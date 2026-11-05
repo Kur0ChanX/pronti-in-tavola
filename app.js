@@ -177,10 +177,17 @@ const nomeBreve = n => String(n || '').split(' ')[0];
 
 /* ---------- ordini ---------- */
 const ATTIVI = ['nuovo', 'proposta', 'accettato', 'pronto'];
+/* teglie che un ordine occupa nella sua settimana (i «pronti» e gli ordini chiusi no) */
+const teglieOrdine = o => (!o.pronto && ATTIVI.includes(o.stato) ? o.righe.filter(r => r.tipo === 'teglia' || r.tipo === 'intera').reduce((a, r) => a + r.qta, 0) : 0);
 function teglieSettimana(sett, escludi) {
-  return S.ordini.filter(o => !o.pronto && o.id !== escludi && ATTIVI.includes(o.stato) && settimana(o.entro) === sett)
-    .reduce((s, o) => s + o.righe.filter(r => r.tipo === 'teglia' || r.tipo === 'intera').reduce((a, r) => a + r.qta, 0), 0);
+  /* il cliente vero non vede gli ordini degli altri: conta il documento settimane/ */
+  if (S.motore === 'firebase' && P.ruolo !== 'monica') {
+    const o = escludi && ordine(escludi);
+    return Math.max(0, ((S.settimane || {})[sett] || 0) - (o && settimana(o.entro) === sett ? teglieOrdine(o) : 0));
+  }
+  return S.ordini.filter(o => o.id !== escludi && settimana(o.entro) === sett).reduce((s, o) => s + teglieOrdine(o), 0);
 }
+const contaSettimane = St => St.ordini.reduce((m, o) => { const n = teglieOrdine(o); if (n) { const k = settimana(o.entro); m[k] = (m[k] || 0) + n; } return m; }, {});
 function giorniPossibili(teglieNuove, da, escludi) {
   const imp = S.impostazioni, out = [], primo = da || piuGiorni(oggi(), imp.anticipo);
   for (let i = 0; i < 14; i++) {
@@ -192,8 +199,8 @@ function giorniPossibili(teglieNuove, da, escludi) {
   }
   return out;
 }
-const STATO_CLIENTE = { nuovo: 'Da confermare', proposta: 'Nuova data', accettato: 'Confermato', pronto: 'Pronto!', ritirato: 'Ritirato', rifiutato: 'Non disponibile', annullato: 'Annullato' };
-const STATO_MONICA = { nuovo: 'Nuovo', proposta: 'Aspetta risposta', accettato: 'Da preparare', pronto: 'Pronto', ritirato: 'Ritirato', rifiutato: 'Rifiutato', annullato: 'Annullato dal cliente' };
+const STATO_CLIENTE = { nuovo: 'Da confermare', proposta: 'Nuova data', accettato: 'Confermato', pronto: 'Pronto!', ritirato: 'Ritirato', rifiutato: 'Non disponibile', annullato: 'Annullato', daApprovare: 'Aspetta Monica' };
+const STATO_MONICA = { nuovo: 'Nuovo', proposta: 'Aspetta risposta', accettato: 'Da preparare', pronto: 'Pronto', ritirato: 'Ritirato', rifiutato: 'Rifiutato', annullato: 'Annullato dal cliente', daApprovare: 'Cliente nuovo' };
 const METODO = { contanti: 'Contanti al ritiro', bonifico: 'Bonifico istantaneo', postepay: 'Postepay' };
 const daGuardare = () => S.ordini.filter(o => o.stato === 'nuovo' || o.modifica || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato'));
 const mapsLink = () => { const r = S.impostazioni.ritiro; return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.via + ', ' + r.citta)}`; };
@@ -306,7 +313,7 @@ function foglioPiatto() {
   const f = p.formati.find(x => x.id === s.formato) || p.formati[0];
   const prezzo = prezzoDi(p, f.id, s.variante), ing = ingDi(p, s.variante), all = allergeniDi(ing), mie = new Set(P.allergie);
   const etiQta = { teglia: 'Quante teglie?', kg: 'Quanti chili?', pz: 'Quanti pezzi?', intera: 'Quante?' }[f.tipo];
-  const testoWa = `Guarda cosa cucina Monica: ${p.nome}. Se vuoi ordinare anche tu, chiedi l'invito qui: ${S.impostazioni.indirizzoApp}#richiesta`;
+  const testoWa = `Guarda cosa cucina Monica: ${p.nome}. Se vuoi ordinare anche tu, chiedi l'invito qui: ${S.impostazioni.indirizzoApp}${Dati.attivo ? '#da=' + (P.ruolo === 'monica' ? 'monica' : P.cliente || '') : '#richiesta'}`;
   let h = `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div>
     ${foto(p, 'grande')}<div class="dentro">
     <div class="sezione"><h1>${esc(p.nome)}</h1>${p.sotto ? `<p class="tenue" style="margin:0">${esc(p.sotto)}</p>` : ''}${etichette(p, false)}</div>`;
@@ -367,7 +374,7 @@ function vCarrello() {
     <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>
     <div class="gruppo"><label for="nota-ordine">Una nota per Monica (se vuoi)</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. passo dopo le 18">${esc(UI.nota)}</textarea></div>
     <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
-    <button type="button" class="btn pieno" data-a="invia" ${dopo.length && !UI.entro ? 'disabled' : ''}>${ico('invito')}Invia l'ordine a Monica</button>
+    <button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
     ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : ''}`;
   return h + '</main>';
 }
@@ -793,7 +800,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio) {
-    const dentro = UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -867,6 +874,15 @@ function indovinaAllergeni(t) {
 
 const A = {
   annulla() { if (fnAnnulla) { const f = fnAnnulla; fnAnnulla = null; $('#toast').innerHTML = ''; f(); } },
+  async 'nome-ok'() {
+    const i = $('#nome-nuovo'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
+    if (nome.length < 3 || !nome.includes(' ')) { mostraToast('Scrivi nome e cognome.'); if (i) i.focus(); return; }
+    try { await Dati.registra(nome, P.tramite || '', false); UI.foglio = null; inviaVero(); } catch (e) { erroreNome(e, nome); }
+  },
+  async 'nome-ricollega'() {
+    try { await Dati.registra(UI.foglio.usato, P.tramite || '', true); UI.foglio = null; inviaVero(); } catch (e) { erroreNome(e); }
+  },
+  'nome-altro'() { UI.foglio = { tipo: 'nome' }; render(); const i = $('#nome-nuovo'); if (i) i.focus(); },
   'entra-monica'() { Dati.entraGoogle().catch(() => mostraToast('Accesso non riuscito. Riprova.')); },
   ruolo(el) { P.ruolo = el.dataset.v; salvaP(); UI.foglio = null; UI.modifica = null; vai(P.ruolo === 'monica' ? 'home' : 'menu'); if (P.ruolo === 'monica') notificaMonica(); },
   vai(el) { vai(el.dataset.v); },
@@ -901,6 +917,7 @@ const A = {
   entro(el) { UI.entro = el.dataset.v; render(); },
   metodo(el) { UI.metodo = el.dataset.v; render(); },
   invia() {
+    if (Dati.attivo) { inviaVero(); return; }
     const c = P.carrello, pronti = c.filter(r => r.pronto), dopo = c.filter(r => !r.pronto);
     for (const r of pronti) {
       const p = piatto(r.piatto);
@@ -1204,6 +1221,8 @@ if (Dati.attivo) avviaDati();
 let renderDopo = false;
 const staScrivendo = () => { const a = document.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && !!$('#app').contains(a); };
 function avviaDati() {
+  const m = location.hash.match(/^#da=([\w-]{1,40})$/);
+  if (m && !P.tramite) { P.tramite = m[1]; salvaP(); }
   Dati.avvia((nuovo, io) => {
     if (Dati.preparaVuoto(statoIniziale())) return;
     S = nuovo;
@@ -1218,6 +1237,50 @@ function avviaDati() {
     if (st.errore === 'permission-denied') mostraToast('Non salvato: questa modifica non è permessa.');
     else if (st.errore) mostraToast('Non salvato: riprova tra poco.');
     else if (st.rete === false && st.inAttesa) mostraToast('Senza rete: si salverà appena torna.');
-  }).catch(() => mostraToast('Non riesco a caricare il menù: controlla la rete e riapri l\'app.'));
+  }, { oggi, settimana, teglieOrdine, contaSettimane }).catch(() => mostraToast('Non riesco a caricare il menù: controlla la rete e riapri l\'app.'));
+}
+addEventListener('online', () => { if (UI.riprova && P.carrello.length) inviaVero(); });
+
+/* ordine vero: parte solo con la rete e con la conferma del server; se no resta nel carrello */
+async function inviaVero() {
+  if (UI.invio) return;
+  if (!Dati.io.utente) { UI.foglio = { tipo: 'nome' }; render(); const i = $('#nome-nuovo'); if (i) i.focus(); return; }
+  if (Dati.io.utente.stato === 'no') { mostraToast('Monica per ora non può prendere il tuo ordine.'); return; }
+  const c = P.carrello, pronti = c.filter(r => r.pronto), dopo = c.filter(r => !r.pronto);
+  if (dopo.length && !UI.entro) return;
+  const fai = (righe, entro, pronto) => ({ id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), n: 0, cliente: P.cliente,
+    righe: righe.map(r => { const x = Object.assign({}, r); delete x.pronto; return x; }), entro, stato: 'nuovo', pronto, proposta: null,
+    paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), cuori: {}, modifica: null, esitoModifica: '' });
+  const lista = [];
+  if (pronti.length) lista.push([pronti, fai(pronti, oggi(), true)]);
+  if (dopo.length) lista.push([dopo, fai(dopo, UI.entro, false)]);
+  UI.invio = true; UI.riprova = false; render();
+  try {
+    await Dati.inviaOrdini(lista.map(x => x[1]));
+    P.carrello = []; UI.entro = null; UI.nota = ''; UI.invio = false; salvaP(); vai('inviato');
+  } catch (e) {
+    UI.invio = false;
+    lista.slice(0, e.partiti || 0).forEach(([righe]) => { P.carrello = P.carrello.filter(r => !righe.includes(r)); });
+    if (e.code === 'finito') {
+      P.carrello.forEach(r => { if (r.pronto && r.piatto === e.piatto) r.pronto = false; });
+      mostraToast(`Mi dispiace: ${e.nome} pronto l'ha appena preso qualcun altro. Ora è da prenotare: scegli il giorno.`);
+    } else if (e.code === 'unavailable' || !navigator.onLine) { UI.riprova = true; mostraToast('Non è partito: manca la rete. Riparte da solo appena torna.'); }
+    else mostraToast('Non è partito. Riprova tra poco.');
+    salvaP(); render();
+  }
+}
+function erroreNome(e, nome) {
+  if (e.code === 'permission-denied' && nome) { UI.foglio = { tipo: 'nome', usato: nome }; render(); return; }
+  mostraToast(e.code === 'chiuso' ? 'Monica in questo momento non prende clienti nuovi.' : e.code === 'nome' ? 'Scrivi nome e cognome.'
+    : e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.');
+}
+function foglioNome() {
+  const u = UI.foglio.usato;
+  return `<h2>Come ti chiami?</h2>
+    <p class="tenue">Scrivi nome e cognome: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>
+    <input type="text" id="nome-nuovo" placeholder="Nome e cognome" aria-label="Nome e cognome" autocomplete="name" maxlength="60" value="${esc(u || '')}">
+    ${u ? `<p><b>Questo nome c'è già.</b> Sei tu con un telefono nuovo?</p>
+      <div class="fila"><button type="button" class="btn pieno" data-a="nome-ricollega">Sì, sono io</button><button type="button" class="btn chiaro" data-a="nome-altro">No, scrivo un altro nome</button></div>`
+    : `<button type="button" class="btn pieno" data-a="nome-ok">${ico('invito')}Invia l'ordine a Monica</button>`}`;
 }
 document.addEventListener('focusout', () => { if (renderDopo) setTimeout(() => { if (!staScrivendo() && renderDopo) { renderDopo = false; render(); } }, 0); });
