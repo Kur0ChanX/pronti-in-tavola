@@ -152,7 +152,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.spesa-riga.presa', { hasText: 'Mascarpone' }).count())) throw new Error('spunta non messa');
     const w = await page.locator('a', { hasText: 'Manda tutta la spesa su WhatsApp' }).getAttribute('href');
     if (decodeURIComponent(w).includes('Mascarpone') || !decodeURIComponent(w).includes('Carne macinata: 4 × 500 g')) throw new Error('testo WhatsApp (il preso non va, il resto sì): ' + decodeURIComponent(w).slice(0, 160));
-    await page.locator('[data-campo="sp.anche"]').uncheck(); await foto('20-spesa-presa');
+    await foto('20-spesa-presa');
+    await clic('[data-a="sp-fatta"]');   // «Ho fatto la spesa»: 250 g in casa + 2 confezioni prese = 750 g
+    const dopo = await page.evaluate(() => casaDi('mascarpone') + '/' + Object.keys(SPESA.presi).length);
+    if (dopo !== '750/0') throw new Error('dopo la spesa (in casa/spunte): ' + dopo);
+    if (await riga('Mascarpone').count()) throw new Error('il mascarpone è ancora da comprare');
+    const usato = await page.evaluate(() => { const o = S.ordini.find(x => x.stato === 'accettato' && x.righe.some(r => r.piatto === 'tiramisu' && !r.pronto)); o.stato = 'pronto'; const q = casaDi('mascarpone'); o.stato = 'accettato'; return q + '/' + casaDi('mascarpone'); });
+    if (usato !== '240/750') throw new Error('consumo col «pronto» e poi annullato: ' + usato);
+    await page.locator('[data-campo="sp.anche"]').uncheck();
     await clic('[data-a="sp-giorni"][data-v="-1"]');   // «Tutti gli ordini» (Mario 05/11)
     if (!(await page.locator('main p', { hasText: 'tutti quelli che hai' }).count())) throw new Error('«Tutti gli ordini» non scelto');
     await clic('[data-a="sp-giorni"][data-v="2"]');
@@ -164,12 +171,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.waitForTimeout(200);
     if ((await page.evaluate(() => document.activeElement && document.activeElement.id)) !== 'ing-spesa-nuova') throw new Error('il campo ha perso la tastiera');
     await page.locator('#ing-spesa-nuova').fill('detersivo piatti'); await clic('[data-a="sp-agg"]');
-    await page.locator('#ing-spesa-nuova').fill('masc');
-    if (!(await page.locator('#sug-spesa button', { hasText: 'Mascarpone' }).count())) throw new Error('nessun suggerimento per «masc»');
-    await clic('#sug-spesa button >> text=Mascarpone');
+    await page.locator('#ing-spesa-nuova').fill('macin');
+    if (!(await page.locator('#sug-spesa button', { hasText: 'Carne macinata' }).count())) throw new Error('nessun suggerimento per «macin»');
+    await clic('#sug-spesa button >> text=Carne macinata');
     const mia = await page.evaluate(() => SPESA.mia.map(v => `${v.n}|${v.q}|${v.rep}`).join(' / '));
-    if (mia !== 'Patate|2 kg|Frutta e verdura / Detersivo piatti||Casa e pulizia / Mascarpone||Frigo: latte, formaggi e uova') throw new Error('voci: ' + mia);
-    if (!(await page.locator('.spesa-riga', { hasText: 'Mascarpone' }).locator('small', { hasText: 'Anche per gli ordini' }).count())) throw new Error('manca «Anche per gli ordini»');
+    if (mia !== 'Patate|2 kg|Frutta e verdura / Detersivo piatti||Casa e pulizia / Carne macinata||Carne, pesce e salumi') throw new Error('voci: ' + mia);
+    if (!(await page.locator('.spesa-riga', { hasText: 'Carne macinata' }).locator('small', { hasText: 'Anche per gli ordini: 2 × 500 g' }).count())) throw new Error('manca «Anche per gli ordini»');
     await page.locator('#ing-spesa-nuova').fill('patate 3 kg'); await campo.press('Enter');   // niente doppioni: cambia la quantità
     const pat = await page.evaluate(() => SPESA.mia.filter(v => v.n === 'Patate').map(v => v.q).join());
     if (pat !== '3 kg') throw new Error('doppione patate: ' + pat);
