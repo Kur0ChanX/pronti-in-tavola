@@ -574,7 +574,29 @@ function vHome() {
       <button type="button" class="btn ${pronti.length ? 'chiaro' : ''} pieno" data-a="apri-pronti">${ico('fiamma')}${pronti.length ? 'Cambia i pronti' : 'Segna cosa hai pronto'}</button></section>
     <section class="scheda"><h2>Da preparare</h2>${agenda()}
       <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>`;
+  h += incassi();
   return h + '</main>';
+}
+/* incassi del mese (Fase 3, C7): per il giorno del ritiro; solo ordini accettati, pronti o ritirati */
+const VALIDI = ['accettato', 'pronto', 'ritirato'];
+function contiMese(mese) {
+  const oo = S.ordini.filter(o => VALIDI.includes(o.stato) && String(o.entro).slice(0, 7) === mese);
+  const presi = oo.filter(o => o.paga && o.paga.ricevuto), daPrendere = oo.filter(o => !(o.paga && o.paga.ricevuto));
+  const piatti = {};
+  oo.forEach(o => o.righe.forEach(r => { piatti[r.nome] = (piatti[r.nome] || 0) + totale([r]); }));
+  return { oo, presi: totale(presi.flatMap(o => o.righe)), daPrendere: totale(daPrendere.flatMap(o => o.righe)), nDa: daPrendere.length,
+    piatti: Object.entries(piatti).sort((a, b) => b[1] - a[1]).slice(0, 3) };
+}
+function incassi() {
+  const ora = oggi().slice(0, 7), d = new Date(ora + '-15T12:00:00'); d.setMonth(d.getMonth() - 1);
+  const prima = d.toISOString().slice(0, 7), c = contiMese(ora), p = contiMese(prima);
+  const nome = m => new Date(m + '-15T12:00:00').toLocaleDateString('it-IT', { month: 'long' });
+  const tot = c.presi + c.daPrendere;
+  return `<details class="scheda incassi"><summary><b>Incassi di ${nome(ora)}</b><span>${euro(tot)}</span></summary>
+    <div class="conti"><div><small>Già presi</small><b>${euro(c.presi)}</b></div><div><small>Da prendere${c.nDa ? ` (${c.nDa} ${c.nDa === 1 ? 'ordine' : 'ordini'})` : ''}</small><b>${euro(c.daPrendere)}</b></div></div>
+    <p class="tenue" style="margin:0"><b>${c.oo.length}</b> ${c.oo.length === 1 ? 'ordine' : 'ordini'} da ritirare in ${nome(ora)}. ${nome(prima).replace(/^./, x => x.toUpperCase())}: ${euro(p.presi + p.daPrendere)}.</p>
+    ${c.piatti.length ? `<p style="margin:0"><small class="tenue">Rendono di più:</small><br>${c.piatti.map(([n, v]) => `${esc(n)} <b>${euro(v)}</b>`).join(' · ')}</p>` : ''}
+    <p class="tenue piccolo" style="margin:0">Contano gli ordini accettati, pronti o ritirati, per il giorno del ritiro. «Già presi» = quelli segnati «Soldi ricevuti».</p></details>`;
 }
 
 function daCucinare(oo) {
