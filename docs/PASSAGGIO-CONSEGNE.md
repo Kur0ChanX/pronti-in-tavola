@@ -34,6 +34,7 @@ Sessione attuale: #9 (dopo la #8 `session_01QTFEqSmQascLxb6RP3Wyih`, chiusa alla
 - Database Firestore in «modalità di test»: si blocca dopo 30 giorni e intanto è aperto a tutti; scelta la produzione con le nostre regole. Piano Blaze (backup): a pagamento, no.
 - Cloudflare con un token API per pubblicare io: un segreto in più; scelto il collegamento con GitHub (Mario autorizza solo questo repo).
 - Sito su `main`: il ramo non esiste; per ora il sito di prova segue il ramo di lavoro (nessun cliente ha il link), `main` con PR e prove verdi prima di darlo ai clienti.
+- Cloudflare con l'email alias `mario.miscera+pronti@gmail.com`: rifiutata da Cloudflare (05/11 20:28, «Only one variation is allowed»); scelta l'account Free aggiuntivo dallo stesso login.
 - Spiegare «lista Hai detto di no» senza esempio: Mario non l'ha capita (PT E7).
 
 ## Prossimi passi
