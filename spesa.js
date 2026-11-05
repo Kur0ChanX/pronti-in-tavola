@@ -55,7 +55,9 @@ const DOSI_INIZIALI = {
   crostata: { farina: 300, burro: 150, zucchero: 120, uova: 2, marmellata: 350 },
   papassini: { farina: 450, zucchero: 200, uvetta: 100, noci: 100, mandorle: 100, strutto: 100, uova: 2, arancia: 1 }
 };
-const GIORNI_SPESA = [[0, 'Oggi'], [1, 'Fino a domani'], [2, '3 giorni'], [6, 'Una settimana']];
+const GIORNI_SPESA = [[0, 'Oggi'], [1, 'Fino a domani'], [2, '3 giorni'], [6, 'Una settimana'], [-1, 'Tutti gli ordini']];   /* -1 = tutti (Mario 05/11) */
+const fineSpesa = () => SPESA.giorni < 0 ? '9999-12-31' : piuGiorni(oggi(), SPESA.giorni);
+const finoA = fino => fino === '9999-12-31' ? 'tutti gli ordini' : `fino a ${giornoLungo(fino)}`;
 const BASI = { teglia: '1 porzione', kg: '1 kg', pz: '1 pezzo', intera: '1 torta intera' };
 const CHIAVE_SPESA = 'pit-spesa-v1';
 
@@ -81,7 +83,7 @@ function basiRiga(r, p) {
   return r.qta;
 }
 function ordiniSpesa() {
-  const fino = piuGiorni(oggi(), SPESA.giorni);
+  const fino = fineSpesa();
   const stati = SPESA.anche ? ['accettato', 'nuovo', 'proposta'] : ['accettato'];
   return S.ordini.filter(o => stati.includes(o.stato) && o.entro <= fino).sort((a, b) => a.entro.localeCompare(b.entro));
 }
@@ -125,7 +127,7 @@ function daComprare(id, serve) {
 }
 /* tutta la spesa ancora da prendere, per reparto: la mia lista + quella degli ordini */
 function testoSpesa(c, fino) {
-  const righe = [`🛒 Lista della spesa (con gli ordini fino a ${giornoLungo(fino)})`];
+  const righe = [`🛒 Lista della spesa (con ${finoA(fino) === 'tutti gli ordini' ? 'tutti gli ordini' : 'gli ordini ' + finoA(fino)})`];
   REPARTI.forEach(rep => {
     const mie = SPESA.mia.filter(v => !v.preso && v.rep === rep).map(v => `- ${v.n}${v.q ? `: ${v.q}` : ''}`);
     const ord = Object.keys(c.tot).filter(id => !SPESA.presi[id] && infoIng(id).rep === rep).map(id => [id, daComprare(id, c.tot[id])]).filter(x => x[1])
@@ -136,7 +138,7 @@ function testoSpesa(c, fino) {
 }
 
 function spesaOrdini() {
-  const oo = ordiniSpesa(), c = calcolaSpesa(oo), fino = piuGiorni(oggi(), SPESA.giorni);
+  const oo = ordiniSpesa(), c = calcolaSpesa(oo), fino = fineSpesa();
   const ids = Object.keys(c.tot).sort((a, b) => ING(a).n.localeCompare(ING(b).n, 'it'));
   const compra = ids.map(id => [id, daComprare(id, c.tot[id])]).filter(x => x[1]);
   return { oo, c, fino, ids, compra };
@@ -159,7 +161,7 @@ function vSpesaOrdini({ oo, c, fino, ids, compra }) {
   let h = `<section class="scheda"><h2>Per quali ordini?</h2>
     <div class="scelte">${GIORNI_SPESA.map(([n, t]) => `<button type="button" class="scelta" data-a="sp-giorni" data-v="${n}" aria-pressed="${SPESA.giorni === n}">${t}</button>`).join('')}</div>
     <label class="interr"><span>Conta anche gli ordini da accettare<small>Così non resti senza se li accetti</small></span><input type="checkbox" data-campo="sp.anche" ${SPESA.anche ? 'checked' : ''}></label>
-    <p class="tenue" style="margin:0">${oo.length ? `<b>${oo.length}</b> ${oo.length === 1 ? 'ordine' : 'ordini'} fino a ${giornoLungo(fino)}. I «pronti subito» non contano: sono già cucinati.` : `Nessun ordine fino a ${giornoLungo(fino)}.`}</p></section>`;
+    <p class="tenue" style="margin:0">${oo.length ? `<b>${oo.length}</b> ${oo.length === 1 ? 'ordine' : 'ordini'}${fino === '9999-12-31' ? ', tutti quelli che hai' : ` fino a ${giornoLungo(fino)}`}. I «pronti subito» non contano: sono già cucinati.` : `Nessun ordine${fino === '9999-12-31' ? '' : ` fino a ${giornoLungo(fino)}`}.`}</p></section>`;
   if (c.mancano.length) h += `<div class="avviso"><div style="width:100%"><b>Mancano delle dosi</b>, quindi la lista non è completa:
     ${c.mancano.map(([id, ii]) => `<div class="fila" style="margin-top:8px"><button type="button" class="chip" data-a="vai" data-v="piatto:${id}">${ico('matita')}${esc(piatto(id).nome)}</button>
       <small>senza dose: ${esc(ii.map(i => ING(i).n.toLowerCase()).join(', '))}</small></div>`).join('')}</div></div>`;
