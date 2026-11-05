@@ -1,0 +1,45 @@
+# Pulizia mensile dei rami di scorta (C352, Mario 30/10 «consigliato»). Le scorte automatiche (scorta-…) crescono di ~20
+# rami al giorno e non si cancellano mai da sole. Il 1° del mese tools/pulisci-scorte.py toglie SOLO quelle più vecchie
+# di 30 giorni e già tutte nel ramo di lavoro (niente si perde); le vecchie con lavoro non nel ramo restano e vengono
+# elencate nel riassunto del giro. Eccezione scritta alla regola 🔒 «nessun ramo si cancella» (REGOLE.md, kit 29.3).
+# ~1 minuto al mese. A mano: «Run workflow» (con «prova a secco» non cancella niente, dice solo cosa toglierebbe).
+name: Pulisci le scorte
+
+on:
+  schedule:
+    - cron: '17 4 1 * *'
+  workflow_dispatch:
+    inputs:
+      prova:
+        description: 'Prova a secco (non cancella niente)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pulisci-scorte
+  cancel-in-progress: false
+
+jobs:
+  pulisci:
+    runs-on: ${{ vars.PROVE_RUNNER || 'ubuntu-latest' }}
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          fetch-depth: 0
+          sparse-checkout: |
+            tools/pulisci-scorte.py
+            .claude/ramo-di-lavoro.txt
+
+      - name: Pulisci le scorte vecchie già nel ramo
+        env:
+          CLAUDE_PROJECT_DIR: ${{ github.workspace }}
+        run: |
+          if [ "${{ inputs.prova }}" = "true" ]; then
+            python3 -I tools/pulisci-scorte.py | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            python3 -I tools/pulisci-scorte.py --cancella | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
