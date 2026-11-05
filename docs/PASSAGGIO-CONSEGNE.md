@@ -11,7 +11,7 @@ Sessione attuale: #10 (dopo la #9 `session_01QTFEqSy2LMrSBBuwFMh1qk`, chiusa all
 - App: `python3 -I tools/anteprima.py && node tools/prova.js` → 25 «OK» e «Nessun errore nella pagina».
 - Motore e regole: `npm install`, poi `npm run prova-firebase` → «83 OK, 0 NO»; `npm run prova-regole` → «50 OK, 0 NO» (05/11 20:36; `dati.js` e regole non toccati dopo).
 - Sito: `python3 -I tools/sito.py` → «OK sito: 9 file dell'app + 17 immagini».
-- Anteprima su claude.ai (https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH): versione 15 (05/11 21:11) con lista della spesa. Ripubblicare: publish con `url` e `dist/anteprima.html` (la prima volta viene rifiutato e mostra le differenze: se sono solo le nostre, ripubblicare).
+- Anteprima su claude.ai (https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH): versione 16 (05/11 ~21:40) con lista della spesa completa e firma C17. Ripubblicare: publish con `url` e `dist/anteprima.html` (la prima volta viene rifiutato e mostra le differenze: se sono solo le nostre, ripubblicare).
 - Kit RVC 35.0. Verifica: `for t in tools/test-*.py; do python3 -I $t; done` → tutti verdi.
 - Soglia 320k: vale solo se l'id della sessione è quello della riga «Principale» di `docs/CHI-FA-COSA.md`: la sessione nuova ci mette il suo.
 
