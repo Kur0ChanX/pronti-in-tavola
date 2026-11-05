@@ -689,6 +689,7 @@ function vPiatti() {
     <p class="tenue" style="margin:0">Tocca un piatto per cambiare foto, prezzi e ingredienti. L'interruttore lo toglie o lo rimette nel menù.</p>`;
   const daControllare = visibili().filter(p => !p.controllato).length;
   if (daControllare) h += `<div class="avviso">${ico('aiuto')}<div>Ho preparato una bozza di ingredienti e allergeni per <b>${daControllare} piatti</b>. Aprili uno alla volta e controlla.</div></div>`;
+  h += `<button type="button" class="btn chiaro pieno" data-a="menu-immagine">${ico('chat')}Immagine del menù da mandare</button>`;
   CATEGORIE.forEach(([k, n]) => {
     const pp = visibili().filter(p => p.cat === k);
     if (!pp.length) return;
@@ -899,7 +900,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -972,7 +973,54 @@ function indovinaAllergeni(t) {
   return [...new Set(r)];
 }
 
+/* immagine del menù (Fase 3, C7): i piatti nel menù coi prezzi, da mandare su WhatsApp o negli stati */
+function disegnaMenu() {
+  const L = 1080, M = 70, cats = CATEGORIE.map(([k, n]) => [n, visibili().filter(p => p.cat === k && p.disponibile)]).filter(x => x[1].length);
+  const prezzi = p => p.formati.map(f => `${f.nome.replace(/^Teglia /, '')} ${euroBreve(f.prezzo)}`).join(' · ');
+  const c = document.createElement('canvas'), g = c.getContext('2d');
+  const righe = cats.reduce((n, [, pp]) => n + 1 + pp.length, 0);
+  c.width = L; c.height = 330 + righe * 64 + cats.length * 30 + 170;
+  g.fillStyle = '#FBF5EA'; g.fillRect(0, 0, L, c.height);
+  g.strokeStyle = '#7B2318'; g.lineWidth = 6; g.strokeRect(24, 24, L - 48, c.height - 48);
+  g.textAlign = 'center'; g.fillStyle = '#7B2318';
+  g.font = '600 76px Fraunces, Georgia, serif'; g.fillText('Pronti in Tavola', L / 2, 150);
+  g.font = '700 34px "Nunito Sans", system-ui, sans-serif'; g.fillStyle = '#9A5B3C'; g.fillText('Il menù di Monica · Olbia · ' + giornoLungo(oggi()), L / 2, 205);
+  let y = 290;
+  cats.forEach(([nome, pp]) => {
+    g.textAlign = 'left'; g.fillStyle = '#7B2318'; g.font = '600 46px Fraunces, Georgia, serif'; g.fillText(nome, M, y); y += 20;
+    g.fillStyle = '#E7D6BE'; g.fillRect(M, y, L - 2 * M, 3); y += 52;
+    pp.forEach(p => {
+      g.fillStyle = '#2B1A12'; g.font = '700 34px "Nunito Sans", system-ui, sans-serif'; g.textAlign = 'left';
+      let n = p.nome; while (g.measureText(n).width > 560 && n.length > 4) n = n.slice(0, -2) + '…';
+      g.fillText(n, M, y);
+      g.textAlign = 'right'; g.fillStyle = '#7B2318'; g.font = '700 30px "Nunito Sans", system-ui, sans-serif';
+      let pr = prezzi(p); while (g.measureText(pr).width > 400 && pr.length > 4) pr = pr.slice(0, -2) + '…';
+      g.fillText(pr, L - M, y); y += 64;
+    });
+    y += 30;
+  });
+  g.textAlign = 'center'; g.fillStyle = '#9A5B3C'; g.font = '700 32px "Nunito Sans", system-ui, sans-serif';
+  g.fillText('Ordina da qui: ' + String(S.impostazioni.indirizzoApp || '').replace(/^https?:\/\//, '').replace(/\/$/, ''), L / 2, y + 40);
+  return c;
+}
+async function mandaMenu() {
+  const c = disegnaMenu();
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  const file = blob && new File([blob], 'menu-pronti-in-tavola.png', { type: 'image/png' });
+  try {
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: 'Il menù di Monica: ' + S.impostazioni.indirizzoApp + '#da=monica' }); return; }
+  } catch (e) { if (e && e.name === 'AbortError') return; }
+  UI.foglio = { tipo: 'menu-img', url: c.toDataURL('image/png') }; render();
+}
+function foglioMenuImg() {
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Il tuo menù</h1>
+    <p class="tenue" style="margin:0">Tieni premuto sull'immagine per salvarla o condividerla, oppure scaricala.</p>
+    <img src="${UI.foglio.url}" alt="Menù di Monica coi prezzi" style="width:100%;border-radius:12px;border:1px solid var(--riga)"></div>
+    <div class="piede"><a class="btn pieno" href="${UI.foglio.url}" download="menu-pronti-in-tavola.png">Scarica l'immagine</a></div>`;
+}
+
 const A = {
+  'menu-immagine'() { mandaMenu(); },
   annulla() { if (fnAnnulla) { const f = fnAnnulla; fnAnnulla = null; $('#toast').innerHTML = ''; f(); } },
   async 'nome-ok'() {
     const i = $('#nome-nuovo'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
