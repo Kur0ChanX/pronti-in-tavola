@@ -1,0 +1,179 @@
+/* Pronti in Tavola · dati di partenza (menù di Monica, ottobre 2026).
+   Ingredienti, dosi e istruzioni sono una BOZZA: ogni piatto ha checked:false finché Monica non lo controlla. */
+'use strict';
+
+/* I 14 allergeni di legge (Reg. UE 1169/2011) */
+const ALLERGENI = [
+  ['glutine', 'Glutine'], ['crostacei', 'Crostacei'], ['uova', 'Uova'], ['pesce', 'Pesce'],
+  ['arachidi', 'Arachidi'], ['soia', 'Soia'], ['latte', 'Latte'], ['guscio', 'Frutta a guscio'],
+  ['sedano', 'Sedano'], ['senape', 'Senape'], ['sesamo', 'Sesamo'], ['solfiti', 'Solfiti'],
+  ['lupini', 'Lupini'], ['molluschi', 'Molluschi']
+];
+
+/* Elenco ingredienti: n = nome, a = allergeni, m = carne o pesce (non vegetariano) */
+const INGREDIENTI = {
+  farina: { n: 'Farina di grano', a: ['glutine'] },
+  semola: { n: 'Semola di grano duro', a: ['glutine'] },
+  pangrattato: { n: 'Pangrattato', a: ['glutine'] },
+  sfoglia: { n: 'Pasta sfoglia', a: ['glutine', 'latte'] },
+  sfogliauovo: { n: "Sfoglia all'uovo", a: ['glutine', 'uova'] },
+  couscous: { n: 'Cous cous', a: ['glutine'] },
+  savoiardi: { n: 'Savoiardi', a: ['glutine', 'uova'] },
+  biscotti: { n: 'Biscotti secchi', a: ['glutine', 'latte'] },
+  riso: { n: 'Riso', a: [] },
+  uova: { n: 'Uova', a: ['uova'] },
+  latte: { n: 'Latte', a: ['latte'] },
+  burro: { n: 'Burro', a: ['latte'] },
+  besciamella: { n: 'Besciamella', a: ['latte', 'glutine'] },
+  mozzarella: { n: 'Mozzarella', a: ['latte'] },
+  parmigiano: { n: 'Parmigiano', a: ['latte'] },
+  pecorino: { n: 'Pecorino', a: ['latte'] },
+  ricotta: { n: 'Ricotta', a: ['latte'] },
+  formaggio: { n: 'Formaggio fresco', a: ['latte'] },
+  gorgonzola: { n: 'Gorgonzola', a: ['latte'] },
+  emmenthal: { n: 'Emmenthal', a: ['latte'] },
+  mascarpone: { n: 'Mascarpone', a: ['latte'] },
+  spalmabile: { n: 'Formaggio spalmabile', a: ['latte'] },
+  panna: { n: 'Panna', a: ['latte'] },
+  nutella: { n: 'Crema di nocciole e cacao', a: ['guscio', 'latte', 'soia'] },
+  noci: { n: 'Noci', a: ['guscio'] },
+  mandorle: { n: 'Mandorle', a: ['guscio'] },
+  tonno: { n: 'Tonno', a: ['pesce'], m: 1 },
+  gamberetti: { n: 'Gamberetti', a: ['crostacei'], m: 1 },
+  macinato: { n: 'Carne macinata', a: [], m: 1 },
+  carne: { n: 'Carne', a: [], m: 1 },
+  pollo: { n: 'Pollo', a: [], m: 1 },
+  cotto: { n: 'Prosciutto cotto', a: [], m: 1 },
+  strutto: { n: 'Strutto', a: [], m: 1 },
+  melanzane: { n: 'Melanzane', a: [] },
+  zucchine: { n: 'Zucchine', a: [] },
+  carciofi: { n: 'Carciofi', a: [] },
+  patate: { n: 'Patate', a: [] },
+  spinaci: { n: 'Spinaci', a: [] },
+  radicchio: { n: 'Radicchio', a: [] },
+  verdure: { n: 'Verdure di stagione', a: [] },
+  pomodoro: { n: 'Passata di pomodoro', a: [] },
+  cipolla: { n: 'Cipolla', a: [] },
+  aglio: { n: 'Aglio', a: [] },
+  prezzemolo: { n: 'Prezzemolo', a: [] },
+  basilico: { n: 'Basilico', a: [] },
+  menta: { n: 'Menta', a: [] },
+  carota: { n: 'Carota', a: [] },
+  sedano: { n: 'Sedano', a: ['sedano'] },
+  peperoni: { n: 'Peperoni', a: [] },
+  avocado: { n: 'Avocado', a: [] },
+  rucola: { n: 'Rucola', a: [] },
+  frutti: { n: 'Frutti di bosco', a: [] },
+  marmellata: { n: 'Marmellata', a: [] },
+  uvetta: { n: 'Uva passa', a: [] },
+  arancia: { n: "Scorza d'arancia", a: [] },
+  zucchero: { n: 'Zucchero', a: [] },
+  cacao: { n: 'Cacao', a: [] },
+  caffe: { n: 'Caffè', a: [] },
+  olio: { n: 'Olio extravergine', a: [] },
+  oliosemi: { n: 'Olio di semi', a: [] },
+  limone: { n: 'Limone', a: [] }
+};
+
+const CATEGORIE = [
+  ['stuzzichini', 'Stuzzichini'],
+  ['primi', 'Primi'],
+  ['dolci', 'Dolci']
+];
+
+/* Formati: t6/t8 = teglia da 6/8 porzioni, kg = al chilo, pz = al pezzo, intera = torta intera */
+const T = (p6, p8) => [
+  { id: 't6', tipo: 'teglia', nome: 'Teglia da 6', porzioni: 6, prezzo: p6 },
+  { id: 't8', tipo: 'teglia', nome: 'Teglia da 8', porzioni: 8, prezzo: p8 }
+];
+const KG = (p, min = 0.5, passo = 0.5) => [{ id: 'kg', tipo: 'kg', nome: 'Al chilo', prezzo: p, min, passo }];
+const PZ = (p, min = 1, passo = 1) => [{ id: 'pz', tipo: 'pz', nome: 'Al pezzo', prezzo: p, min, passo }];
+
+const PIATTI_INIZIALI = [
+  { id: 'polpette-melanzane', cat: 'stuzzichini', nome: 'Polpette di melanzane', formati: KG(11), ing: ['melanzane', 'pangrattato', 'uova', 'pecorino', 'aglio', 'prezzemolo', 'oliosemi'], note: ['Poco sale', 'Ben cotte'] },
+  { id: 'polpette-zucchine', cat: 'stuzzichini', nome: 'Polpette di zucchine', formati: KG(11), ing: ['zucchine', 'pangrattato', 'uova', 'parmigiano', 'menta', 'oliosemi'], note: ['Poco sale', 'Senza menta'] },
+  { id: 'polpette-tonno', cat: 'stuzzichini', nome: 'Polpette di tonno', formati: KG(12), ing: ['tonno', 'patate', 'pangrattato', 'uova', 'parmigiano', 'prezzemolo', 'oliosemi'], note: ['Poco sale'] },
+  { id: 'polpette-carne', cat: 'stuzzichini', nome: 'Polpette di carne', formati: KG(15), ing: ['macinato', 'pangrattato', 'uova', 'parmigiano', 'latte', 'aglio', 'prezzemolo', 'oliosemi'], note: ['Poco sale', 'Senza aglio'] },
+  { id: 'involtini', cat: 'stuzzichini', nome: 'Involtini di melanzane e prosciutto', formati: T(15, 20), ing: ['melanzane', 'cotto', 'mozzarella', 'pomodoro', 'parmigiano', 'basilico', 'olio'], note: ['Poco formaggio'] },
+  { id: 'sfoglia-zucchine', cat: 'stuzzichini', nome: 'Sfoglia zucchine, prosciutto e mozzarella', formati: T(13, 17), ing: ['sfoglia', 'zucchine', 'cotto', 'mozzarella'], note: [] },
+  { id: 'sfoglia-parmigiana', cat: 'stuzzichini', nome: 'Sfoglia alla parmigiana', formati: T(13, 17), ing: ['sfoglia', 'melanzane', 'mozzarella', 'pomodoro', 'parmigiano', 'basilico'], note: [] },
+  { id: 'panade-carciofi', cat: 'stuzzichini', nome: 'Panade di carciofi e patate', sotto: 'Medie, tipo oschiresi', formati: PZ(1.5, 2), ing: ['semola', 'strutto', 'carciofi', 'patate', 'aglio', 'prezzemolo', 'olio'], note: [] },
+  { id: 'panade-carne', cat: 'stuzzichini', nome: 'Panade di carne', sotto: 'Medie, tipo oschiresi', formati: PZ(1, 2), ing: ['semola', 'strutto', 'carne', 'aglio', 'prezzemolo'], note: [] },
+  { id: 'impanade', cat: 'stuzzichini', nome: 'Impanade a mezza luna', sotto: 'Da friggere a casa', aiuto: '1 kg = circa 20 pezzi', formati: KG(15), ing: ['farina', 'strutto', 'carne'], note: [], scalda: 'Friggere in olio di semi ben caldo, pochi pezzi per volta, finché sono dorate.' },
+  { id: 'ravioli', cat: 'primi', nome: 'Ravioli freschi', formati: KG(12), varianti: [
+    { id: 'ricotta', nome: 'Ricotta', prezzi: { kg: 12 }, ing: ['ricotta'] },
+    { id: 'spinaci', nome: 'Spinaci', prezzi: { kg: 13 }, ing: ['spinaci', 'ricotta'] },
+    { id: 'formaggio', nome: 'Formaggio', prezzi: { kg: 15 }, ing: ['pecorino', 'formaggio'] }
+  ], ing: ['semola', 'farina', 'uova'], note: [], scalda: 'Cuocere in acqua salata bollente per 4-5 minuti.' },
+  { id: 'parmigiana', cat: 'primi', nome: 'Melanzane alla parmigiana', formati: T(22, 26), ing: ['melanzane', 'pomodoro', 'mozzarella', 'parmigiano', 'basilico', 'oliosemi'], note: ['Ben gratinata'], scalda: 'Forno a 180 °C per 15-20 minuti.' },
+  { id: 'lasagne-semplici', cat: 'primi', nome: 'Lasagne semplici', formati: T(17, 20), ing: ['sfogliauovo', 'besciamella', 'pomodoro', 'parmigiano', 'mozzarella'], note: ['Ben gratinate', 'Poca besciamella'], scalda: 'Forno a 180 °C per 20-25 minuti, coperte con la stagnola.' },
+  { id: 'lasagne-ragu', cat: 'primi', nome: 'Lasagne al ragù', formati: T(20, 25), ing: ['sfogliauovo', 'besciamella', 'macinato', 'pomodoro', 'parmigiano', 'cipolla', 'carota', 'sedano', 'olio'], note: ['Ben gratinate', 'Poca besciamella'], scalda: 'Forno a 180 °C per 20-25 minuti, coperte con la stagnola.' },
+  { id: 'lasagne-particolari', cat: 'primi', nome: 'Lasagne particolari', formati: T(20, 25), varianti: [
+    { id: 'carciofi', nome: 'Carciofi', ing: ['carciofi'] },
+    { id: 'verdure', nome: 'Verdure', ing: ['verdure'] },
+    { id: 'radicchio', nome: 'Radicchio e gorgonzola', ing: ['radicchio', 'gorgonzola'] },
+    { id: 'noci', nome: 'Gorgonzola e noci', ing: ['gorgonzola', 'noci'] }
+  ], ing: ['sfogliauovo', 'besciamella', 'parmigiano'], note: ['Ben gratinate'], scalda: 'Forno a 180 °C per 20-25 minuti, coperte con la stagnola.' },
+  { id: 'sformato', cat: 'primi', nome: 'Sformato di zucchine', formati: T(12, 15), ing: ['zucchine', 'uova', 'parmigiano', 'pangrattato', 'latte'], note: [] },
+  { id: 'insalata-riso', cat: 'primi', nome: 'Insalata di riso estiva', formati: T(20, 25), ing: ['riso', 'gamberetti', 'avocado', 'rucola', 'emmenthal', 'olio', 'limone'], note: ['Senza gamberetti'], stagione: 'estate', disponibile: false },
+  { id: 'couscous', cat: 'primi', nome: 'Cous cous pollo e verdure', formati: T(20, 25), ing: ['couscous', 'pollo', 'zucchine', 'peperoni', 'carota', 'cipolla', 'olio'], note: ['Poco piccante'], novita: true },
+  { id: 'tiramisu', cat: 'dolci', nome: 'Tiramisù', formati: T(22, 25), ing: ['savoiardi', 'mascarpone', 'uova', 'zucchero', 'caffe', 'cacao'], note: ['Poco cacao sopra'] },
+  { id: 'cheesecake-nutella', cat: 'dolci', nome: 'Cheesecake alla Nutella', formati: T(24, 28), ing: ['biscotti', 'burro', 'spalmabile', 'panna', 'nutella'], note: [] },
+  { id: 'cheesecake-frutti', cat: 'dolci', nome: 'Cheesecake ai frutti di bosco', formati: T(24, 28), ing: ['biscotti', 'burro', 'spalmabile', 'panna', 'frutti'], note: [] },
+  { id: 'crostata', cat: 'dolci', nome: 'Crostata di marmellata', formati: [{ id: 'intera', tipo: 'intera', nome: 'Intera', prezzo: 17 }], ing: ['farina', 'burro', 'zucchero', 'uova', 'marmellata'], note: [] },
+  { id: 'papassini', cat: 'dolci', nome: 'Papassini', formati: KG(18), ing: ['farina', 'zucchero', 'uvetta', 'noci', 'mandorle', 'strutto', 'uova', 'arancia'], note: [] }
+];
+
+/* Giorni relativi a oggi (per la prova) */
+function giornoDa(n) {
+  const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() + n);
+  return d.toISOString().slice(0, 10);
+}
+
+function statoIniziale() {
+  const piatti = PIATTI_INIZIALI.map((p, i) => Object.assign({
+    sotto: '', aiuto: '', varianti: [], note: [], scalda: '', foto: null, disponibile: true,
+    stagione: '', novita: false, controllato: false, cuori: 0, pronto: null, ordine: i, cestino: null
+  }, JSON.parse(JSON.stringify(p))));
+  const P = id => piatti.find(p => p.id === id);
+  P('lasagne-ragu').cuori = 21; P('tiramisu').cuori = 14; P('parmigiana').cuori = 9;
+  P('lasagne-ragu').pronto = { formato: 't8', qta: 2, giorno: giornoDa(0) };
+  P('panade-carciofi').pronto = { formato: 'pz', qta: 12, giorno: giornoDa(0) };
+
+  const riga = (piatto, formato, qta, extra) => {
+    const p = P(piatto), f = p.formati.find(x => x.id === formato);
+    const v = extra && extra.variante ? p.varianti.find(x => x.id === extra.variante) : null;
+    const prezzo = (v && v.prezzi && v.prezzi[formato]) || f.prezzo;
+    return Object.assign({ piatto, nome: p.nome, formato, formatoNome: f.nome, tipo: f.tipo, variante: v ? v.id : '', varianteNome: v ? v.nome : '', qta, prezzo, note: [], testo: '' }, extra || {});
+  };
+
+  return {
+    versione: 1,
+    soloContanti: true,
+    piatti,
+    clienti: [
+      { id: 'c1', nome: 'Giulia Rossi', da: giornoDa(-60) },
+      { id: 'c2', nome: 'Paolo Sanna', da: giornoDa(-40) },
+      { id: 'c3', nome: 'Anna Piras', da: giornoDa(-20) }
+    ],
+    richieste: [{ id: 'r1', nome: 'Laura Deiana', tramite: 'Giulia Rossi', il: giornoDa(0) }],
+    ordini: [
+      { id: 'o1', n: 1, cliente: 'c1', righe: [riga('lasagne-ragu', 't6', 1), riga('papassini', 'kg', 0.5)], entro: giornoDa(-12), stato: 'ritirato', paga: { metodo: 'contanti', dice: false, ricevuto: true }, nota: '', creato: giornoDa(-14), cuori: {} },
+      { id: 'o2', n: 2, cliente: 'c2', righe: [riga('lasagne-ragu', 't8', 1), riga('tiramisu', 't6', 1, { note: ['Poco cacao sopra'] })], entro: giornoDa(2), stato: 'accettato', paga: { metodo: 'contanti', dice: false, ricevuto: false }, nota: 'Passo dopo le 18', creato: giornoDa(-1), cuori: {} },
+      { id: 'o3', n: 3, cliente: 'c3', righe: [riga('polpette-carne', 'kg', 1.5, { note: ['Poco sale'] }), riga('parmigiana', 't6', 1)], entro: giornoDa(1), stato: 'nuovo', paga: { metodo: 'bonifico', dice: false, ricevuto: false }, nota: '', creato: giornoDa(0), cuori: {} }
+    ],
+    prossimoNumero: 4,
+    impostazioni: {
+      anticipo: 1,
+      pausa: { attiva: false, fino: giornoDa(7) },
+      limite: { attivo: false, teglie: 10 },
+      prontiFino: '20:00',
+      natale: { attivo: false, entro: '2026-12-20', piatti: ['papassini', 'tiramisu', 'lasagne-ragu'] },
+      paga: { contanti: true, bonifico: false, postepay: false, iban: '', intestataria: 'Monica', telefonoPostepay: '' },
+      ritiro: { via: 'Via Libano 53', citta: '07026 Olbia', nota: 'Suona il citofono fuori.' },
+      whatsapp: '',
+      mario: '',
+      indirizzoApp: 'https://pronti-in-tavola-by-ynoy-corp.pages.dev/'
+    }
+  };
+}

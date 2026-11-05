@@ -1,0 +1,123 @@
+// Prova dell'app come un telefono vero: cliente ordina, Monica riceve e gestisce.
+// Uso: node tools/prova.js   (foto in /tmp/pit/)
+const { chromium, devices } = require('playwright');
+const path = require('path');
+const fs = require('fs');
+const FILE = 'file://' + path.resolve(__dirname, '../dist/anteprima.html');
+const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+
+(async () => {
+  const browser = await chromium.launch();
+  const ctx = await browser.newContext({ ...devices['Pixel 7'], deviceScaleFactor: 1 });
+  const page = await ctx.newPage();
+  const errori = [];
+  page.on('pageerror', e => errori.push('ERRORE: ' + e.message));
+  page.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) errori.push('console: ' + m.text()); });
+  const foto = async n => page.screenshot({ path: `${OUT}/${n}.png` });
+  const clic = async (sel, opz) => { await page.locator(sel).first().click(opz); await page.waitForTimeout(250); };
+  const passo = async (nome, fn) => { try { await fn(); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n')[0]); } };
+
+  await page.goto(FILE);
+  await page.waitForTimeout(1300); await foto('01-apertura');
+  await page.waitForTimeout(5200);
+  await passo('menù visibile', async () => { await page.locator('.voce').first().waitFor(); await foto('02-menu'); });
+  await passo('pronti subito visibili', async () => { if (await page.locator('.pronto-carta').count() !== 2) throw new Error('attesi 2 pronti'); });
+
+  await passo('allergia frutta a guscio', async () => {
+    await clic('.barra [data-v="io"]'); await clic('[data-a="allergia"][data-v="guscio"]');
+    await clic('.barra [data-v="menu"]');
+    const rossi = await page.locator('.eti.rischio').count(); if (rossi < 2) throw new Error('etichette rosse: ' + rossi);
+  });
+
+  await passo('lasagne particolari: gusto noci, 2 teglie da 8, nota', async () => {
+    await page.locator('.voce', { hasText: 'Lasagne particolari' }).click(); await page.waitForTimeout(300);
+    await clic('[data-a="sel-var"][data-v="noci"]'); await clic('[data-a="sel-formato"][data-v="t8"]');
+    await clic('[data-a="sel-qta"][data-d="1"]'); await clic('[data-a="sel-nota"]');
+    await foto('03-piatto');
+    const t = await page.locator('[data-a="aggiungi"]').innerText(); if (!t.includes('50,00')) throw new Error('prezzo: ' + t);
+    await clic('[data-a="aggiungi"]');
+  });
+  await passo('polpette al kg: 1,5 kg', async () => {
+    await page.locator('.voce', { hasText: 'Polpette di carne' }).click(); await page.waitForTimeout(300);
+    await clic('[data-a="sel-qta"][data-d="1"]'); await clic('[data-a="sel-qta"][data-d="1"]');
+    const t = await page.locator('[data-a="aggiungi"]').innerText(); if (!t.includes('22,50')) throw new Error('prezzo: ' + t);
+    await clic('[data-a="aggiungi"]');
+  });
+  await passo('pronto subito: panade', async () => {
+    await page.locator('.pronto-carta', { hasText: 'Panade' }).click(); await page.waitForTimeout(300);
+    await clic('[data-a="aggiungi"]');
+  });
+  await passo('carrello: giorno, bonifico, invio', async () => {
+    await clic('.testata [data-v="carrello"]'); await foto('04-carrello');
+    await clic('.giorno:not([disabled])');
+    await clic('[data-a="invia"]'); await page.waitForTimeout(500); await foto('05-inviato');
+    if (!(await page.locator('.inviato').count())) throw new Error('niente conferma');
+  });
+  await passo('due ordini creati (pronti + da preparare)', async () => {
+    await clic('[data-a="vai"][data-v="ordini"]');
+    const n = await page.locator('.ordine-carta').count(); if (n !== 3) throw new Error('ordini cliente: ' + n);
+  });
+
+  await passo('Monica: notifica e guida', async () => {
+    await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(500); await foto('06-monica-notifica');
+    await clic('[data-a="guida-avanti"]'); await clic('[data-a="guida-avanti"]'); await clic('[data-a="guida-avanti"]');
+    await page.waitForTimeout(5000); await foto('07-monica-home');
+  });
+  await passo('Monica: accetta e propone', async () => {
+    await clic('.riquadro.primo'); await foto('08-ordini');
+    await page.locator('.ordine-carta', { hasText: 'Ordine n. 5' }).locator('[data-a="accetta"]').click(); await page.waitForTimeout(250);
+    await page.locator('.ordine-carta', { hasText: 'Ordine n. 4' }).locator('[data-a="proponi"]').click(); await page.waitForTimeout(250); await clic('.foglio .giorno >> nth=3'); await clic('[data-a="conferma-giorno"]');
+    await clic('[data-a="tab"][data-v="preparare"]'); await foto('09-da-preparare');
+  });
+  await passo('cliente: accetta la proposta, paga, cambia ordine', async () => {
+    await clic('[data-a="ruolo"][data-v="cliente"]'); await clic('.barra [data-v="ordini"]');
+    await clic('[data-a="proposta-si"]'); await foto('10-cliente-ordini');
+    
+    await clic('[data-a="modifica"]'); await clic('[data-a="m-qta"][data-d="1"]'); await clic('[data-a="modifica-invia"]');
+  });
+  await passo('Monica: vede la modifica e la accetta', async () => {
+    await clic('[data-a="ruolo"][data-v="monica"]'); await clic('.riquadro.primo');
+    await foto('11-modifica'); await clic('[data-a="mod-si"]');
+  });
+  await passo('Monica: pronto e ritirato', async () => {
+    await clic('[data-a="tab"][data-v="preparare"]'); await clic('[data-a="pronto-muto"]');
+    await clic('[data-a="tab"][data-v="pronti"]'); await clic('[data-a="ritirato"]');
+  });
+  await passo('Monica: modifica piatto e ingredienti nuovi', async () => {
+    await clic('.indietro'); await clic('.riquadro >> nth=1'); await foto('12-piatti');
+    await page.locator('.piatto-riga', { hasText: 'Tiramisù' }).locator('.apri').click(); await page.waitForTimeout(300);
+    await page.fill('#ing-base', 'liquore marsala, granella di pistacchio'); await clic('[data-a="ing-aggiungi"][data-s="base"]');
+    await foto('13-piatto-modifica');
+    const t = await page.locator('main').innerText(); if (!/Frutta a guscio/.test(t) || !/Solfiti/.test(t)) throw new Error('allergeni nuovi non trovati');
+    await clic('[data-a="controllato"]');
+  });
+  await passo('Monica: segna pronti, Natale acceso, pausa', async () => {
+    await clic('.indietro'); await clic('.indietro'); await clic('[data-a="apri-pronti"]');
+    await page.locator('.foglio .gruppo', { hasText: 'Tiramisù' }).locator('[data-a="pr-qta"][data-d="1"]').click(); await page.waitForTimeout(200);
+    await clic('.foglio .piede [data-a="chiudi"]');
+    await clic('.riquadro >> nth=3'); await page.locator('[data-campo="i.natale.attivo"]').check(); await page.waitForTimeout(300);
+    await foto('14-impostazioni');
+  });
+  await passo('cliente: menù di Natale e tiramisù pronto', async () => {
+    await clic('[data-a="ruolo"][data-v="cliente"]'); await page.waitForTimeout(300); await foto('15-menu-natale');
+    if (!(await page.locator('.natale').count())) throw new Error('natale assente');
+    if (!(await page.locator('.pronto-carta', { hasText: 'Tiramisù' }).count())) throw new Error('tiramisù pronto assente');
+  });
+  await passo('ritiro: link Maps', async () => {
+    await clic('.barra [data-v="ritiro"]'); await foto('16-ritiro');
+    const h = await page.locator('a', { hasText: 'Apri in Maps' }).getAttribute('href'); if (!h.includes('Via%20Libano%2053')) throw new Error(h);
+  });
+  await passo('annulla dopo un cambio', async () => {
+    await clic('[data-a="ruolo"][data-v="monica"]'); await clic('.riquadro >> nth=1');
+    await page.locator('.piatto-riga', { hasText: 'Papassini' }).locator('input').uncheck(); await page.waitForTimeout(200);
+    await clic('[data-a="annulla"]');
+    if (!(await page.locator('.piatto-riga', { hasText: 'Papassini' }).locator('input').isChecked())) throw new Error('annulla non ha funzionato');
+  });
+  await passo('testo grande', async () => {
+    await clic('.indietro'); await clic('.riquadro >> nth=3'); await page.locator('[data-campo="p.grande"]').check(); await page.waitForTimeout(200);
+    if (!(await page.evaluate(() => document.documentElement.classList.contains('grande')))) throw new Error('niente classe');
+    await page.locator('[data-campo="p.grande"]').uncheck();
+  });
+  console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
+  await browser.close();
+})();
