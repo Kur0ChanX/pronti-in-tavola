@@ -23,9 +23,7 @@ Sessione attuale: #10 (dopo la #9 `session_01QTFEqSy2LMrSBBuwFMh1qk`, chiusa all
 - **Sito**: `tools/sito.py` (solo i file dell'app, controlla config Firebase, immagini e guscio offline), `sito/` ignorata da git. Cloudflare: build `python3 tools/sito.py`, cartella `sito`, `SKIP_DEPENDENCY_INSTALL`=1 (Python 3.13 nell'immagine v3, fonte developers.cloudflare.com/pages/configuration/build-image).
 - **Cloudflare con Mario**: alias `+pronti` rifiutato → account aggiuntivo «Pronti in Tavola» creato (foto `archivio/foto/cloudflare-1-menu-account.jpg`, menù italiano in `docs/GUIDE-GIUSTE.md`). La #8 (chiusa) ha continuato a parlare con Mario e gli ha mandato la guida intera; le ho chiesto di smettere. Mario aspetta la prossima foto (dopo **Compute**).
 - **Nome del sito** `pronti-in-tavola.pages.dev` (Mario): in `data.js`, `index.html`, `docs/SPECIFICA.md` (C10 chiusa).
-- **Anteprima** ripubblicata due volte (20:37 app semplice e rifiutati; 21:11 lista della spesa, versione 15).
 - **Lista della spesa** (Mario: «il carrello che ti avevo detto della spesa…»): `spesa.js` + ganci in `app.js` (vista `spesa`, sezione dosi nel piatto, foglio `spesa-ing`, `salvaCampo` d./sp.), stile in `style.css`, `index.html`, `sw.js`, `tools/sito.py`, `tools/anteprima.py`, 2 prove nuove in `tools/prova.js`. Dati in `localStorage` `pit-spesa-v1` (solo telefono di Monica: C15 per Firebase). Dosi: bozza di Claude da far controllare.
-- Errore mio: ho cercato solo «carrello» e ho chiesto a Mario (PT E8). Per sbaglio un `send_message` «test» a me stessa (detto a Mario).
 - File toccati: `spesa.js`, `app.js`, `index.html`, `style.css`, `sw.js`, `data.js`, `tools/{sito,anteprima}.py`, `tools/prova.js`, `CLAUDE.md`, vari `docs/`, foto in `archivio/foto/`.
 - Controllo Da fare: 1 voce aggiunta (C15); C6 aggiornata; C10 chiusa. «Aspetta Mario»: tolte 5 righe (Mario ha risposto), restano 2.
 
