@@ -1,3 +1,4 @@
-# Ultimo messaggio di Mario (05/11/2026 20:25 ora italiana)
+# Ultimo messaggio di Mario (05/11/2026 20:39 ora italiana)
 
-non usa altri limiti se lo metto cloudflare in mario.miscera@gmail.com?
+si capisce tutto
+metti il carrello che ti ho detto e le funzioni nuove nell app di test devo farla vedere
