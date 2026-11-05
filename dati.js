@@ -46,6 +46,7 @@ const Dati = (() => {
     d['impostazioni/approvati'] = { ritiro: imp.ritiro || {}, whatsapp: imp.whatsapp || '',
       pagaDati: { iban: paga.iban || '', intestataria: paga.intestataria || '', telefonoPostepay: paga.telefonoPostepay || '' } };
     d['impostazioni/monica'] = { mario: imp.mario || '' };
+    if (S.spesa) d['impostazioni/spesa'] = copia(S.spesa);   // lista della spesa e dosi: solo di Monica (C15)
     ['ritiro', 'whatsapp', 'mario'].forEach(k => delete imp[k]);
     imp.paga = { contanti: !!paga.contanti, bonifico: !!paga.bonifico, postepay: !!paga.postepay };
     d['impostazioni/app'] = Object.assign(imp, { ingExtra: S.ingExtra || {}, soloContanti: !!S.soloContanti });
@@ -88,6 +89,7 @@ const Dati = (() => {
       prossimoNumero: (srv['contatori/ordini'] || {}).prossimo || 1,
       settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = Math.max(0, srv[k].teglie || 0); return o; }, {}),
       utenti,
+      spesa: srv['impostazioni/spesa'] || null,
       richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
         .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u) })),
       // «Persone rifiutate»: i telefoni a cui Monica ha detto No (può cambiare idea con «Accetta»)
@@ -178,7 +180,7 @@ const Dati = (() => {
     ascolta(doc(db, 'impostazioni', 'app'));
     if (io.gestore) {
       ['clienti', 'ordini', 'utenti'].forEach(c => ascolta(collection(db, c), c));
-      ascolta(doc(db, 'impostazioni', 'approvati')); ascolta(doc(db, 'impostazioni', 'monica')); ascolta(doc(db, 'contatori', 'ordini'));
+      ascolta(doc(db, 'impostazioni', 'approvati')); ascolta(doc(db, 'impostazioni', 'monica')); ascolta(doc(db, 'impostazioni', 'spesa')); ascolta(doc(db, 'contatori', 'ordini'));
       return;
     }
     ascolta(doc(db, 'contatori', 'ordini'));
