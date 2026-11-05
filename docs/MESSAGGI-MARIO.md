@@ -21,3 +21,6 @@ Non ho capito, allora Firebase può rimanere sul mio account con limiti separati
 
 ## 2026-11-05 12:38 · 01QTFEqR4jaQ
 continua
+
+## 2026-11-05 14:27 · 01QTFEqRY58R
+immagine anteprima ok firebase manda guida
