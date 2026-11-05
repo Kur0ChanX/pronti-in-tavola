@@ -509,3 +509,12 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .benv-logo { width: min(52vw, 220px); height: auto; margin: 8px auto 0; display: block; animation: scatto .6s cubic-bezier(.3, 1.6, .5, 1) both; }
 .benvenuto h1 { font-family: var(--display); color: var(--vino); margin: 4px 0 0; font-size: 2rem; }
 .benvenuto .avviso small { display: block; margin-top: 8px; color: var(--tenue); }
+
+/* incassi del mese nella Home di Monica (C7) */
+.incassi summary { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.incassi summary b { flex: 1; }
+.incassi summary span { font-family: var(--display); font-size: 1.2rem; color: var(--vino); }
+.incassi .conti { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0 8px; }
+.incassi .conti div { background: var(--foglio); border: 1px solid var(--riga); border-radius: 12px; padding: 10px 12px; }
+.incassi .conti small { display: block; color: var(--tenue); font-weight: 700; }
+.incassi .conti b { font-family: var(--display); font-size: 1.3rem; color: var(--vino); }

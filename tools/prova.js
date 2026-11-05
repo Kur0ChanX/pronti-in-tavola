@@ -138,8 +138,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const r = await page.evaluate(() => S.richieste.length + '/' + S.clienti.filter(c => c.nome === 'Paolo Sanna').length);
     if (r !== '0/1') throw new Error('ricollega: ' + r);
   });
+  await passo('Monica: incassi del mese nella Home', async () => {
+    await clic('.indietro');
+    const atteso = await page.evaluate(() => { const c = contiMese(oggi().slice(0, 7)); return euro(c.presi + c.daPrendere); });
+    if (!(await page.locator('.incassi summary', { hasText: atteso }).count())) throw new Error('totale incassi: atteso ' + atteso + ', c\'è ' + await page.locator('.incassi summary').innerText());
+    await page.locator('.incassi summary').click(); await foto('22-incassi'); await page.locator('.incassi summary').click();
+  });
   await passo('Monica: lista della spesa dagli ordini', async () => {
-    await clic('.indietro'); await clic('[data-a="vai"][data-v="spesa"]'); await clic('[data-a="sp-tab"][data-v="ordini"]'); await foto('19-spesa');
+    await clic('[data-a="vai"][data-v="spesa"]'); await clic('[data-a="sp-tab"][data-v="ordini"]'); await foto('19-spesa');
     const riga = n => page.locator('.spesa-riga', { hasText: n });
     // tiramisù da 6: 6 × 85 g di mascarpone = 510 g → 3 confezioni da 250 g; lasagne da 8: 8 × 80 g di macinato = 640 g → 2 da 500 g
     if (!(await riga('Mascarpone').locator('.quanto', { hasText: '3 × 250 g' }).count())) throw new Error('mascarpone: ' + await riga('Mascarpone').innerText());
