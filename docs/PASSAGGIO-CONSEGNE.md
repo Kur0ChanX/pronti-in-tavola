@@ -1,53 +1,59 @@
 # Passaggio di consegne
 
-Sessione attuale: #3 (dopo la #2 `session_01QTFEqS28bRVosA9LwXjudR`, chiusa alla soglia 05/11 08:51; la apre la #2 con `create_session` (catena 2 di 8)).
+Sessione attuale: #4 (dopo la #3 `session_01QTFEqS6SnpDQrcYm57NxM7`, chiusa alla soglia 05/11 09:18; la apre la #3 con `create_session` (catena 3 di 8)).
 
-- **Già deciso da Mario (non richiedere):** cos'è l'app e chi la usa (Monica cucina a Olbia, le amiche ordinano dal link WhatsApp, ritiro a casa sua); app web sulla schermata Home, gratis; dati online gratuiti con Firebase; solo contanti; Kit RVC installato. Nuovo il 05/11 (in `docs/SPECIFICA.md`): **passaparola** con link unico che tutti possono rigirare, menù visibile, il nuovo utente scrive il SUO nome (diverso da quelli già usati, così Monica sa chi ordina), Monica approva al primo ordine, indirizzo e ordini solo agli approvati; **Monica** entra con Google una volta + impronta o PIN del telefono a ogni apertura; **indipendenza**: l'app non usa i limiti gratuiti di altre app (Firebase per progetto, Cloudflare per account) e non pesa su di esse (PT E5).
-- **Da non rifare:** domande già spiegate (PT E4); ricerca sui piani Firebase (fatta il 05/11, fonti in `docs/SPEC-FIREBASE.md`); regole di sicurezza e prove nell'emulatore (fatte, da adattare al passaparola); foto dei decori (in `archivio/foto/`).
+- **Già deciso da Mario (non richiedere):** cos'è l'app e chi la usa (Monica cucina a Olbia, le amiche ordinano dal link WhatsApp, ritiro a casa sua); app web sulla schermata Home, gratis; dati online gratuiti con Firebase; solo contanti; Kit RVC installato. In `docs/SPECIFICA.md`: **passaparola** con link unico che tutti rigirano, menù visibile, il nuovo scrive il SUO nome (diverso da quelli usati), Monica approva al primo ordine, indirizzo e ordini solo agli approvati; **Monica** entra con Google una volta + impronta o PIN a ogni apertura; **indipendenza**: Firebase = progetto nuovo sull'account Google di Mario, Cloudflare = account nuovo solo dell'app, mai condiviso neanche all'1% (niente account Google nuovi).
+- **Da non rifare:** domande già spiegate (PT E4); ricerca sui piani Firebase (fonti in `docs/SPEC-FIREBASE.md`); specifica 0.2, regole e motore dati col passaparola (fatti il 05/11, sotto); foto dei decori (in `archivio/foto/`, già mandate due volte).
 - **Cosa preme a Mario adesso:** avere l'app vera con i dati condivisi e il passaparola, così gli ordini delle amiche arrivano davvero a Monica; senza toccare i limiti delle sue altre app.
 
-## Stato (05/11 08:51 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Scorta `scorta-principale-20261105-01QTFEqS28bR/claude/pronti-ramo-definitivo`: da NON unire (solo una cache Python, superata: `__pycache__` ora è in `.gitignore`).
-- App v0.7 di prova (dati solo sul telefono) + decori sardi, NON ancora toccata per Firebase. Verifica: `python3 -I tools/anteprima.py && node tools/prova.js` → 19 «OK» e «Nessun errore nella pagina».
-- Regole di sicurezza `firestore.rules` (modello «link personale», da adattare al passaparola). Verifica: `npm install` (strumenti solo per le prove, `node_modules` ignorato) poi `npm run prova-regole` → «30 OK, 0 NO». Controprova fatta: con regole aperte 23 NO.
-- Specifica `docs/SPEC-FIREBASE.md` v0.1: piano gratis Spark, foto dentro Firestore (Storage e Functions vogliono la carta dal 03/02/2026), notifiche con un Worker Cloudflare nell'account dell'app. Verifica: il file ha la riga «Indipendenza».
-- Anteprima pubblicata (versione 12, con i decori): https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH.
+## Stato (05/11 09:18 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta.
+- App v0.7 di prova invariata per chi la usa. Verifica: `python3 -I tools/anteprima.py && node tools/prova.js` → 19 «OK» e «Nessun errore nella pagina».
+- Specifica `docs/SPEC-FIREBASE.md` **0.2** col passaparola (raccolte `utenti/`, `nomi/`, `impostazioni/approvati`; stati `nuovo`, `ricollega`, `approvato`, `no`; ordine `daApprovare`). Verifica: in testa «Versione 0.2».
+- Regole `firestore.rules` col passaparola. Verifica: `npm install` poi `npm run prova-regole` → «50 OK, 0 NO». Controprova: con regole aperte 34 NO; tre regole indebolite apposta (accettaNuovi, primo ordine, `primo == id`) scoperte.
+- Motore `dati.js` (nuovo, spento: `FIREBASE_CONFIG = null`; si accende con la configurazione o con `?emulatore`). Lo usano `carica()`, `salva()`, `avviaDati()` e `inviaVero()` in fondo ad `app.js`. Verifica: `npm run prova-firebase` (emulatori Firestore + Auth, libreria da `node_modules/firebase`) → «28 OK, 0 NO».
+- Anteprima pubblicata (versione 12, con i decori): https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH. NON ripubblicata: niente di visibile è cambiato (con `?prova`/senza configurazione il motore è spento).
 - Kit RVC 35.0. Verifica: `for t in tools/test-*.py; do python3 -I $t; done` → 21 verdi.
 
 ## Riferimenti
-- Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C2, C11). Regole del prodotto: `.claude/rules/progetto.md`.
+- Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C2, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#2)
-- Avvio: tolti dal repository i file `__pycache__` (facevano scattare «modifiche non salvate» a ogni avvio).
-- Ricerca aggiornata (Parallel, pagine ufficiali 20/10–03/11/2026): Firestore gratis 1 GiB, 50k letture e 20k scritture al giorno; Storage e Functions solo Blaze; FCM gratis; email-link solo 5 al giorno sul piano gratis; Cloudflare Workers gratis 100k richieste al giorno PER ACCOUNT.
-- Scritta `docs/SPEC-FIREBASE.md` (raccolte, chi legge e scrive, casi difficili: ultimo pronto con transazione, numero ordine col contatore, limite teglie con `settimane/`, ordine senza rete resta nel carrello e riparte, si scrive solo il campo cambiato).
-- Regole `firestore.rules` + `tools/prova-regole.js` (30 casi) + `firebase.json` + `package.json` (firebase-tools 15.35.0, firebase 13.2.0, @firebase/rules-unit-testing 6.0.0). L'emulatore gira nel contenitore (Java 21).
-- Foto dei decori mandate di nuovo a Mario: `archivio/foto/decori-1-menu.png`, `decori-2-titoli.png`.
-- Mario: passaparola con link unico (risposta «1 1 2 1»), niente limiti in comune con altre app, impronta o PIN per Monica.
-- File toccati: `.gitignore`, `docs/CHI-FA-COSA.md`, `docs/DA-FARE.md`, `docs/SPECIFICA.md`, `docs/SPEC-FIREBASE.md`, `docs/ERRORI.md`, `docs/PASSAGGIO-CONSEGNE.md`, `firestore.rules`, `firebase.json`, `package.json`, `package-lock.json`, `tools/prova-regole.js`, `archivio/foto/`.
-- Controllo Da fare: 1 voce aggiunta (C11 passaparola), più C10 (indirizzo del sito) e la riga «account» in Aspetta Mario.
-- Sveglie: cancellate le mie due (continua lavoro, Preferenze a fine giornata). Rifare quella delle Preferenze (sotto).
+## Sessione appena chiusa (#3)
+- Avvio: titolo verde con ❔, sveglia «Preferenze a fine giornata» rifatta mia (`trig_0188qdAMXXMNTGaAQF8KYFEV`, 21:30). Nessuna sveglia della #2 da cancellare (quella «Punto ogni 5 ore» è di un'altra chat: non toccata).
+- Uniti i commit della #2 arrivati dopo l'avvio (Firebase sul conto di Mario, Cloudflare nuovo).
+- Specifica 0.2, regole e 50 prove (sopra).
+- `dati.js`: copia sul telefono (`pit-copia-v1`), ascolti per ruolo (Monica tutto; cliente: menù, impostazioni pubbliche, suo `utenti/`, suoi ordini; approvato anche indirizzo e `clienti/<suo>`), Monica scrive solo i campi cambiati (batch), database vuoto → carica i 23 piatti (`preparaVuoto`), settimane ricalcolate da Monica (`contaSettimane`). Cliente: `registra()` (nome unico o «ricollega»), `inviaOrdini()` (una transazione per ordine: contatore, pronti di oggi, teglie, `primo` per i nuovi), `scriviCliente()` per annulla/proposta/«Ho pagato»/cuori.
+- `app.js`: niente striscia di prova col motore acceso; «Sei Monica? Entra» (Google) in fondo; mentre si scrive in un campo non si ridisegna; foglio «Come ti chiami?» al primo ordine (scelta 1, in attesa di conferma); «l'ha appena preso qualcun altro» → riga da prenotare; senza rete resta nel carrello e riparte da sola; link «Manda a un'amica» con `#da=<cliente>`; stato `daApprovare` («Aspetta Monica» / «Cliente nuovo»).
+- Difetti trovati dalle prove e corretti: S condivideva oggetti con la copia del server (le modifiche dentro oggetti non partivano); il cliente senza `utenti/` non apriva gli ascolti.
+- File toccati: `dati.js` (nuovo), `app.js`, `index.html`, `tools/anteprima.py`, `tools/prova-firebase.js` (nuovo), `tools/prova-regole.js`, `firestore.rules`, `firebase.json` (emulatore Auth 9099), `package.json` (script `prova-firebase`), `package-lock.json`, `docs/SPEC-FIREBASE.md`, `docs/DA-FARE.md`, `docs/DA-FARE-FATTE.md`, `docs/CHI-FA-COSA.md`, `docs/PASSAGGIO-CONSEGNE.md`, `docs/PROSSIMA-SESSIONE.md`, `archivio/consumo/`.
+- Controllo Da fare: 0 voci aggiunte (nessun messaggio di Mario in questa sessione); 1 riga nuova in «Aspetta Mario» (quando chiedere il nome).
+- Avviso spreco: avvio pesante (170k dopo il primo turno, tetto 130k). Detto a Mario. Lavorare con `grep -n -o` e pezzi corti.
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Costruire l'app da zero: l'app esiste già (consegna in `archivio/`).
 - Installare il kit con `installa.py`: il kit lo vieta.
-- Link personale per cliente + link «richiesta» per le amiche: Mario vuole UN link che tutti rigirano (passaparola); il link personale girato mostrava gli ordini di chi lo mandava.
+- Link personale per cliente + link «richiesta»: Mario vuole UN link che tutti rigirano.
 - Accesso di Monica via email-link: solo 5 email al giorno sul piano gratis.
-- Worker sull'account Cloudflare comune: i limiti sono per account, toccherebbe le altre app (PT E5).
+- Worker sull'account Cloudflare comune: limiti per account (PT E5).
+- Leggere `nomi/` dal telefono per sapere se il nome c'è: permetterebbe di scoprire chi è cliente; il telefono prova a scrivere e il rifiuto dice «nome già usato».
+- Nuovi che prendono i pronti o le teglie: un link girato in un gruppo potrebbe bloccare i piatti; li prende Monica all'approvazione.
+- Due ordini nella stessa scrittura: le regole vogliono il contatore +1 per scrittura → una transazione per ordine.
+- Lasciare `S` con oggetti in comune con la copia del server: il confronto non vede i cambi (difetto corretto).
+- Prova del motore con la libreria da gstatic nel browser di prova: si serve da `node_modules/firebase` (stessa 13.2.0) con `page.route`.
 
 ## Prossimi passi
-1. Ricordare a Mario le righe di «## 0. Aspetta Mario» (decori, account nuovo per l'app, creare Firebase), una per messaggio, con le foto dei decori.
-2. C11: riportare il passaparola in `docs/SPEC-FIREBASE.md` (ogni telefono = utente anonimo; `piatti`, `foto` e una parte delle impostazioni leggibili da chi è entrato anche se non approvato; indirizzo, WhatsApp e pagamenti in un documento solo per approvati; nome unico: controllo con un documento `nomi/{nome-normalizzato}` creato in transazione; `tramite` = chi ha girato il link, nel link stesso; al cambio telefono Monica «ricollega» al cliente vecchio). Poi adattare `firestore.rules` e `tools/prova-regole.js`, tutte verdi più la controprova.
-3. C1: strato dati a due motori in `app.js` (solo `carica()`/`salva()`; «prova» come oggi, «firebase» che scrive solo i campi cambiati), 19 controlli verdi; impronta o PIN per Monica con WebAuthn (sblocco del telefono).
-4. Quando Mario scrive «Firebase»: passi a mano uno alla volta (account Google nuovo per l'app se risponde 1; console con «Databases & Storage > Firestore» e «Security > Authentication», nomi da controllare sulla guida ufficiale perché la console chiede l'accesso).
-5. Sveglia `send_later` a fine giornata (~21:30): Preferenze di claude.ai v27 contro kit v35 → mandare a Mario `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola.
+1. Ricordare a Mario le 3 righe di «## 0. Aspetta Mario» (decori con le foto, creare Firebase, quando chiedere il nome), una riga ciascuna.
+2. C1/C11, schermate di Monica col motore acceso: «Nuovi» (Sì: crea `clienti/`, mette `utenti/` approvato e l'ordine `daApprovare` → `nuovo`, prende i pronti se ci sono ancora sennò propone un giorno; No: stato `no`), «Telefono nuovo» (Ricollega al cliente con la stessa `chiave`), interruttore «Accetta nuovi clienti» (`impostazioni/app.nuovi`), totale ricalcolato coi prezzi di Monica. Oggi `S.richieste` arriva da `utenti/` ma «Sì/No» scrivono ancora come la prova: vanno rifatti per il motore. Poi casi in `tools/prova-firebase.js`, tutto verde (19 + 50 + 28).
+3. Schermata «inviato» per il cliente nuovo («Monica ti conferma lei»); impronta o PIN per Monica con WebAuthn (lucchetto locale).
+4. Quando Mario scrive «Firebase»: passi a mano uno alla volta (progetto nuovo sul SUO account Google; nomi della console da controllare sulla guida ufficiale). Poi la configurazione in `dati.js` e la prima entrata di Monica.
+5. Sveglia delle 21:30 (già fatta): Preferenze v27 contro kit v35 → testo di `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola.
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
 «Ok, Firebase sul mio account, confermo Cloudflare, faccio un nuovo account, non voglio che si utilizzi mai neanche l'1% in condivisione.»
-(Deciso, in `docs/SPECIFICA.md` «Indipendenza»; riga tolta da «Aspetta Mario». Prima: domanda sugli account Google, risposta: niente account Google nuovi, un progetto Firebase per app; ancora prima «1 1   2 1 …», vedi C11.)
+(Arrivato alla #2 dopo il suo handoff; in `docs/SPECIFICA.md` «Indipendenza». Alla #3 Mario non ha scritto.)
 
 ## Numeri liberi
 Prossimo PT E libero: PT E6; prossimo C libero: C12; prossimo M libero: M1.

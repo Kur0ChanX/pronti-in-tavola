@@ -7,7 +7,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C1 | Dati veri condivisi con Firebase (Firestore), piano gratis Spark: specifica `docs/SPEC-FIREBASE.md` 0.2; regole (`npm run prova-regole`, 50 verdi); motore `dati.js` spento finché non c'è il progetto (`npm run prova-firebase`, 28 verdi nell'emulatore: Monica carica i 23 piatti e scrive solo i campi cambiati; cliente nuovo: nome al primo ordine, nome già usato → «ricollega», ordine «da approvare»; ultimo pronto conteso, annulla, teglie, senza rete resta nel carrello e riparte). Manca: schermate di Monica «Nuovi» e «Ricollega» con l'approvazione (prende i pronti se ci sono), «Accetta nuovi clienti», impronta o PIN, schermata «inviato» per il cliente nuovo, progetto vero di Mario | Claude | alta |
+| C1 | Dati veri con Firebase (piano Spark). Pronti: specifica 0.2, regole (`npm run prova-regole`), motore `dati.js` e ordini dei clienti (`npm run prova-firebase`). Manca: schermate di Monica «Nuovi» e «Ricollega» (all'ok prende i pronti se ci sono), interruttore «Accetta nuovi clienti», impronta o PIN, schermata «inviato» del cliente nuovo, progetto vero di Mario | Claude | alta |
 | C2 | Foto dentro Firestore (900 px, JPEG 0,8, tetto 300 KB): Storage vuole la carta anche per i progetti vecchi dal 03/02/2026 (verificato 05/11) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) e funzionamento senza rete (service worker, manifest) | Claude | media |
 | C4 | Sito su Cloudflare Pages `pronti-in-tavola.pages.dev` | Claude + Mario | media |
