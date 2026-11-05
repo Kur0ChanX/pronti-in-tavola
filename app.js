@@ -497,7 +497,7 @@ function barraCliente() {
 }
 
 /* ================= MONICA ================= */
-const NOMI_VISTE = { home: 'Home', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni' };
+const NOMI_VISTE = { home: 'Home', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
 function testataMonica(titolo, indietro) {
   const vista = UI.vista.split(':')[0];
   const aiuto = wa(S.impostazioni.mario, `Ciao Mario, sono bloccata in Pronti in Tavola, nella schermata «${NOMI_VISTE[vista] || vista}». Mi aiuti?`);
@@ -528,7 +528,8 @@ function vHome() {
     <section class="scheda"><header class="fila"><h2 style="flex:1">Pronti subito oggi</h2></header>
       ${pronti.length ? `<ul style="margin:0;padding-left:18px">${pronti.map(p => { const f = p.formati.find(x => x.id === p.pronto.formato) || p.formati[0]; return `<li><b>${esc(p.nome)}</b>: ${qtaTesto(f.tipo, p.pronto.qta, f.nome)}</li>`; }).join('')}</ul>` : '<p class="tenue" style="margin:0">Hai qualcosa già pronto? Segnalo: i clienti lo vedono in cima al menù.</p>'}
       <button type="button" class="btn ${pronti.length ? 'chiaro' : ''} pieno" data-a="apri-pronti">${ico('fiamma')}${pronti.length ? 'Cambia i pronti' : 'Segna cosa hai pronto'}</button></section>
-    <section class="scheda"><h2>Da preparare</h2>${agenda()}</section>`;
+    <section class="scheda"><h2>Da preparare</h2>${agenda()}
+      <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>`;
   return h + '</main>';
 }
 
@@ -678,6 +679,7 @@ function vPiatto(id) {
   h += `<section class="scheda"><h2>Ingredienti</h2>${editorIng(p, 'base')}
     <span class="etichetta" style="font-weight:800">Allergeni, calcolati da soli</span>${all.length ? `<div class="allergeni">${all.map(a => `<span>${NOME_ALL[a]}</span>`).join('')}</div>` : '<span class="tenue">Nessuno.</span>'}
     ${vegetariano(p) ? '<span class="eti veg" style="align-self:flex-start">Vegetariano: lo scrivo da solo nel menù</span>' : ''}</section>`;
+  h += sezioneDosi(p);
   h += `<section class="scheda"><h2>Richieste veloci</h2><p class="tenue" style="margin:0">Tasti pronti per il cliente, es. «Poco sale».</p>
     <div class="ingr-lista">${p.note.map((n, i) => `<span class="chip">${esc(n)}<button type="button" data-a="nota-togli" data-i="${i}" aria-label="Togli ${esc(n)}">${ico('x')}</button></span>`).join('')}</div>
     <div class="fila" style="flex-wrap:nowrap"><input type="text" id="nota-nuova" placeholder="es. Senza cipolla" aria-label="Nuova richiesta veloce"><button type="button" class="btn piccolo" data-a="nota-aggiungi">Aggiungi</button></div></section>`;
@@ -813,6 +815,7 @@ function vistaMonica() {
     case 'nuovo': return vNuovo();
     case 'clienti': return vClienti();
     case 'impostazioni': return vImpostazioni();
+    case 'spesa': return vSpesa();
     default: return vHome();
   }
 }
@@ -829,7 +832,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1130,6 +1133,7 @@ function salvaCampo(el) {
   const pid = UI.vista.split(':')[1];
   if (c === 'sel.testo') { UI.sel.testo = val; return; }
   if (c === 'nota') { UI.nota = val; return; }
+  if (c.startsWith('d.') || c.startsWith('sp.')) { salvaCampoSpesa(el); return; }
   if (c === 'p.grande') { P.grande = val; salvaP(); render(); return; }
   if (c === 'disp') { const p = piatto(el.dataset.id); cambia(val ? `Di nuovo nel menù: ${p.nome}` : `Tolto dal menù: ${p.nome}`, () => { p.disponibile = val; }); return; }
   if (c === 'p.novita') { const p = piatto(pid); cambia('', () => { p.novita = val; p.novitaDal = oggi(); }, false); salvatoOk(); return; }
