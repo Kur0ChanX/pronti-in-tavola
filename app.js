@@ -760,7 +760,7 @@ function vImpostazioni() {
     ${Dati.attivo ? vSicurezza() : ''}
     <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
       <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>
-    <button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button></main>`;
+    ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}</main>`;
 }
 
 function foglioPronti() {
@@ -1074,7 +1074,7 @@ const A = {
   'i-anticipo'(el) { cambia('', () => { S.impostazioni.anticipo = Math.min(14, Math.max(0, S.impostazioni.anticipo + Number(el.dataset.d))); }, false); salvatoOk(); },
   'i-limite'(el) { cambia('', () => { S.impostazioni.limite.teglie = Math.min(99, Math.max(1, S.impostazioni.limite.teglie + Number(el.dataset.d))); }, false); salvatoOk(); },
   'natale-piatto'(el) { const l = S.impostazioni.natale.piatti, id = el.dataset.id; cambia('', () => { S.impostazioni.natale.piatti = l.includes(id) ? l.filter(x => x !== id) : [...l, id]; }, false); },
-  ricomincia() { cambia('Prova ricominciata da capo', () => { S = statoIniziale(); }); }
+  ricomincia() { if (Dati.attivo) return; /* coi dati veri cancellerebbe ordini e clienti */ cambia('Prova ricominciata da capo', () => { S = statoIniziale(); }); }
 };
 /* Monica dice Sì o No a un telefono nuovo. Annulla per 10 secondi. */
 async function decidiRichiesta(id, si) {
