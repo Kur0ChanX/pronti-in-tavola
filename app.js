@@ -326,7 +326,7 @@ function foglioPiatto() {
   const f = p.formati.find(x => x.id === s.formato) || p.formati[0];
   const prezzo = prezzoDi(p, f.id, s.variante), ing = ingDi(p, s.variante), all = allergeniDi(ing), mie = new Set(P.allergie);
   const etiQta = { teglia: 'Quante teglie?', kg: 'Quanti chili?', pz: 'Quanti pezzi?', intera: 'Quante?' }[f.tipo];
-  const testoWa = `Guarda cosa cucina Monica: ${p.nome}. Se vuoi ordinare anche tu, chiedi l'invito qui: ${S.impostazioni.indirizzoApp}${Dati.attivo ? '#da=' + (P.ruolo === 'monica' ? 'monica' : P.cliente || '') : '#richiesta'}`;
+  const testoWa = `Guarda cosa cucina Monica: ${p.nome}. Puoi ordinare anche tu da qui: ${S.impostazioni.indirizzoApp}${!Dati.attivo ? '' : P.ruolo === 'monica' ? '#da=monica' : P.cliente ? '#da=' + P.cliente : ''}`;
   let h = `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div>
     ${foto(p, 'grande')}<div class="dentro">
     <div class="sezione"><h1>${esc(p.nome)}</h1>${p.sotto ? `<p class="tenue" style="margin:0">${esc(p.sotto)}</p>` : ''}${etichette(p, false)}</div>`;
