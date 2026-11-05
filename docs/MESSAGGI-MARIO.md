@@ -61,3 +61,6 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+## 2026-11-05 14:43 · 01QTFEqSmQas
+porta questa sessione a 320mila in catena a max token prima di passaggio di consegna
