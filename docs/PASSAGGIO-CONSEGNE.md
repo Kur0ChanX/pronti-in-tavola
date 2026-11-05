@@ -52,12 +52,10 @@ Sessione attuale: #7 (dopo la #6 `session_01QTFEqQc4xdxWWJgwR1fXZB`, chiusa alla
 - Service worker con «prima la copia» per i file dell'app: le novità arriverebbero solo alla seconda apertura; scelta «prima la rete», copia dopo 3 secondi.
 
 ## Prossimi passi
-1. Ricordare a Mario le 5 righe di «## 0. Aspetta Mario» (Firebase, nome al primo ordine, schermata Clienti, lucchetto, lista «Hai detto di no») e rimandare le 5 foto delle righe «Principale 4» e «Principale 5» (due invii: 2 + 3).
-2. Sveglia delle 21:30 (`trig_017v4uLiqHwJYdkLYiZA8AdK`, mia): cancellarla e rifarla tua con `send_later` (Preferenze v27 contro kit v35 → testo di `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola, nomi dei pulsanti di claude.ai controllati sul sito).
-3. Se Mario risponde «1» alla lista «Hai detto di no»: in fondo alla schermata Clienti, chiusa finché non si tocca; «Ripensaci» = transazione inversa del No (utenti/ → «nuovo», ordine rifiutato → «daApprovare»), con prova nell'emulatore.
-4. Quando Mario scrive «Firebase»: passi a mano uno alla volta (progetto nuovo sul SUO account Google; nomi della console controllati sulla guida ufficiale). Poi la configurazione in `dati.js`, la prima entrata di Monica e la prova del lucchetto sul telefono vero.
-5. Lavori da solo intanto: C5 (anteprima del link su WhatsApp col logo, og:image) e C8 (controllo finale della versione vera). Occhio critico ancora aperto: il campo «invito-nome» di Monica perde il testo se la pagina si ridisegna? (stesso difetto del nome della cliente, da guardare).
-6. C3 notifiche e C4 sito: servono l'account Cloudflare nuovo dell'app (Mario); chiederlo dopo Firebase.
+1. Fatti dalla #7 (05/11): avvio, sveglia delle 21:30 rifatta mia (`trig_01M9LWsjdzhVxHEpJi8KAUQf`), C5 (tag og e immagine), C8 nell'emulatore, finestre senza perdita di testo, testo «Manda questo piatto a un'amica». Prove: app 21 OK; motore 80 OK, 0 NO.
+2. Se Mario risponde «1» alla lista «Hai detto di no»: in fondo alla schermata Clienti, chiusa finché non si tocca; «Ripensaci» = transazione inversa del No (utenti/ → «nuovo», ordine rifiutato → «daApprovare»), con prova nell'emulatore.
+3. Quando Mario scrive «Firebase»: passi a mano uno alla volta (progetto nuovo sul SUO account Google; nomi della console controllati sulla guida ufficiale). Poi la configurazione in `dati.js`, la prima entrata di Monica e la prova del lucchetto sul telefono vero.
+4. C3 notifiche e C4 sito: servono l'account Cloudflare nuovo dell'app (Mario); chiederlo dopo Firebase. Col sito online: provare l'anteprima del link su WhatsApp (C5, «👁»); se l'indirizzo cambia (C10), cambiare anche og:url e og:image in `index.html` (la prova lo segnala).
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.

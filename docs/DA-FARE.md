@@ -6,6 +6,7 @@
 - 05/11 · 🟡 Principale 4 · Schermata Clienti di Monica (Telefono nuovo, Nuovi, Sì/No) e primo ordine di una cliente nuova: chiare così? (anteprima versione 13; foto `archivio/foto/clienti-1-nuovi.png`, `archivio/foto/clienti-2-primo-ordine.png`)
 - 05/11 · 🟡 Principale 5 · Lucchetto di Monica: le 3 schermate (Proteggi la tua parte, La tua parte è chiusa, Impostazioni → Lucchetto) chiare così? (foto `archivio/foto/lucchetto-1-metti.png`, `lucchetto-2-chiuso.png`, `lucchetto-3-impostazioni.png`)
 - 05/11 · 🟡 Principale 6 · Dopo un «No» a una cliente nuova: lista «Hai detto di no» con «Ripensaci» in fondo alla schermata Clienti? (1 sì, consiglio · 2 no)
+- 05/11 · 🟡 Principale 7 · Immagine dell'anteprima del link su WhatsApp (logo al centro, «Cucina di casa» e «Ordina e ritira» ai lati): va bene così? (foto `media/anteprima-link-1.jpg`; 1 sì, consiglio · 2 da cambiare)
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
