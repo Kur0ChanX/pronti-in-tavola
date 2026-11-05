@@ -1,5 +1,8 @@
 # Da fare
 
+## 0. Aspetta Mario
+- 🟢 Principale 1 · Decori sardi (trama sullo sfondo e rombi nei titoli): vanno bene così, più visibili o più leggeri? (anteprima versione 12)
+
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C1 | Dati veri condivisi con Firebase (Firestore): accesso cliente col link d'invito `#i=codice`, accesso di Monica separato, regole di sicurezza, transazione sull'ultimo «pronto subito» | Claude | alta |
