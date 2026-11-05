@@ -61,19 +61,21 @@ const Dati = (() => {
     imp.ritiro = appr.ritiro || { via: '', citta: '', nota: '' };
     imp.whatsapp = appr.whatsapp || '';
     imp.mario = mon.mario || '';
-    const utenti = tutti('utenti');
-    const nomeDi = id => (tutti('clienti').find(c => c.id === id) || {}).nome || (id === 'monica' ? 'Monica' : '');
+    const utenti = tutti('utenti'), clienti = tutti('clienti');
+    const nomeDi = id => (clienti.find(c => c.id === id) || {}).nome || (id === 'monica' ? 'Monica' : '');
+    // «Telefono nuovo»: lo stesso nome di un cliente che c'è già (se no è come un nuovo)
+    const vecchioDi = u => u.stato === 'ricollega' ? (clienti.find(c => c.chiave === u.chiave) || {}).id || null : null;
     // Copia profonda: cambiare S non deve cambiare la copia del server, se no non si vede la differenza.
     const S = copia({
       versione: 1, motore: 'firebase', soloContanti, ingExtra, impostazioni: imp,
       piatti: tutti('piatti').sort((a, b) => (a.ordine || 0) - (b.ordine || 0)),
-      clienti: tutti('clienti'),
+      clienti,
       ordini: tutti('ordini').sort((a, b) => (a.n || 0) - (b.n || 0)),
       prossimoNumero: (srv['contatori/ordini'] || {}).prossimo || 1,
       settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = srv[k].teglie || 0; return o; }, {}),
       utenti,
       richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
-        .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato }))
+        .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u) }))
     });
     S.piatti.forEach(p => { p.foto = (srv['foto/' + p.id] || {}).foto || null; });   // le foto sono testo: niente copia
     return S;
@@ -325,13 +327,78 @@ const Dati = (() => {
     return ultimaScrittura;
   }
 
+  /* ---------- Monica decide su un telefono nuovo: Sì (cliente nuovo o ricollega) o No ---------- */
+  // Tutto o niente: utenti/, clienti/, il primo ordine, i pronti e le teglie della settimana.
+  // Se nel frattempo i pronti sono finiti, l'ordine resta da fare in un altro giorno (pronto: false).
+  // Restituisce i pronti finiti e «annulla» per i 10 secondi dell'avviso.
+  async function decidi(uid, si) {
+    if (!io.gestore) throw errore('permission-denied');
+    if (!navigator.onLine) throw errore('unavailable');
+    const { doc, runTransaction } = F.fs, nuovoId = 'c' + Date.now().toString(36);
+    const r = await runTransaction(db, async t => {
+      const uS = await t.get(doc(db, 'utenti', uid));
+      if (!uS.exists() || !['nuovo', 'ricollega'].includes(uS.data().stato)) throw errore('gia');
+      const u = uS.data();
+      const oS = u.primo ? await t.get(doc(db, 'ordini', u.primo)) : null;
+      const o = oS && oS.exists() && oS.data().stato === 'daApprovare' ? oS.data() : null;
+      const vecchio = si && u.stato === 'ricollega' ? tutti('clienti').find(c => c.chiave === u.chiave) : null;
+      const cliente = si ? (vecchio ? vecchio.id : nuovoId) : null;
+      const dopo = o ? Object.assign({}, o, si ? { stato: 'nuovo', cliente } : { stato: 'rifiutato' }) : null;
+      const vuole = presi(dopo), piatti = {}, finiti = [];
+      for (const k of Object.keys(vuole)) piatti[k] = await t.get(doc(db, 'piatti', k));
+      Object.keys(vuole).forEach(k => {
+        const p = piatti[k].exists() ? piatti[k].data() : null;
+        if (!p || !p.pronto || p.pronto.giorno !== op.oggi() || p.pronto.qta < vuole[k]) finiti.push(p ? p.nome : k);
+      });
+      if (finiti.length) dopo.pronto = false;
+      const preso = finiti.length ? {} : vuole, tg = teglie(dopo), sett = {};
+      for (const k of Object.keys(tg)) sett[k] = await t.get(doc(db, 'settimane', k));
+      // prima tutte le letture, poi le scritture
+      if (si && !vecchio) t.set(doc(db, 'clienti', cliente), { id: cliente, nome: u.nome, chiave: u.chiave, da: op.oggi(), tramite: u.tramite || '' });
+      t.update(doc(db, 'utenti', uid), si ? { stato: 'approvato', cliente } : { stato: 'no' });
+      if (o) t.update(doc(db, 'ordini', u.primo), { stato: dopo.stato, cliente: dopo.cliente, pronto: !!dopo.pronto });
+      Object.keys(preso).forEach(k => {
+        const pr = piatti[k].data().pronto;
+        t.update(doc(db, 'piatti', k), { pronto: Object.assign({}, pr, { qta: arrot(pr.qta - preso[k]) }), ultimoOrdine: u.primo });
+      });
+      Object.keys(tg).forEach(k => t.set(doc(db, 'settimane', k), { teglie: (sett[k].exists() ? sett[k].data().teglie || 0 : 0) + tg[k], ultimo: u.primo }));
+      return { u, o, dopo, cliente, creato: si && !vecchio, preso, tg, finiti };
+    });
+    return { finiti: r.finiti, annulla: () => annullaDecisione(uid, r) };
+  }
+  // Rimette tutto com'era prima del Sì o del No (se nel frattempo nessuno l'ha cambiato).
+  async function annullaDecisione(uid, r) {
+    if (!navigator.onLine) throw errore('unavailable');
+    const { doc, runTransaction } = F.fs;
+    await runTransaction(db, async t => {
+      const uS = await t.get(doc(db, 'utenti', uid));
+      if (!uS.exists() || uS.data().stato !== (r.cliente ? 'approvato' : 'no')) throw errore('gia');
+      const oS = r.o ? await t.get(doc(db, 'ordini', r.u.primo)) : null;
+      const torna = !!(oS && oS.exists() && oS.data().stato === r.dopo.stato);   // il cliente non l'ha cambiato
+      const piatti = {}, sett = {};
+      if (torna) {
+        for (const k of Object.keys(r.preso)) piatti[k] = await t.get(doc(db, 'piatti', k));
+        for (const k of Object.keys(r.tg)) sett[k] = await t.get(doc(db, 'settimane', k));
+      }
+      t.set(doc(db, 'utenti', uid), r.u);
+      if (r.creato) t.delete(doc(db, 'clienti', r.cliente));
+      if (!torna) return;
+      t.update(doc(db, 'ordini', r.u.primo), { stato: r.o.stato, cliente: r.o.cliente, pronto: !!r.o.pronto });
+      Object.keys(r.preso).forEach(k => {
+        const p = piatti[k].exists() ? piatti[k].data() : null;
+        if (p && p.pronto && p.pronto.giorno === op.oggi()) t.update(doc(db, 'piatti', k), { pronto: Object.assign({}, p.pronto, { qta: arrot(p.pronto.qta + r.preso[k]) }) });
+      });
+      Object.keys(r.tg).forEach(k => t.set(doc(db, 'settimane', k), { teglie: Math.max(0, (sett[k].exists() ? sett[k].data().teglie || 0 : 0) - r.tg[k]), ultimo: r.u.primo }));
+    });
+  }
+
   async function entraGoogle() {
     const au = F.au, provider = new au.GoogleAuthProvider();
     await au.signInWithPopup(auth, provider);
   }
 
   return {
-    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, registra, inviaOrdini,
+    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, registra, inviaOrdini, decidi,
     confermato: () => ultimaScrittura,
     inAttesa: () => inAttesa
   };

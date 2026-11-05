@@ -65,8 +65,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   });
   await passo('Monica: accetta e propone', async () => {
     await clic('.riquadro.primo'); await foto('08-ordini');
-    await page.locator('.ordine-carta', { hasText: 'Ordine n. 5' }).locator('[data-a="accetta"]').click(); await page.waitForTimeout(250);
-    await page.locator('.ordine-carta', { hasText: 'Ordine n. 4' }).locator('[data-a="proponi"]').click(); await page.waitForTimeout(250); await clic('.foglio .giorno >> nth=3'); await clic('[data-a="conferma-giorno"]');
+    await page.locator('.ordine-carta', { hasText: 'Ordine n. 6' }).locator('[data-a="accetta"]').click(); await page.waitForTimeout(250);
+    await page.locator('.ordine-carta', { hasText: 'Ordine n. 5' }).locator('[data-a="proponi"]').click(); await page.waitForTimeout(250); await clic('.foglio .giorno >> nth=3'); await clic('[data-a="conferma-giorno"]');
     await clic('[data-a="tab"][data-v="preparare"]'); await foto('09-da-preparare');
   });
   await passo('cliente: accetta la proposta, paga, cambia ordine', async () => {
@@ -112,6 +112,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.piatto-riga', { hasText: 'Papassini' }).locator('input').uncheck(); await page.waitForTimeout(200);
     await clic('[data-a="annulla"]');
     if (!(await page.locator('.piatto-riga', { hasText: 'Papassini' }).locator('input').isChecked())) throw new Error('annulla non ha funzionato');
+  });
+  await passo('Monica: clienti nuovi e telefono nuovo', async () => {
+    await clic('.indietro'); await clic('.riquadro >> nth=2'); await foto('17-clienti');
+    if (!(await page.locator('main', { hasText: 'Telefono nuovo' }).count())) throw new Error('manca «Telefono nuovo»');
+    await clic('[data-a="richiesta-si"][data-id="r1"]');
+    const o = await page.evaluate(() => { const x = S.ordini.find(y => y.id === 'o4'); return x.stato + '/' + !!x.cliente; });
+    if (o !== 'nuovo/true') throw new Error('primo ordine di Laura: ' + o);
+    await clic('[data-a="richiesta-si"][data-id="r2"]');
+    const r = await page.evaluate(() => S.richieste.length + '/' + S.clienti.filter(c => c.nome === 'Paolo Sanna').length);
+    if (r !== '0/1') throw new Error('ricollega: ' + r);
   });
   await passo('testo grande', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=3'); await page.locator('[data-campo="p.grande"]').check(); await page.waitForTimeout(200);
