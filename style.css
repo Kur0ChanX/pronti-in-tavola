@@ -518,3 +518,4 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .incassi .conti div { background: var(--foglio); border: 1px solid var(--riga); border-radius: 12px; padding: 10px 12px; }
 .incassi .conti small { display: block; color: var(--tenue); font-weight: 700; }
 .incassi .conti b { font-family: var(--display); font-size: 1.3rem; color: var(--vino); }
+.allarme { color: var(--allarme); font-weight: 800; }

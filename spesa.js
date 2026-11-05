@@ -220,6 +220,8 @@ function foglioSpesaIng() {
     <p class="tenue" style="margin:0">${serve ? `Per gli ordini scelti ti servono <b>${quanto(serve, inf.u)}</b>.` : 'Per gli ordini scelti non serve.'}</p>
     <span class="etichetta" style="font-weight:800">Ce l'hai già in casa</span>
     <div class="fila">${passo('sp-casa', casa ? quanto(casa, inf.u) : '0', `data-ing="${id}"`)}<span class="tenue">${casa ? 'Lo tolgo dalla lista.' : 'Niente in casa.'}</span></div>
+    <span class="etichetta" style="font-weight:800">Quanto lo paghi (se vuoi)</span>
+    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.prezzo" data-ing="${id}" value="${inf.prezzo || ''}" placeholder="0,00" aria-label="Prezzo in euro"><span class="tenue">€ ${inf.conf > 0 ? `per ${misura(inf.conf, inf.u)}` : inf.u === 'pz' ? 'al pezzo' : inf.u === 'g' ? 'al kg' : 'al litro'}</span></div>
     <span class="etichetta" style="font-weight:800">La confezione che compri</span>
     <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.conf" data-ing="${id}" value="${inf.conf || ''}" placeholder="sfuso, a peso" aria-label="Confezione in ${UNITA[inf.u]}"><span class="tenue">${UNITA[inf.u]}</span></div>
     <span class="etichetta" style="font-weight:800">Si misura in</span>
@@ -239,6 +241,7 @@ function sezioneDosi(p) {
   return `<section class="scheda"><h2>Dosi per la lista della spesa</h2><p class="tenue" style="margin:0">Quanto ti serve per <b>${base}</b>. Solo tu le vedi.</p>
     ${p.ing.map(id => riga(id, d, 'base')).join('') || '<span class="tenue">Prima aggiungi gli ingredienti.</span>'}
     ${gusti.map(v => `<span class="etichetta" style="font-weight:800">In più per il gusto ${esc(v.nome)}</span>${v.ing.map(id => riga(id, SPESA.dosi[p.id + ':' + v.id] || {}, v.id)).join('')}`).join('')}
+    ${costoPiatto(p)}
     ${DOSI_INIZIALI[p.id] ? '<span class="tenue piccolo">Sono una mia bozza: correggi i numeri che non tornano.</span>' : ''}</section>`;
 }
 
@@ -253,6 +256,7 @@ function salvaCampoSpesa(el) {
   }
   if (c === 'sp.vn' || c === 'sp.vq') { salvaVoce(el); return; }
   if (c === 'sp.anche') { SPESA.anche = el.checked; salvaSpesa(); render(); return; }
+  if (c === 'sp.prezzo') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { prezzo: num(el.value) }); salvaSpesa(); salvatoOk(); return; }
   if (c === 'sp.conf') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { conf: num(el.value) }); salvaSpesa(); render(); }
 }
 function cambiaIng(id, campi) { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], campi); salvaSpesa(); render(); }
@@ -432,3 +436,27 @@ Object.assign(A, {
   'sp-mpulisci'() { const n = SPESA.mia.filter(v => v.preso).length; cambiaMia(`Tolte ${n} cose prese.`, () => { SPESA.mia = SPESA.mia.filter(v => !v.preso); }); },
   'sp-msvuota'() { cambiaMia('Lista svuotata.', () => { SPESA.mia = []; }); }
 });
+
+/* costo per piatto (Fase 3, C7): dosi × prezzi che Monica scrive negli ingredienti della spesa */
+function prezzoUnita(id) {   // euro per 1 g, 1 ml o 1 pezzo
+  const inf = infoIng(id);
+  if (!inf.prezzo) return null;
+  return inf.conf > 0 ? inf.prezzo / inf.conf : inf.prezzo / (inf.u === 'pz' ? 1 : 1000);
+}
+function costoDosi(p, variante) {
+  const pezzi = [SPESA.dosi[p.id] || {}, variante ? SPESA.dosi[p.id + ':' + variante] || {} : {}];
+  let tot = 0; const senza = [];
+  pezzi.forEach(d => Object.keys(d).forEach(id => { const u = prezzoUnita(id); if (u == null) senza.push(id); else tot += d[id] * u; }));
+  return { tot, senza: [...new Set(senza)] };
+}
+function costoPiatto(p) {
+  const { tot, senza } = costoDosi(p);
+  if (!Object.keys(SPESA.dosi[p.id] || {}).length) return '';
+  const quante = f => f.tipo === 'teglia' ? (f.porzioni || (f.id === 't8' ? 8 : 6)) : 1;   // come basiRiga
+  let h = `<span class="etichetta" style="font-weight:800">Quanto ti costa</span>`;
+  if (!tot) return h + `<span class="tenue piccolo">Scrivi i prezzi degli ingredienti nella lista della spesa (tocca la matita di un ingrediente): qui vedi quanto ti costa e quanto ti resta.</span>`;
+  h += p.formati.map(f => { const c = tot * quante(f), resta = (f.prezzo || 0) - c;
+    return `<div class="fila" style="justify-content:space-between"><span>${esc(f.nome)}: ti costa <b>${euro(c)}</b></span><span class="${resta < 0 ? 'allarme' : 'tenue'}">vendi a ${euro(f.prezzo)} · ti restano <b>${euro(resta)}</b></span></div>`; }).join('');
+  if (senza.length) h += `<span class="tenue piccolo">Senza prezzo (non conta): ${esc(senza.map(i => ING(i).n.toLowerCase()).join(', '))}.</span>`;
+  return h;
+}
