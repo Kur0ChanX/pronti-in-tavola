@@ -5,8 +5,8 @@
    Si carica dopo app.js e ne usa S, UI, A e le funzioni di disegno. */
 'use strict';
 
-const REPARTI = ['Frutta e verdura', 'Carne, pesce e salumi', 'Frigo: latte, formaggi e uova', 'Farine, pasta e riso', 'Dispensa', 'Surgelati', 'Altro'];
-const [R_FV, R_CP, R_FR, R_PF, R_DI, R_SU] = REPARTI;
+const REPARTI = ['Frutta e verdura', 'Carne, pesce e salumi', 'Frigo: latte, formaggi e uova', 'Farine, pasta e riso', 'Dispensa', 'Surgelati', 'Pane e dolci', 'Bevande', 'Casa e pulizia', 'Altro'];
+const [R_FV, R_CP, R_FR, R_PF, R_DI, R_SU, R_PD, R_BE, R_CA] = REPARTI;
 const UNITA = { g: 'grammi', ml: 'millilitri', pz: 'pezzi' };
 /* ingrediente: [unità, confezione che si compra (0 = sfuso, a peso), reparto] · bozza di Claude */
 const ING_SPESA = {
@@ -60,7 +60,7 @@ const BASI = { teglia: '1 porzione', kg: '1 kg', pz: '1 pezzo', intera: '1 torta
 const CHIAVE_SPESA = 'pit-spesa-v1';
 
 function spesaVuota() {
-  return { versione: 1, dosi: JSON.parse(JSON.stringify(DOSI_INIZIALI)), ing: {}, casa: {}, presi: {}, giorni: 2, anche: false };
+  return { versione: 1, dosi: JSON.parse(JSON.stringify(DOSI_INIZIALI)), ing: {}, casa: {}, presi: {}, giorni: 2, anche: false, mia: [], usati: {} };
 }
 let SPESA = (() => {
   try { const s = JSON.parse(localStorage.getItem(CHIAVE_SPESA)); if (s && s.versione === 1) return Object.assign(spesaVuota(), s); }
@@ -123,24 +123,40 @@ function daComprare(id, serve) {
   }
   return { testo: quanto(manca, inf.u), manca };
 }
+/* tutta la spesa ancora da prendere, per reparto: la mia lista + quella degli ordini */
 function testoSpesa(c, fino) {
-  const righe = [`🛒 Lista della spesa (ordini fino a ${giornoLungo(fino)})`];
+  const righe = [`🛒 Lista della spesa (con gli ordini fino a ${giornoLungo(fino)})`];
   REPARTI.forEach(rep => {
-    const qui = Object.keys(c.tot).filter(id => infoIng(id).rep === rep).map(id => [id, daComprare(id, c.tot[id])]).filter(x => x[1]);
-    if (!qui.length) return;
-    righe.push('', `*${rep}*`, ...qui.map(([id, d]) => `- ${ING(id).n}: ${d.testo}`));
+    const mie = SPESA.mia.filter(v => !v.preso && v.rep === rep).map(v => `- ${v.n}${v.q ? `: ${v.q}` : ''}`);
+    const ord = Object.keys(c.tot).filter(id => !SPESA.presi[id] && infoIng(id).rep === rep).map(id => [id, daComprare(id, c.tot[id])]).filter(x => x[1])
+      .map(([id, d]) => `- ${ING(id).n}: ${d.testo}`);
+    if (mie.length || ord.length) righe.push('', `*${rep}*`, ...mie, ...ord);
   });
   return righe.join('\n');
 }
 
-function vSpesa() {
+function spesaOrdini() {
   const oo = ordiniSpesa(), c = calcolaSpesa(oo), fino = piuGiorni(oggi(), SPESA.giorni);
   const ids = Object.keys(c.tot).sort((a, b) => ING(a).n.localeCompare(ING(b).n, 'it'));
   const compra = ids.map(id => [id, daComprare(id, c.tot[id])]).filter(x => x[1]);
+  return { oo, c, fino, ids, compra };
+}
+function vSpesa() {
+  const so = spesaOrdini(), mancaMia = SPESA.mia.filter(v => !v.preso).length, mancaOrd = so.compra.filter(([id]) => !SPESA.presi[id]).length;
+  const tab = UI.spesaTab || 'mia';
+  let h = testataMonica('Lista della spesa', 'home') + '<main class="corpo">';
+  h += `<div class="scelte schede-spesa" role="group" aria-label="Quale lista">
+    <button type="button" class="scelta" data-a="sp-tab" data-v="mia" aria-pressed="${tab === 'mia'}">La mia lista<small>${mancaMia ? `${mancaMia} da prendere` : 'Scrivi cosa ti serve'}</small></button>
+    <button type="button" class="scelta" data-a="sp-tab" data-v="ordini" aria-pressed="${tab === 'ordini'}">Spesa per i miei ordini<small>${mancaOrd ? `${mancaOrd} da prendere` : 'Niente da comprare'}</small></button></div>`;
+  h += tab === 'mia' ? vSpesaMia(so) : vSpesaOrdini(so);
+  if (mancaMia || mancaOrd) h += `<a class="btn pieno" href="${wa('', testoSpesa(so.c, so.fino))}" target="_blank" rel="noopener">${ico('chat')}Manda tutta la spesa su WhatsApp</a>`;
+  h += `<p class="tenue piccolo" style="margin:0">Le dosi le cambi in «I miei piatti», dentro ogni piatto. Per ora la lista resta su questo telefono.</p>`;
+  return h + '</main>';
+}
+function vSpesaOrdini({ oo, c, fino, ids, compra }) {
   const inCasa = ids.filter(id => !daComprare(id, c.tot[id]));
   const presi = compra.filter(([id]) => SPESA.presi[id]).length;
-  let h = testataMonica('Lista della spesa', 'home') + '<main class="corpo">';
-  h += `<section class="scheda"><h2>Per quali ordini?</h2>
+  let h = `<section class="scheda"><h2>Per quali ordini?</h2>
     <div class="scelte">${GIORNI_SPESA.map(([n, t]) => `<button type="button" class="scelta" data-a="sp-giorni" data-v="${n}" aria-pressed="${SPESA.giorni === n}">${t}</button>`).join('')}</div>
     <label class="interr"><span>Conta anche gli ordini da accettare<small>Così non resti senza se li accetti</small></span><input type="checkbox" data-campo="sp.anche" ${SPESA.anche ? 'checked' : ''}></label>
     <p class="tenue" style="margin:0">${oo.length ? `<b>${oo.length}</b> ${oo.length === 1 ? 'ordine' : 'ordini'} fino a ${giornoLungo(fino)}. I «pronti subito» non contano: sono già cucinati.` : `Nessun ordine fino a ${giornoLungo(fino)}.`}</p></section>`;
@@ -159,15 +175,13 @@ function vSpesa() {
           <div class="cosa"><b>${esc(ING(id).n)}</b><small>${sotto}</small></div><b class="quanto">${esc(d.testo)}</b>
           <button type="button" class="icona" data-a="sp-ing" data-ing="${id}" aria-label="Cambia ${esc(ING(id).n)}: in casa, confezione, reparto">${ico('matita')}</button></div>`; }).join('')}</section>`;
     });
-    h += `<a class="btn pieno" href="${wa('', testoSpesa(c, fino))}" target="_blank" rel="noopener">${ico('chat')}Manda la lista su WhatsApp</a>
-      ${presi ? '<button type="button" class="btn chiaro pieno" data-a="sp-ricomincia">Togli le spunte</button>' : ''}`;
+    if (presi) h += '<button type="button" class="btn chiaro pieno" data-a="sp-ricomincia">Togli le spunte</button>';
   } else if (oo.length && !c.mancano.length) h += `<div class="avviso verde">${ico('spunta')}<div>Hai già in casa tutto quello che serve.</div></div>`;
   if (inCasa.length) h += `<section class="scheda"><h2>Ce l'hai già in casa</h2><div class="ingr-lista">${inCasa.map(id => `<button type="button" class="chip" data-a="sp-ing" data-ing="${id}">${esc(ING(id).n)}</button>`).join('')}</div></section>`;
   if (c.per.length) h += `<details class="scheda"><summary><b>Cosa serve per ogni ordine</b></summary>${c.per.map(({ o, ing }) => `<div class="spesa-ordine"><b>${esc(cliente(o.cliente).nome)}</b> · ${giornoLungo(o.entro)}
       <small>${esc(o.righe.map(r => `${r.nome.toLowerCase()} (${descRiga(r)})`).join(', '))}</small>
       <span>${Object.keys(ing).map(id => `${esc(ING(id).n)} ${quanto(ing[id], infoIng(id).u)}`).join(' · ') || 'Niente da comprare.'}</span></div>`).join('')}</details>`;
-  h += `<p class="tenue piccolo" style="margin:0">Le dosi le cambi in «I miei piatti», dentro ogni piatto. Per ora la lista resta su questo telefono.</p>`;
-  return h + '</main>';
+  return h;
 }
 
 function foglioSpesaIng() {
@@ -208,6 +222,7 @@ function salvaCampoSpesa(el) {
     if (el.value === '') delete d[id]; else d[id] = num(el.value);
     salvaSpesa(); salvatoOk(); return;
   }
+  if (c === 'sp.vn' || c === 'sp.vq') { salvaVoce(el); return; }
   if (c === 'sp.anche') { SPESA.anche = el.checked; salvaSpesa(); render(); return; }
   if (c === 'sp.conf') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { conf: num(el.value) }); salvaSpesa(); render(); }
 }
@@ -229,4 +244,148 @@ Object.assign(A, {
     const prima = SPESA.presi; SPESA.presi = {}; salvaSpesa(); render();
     mostraToast('Spunte tolte.', () => { SPESA.presi = prima; salvaSpesa(); render(); });
   }
+});
+
+/* ---------- «La mia lista»: la spesa libera di Monica, come nelle app di spesa migliori (docs/SPECIFICA.md) ----------
+   scrivi e aggiungi (anche «2 kg patate»), reparto da solo, suggerimenti mentre scrivi, usati spesso, spunte, Annulla */
+const PAROLE_REP = [   /* inizi di parola → reparto; si guarda in quest'ordine (es. «passata di pomodoro» → Dispensa) */
+  [R_SU, 'surgel gelat bastoncin piselli minestrone'],
+  [R_CA, 'detersiv sapone carta scottex tovagli sacchett sacchi spugn ammorbident candeggin anticalcare dentifric shampoo bagnoschiuma deodorant pellicol alluminio stagnola forno-carta piatti-di bicchier vaschett'],
+  [R_BE, 'acqua vino birra succo succhi bibit coca aranciata spremut'],
+  [R_DI, 'olio aceto sale zucchero caffe tè te tisan passata pelati polpa conserv concentrat legumi ceci lenticch fagioli tonno sgombr marmellat miele nutella biscott cacao lievit spezi pepe origano dado brodo cereali fette crackers grissin cioccolat noci mandorl nocciol uvetta savoiard vanigli'],
+  [R_CP, 'carne pollo petto cosce tacchin manzo maiale vitell agnell macinat salsicc prosciutt cotto crudo salame mortadell speck pancett guancial bresaol wurstel pesce salmone merluzz orata spigol cozze vongol gamber calamar polpo seppi alici acciugh'],
+  [R_FR, 'latte yogurt burro panna formagg mozzarell parmigian grana pecorin ricotta mascarpone gorgonzol stracchin provol scamorz emmenthal fontin philadelphia spalmabil uova uovo sfoglia besciamell pasta-fresca'],
+  [R_PD, 'pane panin pancarr focacc piadin brioche cornett torta crostat merend'],
+  [R_PF, 'farina pasta spaghett penne fusill rigaton linguin tagliatell lasagn riso semola couscous gnocch pangrattat orzo farro'],
+  [R_FV, 'mela mele pera pere banan arance arancia limon mandarin clementin uva fragol kiwi pesca pesche albicocc cilieg melon anguri insalat lattug pomodor zucchin melanzan patat cipoll aglio carot sedano peperon funghi spinac bietol cavol broccol finocch carciof rucola basilic prezzemol menta rosmarin salvia verdur frutta zucca fagiolin avocado porr scalogn']
+].map(([r, p]) => [r, p.split(' ').map(x => x.replace(/-/g, ' '))]);
+const IDEE_SPESA = ['Latte', 'Uova', 'Pane', 'Acqua', 'Olio', 'Farina', 'Zucchero', 'Caffè', 'Pasta', 'Pomodori', 'Detersivo piatti', 'Carta da forno'];
+const chiaveVoce = n => norm(n).replace(/\s+/g, ' ');
+function repartoDi(n) {
+  const k = chiaveVoce(n), u = SPESA.usati[k];
+  if (u && u.rep) return u.rep;
+  const ing = Object.keys(ING_SPESA).find(id => chiaveVoce(ING(id).n) === k);
+  if (ing) return infoIng(ing).rep;
+  const parole = k.split(' ');
+  for (const [rep, inizi] of PAROLE_REP) {
+    if (inizi.some(i => i.includes(' ') ? k.includes(i) : parole.some(w => w.startsWith(i)))) return rep;
+  }
+  return 'Altro';
+}
+/* «2 kg patate», «patate 2 kg», «latte x2» → nome e quantità */
+const MISURE = '(?:kg|g|gr|hg|l|lt|litri|ml|cl|pz|pezzi|conf|confezioni|bottiglie|pacchi|pacco|vasetti|scatole|barattoli|mazzi|mazzo)';
+function leggiVoce(t) {
+  t = String(t || '').replace(/\s+/g, ' ').trim().slice(0, 60);
+  let m = t.match(new RegExp(`^(\\d+(?:[.,]\\d+)?\\s*${MISURE}?)\\.?\\s+(?:di\\s+)?(.+)$`, 'i'));
+  if (m) return { n: m[2], q: m[1] };
+  m = t.match(new RegExp(`^(.+?)\\s+(?:x\\s*)?(\\d+(?:[.,]\\d+)?\\s*${MISURE}?)$`, 'i'));
+  if (m) return { n: m[1], q: m[2] };
+  return { n: t, q: '' };
+}
+function aggiungiVoce(testo) {
+  const { n, q } = leggiVoce(testo);
+  if (!n) return false;
+  const k = chiaveVoce(n), gia = SPESA.mia.find(v => chiaveVoce(v.n) === k);
+  if (gia) {   // niente doppioni: la voce che c'è torna «da prendere», con la quantità nuova se l'hai scritta
+    const prima = JSON.stringify(SPESA.mia);
+    gia.preso = false; if (q) gia.q = q;
+    salvaSpesa(); render();
+    mostraToast(`${gia.n} era già nella lista${q ? ': quantità cambiata' : ''}.`, () => { SPESA.mia = JSON.parse(prima); salvaSpesa(); render(); });
+    return true;
+  }
+  const v = { id: 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), n: maiuscola(n), q, rep: repartoDi(n), preso: false };
+  SPESA.mia.push(v);
+  const u = SPESA.usati[k] = Object.assign({ volte: 0 }, SPESA.usati[k], { n: v.n, rep: v.rep });
+  u.volte++; u.ultimo = oggi();
+  salvaSpesa(); render();
+  return true;
+}
+function vSpesaMia(so) {
+  const ordine = new Map(so.compra.map(([id, d]) => [chiaveVoce(ING(id).n), d.testo]));
+  const nella = new Set(SPESA.mia.map(v => chiaveVoce(v.n)));
+  const usati = Object.entries(SPESA.usati).filter(([k]) => !nella.has(k)).sort((a, b) => b[1].volte - a[1].volte || (b[1].ultimo || '').localeCompare(a[1].ultimo || '')).map(([, u]) => u.n);
+  const spesso = [...usati, ...IDEE_SPESA.filter(n => !nella.has(chiaveVoce(n)) && !usati.some(u => chiaveVoce(u) === chiaveVoce(n)))].slice(0, 12);
+  const presi = SPESA.mia.filter(v => v.preso).length;
+  let h = `<section class="scheda"><h2>Cosa ti serve?</h2>
+    <div class="fila" style="flex-wrap:nowrap"><input type="text" id="ing-spesa-nuova" data-spcerca="1" enterkeyhint="done" autocomplete="off" maxlength="60" placeholder="es. latte, oppure 2 kg patate" aria-label="Cosa ti serve">
+      <button type="button" class="btn" data-a="sp-agg" aria-label="Aggiungi alla lista">${ico('piu')}</button></div>
+    <div class="suggerimenti" id="sug-spesa"></div>
+    <p class="tenue piccolo" style="margin:0">Il reparto lo metto io. Puoi scrivere anche la quantità.</p></section>`;
+  if (SPESA.mia.length) {
+    h += `<p class="tenue" style="margin:0" aria-live="polite">Nel carrello: <b>${presi}</b> di ${SPESA.mia.length}. Tocca il cerchio quando prendi una cosa.</p>`;
+    REPARTI.forEach(rep => {
+      const qui = SPESA.mia.filter(v => v.rep === rep).sort((a, b) => a.preso - b.preso);
+      if (!qui.length) return;
+      h += `<section class="scheda spesa"><h2>${esc(rep)}</h2>${qui.map(v => {
+        const anche = ordine.get(chiaveVoce(v.n));
+        return `<div class="spesa-riga${v.preso ? ' presa' : ''}"><button type="button" class="spunta" data-a="sp-mpreso" data-id="${v.id}" aria-pressed="${v.preso}" aria-label="Preso: ${esc(v.n)}">${v.preso ? ico('spunta') : ''}</button>
+          <div class="cosa"><b>${esc(v.n)}</b>${anche ? `<small>Anche per gli ordini: ${esc(anche)}</small>` : ''}</div>${v.q ? `<b class="quanto">${esc(v.q)}</b>` : ''}
+          <button type="button" class="icona" data-a="sp-voce" data-id="${v.id}" aria-label="Cambia ${esc(v.n)}">${ico('matita')}</button></div>`; }).join('')}</section>`;
+    });
+    h += `<div class="fila">${presi ? '<button type="button" class="btn chiaro" data-a="sp-mpulisci">Togli le cose prese</button>' : ''}<button type="button" class="btn chiaro" data-a="sp-msvuota">Svuota la lista</button></div>`;
+  } else h += `<div class="avviso"><div>La tua lista è vuota. Scrivi qui sopra o tocca una cosa che compri spesso.</div></div>`;
+  if (spesso.length) h += `<section class="scheda"><h2>Compri spesso</h2><p class="tenue piccolo" style="margin:0">Tocca per metterla nella lista.</p>
+    <div class="suggerimenti">${spesso.map(n => `<button type="button" data-a="sp-sug" data-n="${esc(n)}">${ico('piu')}${esc(n)}</button>`).join('')}</div></section>`;
+  return h;
+}
+function suggerisciSpesa(el) {
+  const box = document.getElementById('sug-spesa');
+  if (!box) return;
+  const q = chiaveVoce(leggiVoce(el.value).n);
+  if (q.length < 2) { box.innerHTML = ''; return; }
+  const nella = new Set(SPESA.mia.filter(v => !v.preso).map(v => chiaveVoce(v.n)));
+  const tutti = [...Object.values(SPESA.usati).map(u => u.n), ...IDEE_SPESA, ...Object.keys(ING_SPESA).map(id => ING(id).n)];
+  const visti = new Set(), trovati = [];
+  tutti.forEach(n => { const k = chiaveVoce(n); if (k.includes(q) && !visti.has(k) && !nella.has(k)) { visti.add(k); trovati.push(n); } });
+  trovati.sort((a, b) => chiaveVoce(b).startsWith(q) - chiaveVoce(a).startsWith(q));
+  box.innerHTML = trovati.slice(0, 6).map(n => `<button type="button" data-a="sp-sug" data-n="${esc(n)}" data-q="${esc(leggiVoce(el.value).q)}">${esc(n)}</button>`).join('');
+}
+function foglioSpesaVoce() {
+  const v = SPESA.mia.find(x => x.id === UI.foglio.id);
+  if (!v) return '<div class="dentro"><p>Questa voce non c\'è più.</p></div><div class="piede"><button type="button" class="btn pieno" data-a="chiudi">Chiudi</button></div>';
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>${esc(v.n)}</h1>
+    <label class="etichetta" for="sp-vn" style="font-weight:800">Nome</label><input type="text" id="sp-vn" data-campo="sp.vn" data-id="${v.id}" maxlength="60" value="${esc(v.n)}">
+    <label class="etichetta" for="sp-vq" style="font-weight:800">Quanto (se vuoi)</label><input type="text" id="sp-vq" data-campo="sp.vq" data-id="${v.id}" maxlength="30" value="${esc(v.q)}" placeholder="es. 2 kg, 3 pacchi">
+    <span class="etichetta" style="font-weight:800">Reparto del negozio</span>
+    <div class="scelte">${REPARTI.map(r => `<button type="button" class="chip" data-a="sp-vrep" data-id="${v.id}" data-v="${esc(r)}" aria-pressed="${v.rep === r}">${esc(r)}</button>`).join('')}</div>
+    <p class="tenue piccolo" style="margin:0">Il reparto me lo ricordo per la prossima volta.</p>
+    <button type="button" class="btn chiaro pieno" data-a="sp-vtogli" data-id="${v.id}">${ico('cestino')}Togli dalla lista</button></div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="chiudi">Fatto</button></div>`;
+}
+function salvaVoce(el) {
+  const v = SPESA.mia.find(x => x.id === el.dataset.id);
+  if (!v) return;
+  if (el.dataset.campo === 'sp.vn') { const n = String(el.value).replace(/\s+/g, ' ').trim().slice(0, 60); if (!n) { el.value = v.n; return; } v.n = maiuscola(n); }
+  else v.q = String(el.value).replace(/\s+/g, ' ').trim().slice(0, 30);
+  salvaSpesa(); salvatoOk();
+}
+function cambiaMia(msg, fn) {
+  const prima = JSON.stringify(SPESA.mia);
+  fn(); salvaSpesa(); render();
+  if (msg) mostraToast(msg, () => { SPESA.mia = JSON.parse(prima); salvaSpesa(); render(); });
+}
+Object.assign(A, {
+  'sp-tab'(el) { UI.spesaTab = el.dataset.v; render(); },
+  'sp-agg'() {
+    const el = document.getElementById('ing-spesa-nuova');
+    if (!el || !el.value.trim()) { if (el) el.focus(); return; }
+    const t = el.value; el.value = '';
+    aggiungiVoce(t);
+    const nuovo = document.getElementById('ing-spesa-nuova'); if (nuovo) nuovo.focus();
+  },
+  'sp-sug'(el) {
+    const campo = document.getElementById('ing-spesa-nuova'); if (campo) campo.value = '';
+    aggiungiVoce((el.dataset.q ? el.dataset.q + ' ' : '') + el.dataset.n);
+  },
+  'sp-mpreso'(el) { const v = SPESA.mia.find(x => x.id === el.dataset.id); if (!v) return; v.preso = !v.preso; salvaSpesa(); render(); },
+  'sp-voce'(el) { UI.foglio = { tipo: 'spesa-voce', id: el.dataset.id }; render(); },
+  'sp-vrep'(el) {
+    const v = SPESA.mia.find(x => x.id === el.dataset.id); if (!v) return;
+    v.rep = el.dataset.v;
+    const k = chiaveVoce(v.n); SPESA.usati[k] = Object.assign({ volte: 1, n: v.n }, SPESA.usati[k], { rep: v.rep });
+    salvaSpesa(); render();
+  },
+  'sp-vtogli'(el) { const v = SPESA.mia.find(x => x.id === el.dataset.id); if (!v) return; UI.foglio = null; cambiaMia(`Tolto: ${v.n}`, () => { SPESA.mia = SPESA.mia.filter(x => x !== v); }); },
+  'sp-mpulisci'() { const n = SPESA.mia.filter(v => v.preso).length; cambiaMia(`Tolte ${n} cose prese.`, () => { SPESA.mia = SPESA.mia.filter(v => !v.preso); }); },
+  'sp-msvuota'() { cambiaMia('Lista svuotata.', () => { SPESA.mia = []; }); }
 });

@@ -832,7 +832,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1387,12 +1387,14 @@ document.addEventListener('input', e => {
   const el = e.target;
   if (el.dataset.campo === 'sel.testo' || el.dataset.campo === 'nota') salvaCampo(el);
   if (el.dataset.cerca) suggerisci(el);
+  if (el.dataset.spcerca) suggerisciSpesa(el);
   if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;   // resta anche se la pagina si ridisegna (una foto che arriva)
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && UI.foglio) A.chiudi();
   if (e.key === 'Enter' && e.target.dataset && e.target.dataset.cerca) { e.preventDefault(); A['ing-aggiungi']({ dataset: { s: e.target.dataset.cerca } }); }
   if (e.key === 'Enter' && e.target.id === 'nuovo-nome') A['nuovo-avanti']();
+  if (e.key === 'Enter' && e.target.id === 'ing-spesa-nuova') { e.preventDefault(); A['sp-agg'](); }
 });
 
 render();
