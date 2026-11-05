@@ -71,6 +71,22 @@ let SPESA = (() => {
 })();
 function salvaSpesa() { try { localStorage.setItem(CHIAVE_SPESA, JSON.stringify(SPESA)); } catch (e) { mostraToast('Memoria piena: la lista non è stata salvata.'); } }
 
+/* «in casa» che si consuma da solo: SPESA.casa è quello che c'era quando l'hai segnato; gli ordini segnati pronti
+   (o ritirati) dopo, non in SPESA.cotti, lo consumano. Se annulli il «pronto», torna. */
+const COTTI = ['pronto', 'ritirato'];
+function consumati() {
+  const oo = S.ordini.filter(o => COTTI.includes(o.stato) && !SPESA.cotti[o.id]);
+  return oo.length ? calcolaSpesa(oo).tot : {};
+}
+function casaDi(id) { return Math.max(0, arrot((SPESA.casa[id] || 0) - (consumati()[id] || 0))); }
+/* prima di cambiare «in casa»: il consumo diventa definitivo */
+function fissaCasa() {
+  const c = consumati();
+  Object.keys(c).forEach(id => { if (SPESA.casa[id] != null) { SPESA.casa[id] = Math.max(0, arrot(SPESA.casa[id] - c[id])); if (!SPESA.casa[id]) delete SPESA.casa[id]; } });
+  SPESA.cotti = {}; S.ordini.forEach(o => { if (COTTI.includes(o.stato)) SPESA.cotti[o.id] = true; });
+}
+if (!SPESA.cotti) { SPESA.cotti = {}; S.ordini.forEach(o => { if (COTTI.includes(o.stato)) SPESA.cotti[o.id] = true; }); }
+
 function infoIng(id) {
   const b = ING_SPESA[id] || ['g', 0, 'Altro'];
   return Object.assign({ u: b[0], conf: b[1], rep: b[2] }, SPESA.ing[id] || {});
@@ -117,7 +133,7 @@ function quanto(q, u) {
 /* la confezione com'è scritta sul pacco, senza arrotondare (es. 75 g, 1,5 l) */
 const misura = (q, u) => u !== 'pz' && q >= 1000 ? `${NUM.format(q / 1000)} ${u === 'g' ? 'kg' : 'l'}` : `${NUM.format(q)} ${u}`;
 function daComprare(id, serve) {
-  const inf = infoIng(id), casa = SPESA.casa[id] || 0, manca = Math.max(0, serve - casa);
+  const inf = infoIng(id), casa = casaDi(id), manca = Math.max(0, serve - casa);
   if (!manca) return null;
   if (inf.conf > 0) {
     const n = Math.ceil(manca / inf.conf - 1e-9);
@@ -171,23 +187,25 @@ function vSpesaOrdini({ oo, c, fino, ids, compra }) {
       const qui = compra.filter(([id]) => infoIng(id).rep === rep);
       if (!qui.length) return;
       h += `<section class="scheda spesa"><h2>${esc(rep)}</h2>${qui.map(([id, d]) => {
-        const preso = !!SPESA.presi[id], inf = infoIng(id), casa = SPESA.casa[id] || 0;
+        const preso = !!SPESA.presi[id], inf = infoIng(id), casa = casaDi(id);
         const sotto = `Servono ${quanto(c.tot[id], inf.u)}${casa ? ` · in casa ${quanto(casa, inf.u)}` : ''}`;
         return `<div class="spesa-riga${preso ? ' presa' : ''}"><button type="button" class="spunta" data-a="sp-preso" data-ing="${id}" aria-pressed="${preso}" aria-label="Preso: ${esc(ING(id).n)}">${preso ? ico('spunta') : ''}</button>
           <div class="cosa"><b>${esc(ING(id).n)}</b><small>${sotto}</small></div><b class="quanto">${esc(d.testo)}</b>
           <button type="button" class="icona" data-a="sp-ing" data-ing="${id}" aria-label="Cambia ${esc(ING(id).n)}: in casa, confezione, reparto">${ico('matita')}</button></div>`; }).join('')}</section>`;
     });
-    if (presi) h += '<button type="button" class="btn chiaro pieno" data-a="sp-ricomincia">Togli le spunte</button>';
+    if (presi) h += `<button type="button" class="btn pieno" data-a="sp-fatta">${ico('spunta')}Ho fatto la spesa: metti in casa le cose prese</button>
+      <button type="button" class="btn chiaro pieno" data-a="sp-ricomincia">Togli le spunte</button>`;
   } else if (oo.length && !c.mancano.length) h += `<div class="avviso verde">${ico('spunta')}<div>Hai già in casa tutto quello che serve.</div></div>`;
   if (inCasa.length) h += `<section class="scheda"><h2>Ce l'hai già in casa</h2><div class="ingr-lista">${inCasa.map(id => `<button type="button" class="chip" data-a="sp-ing" data-ing="${id}">${esc(ING(id).n)}</button>`).join('')}</div></section>`;
   if (c.per.length) h += `<details class="scheda"><summary><b>Cosa serve per ogni ordine</b></summary>${c.per.map(({ o, ing }) => `<div class="spesa-ordine"><b>${esc(cliente(o.cliente).nome)}</b> · ${giornoLungo(o.entro)}
       <small>${esc(o.righe.map(r => `${r.nome.toLowerCase()} (${descRiga(r)})`).join(', '))}</small>
       <span>${Object.keys(ing).map(id => `${esc(ING(id).n)} ${quanto(ing[id], infoIng(id).u)}`).join(' · ') || 'Niente da comprare.'}</span></div>`).join('')}</details>`;
+  h += `<p class="tenue piccolo" style="margin:0">Quando segni un ordine «pronto», tolgo da «in casa» quello che hai usato.</p>`;
   return h;
 }
 
 function foglioSpesaIng() {
-  const id = UI.foglio.id, inf = infoIng(id), casa = SPESA.casa[id] || 0;
+  const id = UI.foglio.id, inf = infoIng(id), casa = casaDi(id);
   const serve = calcolaSpesa(ordiniSpesa()).tot[id] || 0;
   return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>${esc(ING(id).n)}</h1>
     <p class="tenue" style="margin:0">${serve ? `Per gli ordini scelti ti servono <b>${quanto(serve, inf.u)}</b>.` : 'Per gli ordini scelti non serve.'}</p>
@@ -236,12 +254,24 @@ Object.assign(A, {
   'sp-ing'(el) { UI.foglio = { tipo: 'spesa-ing', id: el.dataset.ing }; render(); },
   'sp-casa'(el) {
     const id = el.dataset.ing, inf = infoIng(id), passoQ = inf.conf || (inf.u === 'pz' ? 1 : 100);
+    fissaCasa();
     SPESA.casa[id] = Math.max(0, arrot((SPESA.casa[id] || 0) + Number(el.dataset.d) * passoQ));
     if (!SPESA.casa[id]) delete SPESA.casa[id];
     salvaSpesa(); render();
   },
   'sp-unita'(el) { cambiaIng(el.dataset.ing, { u: el.dataset.v }); },
   'sp-rep'(el) { cambiaIng(el.dataset.ing, { rep: el.dataset.v }); },
+  'sp-fatta'() {   /* le cose spuntate vanno «in casa» (le confezioni intere che hai preso), la lista si svuota da sola */
+    const prima = JSON.stringify(SPESA), c = calcolaSpesa(ordiniSpesa());
+    fissaCasa();
+    let n = 0;
+    Object.keys(SPESA.presi).forEach(id => {
+      const serve = c.tot[id] || 0, inf = infoIng(id), manca = Math.max(0, serve - (SPESA.casa[id] || 0));
+      if (manca) { SPESA.casa[id] = arrot((SPESA.casa[id] || 0) + (inf.conf > 0 ? Math.ceil(manca / inf.conf - 1e-9) * inf.conf : manca)); n++; }
+    });
+    SPESA.presi = {}; salvaSpesa(); render();
+    mostraToast(`Messe in casa ${n} ${n === 1 ? 'cosa' : 'cose'}.`, () => { SPESA = JSON.parse(prima); salvaSpesa(); render(); });
+  },
   'sp-ricomincia'() {
     const prima = SPESA.presi; SPESA.presi = {}; salvaSpesa(); render();
     mostraToast('Spunte tolte.', () => { SPESA.presi = prima; salvaSpesa(); render(); });
