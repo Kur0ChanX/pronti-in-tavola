@@ -8,7 +8,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C1 | Dati veri condivisi con Firebase (Firestore), piano gratis Spark: specifica in `docs/SPEC-FIREBASE.md` (05/11); manca: strato dati a due motori, regole e prove nell'emulatore, progetto vero di Mario | Claude | alta |
+| C1 | Dati veri condivisi con Firebase (Firestore), piano gratis Spark: specifica in `docs/SPEC-FIREBASE.md` (05/11); regole di sicurezza fatte (`firestore.rules`, 30 prove verdi nell'emulatore: `npm run prova-regole`); manca: strato dati a due motori in `app.js`, progetto vero di Mario | Claude | alta |
 | C2 | Foto dentro Firestore (900 px, JPEG 0,8, tetto 300 KB): Storage vuole la carta anche per i progetti vecchi dal 03/02/2026 (verificato 05/11) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) e funzionamento senza rete (service worker, manifest) | Claude | media |
 | C4 | Sito su Cloudflare Pages `pronti-in-tavola.pages.dev` | Claude + Mario | media |
