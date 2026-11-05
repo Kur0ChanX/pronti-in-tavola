@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (05/11/2026 21:13 ora italiana)
+# Ultimo messaggio di Mario (05/11/2026 21:33 ora italiana)
 
-Praticamente ha una lista della spesa. Ovviamente fai una lista della spesa, visto che ci siamo, completa, prendi spunto alle app gold standard della spesa e mettila dentro, e poi dentro una sezione con scritto tipo, cosa ne so, spesa per i miei ordini, gli esce quello che deve comprare.
+Guarda anche la risposta che ho dato nella sessione precedente, la 9, vai avanti da solo e pubblica momentaneamente nell'artefatto di prova, poi piano piano facciamo l'app effettiva, però pubblica lì, e autonomamente, da solo, vai tranquillo, mi fido di te. Da solo che mi devo assentare qualche ora.
