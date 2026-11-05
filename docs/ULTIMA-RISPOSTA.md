@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (05/11/2026 09:33 ora italiana)
+# Ultima risposta di Claude (05/11/2026 13:17 ora italiana)
 
-Ho salvato su GitHub il file del consumo di token di questa sessione (commit `79cf556`): non resta niente da salvare.
+Salvato su GitHub (commit 7f3244e). Le prove girano ancora; riprendo quando finiscono.
