@@ -3,4 +3,4 @@
 ## Catene
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
-| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 2 | session_01QTFEqS28bRVosA9LwXjudR | |
+| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 3 | session_01QTFEqS6SnpDQrcYm57NxM7 | |
