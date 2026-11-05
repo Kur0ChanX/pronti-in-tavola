@@ -77,6 +77,10 @@ service cloud.firestore {
     match /impostazioni/monica {
       allow read, write: if gestore();
     }
+    // lista della spesa, dosi e «in casa» di Monica (C15): i clienti non la vedono mai
+    match /impostazioni/spesa {
+      allow read, write: if gestore();
+    }
 
     // Un telefono. Si crea una volta sola (con «Accetta nuovi clienti» acceso):
     // «nuovo» col suo nome unico, o «ricollega» se il nome c'è già (telefono nuovo della stessa persona).
