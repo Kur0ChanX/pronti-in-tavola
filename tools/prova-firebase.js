@@ -304,6 +304,8 @@ const server = http.createServer((req, res) => {
     await monica.click('#toast [data-a="annulla"]');
     controlla('Annulla dopo «Accetta»: torna tra i rifiutati', await aspetta(monica, id => (S.rifiutati || []).some(r => r.id === id) && S.ordini.some(o => o.utente === id && o.stato === 'rifiutato'), uidT)
       && (await admin(d => getDoc(doc(d, 'utenti/' + uidT)))).data().stato === 'no');
+    const vivo = await aspetta(terzo, () => Dati.io.utente && Dati.io.utente.stato === 'no' && S.ordini.some(o => o.stato === 'rifiutato'));
+    console.log('     (dal vivo, senza riaprire:', vivo, JSON.stringify(await terzo.evaluate(() => [Dati.io.utente && Dati.io.utente.stato, S.ordini.map(o => o.stato), Object.keys(S).length])), ')');
     await terzo.reload(); await aspetta(terzo, () => S.piatti.length === 23); await terzo.evaluate(RIGA);   // il telefono riparte dal server: deve leggere il No (se un cambio doppio non arrivasse dal vivo, riaprendo l'app si vede giusto)
     controlla('Accetta e Annulla: riaperta l\'app il telefono legge il No', await aspetta(terzo, () => Dati.io.utente && Dati.io.utente.stato === 'no' && S.ordini.some(o => o.stato === 'rifiutato')));
     await terzo.evaluate(() => { UI.entro = piuGiorni(oggi(), 3); P.carrello = [riga('lasagne-ragu', false, 1)]; return inviaVero(); });
