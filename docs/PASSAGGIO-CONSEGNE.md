@@ -46,7 +46,7 @@ Sessione attuale: #4 (dopo la #3 `session_01QTFEqS6SnpDQrcYm57NxM7`, chiusa alla
 2. C1/C11, schermate di Monica col motore acceso: «Nuovi» (Sì: crea `clienti/`, mette `utenti/` approvato e l'ordine `daApprovare` → `nuovo`, prende i pronti se ci sono ancora sennò propone un giorno; No: stato `no`), «Telefono nuovo» (Ricollega al cliente con la stessa `chiave`), interruttore «Accetta nuovi clienti» (`impostazioni/app.nuovi`), totale ricalcolato coi prezzi di Monica. Oggi `S.richieste` arriva da `utenti/` ma «Sì/No» scrivono ancora come la prova: vanno rifatti per il motore. Poi casi in `tools/prova-firebase.js`, tutto verde (19 + 50 + 28).
 3. Schermata «inviato» per il cliente nuovo («Monica ti conferma lei»); impronta o PIN per Monica con WebAuthn (lucchetto locale).
 4. Quando Mario scrive «Firebase»: passi a mano uno alla volta (progetto nuovo sul SUO account Google; nomi della console da controllare sulla guida ufficiale). Poi la configurazione in `dati.js` e la prima entrata di Monica.
-5. Sveglia delle 21:30 (già fatta): Preferenze v27 contro kit v35 → testo di `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola.
+5. Sveglia delle 21:30: la mia (`trig_0188qdAMXXMNTGaAQF8KYFEV`) va cancellata e rifatta tua con `send_later`: Preferenze v27 contro kit v35 → testo di `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola.
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
