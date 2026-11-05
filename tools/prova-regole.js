@@ -234,6 +234,14 @@ async function semina(env) {
     await assertSucceeds(updateDoc(doc(d, 'ordini/o3'), { stato: 'pronto', 'paga.ricevuto': true }));
     await assertSucceeds(updateDoc(doc(d, 'impostazioni/app'), { nuovi: false }));
   });
+  await caso('spesa di Monica: solo lei la legge e la scrive (C15)', async () => {
+    await assertSucceeds(setDoc(doc(db('monica'), 'impostazioni/spesa'), { versione: 1, dosi: { tiramisu: { mascarpone: 85 } }, mia: [{ id: 'v1', n: 'Latte', q: '', rep: 'Frigo', preso: false }] }));
+    await assertSucceeds(getDoc(doc(db('monica'), 'impostazioni/spesa')));
+    for (const chi of ['tel1', 'nuova', null]) {
+      await assertFails(getDoc(doc(db(chi), 'impostazioni/spesa')));
+      await assertFails(setDoc(doc(db(chi), 'impostazioni/spesa'), { versione: 1 }));
+    }
+  });
   await caso('foto troppo grande: no', () => assertFails(setDoc(doc(db('monica'), 'foto/lasagne'), { foto: 'x'.repeat(400001) })));
   await caso('nessuno si fa gestore da solo', () => assertFails(setDoc(doc(db('tel1'), 'gestori/tel1'), { nome: 'io' })));
 

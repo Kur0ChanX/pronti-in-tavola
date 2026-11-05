@@ -1465,6 +1465,7 @@ function avviaDati() {
     if (Dati.preparaVuoto(statoIniziale())) return;
     S = nuovo;
     if (!S.ingExtra) S.ingExtra = {};
+    if (io.gestore) spesaDalServer();
     P.ruolo = io.gestore ? 'monica' : 'cliente';
     P.cliente = io.utente && io.utente.stato === 'approvato' ? io.utente.cliente : null;
     if (UI.vista === 'home' && P.ruolo === 'cliente') UI.vista = 'menu';
