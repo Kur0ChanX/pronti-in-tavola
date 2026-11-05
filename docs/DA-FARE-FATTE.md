@@ -3,6 +3,7 @@
 La storia dei lavori finiti (in `docs/DA-FARE.md` resta solo cosa manca).
 
 - 05/11 · C5: anteprima del link su WhatsApp: tag og (indirizzo, immagine 1200×630 da 139 KB col logo e i decori sardi, testo) in `index.html`; immagine rifatta da `tools/immagine-link.js`; `tools/prova.js` controlla che og:url sia uguale a indirizzoApp (#7).
+- 05/11 · C8: coi dati veri niente striscia «Prova» né «Ricomincia la prova», per Monica e per i clienti (controllato nell'emulatore; il telefono vero resta in C1). «Manda questo piatto a un'amica»: testo del passaparola («Puoi ordinare anche tu da qui»), niente «#da=» vuoto (#7).
 - 05/11 · Finestre (nota del piatto, nome della cliente nuova): se arriva un cambio mentre si scrive, testo e tastiera restano; tolto il vecchio codice dell'«invito personale» (#7).
 - 05/11 · C1: motore dati.js con ascolti, scrittura dei soli campi cambiati, ordini dei clienti con transazione, nome al primo ordine e «ricollega» (28 prove nell'emulatore); regole del passaparola (50 prove).
 - 05/11 · C1: schermate di Monica «Nuovi», «Telefono nuovo», Sì / No con Annulla, interruttore «Accetta clienti nuovi», prezzi di Monica, «inviato» del cliente nuovo (#4).

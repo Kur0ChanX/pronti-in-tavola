@@ -9,19 +9,18 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica | Claude | alta |
+| C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica (anche: niente striscia «Prova» né «Ricomincia», ex C8) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) con un Worker di Cloudflare nell'account dell'app: serve C4. Fatto il 05/11: l'app si apre senza rete (`sw.js`, `manifest.webmanifest`) | Claude | media |
 | C4 | Sito su Cloudflare Pages `pronti-in-tavola.pages.dev` | Claude + Mario | media |
 | C5 | Anteprima del link su WhatsApp col logo: fatti il 05/11 tag e immagine (`media/anteprima-link-1.jpg`, `tools/immagine-link.js`). Manca: provarla su WhatsApp col sito online (C4). 👁 Lo vedi: in WhatsApp, mandando il link a te stesso compare il riquadro col logo · prova: foto della chat | Claude | con C4 |
 | C6 | Fase 2: dosi e spesa, sconti | Claude | dopo |
 | C7 | Fase 3: etichette, immagine del menù, incassi, costo per piatto | Claude | dopo |
-| C8 | Togliere la striscia «Prova · guarda come» nella versione vera (già fatto: striscia e «Ricomincia la prova da capo» spariscono coi dati veri; manca solo il controllo finale) | Claude | con C1 |
 | C11 | Passaparola (Mario 05/11): link unico `#da=` che tutti rigirano, menù visibile, nome unico (`nomi/`), primo ordine «da approvare», Monica approva o ricollega un telefono nuovo, interruttore «Accetta nuovi clienti»; Monica: Google + impronta o PIN. Fatto (05/11): specifica 0.2, regole con 50 prove, schermate nell'app. Manca: provarlo coi telefoni veri (dopo il progetto Firebase di Mario) | Claude | alta |
 | C9 | Kit RVC: nel pacchetto «indipendente» v35 manca `tools/consegne.py` (lo usano hook, skill `consegne` e `test-scorta.py`); qui copiato da RVC e adattato. Da segnalare alla sessione RVC | Mario → RVC | bassa |
 | C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev`; se cambia, cambiare anche og:url e og:image in `index.html` (la prova `tools/prova.js` lo controlla) | Claude + Mario | con C4 |
 
 ## 1. Claude da solo
-- C1, C3, C8
+- C1, C3
 
 ## 2. Claude dopo scelta o ok di Mario
 - C4 (serve l'account Cloudflare), C6, C7

@@ -105,6 +105,8 @@ const server = http.createServer((req, res) => {
     // Cliente nuovo: vede il menù, non l'indirizzo
     const cliente = await apri();
     controlla('cliente nuovo vede il menù', await aspetta(cliente, () => S.piatti.length === 23));
+    controlla('cliente: niente striscia di prova né «Ricomincia»', await cliente.evaluate(() => !document.querySelector('.prova') && !document.querySelector('[data-a="ricomincia"]')));
+    controlla('cliente nuovo: il link da girare non ha «#da=» vuoto', await cliente.evaluate(() => { apriPiatto('tiramisu'); const h = decodeURIComponent(document.querySelector('.foglio a[href*="wa.me"]').href); A.chiudi(); return !/#da=$/.test(h) && !/invito/.test(h); }));
     controlla('cliente nuovo non vede l\'indirizzo', await cliente.evaluate(() => S.impostazioni.ritiro.via === '' && P.ruolo === 'cliente'));
     controlla('il cambio di Monica arriva al cliente', await cliente.evaluate(() => S.piatti.find(p => p.id === 'tiramisu').stagione === 'inverno'));
     controlla('il cliente vede «Sei Monica? Entra»', await cliente.evaluate(() => !!document.querySelector('[data-a="entra-monica"]')));
