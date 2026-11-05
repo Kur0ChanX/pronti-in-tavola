@@ -1,0 +1,14 @@
+{
+"account": "377be6",
+"sessione": "bdeab25dc359",
+"giorno": "2026-11-05",
+"turni": 1,
+"peso": 890184,
+"uscita": 39467,
+"contesto_max": 206819,
+"anomalie": [
+"2 uscite di strumento enormi (257 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"avvio pesante: 206k token dopo il primo turno (tetto 130k)",
+"39k token scritti in un turno"
+]
+}

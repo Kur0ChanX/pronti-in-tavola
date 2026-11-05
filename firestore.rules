@@ -1,0 +1,142 @@
+rules_version = '2';
+// Regole di sicurezza di Pronti in Tavola (docs/SPEC-FIREBASE.md).
+// Gestore = Monica o Mario (documento gestori/<uid>, creato a mano nella console).
+// Invitato = telefono legato a un cliente con un invito ancora attivo.
+// Prove: npm run prova-regole (emulatore, tools/prova-regole.js).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function doc(col, id) { return /databases/$(database)/documents/$(col)/$(id); }
+    function entrato() { return request.auth != null; }
+    function gestore() { return entrato() && exists(doc('gestori', request.auth.uid)); }
+    function telefono() { return get(doc('telefoni', request.auth.uid)).data; }
+    function invitato() {
+      return entrato() && exists(doc('telefoni', request.auth.uid))
+        && get(doc('inviti', telefono().codice)).data.attivo == true
+        && get(doc('inviti', telefono().codice)).data.cliente == telefono().cliente;
+    }
+    function mioCliente() { return telefono().cliente; }
+    function cambiati() { return request.resource.data.diff(resource.data).affectedKeys(); }
+    // L'ordine indicato appartiene a questo cliente e cambia in questa stessa scrittura
+    // (nuovo, o con lo stato cambiato): serve a legare pronti, cuori e contatori a un ordine vero.
+    function ordineMioCheCambia(id) {
+      return existsAfter(doc('ordini', id))
+        && getAfter(doc('ordini', id)).data.cliente == mioCliente()
+        && (!exists(doc('ordini', id))
+            || getAfter(doc('ordini', id)).data.stato != get(doc('ordini', id)).data.stato
+            || getAfter(doc('ordini', id)).data.get('cuori', {}) != get(doc('ordini', id)).data.get('cuori', {}));
+    }
+
+    match /gestori/{uid} {
+      allow read: if (entrato() && request.auth.uid == uid) || gestore();
+      allow write: if gestore();
+    }
+
+    match /piatti/{id} {
+      allow read: if invitato() || gestore();
+      allow write: if gestore();
+      // Cliente: solo i pronti (presi o rimessi) e i cuori (+1 o -1), sempre insieme a un suo ordine.
+      allow update: if invitato()
+        && cambiati().hasOnly(['pronto', 'cuori', 'ultimoOrdine'])
+        && ordineMioCheCambia(request.resource.data.ultimoOrdine)
+        && (!cambiati().hasAny(['cuori'])
+            || (request.resource.data.cuori is int && request.resource.data.cuori - resource.data.cuori <= 1
+                && resource.data.cuori - request.resource.data.cuori <= 1 && request.resource.data.cuori >= 0))
+        && (!cambiati().hasAny(['pronto'])
+            || (resource.data.pronto != null && request.resource.data.pronto != null
+                && request.resource.data.pronto.diff(resource.data.pronto).affectedKeys().hasOnly(['qta'])
+                && request.resource.data.pronto.qta >= 0));
+    }
+
+    match /foto/{id} {
+      allow read: if invitato() || gestore();
+      allow write: if gestore() && request.resource.data.foto is string && request.resource.data.foto.size() < 400000;
+      allow delete: if gestore();
+    }
+
+    match /impostazioni/app {
+      allow read: if invitato() || gestore();
+      allow write: if gestore();
+    }
+    match /impostazioni/monica {
+      allow read, write: if gestore();
+    }
+
+    match /clienti/{id} {
+      allow read: if gestore() || (invitato() && mioCliente() == id);
+      allow write: if gestore();
+    }
+
+    match /inviti/{codice} {
+      allow read, write: if gestore();
+    }
+
+    match /telefoni/{uid} {
+      allow read: if (entrato() && request.auth.uid == uid) || gestore();
+      allow write: if gestore();
+      // Il telefono si lega da solo a un cliente solo con un invito attivo di quel cliente.
+      allow create, update: if entrato() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['cliente', 'codice', 'il'])
+        && request.resource.data.codice is string && request.resource.data.codice.size() >= 20
+        && get(doc('inviti', request.resource.data.codice)).data.attivo == true
+        && get(doc('inviti', request.resource.data.codice)).data.cliente == request.resource.data.cliente;
+    }
+
+    match /richieste/{uid} {
+      allow read: if (entrato() && request.auth.uid == uid) || gestore();
+      allow update, delete: if gestore();
+      allow create, update: if entrato() && request.auth.uid == uid
+        && request.resource.data.keys().hasOnly(['id', 'nome', 'tramite', 'il'])
+        && request.resource.data.id == uid
+        && request.resource.data.nome is string
+        && request.resource.data.nome.size() > 0 && request.resource.data.nome.size() <= 60;
+    }
+
+    match /ordini/{id} {
+      allow read: if gestore() || (invitato() && resource.data.cliente == mioCliente());
+      allow write: if gestore();
+      // Cliente: crea solo un ordine suo, nuovo, non pagato, col numero preso dal contatore.
+      allow create: if invitato()
+        && request.resource.data.id == id
+        && request.resource.data.cliente == mioCliente()
+        && request.resource.data.stato == 'nuovo'
+        && request.resource.data.paga.ricevuto == false
+        && request.resource.data.n == get(doc('contatori', 'ordini')).data.prossimo
+        && getAfter(doc('contatori', 'ordini')).data.prossimo == request.resource.data.n + 1;
+      // Cliente: annulla se nuovo, risponde alla proposta, «Ho pagato», chiede una modifica, «Mi è piaciuto».
+      allow update: if invitato()
+        && resource.data.cliente == mioCliente()
+        && cambiati().hasOnly(['stato', 'entro', 'proposta', 'paga', 'modifica', 'esitoModifica', 'cuori'])
+        && (!cambiati().hasAny(['paga'])
+            || request.resource.data.paga.diff(resource.data.paga).affectedKeys().hasOnly(['dice']))
+        && (!cambiati().hasAny(['esitoModifica']) || request.resource.data.esitoModifica == '')
+        && (!cambiati().hasAny(['stato', 'entro', 'proposta'])
+            || (resource.data.stato == 'nuovo' && request.resource.data.stato == 'annullato'
+                && !cambiati().hasAny(['entro', 'proposta']))
+            || (resource.data.stato == 'proposta' && request.resource.data.stato in ['accettato', 'nuovo']
+                && request.resource.data.proposta == null
+                && (request.resource.data.stato != 'accettato' || request.resource.data.entro == resource.data.proposta)));
+    }
+
+    match /contatori/ordini {
+      allow read: if invitato() || gestore();
+      allow write: if gestore();
+      // Cliente: +1 solo insieme al suo ordine nuovo.
+      allow update: if invitato()
+        && cambiati().hasOnly(['prossimo', 'ultimo'])
+        && request.resource.data.prossimo == resource.data.prossimo + 1
+        && !exists(doc('ordini', request.resource.data.ultimo))
+        && ordineMioCheCambia(request.resource.data.ultimo);
+    }
+
+    match /settimane/{settimana} {
+      allow read: if invitato() || gestore();
+      allow write: if gestore();
+      // Cliente: le teglie cambiano solo insieme a un suo ordine (nuovo o annullato).
+      allow create, update: if invitato()
+        && request.resource.data.keys().hasOnly(['teglie', 'ultimo'])
+        && request.resource.data.teglie is int && request.resource.data.teglie >= 0
+        && ordineMioCheCambia(request.resource.data.ultimo);
+    }
+  }
+}
