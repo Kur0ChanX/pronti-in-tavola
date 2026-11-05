@@ -8,7 +8,6 @@ const CACHE = 'pit-' + VERSIONE_FB;
 const FB = 'https://www.gstatic.com/firebasejs/' + VERSIONE_FB + '/';
 const GUSCIO = ['./', 'style.css', 'data.js', 'dati.js', 'lucchetto.js', 'app.js', 'spesa.js', 'manifest.webmanifest',
   'media/icon-192.png', 'media/icon-512.png', 'media/logo-480.webp', 'media/logo-firma.webp', 'media/logo-medaglione.webp', 'media/logo-titolo.webp',
-  'media/firma-luna-1.png', 'media/firma-luna-2.png', 'media/firma-luna-3.png', 'media/firma-luna-4.png',
   'media/ynoy-firma.png', 'media/ynoy-scritta.png', 'media/ynoy-luna-1.png', 'media/ynoy-luna-2.png', 'media/ynoy-luna-3.png', 'media/ynoy-luna-4.png'];
 const LIBRERIA = ['firebase-app.js', 'firebase-firestore.js', 'firebase-auth.js'].map(f => FB + f);
 const fisso = u => u.startsWith(FB) || /^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(u);

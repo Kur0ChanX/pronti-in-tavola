@@ -143,6 +143,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const w = await page.locator('a', { hasText: 'Manda tutta la spesa su WhatsApp' }).getAttribute('href');
     if (decodeURIComponent(w).includes('Mascarpone') || !decodeURIComponent(w).includes('Carne macinata: 4 × 500 g')) throw new Error('testo WhatsApp (il preso non va, il resto sì): ' + decodeURIComponent(w).slice(0, 160));
     await page.locator('[data-campo="sp.anche"]').uncheck(); await foto('20-spesa-presa');
+    await clic('[data-a="sp-giorni"][data-v="-1"]');   // «Tutti gli ordini» (Mario 05/11)
+    if (!(await page.locator('main p', { hasText: 'tutti quelli che hai' }).count())) throw new Error('«Tutti gli ordini» non scelto');
+    await clic('[data-a="sp-giorni"][data-v="2"]');
   });
   await passo('Monica: la mia lista della spesa', async () => {
     await clic('[data-a="sp-tab"][data-v="mia"]');
