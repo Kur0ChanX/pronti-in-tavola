@@ -6,7 +6,7 @@
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
 - 05/11 · 🟡 Principale 4 · Schermata Clienti di Monica (Telefono nuovo, Nuovi, Sì/No) e primo ordine di una cliente nuova: chiare così? (anteprima versione 13; foto `archivio/foto/clienti-1-nuovi.png`, `archivio/foto/clienti-2-primo-ordine.png`)
 - 05/11 · 🟡 Principale 5 · Lucchetto di Monica: le 3 schermate (Proteggi la tua parte, La tua parte è chiusa, Impostazioni → Lucchetto) chiare così? (foto `archivio/foto/lucchetto-1-metti.png`, `lucchetto-2-chiuso.png`, `lucchetto-3-impostazioni.png`)
-- 05/11 · 🟡 Principale 6 · Dopo un «No» a una cliente nuova: lista «Hai detto di no» con «Ripensaci» in fondo alla schermata Clienti? (1 sì, consiglio · 2 no)
+- 05/11 · 🟡 Principale 8 · «Persone rifiutate» (fatta: un «No» sbagliato si corregge con «Accetta», in fondo a Clienti): chiara così? (foto `archivio/foto/rifiutati-1.png`) · e «1 ok» valeva anche per le 4 foto dell'app più semplice?
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
@@ -21,6 +21,7 @@
 | C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev`; se cambia, cambiare anche og:url e og:image in `index.html` (la prova `tools/prova.js` lo controlla) | Claude + Mario | con C4 |
 | C12 | Regola da portare nel kit (non sono nella fonte): «guida a mano sbagliata → scrivere subito quella giusta in `docs/GUIDE-GIUSTE.md`» (Mario 05/11). Per ora vale solo qui, nel `CLAUDE.md` | Mario → RVC | bassa |
 | C13 | App più semplice per clienti e Monica (Mario 05/11: «valuta tu le scelte e dimmele»): barra del cliente a 2 voci (Menù, I miei ordini), ritiro dentro «I miei ordini», allergie e «Aa» nel menù senza schermata «Io», nota solo nel carrello, pagamento in una riga se c'è un solo modo, Impostazioni di Monica con «Altre impostazioni» chiuse. Fatto e provato il 05/11 (anteprima versione 14, 4 foto mandate); manca l'ok di Mario. 👁 Lo vedi: nell'app online, menù con 2 voci in basso e «Aa» in alto · prova: foto dal telefono di Mario | Claude | alta |
+| C14 | «Persone rifiutate» (Mario 05/11 «1 ok»): fatta il 05/11, in fondo a Clienti; «Accetta» = il Sì di sempre (anche `decidi` accetta un telefono in stato «no»; Annulla lo rimette «no»). Prove: app 23 OK, motore 83 OK. Da guardare: dopo «Accetta» + «Annulla» il telefono del cliente non ha riletto il «No» dal vivo nella prova (riaperta l'app sì): controllare con due telefoni veri. 👁 Lo vedi: nell'app online, dopo un No, in Clienti compare «Persone rifiutate (1)» · prova: foto dal telefono di Mario | Claude | media |
 
 ## 1. Claude da solo
 - C1, C3

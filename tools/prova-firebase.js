@@ -285,8 +285,22 @@ const server = http.createServer((req, res) => {
     await aspetta(monica, id => !!document.querySelector(`[data-a="richiesta-no"][data-id="${id}"]`), uidT);
     await monica.click(`[data-a="richiesta-no"][data-id="${uidT}"]`);
     controlla('No: ordine rifiutato e il telefono resta fuori', await aspetta(terzo, () => Dati.io.utente && Dati.io.utente.stato === 'no' && S.ordini.some(o => o.stato === 'rifiutato')));
+    // c2) «Persone rifiutate»: un No sbagliato si corregge con «Accetta» (un tocco: Sì come sempre), poi di nuovo No
+    await aspetta(monica, id => (S.rifiutati || []).some(r => r.id === id), uidT);
+    await monica.evaluate(() => { vai('clienti'); UI.rifiutati = true; render(); });
+    await aspetta(monica, id => !!document.querySelector(`[data-a="rifiutato-si"][data-id="${id}"]`), uidT);
+    await monica.click(`[data-a="rifiutato-si"][data-id="${uidT}"]`);
+    const uR = await aspetta(monica, id => S.ordini.some(o => o.utente === id && o.stato === 'nuovo' && !!o.cliente), uidT);
+    const uRd = (await admin(d => getDoc(doc(d, 'utenti/' + uidT)))).data();
+    controlla('Accetta dopo un No: diventa cliente e l\'ordine va avanti', uR && uRd.stato === 'approvato' && !!uRd.cliente && !(await monica.evaluate(id => (S.rifiutati || []).some(r => r.id === id), uidT)), uRd);
+    await monica.click('#toast [data-a="annulla"]');
+    controlla('Annulla dopo «Accetta»: torna tra i rifiutati', await aspetta(monica, id => (S.rifiutati || []).some(r => r.id === id) && S.ordini.some(o => o.utente === id && o.stato === 'rifiutato'), uidT)
+      && (await admin(d => getDoc(doc(d, 'utenti/' + uidT)))).data().stato === 'no');
+    await terzo.reload(); await aspetta(terzo, () => S.piatti.length === 23); await terzo.evaluate(RIGA);   // il telefono riparte dal server: deve leggere il No (se un cambio doppio non arrivasse dal vivo, riaprendo l'app si vede giusto)
+    controlla('Accetta e Annulla: riaperta l\'app il telefono legge il No', await aspetta(terzo, () => Dati.io.utente && Dati.io.utente.stato === 'no' && S.ordini.some(o => o.stato === 'rifiutato')));
     await terzo.evaluate(() => { UI.entro = piuGiorni(oggi(), 3); P.carrello = [riga('lasagne-ragu', false, 1)]; return inviaVero(); });
-    controlla('dopo il No legge «Monica per ora non può prendere il tuo ordine»', /non può prendere/.test(await terzo.textContent('#toast')));
+    controlla('dopo il No legge «Monica per ora non può prendere il tuo ordine»', /non può prendere/.test(await terzo.textContent('#toast')),
+      await terzo.evaluate(() => [document.querySelector('#toast').textContent, Dati.io.utente && Dati.io.utente.stato, UI.foglio, P.cliente]));
 
     // d) «Accetta clienti nuovi» spento
     await monica.evaluate(() => { vai('clienti'); const i = document.querySelector('[data-campo="i.nuovi"]'); i.checked = false; i.dispatchEvent(new Event('change', { bubbles: true })); });
