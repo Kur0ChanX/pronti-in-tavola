@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 05/11 · 🟡 Principale 10 · Firma YNOY (C17, video mandato): 1 · resta tutta rosso scuro come ora (consiglio) · 2 · coda proprio nera. Senza risposta resta la 1
 - 05/11 · 🟡 Principale 9 · Cloudflare passo 2: nel menù tocca **Compute** e manda la foto di cosa compare (account «Pronti in Tavola» già creato e scelto)
 - 05/11 · 🟡 Principale 9 · Lista della spesa completa (C16): la usa solo Monica sul suo telefono, con «Manda su WhatsApp» (consiglio, si fa subito) o la condivide con un'altra persona che fa la spesa con lei (serve Firebase, dopo)? Senza risposta vado col consiglio
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
