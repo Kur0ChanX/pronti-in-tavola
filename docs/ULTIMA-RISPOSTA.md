@@ -1,12 +1,12 @@
-# Ultima risposta di Claude (05/11/2026 13:59 ora italiana)
+# Ultima risposta di Claude (05/11/2026 14:36 ora italiana)
 
+Ho capito: quando scopro che una guida era sbagliata, devo scrivere subito quella giusta su GitHub.
 
+✅ **FATTO**
+- Regola salvata in `CLAUDE.md`: prima di ogni guida leggo `docs/GUIDE-GIUSTE.md`. Se una guida si scopre sbagliata, scrivo lì subito quella giusta, come l'hai vista tu.
+- Prima voce già scritta: l'icona **Web** al centro non c'era. Il percorso giusto è **+ Aggiungi app** → **Web**. Nel file ci sono anche la schermata di creazione del progetto e il Cloud Shell.
+- Una riga in `docs/ERRORI.md` (PT E6) e una nella storia delle regole, con le tue parole. Tutto su GitHub.
 
-## Domande a Mario
+───
 
-❓ **DOMANDE**
-1. 🆕 Immagine dell'anteprima del link (prima foto che ti ho mandato)
-📌 Di cosa parliamo: è l'immagine che compare su WhatsApp sotto il link dell'app, quando qualcuno lo gira a un'amica. Va scelta prima che il sito vada online, perché WhatsApp poi se la ricorda.
-1 · Va bene così: logo al centro, «Cucina di casa» e «Ordina e ritira» ai lati (consiglio) · 2 · Da cambiare: dimmi cosa (testi, colori o disposizione) e la rifaccio
-
-Nella voce C5 di Da fare ora c'è anche quando la vedrai: col sito online.
+💡 …
