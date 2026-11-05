@@ -120,14 +120,14 @@ const server = http.createServer((req, res) => {
     controlla('approvato: vede l\'indirizzo senza riaprire l\'app', await aspetta(cliente, () => S.impostazioni.ritiro.via === 'Via di prova 1'));
     controlla('approvato: l\'app sa chi è', await cliente.evaluate(() => P.cliente === 'c1'));
 
-    // Chi scrive in una finestra (la nota del piatto) non perde testo né tastiera quando arriva un cambio
+    // Chi scrive in una finestra (il nome) non perde testo né tastiera quando arriva un cambio
     const oggiC = await cliente.evaluate(() => oggi());
-    await cliente.evaluate(() => apriPiatto('tiramisu'));
-    await cliente.click('#nota-piatto'); await cliente.keyboard.type('senza cacao');
+    await cliente.evaluate(() => { UI.foglio = { tipo: 'nome' }; render(); });
+    await cliente.click('#nome-nuovo'); await cliente.keyboard.type('senza cacao');
     await admin(d => setDoc(doc(d, 'piatti/tiramisu'), { pronto: { formato: 't6', qta: 2, giorno: oggiC } }, { merge: true }));
     await aspetta(cliente, () => (S.piatti.find(p => p.id === 'tiramisu').pronto || {}).qta === 2);
     controlla('finestra: testo e tastiera restano quando arriva un cambio',
-      await cliente.evaluate(() => document.activeElement.id === 'nota-piatto' && document.activeElement.value === 'senza cacao'),
+      await cliente.evaluate(() => document.activeElement.id === 'nome-nuovo' && document.activeElement.value === 'senza cacao'),
       await cliente.evaluate(() => [document.activeElement.id, document.activeElement.value]));
     await cliente.evaluate(() => document.activeElement.blur());
     controlla('finestra: uscita dal campo, la pagina mostra il cambio',
@@ -317,7 +317,7 @@ const server = http.createServer((req, res) => {
     await monica.impronta(true);
     await monica.click('[data-a="lucchetto-apri"]');
     controlla('impronta giusta col pulsante: si apre', await aspetta(monica, () => L.aperto));
-    await monica.evaluate(() => vai('impostazioni'));
+    await monica.evaluate(() => vai('impostazioni')); await monica.click('[data-a="altre-imp"]');
     controlla('dati veri: niente «Ricomincia la prova da capo»', await monica.evaluate(() => !document.querySelector('[data-a="ricomincia"]')));
     await monica.click('[data-a="i-lucchetto"][data-d="1"]');
     await monica.evaluate(() => Dati.confermato());
@@ -351,7 +351,7 @@ const server = http.createServer((req, res) => {
       S.piatti.find(p => p.id === 'tiramisu').stagione = 'primavera'; salva();
     }, oL);
     controlla('senza rete: modifiche in coda con l\'avviso «si salverà appena torna»', await aspetta(monica, () => Dati.inAttesa() > 0 && /si salverà appena torna/.test(document.querySelector('#toast').textContent)));
-    await monica.evaluate(() => vai('impostazioni'));
+    await monica.evaluate(() => vai('impostazioni')); await monica.click('[data-a="altre-imp"]');
     await monica.click('[data-a="lucchetto-esci"]');
     await monica.click('[data-a="lucchetto-esci"]');
     controlla('modifiche in coda: «Esci da questo telefono» aspetta la rete', await aspetta(monica, () => /Non esco ancora/.test(document.querySelector('#toast').textContent) && Dati.io.gestore));
@@ -385,7 +385,7 @@ const server = http.createServer((req, res) => {
     await mario.reload();
     controlla('senza blocco schermo: parte aperta con l\'avviso', await aspetta(mario, () => Dati.io.gestore && L.puo === false && L.aperto
       && /non ha il blocco schermo/.test(document.querySelector('#toast').textContent)));
-    await mario.evaluate(() => vai('impostazioni'));
+    await mario.evaluate(() => vai('impostazioni')); await mario.click('[data-a="altre-imp"]');
     controlla('Impostazioni: «Spento: il telefono non ha il blocco schermo»', /Spento: il telefono non ha il blocco schermo/.test(await mario.textContent('#app')));
     await mario.click('[data-a="lucchetto-esci"]');
     await Promise.all([mario.waitForNavigation(), mario.click('[data-a="lucchetto-esci"]')]);

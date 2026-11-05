@@ -24,8 +24,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('pronti subito visibili', async () => { if (await page.locator('.pronto-carta').count() !== 2) throw new Error('attesi 2 pronti'); });
 
   await passo('allergia frutta a guscio', async () => {
-    await clic('.barra [data-v="io"]'); await clic('[data-a="allergia"][data-v="guscio"]');
-    await clic('.barra [data-v="menu"]');
+    await clic('[data-a="apri-allergie"]'); await clic('[data-a="allergia"][data-v="guscio"]');
+    await clic('.foglio .piede [data-a="chiudi"]');
+    if (!(await page.locator('.allergie-box', { hasText: 'frutta a guscio' }).count())) throw new Error('riquadro allergie non aggiornato');
     const rossi = await page.locator('.eti.rischio').count(); if (rossi < 2) throw new Error('etichette rosse: ' + rossi);
   });
 
@@ -95,7 +96,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.indietro'); await clic('.indietro'); await clic('[data-a="apri-pronti"]');
     await page.locator('.foglio .gruppo', { hasText: 'Tiramisù' }).locator('[data-a="pr-qta"][data-d="1"]').click(); await page.waitForTimeout(200);
     await clic('.foglio .piede [data-a="chiudi"]');
-    await clic('.riquadro >> nth=3'); await page.locator('[data-campo="i.natale.attivo"]').check(); await page.waitForTimeout(300);
+    await clic('.riquadro >> nth=3'); await clic('[data-a="altre-imp"]'); await page.locator('[data-campo="i.natale.attivo"]').check(); await page.waitForTimeout(300);
     await foto('14-impostazioni');
   });
   await passo('cliente: menù di Natale e tiramisù pronto', async () => {
@@ -104,7 +105,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.pronto-carta', { hasText: 'Tiramisù' }).count())) throw new Error('tiramisù pronto assente');
   });
   await passo('ritiro: link Maps', async () => {
-    await clic('.barra [data-v="ritiro"]'); await foto('16-ritiro');
+    await clic('.barra [data-v="ordini"]'); await page.locator('.ritiro-scheda').scrollIntoViewIfNeeded(); await foto('16-ritiro');
     const h = await page.locator('a', { hasText: 'Apri in Maps' }).getAttribute('href'); if (!h.includes('Via%20Libano%2053')) throw new Error(h);
   });
   await passo('annulla dopo un cambio', async () => {
@@ -127,6 +128,18 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.indietro'); await clic('.riquadro >> nth=3'); await page.locator('[data-campo="p.grande"]').check(); await page.waitForTimeout(200);
     if (!(await page.evaluate(() => document.documentElement.classList.contains('grande')))) throw new Error('niente classe');
     await page.locator('[data-campo="p.grande"]').uncheck();
+  });
+  await passo('cliente semplice: 2 voci in basso, «Aa», una sola nota, pagamento in una riga', async () => {
+    await clic('[data-a="ruolo"][data-v="cliente"]'); await clic('.barra [data-v="menu"]');
+    const voci = await page.locator('.barra button').count(); if (voci !== 2) throw new Error('voci in basso: ' + voci);
+    await clic('.testata [data-a="testo-grande"]');
+    if (!(await page.evaluate(() => document.documentElement.classList.contains('grande')))) throw new Error('«Aa» non ingrandisce');
+    await clic('.testata [data-a="testo-grande"]');
+    await page.locator('.voce').first().click(); await page.waitForTimeout(300);
+    if (await page.locator('#nota-piatto').count()) throw new Error('nota nel piatto ancora presente');
+    await clic('[data-a="aggiungi"]'); await clic('.testata [data-v="carrello"]');
+    if (!(await page.locator('.paga-riga').count())) throw new Error('pagamento non in una riga');
+    if ((await page.locator('textarea').count()) !== 1) throw new Error('caselle di testo nel carrello: ' + await page.locator('textarea').count());
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
