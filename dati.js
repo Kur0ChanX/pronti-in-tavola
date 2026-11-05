@@ -58,17 +58,19 @@ const Dati = (() => {
     imp.mario = mon.mario || '';
     const utenti = tutti('utenti');
     const nomeDi = id => (tutti('clienti').find(c => c.id === id) || {}).nome || (id === 'monica' ? 'Monica' : '');
-    return {
+    // Copia profonda: cambiare S non deve cambiare la copia del server, se no non si vede la differenza.
+    const S = copia({
       versione: 1, motore: 'firebase', soloContanti, ingExtra, impostazioni: imp,
-      piatti: tutti('piatti').map(p => Object.assign({}, p, { foto: (srv['foto/' + p.id] || {}).foto || null }))
-        .sort((a, b) => (a.ordine || 0) - (b.ordine || 0)),
+      piatti: tutti('piatti').sort((a, b) => (a.ordine || 0) - (b.ordine || 0)),
       clienti: tutti('clienti'),
       ordini: tutti('ordini').sort((a, b) => (a.n || 0) - (b.n || 0)),
       prossimoNumero: (srv['contatori/ordini'] || {}).prossimo || 1,
       utenti,
       richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
         .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato }))
-    };
+    });
+    S.piatti.forEach(p => { p.foto = (srv['foto/' + p.id] || {}).foto || null; });   // le foto sono testo: niente copia
+    return S;
   }
 
   /* ---------- copia sul telefono: il menù si vede subito, anche senza rete ---------- */
@@ -81,6 +83,8 @@ const Dati = (() => {
   let tCambio = null;
   function avvisaCambio() {
     clearTimeout(tCambio);
+    // Il cliente aspetta le impostazioni (senza, l'app non sa disegnarsi); Monica no: col database vuoto lo prepara lei.
+    if (!srv['impostazioni/app'] && !(io.gestore && io.pronto)) return;
     tCambio = setTimeout(() => { const S = stato(); if (io.pronto) salvaCopia(S); alCambio(S, Object.assign({}, io)); }, 30);
   }
 
@@ -131,7 +135,7 @@ const Dati = (() => {
     io.utente = null;
     if (!io.gestore) {
       // Il documento utenti/ di questo telefono: quando Monica approva, si riaprono gli ascolti.
-      let prima = '';
+      let prima = null;
       ascoltoUtente && ascoltoUtente();
       ascoltoUtente = onSnapshot(doc(db, 'utenti', user.uid), snap => {
         io.utente = snap.exists() ? snap.data() : null;
