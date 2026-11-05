@@ -156,13 +156,17 @@ function statoIniziale() {
       { id: 'c2', nome: 'Paolo Sanna', da: giornoDa(-40) },
       { id: 'c3', nome: 'Anna Piras', da: giornoDa(-20) }
     ],
-    richieste: [{ id: 'r1', nome: 'Laura Deiana', tramite: 'Giulia Rossi', il: giornoDa(0) }],
+    richieste: [
+      { id: 'r1', nome: 'Laura Deiana', tramite: 'Giulia Rossi', il: giornoDa(0), stato: 'nuovo', primo: 'o4', cliente: null },
+      { id: 'r2', nome: 'Paolo Sanna', tramite: '', il: giornoDa(0), stato: 'ricollega', primo: null, cliente: 'c2' }
+    ],
     ordini: [
       { id: 'o1', n: 1, cliente: 'c1', righe: [riga('lasagne-ragu', 't6', 1), riga('papassini', 'kg', 0.5)], entro: giornoDa(-12), stato: 'ritirato', paga: { metodo: 'contanti', dice: false, ricevuto: true }, nota: '', creato: giornoDa(-14), cuori: {} },
       { id: 'o2', n: 2, cliente: 'c2', righe: [riga('lasagne-ragu', 't8', 1), riga('tiramisu', 't6', 1, { note: ['Poco cacao sopra'] })], entro: giornoDa(2), stato: 'accettato', paga: { metodo: 'contanti', dice: false, ricevuto: false }, nota: 'Passo dopo le 18', creato: giornoDa(-1), cuori: {} },
-      { id: 'o3', n: 3, cliente: 'c3', righe: [riga('polpette-carne', 'kg', 1.5, { note: ['Poco sale'] }), riga('parmigiana', 't6', 1)], entro: giornoDa(1), stato: 'nuovo', paga: { metodo: 'bonifico', dice: false, ricevuto: false }, nota: '', creato: giornoDa(0), cuori: {} }
+      { id: 'o3', n: 3, cliente: 'c3', righe: [riga('polpette-carne', 'kg', 1.5, { note: ['Poco sale'] }), riga('parmigiana', 't6', 1)], entro: giornoDa(1), stato: 'nuovo', paga: { metodo: 'bonifico', dice: false, ricevuto: false }, nota: '', creato: giornoDa(0), cuori: {} },
+      { id: 'o4', n: 4, cliente: null, utente: 'r1', righe: [riga('parmigiana', 't6', 1)], entro: giornoDa(2), stato: 'daApprovare', pronto: false, paga: { metodo: 'contanti', dice: false, ricevuto: false }, nota: '', creato: giornoDa(0), cuori: {} }
     ],
-    prossimoNumero: 4,
+    prossimoNumero: 5,
     impostazioni: {
       anticipo: 1,
       pausa: { attiva: false, fino: giornoDa(7) },
