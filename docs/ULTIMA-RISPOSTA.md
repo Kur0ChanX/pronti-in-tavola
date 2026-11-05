@@ -1,15 +1,21 @@
-# Ultima risposta di Claude (05/11/2026 21:13 ora italiana)
+# Ultima risposta di Claude (05/11/2026 22:13 ora italiana)
 
-Ho capito: il «carrello» era la lista della spesa, che calcola cosa comprare dagli ordini. Era già nei piani: dovevo collegarla da solo, scusa. Ho scritto l'errore nel diario.
+Ho capito: vado avanti da solo, ripartendo dai «Prossimi passi».
 
 ───
-✅ FATTO
-- La lista della spesa è nell'app di prova: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH (versione 15).
-- Dove si trova: passa a Monica → riquadro «Da preparare» → **Lista della spesa**.
-- Cosa fa: somma gli ingredienti degli ordini accettati (fino a oggi, domani, 3 giorni o una settimana). Toglie quello che Monica ha già in casa e arrotonda alle confezioni (es. «3 × 250 g»). Divide per reparto, ha le …
+✅ **FATTO**
+- **Etichette per le vaschette** (ultima parte della Fase 3, C7). Si aprono da Ordini → Da preparare → «Etichette per le vaschette».
+- Ogni etichetta ha nome, piatto, quantità, note e allergeni in rosso. Ne esce una per ogni teglia. Si sceglie il giorno.
+- Il foglio è un A4 con 10 etichette da 105 × 57 mm. Si stampa su fogli adesivi, oppure su carta normale e si ritaglia.
+- Nell'anteprima ho tolto il pulsante «Scarica» del menù: lì dentro non funzionava. Resta «tieni premuto sull'immagine».
+- Prova: 30 …
 
 ## Domande a Mario
 
-❓ DOMANDE
-📌 Di cosa parliamo: la lista della spesa di Monica (foto qui sopra). La usa prima di andare a comprare.
-1. Si capisce così? 1 · sì, va bene · 2 · cambierei qualcosa: scrivimi cosa in una riga.
+❓ **DOMANDE**
+1. Monica ha una stampante? E che fogli usa? 1 · fogli adesivi A4 da 10 (consiglio) · 2 · carta normale da ritagliare · 3 · non ha la stampante.
+
+⚠️ **Aspettano te** (dalla sessione prima):
+- Firma YNOY (il video è qui sopra): 1 · resta tutta rosso scuro (consiglio) · 2 · la coda proprio nera.
+- Cloudflare passo 2: nel menù tocca **Compute** e mandami la foto.
+- Lista della spesa: la usa solo Monica e la manda con «Manda su WhatsApp» (consiglio)?
