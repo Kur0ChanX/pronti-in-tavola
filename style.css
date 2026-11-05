@@ -502,6 +502,10 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
 .spesa-riga .cosa small { display: block; color: var(--tenue); font-weight: 600; }
 .spesa-riga .quanto { flex: none; font-family: var(--display); font-size: 1.05rem; color: var(--vino); text-align: right; }
 .spesa-riga.presa .cosa b, .spesa-riga.presa .quanto { text-decoration: line-through; opacity: .55; }
+.schede-spesa { display: grid; grid-template-columns: 1fr 1fr; }
+.schede-spesa .scelta { min-height: 60px; line-height: 1.2; }
+#ing-spesa-nuova { flex: 1; min-width: 0; }
+.suggerimenti button svg { width: 16px; height: 16px; vertical-align: -3px; margin-right: 2px; }
 .spesa-ordine { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px dashed var(--riga); }
 .spesa-ordine small { color: var(--tenue); }
 details.scheda summary { cursor: pointer; min-height: 32px; }
