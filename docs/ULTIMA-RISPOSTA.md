@@ -1,15 +1,9 @@
-# Ultima risposta di Claude (05/11/2026 21:13 ora italiana)
+# Ultima risposta di Claude (05/11/2026 21:33 ora italiana)
 
-Ho capito: il «carrello» era la lista della spesa, che calcola cosa comprare dagli ordini. Era già nei piani: dovevo collegarla da solo, scusa. Ho scritto l'errore nel diario.
+Ho capito: il messaggio che avevi scritto nella chat vecchia mi è arrivato. Il cliente nuovo scrive nome e cognome alla prima apertura, in una schermata di benvenuto. Poi l'app lo saluta con il suo nome.
 
 ───
 ✅ FATTO
-- La lista della spesa è nell'app di prova: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH (versione 15).
-- Dove si trova: passa a Monica → riquadro «Da preparare» → **Lista della spesa**.
-- Cosa fa: somma gli ingredienti degli ordini accettati (fino a oggi, domani, 3 giorni o una settimana). Toglie quello che Monica ha già in casa e arrotonda alle confezioni (es. «3 × 250 g»). Divide per reparto, ha le …
-
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: la lista della spesa di Monica (foto qui sopra). La usa prima di andare a comprare.
-1. Si capisce così? 1 · sì, va bene · 2 · cambierei qualcosa: scrivimi cosa in una riga.
+- **Benvenuto (C18)**: alla prima apertura il cliente vede il logo, «Benvenuti da Monica!» e due campi, Nome e Cognome. Senza nome e cognome il menù non si apre.
+- Il nome resta legato al telefono del cliente. Dopo, in alto compare «Ciao Laura!».
+- Se il nome è già usato, l'app chiede: «Sei tu con un telefono nuovo?». Se Monica non prende clienti nuovi, il cliente può solo …
