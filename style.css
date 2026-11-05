@@ -69,7 +69,7 @@ body.con-barra #app { padding-bottom: 72px; }
   background: var(--foglio); border-top: 1px solid var(--riga);
   padding-bottom: env(safe-area-inset-bottom);
 }
-.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(4, 1fr); }
+.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(2, 1fr); }
 .barra button {
   border: 0; background: none; padding: 8px 4px 10px; min-height: 62px;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
@@ -101,6 +101,13 @@ body.con-barra #app { padding-bottom: 72px; }
 .icona { border: 0; background: none; width: 44px; height: 44px; display: grid; place-items: center; color: var(--vino); border-radius: 50%; position: relative; }
 .icona svg { width: 26px; height: 26px; }
 .icona .pallino { top: 2px; left: auto; right: -2px; }
+.icona.aa { font-family: var(--display); font-weight: 800; font-size: 1.15rem; border: 1.5px solid var(--riga); }
+.icona.aa[aria-pressed="true"] { background: var(--vino); color: #FBF4E8; border-color: var(--vino); }
+.allergie-box { width: 100%; text-align: left; border: 1.5px dashed #D9B98A; background: #FFFBF2; color: inherit; border-radius: var(--r); padding: 12px 14px; display: flex; gap: 12px; align-items: center; font: inherit; cursor: pointer; }
+.allergie-box svg { width: 26px; height: 26px; flex: none; color: var(--allarme); }
+.allergie-box u { color: var(--vino); font-weight: 800; }
+.paga-riga { display: flex; gap: 10px; align-items: center; margin: 0; font-weight: 700; }
+.paga-riga svg { width: 22px; height: 22px; flex: none; color: var(--vino); }
 
 /* blocchi */
 .scheda { background: var(--foglio); border: 1px solid var(--riga); border-radius: var(--r); padding: 16px; box-shadow: var(--ombra); display: flex; flex-direction: column; gap: 12px; }
