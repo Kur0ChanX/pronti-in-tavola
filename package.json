@@ -3,7 +3,8 @@
   "private": true,
   "description": "Strumenti per le prove (l'app non usa npm)",
   "scripts": {
-    "prova-regole": "firebase emulators:exec --only firestore --project demo-pronti \"node tools/prova-regole.js\""
+    "prova-regole": "firebase emulators:exec --only firestore --project demo-pronti \"node tools/prova-regole.js\"",
+    "prova-firebase": "firebase emulators:exec --only firestore,auth --project demo-pronti \"node tools/prova-firebase.js\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "6.0.0",
