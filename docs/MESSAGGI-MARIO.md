@@ -89,3 +89,6 @@ in che senso lista ho detto di no? sei sicuro?
 
 ## 2026-11-05 20:25 · 01QTFEqSmQas
 non usa altri limiti se lo metto cloudflare in mario.miscera@gmail.com?
+
+## 2026-11-05 20:33 · 01QTFEqSy2LM
+pronti-in-tavola.pages.dev questo
