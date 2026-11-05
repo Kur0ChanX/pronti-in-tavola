@@ -1,31 +1,31 @@
 # Passaggio di consegne
 
-Sessione attuale: #6 (dopo la #5 `session_01QTFEqUTD1rwfGVfHvjoy5s`, chiusa alla soglia 05/11 13:07; la apre la #5 con `create_session` (catena 5 di 8)).
+Sessione attuale: #7 (dopo la #6 `session_01QTFEqQc4xdxWWJgwR1fXZB`, chiusa alla soglia 05/11 13:40; la apre la #6 con `create_session` (catena 6 di 8)).
 
 - **Già deciso da Mario (non richiedere):** cos'è l'app e chi la usa (Monica cucina a Olbia, le amiche ordinano dal link WhatsApp, ritiro a casa sua); app web sulla schermata Home, gratis; dati online gratuiti con Firebase; solo contanti; Kit RVC installato; decori sardi delicati come sono (05/11, `docs/SPECIFICA.md` «Aspetto»). In `docs/SPECIFICA.md`: **passaparola** con link unico che tutti rigirano, menù visibile, il nuovo scrive il SUO nome (diverso da quelli usati), Monica approva al primo ordine, indirizzo e ordini solo agli approvati; **Monica** entra con Google una volta + impronta o PIN a ogni apertura; **indipendenza**: Firebase = progetto nuovo sull'account Google di Mario, Cloudflare = account nuovo solo dell'app, mai condiviso neanche all'1% (niente account Google nuovi).
-- **Da non rifare:** domande già spiegate (PT E4); lucchetto con impronta o PIN (fatto dalla #5, `lucchetto.js`); rischio «scrivi() riscrive cambi non ancora arrivati» (corretto dalla #5); ricerca sui piani Firebase (fonti in `docs/SPEC-FIREBASE.md`); specifica 0.2, regole e motore dati col passaparola (fatti il 05/11, sotto); foto dei decori (Mario ha risposto); schermate di Monica «Nuovi», «Telefono nuovo», Sì/No con Annulla, interruttore e prezzi (fatte il 05/11 dalla #4, sotto).
+- **Da non rifare:** domande già spiegate (PT E4); coda delle modifiche di Monica senza rete, foto C2 e parte «senza rete» di C3 (fatte dalla #6, sotto); lucchetto con impronta o PIN (fatto dalla #5, `lucchetto.js`); rischio «scrivi() riscrive cambi non ancora arrivati» (corretto dalla #5); ricerca sui piani Firebase (fonti in `docs/SPEC-FIREBASE.md`); specifica 0.2, regole e motore dati col passaparola (fatti il 05/11, sotto); foto dei decori (Mario ha risposto); schermate di Monica «Nuovi», «Telefono nuovo», Sì/No con Annulla, interruttore e prezzi (fatte il 05/11 dalla #4, sotto).
 - **Cosa preme a Mario adesso:** avere l'app vera con i dati condivisi e il passaparola, così gli ordini delle amiche arrivano davvero a Monica; senza toccare i limiti delle sue altre app.
 
-## Stato (05/11 13:07 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v0.7 (di prova). Scorta `scorta-principale-20261105-01QTFEqUTD1r`: superata dal commit 17fa560 (stesso lavoro), da NON unire.
+## Stato (05/11 13:40 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v0.7 (di prova). Scorta `scorta-principale-20261105-01QTFEqQc4xd`: delle 12:39 UTC, superata dai commit dopo (tutto il lavoro è nel ramo), da NON unire.
 - App: verifica `python3 -I tools/anteprima.py && node tools/prova.js` → 20 «OK» e «Nessun errore nella pagina».
-- Motore e regole: `npm install`, poi `npm run prova-firebase` → «58 OK, 0 NO»; `npm run prova-regole` → «50 OK, 0 NO» (regole non toccate).
-- Anteprima versione 13: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH, NON ripubblicata dalla #5 (nella prova non cambia niente: il lucchetto c'è solo coi dati veri). Ripubblicarla alla prossima modifica visibile (`python3 -I tools/anteprima.py` → `dist/anteprima.html`).
+- Motore e regole: `npm install`, poi `npm run prova-firebase` → «76 OK, 0 NO» (con `VEDI=1` stampa anche gli avvisi delle pagine); `npm run prova-regole` → «50 OK, 0 NO» (regole non toccate).
+- Anteprima versione 13: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH, NON ripubblicata dalla #5 né dalla #6 (nella prova non cambia niente: lucchetto, coda senza rete, foto e service worker ci sono solo coi dati veri). Ripubblicarla alla prossima modifica visibile (`python3 -I tools/anteprima.py` → `dist/anteprima.html`).
 - Kit RVC 35.0. Verifica: `for t in tools/test-*.py; do python3 -I $t; done` → tutti verdi.
 
 ## Riferimenti
-- Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C2, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
+- Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C3, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#5)
-- Avvio: titolo verde con ❔; sveglia «Preferenze a fine giornata» della #4 cancellata e rifatta mia (`trig_01AzhBDxYkAhjicx8qY2yL7H`, 21:30). «Punto (ogni 5 ore)» è di un'altra chat: non toccata.
-- **Lucchetto** (`lucchetto.js`, WebAuthn senza server): appena entrata con Google (entrata «fresca» = `lastSignInTime` < 5 min) schermata «Proteggi la tua parte» → «Metti l'impronta»; a ogni apertura «La tua parte è chiusa», l'impronta si chiede da sola finita l'apertura animata (Chrome e Safari lo permettono senza tocco: issue W3C webauthn #1293, chiusa 02/04/2025); si richiude dopo N minuti fuori dall'app (`impostazioni.lucchetto`, passi 1-2-5-10-15-30-60, default 5); chiave persa → «Non funziona? Entra di nuovo con Google» (`Dati.rientra`, reauthenticateWithPopup, solo stesso account) → impronta nuova; senza chiave e senza entrata fresca → «Entra di nuovo»; telefono senza blocco schermo → parte aperta con avviso; Impostazioni → Lucchetto con «Esci da questo telefono» (due tocchi: `Dati.esci` chiude ascolti, terminate + clearIndexedDbPersistence, toglie `pit-copia-v1`, signOut; poi ricarica). Finché è chiusa la pagina non ha dati (anche la copia locale ha i clienti: per questo chiuso di partenza con `P.ruolo === 'monica'`).
-- **Difetto vecchio corretto** (`dati.js`): riaperta l'app con la copia uguale al server, `io.pronto` non diventava mai vero (senza `includeMetadataChanges` il passaggio cache → server non arriva) e Monica non salvava, con «Salvato» a schermo. Ora gli ascolti hanno `includeMetadataChanges` e avvisano solo con dati cambiati o al primo «pronto»; senza collegamento: toast «Non salvato: l'app non è ancora collegata» e niente «Salvato».
-- **scrivi() di Monica** confronta con `base` (la copia da cui S è nato), non con l'ultima arrivata: un cambio del server nei 30 ms prima del ridisegno non si riscrive e un documento nuovo non si cancella.
-- Coi dati veri spariscono «Ricomincia la prova da capo» (cancellava ordini e clienti) e il suo comando.
-- Prove: 15 controlli nuovi in `tools/prova-firebase.js` (autenticatore virtuale CDP; Monica su `localhost` perché WebAuthn non accetta l'IP). Foto: `archivio/foto/lucchetto-1-metti.png`, `-2-chiuso.png`, `-3-impostazioni.png` (mandate a Mario con le 2 della schermata Clienti).
-- File toccati: `lucchetto.js` (nuovo), `app.js`, `dati.js`, `index.html`, `style.css`, `tools/anteprima.py`, `tools/prova-firebase.js`, `archivio/foto/lucchetto-*.png`, `docs/SPEC-FIREBASE.md`, `docs/DA-FARE.md`, `docs/DA-FARE-FATTE.md`, `docs/CHI-FA-COSA.md`, `docs/PASSAGGIO-CONSEGNE.md`, `docs/PROSSIMA-SESSIONE.md`.
-- Controllo Da fare: 0 voci aggiunte (nessun messaggio di Mario in questa sessione).
-- Spreco di token segnalato dall'hook: uscita di 355 KB (risultati della ricerca web) e avvio pesante; da fare: ricerche con domande strette, uscite lunghe in un file.
+## Sessione appena chiusa (#6)
+- Avvio: titolo verde con ❔; sveglia «Preferenze a fine giornata» della #5 cancellata e rifatta mia (`trig_017v4uLiqHwJYdkLYiZA8AdK`, 21:30 ora italiana). «Punto (ogni 5 ore)» è di un'altra chat: non toccata. Rimandate a Mario le 5 foto (Clienti 2, lucchetto 3) e ricordate le 4 righe.
+- **Monica senza rete all'apertura** (`dati.js`): prima le modifiche si perdevano («Non salvato: l'app non è ancora collegata»), contro la specifica. Ora si scrive anche con la base dalla copia di Firestore: le scritture restano in coda (anche ad app chiusa) e partono quando torna la rete; avviso «Senza rete: si salverà appena torna» anche quando il telefono crede di avere rete ma Firestore non risponde. Gestore riconosciuto anche senza rete; «Esci da questo telefono» aspetta la coda; `salvatoOk` usa `Dati.haDati()`.
+- **Pronti e teglie come differenza** (`increment`): i pronti dello stesso giorno e formato e le teglie della settimana si scrivono come +1/−2, così quelli presi o ordinati intanto dai clienti restano. Dopo ogni scrittura la base si aggiorna (`dopo`): due salvataggi di fila non mandano due volte la stessa differenza (difetto trovato dalla prova).
+- **C2 foto**: non si ascoltano più; il piatto ha `fotoV` (versione) e il telefono scarica la foto solo quando cambia, poi dalla copia di Firestore (`getDocFromCache`). Motivo: dopo 30 minuti fuori Firestore rimanda tutto e oltre 10 GiB al mese il piano gratis si spegne fino a fine mese (fonti in `docs/SPEC-FIREBASE.md`, riga «Foto»). Tetto 300 KB in `caricaFoto` (qualità fino a 0,5, poi foto più piccola). La copia veloce (localStorage) non tiene le foto (7 MB non ci starebbero).
+- **Difetto trovato**: il nome scritto dalla cliente nuova si perdeva se la pagina si ridisegnava (una foto in arrivo); ora resta in `UI.foglio.scritto`.
+- **C3 senza rete**: `sw.js` (pagina e file: prima la rete, dopo 3 s o senza rete la copia; libreria Firebase 13.2.0 e caratteri dalla copia) e `manifest.webmanifest`; nelle prove i service worker sono spenti, tranne la prova (h). Le notifiche vere restano: servono il Worker e l'account Cloudflare (C4).
+- Prove: da 58 a 76 controlli in `tools/prova-firebase.js` (g: Monica senza rete; foto; h: app senza rete). App: 20 OK.
+- File toccati: `dati.js`, `app.js`, `index.html`, `sw.js` (nuovo), `manifest.webmanifest` (nuovo), `tools/prova-firebase.js`, `docs/SPEC-FIREBASE.md`, `docs/DA-FARE.md`, `docs/DA-FARE-FATTE.md`, `docs/CHI-FA-COSA.md`, `docs/PASSAGGIO-CONSEGNE.md`, `docs/PROSSIMA-SESSIONE.md`.
+- Controllo Da fare: 0 voci aggiunte (nessun messaggio di Mario in questa sessione). 1 riga nuova in «## 0. Aspetta Mario» (Principale 6: lista «Hai detto di no»).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Costruire l'app da zero: l'app esiste già (consegna in `archivio/`).
@@ -45,14 +45,19 @@ Sessione attuale: #6 (dopo la #5 `session_01QTFEqUTD1rwfGVfHvjoy5s`, chiusa alla
 - Un PIN dell'app come riserva per i telefoni senza blocco schermo: un'altra cosa da ricordare per Monica; un telefono senza blocco è già aperto a tutti.
 - Mettere la chiave senza Google quando manca (dati del sito cancellati a metà): chiunque col telefono potrebbe metterne una sua; serve l'entrata fresca o «Entra di nuovo con Google».
 - Ascolti con `includeMetadataChanges` che ridisegnano a ogni cambio di metadati: ridisegni inutili a ogni salvataggio; si avvisa solo con dati cambiati o al primo «pronto».
+- Bloccare le scritture di Monica finché non arriva il server (scelta della #5): le modifiche fatte senza rete si perdevano; la coda di Firestore le tiene anche ad app chiusa.
+- Pronti e teglie scritti come numero: Monica con la copia vecchia rimetteva i pronti già presi dai clienti; scelta la differenza (`increment`), con la base aggiornata dopo ogni scrittura.
+- Ascoltare la raccolta `foto/`: dopo 30 minuti fuori Firestore rimanda tutte le foto (fino a 7 MB per apertura) e i 10 GiB gratis del mese possono finire; scelta la versione nel piatto.
+- Tenere le foto nella copia veloce (localStorage): 23 foto non ci stanno (limite ~5 MB) e la copia non si salverebbe più.
+- Service worker con «prima la copia» per i file dell'app: le novità arriverebbero solo alla seconda apertura; scelta «prima la rete», copia dopo 3 secondi.
 
 ## Prossimi passi
-1. Ricordare a Mario le 4 righe di «## 0. Aspetta Mario» (Firebase, nome al primo ordine, schermata Clienti, lucchetto) e rimandare le 5 foto delle righe «Principale 4» e «Principale 5» (due invii: 3 + 2).
-2. Idea da chiedere a Mario: dopo un «No» Monica non può ripensarci oltre i 10 secondi; una lista «Hai detto di no» con «Ripensaci».
-3. ✅ (#6) Monica senza rete all'apertura: modifiche in coda, pronti e teglie come differenza.
+1. Ricordare a Mario le 5 righe di «## 0. Aspetta Mario» (Firebase, nome al primo ordine, schermata Clienti, lucchetto, lista «Hai detto di no») e rimandare le 5 foto delle righe «Principale 4» e «Principale 5» (due invii: 2 + 3).
+2. Sveglia delle 21:30 (`trig_017v4uLiqHwJYdkLYiZA8AdK`, mia): cancellarla e rifarla tua con `send_later` (Preferenze v27 contro kit v35 → testo di `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola, nomi dei pulsanti di claude.ai controllati sul sito).
+3. Se Mario risponde «1» alla lista «Hai detto di no»: in fondo alla schermata Clienti, chiusa finché non si tocca; «Ripensaci» = transazione inversa del No (utenti/ → «nuovo», ordine rifiutato → «daApprovare»), con prova nell'emulatore.
 4. Quando Mario scrive «Firebase»: passi a mano uno alla volta (progetto nuovo sul SUO account Google; nomi della console controllati sulla guida ufficiale). Poi la configurazione in `dati.js`, la prima entrata di Monica e la prova del lucchetto sul telefono vero.
-5. ✅ (#6) C2 foto. Poi C3 (notifiche e senza rete).
-6. Sveglia delle 21:30 (`trig_01AzhBDxYkAhjicx8qY2yL7H`, mia): cancellarla e rifarla tua con `send_later` (Preferenze v27 contro kit v35 → testo di `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola).
+5. Lavori da solo intanto: C5 (anteprima del link su WhatsApp col logo, og:image) e C8 (controllo finale della versione vera). Occhio critico ancora aperto: il campo «invito-nome» di Monica perde il testo se la pagina si ridisegna? (stesso difetto del nome della cliente, da guardare).
+6. C3 notifiche e C4 sito: servono l'account Cloudflare nuovo dell'app (Mario); chiederlo dopo Firebase.
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
