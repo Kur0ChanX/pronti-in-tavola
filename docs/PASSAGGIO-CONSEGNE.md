@@ -49,9 +49,9 @@ Sessione attuale: #6 (dopo la #5 `session_01QTFEqUTD1rwfGVfHvjoy5s`, chiusa alla
 ## Prossimi passi
 1. Ricordare a Mario le 4 righe di «## 0. Aspetta Mario» (Firebase, nome al primo ordine, schermata Clienti, lucchetto) e rimandare le 5 foto delle righe «Principale 4» e «Principale 5» (due invii: 3 + 2).
 2. Idea da chiedere a Mario: dopo un «No» Monica non può ripensarci oltre i 10 secondi; una lista «Hai detto di no» con «Ripensaci».
-3. Occhio critico ancora aperto: l'app aperta SENZA rete da Monica mostra «Non salvato: l'app non è ancora collegata» (onesto, ma la modifica si perde al primo ridisegno). Valutare una coda locale delle modifiche fatte prima del primo collegamento.
+3. ✅ (#6) Monica senza rete all'apertura: modifiche in coda, pronti e teglie come differenza.
 4. Quando Mario scrive «Firebase»: passi a mano uno alla volta (progetto nuovo sul SUO account Google; nomi della console controllati sulla guida ufficiale). Poi la configurazione in `dati.js`, la prima entrata di Monica e la prova del lucchetto sul telefono vero.
-5. C2 (foto dentro Firestore, 900 px, JPEG 0,8, tetto 300 KB) e C3 (notifiche e senza rete) dopo, in quest'ordine.
+5. ✅ (#6) C2 foto. Poi C3 (notifiche e senza rete).
 6. Sveglia delle 21:30 (`trig_01AzhBDxYkAhjicx8qY2yL7H`, mia): cancellarla e rifarla tua con `send_later` (Preferenze v27 contro kit v35 → testo di `docs/kit-progetto/PREFERENZE-CHAT.txt` in un riquadro, una volta sola).
 
 ## Domande aperte

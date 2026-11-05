@@ -11,7 +11,7 @@ Fonti controllate oggi (pagine ufficiali aggiornate fra il 20/10 e il 03/11/2026
 | Tema | Scelta | Perché |
 |---|---|---|
 | Piano | **Spark**, gratis, senza carta | Già deciso «gratis». Se si superano i limiti il servizio si ferma, non arriva un conto |
-| Foto | Dentro Firestore, una per documento, 900 px JPEG 0,8 (tetto 300 KB) | Storage vuole la carta |
+| Foto | Dentro Firestore, una per documento, 900 px JPEG 0,8 (tetto 300 KB: qualità più bassa, poi foto più piccola). Non si ascoltano: il piatto ha la versione (`fotoV`) e il telefono la scarica solo quando cambia, poi la prende dalla sua copia; la copia veloce (localStorage) non tiene le foto | Storage vuole la carta; dopo 30 minuti fuori Firestore rimanda tutto (https://firebase.google.com/docs/firestore/pricing, 03/11/2026) e oltre i 10 GiB del mese il piano gratis spegne Firestore fino a fine mese (https://firebase.google.com/docs/projects/billing/firebase-pricing-plans, 20/10/2026) |
 | Indipendenza | Progetto Firebase e account Cloudflare solo dell'app (Mario 05/11) | I limiti gratuiti di Firebase valgono per progetto, quelli dei Worker di Cloudflare per account: così non si toccano le altre app |
 | Notifiche (C3) | Un Worker gratuito di Cloudflare, nell'account dell'app, manda la notifica a Monica | Le Functions vogliono la carta |
 | Cliente | **Passaparola**: un link unico che tutti possono rigirare (`#da=<chi l'ha girato>`). Ogni telefono entra da solo con l'accesso anonimo (invisibile). Scrive il suo nome una volta, diverso da quelli già usati | Il cliente non crea account né password; Monica sa sempre chi ordina e chi l'ha portato |

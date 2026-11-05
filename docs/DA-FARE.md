@@ -9,7 +9,6 @@
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica | Claude | alta |
-| C2 | Foto dentro Firestore (900 px, JPEG 0,8, tetto 300 KB): Storage vuole la carta anche per i progetti vecchi dal 03/02/2026 (verificato 05/11) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) e funzionamento senza rete (service worker, manifest) | Claude | media |
 | C4 | Sito su Cloudflare Pages `pronti-in-tavola.pages.dev` | Claude + Mario | media |
 | C5 | Anteprima del link su WhatsApp col logo (og:image) | Claude | bassa |
@@ -21,7 +20,7 @@
 | C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev` | Claude + Mario | con C4 |
 
 ## 1. Claude da solo
-- C1, C2, C3, C5, C8
+- C1, C3, C5, C8
 
 ## 2. Claude dopo scelta o ok di Mario
 - C4 (serve l'account Cloudflare), C6, C7
