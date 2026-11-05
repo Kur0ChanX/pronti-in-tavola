@@ -1014,9 +1014,9 @@ async function mandaMenu() {
 }
 function foglioMenuImg() {
   return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Il tuo menù</h1>
-    <p class="tenue" style="margin:0">Tieni premuto sull'immagine per salvarla o condividerla, oppure scaricala.</p>
+    <p class="tenue" style="margin:0">Tieni premuto sull'immagine per salvarla o condividerla${Dati.attivo ? ', oppure scaricala' : ''}.</p>
     <img src="${UI.foglio.url}" alt="Menù di Monica coi prezzi" style="width:100%;border-radius:12px;border:1px solid var(--riga)"></div>
-    <div class="piede"><a class="btn pieno" href="${UI.foglio.url}" download="menu-pronti-in-tavola.png">Scarica l'immagine</a></div>`;
+    ${Dati.attivo ? `<div class="piede"><a class="btn pieno" href="${UI.foglio.url}" download="menu-pronti-in-tavola.png">Scarica l'immagine</a></div>` : ''}`;
 }
 
 const A = {
