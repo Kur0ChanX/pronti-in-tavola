@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (05/11/2026 20:25 ora italiana)
+# Ultimo messaggio di Mario (05/11/2026 20:33 ora italiana)
 
-non usa altri limiti se lo metto cloudflare in mario.miscera@gmail.com?
+pronti-in-tavola.pages.dev questo
