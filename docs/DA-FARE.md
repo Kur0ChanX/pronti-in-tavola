@@ -1,18 +1,22 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 🟢 Principale 1 · Decori sardi (trama sullo sfondo e rombi nei titoli): vanno bene così, più visibili o più leggeri? (anteprima versione 12)
+- 05/11 · 🟡 Principale 1 · Decori sardi (trama sullo sfondo e rombi nei titoli): vanno bene così, più visibili o più leggeri? (anteprima versione 12; foto `archivio/foto/decori-1-menu.png`, `archivio/foto/decori-2-titoli.png`)
+- 05/11 · 🟡 Principale 2 · ⏭ Come entra Monica nell'app vera: account Google (consiglio), link segreto suo, email e password? (`docs/SPEC-FIREBASE.md`)
+- 05/11 · 🟡 Principale 2 · ⏭ Link del cliente: personale e riusabile su un altro telefono (consiglio) o valido una volta sola?
+- 05/11 · 🟡 Principale 2 · Creare il progetto Firebase con la guida passo passo: scrivere «Firebase» quando ha 10 minuti, meglio al computer
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C1 | Dati veri condivisi con Firebase (Firestore): accesso cliente col link d'invito `#i=codice`, accesso di Monica separato, regole di sicurezza, transazione sull'ultimo «pronto subito» | Claude | alta |
-| C2 | Foto: se Firebase Storage chiede il piano a pagamento, foto piccole (900 px, JPEG 0,8) dentro Firestore | Claude | alta |
+| C1 | Dati veri condivisi con Firebase (Firestore), piano gratis Spark: specifica in `docs/SPEC-FIREBASE.md` (05/11); manca: strato dati a due motori, regole e prove nell'emulatore, progetto vero di Mario | Claude | alta |
+| C2 | Foto dentro Firestore (900 px, JPEG 0,8, tetto 300 KB): Storage vuole la carta anche per i progetti vecchi dal 03/02/2026 (verificato 05/11) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) e funzionamento senza rete (service worker, manifest) | Claude | media |
 | C4 | Sito su Cloudflare Pages `pronti-in-tavola.pages.dev` | Claude + Mario | media |
 | C5 | Anteprima del link su WhatsApp col logo (og:image) | Claude | bassa |
 | C6 | Fase 2: dosi e spesa, sconti | Claude | dopo |
 | C7 | Fase 3: etichette, immagine del menù, incassi, costo per piatto | Claude | dopo |
 | C8 | Togliere la striscia «Prova · guarda come» nella versione vera | Claude | con C1 |
+| C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev` | Claude + Mario | con C4 |
 | C9 | Kit RVC: nel pacchetto «indipendente» v35 manca `tools/consegne.py` (lo usano hook, skill `consegne` e `test-scorta.py`); qui copiato da RVC e adattato. Da segnalare alla sessione RVC | Mario → RVC | bassa |
 
 ## 1. Claude da solo

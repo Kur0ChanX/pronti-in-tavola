@@ -42,7 +42,7 @@ Sessione attuale: #2 (dopo la #1 `session_01QTFEqUfb9wLHtBnMRef5Rb`, chiusa alla
 «Prima valuta se il kit è performante, è meglio del tuo e poi installalo. Se non ti convince, aspetta.»
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C10; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C11; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
