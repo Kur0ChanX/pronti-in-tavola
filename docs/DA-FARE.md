@@ -2,7 +2,6 @@
 
 ## 0. Aspetta Mario
 - 05/11 · 🟡 Principale 1 · Decori sardi (trama sullo sfondo e rombi nei titoli): vanno bene così, più visibili o più leggeri? (anteprima versione 12; foto `archivio/foto/decori-1-menu.png`, `archivio/foto/decori-2-titoli.png`)
-- 05/11 · 🟡 Principale 2 · ⏭ Firebase: progetto nuovo sul SUO account Google (i limiti gratis di Firebase sono per progetto, niente account Google nuovi: i controlli di Google non si aggirano); Cloudflare: account nuovo che Mario può creare (05/11) o lo stesso (uso dell'app stimato minimo). Confermi?
 - 05/11 · 🟡 Principale 2 · Creare il progetto Firebase con la guida passo passo: scrivere «Firebase» quando ha 10 minuti, meglio al computer
 
 | N | Cosa | Chi | Urgenza |
