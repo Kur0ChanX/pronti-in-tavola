@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (05/11/2026 14:27 ora italiana)
+# Ultimo messaggio di Mario (05/11/2026 14:34 ora italiana)
 
-immagine anteprima ok firebase manda guida
+salvalo cosí ti ricordi
