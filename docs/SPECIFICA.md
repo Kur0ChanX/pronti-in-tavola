@@ -27,6 +27,8 @@ Regola d'oro di Mario: **semplicissima**. Monica fa tutto da sola, a prova di er
 | Aspetto | Colori del logo, stile «trattoria moderna»; apertura animata col logo e il vapore; in basso «Powered by» col logo YNOY Corp con le 4 lune (`media/ynoy.png`) |
 | Telefono di Monica | Android |
 | Indirizzo web | Gratis (proposta: `pronti-in-tavola-by-ynoy-corp.pages.dev`, come Jona) |
+| Passaparola | Link unico che tutti possono rigirare; menù visibile a chi lo apre; il nuovo utente scrive il suo nome (diverso da quelli già usati) e Monica lo approva al primo ordine; indirizzo e ordini solo agli approvati (Mario 05/11) |
+| Accesso di Monica | Google una volta sola + impronta o PIN del telefono a ogni apertura della sua parte (Mario 05/11) |
 | Indipendenza | L'app non usa i limiti gratuiti di altre app (Firebase, Cloudflare) e non pesa su di esse: account e progetti solo suoi (Mario 05/11) |
 | Ambiente | Progetto tutto separato: repository suo, ambiente Claude Code nuovo, ramo unico nuovo, kit RVC installato |
 

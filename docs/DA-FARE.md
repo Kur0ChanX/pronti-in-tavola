@@ -2,8 +2,6 @@
 
 ## 0. Aspetta Mario
 - 05/11 · 🟡 Principale 1 · Decori sardi (trama sullo sfondo e rombi nei titoli): vanno bene così, più visibili o più leggeri? (anteprima versione 12; foto `archivio/foto/decori-1-menu.png`, `archivio/foto/decori-2-titoli.png`)
-- 05/11 · 🛑 · 🟡 Principale 2 · Link per il passaparola: link unico per tutti con menù visibile e ok di Monica al primo ordine (consiglio), menù solo dopo l'ok, o link personale + link per le amiche? (`docs/SPEC-FIREBASE.md`)
-- 05/11 · 🟡 Principale 2 · ⏭ Come entra Monica: Google una volta + impronta o PIN del telefono a ogni apertura (consiglio), solo Google, solo PIN?
 - 05/11 · 🟡 Principale 2 · ⏭ Account nuovo solo per l'app (Google e Cloudflare, lo crea Mario) per non toccare i limiti delle altre app (consiglio), o account di Monica?
 - 05/11 · 🟡 Principale 2 · Creare il progetto Firebase con la guida passo passo: scrivere «Firebase» quando ha 10 minuti, meglio al computer
 
@@ -17,6 +15,7 @@
 | C6 | Fase 2: dosi e spesa, sconti | Claude | dopo |
 | C7 | Fase 3: etichette, immagine del menù, incassi, costo per piatto | Claude | dopo |
 | C8 | Togliere la striscia «Prova · guarda come» nella versione vera | Claude | con C1 |
+| C11 | Passaparola (Mario 05/11, «1 1 2 1»): link unico per tutti, menù visibile; ogni cliente può rigirare il link; chi lo apre la prima volta scrive il SUO nome (diverso da quelli già usati, così Monica sa chi ordina), resta segnato chi gli ha mandato il link; Monica approva al primo ordine; indirizzo e ordini solo agli approvati. Monica: Google una volta + impronta o PIN del telefono a ogni apertura. Da riportare in `docs/SPEC-FIREBASE.md` e nelle regole | Claude | alta |
 | C9 | Kit RVC: nel pacchetto «indipendente» v35 manca `tools/consegne.py` (lo usano hook, skill `consegne` e `test-scorta.py`); qui copiato da RVC e adattato. Da segnalare alla sessione RVC | Mario → RVC | bassa |
 | C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev` | Claude + Mario | con C4 |
 
