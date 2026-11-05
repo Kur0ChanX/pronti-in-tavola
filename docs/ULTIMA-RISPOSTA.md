@@ -1,12 +1,12 @@
-# Ultima risposta di Claude (05/11/2026 13:59 ora italiana)
+# Ultima risposta di Claude (05/11/2026 14:31 ora italiana)
 
+Ho capito: vuoi sapere cosa ti dà Gemini in più, prima di tenerlo acceso.
 
+💡 **PARERE**
+Gemini è un assistente AI dentro la console Firebase. Risponde a domande, aiuta a trovare errori e a scrivere regole. È gratis e si può accendere anche dopo.
+Per noi non serve: il codice e le regole le faccio io, e sono già provate. Nella schermata c'è anche questa frase: Gemini «potrebbe utilizzare i tuoi prompt e le sue risposte per addestrare il proprio modello». Meglio non accenderlo.
 
-## Domande a Mario
+───
 
-❓ **DOMANDE**
-1. 🆕 Immagine dell'anteprima del link (prima foto che ti ho mandato)
-📌 Di cosa parliamo: è l'immagine che compare su WhatsApp sotto il link dell'app, quando qualcuno lo gira a un'amica. Va scelta prima che il sito vada online, perché WhatsApp poi se la ricorda.
-1 · Va bene così: logo al centro, «Cucina di casa» e «Ordina e ritira» ai lati (consiglio) · 2 · Da cambiare: dimmi cosa (testi, colori o disposizione) e la rifaccio
-
-Nella voce C5 di Da fare ora c'è anche quando la vedrai: col sito online.
+👉 **DA FARE TU**
+1. Tocca l'interruttore **Abilita Gemini in Firebase**, quello con la spunta. La spunta deve …
