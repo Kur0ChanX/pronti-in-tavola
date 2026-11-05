@@ -169,12 +169,28 @@ const Dati = (() => {
       }
       if (!snap.metadata.fromCache && !io.pronto) { io.pronto = true; cambiato = true; }
       if (cambiato) avvisaCambio();
-    }, err => { console.warn('ascolto', col || rif.path, err.code); alStato({ errore: err.code }); }));
+    }, err => {
+      console.warn('ascolto', col || rif.path, err.code); alStato({ errore: err.code });
+      // Un cliente a cui Monica ha appena cambiato lo stato (Accetta e poi Annulla): l'ascolto del suo documento
+      // può restare indietro. Si rilegge dal server e si riaprono gli ascolti giusti (C14).
+      if (err.code === 'permission-denied' && !io.gestore) rileggiUtente();
+    }));
+  }
+  let tRilettura = 0;
+  function rileggiUtente() {
+    if (Date.now() - tRilettura < 2000 || !io.uid) return;
+    tRilettura = Date.now();
+    (F.fs.getDocFromServer || F.fs.getDoc)(F.fs.doc(db, 'utenti', io.uid)).then(snap => {
+      io.utente = snap.exists() ? snap.data() : null; io.letto = true;
+      apriAscolti(); avvisaCambio();
+    }, () => {});
   }
   function chiudiAscolti() { while (ascolti.length) ascolti.pop()(); }
 
   function apriAscolti() {
     chiudiAscolti();
+    // cliente: quello che leggeva prima (indirizzo, scheda, ordini) si toglie: lo rimettono gli ascolti di adesso
+    if (!io.gestore) Object.keys(srv).filter(k => /^(clienti\/|ordini\/|impostazioni\/approvati$)/.test(k)).forEach(k => delete srv[k]);
     const { doc, collection, query, where } = F.fs;
     ['piatti', 'settimane'].forEach(c => ascolta(collection(db, c), c));
     ascolta(doc(db, 'impostazioni', 'app'));
