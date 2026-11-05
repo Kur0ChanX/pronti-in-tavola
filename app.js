@@ -719,7 +719,9 @@ function vClienti() {
   const riga = r => { const o = ordineDi(r);
     return `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">${r.cliente ? 'Dice che ha cambiato telefono' : r.tramite ? 'Amica di ' + esc(r.tramite) : 'Ha trovato il link'}
       · ${o ? `ha ordinato: ${euro(totale(prezziGiusti(o.righe)))}, ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}` : 'non ha ancora ordinato'}</span></div>${bottoniRichiesta(r)}</div>`; };
-  const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente);
+  const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
+  const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
+    <button type="button" class="btn verde piccolo" data-a="rifiutato-si" data-id="${r.id}"${UI.decido === r.id ? ' disabled' : ''}>${ico('spunta')}Accetta</button></div>`;
   const testo = `Ciao! Qui vedi cosa cucino e puoi ordinare: ${S.impostazioni.indirizzoApp}#da=monica`;
   return `${testataMonica('Clienti', 'home')}<main class="corpo">
     ${telefoni.length ? `<section class="scheda"><h2>Telefono nuovo</h2><p class="tenue" style="margin:0">Hanno lo stesso nome di un tuo cliente. Se è proprio lei, ricollega: ritrova i suoi ordini.</p>${telefoni.map(riga).join('')}</section>` : ''}
@@ -1068,6 +1070,8 @@ const A = {
   rimetti(el) { cambia('Rimesso nel menù', () => { piatto(el.dataset.id).cestino = null; }); },
   'richiesta-si'(el) { return decidiRichiesta(el.dataset.id, true); },
   'richiesta-no'(el) { return decidiRichiesta(el.dataset.id, false); },
+  'rifiutato-si'(el) { return decidiRichiesta(el.dataset.id, true); },
+  'rifiutati-apri'() { UI.rifiutati = !UI.rifiutati; render(); },
   'i-anticipo'(el) { cambia('', () => { S.impostazioni.anticipo = Math.min(14, Math.max(0, S.impostazioni.anticipo + Number(el.dataset.d))); }, false); salvatoOk(); },
   'i-limite'(el) { cambia('', () => { S.impostazioni.limite.teglie = Math.min(99, Math.max(1, S.impostazioni.limite.teglie + Number(el.dataset.d))); }, false); salvatoOk(); },
   'natale-piatto'(el) { const l = S.impostazioni.natale.piatti, id = el.dataset.id; cambia('', () => { S.impostazioni.natale.piatti = l.includes(id) ? l.filter(x => x !== id) : [...l, id]; }, false); },
@@ -1075,7 +1079,7 @@ const A = {
 };
 /* Monica dice Sì o No a un telefono nuovo. Annulla per 10 secondi. */
 async function decidiRichiesta(id, si) {
-  const r = S.richieste.find(x => x.id === id);
+  const r = S.richieste.find(x => x.id === id) || (S.rifiutati || []).find(x => x.id === id);
   if (!r || UI.decido) return;
   const msg = si ? (r.cliente ? `${r.nome}: telefono ricollegato` : `${r.nome} ora può ordinare`) : `Hai detto di no a ${r.nome}`;
   if (!Dati.attivo) { cambia(msg, () => decidiProva(r, si)); return; }
@@ -1095,11 +1099,12 @@ async function decidiRichiesta(id, si) {
 /* la stessa decisione nella prova (dati sul telefono) */
 function decidiProva(r, si) {
   S.richieste = S.richieste.filter(x => x !== r);
+  S.rifiutati = (S.rifiutati || []).filter(x => x !== r);
   const o = r.primo && ordine(r.primo);
-  if (!si) { if (o && o.stato === 'daApprovare') o.stato = 'rifiutato'; return; }
+  if (!si) { if (o && o.stato === 'daApprovare') o.stato = 'rifiutato'; S.rifiutati.push(r); return; }
   let id = r.cliente;
   if (!id) { id = 'c' + Date.now().toString(36); S.clienti.push({ id, nome: r.nome, da: oggi() }); }
-  if (!o || o.stato !== 'daApprovare') return;
+  if (!o || !(o.stato === 'daApprovare' || (o.stato === 'rifiutato' && !o.cliente))) return;
   o.stato = 'nuovo'; o.cliente = id;
   if (!o.pronto) return;
   const ci = o.righe.every(x => { const p = piatto(x.piatto); return p && p.pronto && p.pronto.giorno === oggi() && p.pronto.qta >= x.qta; });

@@ -89,7 +89,9 @@ const Dati = (() => {
       settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = Math.max(0, srv[k].teglie || 0); return o; }, {}),
       utenti,
       richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
-        .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u) }))
+        .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u) })),
+      // «Persone rifiutate»: i telefoni a cui Monica ha detto No (può cambiare idea con «Accetta»)
+      rifiutati: utenti.filter(u => u.stato === 'no').map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, primo: u.primo || null }))
     });
     S.piatti.forEach(p => {
       p.foto = (srv['foto/' + p.id] || {}).foto || null;   // le foto sono testo: niente copia
@@ -298,7 +300,7 @@ const Dati = (() => {
   /* La prima volta che entra Monica il database è vuoto: si caricano i 23 piatti e le impostazioni. */
   function preparaVuoto(iniziale) {
     if (!io.gestore || !io.pronto || srv['impostazioni/app']) return false;
-    const S = Object.assign({}, iniziale, { clienti: [], ordini: [], richieste: [], prossimoNumero: 1 });
+    const S = Object.assign({}, iniziale, { clienti: [], ordini: [], richieste: [], rifiutati: [], prossimoNumero: 1 });
     S.piatti = S.piatti.map(p => Object.assign({}, p, { cuori: 0, pronto: null }));
     scrivi(S);
     return true;
@@ -423,11 +425,13 @@ const Dati = (() => {
     const { doc, runTransaction } = F.fs, nuovoId = 'c' + Date.now().toString(36);
     const r = await runTransaction(db, async t => {
       const uS = await t.get(doc(db, 'utenti', uid));
-      if (!uS.exists() || !['nuovo', 'ricollega'].includes(uS.data().stato)) throw errore('gia');
-      const u = uS.data();
+      // Un telefono nuovo, oppure (solo con Sì) uno a cui Monica aveva detto No e ha ripensato.
+      if (!uS.exists() || !(['nuovo', 'ricollega'].includes(uS.data().stato) || (si && uS.data().stato === 'no'))) throw errore('gia');
+      const u = uS.data(), eraNo = u.stato === 'no';
+      const stato = eraNo ? (u.era || (tutti('clienti').some(c => c.chiave === u.chiave) ? 'ricollega' : 'nuovo')) : u.stato;
       const oS = u.primo ? await t.get(doc(db, 'ordini', u.primo)) : null;
-      const o = oS && oS.exists() && oS.data().stato === 'daApprovare' ? oS.data() : null;
-      const vecchio = si && u.stato === 'ricollega' ? tutti('clienti').find(c => c.chiave === u.chiave) : null;
+      const o = oS && oS.exists() && (oS.data().stato === 'daApprovare' || (eraNo && oS.data().stato === 'rifiutato' && !oS.data().cliente)) ? oS.data() : null;
+      const vecchio = si && stato === 'ricollega' ? tutti('clienti').find(c => c.chiave === u.chiave) : null;
       const cliente = si ? (vecchio ? vecchio.id : nuovoId) : null;
       const dopo = o ? Object.assign({}, o, si ? { stato: 'nuovo', cliente } : { stato: 'rifiutato' }) : null;
       const vuole = presi(dopo), piatti = {}, finiti = [];
@@ -441,7 +445,7 @@ const Dati = (() => {
       for (const k of Object.keys(tg)) sett[k] = await t.get(doc(db, 'settimane', k));
       // prima tutte le letture, poi le scritture
       if (si && !vecchio) t.set(doc(db, 'clienti', cliente), { id: cliente, nome: u.nome, chiave: u.chiave, da: op.oggi(), tramite: u.tramite || '' });
-      t.update(doc(db, 'utenti', uid), si ? { stato: 'approvato', cliente } : { stato: 'no' });
+      t.update(doc(db, 'utenti', uid), si ? { stato: 'approvato', cliente } : { stato: 'no', era: u.stato });
       if (o) t.update(doc(db, 'ordini', u.primo), { stato: dopo.stato, cliente: dopo.cliente, pronto: !!dopo.pronto });
       Object.keys(preso).forEach(k => {
         const pr = piatti[k].data().pronto;
