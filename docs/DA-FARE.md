@@ -2,6 +2,7 @@
 
 ## 0. Aspetta Mario
 - 05/11 · 🟡 Principale 9 · Cloudflare passo 2: nel menù tocca **Compute** e manda la foto di cosa compare (account «Pronti in Tavola» già creato e scelto)
+- 05/11 · 🟡 Principale 9 · Lista della spesa (C6): si capisce così? (foto `archivio/foto/spesa-1-lista.png`, `spesa-2-lista-fine.png`, `spesa-3-ingrediente.png`, `spesa-4-dosi.png`; anteprima versione 15)
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
 
 | N | Cosa | Chi | Urgenza |
