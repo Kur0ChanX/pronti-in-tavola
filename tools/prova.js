@@ -129,7 +129,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r !== '0/1') throw new Error('ricollega: ' + r);
   });
   await passo('Monica: lista della spesa dagli ordini', async () => {
-    await clic('.indietro'); await clic('[data-a="vai"][data-v="spesa"]'); await foto('19-spesa');
+    await clic('.indietro'); await clic('[data-a="vai"][data-v="spesa"]'); await clic('[data-a="sp-tab"][data-v="ordini"]'); await foto('19-spesa');
     const riga = n => page.locator('.spesa-riga', { hasText: n });
     // tiramisù da 6: 6 × 85 g di mascarpone = 510 g → 3 confezioni da 250 g; lasagne da 8: 8 × 80 g di macinato = 640 g → 2 da 500 g
     if (!(await riga('Mascarpone').locator('.quanto', { hasText: '3 × 250 g' }).count())) throw new Error('mascarpone: ' + await riga('Mascarpone').innerText());
@@ -140,9 +140,33 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await riga('Mascarpone').locator('.quanto', { hasText: '2 × 250 g' }).count())) throw new Error('in casa non tolto: ' + await riga('Mascarpone').innerText());
     await clic('[data-a="sp-preso"][data-ing="mascarpone"]');
     if (!(await page.locator('.spesa-riga.presa', { hasText: 'Mascarpone' }).count())) throw new Error('spunta non messa');
-    const w = await page.locator('a', { hasText: 'Manda la lista su WhatsApp' }).getAttribute('href');
-    if (!decodeURIComponent(w).includes('Mascarpone: 2 × 250 g')) throw new Error('testo WhatsApp: ' + decodeURIComponent(w).slice(0, 120));
+    const w = await page.locator('a', { hasText: 'Manda tutta la spesa su WhatsApp' }).getAttribute('href');
+    if (decodeURIComponent(w).includes('Mascarpone') || !decodeURIComponent(w).includes('Carne macinata: 4 × 500 g')) throw new Error('testo WhatsApp (il preso non va, il resto sì): ' + decodeURIComponent(w).slice(0, 160));
     await page.locator('[data-campo="sp.anche"]').uncheck(); await foto('20-spesa-presa');
+  });
+  await passo('Monica: la mia lista della spesa', async () => {
+    await clic('[data-a="sp-tab"][data-v="mia"]');
+    const campo = page.locator('#ing-spesa-nuova');
+    await campo.fill('2 kg patate'); await campo.press('Enter');
+    await page.waitForTimeout(200);
+    if (!(await page.evaluate(() => document.activeElement && document.activeElement.id)) === 'ing-spesa-nuova') throw new Error('il campo ha perso la tastiera');
+    await page.locator('#ing-spesa-nuova').fill('detersivo piatti'); await clic('[data-a="sp-agg"]');
+    await page.locator('#ing-spesa-nuova').fill('masc');
+    if (!(await page.locator('#sug-spesa button', { hasText: 'Mascarpone' }).count())) throw new Error('nessun suggerimento per «masc»');
+    await clic('#sug-spesa button >> text=Mascarpone');
+    const mia = await page.evaluate(() => SPESA.mia.map(v => `${v.n}|${v.q}|${v.rep}`).join(' / '));
+    if (mia !== 'Patate|2 kg|Frutta e verdura / Detersivo piatti||Casa e pulizia / Mascarpone||Frigo: latte, formaggi e uova') throw new Error('voci: ' + mia);
+    if (!(await page.locator('.spesa-riga', { hasText: 'Mascarpone' }).locator('small', { hasText: 'Anche per gli ordini' }).count())) throw new Error('manca «Anche per gli ordini»');
+    await page.locator('#ing-spesa-nuova').fill('patate 3 kg'); await campo.press('Enter');   // niente doppioni: cambia la quantità
+    const pat = await page.evaluate(() => SPESA.mia.filter(v => v.n === 'Patate').map(v => v.q).join());
+    if (pat !== '3 kg') throw new Error('doppione patate: ' + pat);
+    await clic('[data-a="sp-mpreso"] >> nth=0'); await foto('21-mia-lista');
+    await clic('[data-a="sp-msvuota"]');
+    if (await page.locator('[data-a="sp-mpreso"]').count()) throw new Error('lista non svuotata');
+    await clic('#toast [data-a="annulla"]');
+    if (await page.locator('[data-a="sp-mpreso"]').count() !== 3) throw new Error('Annulla non ha rimesso le 3 voci');
+    if (!(await page.locator('.suggerimenti [data-a="sp-sug"]', { hasText: 'Latte' }).count())) throw new Error('manca «Compri spesso»');
+    await clic('[data-a="sp-voce"] >> nth=0'); await clic('.foglio [data-a="sp-vrep"][data-v="Dispensa"]'); await clic('.foglio .piede [data-a="chiudi"]');
   });
   await passo('Monica: dosi nella scheda del piatto', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await clic('.piatto-riga >> text=Tiramisù');
