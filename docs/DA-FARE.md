@@ -9,7 +9,7 @@
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica | Claude | alta |
-| C3 | Notifiche vere a Monica (Android, app sulla schermata Home) e funzionamento senza rete (service worker, manifest) | Claude | media |
+| C3 | Notifiche vere a Monica (Android, app sulla schermata Home) con un Worker di Cloudflare nell'account dell'app: serve C4. Fatto il 05/11: l'app si apre senza rete (`sw.js`, `manifest.webmanifest`) | Claude | media |
 | C4 | Sito su Cloudflare Pages `pronti-in-tavola.pages.dev` | Claude + Mario | media |
 | C5 | Anteprima del link su WhatsApp col logo (og:image) | Claude | bassa |
 | C6 | Fase 2: dosi e spesa, sconti | Claude | dopo |

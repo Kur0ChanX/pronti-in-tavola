@@ -10,7 +10,7 @@ const { doc, getDoc, getDocs, collection, setDoc } = require('firebase/firestore
 
 const RADICE = path.resolve(__dirname, '..');
 const PORTA = 5055;
-const TIPI = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.webp': 'image/webp' };
+const TIPI = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.webp': 'image/webp', '.webmanifest': 'application/manifest+json' };
 
 const server = http.createServer((req, res) => {
   const p = decodeURIComponent(req.url.split('?')[0].split('#')[0]);
@@ -35,7 +35,7 @@ const server = http.createServer((req, res) => {
   const errori = [];
   // impronta: true → telefono con l'impronta finta (autenticatore virtuale di Chromium); WebAuthn vuole «localhost», non l'IP
   const apri = async (opz = {}) => {
-    const ctx = await browser.newContext(devices['Pixel 7']);
+    const ctx = await browser.newContext(Object.assign({}, devices['Pixel 7'], { serviceWorkers: opz.sw ? 'allow' : 'block' }));
     await ctx.route('https://www.gstatic.com/firebasejs/**', r => {
       const nome = r.request().url().split('/').pop();
       r.fulfill({ path: path.join(RADICE, 'node_modules/firebase', nome), contentType: 'text/javascript' });
@@ -346,6 +346,21 @@ const server = http.createServer((req, res) => {
     controlla('pronti: conta la differenza (1 rimasto + 1 di Monica = 2), non il 4 che vedeva lei', tiraG.pronto.qta === 2 && tiraG.stagione === 'primavera', [tiraG.pronto, tiraG.stagione]);
     controlla('teglie: le 5 arrivate intanto restano, meno le 2 rifiutate', settG.teglie === tegliePrima + 5 - 2, [tegliePrima, settG.teglie]);
     controlla('l\'ordine rifiutato senza rete è rifiutato sul server', (await admin(d => getDoc(doc(d, 'ordini/' + oL)))).data().stato === 'rifiutato');
+
+    // h) l'app si apre anche senza rete (service worker): pagina e file dalla copia, menù dalla copia del telefono
+    const versFB = fs.readFileSync(path.join(RADICE, 'dati.js'), 'utf8').match(/FIREBASE_VERSIONE = '([\d.]+)'/)[1];
+    controlla('service worker: stessa versione di Firebase di dati.js', fs.readFileSync(path.join(RADICE, 'sw.js'), 'utf8').includes(`VERSIONE_FB = '${versFB}'`));
+    const sw = await apri({ sw: true });
+    await aspetta(sw, () => S.piatti.length === 23);
+    controlla('service worker attivo', await sw.evaluate(() => navigator.serviceWorker.ready.then(r => !!r.active)));
+    await sw.reload();
+    await sw.waitForFunction(() => Dati.io.uid, null, { timeout: 20000 });
+    await aspetta(sw, () => S.piatti.length === 23 && !!navigator.serviceWorker.controller && ((Dati.copiaLocale() || {}).piatti || []).length === 23);
+    await sw.context().setOffline(true);
+    await sw.reload();
+    controlla('senza rete l\'app si apre col menù', await aspetta(sw, () => typeof S === 'object' && S.piatti.length === 23 && /Tiramis/.test(document.querySelector('#app').textContent)));
+    controlla('senza rete anche la libreria Firebase dalla copia (telefono riconosciuto)', await aspetta(sw, () => !!Dati.io.uid));
+    await sw.context().setOffline(false);
 
     // f) telefono senza blocco schermo (Mario): la parte resta aperta con l'avviso; poi «Esci da questo telefono»
     const mario = await apri();
