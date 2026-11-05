@@ -202,7 +202,19 @@ function giorniPossibili(teglieNuove, da, escludi) {
 const STATO_CLIENTE = { nuovo: 'Da confermare', proposta: 'Nuova data', accettato: 'Confermato', pronto: 'Pronto!', ritirato: 'Ritirato', rifiutato: 'Non disponibile', annullato: 'Annullato', daApprovare: 'Aspetta Monica' };
 const STATO_MONICA = { nuovo: 'Nuovo', proposta: 'Aspetta risposta', accettato: 'Da preparare', pronto: 'Pronto', ritirato: 'Ritirato', rifiutato: 'Rifiutato', annullato: 'Annullato dal cliente', daApprovare: 'Cliente nuovo' };
 const METODO = { contanti: 'Contanti al ritiro', bonifico: 'Bonifico istantaneo', postepay: 'Postepay' };
-const daGuardare = () => S.ordini.filter(o => o.stato === 'nuovo' || o.modifica || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato'));
+/* telefono nuovo che aspetta il Sì di Monica, legato al suo primo ordine */
+const richiestaDi = o => o.stato === 'daApprovare' ? (S.richieste || []).find(r => r.primo === o.id) || null : null;
+const chiOrdina = o => o.cliente ? cliente(o.cliente).nome
+  : ((S.richieste || []).find(r => r.primo === o.id) || (S.utenti || []).find(u => u.uid === o.utente) || {}).nome || 'Cliente nuovo';
+/* prezzi di Monica: finché non accetta, il totale si fa coi prezzi del menù (non con quelli scritti dal telefono);
+   le righe già accettate tengono il loro prezzo */
+const prezzoOra = r => { const p = piatto(r.piatto); return p && p.formati.some(f => f.id === r.formato) ? prezzoDi(p, r.formato, r.variante) : r.prezzo; };
+const prezziGiusti = (rr, prima = []) => rr.map(r => {
+  const v = prima.find(x => x.piatto === r.piatto && x.formato === r.formato && (x.variante || '') === (r.variante || ''));
+  return Object.assign({}, r, { prezzo: v ? v.prezzo : prezzoOra(r) });
+});
+const daAccettare = o => ['nuovo', 'daApprovare'].includes(o.stato);
+const daGuardare = () => S.ordini.filter(o => o.stato === 'nuovo' || o.modifica || richiestaDi(o) || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato'));
 const mapsLink = () => { const r = S.impostazioni.ritiro; return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.via + ', ' + r.citta)}`; };
 const numero = n => { const d = String(n || '').replace(/\D/g, ''); return d ? (d.length <= 10 ? '39' + d : d) : ''; };
 const wa = (num, testo) => `https://wa.me/${numero(num)}?text=${encodeURIComponent(testo)}`;
@@ -381,12 +393,13 @@ function vCarrello() {
 
 function vInviato() {
   return `${testataCliente()}<main class="corpo"><div class="inviato"><div class="scoppio">${Array.from({ length: 10 }, (_, i) => `<i style="--a:${i * 36}deg"></i>`).join('')}<div class="spunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div></div>
-    <h1>Ordine inviato!</h1><p class="tenue" style="margin:0">A Monica è arrivata la notifica. Ti conferma lei il giorno.<br>Lo segui in «I miei ordini».</p>
+    <h1>Ordine inviato!</h1><p class="tenue" style="margin:0">${Dati.attivo && Dati.io.utente && Dati.io.utente.stato !== 'approvato'
+      ? 'È il tuo primo ordine: Monica lo guarda e ti conferma lei.' : 'A Monica è arrivata la notifica. Ti conferma lei il giorno.'}<br>Lo segui in «I miei ordini».</p>
     <div class="fila larga" style="width:100%"><button type="button" class="btn" data-a="vai" data-v="ordini">I miei ordini</button><button type="button" class="btn chiaro" data-a="vai" data-v="menu">Torna al menù</button></div></div></main>`;
 }
 
 function tappe(o) {
-  const n = { nuovo: 1, proposta: 1, accettato: 2, pronto: 3, ritirato: 4 }[o.stato];
+  const n = { daApprovare: 1, nuovo: 1, proposta: 1, accettato: 2, pronto: 3, ritirato: 4 }[o.stato];
   return `<div class="tappe" aria-label="Stato: ${STATO_CLIENTE[o.stato]}">${['Inviato', 'Confermato', 'Pronto', 'Ritirato'].map((t, i) =>
     `<div class="tappa ${i < n ? 'fatta' : i === n ? 'ora' : ''}"><i>${i < n ? ico('spunta') : ''}</i>${t}</div>`).join('')}</div>`;
 }
@@ -559,23 +572,27 @@ function waOrdine(o, tipo) {
   return wa(c.telefono || '', testi[tipo] + firmaMsg);
 }
 function cartaOrdineMonica(o) {
-  const c = cliente(o.cliente);
-  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(c.nome)}</h3><span class="tenue piccolo">Ordine n. ${o.n} · ${o.pronto ? 'pronti subito, ritiro oggi' : ['accettato', 'pronto'].includes(o.stato) ? 'ritiro ' + giornoLungo(o.entro) : 'le serve entro ' + giornoLungo(o.entro)}</span></div>
-    <span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span></header>`;
+  const r = richiestaDi(o), righe = daAccettare(o) ? prezziGiusti(o.righe) : o.righe;
+  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n} · ${o.pronto ? 'pronti subito, ritiro oggi' : ['accettato', 'pronto'].includes(o.stato) ? 'ritiro ' + giornoLungo(o.entro) : 'le serve entro ' + giornoLungo(o.entro)}</span></div>
+    <span class="stato ${o.stato}">${r && r.cliente ? 'Telefono nuovo' : STATO_MONICA[o.stato]}</span></header>`;
+  if (r) h += `<div class="avviso">${ico('clienti')}<div>${r.cliente ? `<b>Telefono nuovo.</b> Dice di essere ${esc(r.nome)}, che conosci già. Se è lei, ricollega: vedrà i suoi ordini.`
+    : `<b>Prima volta.</b> ${r.tramite ? `Amica di ${esc(r.tramite)}.` : ''} Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.`}</div></div>`;
   if (o.stato === 'proposta') h += `<p class="tenue" style="margin:0">Hai proposto ${giornoLungo(o.proposta)}. Aspetti la risposta. <a class="link" href="${waOrdine(o, 'proposta')}" target="_blank" rel="noopener">Avvisala su WhatsApp</a></p>`;
   if (o.modifica) {
     h += `<div class="avviso">${ico('matita')}<div><b>Chiede una modifica.</b> In verde il nuovo, in rosso il tolto.</div></div><div>${diff(o)}</div>
-      <div class="totale"><span>Nuovo totale</span><span>${euro(totale(o.modifica.righe))}</span></div>
+      <div class="totale"><span>Nuovo totale</span><span>${euro(totale(prezziGiusti(o.modifica.righe, daAccettare(o) ? [] : o.righe)))}</span></div>
       <div class="fila larga"><button type="button" class="btn verde" data-a="mod-si" data-id="${o.id}">Accetta la modifica</button><button type="button" class="btn chiaro" data-a="mod-no" data-id="${o.id}">No</button></div>`;
   } else {
-    h += `<div>${o.righe.map(r => rigaOrdine(r)).join('')}</div><div class="totale"><span>Totale</span><span>${euro(totale(o.righe))}</span></div>`;
+    h += `<div>${righe.map(x => rigaOrdine(x)).join('')}</div><div class="totale"><span>Totale</span><span>${euro(totale(righe))}</span></div>`;
+    if (totale(righe) !== totale(o.righe)) h += `<p class="tenue piccolo" style="margin:0">Coi tuoi prezzi di oggi. Il cliente vedeva ${euro(totale(o.righe))}: quando accetti, vede il tuo.</p>`;
   }
   if (o.nota) h += `<div class="avviso">${ico('chat')}<div><b>Nota:</b> ${esc(o.nota)}</div></div>`;
-  if (!['rifiutato', 'annullato'].includes(o.stato)) {
+  if (!['rifiutato', 'annullato', 'daApprovare'].includes(o.stato)) {
     const pg = o.paga;
     h += `<div class="fila" style="justify-content:space-between"><span><b>${METODO[pg.metodo]}</b> · ${pg.ricevuto ? '<span style="color:var(--basilico);font-weight:800">soldi ricevuti ✓</span>' : pg.dice ? '<span style="color:var(--cotto);font-weight:800">dice che ha pagato: controlla</span>' : 'da ricevere'}</span>
       ${!pg.ricevuto && (pg.dice || ['accettato', 'pronto', 'ritirato'].includes(o.stato) && (pg.metodo !== 'contanti' || o.stato !== 'accettato')) ? `<button type="button" class="btn chiaro piccolo" data-a="ricevuto" data-id="${o.id}">${ico('euro')}Soldi ricevuti</button>` : ''}</div>`;
   }
+  if (r) h += bottoniRichiesta(r);
   if (!o.modifica) {
     if (o.stato === 'nuovo') h += `<div class="fila larga"><button type="button" class="btn verde" data-a="accetta" data-id="${o.id}">${ico('spunta')}Accetta</button>${o.pronto ? '' : `<button type="button" class="btn chiaro" data-a="proponi" data-id="${o.id}">Proponi un altro giorno</button>`}</div>
       <button type="button" class="link" data-a="rifiuta" data-id="${o.id}">Non posso farlo</button>`;
@@ -696,14 +713,25 @@ function vNuovo() {
   return h + '</main>';
 }
 
+/* Sì / No a un telefono nuovo (cliente nuovo o «telefono nuovo» di un cliente che c'è già) */
+function bottoniRichiesta(r) {
+  const occ = UI.decido === r.id ? ' disabled' : '';
+  return `<div class="fila larga"><button type="button" class="btn verde" data-a="richiesta-si" data-id="${r.id}"${occ}>${ico('spunta')}${r.cliente ? 'Sì, ricollega' : 'Sì, può ordinare'}</button><button type="button" class="btn chiaro" data-a="richiesta-no" data-id="${r.id}"${occ}>No</button></div>`;
+}
 function vClienti() {
   const conta = id => S.ordini.filter(o => o.cliente === id).length;
+  const ordineDi = r => { const o = r.primo && ordine(r.primo); return o && o.stato === 'daApprovare' ? o : null; };
+  const riga = r => { const o = ordineDi(r);
+    return `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">${r.cliente ? 'Dice che ha cambiato telefono' : r.tramite ? 'Amica di ' + esc(r.tramite) : 'Ha trovato il link'}
+      · ${o ? `ha ordinato: ${euro(totale(prezziGiusti(o.righe)))}, ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}` : 'non ha ancora ordinato'}</span></div>${bottoniRichiesta(r)}</div>`; };
+  const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente);
+  const testo = `Ciao! Qui vedi cosa cucino e puoi ordinare: ${S.impostazioni.indirizzoApp}#da=monica`;
   return `${testataMonica('Clienti', 'home')}<main class="corpo">
-    <section class="scheda"><h2>Invita una persona</h2><p class="tenue" style="margin:0">Scrivi il nome, poi scegli il contatto su WhatsApp: le arriva il link per ordinare.</p>
-      <input type="text" id="invito-nome" placeholder="Nome e cognome" aria-label="Nome e cognome">
-      <a class="btn pieno" id="invito-link" data-a="invita" href="${wa('', '')}" target="_blank" rel="noopener">${ico('invito')}Manda l'invito su WhatsApp</a></section>
-    ${S.richieste.length ? `<section class="scheda"><h2>Chiedono di entrare</h2>${S.richieste.map(r => `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">Amica di ${esc(r.tramite)}</span></div>
-      <div class="fila larga"><button type="button" class="btn verde piccolo" data-a="richiesta-si" data-id="${r.id}">Sì, può ordinare</button><button type="button" class="btn chiaro piccolo" data-a="richiesta-no" data-id="${r.id}">No</button></div></div>`).join('')}</section>` : ''}
+    ${telefoni.length ? `<section class="scheda"><h2>Telefono nuovo</h2><p class="tenue" style="margin:0">Hanno lo stesso nome di un tuo cliente. Se è proprio lei, ricollega: ritrova i suoi ordini.</p>${telefoni.map(riga).join('')}</section>` : ''}
+    ${nuovi.length ? `<section class="scheda"><h2>Nuovi</h2><p class="tenue" style="margin:0">Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.</p>${nuovi.map(riga).join('')}</section>` : ''}
+    <section class="scheda"><h2>Fai conoscere la tua cucina</h2><p class="tenue" style="margin:0">Manda il link a chi vuoi: vede il menù e al primo ordine scrive il suo nome. Poi decidi tu.</p>
+      <a class="btn pieno" href="${wa('', testo)}" target="_blank" rel="noopener">${ico('invito')}Manda il link su WhatsApp</a>
+      <label class="interr"><span>Accetta clienti nuovi<small>Spento: chi ha il link vede il menù, ma non può fare il primo ordine.</small></span><input type="checkbox" data-campo="i.nuovi" ${S.impostazioni.nuovi !== false ? 'checked' : ''}></label></section>
     <section class="scheda"><h2>I tuoi clienti</h2>${S.clienti.map(c => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><div><b>${esc(c.nome)}</b><br><span class="tenue piccolo">${c.invitato && !conta(c.id) ? 'Invitata, non ha ancora ordinato' : `${conta(c.id)} ordini · dal ${F_DATA.format(daIso(c.da))}`}</span></div></div>`).join('')}</section></main>`;
 }
 
@@ -833,13 +861,13 @@ function cambiaQta(r, d) {
   return Math.max(min, q);
 }
 function notificaMonica() {
-  const nuovi = S.ordini.filter(o => o.n > P.visti && o.stato === 'nuovo');
+  const nuovi = S.ordini.filter(o => o.n > P.visti && (o.stato === 'nuovo' || o.stato === 'daApprovare'));
   P.visti = S.prossimoNumero - 1; salvaP();
   if (!nuovi.length) return;
   const o = nuovi[nuovi.length - 1], piu = nuovi.length > 1;
   const el = document.createElement('div');
   el.className = 'notifica'; el.setAttribute('role', 'status');
-  el.innerHTML = `<img src="${LOGO}" alt=""><div><b>${piu ? `${nuovi.length} ordini nuovi` : `Nuovo ordine da ${esc(cliente(o.cliente).nome)}`}</b><span>${piu ? esc([...new Set(nuovi.map(x => cliente(x.cliente).nome))].join(', ')) + ' · ' + euro(nuovi.reduce((s, x) => s + totale(x.righe), 0)) : `${o.righe.length} ${o.righe.length === 1 ? 'piatto' : 'piatti'} · ${euro(totale(o.righe))} · ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}`}</span></div>`;
+  el.innerHTML = `<img src="${LOGO}" alt=""><div><b>${piu ? `${nuovi.length} ordini nuovi` : `${o.stato === 'daApprovare' ? 'Cliente nuovo' : 'Nuovo ordine'}: ${esc(chiOrdina(o))}`}</b><span>${piu ? esc([...new Set(nuovi.map(chiOrdina))].join(', ')) + ' · ' + euro(nuovi.reduce((s, x) => s + totale(x.righe), 0)) : `${o.righe.length} ${o.righe.length === 1 ? 'piatto' : 'piatti'} · ${euro(totale(o.righe))} · ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}`}</span></div>`;
   document.body.appendChild(el); setTimeout(() => el.remove(), 5200);
 }
 const ordine = id => S.ordini.find(o => o.id === id);
@@ -949,7 +977,7 @@ const A = {
   'conferma-giorno'() {
     const { tipo, id } = UI.foglio, o = ordine(id), g = UI.proposta;
     UI.foglio = null; UI.proposta = null;
-    if (tipo === 'proponi') cambia(`Proposta mandata: ${giornoLungo(g)}`, () => { o.proposta = g; o.stato = 'proposta'; });
+    if (tipo === 'proponi') cambia(`Proposta mandata: ${giornoLungo(g)}`, () => { if (daAccettare(o)) o.righe = prezziGiusti(o.righe); o.proposta = g; o.stato = 'proposta'; });
     else cambia('Nuovo giorno mandato a Monica', () => { o.entro = g; o.proposta = null; o.stato = 'nuovo'; }, false);
   },
   'ho-pagato'(el) { const o = ordine(el.dataset.id); cambia('Grazie! Monica controlla e conferma.', () => { o.paga.dice = true; }, false); },
@@ -980,9 +1008,9 @@ const A = {
   'rivedi-guida'() { P.guida = false; salvaP(); UI.guidaPasso = 0; vai('home'); },
   riprendi() { cambia('Pausa finita: sei di nuovo aperta', () => { S.impostazioni.pausa.attiva = false; }); },
   tab(el) { UI.tab = el.dataset.v; render(); },
-  accetta(el) { const o = ordine(el.dataset.id); cambia(`Accettato: ${cliente(o.cliente).nome}`, () => { o.stato = 'accettato'; }); },
+  accetta(el) { const o = ordine(el.dataset.id); cambia(`Accettato: ${cliente(o.cliente).nome}`, () => { o.righe = prezziGiusti(o.righe); o.stato = 'accettato'; }); },
   rifiuta(el) { const o = ordine(el.dataset.id); cambia('Ordine rifiutato', () => { o.stato = 'rifiutato'; rimettiPronti(o); }); },
-  'mod-si'(el) { const o = ordine(el.dataset.id); cambia('Modifica accettata', () => { o.righe = o.modifica.righe; o.modifica = null; o.esitoModifica = 'si'; }); },
+  'mod-si'(el) { const o = ordine(el.dataset.id); cambia('Modifica accettata', () => { o.righe = prezziGiusti(o.modifica.righe, daAccettare(o) ? [] : o.righe); o.modifica = null; o.esitoModifica = 'si'; }); },
   'mod-no'(el) { const o = ordine(el.dataset.id); cambia('Modifica rifiutata', () => { o.modifica = null; o.esitoModifica = 'no'; }); },
   pronto(el) { const o = ordine(el.dataset.id); setTimeout(() => cambia('Segnato pronto', () => { o.stato = 'pronto'; }), 60); },
   'pronto-muto'(el) { const o = ordine(el.dataset.id); cambia('Segnato pronto', () => { o.stato = 'pronto'; }); },
@@ -1037,18 +1065,46 @@ const A = {
   anteprima() { apriPiatto(UI.vista.split(':')[1], false, true); },
   cestina() { const p = piatto(UI.vista.split(':')[1]); UI.vista = 'piatti'; cambia(`Nel cestino: ${p.nome}`, () => { p.cestino = oggi(); }); },
   rimetti(el) { cambia('Rimesso nel menù', () => { piatto(el.dataset.id).cestino = null; }); },
-  invita(el, e) {
-    const nome = $('#invito-nome').value.trim();
-    if (!nome) { e.preventDefault(); mostraToast('Scrivi prima il nome.'); $('#invito-nome').focus(); return; }
-    setTimeout(() => cambia(`Invito pronto per ${nome}`, () => { S.clienti.push({ id: 'c' + Date.now().toString(36), nome, da: oggi(), invitato: true }); }), 60);
-  },
-  'richiesta-si'(el) { const r = S.richieste.find(x => x.id === el.dataset.id); cambia(`${r.nome} ora può ordinare`, () => { S.richieste = S.richieste.filter(x => x !== r); S.clienti.push({ id: 'c' + Date.now().toString(36), nome: r.nome, da: oggi(), invitato: true }); }); },
-  'richiesta-no'(el) { const r = S.richieste.find(x => x.id === el.dataset.id); cambia('Richiesta rifiutata', () => { S.richieste = S.richieste.filter(x => x !== r); }); },
+  'richiesta-si'(el) { return decidiRichiesta(el.dataset.id, true); },
+  'richiesta-no'(el) { return decidiRichiesta(el.dataset.id, false); },
   'i-anticipo'(el) { cambia('', () => { S.impostazioni.anticipo = Math.min(14, Math.max(0, S.impostazioni.anticipo + Number(el.dataset.d))); }, false); salvatoOk(); },
   'i-limite'(el) { cambia('', () => { S.impostazioni.limite.teglie = Math.min(99, Math.max(1, S.impostazioni.limite.teglie + Number(el.dataset.d))); }, false); salvatoOk(); },
   'natale-piatto'(el) { const l = S.impostazioni.natale.piatti, id = el.dataset.id; cambia('', () => { S.impostazioni.natale.piatti = l.includes(id) ? l.filter(x => x !== id) : [...l, id]; }, false); },
   ricomincia() { cambia('Prova ricominciata da capo', () => { S = statoIniziale(); }); }
 };
+/* Monica dice Sì o No a un telefono nuovo. Annulla per 10 secondi. */
+async function decidiRichiesta(id, si) {
+  const r = S.richieste.find(x => x.id === id);
+  if (!r || UI.decido) return;
+  const msg = si ? (r.cliente ? `${r.nome}: telefono ricollegato` : `${r.nome} ora può ordinare`) : `Hai detto di no a ${r.nome}`;
+  if (!Dati.attivo) { cambia(msg, () => decidiProva(r, si)); return; }
+  UI.decido = id; render();
+  try {
+    const esito = await Dati.decidi(id, si);
+    UI.decido = null; render();
+    mostraToast(esito.finiti.length ? `${msg}. I pronti sono finiti (${esito.finiti.join(', ')}): proponi un altro giorno.` : msg, () => {
+      esito.annulla().then(() => mostraToast('Annullato'),
+        e => mostraToast(e.code === 'gia' ? 'Non si può più annullare: è già cambiato.' : 'Non annullato: controlla la rete e riprova.'));
+    });
+  } catch (e) {
+    UI.decido = null; render();
+    mostraToast(e.code === 'gia' ? 'Già fatto: l\'ha deciso qualcun altro.' : e.code === 'unavailable' || !navigator.onLine ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.');
+  }
+}
+/* la stessa decisione nella prova (dati sul telefono) */
+function decidiProva(r, si) {
+  S.richieste = S.richieste.filter(x => x !== r);
+  const o = r.primo && ordine(r.primo);
+  if (!si) { if (o && o.stato === 'daApprovare') o.stato = 'rifiutato'; return; }
+  let id = r.cliente;
+  if (!id) { id = 'c' + Date.now().toString(36); S.clienti.push({ id, nome: r.nome, da: oggi() }); }
+  if (!o || o.stato !== 'daApprovare') return;
+  o.stato = 'nuovo'; o.cliente = id;
+  if (!o.pronto) return;
+  const ci = o.righe.every(x => { const p = piatto(x.piatto); return p && p.pronto && p.pronto.giorno === oggi() && p.pronto.qta >= x.qta; });
+  if (ci) o.righe.forEach(x => { const p = piatto(x.piatto); p.pronto.qta = arrot(p.pronto.qta - x.qta); });
+  else o.pronto = false;
+}
 function rimettiPronti(o) { if (!o.pronto) return; o.righe.forEach(r => { const p = piatto(r.piatto); if (p && p.pronto && p.pronto.giorno === oggi()) p.pronto.qta = arrot(p.pronto.qta + r.qta); }); }
 function segnaPronto(p, d) {
   const fId = p.pronto ? p.pronto.formato : p.formati[0].id, f = p.formati.find(x => x.id === fId) || p.formati[0];
