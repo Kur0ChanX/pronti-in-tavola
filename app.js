@@ -386,7 +386,7 @@ function vCarrello() {
       <div class="giorni">${giorni.map(({ g, no }) => { const d = daIso(g); return `<button type="button" class="giorno" data-a="entro" data-v="${g}" aria-pressed="${UI.entro === g}" ${no ? 'disabled' : ''} aria-label="${giornoLungo(g)}${no ? ', non disponibile' : ''}"><small>${no || F_GS.format(d)}</small><b>${d.getDate()}</b><small>${F_MESE.format(d)}</small></button>`; }).join('')}</div>
       <span class="tenue piccolo">Monica lo prepara entro quel giorno e te lo conferma. Se non ce la fa, ti propone un altro giorno.</span></div></section>`;
   }
-  h += metodi.length === 1 && metodi[0] === 'contanti' ? `<p class="paga-riga">${ico('ritiro')}Paghi in contanti quando ritiri.</p>` : `<section class="scheda"><h2>Come paghi</h2><div class="scelte">${metodi.map(m => `<button type="button" class="scelta" data-a="metodo" data-v="${m}" aria-pressed="${UI.metodo === m}">${METODO[m]}</button>`).join('')}</div>
+  h += metodi.length === 1 && metodi[0] === 'contanti' ? `<p class="paga-riga">${ico('spunta')}Paghi in contanti quando ritiri.</p>` : `<section class="scheda"><h2>Come paghi</h2><div class="scelte">${metodi.map(m => `<button type="button" class="scelta" data-a="metodo" data-v="${m}" aria-pressed="${UI.metodo === m}">${METODO[m]}</button>`).join('')}</div>
     <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>`;
   h += `    <div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica? (se vuoi)</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>
     <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
@@ -455,7 +455,8 @@ function vOrdiniCliente() {
   const lista = S.ordini.filter(o => o.cliente === P.cliente).sort((a, b) => b.n - a.n);
   let h = testataCliente() + '<main class="corpo"><h1>I miei ordini</h1>';
   if (!lista.length) h += '<p class="tenue">Non hai ancora ordinato.</p>';
-  return h + lista.map(cartaOrdineCliente).join('') + schedaRitiro() + '</main>';
+  /* l'indirizzo sta dopo l'ordine più recente: si trova senza scorrere anche con tanti ordini vecchi */
+  return h + lista.slice(0, 1).map(cartaOrdineCliente).join('') + schedaRitiro() + lista.slice(1).map(cartaOrdineCliente).join('') + '</main>';
 }
 
 function vModifica() {
