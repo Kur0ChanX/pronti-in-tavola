@@ -28,7 +28,7 @@ const Dati = (() => {
   let base = null;                // la copia da cui è nato lo S attuale: Monica scrive solo ciò che ha cambiato lei
   const ascolti = [];             // ascolti attivi da chiudere al cambio di utente
   let ultimaScrittura = Promise.resolve(), inAttesa = 0, tAvviso = null;
-  const io = { uid: null, gestore: false, utente: null, pronto: false, entrata: 0, nome: '' };
+  const io = { uid: null, gestore: false, utente: null, letto: false, pronto: false, entrata: 0, nome: '' };   // letto: si sa già se il telefono ha un nome
   let ascoltoUtente = null;   // il documento utenti/ di questo telefono
   let uscito = false;         // «Esci da questo telefono»: si aspetta solo il ricaricamento
 
@@ -200,17 +200,17 @@ const Dati = (() => {
     io.nome = user.displayName || '';
     const rg = doc(db, 'gestori', user.uid);   // senza rete: dalla copia del telefono
     io.gestore = (await getDoc(rg).catch(() => getDocFromCache(rg)).catch(() => null))?.exists() || false;
-    io.utente = null;
+    io.utente = null; io.letto = io.gestore;
     if (!io.gestore) {
       // Il documento utenti/ di questo telefono: quando Monica approva, si riaprono gli ascolti.
       let prima = null;
       ascoltoUtente && ascoltoUtente();
       ascoltoUtente = onSnapshot(doc(db, 'utenti', user.uid), snap => {
-        io.utente = snap.exists() ? snap.data() : null;
+        io.utente = snap.exists() ? snap.data() : null; io.letto = true;
         const ora = io.utente ? io.utente.stato + '/' + io.utente.cliente : '';
         if (ora !== prima) { prima = ora; apriAscolti(); }
         avvisaCambio();
-      }, () => { io.utente = null; apriAscolti(); });
+      }, () => { io.utente = null; io.letto = true; apriAscolti(); });
     } else apriAscolti();
   }
   async function avvia(cambio, statoRete, opzioni) {
@@ -323,7 +323,7 @@ const Dati = (() => {
     b.set(doc(db, 'utenti', io.uid), u);
     if (!ricollega) b.set(doc(db, 'nomi', chiave), { il: u.il });
     await b.commit();
-    io.utente = u; avvisaCambio();
+    io.utente = u; io.letto = true; avvisaCambio();
   }
 
   // Quanto prende un ordine dai «pronti» (per piatto) e dalle teglie della settimana.

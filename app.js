@@ -263,10 +263,54 @@ function rigaOrdine(r, extra = '') {
 }
 
 /* ================= CLIENTE ================= */
+/* nome del cliente di questo telefono: quello scritto nel benvenuto (Mario 05/11: «entra nome e cognome… e gli dici ciao, il suo nome») */
+const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && Dati.io.utente.nome) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
+/* il benvenuto: alla prima apertura il cliente nuovo scrive nome e cognome, senza non si entra (nell'anteprima: una volta per telefono) */
+function serveBenvenuto() {
+  if (P.ruolo !== 'cliente' || UI.senzaNome) return false;
+  return Dati.attivo ? !!Dati.io.uid && Dati.io.letto && !Dati.io.utente : !P.benvenuto;
+}
+function vBenvenuto() {
+  const b = UI.benv || {};
+  let h = `<main class="corpo benvenuto"><img class="benv-logo" src="media/logo-medaglione.webp" alt="Pronti in Tavola con Monica">
+    <h1>Benvenuti da Monica!</h1><p class="tenue">Monica cucina per te a Olbia. Prima di entrare, dicci come ti chiami: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>`;
+  if (b.chiuso) return h + `<div class="avviso"><div><b>Monica in questo momento non prende clienti nuovi.</b><br>Puoi guardare il menù; per ordinare riprova più avanti.</div></div>
+    <button type="button" class="btn chiaro pieno" data-a="benv-guarda">Guarda il menù</button></main>`;
+  h += `<section class="scheda"><label class="etichetta" for="benv-nome" style="font-weight:800">Il tuo nome</label>
+    <input type="text" id="benv-nome" autocomplete="given-name" autocapitalize="words" maxlength="30" placeholder="es. Laura" value="${esc(b.nome || '')}">
+    <label class="etichetta" for="benv-cognome" style="font-weight:800">Il tuo cognome</label>
+    <input type="text" id="benv-cognome" autocomplete="family-name" autocapitalize="words" maxlength="30" placeholder="es. Sanna" value="${esc(b.cognome || '')}" enterkeyhint="go"></section>`;
+  if (b.usato) h += `<div class="avviso"><div><b>«${esc(b.usato)}» c'è già.</b> Sei tu con un telefono nuovo?
+    <div class="fila" style="margin-top:10px"><button type="button" class="btn" data-a="benv-ricollega">Sì, sono io</button><button type="button" class="btn chiaro" data-a="benv-altro">No, è un'altra persona</button></div>
+    <small>Se è un'altra persona con lo stesso nome, aggiungi qualcosa (es. «Laura Sanna B.»).</small></div></div>`;
+  else h += `<button type="button" class="btn pieno" data-a="benv-entra"${UI.benvInvio ? ' disabled' : ''}>${UI.benvInvio ? 'Un attimo…' : 'Entra'}</button>`;
+  return h + '</main>';
+}
+async function benvEntra(ricollega) {
+  const prendi = id => { const i = document.getElementById(id); return i ? i.value.replace(/\s+/g, ' ').trim() : ''; };
+  const b = UI.benv = Object.assign({}, UI.benv, ricollega ? {} : { nome: prendi('benv-nome'), cognome: prendi('benv-cognome') });
+  if (b.nome.length < 2) { mostraToast('Scrivi il tuo nome.'); const i = $('#benv-nome'); if (i) i.focus(); return; }
+  if (b.cognome.length < 2) { mostraToast('Scrivi anche il cognome.'); const i = $('#benv-cognome'); if (i) i.focus(); return; }
+  const tutto = ricollega ? b.usato : [b.nome, b.cognome].map(x => x.split(' ').map(maiuscola).join(' ')).join(' ');
+  if (Dati.attivo) {
+    UI.benvInvio = true; render();
+    try { await Dati.registra(tutto, P.tramite || '', !!ricollega); }
+    catch (e) {
+      UI.benvInvio = false;
+      if (e.code === 'permission-denied' && !ricollega) { UI.benv.usato = tutto; render(); return; }
+      if (e.code === 'chiuso') { UI.benv.chiuso = true; render(); return; }
+      render(); mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); return;
+    }
+    UI.benvInvio = false;
+  } else { P.benvenuto = true; P.nomeProva = tutto; salvaP(); }
+  UI.benv = null; vai('menu');
+  mostraToast(`Ciao ${nomeBreve(tutto)}! Ecco il menù di Monica.`);
+}
+
 function testataCliente() {
   const n = quanti(P.carrello);
   return `<header class="testata"><img class="marchio" src="${LOGO}" alt="">
-    <div class="titolo"><b>Pronti in Tavola</b><span>Ciao ${esc(nomeBreve(cliente(P.cliente).nome))}!</span></div>
+    <div class="titolo"><b>Pronti in Tavola</b><span>Ciao ${esc(nomeBreve(nomeCliente()))}!</span></div>
     <button type="button" class="icona aa" data-a="testo-grande" aria-pressed="${!!P.grande}" aria-label="Testo più grande">Aa</button>
     <button type="button" class="icona" data-a="vai" data-v="carrello" aria-label="Il tuo ordine: ${n} piatti">${ico('carrello')}${n ? `<span class="pallino">${n}</span>` : ''}</button></header>`;
 }
@@ -825,10 +869,11 @@ function render() {
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
   const chiuso = statoLucchetto();   /* la parte di Monica col lucchetto: nessun dato nella pagina finché non si apre */
-  $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : vistaCliente()) + firma();
-  $('#barra').innerHTML = P.ruolo === 'cliente' ? barraCliente() : '';
-  $('#barra').classList.toggle('nascosto', P.ruolo !== 'cliente');
-  document.body.classList.toggle('con-barra', P.ruolo === 'cliente');
+  const benv = !chiuso && serveBenvenuto();
+  $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : benv ? vBenvenuto() : vistaCliente()) + firma();
+  $('#barra').innerHTML = P.ruolo === 'cliente' && !benv ? barraCliente() : '';
+  $('#barra').classList.toggle('nascosto', P.ruolo !== 'cliente' || benv);
+  document.body.classList.toggle('con-barra', P.ruolo === 'cliente' && !benv);
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
@@ -915,6 +960,10 @@ const A = {
   async 'nome-ricollega'() {
     try { await Dati.registra(UI.foglio.usato, P.tramite || '', true); UI.foglio = null; inviaVero(); } catch (e) { erroreNome(e); }
   },
+  'benv-entra'() { benvEntra(false); },
+  'benv-ricollega'() { benvEntra(true); },
+  'benv-altro'() { UI.benv.usato = ''; render(); const i = $('#benv-cognome'); if (i) i.focus(); },
+  'benv-guarda'() { UI.senzaNome = true; render(); },
   'nome-altro'() { UI.foglio = { tipo: 'nome' }; render(); const i = $('#nome-nuovo'); if (i) i.focus(); },
   'entra-monica'() { Dati.entraGoogle().catch(() => mostraToast('Accesso non riuscito. Riprova.')); },
   ruolo(el) { P.ruolo = el.dataset.v; salvaP(); UI.foglio = null; UI.modifica = null; vai(P.ruolo === 'monica' ? 'home' : 'menu'); if (P.ruolo === 'monica') notificaMonica(); },
@@ -1395,6 +1444,8 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && UI.foglio) A.chiudi();
   if (e.key === 'Enter' && e.target.dataset && e.target.dataset.cerca) { e.preventDefault(); A['ing-aggiungi']({ dataset: { s: e.target.dataset.cerca } }); }
   if (e.key === 'Enter' && e.target.id === 'nuovo-nome') A['nuovo-avanti']();
+  if (e.key === 'Enter' && e.target.id === 'benv-nome') { e.preventDefault(); const c = $('#benv-cognome'); if (c) c.focus(); }
+  if (e.key === 'Enter' && e.target.id === 'benv-cognome') { e.preventDefault(); benvEntra(false); }
   if (e.key === 'Enter' && e.target.id === 'ing-spesa-nuova') { e.preventDefault(); A['sp-agg'](); }
 });
 

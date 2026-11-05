@@ -105,3 +105,6 @@ Il carrello che ti avevo detto della spesa, che guarda le quantità dei prodotti
 
 ## 2026-11-05 21:13 · 01QTFEqSy2LM
 Praticamente ha una lista della spesa. Ovviamente fai una lista della spesa, visto che ci siamo, completa, prendi spunto alle app gold standard della spesa e mettila dentro, e poi dentro una sezione con scritto tipo, cosa ne so, spesa per i miei ordini, gli esce quello che deve comprare.
+
+## 2026-11-05 ~21:20 · 01QTFEqSy2LM (girato dalla #9)
+ma dopo che mette il nome ordine anche al primo ordine, senza di quello non può effettuare l'ordine se non mette il nome e cognome, e poi il nome ordine si allaccia all'account, diciamo, all'applicazione del cliente, perché non lo so, perché è bellino che mette tipo nome e cognome, entra nome e cognome con una bella presentazione all'inizio, tipo il tuo nome e tuo cognome, entra e gli dici anche ciao, il suo nome.

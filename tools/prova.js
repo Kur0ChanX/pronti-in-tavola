@@ -20,6 +20,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
   await page.waitForTimeout(5200);
+  await passo('benvenuto: nome e cognome alla prima apertura, poi «Ciao»', async () => {
+    await page.locator('#benv-nome').waitFor(); await foto('00-benvenuto');
+    if (await page.locator('.voce').count()) throw new Error('il menù si vede senza nome');
+    await page.fill('#benv-nome', 'laura'); await clic('[data-a="benv-entra"]');
+    if (!(await page.locator('#toast', { hasText: 'cognome' }).count())) throw new Error('senza cognome è entrato');
+    await page.fill('#benv-cognome', 'sanna'); await page.press('#benv-cognome', 'Enter');
+    await page.locator('.testata .titolo span', { hasText: 'Ciao Laura!' }).waitFor({ timeout: 3000 });
+    const n = await page.evaluate(() => P.nomeProva + '/' + P.benvenuto);
+    if (n !== 'Laura Sanna/true') throw new Error('nome salvato: ' + n);
+  });
   await passo('menù visibile', async () => { await page.locator('.voce').first().waitFor(); await foto('02-menu'); });
   await passo('pronti subito visibili', async () => { if (await page.locator('.pronto-carta').count() !== 2) throw new Error('attesi 2 pronti'); });
 
