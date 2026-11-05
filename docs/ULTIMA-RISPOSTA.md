@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (05/11/2026 14:36 ora italiana)
+# Ultima risposta di Claude (05/11/2026 15:10 ora italiana)
 
-Salvato su GitHub. Aspetto il `firebaseConfig`.
+Titolo già giallo, aspetto Mario.
