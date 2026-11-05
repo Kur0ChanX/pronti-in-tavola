@@ -9,6 +9,7 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 - **PT E3** (05/11/2026) «Se clicchi salta l'animazione» voleva dire: un tocco ovunque (anche sul logo) deve saltarla. Nel dubbio su una frase di Mario, chiedere in una riga prima di cambiare.
 - **PT E4** (05/11/2026) In Claude Code ho rifatto domande (cos'è l'app, chi la usa) già spiegate nella chat che non posso vedere. Se un'informazione non è nella sessione o nel repository, dirlo una volta chiaramente e chiedere tutto insieme, senza ripetere.
 - **PT E5** (05/11/2026) L'app non deve usare i limiti gratuiti condivisi con altre app di Mario (Firebase, Cloudflare) né pesare su di esse: servizi su account solo dell'app. Avevo proposto il Worker sull'account Cloudflare comune.
+- **PT E6** (05/11/2026) Guida a mano sbagliata («icona Web al centro» invece di «+ Aggiungi app»): ogni volta che vedo che una guida era sbagliata scrivo subito quella giusta in `docs/GUIDE-GIUSTE.md` (come l'ha vista Mario) e la leggo prima di rifare quella guida (Mario 05/11).
 
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
