@@ -24,7 +24,10 @@ html, body { height: 100%; margin: 0; }
 html { font-size: 17px; }
 html.grande { font-size: 20px; }
 body {
-  background: var(--carta);
+  /* trama dei tessuti sardi «a pibiones»: chicchi a rombo, appena visibili */
+  background-color: var(--carta);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='36' height='36' fill='%237B2318' fill-opacity='.075'%3E%3Ccircle cx='18' cy='4' r='1.2'/%3E%3Ccircle cx='25' cy='11' r='1.2'/%3E%3Ccircle cx='32' cy='18' r='1.2'/%3E%3Ccircle cx='25' cy='25' r='1.2'/%3E%3Ccircle cx='18' cy='32' r='1.2'/%3E%3Ccircle cx='11' cy='25' r='1.2'/%3E%3Ccircle cx='4' cy='18' r='1.2'/%3E%3Ccircle cx='11' cy='11' r='1.2'/%3E%3Ccircle cx='18' cy='18' r='1.8'/%3E%3C/svg%3E");
+  background-attachment: fixed;
   color: var(--inchiostro);
   font-family: var(--testo);
   line-height: 1.45;
@@ -128,7 +131,11 @@ body.con-barra #app { padding-bottom: 72px; }
 
 .cat-titolo { display: flex; align-items: baseline; gap: 12px; padding-top: 6px; scroll-margin-top: 130px; }
 .cat-titolo h2 { font-size: 1.6rem; font-style: italic; }
-.cat-titolo span { flex: 1; height: 1.5px; background: var(--riga); transform: translateY(-6px); }
+.cat-titolo span {
+  /* bordura a rombi, come le cornici dei tappeti sardi */
+  flex: 1; height: 10px; transform: translateY(-4px); opacity: .7;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='10'%3E%3Cpath d='M8 1 L13 5 L8 9 L3 5 Z' fill='none' stroke='%23C4532E' stroke-width='1.2'/%3E%3Ccircle cx='8' cy='5' r='1.1' fill='%237B2318'/%3E%3Ccircle cx='0' cy='5' r='.9' fill='%23E8B46A'/%3E%3Ccircle cx='16' cy='5' r='.9' fill='%23E8B46A'/%3E%3C/svg%3E") left center / 16px 10px repeat-x;
+}
 
 .voce {
   display: grid; grid-template-columns: 78px 1fr; gap: 14px; align-items: center;
