@@ -3,9 +3,9 @@
 ## Catene
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
-| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 5 | session_01QTFEqUTD1rwfGVfHvjoy5s | |
+| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 6 | session_01QTFEqQc4xdxWWJgwR1fXZB | |
 
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| Principale 5 | Impronta o PIN di Monica (C1) | `app.js`, `dati.js`, `index.html`, `style.css`, `tools/prova*.js` | 05/11 12:45 |
+| Principale 6 | Modifiche di Monica senza rete all'apertura (C1) | `app.js`, `dati.js`, `tools/prova-firebase.js` | 05/11 13:20 |
