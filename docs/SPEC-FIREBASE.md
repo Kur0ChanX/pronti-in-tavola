@@ -1,6 +1,6 @@
 # Dati veri con Firebase · specifica corta (C1 + C2)
 
-Versione 0.1 · 05/11/2026 · da far vedere a Mario prima del codice. Finito il lavoro va in `docs/piani-finiti/`.
+Versione 0.1 · 05/11/2026 · da far vedere a Mario prima del codice. In discussione (05/11): link unico per il passaparola, impronta o PIN per Monica: le tabelle «Accessi» cambiano con le risposte. Finito il lavoro va in `docs/piani-finiti/`.
 Fonti controllate oggi (pagine ufficiali aggiornate fra il 20/10 e il 03/11/2026):
 - Firestore gratis: 1 GiB, 50.000 letture e 20.000 scritture al giorno, 10 GiB al mese in uscita (https://firebase.google.com/docs/firestore/quotas).
 - Cloud Storage (le foto) e Cloud Functions chiedono il piano Blaze, con carta di credito, dal 03/02/2026 anche per i progetti vecchi (https://firebase.google.com/docs/storage/faqs-storage-changes-announced-sept-2024).
@@ -12,7 +12,8 @@ Fonti controllate oggi (pagine ufficiali aggiornate fra il 20/10 e il 03/11/2026
 |---|---|---|
 | Piano | **Spark**, gratis, senza carta | Già deciso «gratis». Se si superano i limiti il servizio si ferma, non arriva un conto |
 | Foto | Dentro Firestore, una per documento, 900 px JPEG 0,8 (tetto 300 KB) | Storage vuole la carta |
-| Notifiche (C3) | Un Worker gratuito di Cloudflare manda la notifica a Monica | Le Functions vogliono la carta; il sito sarà già su Cloudflare |
+| Indipendenza | Progetto Firebase e account Cloudflare solo dell'app (Mario 05/11) | I limiti gratuiti di Firebase valgono per progetto, quelli dei Worker di Cloudflare per account: così non si toccano le altre app |
+| Notifiche (C3) | Un Worker gratuito di Cloudflare, nell'account dell'app, manda la notifica a Monica | Le Functions vogliono la carta |
 | Cliente | Accesso anonimo invisibile + link personale `#i=codice` (codice casuale di 20 caratteri) | Il cliente non crea account né password |
 | Monica | Accesso col suo account Google (un tocco su Android) | Sicuro, niente password da ricordare. Mario: stesso modo, come riserva |
 | Chi gestisce | Documento `gestori/<id>` creato una volta da Mario nella console | Nessun dato personale nel codice |

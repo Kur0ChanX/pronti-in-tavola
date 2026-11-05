@@ -2,8 +2,9 @@
 
 ## 0. Aspetta Mario
 - 05/11 · 🟡 Principale 1 · Decori sardi (trama sullo sfondo e rombi nei titoli): vanno bene così, più visibili o più leggeri? (anteprima versione 12; foto `archivio/foto/decori-1-menu.png`, `archivio/foto/decori-2-titoli.png`)
-- 05/11 · 🟡 Principale 2 · ⏭ Come entra Monica nell'app vera: account Google (consiglio), link segreto suo, email e password? (`docs/SPEC-FIREBASE.md`)
-- 05/11 · 🟡 Principale 2 · ⏭ Link del cliente: personale e riusabile su un altro telefono (consiglio) o valido una volta sola?
+- 05/11 · 🛑 · 🟡 Principale 2 · Link per il passaparola: link unico per tutti con menù visibile e ok di Monica al primo ordine (consiglio), menù solo dopo l'ok, o link personale + link per le amiche? (`docs/SPEC-FIREBASE.md`)
+- 05/11 · 🟡 Principale 2 · ⏭ Come entra Monica: Google una volta + impronta o PIN del telefono a ogni apertura (consiglio), solo Google, solo PIN?
+- 05/11 · 🟡 Principale 2 · ⏭ Account nuovo solo per l'app (Google e Cloudflare, lo crea Mario) per non toccare i limiti delle altre app (consiglio), o account di Monica?
 - 05/11 · 🟡 Principale 2 · Creare il progetto Firebase con la guida passo passo: scrivere «Firebase» quando ha 10 minuti, meglio al computer
 
 | N | Cosa | Chi | Urgenza |
