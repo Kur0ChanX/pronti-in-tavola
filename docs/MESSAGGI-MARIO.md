@@ -24,3 +24,40 @@ continua
 
 ## 2026-11-05 14:27 · 01QTFEqRY58R
 immagine anteprima ok firebase manda guida
+
+## 2026-11-05 14:30 · 01QTFEqRY58R
+Abilito Gemini che cosa ci dà in più?
+
+## 2026-11-05 14:31 · 01QTFEqRY58R
+fatto
+
+## 2026-11-05 14:33 · 01QTFEqRY58R
+dove
+
+## 2026-11-05 14:34 · 01QTFEqRY58R
+salvalo cosí ti ricordi
+
+## 2026-11-05 14:35 · 01QTFEqRY58R
+ogni vokta che vedi che sbagli una guida segna quella giusta su github
+
+## 2026-11-05 14:36 · 01QTFEqRY58R
+se ne parliamo la consulti
+
+## 2026-11-05 14:36 · 01QTFEqRY58R
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "[segreto tolto dalla scorta]",
+  authDomain: "pronti-in-tavola.firebaseapp.com",
+  projectId: "pronti-in-tavola",
+  storageBucket: "pronti-in-tavola.firebasestorage.app",
+  messagingSenderId: "340961319417",
+  appId: "1:340961319417:web:0c1e6c4a9b894bc187c528"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
