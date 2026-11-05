@@ -840,7 +840,7 @@ function render() {
   $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
   if (UI.vista === ultimaVista) window.scrollTo(0, y); else window.scrollTo(0, 0);
-  if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|invito-nome)/.test(attivo)) document.getElementById(attivo).focus();
+  if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova)/.test(attivo)) document.getElementById(attivo).focus();
   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
   if (chiuso === 'chiuso') setTimeout(provaApri, 0);
 }
@@ -1380,10 +1380,6 @@ document.addEventListener('input', e => {
   if (el.dataset.campo === 'sel.testo' || el.dataset.campo === 'nota') salvaCampo(el);
   if (el.dataset.cerca) suggerisci(el);
   if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;   // resta anche se la pagina si ridisegna (una foto che arriva)
-  if (el.id === 'invito-nome') {
-    const nome = el.value.trim(), tok = Math.random().toString(36).slice(2, 8);
-    $('#invito-link').href = wa('', `Ciao ${nomeBreve(nome)}! Sono Monica di Pronti in Tavola. Da qui vedi il mio menù e ordini in due tocchi:\n${S.impostazioni.indirizzoApp}#i=${tok}`);
-  }
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && UI.foglio) A.chiudi();
@@ -1399,7 +1395,7 @@ if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && windo
 
 /* ---------- dati veri (motore «firebase», dati.js) ---------- */
 let renderDopo = false;
-const staScrivendo = () => { const a = document.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && !!$('#app').contains(a); };
+const staScrivendo = () => { const a = document.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && !!($('#app').contains(a) || $('#foglio').contains(a)); };   /* anche le finestre (nota del piatto, nome): se no si chiude la tastiera */
 function avviaDati() {
   const m = location.hash.match(/^#da=([\w-]{1,40})$/);
   if (m && !P.tramite) { P.tramite = m[1]; salvaP(); }
