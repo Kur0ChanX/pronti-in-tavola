@@ -177,7 +177,7 @@ function statoIniziale() {
       ritiro: { via: 'Via Libano 53', citta: '07026 Olbia', nota: 'Suona il citofono fuori.' },
       whatsapp: '',
       mario: '',
-      indirizzoApp: 'https://pronti-in-tavola-by-ynoy-corp.pages.dev/'
+      indirizzoApp: 'https://pronti-in-tavola.pages.dev/'
     }
   };
 }

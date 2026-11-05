@@ -26,7 +26,7 @@ Regola d'oro di Mario: **semplicissima**. Monica fa tutto da sola, a prova di er
 | Idee approvate | Pausa, limite di teglie a settimana, agenda «da preparare», «Mi è piaciuto», passaparola controllato, Novità per 2 settimane, testo grande, icona col logo, menù di Natale (solo se lo accende Monica, già nella prima versione) |
 | Aspetto | Colori del logo, stile «trattoria moderna»; apertura animata col logo e il vapore; in basso «Powered by» col logo YNOY Corp con le 4 lune (`media/ynoy.png`); decori sardi delicati (trama «a pibiones» sullo sfondo, rombi nei titoli): vanno bene così, mai pacchiani né pesanti (Mario 05/11) |
 | Telefono di Monica | Android |
-| Indirizzo web | Gratis (proposta: `pronti-in-tavola-by-ynoy-corp.pages.dev`, come Jona) |
+| Indirizzo web | Gratis: `pronti-in-tavola.pages.dev` (deciso da Mario il 05/11) |
 | Passaparola | Link unico che tutti possono rigirare; menù visibile a chi lo apre; il nuovo utente scrive il suo nome (diverso da quelli già usati) e Monica lo approva al primo ordine; indirizzo e ordini solo agli approvati (Mario 05/11) |
 | Accesso di Monica | Google una volta sola + impronta o PIN del telefono a ogni apertura della sua parte (Mario 05/11) |
 | Indipendenza | L'app non usa i limiti gratuiti di altre app (Firebase, Cloudflare) e non pesa su di esse: account e progetti solo suoi (Mario 05/11). Firebase: progetto nuovo sull'account Google di Mario (limiti per progetto). Cloudflare: account nuovo solo dell'app, mai condiviso neanche all'1% (Mario 05/11) |
