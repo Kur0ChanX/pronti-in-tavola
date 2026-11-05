@@ -1379,6 +1379,7 @@ document.addEventListener('input', e => {
   const el = e.target;
   if (el.dataset.campo === 'sel.testo' || el.dataset.campo === 'nota') salvaCampo(el);
   if (el.dataset.cerca) suggerisci(el);
+  if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;   // resta anche se la pagina si ridisegna (una foto che arriva)
   if (el.id === 'invito-nome') {
     const nome = el.value.trim(), tok = Math.random().toString(36).slice(2, 8);
     $('#invito-link').href = wa('', `Ciao ${nomeBreve(nome)}! Sono Monica di Pronti in Tavola. Da qui vedi il mio menù e ordini in due tocchi:\n${S.impostazioni.indirizzoApp}#i=${tok}`);
@@ -1456,7 +1457,7 @@ function foglioNome() {
   const u = UI.foglio.usato;
   return `<h2>Come ti chiami?</h2>
     <p class="tenue">Scrivi nome e cognome: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>
-    <input type="text" id="nome-nuovo" placeholder="Nome e cognome" aria-label="Nome e cognome" autocomplete="name" maxlength="60" value="${esc(u || '')}">
+    <input type="text" id="nome-nuovo" placeholder="Nome e cognome" aria-label="Nome e cognome" autocomplete="name" maxlength="60" value="${esc(u || UI.foglio.scritto || '')}">
     ${u ? `<p><b>Questo nome c'è già.</b> Sei tu con un telefono nuovo?</p>
       <div class="fila"><button type="button" class="btn pieno" data-a="nome-ricollega">Sì, sono io</button><button type="button" class="btn chiaro" data-a="nome-altro">No, scrivo un altro nome</button></div>`
     : `<button type="button" class="btn pieno" data-a="nome-ok">${ico('invito')}Invia l'ordine a Monica</button>`}`;
