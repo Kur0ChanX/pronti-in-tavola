@@ -87,6 +87,19 @@ const server = http.createServer((req, res) => {
     const appr = (await admin(d => getDoc(doc(d, 'impostazioni/approvati')))).data();
     controlla('indirizzo del ritiro nel documento solo per approvati', appr && appr.ritiro.via === 'Via di prova 1');
 
+    // Un cambio del server non ancora arrivato in S (i 30 ms prima del ridisegno) non si riscrive né si cancella
+    await monica.evaluate(() => { window.__st = window.setTimeout; window.__fermi = []; window.setTimeout = (f, ms) => (ms === 30 ? (__fermi.push(f), 0) : __st(f, ms)); });
+    await admin(d => setDoc(doc(d, 'piatti/tiramisu'), { stagione: 'estate' }, { merge: true }));
+    await admin(d => setDoc(doc(d, 'clienti/cProva'), { nome: 'Cliente Prova' }));
+    await monica.waitForFunction(() => __fermi.length > 0, null, { timeout: 15000 }).catch(() => {});
+    await monica.waitForTimeout(800);
+    await monica.evaluate(() => { S.impostazioni.prontiFino = '21:00'; return salva(); });
+    await monica.evaluate(() => { window.setTimeout = __st; __fermi.splice(0).forEach(f => f()); return Dati.confermato(); });
+    const tira2 = (await admin(d => getDoc(doc(d, 'piatti/tiramisu')))).data(), cP = await admin(d => getDoc(doc(d, 'clienti/cProva')));
+    const app2 = (await admin(d => getDoc(doc(d, 'impostazioni/app')))).data();
+    controlla('cambio del server non ancora in S: resta, e il campo di Monica si scrive', tira2.stagione === 'estate' && cP.exists() && app2.prontiFino === '21:00', [tira2.stagione, cP.exists(), app2.prontiFino]);
+    await admin(d => require('firebase/firestore').deleteDoc(doc(d, 'clienti/cProva')));
+
     // Cliente nuovo: vede il menù, non l'indirizzo
     const cliente = await apri();
     controlla('cliente nuovo vede il menù', await aspetta(cliente, () => S.piatti.length === 23));

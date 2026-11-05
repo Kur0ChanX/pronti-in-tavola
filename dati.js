@@ -17,6 +17,7 @@ const Dati = (() => {
 
   let F = null, db = null, auth = null, alCambio = () => {}, alStato = () => {}, op = {};
   const srv = {};                 // ultima copia del server (o della cache): 'raccolta/id' → dati
+  let base = null;                // la copia da cui è nato lo S attuale: Monica scrive solo ciò che ha cambiato lei
   const ascolti = [];             // ascolti attivi da chiudere al cambio di utente
   let ultimaScrittura = Promise.resolve(), inAttesa = 0, tAvviso = null;
   const io = { uid: null, gestore: false, utente: null, pronto: false, entrata: 0, nome: '' };
@@ -94,7 +95,7 @@ const Dati = (() => {
     clearTimeout(tCambio);
     // Il cliente aspetta le impostazioni (senza, l'app non sa disegnarsi); Monica no: col database vuoto lo prepara lei.
     if (!srv['impostazioni/app'] && !(io.gestore && io.pronto)) return;
-    tCambio = setTimeout(() => { const S = stato(); if (io.pronto) salvaCopia(S); alCambio(S, Object.assign({}, io)); }, 30);
+    tCambio = setTimeout(() => { base = Object.assign({}, srv); const S = stato(); if (io.pronto) salvaCopia(S); alCambio(S, Object.assign({}, io)); }, 30);
   }
 
   /* ---------- ascolti ---------- */
@@ -147,7 +148,7 @@ const Dati = (() => {
   /* ---------- chi sono: telefono anonimo, o Monica con Google ---------- */
   async function chiSono(user) {
     const { doc, getDoc, onSnapshot } = F.fs;
-    if (io.uid !== user.uid) { chiudiAscolti(); Object.keys(srv).forEach(k => delete srv[k]); io.pronto = false; }
+    if (io.uid !== user.uid) { chiudiAscolti(); Object.keys(srv).forEach(k => delete srv[k]); base = null; io.pronto = false; }
     io.uid = user.uid;
     io.entrata = Date.parse(user.metadata && user.metadata.lastSignInTime) || 0;   // per il lucchetto: entrata appena fatta?
     io.nome = user.displayName || '';
@@ -195,22 +196,24 @@ const Dati = (() => {
     if (db && !io.gestore && io.pronto) return scriviCliente(S);
     if (!db || !io.gestore) return ultimaScrittura;
     const { doc, writeBatch, deleteField } = F.fs;
-    const nuovi = documenti(S), b = writeBatch(db);
+    /* Confronto con la copia da cui S è nato (base), non con l'ultima arrivata: un cambio del server
+       non ancora in S (Mario, un ordine nuovo) non viene riscritto né cancellato. */
+    const rif = base || srv, nuovi = documenti(S), b = writeBatch(db);
     let n = 0;
     Object.keys(nuovi).forEach(k => {
-      const vecchio = srv[k], nuovo = nuovi[k];
+      const vecchio = rif[k], nuovo = nuovi[k];
       if (!vecchio) { b.set(doc(db, k), nuovo); n++; return; }
       const campi = {};
       Object.keys(nuovo).forEach(c => { if (chiaro(nuovo[c]) !== chiaro(vecchio[c])) campi[c] = nuovo[c]; });
       if (k.startsWith('impostazioni/')) Object.keys(vecchio).forEach(c => { if (!(c in nuovo)) campi[c] = deleteField(); });
       if (Object.keys(campi).length) { b.update(doc(db, k), campi); n++; }
     });
-    Object.keys(srv).forEach(k => {
+    Object.keys(rif).forEach(k => {
       if (!(k in nuovi) && SCRIVIBILI.some(p => k.startsWith(p)) && !k.startsWith('impostazioni/') && !k.startsWith('contatori/')) { b.delete(doc(db, k)); n++; }
     });
     if (!n) return ultimaScrittura;
     // la copia del server non è ancora arrivata (app aperta senza rete): niente scritture alla cieca, e lo si dice
-    if (!io.pronto) { alStato({ errore: 'non-pronto' }); return ultimaScrittura; }
+    if (!io.pronto || !base) { alStato({ errore: 'non-pronto' }); return ultimaScrittura; }
     inAttesa++;
     clearTimeout(tAvviso);
     if (!navigator.onLine) alStato({ rete: false, inAttesa });
