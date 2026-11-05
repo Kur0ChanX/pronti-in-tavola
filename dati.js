@@ -205,19 +205,20 @@ const Dati = (() => {
        La base può venire dalla copia di Firestore sul telefono (app aperta senza rete): le scritture
        restano in coda, anche ad app chiusa, e partono da sole quando torna la rete. */
     const rif = base || srv, nuovi = documenti(S), b = writeBatch(db);
+    const dopo = {};   // come diventa la base dopo questa scrittura: due salvataggi di fila non mandano due volte la stessa differenza
     let n = 0;
     Object.keys(nuovi).forEach(k => {
       const vecchio = rif[k], nuovo = nuovi[k];
       // Teglie della settimana: si scrive la differenza, non il numero, così gli ordini arrivati intanto restano contati
       if (k.startsWith('settimane/')) {
         const d = (nuovo.teglie || 0) - ((vecchio || {}).teglie || 0);
-        if (d) { b.set(doc(db, k), { teglie: increment(d) }, { merge: true }); n++; }
+        if (d) { b.set(doc(db, k), { teglie: increment(d) }, { merge: true }); n++; dopo[k] = Object.assign({}, vecchio, { teglie: nuovo.teglie }); }
         return;
       }
       if (!vecchio) {
         // senza la copia del server non si creano impostazioni e contatore: sul server potrebbero esserci già
         if (!io.pronto && /^(impostazioni|contatori)\//.test(k)) return;
-        b.set(doc(db, k), nuovo); n++; return;
+        b.set(doc(db, k), nuovo); n++; dopo[k] = nuovo; return;
       }
       const campi = {};
       Object.keys(nuovo).forEach(c => { if (chiaro(nuovo[c]) !== chiaro(vecchio[c])) campi[c] = nuovo[c]; });
@@ -227,14 +228,15 @@ const Dati = (() => {
         delete campi.pronto; campi['pronto.qta'] = increment(arrot((pn.qta || 0) - (pv.qta || 0)));
       }
       if (k.startsWith('impostazioni/')) Object.keys(vecchio).forEach(c => { if (!(c in nuovo)) campi[c] = deleteField(); });
-      if (Object.keys(campi).length) { b.update(doc(db, k), campi); n++; }
+      if (Object.keys(campi).length) { b.update(doc(db, k), campi); n++; dopo[k] = k.startsWith('impostazioni/') ? nuovo : Object.assign({}, vecchio, nuovo); }
     });
     Object.keys(rif).forEach(k => {
-      if (!(k in nuovi) && SCRIVIBILI.some(p => k.startsWith(p)) && !k.startsWith('impostazioni/') && !k.startsWith('contatori/')) { b.delete(doc(db, k)); n++; }
+      if (!(k in nuovi) && SCRIVIBILI.some(p => k.startsWith(p)) && !k.startsWith('impostazioni/') && !k.startsWith('contatori/')) { b.delete(doc(db, k)); n++; dopo[k] = null; }
     });
     if (!n) return ultimaScrittura;
     // S non è nato dai dati di Firestore (solo la copia dell'app, nei primi istanti): niente scritture alla cieca, e lo si dice
     if (!base) { alStato({ errore: 'non-pronto' }); return ultimaScrittura; }
+    Object.keys(dopo).forEach(k => { if (dopo[k]) base[k] = dopo[k]; else delete base[k]; });
     inAttesa++;
     clearTimeout(tAvviso);
     if (!navigator.onLine || !io.pronto) alStato({ rete: false, inAttesa });
