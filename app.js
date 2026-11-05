@@ -64,7 +64,8 @@ const PATH = {
   stella: '<path d="M12 3l2.6 5.6 6 .6-4.5 4 1.3 6L12 16.3 6.6 19.2l1.3-6-4.5-4 6-.6z"/>',
   matita: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
   euro: '<path d="M17 6.5A6.5 6.5 0 1 0 17 17.5M4 10h9M4 14h9"/>',
-  occhio: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
+  occhio: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  lucchetto: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4M12 15v2"/>'
 };
 const ico = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${PATH[n]}</svg>`;
 
@@ -227,7 +228,7 @@ function foto(p, cls = '') {
   return `<div class="foto segnaposto ${cls}" aria-hidden="true"><span>${esc(p.nome.charAt(0))}</span></div>`;
 }
 const YN = '<div class="yn" role="img" aria-label="YNOY Corp"><i class="ys"></i><i class="y1"></i><i class="y2"></i><i class="y3"></i><i class="y4"></i></div>';
-const firma = () => `<footer class="firma">Powered by${YN}${Dati.attivo && !Dati.io.gestore ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
+const firma = () => `<footer class="firma">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
 const filo = () => `<div class="filo" aria-hidden="true">${ico('spiga')}</div>`;
 function striscia() {
   if (Dati.attivo) return '';
@@ -756,6 +757,7 @@ function vImpostazioni() {
       <label for="rit-nota" style="font-weight:800">Come trovarti</label><input type="text" id="rit-nota" data-campo="i.ritiro.nota" value="${esc(i.ritiro.nota)}"></section>
     <section class="scheda"><h2>Numeri</h2><label for="n-wa" style="font-weight:800">Il tuo WhatsApp</label><input type="tel" id="n-wa" data-campo="i.whatsapp" value="${esc(i.whatsapp)}" placeholder="es. 333 123 4567">
       <label for="n-mario" style="font-weight:800">Numero di Mario (per «Chiedi a Mario»)</label><input type="tel" id="n-mario" data-campo="i.mario" value="${esc(i.mario)}" placeholder="es. 333 123 4567"></section>
+    ${Dati.attivo ? vSicurezza() : ''}
     <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
       <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>
     <button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button></main>`;
@@ -821,24 +823,26 @@ function render() {
   document.documentElement.classList.toggle('grande', !!P.grande);
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
-  $('#app').innerHTML = striscia() + (P.ruolo === 'monica' ? vistaMonica() : vistaCliente()) + firma();
+  const chiuso = statoLucchetto();   /* la parte di Monica col lucchetto: nessun dato nella pagina finché non si apre */
+  $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : vistaCliente()) + firma();
   $('#barra').innerHTML = P.ruolo === 'cliente' ? barraCliente() : '';
   $('#barra').classList.toggle('nascosto', P.ruolo !== 'cliente');
   document.body.classList.toggle('con-barra', P.ruolo === 'cliente');
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
-  if (UI.foglio) {
+  if (UI.foglio && !chiuso) {
     const dentro = UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
   if (fh && chiaveFoglio === ultimoFoglio) $('.foglio').scrollTop = fy;
   if (UI.vista !== ultimaVista && $('main.corpo')) $('main.corpo').classList.add('entra');
-  $('#guida').innerHTML = P.ruolo === 'monica' && !P.guida && UI.vista === 'home' ? guida() : '';
+  $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
   if (UI.vista === ultimaVista) window.scrollTo(0, y); else window.scrollTo(0, 0);
   if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|invito-nome)/.test(attivo)) document.getElementById(attivo).focus();
   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
+  if (chiuso === 'chiuso') setTimeout(provaApri, 0);
 }
 
 /* ================= AZIONI ================= */
@@ -1225,7 +1229,7 @@ function apertura() {
   const esci = () => {
     if (!d.isConnected || d.classList.contains('esce')) return;
     clearTimeout(tEsci); d.classList.add('esce');
-    setTimeout(() => { d.remove(); const m = $('main.corpo'); if (m) { m.classList.remove('entra'); void m.offsetWidth; m.classList.add('entra'); } }, 560);
+    setTimeout(() => { d.remove(); const m = $('main.corpo'); if (m) { m.classList.remove('entra'); void m.offsetWidth; m.classList.add('entra'); } provaApri(); }, 560);
   };
   const parti = () => {
     if (partita) return; partita = true;
@@ -1241,6 +1245,110 @@ function apertura() {
   setTimeout(() => { if (!partita && document.visibilityState === 'visible') parti(); }, 2500);
   d.addEventListener('click', esci); /* un tocco ovunque (anche sul logo) salta l'apertura */
 }
+
+/* ---------- lucchetto della parte di Monica (lucchetto.js; docs/SPEC-FIREBASE.md «Accesso») ----------
+   Solo coi dati veri. Stati: '' aperto · 'attendi' (si sta capendo chi è) · 'chiuso' (impronta o PIN)
+   · 'metti' (appena entrata con Google: mette il lucchetto) · 'google' (chiave mancante: di nuovo Google). */
+const L = { aperto: false, puo: undefined, inCorso: false, tentato: false, errore: '', fallito: false, via: 0, esci: false };
+const FRESCA = 5 * 60000;                          /* entrata con Google da meno di 5 minuti */
+const MINUTI_LUCCHETTO = [1, 2, 5, 10, 15, 30, 60];   /* «si richiude se esci dall'app per…» */
+const minutiLucchetto = () => { const m = Number(S.impostazioni.lucchetto); return MINUTI_LUCCHETTO.includes(m) ? m : 5; };
+function statoLucchetto() {
+  if (!Dati.attivo || P.ruolo !== 'monica' || L.aperto) return '';
+  const io = Dati.io;
+  if (!io.uid || !io.gestore || L.puo === undefined) return 'attendi';
+  const k = Lucchetto.di(io.uid);
+  if (k && k.id) return 'chiuso';
+  if (k && k.senza && !L.puo) { L.aperto = true; return ''; }
+  if (Date.now() - (io.entrata || 0) < FRESCA || (k && k.senza)) {
+    if (L.puo) return 'metti';
+    /* telefono senza blocco schermo: la parte resta aperta, con l'avviso (una volta) */
+    Lucchetto.metti(io.uid, { senza: true }); L.aperto = true;
+    setTimeout(() => mostraToast('Il telefono non ha il blocco schermo: la tua parte resta aperta. Mettilo nelle impostazioni del telefono.'), 0);
+    return '';
+  }
+  return 'google';
+}
+function vLucchetto(st) {
+  const scheda = (titolo, testo, corpo) => `<main class="corpo lucchetto"><section class="scheda">
+    <div class="lucchetto-ico">${ico('lucchetto')}</div><h1>${titolo}</h1><p>${testo}</p>${corpo}
+    ${L.errore ? `<p class="avviso-errore" role="alert">${esc(L.errore)}</p>` : ''}</section></main>`;
+  const testata = `<header class="testata"><img class="marchio" src="${LOGO}" alt=""><div class="titolo"><b>Pronti in Tavola</b></div></header>`;
+  if (st === 'attendi') return testata + `<main class="corpo lucchetto"><section class="scheda"><div class="lucchetto-ico">${ico('lucchetto')}</div><p>Un attimo…</p></section></main>`;
+  if (st === 'chiuso') return testata + scheda('La tua parte è chiusa', 'Per aprirla usa l\'impronta o il PIN del telefono.',
+    `<button type="button" class="btn pieno grande" data-a="lucchetto-apri" ${L.inCorso ? 'disabled' : ''}>${ico('lucchetto')}${L.inCorso ? 'Tocca il sensore…' : 'Apri con l\'impronta'}</button>
+     <button type="button" class="link" data-a="lucchetto-google">Non funziona? Entra di nuovo con Google</button>`);
+  if (st === 'metti') return testata + scheda('Proteggi la tua parte', 'Da ora, per aprire la tua parte, il telefono ti chiede l\'impronta o il PIN. Così i dati dei clienti restano al sicuro anche se presti il telefono.',
+    `<button type="button" class="btn pieno grande" data-a="lucchetto-metti" ${L.inCorso ? 'disabled' : ''}>${ico('lucchetto')}${L.inCorso ? 'Tocca il sensore…' : 'Metti l\'impronta'}</button>
+     ${L.fallito || (Lucchetto.di(Dati.io.uid) || {}).senza ? '<button type="button" class="link" data-a="lucchetto-dopo">Più tardi</button>' : ''}`);
+  return testata + scheda('Entra di nuovo', 'Per sicurezza, entra di nuovo con il tuo account Google. Poi metti l\'impronta.',
+    `<button type="button" class="btn pieno grande" data-a="lucchetto-google">Entra con Google</button>`);
+}
+function vSicurezza() {
+  const k = Lucchetto.di(Dati.io.uid) || {}, m = minutiLucchetto();
+  return `<section class="scheda"><h2>Lucchetto</h2>
+    ${k.id ? `<p style="margin:0"><b>Acceso.</b> Per aprire la tua parte il telefono chiede l'impronta o il PIN.</p>
+      <span class="etichetta" style="font-weight:800">Si richiude se esci dall'app per</span>
+      <div class="fila">${passo('i-lucchetto', m)}<span class="tenue">${m === 1 ? 'minuto' : 'minuti'}</span></div>`
+    : L.puo ? `<p style="margin:0"><b>Spento.</b> Mettilo: per aprire la tua parte il telefono chiederà l'impronta o il PIN.</p>
+      <button type="button" class="btn pieno" data-a="lucchetto-metti">${ico('lucchetto')}Metti l'impronta</button>`
+    : `<p style="margin:0"><b>Spento:</b> il telefono non ha il blocco schermo. Mettilo nelle impostazioni del telefono, poi riapri l'app.</p>`}
+    <button type="button" class="link" data-a="lucchetto-esci" style="color:var(--allarme)">${L.esci ? 'Sicura? Tocca ancora per uscire' : 'Esci da questo telefono'}</button>
+    <small class="tenue">Se cambi telefono o lo dai via. Per rientrare: «Sei Monica? Entra» in fondo alla pagina.</small></section>`;
+}
+/* l'impronta si chiede da sola una volta, finita l'apertura animata; poi col pulsante */
+function provaApri() {
+  if (L.tentato || L.inCorso || document.visibilityState !== 'visible' || $('.apertura') || statoLucchetto() !== 'chiuso') return;
+  L.tentato = true; apriLucchetto();
+}
+async function apriLucchetto() {
+  if (L.inCorso) return;
+  L.inCorso = true; L.errore = ''; render();
+  try { await Lucchetto.apri(Dati.io.uid); L.aperto = true; }
+  catch (e) { L.errore = e.name === 'NotAllowedError' ? 'Non si è aperta. Tocca il pulsante e riprova.' : 'Il telefono non riesce a usare l\'impronta. Riprova, o entra di nuovo con Google.'; }
+  L.inCorso = false; render();
+}
+/* uscita dall'app più lunga dei minuti scelti: si richiude */
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') { L.via = Date.now(); return; }
+  const k = Dati.attivo ? Lucchetto.di(Dati.io.uid) : null;
+  if (L.aperto && k && k.id && L.via && Date.now() - L.via >= minutiLucchetto() * 60000) {
+    L.aperto = false; L.tentato = false; L.errore = ''; UI.foglio = null; render();
+  }
+  L.via = 0; provaApri();
+});
+Object.assign(A, {
+  'lucchetto-apri'() { L.tentato = true; apriLucchetto(); },
+  async 'lucchetto-metti'() {
+    if (L.inCorso) return;
+    L.inCorso = true; L.errore = ''; render();
+    try {
+      await Lucchetto.crea(Dati.io.uid, Dati.io.nome); L.aperto = true; L.fallito = false; L.inCorso = false; render();
+      mostraToast('Lucchetto messo ✓ Da ora il telefono ti chiede l\'impronta o il PIN.');
+    } catch (e) { L.inCorso = false; L.fallito = true; L.errore = 'Non è andata. Riprova.'; render(); }
+  },
+  'lucchetto-dopo'() { L.aperto = true; L.errore = ''; render(); },
+  async 'lucchetto-google'() {
+    L.errore = '';
+    try { await Dati.rientra(); Lucchetto.metti(Dati.io.uid, null); L.fallito = false; }
+    catch (e) {
+      L.errore = e.code === 'auth/user-mismatch' ? 'Questo non è il tuo account: scegli quello con cui entri di solito.'
+        : e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request' ? '' : 'Accesso non riuscito. Riprova.';
+    }
+    render();
+  },
+  'i-lucchetto'(el) {
+    const i = MINUTI_LUCCHETTO.indexOf(minutiLucchetto()) + Number(el.dataset.d);
+    cambia('', () => { S.impostazioni.lucchetto = MINUTI_LUCCHETTO[Math.min(MINUTI_LUCCHETTO.length - 1, Math.max(0, i))]; }, false); salvatoOk();
+  },
+  async 'lucchetto-esci'() {
+    if (!L.esci) { L.esci = true; render(); setTimeout(() => { L.esci = false; if (UI.vista === 'impostazioni') render(); }, 5000); return; }
+    const uid = Dati.io.uid;
+    try { await Dati.esci(); } catch (e) { mostraToast('Non sono riuscita a uscire. Riprova.'); return; }
+    Lucchetto.metti(uid, null); P.ruolo = 'cliente'; salvaP(); location.reload();
+  }
+});
+if (Dati.attivo) Lucchetto.disponibile().then(v => { L.puo = v; render(); });
 
 /* ---------- avvio ---------- */
 document.addEventListener('click', e => {

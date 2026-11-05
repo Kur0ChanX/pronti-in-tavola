@@ -19,7 +19,7 @@ const Dati = (() => {
   const srv = {};                 // ultima copia del server (o della cache): 'raccolta/id' → dati
   const ascolti = [];             // ascolti attivi da chiudere al cambio di utente
   let ultimaScrittura = Promise.resolve(), inAttesa = 0, tAvviso = null;
-  const io = { uid: null, gestore: false, utente: null, pronto: false };
+  const io = { uid: null, gestore: false, utente: null, pronto: false, entrata: 0, nome: '' };
   let ascoltoUtente = null;   // il documento utenti/ di questo telefono
 
   /* JSON con le chiavi in ordine: due oggetti uguali danno lo stesso testo */
@@ -139,6 +139,8 @@ const Dati = (() => {
     const { doc, getDoc, onSnapshot } = F.fs;
     if (io.uid !== user.uid) { chiudiAscolti(); Object.keys(srv).forEach(k => delete srv[k]); io.pronto = false; }
     io.uid = user.uid;
+    io.entrata = Date.parse(user.metadata && user.metadata.lastSignInTime) || 0;   // per il lucchetto: entrata appena fatta?
+    io.nome = user.displayName || '';
     io.gestore = (await getDoc(doc(db, 'gestori', user.uid)).catch(() => null))?.exists() || false;
     io.utente = null;
     if (!io.gestore) {
@@ -169,6 +171,7 @@ const Dati = (() => {
       au.connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
     }
     au.onAuthStateChanged(auth, user => {
+      if (uscito) return;
       if (user) chiSono(user);
       else au.signInAnonymously(auth).catch(e => alStato({ errore: e.code }));
     });
@@ -396,9 +399,26 @@ const Dati = (() => {
     const au = F.au, provider = new au.GoogleAuthProvider();
     await au.signInWithPopup(auth, provider);
   }
+  /* il lucchetto non si apre (chiave persa, telefono cambiato): di nuovo Google, solo con lo stesso account */
+  async function rientra() {
+    const au = F.au;
+    await au.reauthenticateWithPopup(auth.currentUser, new au.GoogleAuthProvider());
+    io.entrata = Date.now();
+  }
+  /* «Esci da questo telefono»: via la copia dei dati (anche quella di Firestore) e l'account;
+     poi l'app si ricarica e il telefono torna un cliente anonimo nuovo */
+  let uscito = false;
+  async function esci() {
+    uscito = true;
+    chiudiAscolti(); if (ascoltoUtente) { ascoltoUtente(); ascoltoUtente = null; }
+    await F.fs.terminate(db).catch(() => {});
+    await F.fs.clearIndexedDbPersistence(db).catch(() => {});
+    try { localStorage.removeItem(CHIAVE_COPIA); } catch (e) { /* niente */ }
+    await F.au.signOut(auth);
+  }
 
   return {
-    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, registra, inviaOrdini, decidi,
+    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi,
     confermato: () => ultimaScrittura,
     inAttesa: () => inAttesa
   };
