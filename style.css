@@ -502,3 +502,10 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
 .spesa-ordine { display: flex; flex-direction: column; gap: 2px; padding: 10px 0; border-top: 1px dashed var(--riga); }
 .spesa-ordine small { color: var(--tenue); }
 details.scheda summary { cursor: pointer; min-height: 32px; }
+
+/* benvenuto del cliente nuovo (nome e cognome alla prima apertura) */
+.benvenuto { text-align: center; }
+.benvenuto .scheda, .benvenuto .avviso { text-align: left; }
+.benv-logo { width: min(52vw, 220px); height: auto; margin: 8px auto 0; display: block; animation: scatto .6s cubic-bezier(.3, 1.6, .5, 1) both; }
+.benvenuto h1 { font-family: var(--display); color: var(--vino); margin: 4px 0 0; font-size: 2rem; }
+.benvenuto .avviso small { display: block; margin-top: 8px; color: var(--tenue); }
