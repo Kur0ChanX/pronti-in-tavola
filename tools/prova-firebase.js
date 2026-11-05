@@ -279,6 +279,38 @@ const server = http.createServer((req, res) => {
     await monica.click('[data-a="lucchetto-metti"]');
     controlla('dopo Google: impronta nuova e parte aperta', await aspetta(monica, id => L.aperto && Lucchetto.di(Dati.io.uid).id && Lucchetto.di(Dati.io.uid).id !== id, vecchia));
 
+    // g) Monica apre l'app senza rete: le modifiche restano in coda e partono da sole; quello che è cambiato intanto sul server resta
+    await admin(d => setDoc(doc(d, 'piatti/tiramisu'), { pronto: { formato: 't6', qta: 3, giorno: oggiPag } }, { merge: true }));
+    await aspetta(monica, () => (S.piatti.find(p => p.id === 'tiramisu').pronto || {}).qta === 3);
+    const tegliePrima = (await admin(d => getDoc(doc(d, 'settimane/' + sett)))).data().teglie;
+    const oL = await monica.evaluate(() => (S.ordini.find(o => o.cliente === 'c1' && o.stato === 'nuovo' && !o.pronto && o.righe.some(r => r.piatto === 'lasagne-ragu' && r.qta === 2)) || {}).id);
+    const SENZA = /127\.0\.0\.1:8080/;
+    await monica.context().route(SENZA, r => r.abort());
+    await monica.reload();
+    controlla('senza rete: Monica riconosciuta dalla copia del telefono e parte aperta con l\'impronta', await aspetta(monica, () => Dati.io.gestore && !Dati.io.pronto && L.aperto && S.piatti.length === 23));
+    // intanto sul server: un cliente prende 2 tiramisù pronti e arrivano 5 teglie nella stessa settimana
+    await admin(async d => {
+      await setDoc(doc(d, 'piatti/tiramisu'), { pronto: { formato: 't6', qta: 1, giorno: oggiPag } }, { merge: true });
+      await setDoc(doc(d, 'settimane/' + sett), { teglie: tegliePrima + 5 }, { merge: true });
+    });
+    await monica.evaluate(id => {
+      segnaPronto(piatto('tiramisu'), 1);   // Monica: un tiramisù pronto in più (lei ne vede 3 → 4)
+      S.piatti.find(p => p.id === 'tiramisu').stagione = 'primavera'; salva();
+      A.rifiuta({ dataset: { id } });        // rifiuta un ordine da 2 teglie
+    }, oL);
+    controlla('senza rete: modifiche in coda con l\'avviso «si salverà appena torna»', await aspetta(monica, () => Dati.inAttesa() > 0 && /si salverà appena torna/.test(document.querySelector('#toast').textContent)));
+    await monica.evaluate(() => vai('impostazioni'));
+    await monica.click('[data-a="lucchetto-esci"]');
+    await monica.click('[data-a="lucchetto-esci"]');
+    controlla('modifiche in coda: «Esci da questo telefono» aspetta la rete', await aspetta(monica, () => /Non esco ancora/.test(document.querySelector('#toast').textContent) && Dati.io.gestore));
+    await monica.context().unroute(SENZA);
+    await monica.evaluate(() => dispatchEvent(new Event('online')));
+    controlla('torna la rete: le modifiche partono da sole', await aspetta(monica, () => Dati.io.pronto && Dati.inAttesa() === 0));
+    const tiraG = (await admin(d => getDoc(doc(d, 'piatti/tiramisu')))).data(), settG = (await admin(d => getDoc(doc(d, 'settimane/' + sett)))).data();
+    controlla('pronti: conta la differenza (1 rimasto + 1 di Monica = 2), non il 4 che vedeva lei', tiraG.pronto.qta === 2 && tiraG.stagione === 'primavera', [tiraG.pronto, tiraG.stagione]);
+    controlla('teglie: le 5 arrivate intanto restano, meno le 2 rifiutate', settG.teglie === tegliePrima + 5 - 2, [tegliePrima, settG.teglie]);
+    controlla('l\'ordine rifiutato senza rete è rifiutato sul server', (await admin(d => getDoc(doc(d, 'ordini/' + oL)))).data().stato === 'rifiutato');
+
     // f) telefono senza blocco schermo (Mario): la parte resta aperta con l'avviso; poi «Esci da questo telefono»
     const mario = await apri();
     const uidMa = await mario.evaluate(() => Dati.io.uid);
