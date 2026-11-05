@@ -33,16 +33,8 @@ Monica
 - Ogni modifica si salva da sola; «Annulla» per 10 secondi.
 - Animazioni: entrata delle schermate, piatto che vola nel carrello, foglio che si chiude scendendo, scoppio all'invio.
 
-### Da fare (in ordine)
-1. Installare il kit di regole RVC (pacchetto «indipendente» v35, `docs/kit-progetto/pacchetto/` del repo RVC) con il ramo `claude/pronti-ramo-definitivo`.
-2. Dati veri condivisi con **Firebase** come Jona: Firestore; accesso cliente col link d'invito (`#i=codice`), accesso di Monica separato; regole di sicurezza (il cliente vede solo i suoi ordini; costi e dosi solo Monica). Due persone sull'ultimo «pronto subito»: transazione.
-3. Foto: verificare se Firebase Storage richiede il piano a pagamento; se sì, foto piccole (900 px, JPEG 0,8) dentro Firestore.
-4. Notifiche vere a Monica (Android, app aggiunta alla schermata Home, Firebase Cloud Messaging) e funzionamento senza rete (service worker, manifest, icone già pronte in `media/`).
-5. Sito su Cloudflare Pages: `pronti-in-tavola.pages.dev` (riserve: `prontiintavola.pages.dev`, `pronti-in-tavola-monica.pages.dev`). Più avanti forse il dominio `pronti-in-tavola.app` (a pagamento, deciderà Mario).
-6. Anteprima del link su WhatsApp col logo (immagine og:image).
-7. Fase 2: dosi per ricetta e **spesa** (totale e per ordine, dispensa, confezioni, reparti, senza rete), sconti per cliente o per ordine (il cliente vede lo sconto solo se c'è).
-8. Fase 3: etichette da stampare per le vaschette, immagine del menù per WhatsApp, incassi del mese, costo per piatto.
-9. Togliere la striscia «Prova · guarda come Cliente / Monica» nella versione vera.
+### Da fare
+In `docs/DA-FARE.md` (un posto solo). Kit RVC 35.0 installato il 05/11/2026 nella prima sessione di Claude Code.
 
 ## 3. Decisioni e perché
 | Tema | Decisione | Perché / chi |
