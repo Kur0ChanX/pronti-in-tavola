@@ -117,7 +117,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('Monica: clienti nuovi e telefono nuovo', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=2'); await foto('17-clienti');
     if (!(await page.locator('main', { hasText: 'Telefono nuovo' }).count())) throw new Error('manca «Telefono nuovo»');
-    await clic('[data-a="richiesta-si"][data-id="r1"]');
+    await clic('[data-a="richiesta-no"][data-id="r1"]');   // un No sbagliato...
+    if (!(await page.locator('[data-a="rifiutati-apri"]', { hasText: 'Persone rifiutate (1)' }).count())) throw new Error('manca «Persone rifiutate (1)»');
+    await clic('[data-a="rifiutati-apri"]'); await foto('18-rifiutati');
+    await clic('[data-a="rifiutato-si"][data-id="r1"]');   // ...si corregge con «Accetta»
+    if (await page.locator('[data-a="rifiutati-apri"]').count()) throw new Error('la lista dei rifiutati non si è svuotata');
     const o = await page.evaluate(() => { const x = S.ordini.find(y => y.id === 'o4'); return x.stato + '/' + !!x.cliente; });
     if (o !== 'nuovo/true') throw new Error('primo ordine di Laura: ' + o);
     await clic('[data-a="richiesta-si"][data-id="r2"]');
