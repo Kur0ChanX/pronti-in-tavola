@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (05/11/2026 21:13 ora italiana)
+# Ultimo messaggio di Mario (05/11/2026 21:21 ora italiana)
 
-Praticamente ha una lista della spesa. Ovviamente fai una lista della spesa, visto che ci siamo, completa, prendi spunto alle app gold standard della spesa e mettila dentro, e poi dentro una sezione con scritto tipo, cosa ne so, spesa per i miei ordini, gli esce quello che deve comprare.
+ma dopo che mette il nome ordine anche al primo ordine, senza di quello non può effettuare l'ordine se non mette il nome e cognome, e poi il nome ordine si allaccia all'account, diciamo, all'applicazione del cliente, perché non lo so, perché è bellino che mette tipo nome e cognome, entra nome e cognome con una bella presentazione all'inizio, tipo il tuo nome e tuo cognome, entra e gli dici anche ciao, il suo nome.
