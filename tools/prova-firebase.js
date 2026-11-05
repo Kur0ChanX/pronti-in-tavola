@@ -117,6 +117,39 @@ const server = http.createServer((req, res) => {
     controlla('approvato: vede l\'indirizzo senza riaprire l\'app', await aspetta(cliente, () => S.impostazioni.ritiro.via === 'Via di prova 1'));
     controlla('approvato: l\'app sa chi è', await cliente.evaluate(() => P.cliente === 'c1'));
 
+    // Foto (C2): dentro Firestore, versione nel piatto; il cliente la scarica una volta sola, poi dalla copia del telefono
+    const FOTO = await monica.evaluate(() => { const c = document.createElement('canvas'); c.width = c.height = 40; const x = c.getContext('2d'); x.fillStyle = '#C4532E'; x.fillRect(0, 0, 40, 40); return c.toDataURL('image/jpeg', 0.8); });
+    await monica.evaluate(f => { S.piatti.find(p => p.id === 'tiramisu').foto = f; salva(); }, FOTO);
+    await monica.evaluate(() => Dati.confermato());
+    const pT = (await admin(d => getDoc(doc(d, 'piatti/tiramisu')))).data(), fT = await admin(d => getDoc(doc(d, 'foto/tiramisu')));
+    controlla('foto: nel suo documento, e il piatto ha la versione', fT.exists() && fT.data().foto === FOTO && !!pT.fotoV && !('foto' in pT), pT.fotoV);
+    controlla('foto: arriva al cliente', await aspetta(cliente, f => S.piatti.find(p => p.id === 'tiramisu').foto === f, FOTO));
+    const scaricate = await cliente.evaluate(() => Dati.fotoDalServer());
+    await cliente.reload();
+    await cliente.waitForFunction(() => Dati.io.uid, null, { timeout: 20000 });
+    controlla('foto: riaperta l\'app arriva dalla copia del telefono, senza riscaricarla', await aspetta(cliente, f => S.piatti.find(p => p.id === 'tiramisu').foto === f, FOTO)
+      && await cliente.evaluate(() => Dati.fotoDalServer() === 0) && scaricate === 1, scaricate);
+    controlla('foto: la copia veloce (localStorage) non tiene le foto', await cliente.evaluate(() => !/data:image/.test(localStorage.getItem('pit-copia-v1') || '')));
+    await monica.evaluate(() => { S.piatti.find(p => p.id === 'tiramisu').stagione = 'inverno'; salva(); });
+    await monica.evaluate(() => Dati.confermato());
+    controlla('foto: un altro cambio del piatto non la riscrive né la toglie', (await admin(d => getDoc(doc(d, 'foto/tiramisu')))).exists()
+      && (await admin(d => getDoc(doc(d, 'piatti/tiramisu')))).data().fotoV === pT.fotoV);
+    await monica.evaluate(() => { S.piatti.find(p => p.id === 'tiramisu').foto = null; salva(); });
+    await monica.evaluate(() => Dati.confermato());
+    controlla('foto tolta: sparisce dal server e dal cliente', !(await admin(d => getDoc(doc(d, 'foto/tiramisu')))).exists()
+      && await aspetta(cliente, () => !S.piatti.find(p => p.id === 'tiramisu').foto));
+    // foto pesantissima (rumore): si alleggerisce sotto il tetto e il server la accetta
+    await monica.evaluate(() => new Promise(fine => {
+      const c = document.createElement('canvas'); c.width = c.height = 1800; const x = c.getContext('2d'), im = x.createImageData(1800, 1800);
+      for (let i = 0; i < im.data.length; i++) im.data[i] = (i % 4 === 3) ? 255 : Math.random() * 255;
+      x.putImageData(im, 0, 0);
+      c.toBlob(b => { caricaFoto({ files: [new File([b], 'rumore.png', { type: 'image/png' })], dataset: { id: 'lasagne-ragu' } }); fine(); }, 'image/png');
+    }));
+    await aspetta(monica, () => !!S.piatti.find(p => p.id === 'lasagne-ragu').foto);
+    await monica.evaluate(() => Dati.confermato()).catch(() => {});
+    const fL = await admin(d => getDoc(doc(d, 'foto/lasagne-ragu')));
+    controlla('foto pesante: alleggerita sotto i 400.000 caratteri e salvata', fL.exists() && fL.data().foto.length < 400000, fL.exists() && fL.data().foto.length);
+
     // Copia sul telefono: alla prossima apertura il menù si vede subito, anche prima della rete
     controlla('copia del menù sul telefono', await cliente.evaluate(() => (Dati.copiaLocale() || { piatti: [] }).piatti.length === 23));
 

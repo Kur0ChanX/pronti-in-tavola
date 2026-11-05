@@ -28,9 +28,11 @@ const Dati = (() => {
   const chiaro = v => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)
     ? Object.keys(x).sort().reduce((o, c) => { o[c] = x[c]; return o; }, {}) : x));
   const copia = v => JSON.parse(JSON.stringify(v));
+  /* versione di una foto (lunghezza + impronta del testo): cambia solo se cambia la foto */
+  const versioneFoto = f => { let h = 0; for (let i = 0; i < f.length; i++) h = (h * 31 + f.charCodeAt(i)) | 0; return f.length.toString(36) + '-' + (h >>> 0).toString(36); };
 
   /* ---------- da S (lo stato dell'app) ai documenti, e ritorno ---------- */
-  function documenti(S) {
+  function documenti(S, rif) {
     const d = {}, imp = copia(S.impostazioni || {});
     const paga = imp.paga || {};
     d['impostazioni/approvati'] = { ritiro: imp.ritiro || {}, whatsapp: imp.whatsapp || '',
@@ -41,6 +43,8 @@ const Dati = (() => {
     d['impostazioni/app'] = Object.assign(imp, { ingExtra: S.ingExtra || {}, soloContanti: !!S.soloContanti });
     (S.piatti || []).forEach(p => {
       const resto = copia(p); delete resto.foto;
+      // la versione cambia solo quando Monica cambia la foto: una foto non ancora arrivata non è una foto tolta
+      if ((p.foto || null) !== (((rif || srv)['foto/' + p.id] || {}).foto || null)) resto.fotoV = p.foto ? versioneFoto(p.foto) : null;
       d['piatti/' + p.id] = resto;
       if (p.foto) d['foto/' + p.id] = { foto: p.foto };
     });
@@ -91,14 +95,43 @@ const Dati = (() => {
     try { const c = JSON.parse(localStorage.getItem(CHIAVE_COPIA)); return c && c.versione === 1 ? c : null; }
     catch (e) { return null; }
   }
-  function salvaCopia(S) { try { localStorage.setItem(CHIAVE_COPIA, JSON.stringify(S)); } catch (e) { /* telefono pieno: si rilegge dal server */ } }
+  /* senza le foto (fino a 300 KB l'una, non ci starebbero): quelle le tiene la copia di Firestore */
+  function salvaCopia(S) {
+    const c = Object.assign({}, S, { piatti: S.piatti.map(p => p.foto && /^data:/.test(p.foto) ? Object.assign({}, p, { foto: null }) : p) });
+    try { localStorage.setItem(CHIAVE_COPIA, JSON.stringify(c)); } catch (e) { /* telefono pieno: si rilegge dal server */ }
+  }
 
   let tCambio = null;
   function avvisaCambio() {
     clearTimeout(tCambio);
     // Il cliente aspetta le impostazioni (senza, l'app non sa disegnarsi); Monica no: col database vuoto lo prepara lei.
     if (!srv['impostazioni/app'] && !(io.gestore && io.pronto)) return;
-    tCambio = setTimeout(() => { base = Object.assign({}, srv); const S = stato(); if (io.pronto) salvaCopia(S); alCambio(S, Object.assign({}, io)); }, 30);
+    tCambio = setTimeout(() => { prendiFoto(); base = Object.assign({}, srv); const S = stato(); if (io.pronto) salvaCopia(S); alCambio(S, Object.assign({}, io)); }, 30);
+  }
+
+  /* Foto: non si ascoltano (fino a 300 KB l'una; dopo 30 minuti fuori Firestore le rimanderebbe tutte e i 10 GB
+     gratis del mese finirebbero). Il piatto dice la versione (fotoV): si prende dalla copia del telefono,
+     e dal server solo se è cambiata. */
+  const fotoVer = {}, fotoInArrivo = {};
+  let fotoDalServer = 0;
+  function prendiFoto() {
+    const { doc, getDoc, getDocFromCache } = F.fs;
+    tutti('piatti').forEach(p => {
+      const k = 'foto/' + p.id, v = p.fotoV || null;
+      if (!v) { if (k in srv) { delete srv[k]; delete fotoVer[k]; avvisaCambio(); } return; }
+      if (fotoVer[k] === v || fotoInArrivo[k] === v) return;
+      fotoInArrivo[k] = v;
+      const r = doc(db, 'foto', p.id), giusta = s => !!s && s.exists() && versioneFoto(s.data().foto || '') === v;
+      getDocFromCache(r).catch(() => null)
+        .then(s => giusta(s) ? s : getDoc(r).then(x => { fotoDalServer++; return x; }, () => null))
+        .then(s => {
+          if (fotoInArrivo[k] === v) delete fotoInArrivo[k];
+          if (!s) return;                       // senza rete: si riprova al prossimo cambio
+          fotoVer[k] = v;                       // provata questa versione: niente giri a vuoto
+          if (s.exists()) srv[k] = s.data(); else delete srv[k];
+          avvisaCambio();
+        });
+    });
   }
 
   /* ---------- ascolti ---------- */
@@ -131,7 +164,7 @@ const Dati = (() => {
   function apriAscolti() {
     chiudiAscolti();
     const { doc, collection, query, where } = F.fs;
-    ['piatti', 'foto', 'settimane'].forEach(c => ascolta(collection(db, c), c));
+    ['piatti', 'settimane'].forEach(c => ascolta(collection(db, c), c));
     ascolta(doc(db, 'impostazioni', 'app'));
     if (io.gestore) {
       ['clienti', 'ordini', 'utenti'].forEach(c => ascolta(collection(db, c), c));
@@ -151,7 +184,7 @@ const Dati = (() => {
   /* ---------- chi sono: telefono anonimo, o Monica con Google ---------- */
   async function chiSono(user) {
     const { doc, getDoc, getDocFromCache, onSnapshot } = F.fs;
-    if (io.uid !== user.uid) { chiudiAscolti(); Object.keys(srv).forEach(k => delete srv[k]); base = null; io.pronto = false; }
+    if (io.uid !== user.uid) { chiudiAscolti(); [srv, fotoVer].forEach(o => Object.keys(o).forEach(k => delete o[k])); base = null; io.pronto = false; }
     io.uid = user.uid;
     io.entrata = Date.parse(user.metadata && user.metadata.lastSignInTime) || 0;   // per il lucchetto: entrata appena fatta?
     io.nome = user.displayName || '';
@@ -204,7 +237,7 @@ const Dati = (() => {
        non ancora in S (Mario, un ordine nuovo) non viene riscritto né cancellato.
        La base può venire dalla copia di Firestore sul telefono (app aperta senza rete): le scritture
        restano in coda, anche ad app chiusa, e partono da sole quando torna la rete. */
-    const rif = base || srv, nuovi = documenti(S), b = writeBatch(db);
+    const rif = base || srv, nuovi = documenti(S, rif), b = writeBatch(db);
     const dopo = {};   // come diventa la base dopo questa scrittura: due salvataggi di fila non mandano due volte la stessa differenza
     let n = 0;
     Object.keys(nuovi).forEach(k => {
@@ -236,7 +269,11 @@ const Dati = (() => {
     if (!n) return ultimaScrittura;
     // S non è nato dai dati di Firestore (solo la copia dell'app, nei primi istanti): niente scritture alla cieca, e lo si dice
     if (!base) { alStato({ errore: 'non-pronto' }); return ultimaScrittura; }
-    Object.keys(dopo).forEach(k => { if (dopo[k]) base[k] = dopo[k]; else delete base[k]; });
+    Object.keys(dopo).forEach(k => {
+      if (dopo[k]) base[k] = dopo[k]; else delete base[k];
+      // le foto non si ascoltano: quella scritta da Monica è già la copia giusta
+      if (k.startsWith('foto/')) { if (dopo[k]) { srv[k] = dopo[k]; fotoVer[k] = versioneFoto(dopo[k].foto); } else { delete srv[k]; delete fotoVer[k]; } }
+    });
     inAttesa++;
     clearTimeout(tAvviso);
     if (!navigator.onLine || !io.pronto) alStato({ rete: false, inAttesa });
@@ -461,6 +498,7 @@ const Dati = (() => {
     attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi,
     confermato: () => ultimaScrittura,
     haDati: () => !!base,
+    fotoDalServer: () => fotoDalServer,
     inAttesa: () => inAttesa
   };
 })();

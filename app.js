@@ -1152,6 +1152,7 @@ function salvaCampo(el) {
 }
 
 /* foto: ridotta e migliorata (più luce, colori caldi) */
+const TETTO_FOTO = 390000;   // caratteri della foto (circa 290 KB)
 function caricaFoto(input) {
   const file = input.files && input.files[0], id = input.dataset.id;
   if (!file) return;
@@ -1163,8 +1164,16 @@ function caricaFoto(input) {
     x.filter = 'brightness(1.06) saturate(1.12) contrast(1.04)';
     x.drawImage(img, 0, 0, c.width, c.height);
     x.filter = 'none'; x.globalCompositeOperation = 'soft-light'; x.fillStyle = 'rgba(255,170,90,.16)'; x.fillRect(0, 0, c.width, c.height);
-    const dati = c.toDataURL('image/jpeg', 0.8);
+    // tetto 300 KB (il server ne accetta fino a 400.000 caratteri): prima qualità più bassa, poi foto più piccola
+    let q = 0.8, dati = c.toDataURL('image/jpeg', q);
+    while (dati.length > TETTO_FOTO && q > 0.55) { q -= 0.1; dati = c.toDataURL('image/jpeg', q); }
+    while (dati.length > TETTO_FOTO && c.width > 300) {
+      const p = document.createElement('canvas'); p.width = Math.round(c.width * 0.8); p.height = Math.round(c.height * 0.8);
+      p.getContext('2d').drawImage(c, 0, 0, p.width, p.height); c.width = p.width; c.height = p.height; c.getContext('2d').drawImage(p, 0, 0);
+      dati = c.toDataURL('image/jpeg', q);
+    }
     URL.revokeObjectURL(url);
+    if (dati.length > TETTO_FOTO) { mostraToast('Questa foto è troppo pesante. Prova con un\'altra.'); return; }
     cambia('Foto aggiunta e migliorata', () => { piatto(id).foto = dati; });
   };
   img.onerror = () => { URL.revokeObjectURL(url); mostraToast('Questa foto non si apre. Prova con un\'altra.'); };
