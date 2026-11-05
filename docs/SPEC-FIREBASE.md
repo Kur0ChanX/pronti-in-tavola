@@ -60,7 +60,8 @@ Fase 2 (costi e dosi): raccolta a parte che legge solo Monica.
 | Monica e Mario dicono Sì/No allo stesso telefono | Transazione: il secondo legge «Già fatto: l'ha deciso qualcun altro». «Annulla» (10 secondi) rimette telefono, cliente, ordine, pronti e teglie com'erano |
 | Limite di teglie a settimana | Il cliente non vede gli ordini degli altri: conta il documento `settimane/…`, aggiornato con ogni ordine (annullato o rifiutato → si toglie) |
 | Senza rete, cliente | Il menù si vede (copia sul telefono). L'ordine NON parte senza rete: resta nel carrello, avviso chiaro «Non è partito: manca la rete», riparte da solo appena torna, tasto «Riprova» |
-| Senza rete, Monica | Le modifiche restano in coda: «Si salverà appena torna la rete»; «Salvato ✓» solo dopo la conferma del server |
+| Senza rete, Monica | Le modifiche restano in coda, anche con l'app aperta senza rete (dalla copia di Firestore sul telefono) e ad app chiusa: «Si salverà appena torna la rete»; «Salvato ✓» solo dopo la conferma del server. «Esci da questo telefono» aspetta che la coda sia vuota |
+| Pronti e teglie cambiati da Monica | Si scrive la differenza (+1, −2), non il numero: i pronti presi e le teglie ordinate intanto dai clienti restano contati |
 | Monica e Mario insieme | Si scrive solo il campo cambiato, mai il documento intero: nessuno cancella il lavoro dell'altro |
 | Errori di salvataggio | Messaggio chiaro, nuovo tentativo da solo, tasto «Riprova» (RVC E13) |
 | Annulla 10 secondi | Rimette i campi di prima con una scrittura nuova |

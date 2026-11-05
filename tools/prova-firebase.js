@@ -294,9 +294,9 @@ const server = http.createServer((req, res) => {
       await setDoc(doc(d, 'settimane/' + sett), { teglie: tegliePrima + 5 }, { merge: true });
     });
     await monica.evaluate(id => {
-      segnaPronto(piatto('tiramisu'), 1);   // Monica: un tiramisù pronto in più (lei ne vede 3 → 4)
-      S.piatti.find(p => p.id === 'tiramisu').stagione = 'primavera'; salva();
       A.rifiuta({ dataset: { id } });        // rifiuta un ordine da 2 teglie
+      segnaPronto(piatto('tiramisu'), 1);   // un tiramisù pronto in più (lei ne vede 3 → 4); tre salvataggi di fila
+      S.piatti.find(p => p.id === 'tiramisu').stagione = 'primavera'; salva();
     }, oL);
     controlla('senza rete: modifiche in coda con l\'avviso «si salverà appena torna»', await aspetta(monica, () => Dati.inAttesa() > 0 && /si salverà appena torna/.test(document.querySelector('#toast').textContent)));
     await monica.evaluate(() => vai('impostazioni'));
