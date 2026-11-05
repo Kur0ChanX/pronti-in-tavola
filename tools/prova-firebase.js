@@ -33,7 +33,8 @@ const server = http.createServer((req, res) => {
   let ok = 0, no = 0;
   const controlla = (nome, vero, dettaglio) => { if (vero) { ok++; console.log('OK  ', nome); } else { no++; console.log('NO  ', nome, dettaglio === undefined ? '' : '→ ' + JSON.stringify(dettaglio)); } };
   const errori = [];
-  const apri = async () => {
+  // impronta: true → telefono con l'impronta finta (autenticatore virtuale di Chromium); WebAuthn vuole «localhost», non l'IP
+  const apri = async (opz = {}) => {
     const ctx = await browser.newContext(devices['Pixel 7']);
     await ctx.route('https://www.gstatic.com/firebasejs/**', r => {
       const nome = r.request().url().split('/').pop();
@@ -41,8 +42,15 @@ const server = http.createServer((req, res) => {
     });
     await ctx.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
     const page = await ctx.newPage();
+    if (opz.impronta) {
+      const cdp = await ctx.newCDPSession(page);
+      await cdp.send('WebAuthn.enable', { enableUI: false });
+      const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', { options: {
+        protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } });
+      page.impronta = giusta => cdp.send('WebAuthn.setUserVerified', { authenticatorId, isUserVerified: giusta });
+    }
     page.on('pageerror', e => errori.push(e.message));
-    await page.goto(`http://127.0.0.1:${PORTA}/?emulatore`);
+    await page.goto(`http://${opz.impronta ? 'localhost' : '127.0.0.1'}:${PORTA}/?emulatore`);
     await page.waitForFunction(() => Dati.io.uid, null, { timeout: 20000 });
     return page;
   };
@@ -50,7 +58,7 @@ const server = http.createServer((req, res) => {
 
   try {
     // Monica: la prima volta il database è vuoto, si caricano i 23 piatti
-    const monica = await apri();
+    const monica = await apri({ impronta: true });
     const uidM = await monica.evaluate(() => Dati.io.uid);
     await admin(d => setDoc(doc(d, 'gestori/' + uidM), { nome: 'Monica' }));
     await monica.reload();
@@ -62,6 +70,11 @@ const server = http.createServer((req, res) => {
     const app = await admin(d => getDoc(doc(d, 'impostazioni/app')));
     controlla('indirizzo e WhatsApp non stanno nelle impostazioni pubbliche', app.exists() && !('ritiro' in app.data()) && !('whatsapp' in app.data()));
     controlla('Monica vede la sua parte (niente striscia di prova)', await monica.evaluate(() => P.ruolo === 'monica' && !document.querySelector('.prova')));
+    // Lucchetto: appena entrata propone l'impronta; prima nessun dato nella pagina
+    controlla('lucchetto: appena entrata, «Metti l\'impronta» e niente dati', await aspetta(monica, () => !!document.querySelector('[data-a="lucchetto-metti"]')
+      && !document.querySelector('#app [data-v="ordini"]')));
+    await monica.click('[data-a="lucchetto-metti"]');
+    controlla('lucchetto messo: la parte si apre', await aspetta(monica, () => L.aperto && !!(Lucchetto.di(Dati.io.uid) || {}).id && !!document.querySelector('#app [data-v="ordini"]')));
 
     // Monica cambia un campo: si scrive solo quel campo
     await admin(d => setDoc(doc(d, 'piatti/tiramisu'), { campoDiMario: 'resta' }, { merge: true }));
@@ -220,6 +233,51 @@ const server = http.createServer((req, res) => {
     await quarto.fill('#nome-nuovo', 'Pino Fois');
     await quarto.click('[data-a="nome-ok"]');
     controlla('spento: il telefono nuovo legge «non prende clienti nuovi»', await aspetta(quarto, () => /non prende clienti nuovi/.test(document.querySelector('#toast').textContent)));
+
+    // e) lucchetto: riaperta l'app si chiude, si apre da solo con l'impronta, si richiude fuori dall'app
+    await monica.reload();
+    controlla('riaperta l\'app: la parte è chiusa, nessun cliente nella pagina', await aspetta(monica, () => !!document.querySelector('[data-a="lucchetto-apri"]')
+      && !/Sara Mura|Paolo Sanna|Ordini/.test(document.querySelector('#app').textContent)));
+    controlla('finita l\'apertura, l\'impronta si chiede da sola e apre', await aspetta(monica, () => L.aperto && !document.querySelector('.apertura')));
+    const fuori = (pg, minuti) => pg.evaluate(m => {
+      Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); document.dispatchEvent(new Event('visibilitychange'));
+      L.via -= m * 60000; delete document.visibilityState; document.dispatchEvent(new Event('visibilitychange'));
+    }, minuti);
+    await fuori(monica, 1);
+    controlla('fuori dall\'app 1 minuto: resta aperta', await monica.evaluate(() => L.aperto));
+    await monica.impronta(false);
+    await fuori(monica, 6);
+    controlla('fuori 6 minuti e impronta sbagliata: resta chiusa con l\'avviso', await aspetta(monica, () => !L.aperto && !L.inCorso && /Non si è aperta/.test(document.querySelector('#app').textContent)));
+    await monica.impronta(true);
+    await monica.click('[data-a="lucchetto-apri"]');
+    controlla('impronta giusta col pulsante: si apre', await aspetta(monica, () => L.aperto));
+    await monica.evaluate(() => vai('impostazioni'));
+    await monica.click('[data-a="i-lucchetto"][data-d="1"]');
+    await monica.evaluate(() => Dati.confermato());
+    const minSrv = (await admin(d => getDoc(doc(d, 'impostazioni/app')))).data().lucchetto;
+    controlla('Impostazioni: «si richiude dopo» 10 minuti, sul server', minSrv === 10, [minSrv, await monica.evaluate(() => [S.impostazioni.lucchetto, UI.vista, !!document.querySelector('[data-a="i-lucchetto"]'), Dati.io.gestore, Dati.io.pronto])]);
+    // chiave persa (o telefono che non la trova più): di nuovo Google, poi impronta nuova
+    const vecchia = await monica.evaluate(() => { const id = Lucchetto.di(Dati.io.uid).id; Lucchetto.metti(Dati.io.uid, null); Dati.io.entrata = 0; L.aperto = false; render(); return id; });
+    controlla('senza chiave e senza entrata fresca: «Entra con Google»', await aspetta(monica, () => statoLucchetto() === 'google' && !!document.querySelector('[data-a="lucchetto-google"]')));
+    await monica.evaluate(() => { Dati.rientra = async () => { Dati.io.entrata = Date.now(); }; });
+    await monica.click('[data-a="lucchetto-google"]');
+    await monica.click('[data-a="lucchetto-metti"]');
+    controlla('dopo Google: impronta nuova e parte aperta', await aspetta(monica, id => L.aperto && Lucchetto.di(Dati.io.uid).id && Lucchetto.di(Dati.io.uid).id !== id, vecchia));
+
+    // f) telefono senza blocco schermo (Mario): la parte resta aperta con l'avviso; poi «Esci da questo telefono»
+    const mario = await apri();
+    const uidMa = await mario.evaluate(() => Dati.io.uid);
+    await admin(d => setDoc(doc(d, 'gestori/' + uidMa), { nome: 'Mario' }));
+    await mario.reload();
+    controlla('senza blocco schermo: parte aperta con l\'avviso', await aspetta(mario, () => Dati.io.gestore && L.puo === false && L.aperto
+      && /non ha il blocco schermo/.test(document.querySelector('#toast').textContent)));
+    await mario.evaluate(() => vai('impostazioni'));
+    controlla('Impostazioni: «Spento: il telefono non ha il blocco schermo»', /Spento: il telefono non ha il blocco schermo/.test(await mario.textContent('#app')));
+    await mario.click('[data-a="lucchetto-esci"]');
+    await Promise.all([mario.waitForNavigation(), mario.click('[data-a="lucchetto-esci"]')]);
+    await mario.waitForFunction(() => Dati.io.uid, null, { timeout: 20000 });
+    controlla('Esci: telefono di nuovo cliente, senza la copia dei dati di Monica', await aspetta(mario, u => Dati.io.uid !== u && !Dati.io.gestore && P.ruolo === 'cliente'
+      && !/Via di prova|Sara Mura/.test(localStorage.getItem('pit-copia-v1') || '') && !Lucchetto.di(u), uidMa));
   } catch (e) {
     no++; console.log('NO   la prova si è fermata →', e.message.split('\n')[0]);
   }

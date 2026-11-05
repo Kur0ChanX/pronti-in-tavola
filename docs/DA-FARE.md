@@ -7,7 +7,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C1 | Dati veri con Firebase (piano Spark). Pronti: specifica 0.2, regole (`npm run prova-regole`), motore `dati.js` e ordini dei clienti (`npm run prova-firebase`). Fatto il 05/11: schermate di Monica «Nuovi», «Telefono nuovo», Sì / No con Annulla, interruttore «Accetta clienti nuovi», prezzi di Monica, «inviato» del cliente nuovo (`npm run prova-firebase`: 43 OK). Manca: impronta o PIN, progetto vero di Mario | Claude | alta |
+| C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica | Claude | alta |
 | C2 | Foto dentro Firestore (900 px, JPEG 0,8, tetto 300 KB): Storage vuole la carta anche per i progetti vecchi dal 03/02/2026 (verificato 05/11) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) e funzionamento senza rete (service worker, manifest) | Claude | media |
 | C4 | Sito su Cloudflare Pages `pronti-in-tavola.pages.dev` | Claude + Mario | media |
