@@ -50,6 +50,7 @@ const server = http.createServer((req, res) => {
       page.impronta = giusta => cdp.send('WebAuthn.setUserVerified', { authenticatorId, isUserVerified: giusta });
     }
     page.on('pageerror', e => errori.push(e.message));
+    if (process.env.VEDI) page.on('console', m => { if (/warn|error/.test(m.type())) console.log('   [pagina]', m.text().slice(0, 300)); });
     await page.goto(`http://${opz.impronta ? 'localhost' : '127.0.0.1'}:${PORTA}/?emulatore`);
     await page.waitForFunction(() => Dati.io.uid, null, { timeout: 20000 });
     return page;
