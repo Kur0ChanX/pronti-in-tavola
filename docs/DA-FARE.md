@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 05/11 · 🟡 Principale 9 · Cloudflare passo 1 (nuovo): `mario.miscera@gmail.com` ha già un account e l'alias `+pronti` è rifiutato; quindi account Free aggiuntivo: entra su https://dash.cloudflare.com/login → pagina Accounts → Create Account «Pronti in Tavola»; foto di ogni schermata (nomi non ancora visti), poi «fatto»
+- 05/11 · 🟡 Principale 9 · Cloudflare passo 2: nel menù tocca **Compute** e manda la foto di cosa compare (account «Pronti in Tavola» già creato e scelto)
 - 05/11 · 🟡 Principale 8 · App più semplice (C13): le 4 foto vanno bene così? (`archivio/foto/semplice-1-menu.png`, `semplice-2-carrello.png`, `semplice-3-ritiro.png`, `semplice-4-impostazioni-monica.png`)
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
 - 05/11 · 🟡 Principale 4 · Schermata Clienti di Monica (Telefono nuovo, Nuovi, Sì/No) e primo ordine di una cliente nuova: chiare così? (anteprima versione 13; foto `archivio/foto/clienti-1-nuovi.png`, `archivio/foto/clienti-2-primo-ordine.png`)
@@ -12,7 +12,7 @@
 |---|---|---|---|
 | C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica (anche: niente striscia «Prova» né «Ricomincia», ex C8) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) con un Worker di Cloudflare nell'account dell'app: serve C4. Fatto il 05/11: l'app si apre senza rete (`sw.js`, `manifest.webmanifest`) | Claude | media |
-| C4 | Sito `pronti-in-tavola.pages.dev` su Cloudflare Pages: `tools/sito.py` pronto (build `python3 tools/sito.py`, cartella `sito`, variabile `SKIP_DEPENDENCY_INSTALL`=`1`); account «Pronti in Tavola» creato da Mario (foto 20:34); ramo di produzione `main` (500 build/mese: si pubblica su `main` dopo le prove verdi; anteprime degli altri rami spente). Manca: progetto in Cloudflare (se il nome prende un suffisso, cambiarlo in `data.js` e `index.html`), dominio in Firebase. 👁 Lo vedi: dal tuo telefono apri l'indirizzo `.pages.dev` e compare il menù di Monica · prova: foto dal telefono di Mario | Claude + Mario | media |
+| C4 | Sito `pronti-in-tavola.pages.dev` su Cloudflare Pages, account «Pronti in Tavola» (creato). In Cloudflare: build `python3 tools/sito.py`, cartella `sito`, variabile `SKIP_DEPENDENCY_INSTALL`=`1`, ramo di produzione `main` (si pubblica su `main` dopo le prove verdi; anteprime degli altri rami spente). Manca: progetto (nome con suffisso → cambiarlo in `data.js` e `index.html`), dominio in Firebase. 👁 Lo vedi: dal telefono apri l'indirizzo `.pages.dev` e compare il menù di Monica · prova: foto di Mario | Claude + Mario | media |
 | C5 | Anteprima del link su WhatsApp col logo: fatti il 05/11 tag e immagine (`media/anteprima-link-1.jpg`, approvata da Mario il 05/11; `tools/immagine-link.js`). Manca: provarla su WhatsApp col sito online (C4). 👁 Lo vedi: in WhatsApp, quando il sito sarà online (C4), mandando il link a te stesso compare il riquadro col logo · prova: foto della chat | Claude | con C4 |
 | C6 | Fase 2: dosi e spesa, sconti | Claude | dopo |
 | C7 | Fase 3: etichette, immagine del menù, incassi, costo per piatto | Claude | dopo |
