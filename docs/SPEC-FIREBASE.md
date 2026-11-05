@@ -87,7 +87,9 @@ Fase 2 (costi e dosi): raccolta a parte che legge solo Monica.
 3. Accendere Firestore (zona Europa) e l'accesso anonimo e Google.
 4. Entrare una volta nell'app con Google; poi creare `gestori/<id>` per sé e per Monica.
 
-### Dove siamo (05/11, ore 14:30-14:40, dal telefono di Mario)
-- **Passo 1 fatto**: progetto «Pronti in Tavola» creato sul suo account Google, **Piano Spark** (gratis, visto nella foto della console). Gemini in Firebase e Google Analytics: gli ho detto di spegnerli, ma non l'ho verificato.
-- **Passo 2 in corso**: registrare l'app web e incollare in chat il testo di `firebaseConfig` (non è segreto). Nella console di Mario non c'è l'icona **Web** al centro: c'è **+ Aggiungi app** in alto a sinistra, poi si sceglie **Web** (`</>`). Il messaggio «Impossibile caricare Cloud Shell» in basso non conta.
-- Poi: passo 3 (Firestore in Europa, accesso anonimo e Google), `FIREBASE_CONFIG` in `dati.js`, passo 4 (gestori).
+### Dove siamo (05/11, ore 14:50, dal telefono di Mario)
+- **Passo 1 fatto**: progetto «Pronti in Tavola» (id `pronti-in-tavola`) sul suo account Google, **Piano Spark** (gratis, visto nella foto). Gemini e Analytics: gli ho detto di spegnerli, non verificato.
+- **Passo 2 fatto**: app web registrata (nickname «Pronti in Tavola web», Hosting non attivato). `firebaseConfig` incollato da Mario e messo in `dati.js` (`FIREBASE_CONFIG`); l'anteprima di prova la toglie da sola (`tools/anteprima.py`, controllato da `tools/prova.js`). Il repo è pubblico: la chiave `AIza…` è la chiave web di Firebase, non segreta (la protezione sono le regole).
+- **Passo 3 in corso** (guida data a Mario, 05/11 14:50): console → **Database e archiviazione** → **Firestore** → **Crea database**; posizione **Milano (europe-west8)**, non si cambia più; modalità di **produzione**; **Crea**. Poi **Sicurezza** → **Autenticazione** → scheda **Metodo di accesso**: attivare **Anonimo** e **Google** (**Salva**; per Google serve un'email di assistenza del progetto). Nomi presi dalla guida ufficiale (agosto 2026), non ancora visti da Mario: se sbagliano, scrivere la versione giusta in `docs/GUIDE-GIUSTE.md`.
+- Gratis di Firestore: 1 GiB, 50.000 letture e 20.000 scritture al giorno, **un solo database gratis per progetto** (il primo creato): creare solo quello «(default)».
+- Poi: passo 4 = regole (`firestore.rules`, 188 righe: console → **Firestore** → scheda **Regole** → incollare → **Pubblica**; da provare dopo, con l'app vera), passo 5 = entrare con Google una volta nell'app e creare `gestori/<id>` per Monica. Serve il sito online (C4, Cloudflare): per l'accesso con Google il dominio del sito va aggiunto in **Autenticazione** → **Impostazioni** → domini autorizzati (nome da controllare allora).
