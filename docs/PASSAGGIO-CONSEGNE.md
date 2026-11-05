@@ -64,7 +64,7 @@ Sessione attuale: #7 (dopo la #6 `session_01QTFEqQc4xdxWWJgwR1fXZB`, chiusa alla
 «continua» (05/11 12:38, alla #4 dopo il riavvio del contenitore). Prima, alla #2 alle 09:32: «Non ho capito, allora Firebase può rimanere sul mio account con limiti separati che non influisce niente negli altri progetti? Sì, e allora ok. E poi Cloudflare invece devo creare un nuovo account, non mi ricordo. Per quello sardo sì, che non sia troppo pacchiano e troppo pesante, però sì, una cosa delicata che rispecchia le tradizioni sarde, ecco.»
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C12; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C13; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).

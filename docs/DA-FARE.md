@@ -18,6 +18,7 @@
 | C11 | Passaparola (Mario 05/11): link unico `#da=` che tutti rigirano, menù visibile, nome unico (`nomi/`), primo ordine «da approvare», Monica approva o ricollega un telefono nuovo, interruttore «Accetta nuovi clienti»; Monica: Google + impronta o PIN. Fatto (05/11): specifica 0.2, regole con 50 prove, schermate nell'app. Manca: provarlo coi telefoni veri (dopo il progetto Firebase di Mario) | Claude | alta |
 | C9 | Kit RVC: nel pacchetto «indipendente» v35 manca `tools/consegne.py` (lo usano hook, skill `consegne` e `test-scorta.py`); qui copiato da RVC e adattato. Da segnalare alla sessione RVC | Mario → RVC | bassa |
 | C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev`; se cambia, cambiare anche og:url e og:image in `index.html` (la prova `tools/prova.js` lo controlla) | Claude + Mario | con C4 |
+| C12 | Regola da portare nel kit (non sono nella fonte): «guida a mano sbagliata → scrivere subito quella giusta in `docs/GUIDE-GIUSTE.md`» (Mario 05/11). Per ora vale solo qui, nel `CLAUDE.md` | Mario → RVC | bassa |
 
 ## 1. Claude da solo
 - C1, C3
