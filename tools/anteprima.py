@@ -17,7 +17,7 @@ html = (QUI / 'index.html').read_text(encoding='utf-8')
 html = html.replace('<link rel="stylesheet" href="style.css">', '<style>\n' + (QUI / 'style.css').read_text(encoding='utf-8') + '\n</style>')
 for nome in ('data.js', 'dati.js', 'lucchetto.js', 'app.js'):
     html = html.replace(f'<script src="{nome}"></script>', '<script>\n' + (QUI / nome).read_text(encoding='utf-8') + '\n</script>')
-for img in sorted(set(re.findall(r'media/[\w.-]+\.(?:png|webp|jpg)', html))):
+for img in sorted(set(re.findall(r'(?<![/\w])media/[\w.-]+\.(?:png|webp|jpg)', html))):  # non gli indirizzi interi (og:image)
     html = html.replace(img, dato(img))
 (QUI / 'dist').mkdir(exist_ok=True)
 (QUI / 'dist' / 'anteprima.html').write_text(html, encoding='utf-8')
