@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 05/11 · 🟡 Principale 9 · Cloudflare passo 1: hai già un account Cloudflare con `mario.miscera@gmail.com`? 1 sì → account Free aggiuntivo (dashboard → Accounts, limiti separati) · 2 no → iscriversi con quella · 3 non so → provare ad entrare su dash.cloudflare.com; poi «fatto» (nomi dei pulsanti da vedere in foto)
+- 05/11 · 🟡 Principale 9 · Cloudflare passo 1 (nuovo): `mario.miscera@gmail.com` ha già un account e l'alias `+pronti` è rifiutato; quindi account Free aggiuntivo: entra su https://dash.cloudflare.com/login → pagina Accounts → Create Account «Pronti in Tavola»; foto di ogni schermata (nomi non ancora visti), poi «fatto»
 - 05/11 · 🟡 Principale 8 · App più semplice (C13): le 4 foto vanno bene così? (`archivio/foto/semplice-1-menu.png`, `semplice-2-carrello.png`, `semplice-3-ritiro.png`, `semplice-4-impostazioni-monica.png`)
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
 - 05/11 · 🟡 Principale 4 · Schermata Clienti di Monica (Telefono nuovo, Nuovi, Sì/No) e primo ordine di una cliente nuova: chiare così? (anteprima versione 13; foto `archivio/foto/clienti-1-nuovi.png`, `archivio/foto/clienti-2-primo-ordine.png`)
