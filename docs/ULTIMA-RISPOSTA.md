@@ -1,12 +1,14 @@
-# Ultima risposta di Claude (05/11/2026 13:59 ora italiana)
+# Ultima risposta di Claude (05/11/2026 14:33 ora italiana)
 
+Ho capito: nella tua pagina non c'è l'icona **Web** al centro.
 
+Mi sono sbagliato io: la guida parlava dell'icona, ma tu hai il pulsante **Aggiungi app**. È in alto a sinistra, sotto «Pronti in Tavola», con il segno `+`.
 
-## Domande a Mario
+👉 **DA FARE TU**
+1. Tocca **+ Aggiungi app**.
+2. Tra le piattaforme scegli **Web**, l'icona con `</>`.
+3. Poi segui i passi 2-5 di prima: nickname, **Registra app** e incolla qui il testo di `firebaseConfig`.
 
-❓ **DOMANDE**
-1. 🆕 Immagine dell'anteprima del link (prima foto che ti ho mandato)
-📌 Di cosa parliamo: è l'immagine che compare su WhatsApp sotto il link dell'app, quando qualcuno lo gira a un'amica. Va scelta prima che il sito vada online, perché WhatsApp poi se la ricorda.
-1 · Va bene così: logo al centro, «Cucina di casa» e «Ordina e ritira» ai lati (consiglio) · 2 · Da cambiare: dimmi cosa (testi, colori o disposizione) e la rifaccio
+Il progetto è sul **Piano Spark**: è quello gratis, perfetto. L'errore «Impossibile caricare Cloud Shell» in basso non conta: tocca **Chiudi** o ignoralo.
 
-Nella voce C5 di Da fare ora c'è anche quando la vedrai: col sito online.
+Scrivimi …
