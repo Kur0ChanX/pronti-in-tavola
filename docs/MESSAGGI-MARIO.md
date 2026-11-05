@@ -61,3 +61,19 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+## 2026-11-05 14:43 · 01QTFEqSmQas
+porta questa sessione a 320mila in catena a max token prima di passaggio di consegna
+
+## 2026-11-05 14:47 · 01QTFEqSmQas
+tanto alla partenza parte con 100k quindi non sò cosa conviene di piú padsaggio o lunghezza.... manda guida firebase parte 3
+e rendi l'app molto plu in play semplice e chiara per i clienti e Monica valuta tu le scelte e dimmele cos hai scelto, cerca fi capire che non tutti i clienti bazzicando tanto di impostazioni ecc per monica l'aiuto io
+
+## 2026-11-05 15:04 · 01QTFEqSmQas
+Cavolo, io in un'altra app che avevo creato ho messo Europa 3, avevo messo, ho penso di aver fatto danno, non avevo letto che c'era Europa 8 con Milano. Cambia qualcosa nella mia app per l'albergo RVC?
+
+## 2026-11-05 15:11 · 01QTFEqSmQas
+fatto
+
+## 2026-11-05 15:14 · 01QTFEqSmQas
+fatto
