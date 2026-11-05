@@ -89,3 +89,6 @@ in che senso lista ho detto di no? sei sicuro?
 
 ## 2026-11-05 20:25 · 01QTFEqSmQas
 non usa altri limiti se lo metto cloudflare in mario.miscera@gmail.com?
+
+## 2026-11-05 20:32 · 01QTFEqSmQas
+creato ora mandami tutta la fuida per cloudflare
