@@ -89,3 +89,13 @@ in che senso lista ho detto di no? sei sicuro?
 
 ## 2026-11-05 20:25 · 01QTFEqSmQas
 non usa altri limiti se lo metto cloudflare in mario.miscera@gmail.com?
+
+## 2026-11-05 20:33 · 01QTFEqSy2LM
+pronti-in-tavola.pages.dev questo
+
+## 2026-11-05 20:36 · 01QTFEqSy2LM
+metti tutti gli aggiornamenti sull artefatto test che devo mostrare l'app
+
+## 2026-11-05 20:39 · 01QTFEqSy2LM
+si capisce tutto
+metti il carrello che ti ho detto e le funzioni nuove nell app di test devo farla vedere
