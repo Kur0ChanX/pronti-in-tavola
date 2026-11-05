@@ -69,7 +69,15 @@ let SPESA = (() => {
   catch (e) { /* prova senza memoria */ }
   return spesaVuota();
 })();
-function salvaSpesa() { try { localStorage.setItem(CHIAVE_SPESA, JSON.stringify(SPESA)); } catch (e) { mostraToast('Memoria piena: la lista non è stata salvata.'); } }
+function salvaSpesa() {
+  try { localStorage.setItem(CHIAVE_SPESA, JSON.stringify(SPESA)); } catch (e) { if (!Dati.attivo) mostraToast('Memoria piena: la lista non è stata salvata.'); }
+  if (Dati.attivo && Dati.io.gestore) { S.spesa = JSON.parse(JSON.stringify(SPESA)); salva(); }   // anche sul server, nei dati privati di Monica (C15)
+}
+/* coi dati veri la spesa sta su Firebase (impostazioni/spesa, solo gestori): la prima volta ci va quella del telefono */
+function spesaDalServer() {
+  if (S.spesa && S.spesa.versione === 1) { SPESA = Object.assign(spesaVuota(), JSON.parse(JSON.stringify(S.spesa))); if (!S.spesa.cotti) segnaCotti(); }
+  else if (Dati.haDati && Dati.haDati()) { segnaCotti(); S.spesa = JSON.parse(JSON.stringify(SPESA)); salva(); }   // gli ordini già cucinati non consumano
+}
 
 /* «in casa» che si consuma da solo: SPESA.casa è quello che c'era quando l'hai segnato; gli ordini segnati pronti
    (o ritirati) dopo, non in SPESA.cotti, lo consumano. Se annulli il «pronto», torna. */
@@ -83,9 +91,10 @@ function casaDi(id) { return Math.max(0, arrot((SPESA.casa[id] || 0) - (consumat
 function fissaCasa() {
   const c = consumati();
   Object.keys(c).forEach(id => { if (SPESA.casa[id] != null) { SPESA.casa[id] = Math.max(0, arrot(SPESA.casa[id] - c[id])); if (!SPESA.casa[id]) delete SPESA.casa[id]; } });
-  SPESA.cotti = {}; S.ordini.forEach(o => { if (COTTI.includes(o.stato)) SPESA.cotti[o.id] = true; });
+  segnaCotti();
 }
-if (!SPESA.cotti) { SPESA.cotti = {}; S.ordini.forEach(o => { if (COTTI.includes(o.stato)) SPESA.cotti[o.id] = true; }); }
+function segnaCotti() { SPESA.cotti = {}; S.ordini.forEach(o => { if (COTTI.includes(o.stato)) SPESA.cotti[o.id] = true; }); }
+if (!SPESA.cotti) segnaCotti();
 
 function infoIng(id) {
   const b = ING_SPESA[id] || ['g', 0, 'Altro'];
@@ -168,7 +177,7 @@ function vSpesa() {
     <button type="button" class="scelta" data-a="sp-tab" data-v="ordini" aria-pressed="${tab === 'ordini'}">Spesa per i miei ordini<small>${mancaOrd ? `${mancaOrd} da prendere` : 'Niente da comprare'}</small></button></div>`;
   h += tab === 'mia' ? vSpesaMia(so) : vSpesaOrdini(so);
   if (mancaMia || mancaOrd) h += `<a class="btn pieno" href="${wa('', testoSpesa(so.c, so.fino))}" target="_blank" rel="noopener">${ico('chat')}Manda tutta la spesa su WhatsApp</a>`;
-  h += `<p class="tenue piccolo" style="margin:0">Le dosi le cambi in «I miei piatti», dentro ogni piatto. Per ora la lista resta su questo telefono.</p>`;
+  h += `<p class="tenue piccolo" style="margin:0">Le dosi le cambi in «I miei piatti», dentro ogni piatto. ${Dati.attivo ? 'La lista la vedi solo tu, anche da un altro telefono dove entri tu.' : 'Nella prova la lista resta su questo telefono.'}</p>`;
   return h + '</main>';
 }
 function vSpesaOrdini({ oo, c, fino, ids, compra }) {
@@ -292,7 +301,7 @@ const PAROLE_REP = [   /* inizi di parola → reparto; si guarda in quest'ordine
   [R_FV, 'mela mele pera pere banan arance arancia limon mandarin clementin uva fragol kiwi pesca pesche albicocc cilieg melon anguri insalat lattug pomodor zucchin melanzan patat cipoll aglio carot sedano peperon funghi spinac bietol cavol broccol finocch carciof rucola basilic prezzemol menta rosmarin salvia verdur frutta zucca fagiolin avocado porr scalogn']
 ].map(([r, p]) => [r, p.split(' ').map(x => x.replace(/-/g, ' '))]);
 const IDEE_SPESA = ['Latte', 'Uova', 'Pane', 'Acqua', 'Olio', 'Farina', 'Zucchero', 'Caffè', 'Pasta', 'Pomodori', 'Detersivo piatti', 'Carta da forno'];
-const chiaveVoce = n => norm(n).replace(/\s+/g, ' ');
+const chiaveVoce = n => norm(n).replace(/[^a-z0-9 ]/g, '').replace(/\s+/g, ' ').trim() || '-';
 function repartoDi(n) {
   const k = chiaveVoce(n), u = SPESA.usati[k];
   if (u && u.rep) return u.rep;
@@ -329,6 +338,8 @@ function aggiungiVoce(testo) {
   SPESA.mia.push(v);
   const u = SPESA.usati[k] = Object.assign({ volte: 0 }, SPESA.usati[k], { n: v.n, rep: v.rep });
   u.volte++; u.ultimo = oggi();
+  const tutte = Object.keys(SPESA.usati);   // al massimo 150 cose ricordate: via quelle usate meno
+  if (tutte.length > 150) tutte.sort((a, b) => SPESA.usati[a].volte - SPESA.usati[b].volte || (SPESA.usati[a].ultimo || '').localeCompare(SPESA.usati[b].ultimo || '')).slice(0, tutte.length - 150).forEach(x => delete SPESA.usati[x]);
   salvaSpesa(); render();
   return true;
 }

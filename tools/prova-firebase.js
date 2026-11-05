@@ -88,6 +88,14 @@ const server = http.createServer((req, res) => {
     const appr = (await admin(d => getDoc(doc(d, 'impostazioni/approvati')))).data();
     controlla('indirizzo del ritiro nel documento solo per approvati', appr && appr.ritiro.via === 'Via di prova 1');
 
+    // Lista della spesa nei dati privati di Monica (C15): va sul server e torna se cambia da un altro telefono
+    await aspetta(monica, () => !!S.spesa);
+    await monica.evaluate(() => { aggiungiVoce('2 kg patate'); return Dati.confermato(); });
+    const sp = (await admin(d => getDoc(doc(d, 'impostazioni/spesa')))).data();
+    controlla('spesa di Monica sul server (dosi e la sua lista)', sp && sp.versione === 1 && sp.dosi.tiramisu.mascarpone === 85 && sp.mia.some(v => v.n === 'Patate' && v.q === '2 kg'), sp && sp.mia);
+    await admin(d => setDoc(doc(d, 'impostazioni/spesa'), Object.assign({}, sp, { mia: sp.mia.concat([{ id: 'vx', n: 'Latte', q: '', rep: 'Frigo: latte, formaggi e uova', preso: false }]) })));
+    controlla('spesa cambiata da un altro telefono: arriva a Monica', await aspetta(monica, () => SPESA.mia.some(v => v.n === 'Latte')));
+
     // Un cambio del server non ancora arrivato in S (i 30 ms prima del ridisegno) non si riscrive né si cancella
     await monica.evaluate(() => { window.__st = window.setTimeout; window.__fermi = []; window.setTimeout = (f, ms) => (ms === 30 ? (__fermi.push(f), 0) : __st(f, ms)); });
     await admin(d => setDoc(doc(d, 'piatti/tiramisu'), { stagione: 'estate' }, { merge: true }));
