@@ -42,6 +42,7 @@ Monica: home a 4 riquadri, guida della prima volta, notifica (finta nella prova)
 2. Dati veri condivisi (specifica: `docs/SPEC-FIREBASE.md`): Firebase come Jona (Firestore + accesso col link d'invito; Monica con accesso suo). Foto: verificare se Firebase Storage chiede il piano a pagamento; se sì, foto piccole dentro Firestore.
 3. Notifiche vere a Monica (Android, app aggiunta alla schermata Home) e sito su Cloudflare Pages.
 4. Fase 2: dosi per ricetta e **spesa** (totale e per ordine, dispensa, confezioni, reparti, senza rete), sconti.
+   - **Lista della spesa** (Mario 05/11: «guarda le quantità dei prodotti… e quando va a fare la spesa gli segna la spesa che deve fare in base alle quantità degli ordini»), fatta in `spesa.js`: dosi per 1 porzione / 1 kg / 1 pezzo / 1 torta (in più per gusto), ordini accettati fino a oggi, domani, 3 giorni o una settimana (anche quelli da accettare, se vuole), meno quello che ha in casa, arrotondato alle confezioni, diviso per reparti, spunte mentre compra, lista su WhatsApp. I «pronti subito» non contano. I clienti non vedono mai le dosi.
 5. Fase 3: etichette da stampare, immagine del menù per WhatsApp, incassi del mese, costo per piatto.
 
 ## Da controllare con Monica

@@ -128,6 +128,30 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const r = await page.evaluate(() => S.richieste.length + '/' + S.clienti.filter(c => c.nome === 'Paolo Sanna').length);
     if (r !== '0/1') throw new Error('ricollega: ' + r);
   });
+  await passo('Monica: lista della spesa dagli ordini', async () => {
+    await clic('.indietro'); await clic('[data-a="vai"][data-v="spesa"]'); await foto('19-spesa');
+    const riga = n => page.locator('.spesa-riga', { hasText: n });
+    // tiramisù da 6: 6 × 85 g di mascarpone = 510 g → 3 confezioni da 250 g; lasagne da 8: 8 × 80 g di macinato = 640 g → 2 da 500 g
+    if (!(await riga('Mascarpone').locator('.quanto', { hasText: '3 × 250 g' }).count())) throw new Error('mascarpone: ' + await riga('Mascarpone').innerText());
+    if (!(await riga('Carne macinata').locator('.quanto', { hasText: '2 × 500 g' }).count())) throw new Error('macinato: ' + await riga('Carne macinata').innerText());
+    await page.locator('[data-campo="sp.anche"]').check(); await page.waitForTimeout(250);   // + polpette di carne 1,5 kg (ordine da accettare)
+    if (!(await riga('Carne macinata').locator('.quanto', { hasText: '4 × 500 g' }).count())) throw new Error('con gli ordini da accettare: ' + await riga('Carne macinata').innerText());
+    await clic('[data-a="sp-ing"][data-ing="mascarpone"]'); await clic('.foglio [data-a="sp-casa"][data-d="1"]'); await clic('.foglio .piede [data-a="chiudi"]');
+    if (!(await riga('Mascarpone').locator('.quanto', { hasText: '2 × 250 g' }).count())) throw new Error('in casa non tolto: ' + await riga('Mascarpone').innerText());
+    await clic('[data-a="sp-preso"][data-ing="mascarpone"]');
+    if (!(await page.locator('.spesa-riga.presa', { hasText: 'Mascarpone' }).count())) throw new Error('spunta non messa');
+    const w = await page.locator('a', { hasText: 'Manda la lista su WhatsApp' }).getAttribute('href');
+    if (!decodeURIComponent(w).includes('Mascarpone: 2 × 250 g')) throw new Error('testo WhatsApp: ' + decodeURIComponent(w).slice(0, 120));
+    await page.locator('[data-campo="sp.anche"]').uncheck(); await foto('20-spesa-presa');
+  });
+  await passo('Monica: dosi nella scheda del piatto', async () => {
+    await clic('.indietro'); await clic('.riquadro >> nth=1'); await clic('.piatto-riga >> text=Tiramisù');
+    const q = page.locator('[data-campo="d.q"][data-ing="mascarpone"]'); await q.scrollIntoViewIfNeeded();
+    if (await q.inputValue() !== '85') throw new Error('dose mascarpone: ' + await q.inputValue());
+    await q.fill('100'); await q.dispatchEvent('change'); await foto('21-dosi');
+    if (await page.evaluate(() => SPESA.dosi.tiramisu.mascarpone) !== 100) throw new Error('dose non salvata');
+    await clic('.indietro');   // resta in «I miei piatti»: la prova dopo parte da una schermata interna
+  });
   await passo('testo grande', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=3'); await page.locator('[data-campo="p.grande"]').check(); await page.waitForTimeout(200);
     if (!(await page.evaluate(() => document.documentElement.classList.contains('grande')))) throw new Error('niente classe');

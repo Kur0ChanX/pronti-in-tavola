@@ -2,7 +2,6 @@
 
 ## 0. Aspetta Mario
 - 05/11 · 🟡 Principale 9 · Cloudflare passo 2: nel menù tocca **Compute** e manda la foto di cosa compare (account «Pronti in Tavola» già creato e scelto)
-- 05/11 · 🟡 Principale 9 · «Il carrello che ti ho detto»: quale? Nel repo e nei messaggi salvati non c'è (chiesto anche alla #8). 1 il carrello semplice delle foto (già nell'anteprima delle 20:37) · 2 un'altra cosa: riscriverla in una riga
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
 
 | N | Cosa | Chi | Urgenza |
@@ -11,7 +10,8 @@
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) con un Worker di Cloudflare nell'account dell'app: serve C4. Fatto il 05/11: l'app si apre senza rete (`sw.js`, `manifest.webmanifest`) | Claude | media |
 | C4 | Sito `pronti-in-tavola.pages.dev` su Cloudflare Pages, account «Pronti in Tavola» (creato). In Cloudflare: build `python3 tools/sito.py`, cartella `sito`, variabile `SKIP_DEPENDENCY_INSTALL`=`1`, ramo di produzione `main` (creato, giro verde in locale; anteprime degli altri rami spente). Manca: progetto (nome con suffisso → cambiarlo in `data.js` e `index.html`), dominio in Firebase. 👁 Lo vedi: dal telefono apri l'indirizzo `.pages.dev` e compare il menù di Monica · prova: foto di Mario | Claude + Mario | media |
 | C5 | Anteprima del link su WhatsApp col logo: fatti il 05/11 tag e immagine (`media/anteprima-link-1.jpg`, approvata da Mario il 05/11; `tools/immagine-link.js`). Manca: provarla su WhatsApp col sito online (C4). 👁 Lo vedi: in WhatsApp, quando il sito sarà online (C4), mandando il link a te stesso compare il riquadro col logo · prova: foto della chat | Claude | con C4 |
-| C6 | Fase 2: dosi e spesa, sconti | Claude | dopo |
+| C6 | Fase 2. Lista della spesa fatta il 05/11 (`spesa.js`, nell'anteprima): dosi per piatto (bozza di Claude), ordini da preparare per giorni, in casa, confezioni, reparti, spunte, WhatsApp. Manca: dosi controllate da Monica; «ho fatto la spesa → in casa» e consumo automatico; sconti. 👁 Lo vedi: nell'anteprima, Monica → Da preparare → Lista della spesa · prova: foto di Mario | Claude | media |
+| C15 | Dosi, «in casa» e confezioni della spesa nei dati privati di Monica su Firebase (raccolta solo gestori, regole e prove): oggi stanno solo sul suo telefono (`pit-spesa-v1`). Prima di darle l'app vera | Claude | alta |
 | C7 | Fase 3: etichette, immagine del menù, incassi, costo per piatto | Claude | dopo |
 | C11 | Passaparola (Mario 05/11): link unico `#da=` che tutti rigirano, menù visibile, nome unico (`nomi/`), primo ordine «da approvare», Monica approva o ricollega un telefono nuovo, interruttore «Accetta nuovi clienti»; Monica: Google + impronta o PIN. Fatto (05/11): specifica 0.2, regole con 50 prove, schermate nell'app. Manca: provarlo coi telefoni veri (dopo il progetto Firebase di Mario) | Claude | alta |
 | C9 | Kit RVC: nel pacchetto «indipendente» v35 manca `tools/consegne.py` (lo usano hook, skill `consegne` e `test-scorta.py`); qui copiato da RVC e adattato. Da segnalare alla sessione RVC | Mario → RVC | bassa |
