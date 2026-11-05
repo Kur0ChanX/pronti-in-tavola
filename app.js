@@ -267,6 +267,7 @@ function testataCliente() {
   const n = quanti(P.carrello);
   return `<header class="testata"><img class="marchio" src="${LOGO}" alt="">
     <div class="titolo"><b>Pronti in Tavola</b><span>Ciao ${esc(nomeBreve(cliente(P.cliente).nome))}!</span></div>
+    <button type="button" class="icona aa" data-a="testo-grande" aria-pressed="${!!P.grande}" aria-label="Testo più grande">Aa</button>
     <button type="button" class="icona" data-a="vai" data-v="carrello" aria-label="Il tuo ordine: ${n} piatti">${ico('carrello')}${n ? `<span class="pallino">${n}</span>` : ''}</button></header>`;
 }
 function testataSemplice(titolo, indietro, etichetta = 'Indietro') {
@@ -301,8 +302,11 @@ function vMenu() {
           <span class="piccolo num">${euro(prezzoDi(p, f.id))}${f.tipo === 'kg' ? ' al kg' : ''}</span></button>`;
       }).join('')}</div></section>`;
   }
+  h += P.allergie.length
+    ? `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Le tue allergie:</b> ${esc(P.allergie.map(a => NOME_ALL[a].toLowerCase()).join(', '))}<br><u>Cambia</u></span></button>`
+    : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b><br><small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`;
   h += `<nav class="schede-cat" aria-label="Parti del menù">${cats.map(([k, n]) => `<button type="button" class="chip" data-a="cat" data-v="${k}" aria-pressed="${UI.cat === k}">${n}</button>`).join('')}
-    <button type="button" class="chip" data-a="vai" data-v="io">${ico('cuore')}Le mie allergie${P.allergie.length ? ` (${P.allergie.length})` : ''}</button></nav>`;
+</nav>`;
   cats.forEach(([k, n], i) => {
     if (i) h += filo();
     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
@@ -353,8 +357,7 @@ function foglioPiatto() {
   if (!anteprima) {
     if (p.note.length) h += `<div class="gruppo"><span class="etichetta">Vuoi qualcosa di diverso?</span><div class="scelte">${p.note.map(n =>
       `<button type="button" class="chip" data-a="sel-nota" data-v="${esc(n)}" aria-pressed="${s.note.includes(n)}">${esc(n)}</button>`).join('')}</div></div>`;
-    h += `<div class="gruppo"><label for="nota-piatto">Altro per Monica (se vuoi)</label><textarea id="nota-piatto" data-campo="sel.testo" placeholder="es. senza prezzemolo">${esc(s.testo)}</textarea></div>
-      <a class="link" href="${wa('', testoWa)}" target="_blank" rel="noopener">Manda questo piatto a un'amica</a>`;
+    h += `<a class="link" href="${wa('', testoWa)}" target="_blank" rel="noopener">Manda questo piatto a un'amica</a>`;
   }
   h += '</div>';
   if (!anteprima) h += `<div class="piede"><button type="button" class="btn pieno" data-a="aggiungi">${UI.modifica ? 'Aggiungi alla modifica' : pronto ? 'Lo prendo oggi' : 'Aggiungi'} · ${euro(prezzo * s.qta)}</button></div>`;
@@ -383,9 +386,9 @@ function vCarrello() {
       <div class="giorni">${giorni.map(({ g, no }) => { const d = daIso(g); return `<button type="button" class="giorno" data-a="entro" data-v="${g}" aria-pressed="${UI.entro === g}" ${no ? 'disabled' : ''} aria-label="${giornoLungo(g)}${no ? ', non disponibile' : ''}"><small>${no || F_GS.format(d)}</small><b>${d.getDate()}</b><small>${F_MESE.format(d)}</small></button>`; }).join('')}</div>
       <span class="tenue piccolo">Monica lo prepara entro quel giorno e te lo conferma. Se non ce la fa, ti propone un altro giorno.</span></div></section>`;
   }
-  h += `<section class="scheda"><h2>Come paghi</h2><div class="scelte">${metodi.map(m => `<button type="button" class="scelta" data-a="metodo" data-v="${m}" aria-pressed="${UI.metodo === m}">${METODO[m]}</button>`).join('')}</div>
-    <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>
-    <div class="gruppo"><label for="nota-ordine">Una nota per Monica (se vuoi)</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. passo dopo le 18">${esc(UI.nota)}</textarea></div>
+  h += metodi.length === 1 && metodi[0] === 'contanti' ? `<p class="paga-riga">${ico('ritiro')}Paghi in contanti quando ritiri.</p>` : `<section class="scheda"><h2>Come paghi</h2><div class="scelte">${metodi.map(m => `<button type="button" class="scelta" data-a="metodo" data-v="${m}" aria-pressed="${UI.metodo === m}">${METODO[m]}</button>`).join('')}</div>
+    <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>`;
+  h += `    <div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica? (se vuoi)</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>
     <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
     <button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
     ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : ''}`;
@@ -442,7 +445,7 @@ function cartaOrdineCliente(o) {
   if (!chiuso) h += boxPaga(o);
   const az = [];
   if (['nuovo', 'accettato'].includes(o.stato) && !o.pronto && !o.modifica) az.push(`<button type="button" class="btn chiaro" data-a="modifica" data-id="${o.id}">${ico('matita')}Cambia l'ordine</button>`);
-  if (o.stato === 'pronto') az.push(`<button type="button" class="btn" data-a="vai" data-v="ritiro">${ico('ritiro')}Come arrivare</button>`);
+  if (o.stato === 'pronto') az.push(`<a class="btn" href="${mapsLink()}" target="_blank" rel="noopener">${ico('ritiro')}Come arrivare</a>`);
   if (o.stato === 'ritirato' || chiuso) az.push(`<button type="button" class="btn chiaro" data-a="riordina" data-id="${o.id}">Ordina di nuovo</button>`);
   if (az.length) h += `<div class="fila larga">${az.join('')}</div>`;
   if (o.stato === 'nuovo' && !o.modifica) h += `<button type="button" class="link" data-a="annulla-ordine" data-id="${o.id}">Annulla l'ordine</button>`;
@@ -452,7 +455,7 @@ function vOrdiniCliente() {
   const lista = S.ordini.filter(o => o.cliente === P.cliente).sort((a, b) => b.n - a.n);
   let h = testataCliente() + '<main class="corpo"><h1>I miei ordini</h1>';
   if (!lista.length) h += '<p class="tenue">Non hai ancora ordinato.</p>';
-  return h + lista.map(cartaOrdineCliente).join('') + '</main>';
+  return h + lista.map(cartaOrdineCliente).join('') + schedaRitiro() + '</main>';
 }
 
 function vModifica() {
@@ -467,39 +470,29 @@ function vModifica() {
   return h + '</main>';
 }
 
-function vRitiro() {
+function schedaRitiro() {
   const r = S.impostazioni.ritiro, num = S.impostazioni.whatsapp;
-  return `${testataCliente()}<main class="corpo"><h1>Dove ritirare</h1>
-    <section class="scheda">
-      <svg viewBox="0 0 320 120" role="img" aria-label="Disegno della via" style="width:100%;border-radius:10px;background:#F3E6CF">
-        <path d="M-10 78 L330 62" stroke="#FFFBF2" stroke-width="18"/><path d="M120 -10 L150 130" stroke="#FFFBF2" stroke-width="14"/><path d="M230 -10 L250 130" stroke="#FFFBF2" stroke-width="10"/>
-        <path d="M-10 78 L330 62" stroke="#E2CDA8" stroke-width="1" stroke-dasharray="6 6"/>
-        <g transform="translate(184 64)"><circle r="18" fill="#7B2318" opacity=".15"/><path d="M0 4s-11-9.6-11-18a11 11 0 0 1 22 0C11-5.6 0 4 0 4z" fill="#7B2318"/><circle cy="-14" r="4" fill="#FBF4E8"/></g>
-      </svg>
-      <div><b style="font-size:1.25rem;font-family:var(--display)">${esc(r.via)}</b><br><span class="tenue">${esc(r.citta)}</span></div>
-      ${r.nota ? `<div class="avviso">${ico('aiuto')}<div>${esc(r.nota)}</div></div>` : ''}
-      <a class="btn pieno" href="${mapsLink()}" target="_blank" rel="noopener">${ico('mappa')}Apri in Maps</a>
-      ${num ? `<a class="btn chiaro pieno" href="${wa(num, 'Ciao Monica! ')}" target="_blank" rel="noopener">${ico('chat')}Scrivi a Monica</a>
-        <a class="btn chiaro pieno" href="tel:+${numero(num)}">${ico('telefono')}Chiama Monica</a><span class="tenue piccolo" style="text-align:center">+${numero(num)}</span>`
-    : '<span class="tenue piccolo">Monica aggiunge il suo numero nelle impostazioni: poi qui compaiono «Scrivi» e «Chiama».</span>'}
-    </section>
-    <section class="scheda"><h2>Quando</h2><p style="margin:0">Il giorno lo scegli quando ordini e Monica lo conferma. Quando è pronto, ti avvisa lei.</p></section></main>`;
+  if (!r.via) return '';   /* chi non è ancora approvato non riceve l'indirizzo */
+  return `<section class="scheda ritiro-scheda"><h2>Dove ritiri</h2>
+    <div><b style="font-size:1.2rem;font-family:var(--display)">${esc(r.via)}</b><br><span class="tenue">${esc(r.citta)}</span></div>
+    ${r.nota ? `<p class="tenue" style="margin:0">${esc(r.nota)}</p>` : ''}
+    <a class="btn pieno" href="${mapsLink()}" target="_blank" rel="noopener">${ico('mappa')}Apri in Maps</a>
+    ${num ? `<div class="fila larga"><a class="btn chiaro" href="${wa(num, 'Ciao Monica! ')}" target="_blank" rel="noopener">${ico('chat')}Scrivi a Monica</a>
+      <a class="btn chiaro" href="tel:+${numero(num)}">${ico('telefono')}Chiama</a></div>` : ''}
+  </section>`;
 }
-
-function vIo() {
-  const c = cliente(P.cliente);
-  return `${testataCliente()}<main class="corpo"><h1>${esc(c.nome)}</h1>
-    <section class="scheda"><h2>Le mie allergie</h2><p class="tenue" style="margin:0">Tocca quelle che hai: nel menù i piatti che le contengono diventano rossi. Restano solo su questo telefono.</p>
-      <div class="scelte">${ALLERGENI.map(([k, n]) => `<button type="button" class="chip" data-a="allergia" data-v="${k}" aria-pressed="${P.allergie.includes(k)}">${n}</button>`).join('')}</div></section>
-    <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label></section>
-    <button type="button" class="link" data-a="rivedi-apertura">Rivedi l'animazione di apertura</button></main>`;
+function foglioAllergie() {
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Le tue allergie</h1>
+    <p class="tenue" style="margin:0">Tocca quelle che hai: nel menù i piatti che le contengono diventano rossi. Restano solo su questo telefono.</p>
+    <div class="scelte">${ALLERGENI.map(([k, n]) => `<button type="button" class="chip" data-a="allergia" data-v="${k}" aria-pressed="${P.allergie.includes(k)}">${n}</button>`).join('')}</div></div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="chiudi">Fatto</button></div>`;
 }
 
 function barraCliente() {
   const att = { menu: 'menu', carrello: 'menu', modifica: 'ordini', inviato: 'ordini' }[UI.vista] || UI.vista;
   const avvisi = S.ordini.filter(o => o.cliente === P.cliente && (o.stato === 'proposta' || o.stato === 'pronto')).length;
   const b = (v, n, t, extra = '') => `<button type="button" data-a="vai" data-v="${v}" ${att === v ? 'aria-current="page"' : ''}>${ico(n)}${t}${extra}</button>`;
-  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}${b('ritiro', 'ritiro', 'Ritiro')}${b('io', 'io', 'Io')}</nav>`;
+  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}</nav>`;
 }
 
 /* ================= MONICA ================= */
@@ -529,7 +522,7 @@ function vHome() {
       <button type="button" class="riquadro primo" data-a="vai" data-v="ordini">${ico('ordini')}${n ? `<span class="pallino">${n}</span>` : ''}<div><b>Ordini</b><br><small>Accetta e prepara</small></div></button>
       <button type="button" class="riquadro" data-a="vai" data-v="piatti">${ico('piatti')}<div><b>I miei piatti</b><br><small>Foto, prezzi, pronti</small></div></button>
       <button type="button" class="riquadro" data-a="vai" data-v="clienti">${ico('clienti')}${S.richieste.length ? `<span class="pallino">${S.richieste.length}</span>` : ''}<div><b>Clienti</b><br><small>Invita e approva</small></div></button>
-      <button type="button" class="riquadro" data-a="vai" data-v="impostazioni">${ico('impostazioni')}<div><b>Impostazioni</b><br><small>Pausa, giorni, pagamenti</small></div></button>
+      <button type="button" class="riquadro" data-a="vai" data-v="impostazioni">${ico('impostazioni')}<div><b>Impostazioni</b><br><small>Pausa e ferie</small></div></button>
     </div>
     <section class="scheda"><header class="fila"><h2 style="flex:1">Pronti subito oggi</h2></header>
       ${pronti.length ? `<ul style="margin:0;padding-left:18px">${pronti.map(p => { const f = p.formati.find(x => x.id === p.pronto.formato) || p.formati[0]; return `<li><b>${esc(p.nome)}</b>: ${qtaTesto(f.tipo, p.pronto.qta, f.nome)}</li>`; }).join('')}</ul>` : '<p class="tenue" style="margin:0">Hai qualcosa già pronto? Segnalo: i clienti lo vedono in cima al menù.</p>'}
@@ -742,11 +735,15 @@ function vImpostazioni() {
   return `${testataMonica('Impostazioni', 'home')}<main class="corpo">
     <section class="scheda"><h2>Pausa</h2>${sw('i.pausa.attiva', i.pausa.attiva, 'Sono in pausa', 'I clienti ordinano solo per dopo')}
       ${i.pausa.attiva ? `<label for="pausa-fino" style="font-weight:800">Fino a (compreso)</label><input type="date" id="pausa-fino" data-campo="i.pausa.fino" value="${i.pausa.fino}">` : ''}</section>
+    <section class="scheda"><h2>Pronti subito</h2><label for="pronti-fino" style="font-weight:800">Ritiro entro le</label><input type="time" id="pronti-fino" data-campo="i.prontiFino" value="${esc(i.prontiFino)}"></section>
+    <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
+      <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>
+    <button type="button" class="btn chiaro pieno" data-a="altre-imp" aria-expanded="${!!UI.altreImp}">${ico('impostazioni')}${UI.altreImp ? 'Chiudi le altre impostazioni' : 'Altre impostazioni (le sistema Mario)'}</button>
+    ${UI.altreImp ? `<p class="tenue piccolo" style="margin:0">Cose che si cambiano di rado: nel dubbio chiedi a Mario.</p>
     <section class="scheda"><h2>Giorni di anticipo</h2><p class="tenue" style="margin:0">Quanti giorni prima devono ordinare.</p>
       <div class="fila">${passo('i-anticipo', i.anticipo)}<span class="tenue">${i.anticipo === 0 ? 'anche per oggi' : i.anticipo === 1 ? 'giorno' : 'giorni'}</span></div></section>
     <section class="scheda"><h2>Limite della settimana</h2>${sw('i.limite.attivo', i.limite.attivo, 'Metti un limite', 'Arrivata al limite, i giorni di quella settimana si chiudono')}
       ${i.limite.attivo ? `<div class="fila">${passo('i-limite', i.limite.teglie)}<span class="tenue">teglie e torte a settimana</span></div>` : ''}</section>
-    <section class="scheda"><h2>Pronti subito</h2><label for="pronti-fino" style="font-weight:800">Ritiro entro le</label><input type="time" id="pronti-fino" data-campo="i.prontiFino" value="${esc(i.prontiFino)}"></section>
     <section class="scheda natale-imp"><h2>Menù di Natale</h2>${sw('i.natale.attivo', i.natale.attivo, 'Mostra il menù di Natale', 'Compare in cima, con la sua data limite')}
       ${i.natale.attivo ? `<label for="natale-entro" style="font-weight:800">Ordini entro</label><input type="date" id="natale-entro" data-campo="i.natale.entro" value="${i.natale.entro}">
       <span class="etichetta" style="font-weight:800">Piatti del menù di Natale</span><div class="scelte">${visibili().map(p => `<button type="button" class="chip" data-a="natale-piatto" data-id="${p.id}" aria-pressed="${i.natale.piatti.includes(p.id)}">${esc(p.nome)}</button>`).join('')}</div>` : ''}</section>
@@ -758,9 +755,7 @@ function vImpostazioni() {
     <section class="scheda"><h2>Numeri</h2><label for="n-wa" style="font-weight:800">Il tuo WhatsApp</label><input type="tel" id="n-wa" data-campo="i.whatsapp" value="${esc(i.whatsapp)}" placeholder="es. 333 123 4567">
       <label for="n-mario" style="font-weight:800">Numero di Mario (per «Chiedi a Mario»)</label><input type="tel" id="n-mario" data-campo="i.mario" value="${esc(i.mario)}" placeholder="es. 333 123 4567"></section>
     ${Dati.attivo ? vSicurezza() : ''}
-    <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
-      <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>
-    ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}</main>`;
+    ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}` : ''}</main>`;
 }
 
 function foglioPronti() {
@@ -801,8 +796,6 @@ function vistaCliente() {
     case 'inviato': return vInviato();
     case 'ordini': return vOrdiniCliente();
     case 'modifica': return UI.modifica ? vModifica() : vOrdiniCliente();
-    case 'ritiro': return vRitiro();
-    case 'io': return vIo();
     default: return vMenu();
   }
 }
@@ -831,7 +824,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -921,6 +914,9 @@ const A = {
   cat(el) { UI.cat = el.dataset.v; const t = document.getElementById('cat-' + el.dataset.v); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-a="cat"]').forEach(b => b.setAttribute('aria-pressed', b === el)); },
   piatto(el) { apriPiatto(el.dataset.id, !!el.dataset.pronto); },
   chiudi() { chiudiFoglio(); },
+  'altre-imp'() { UI.altreImp = !UI.altreImp; render(); },
+  'apri-allergie'() { UI.foglio = { tipo: 'allergie' }; render(); },
+  'testo-grande'() { P.grande = !P.grande; salvaP(); render(); mostraToast(P.grande ? 'Testo grande' : 'Testo normale'); },
   'chiudi-fuori'(el, e) { if (e.target === el) A.chiudi(); },
   'sel-var'(el) { UI.sel.variante = el.dataset.v; render(); },
   'sel-formato'(el) { const p = piatto(UI.foglio.id), f = p.formati.find(x => x.id === el.dataset.v); UI.sel.formato = f.id; UI.sel.qta = f.tipo === 'kg' || f.tipo === 'pz' ? passoDi(f).min : 1; render(); },
