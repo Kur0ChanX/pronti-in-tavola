@@ -80,6 +80,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.ordine-carta', { hasText: 'Ordine n. 5' }).locator('[data-a="proponi"]').click(); await page.waitForTimeout(250); await clic('.foglio .giorno >> nth=3'); await clic('[data-a="conferma-giorno"]');
     await clic('[data-a="tab"][data-v="preparare"]'); await foto('09-da-preparare');
   });
+  await passo('Monica: etichette per le vaschette', async () => {
+    await clic('[data-a="etichette"]');
+    await page.locator('.foglio img[alt^="Foglio 1"]').waitFor({ timeout: 5000 });
+    const x = await page.evaluate(() => { const g = UI.foglio.giorno, ee = etichetteDi(g), c = disegnaEtichette(ee)[0];
+      return { n: ee.length, fogli: UI.foglio.url.length, w: c.width, h: c.height, all: ee.some(e => e.all.length), giorni: UI.foglio.giorni.length }; });
+    if (!x.n || x.fogli !== Math.ceil(x.n / 10) || x.w !== 1240 || x.h !== 1754 || !x.all) throw new Error('etichette: ' + JSON.stringify(x));
+    if (x.giorni > 1) { await clic('.foglio [data-a="eti-giorno"] >> nth=1'); await page.locator('.foglio [data-a="eti-giorno"][aria-pressed="true"] >> nth=0').waitFor(); }
+    await page.waitForTimeout(500); await foto('09b-etichette'); await clic('.foglio [data-a="chiudi"]');
+  });
   await passo('cliente: accetta la proposta, paga, cambia ordine', async () => {
     await clic('[data-a="ruolo"][data-v="cliente"]'); await clic('.barra [data-v="ordini"]');
     await clic('[data-a="proposta-si"]'); await foto('10-cliente-ordini');

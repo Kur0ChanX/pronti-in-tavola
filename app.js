@@ -678,7 +678,8 @@ function vOrdiniMonica() {
   if (UI.tab === 'preparare') {
     const cucina = daCucinare(lista.filter(o => o.stato === 'accettato'));
     if (cucina.length) h += `<section class="scheda"><h2>Cosa cucinare</h2>${cucina.map(([g, piatti]) => `<div class="gruppo"><span class="etichetta">${maiuscola(giornoLungo(g))}</span>
-      <ul style="margin:0;padding-left:18px">${Object.values(piatti).map(x => `<li><b>${esc(x.nome)}</b>${x.varianteNome ? ' ' + esc(x.varianteNome.toLowerCase()) : ''}: ${qtaTesto(x.tipo, x.qta, x.formatoNome)}${x.note.length ? `<br><span style="color:var(--cotto);font-weight:800">${esc(x.note.join(' · '))}</span>` : ''}</li>`).join('')}</ul></div>`).join('')}</section>`;
+      <ul style="margin:0;padding-left:18px">${Object.values(piatti).map(x => `<li><b>${esc(x.nome)}</b>${x.varianteNome ? ' ' + esc(x.varianteNome.toLowerCase()) : ''}: ${qtaTesto(x.tipo, x.qta, x.formatoNome)}${x.note.length ? `<br><span style="color:var(--cotto);font-weight:800">${esc(x.note.join(' · '))}</span>` : ''}</li>`).join('')}</ul></div>`).join('')}
+      <button type="button" class="btn chiaro pieno" data-a="etichette">${ico('spunta')}Etichette per le vaschette</button></section>`;
   }
   if (!lista.length) h += `<p class="tenue">${{ guardare: 'Niente da guardare. Ti arriva una notifica a ogni ordine nuovo.', preparare: 'Niente da preparare.', pronti: 'Nessun ordine pronto da ritirare.', finiti: 'Ancora nessun ordine finito.' }[UI.tab]}</p>`;
   return h + lista.map(cartaOrdineMonica).join('') + '</main>';
@@ -900,7 +901,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1019,8 +1020,75 @@ function foglioMenuImg() {
     ${Dati.attivo ? `<div class="piede"><a class="btn pieno" href="${UI.foglio.url}" download="menu-pronti-in-tavola.png">Scarica l'immagine</a></div>` : ''}`;
 }
 
+/* ---------- etichette per le vaschette (A4, 10 per foglio da 105 x 57 mm) ---------- */
+const ordiniDaCucinare = () => S.ordini.filter(o => o.stato === 'accettato' && !o.modifica);
+function etichetteDi(giorno) {
+  const out = [];
+  ordiniDaCucinare().filter(o => o.entro === giorno).sort((a, b) => a.n - b.n).forEach(o => o.righe.forEach(r => {
+    const p = piatto(r.piatto), all = p ? allergeniDi(ingDi(p, r.variante)) : [];
+    const pezzi = ['teglia', 'intera'].includes(r.tipo) && Number.isInteger(r.qta) && r.qta > 1 ? r.qta : 1;
+    const e = { chi: chiOrdina(o), n: o.n, nome: r.nome, variante: r.varianteNome || '', qta: pezzi > 1 ? qtaTesto(r.tipo, 1, r.formatoNome) : qtaTesto(r.tipo, r.qta, r.formatoNome),
+      note: [...(r.note || []), r.testo].filter(Boolean).join(' · '), all: all.map(x => NOME_ALL[x].toLowerCase()), giorno };
+    for (let i = 1; i <= pezzi; i++) out.push(Object.assign({}, e, { pezzo: pezzi > 1 ? `${i} di ${pezzi}` : '' }));
+  }));
+  return out.slice(0, 100);
+}
+function disegnaEtichette(ee) {
+  const W = 1240, H = 1754, LW = 620, LH = 337, TOP = 35, FONT = '"Nunito Sans", system-ui, sans-serif';
+  const taglia = (g, t, max) => { t = String(t); while (g.measureText(t).width > max && t.length > 2) t = t.slice(0, -2) + '…'; return t; };
+  const pagine = [];
+  for (let k = 0; k < ee.length; k += 10) {
+    const c = document.createElement('canvas'), g = c.getContext('2d');
+    c.width = W; c.height = H; g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, W, H);
+    ee.slice(k, k + 10).forEach((e, i) => {
+      const x = (i % 2) * LW, y = TOP + Math.floor(i / 2) * LH, P0 = 34, larg = LW - 2 * P0;
+      g.setLineDash([10, 8]); g.strokeStyle = '#D9C7AE'; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, LW - 2, LH - 2); g.setLineDash([]);
+      g.textAlign = 'left'; g.fillStyle = '#7B2318'; g.font = '600 46px Fraunces, Georgia, serif';
+      g.fillText(taglia(g, e.chi, larg - (e.pezzo ? 110 : 0)), x + P0, y + 72);
+      if (e.pezzo) { g.textAlign = 'right'; g.fillStyle = '#9A5B3C'; g.font = `700 24px ${FONT}`; g.fillText(e.pezzo, x + LW - P0, y + 66); g.textAlign = 'left'; }
+      g.fillStyle = '#2B1A12'; g.font = `800 34px ${FONT}`; g.fillText(taglia(g, e.nome, larg), x + P0, y + 124);
+      g.font = `700 26px ${FONT}`; g.fillStyle = '#5B4636'; g.fillText(taglia(g, [e.variante, e.qta].filter(Boolean).join(' · '), larg), x + P0, y + 164);
+      let yy = y + 204;
+      if (e.note) { g.fillStyle = '#A0451F'; g.font = `800 26px ${FONT}`; g.fillText(taglia(g, e.note, larg), x + P0, yy); yy += 38; }
+      if (e.all.length) {
+        g.fillStyle = '#B3261E'; g.font = `800 25px ${FONT}`;
+        const parole = ('Contiene: ' + e.all.join(', ')).split(' '); let riga = '', n = 0;
+        parole.forEach(w => { const t = riga ? riga + ' ' + w : w; if (g.measureText(t).width > larg && riga && n < 1) { g.fillText(riga, x + P0, yy); yy += 32; n++; riga = w; } else riga = t; });
+        g.fillText(taglia(g, riga, larg), x + P0, yy);
+      }
+      g.fillStyle = '#9A5B3C'; g.font = `700 22px ${FONT}`; g.fillText(taglia(g, `Ordine n. ${e.n} · ritiro ${e.giorno.slice(8, 10)}/${e.giorno.slice(5, 7)}`, larg - 190), x + P0, y + LH - 30);
+      g.textAlign = 'right'; g.fillStyle = '#7B2318'; g.font = '600 24px Fraunces, Georgia, serif'; g.fillText('Pronti in Tavola', x + LW - P0, y + LH - 30);
+    });
+    pagine.push(c);
+  }
+  return pagine;
+}
+function apriEtichette(giorno) {
+  const giorni = [...new Set(ordiniDaCucinare().map(o => o.entro))].sort();
+  if (!giorni.length) return;
+  if (!giorni.includes(giorno)) giorno = giorni[0];
+  const ee = etichetteDi(giorno);
+  UI.foglio = { tipo: 'etichette', giorni, giorno, quante: ee.length, url: disegnaEtichette(ee).map(c => c.toDataURL('image/png')) };
+  render();
+}
+async function mandaEtichette() {
+  const ff = await Promise.all(UI.foglio.url.map(async (u, i) => new File([await (await fetch(u)).blob()], `etichette-${UI.foglio.giorno}-${i + 1}.png`, { type: 'image/png' })));
+  try { if (navigator.canShare && navigator.canShare({ files: ff })) await navigator.share({ files: ff }); } catch (e) { /* annullato */ }
+}
+function foglioEtichette() {
+  const f = UI.foglio, fogli = f.url.length;
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Etichette per le vaschette</h1>
+    ${f.giorni.length > 1 ? `<div class="fila" style="flex-wrap:wrap;gap:8px">${f.giorni.map(g => `<button type="button" class="chip" data-a="eti-giorno" data-v="${g}" aria-pressed="${g === f.giorno}">${maiuscola(giornoLungo(g))}</button>`).join('')}</div>` : `<p style="margin:0"><b>${maiuscola(giornoLungo(f.giorno))}</b></p>`}
+    <p class="tenue" style="margin:0">${f.quante} ${f.quante === 1 ? 'etichetta' : 'etichette'}, ${fogli} ${fogli === 1 ? 'foglio' : 'fogli'} A4. Stampa su fogli adesivi da 10 (105 × 57 mm) oppure su carta normale e ritaglia lungo le righe. Tieni premuto su un foglio per salvarlo o condividerlo.</p>
+    ${f.url.map((u, i) => `<img src="${u}" alt="Foglio ${i + 1} delle etichette" style="width:100%;border-radius:8px;border:1px solid var(--riga);background:#fff">`).join('')}</div>
+    ${Dati.attivo && navigator.canShare ? `<div class="piede"><button type="button" class="btn pieno" data-a="eti-manda">Condividi per stampare</button></div>` : ''}`;
+}
+
 const A = {
   'menu-immagine'() { mandaMenu(); },
+  etichette() { apriEtichette(); },
+  'eti-giorno'(el) { apriEtichette(el.dataset.v); },
+  'eti-manda'() { mandaEtichette(); },
   annulla() { if (fnAnnulla) { const f = fnAnnulla; fnAnnulla = null; $('#toast').innerHTML = ''; f(); } },
   async 'nome-ok'() {
     const i = $('#nome-nuovo'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
