@@ -15,7 +15,7 @@ const Dati = (() => {
   const attivo = !!CONFIG && !qs.has('prova') && location.protocol !== 'file:';
   const CHIAVE_COPIA = 'pit-copia-v1';
 
-  let F = null, db = null, auth = null, alCambio = () => {}, alStato = () => {};
+  let F = null, db = null, auth = null, alCambio = () => {}, alStato = () => {}, op = {};
   const srv = {};                 // ultima copia del server (o della cache): 'raccolta/id' → dati
   const ascolti = [];             // ascolti attivi da chiudere al cambio di utente
   let ultimaScrittura = Promise.resolve(), inAttesa = 0, tAvviso = null;
@@ -45,6 +45,11 @@ const Dati = (() => {
     (S.clienti || []).forEach(c => { d['clienti/' + c.id] = copia(c); });
     (S.ordini || []).forEach(o => { d['ordini/' + o.id] = copia(o); });
     d['contatori/ordini'] = { prossimo: S.prossimoNumero || 1 };
+    if (op.contaSettimane) {
+      const conto = op.contaSettimane(S);
+      Object.keys(srv).filter(k => k.startsWith('settimane/')).forEach(k => { d[k] = { teglie: 0 }; });
+      Object.keys(conto).forEach(s => { d['settimane/' + s] = { teglie: conto[s] }; });
+    }
     return d;
   }
   const tutti = col => Object.keys(srv).filter(k => k.startsWith(col + '/')).map(k => srv[k]);
@@ -65,6 +70,7 @@ const Dati = (() => {
       clienti: tutti('clienti'),
       ordini: tutti('ordini').sort((a, b) => (a.n || 0) - (b.n || 0)),
       prossimoNumero: (srv['contatori/ordini'] || {}).prossimo || 1,
+      settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = srv[k].teglie || 0; return o; }, {}),
       utenti,
       richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
         .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato }))
@@ -109,7 +115,7 @@ const Dati = (() => {
   function apriAscolti() {
     chiudiAscolti();
     const { doc, collection, query, where } = F.fs;
-    ['piatti', 'foto'].forEach(c => ascolta(collection(db, c), c));
+    ['piatti', 'foto', 'settimane'].forEach(c => ascolta(collection(db, c), c));
     ascolta(doc(db, 'impostazioni', 'app'));
     if (io.gestore) {
       ['clienti', 'ordini', 'utenti'].forEach(c => ascolta(collection(db, c), c));
@@ -145,8 +151,8 @@ const Dati = (() => {
       }, () => { io.utente = null; apriAscolti(); });
     } else apriAscolti();
   }
-  async function avvia(cambio, statoRete) {
-    alCambio = cambio; alStato = statoRete || (() => {});
+  async function avvia(cambio, statoRete, opzioni) {
+    alCambio = cambio; alStato = statoRete || (() => {}); op = opzioni || {};
     const base = 'https://www.gstatic.com/firebasejs/' + FIREBASE_VERSIONE + '/';
     const [app, fs, au] = await Promise.all(['firebase-app.js', 'firebase-firestore.js', 'firebase-auth.js'].map(f => import(base + f)));
     F = { app, fs, au };
@@ -171,6 +177,7 @@ const Dati = (() => {
   /* ---------- scrivere solo i campi cambiati (Monica) ---------- */
   const SCRIVIBILI = ['piatti/', 'foto/', 'impostazioni/', 'clienti/', 'ordini/', 'contatori/'];
   function scrivi(S) {
+    if (db && !io.gestore && io.pronto) return scriviCliente(S);
     if (!db || !io.gestore || !io.pronto) return ultimaScrittura;
     const { doc, writeBatch, deleteField } = F.fs;
     const nuovi = documenti(S), b = writeBatch(db);
@@ -209,13 +216,122 @@ const Dati = (() => {
     return true;
   }
 
+  /* ---------- clienti: nome, ordini e risposte, sempre «tutto o niente» ---------- */
+  const errore = (code, extra) => Object.assign(new Error(code), { code }, extra || {});
+  const approvato = () => !!(io.utente && io.utente.stato === 'approvato' && io.utente.cliente);
+  const chiaveNome = nome => String(nome).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60).replace(/-+$/, '');
+
+  // Il telefono si presenta: nome unico (nomi/), o «ricollega» se è lo stesso nome su un telefono nuovo.
+  async function registra(nome, tramite, ricollega) {
+    if ((srv['impostazioni/app'] || {}).nuovi === false) throw errore('chiuso');
+    if (!navigator.onLine) throw errore('unavailable');
+    const chiave = chiaveNome(nome);
+    if (!chiave || nome.length < 2 || nome.length > 60) throw errore('nome');
+    const { doc, writeBatch } = F.fs, b = writeBatch(db);
+    const u = { nome, chiave, tramite: String(tramite || '').slice(0, 40), il: op.oggi(), stato: ricollega ? 'ricollega' : 'nuovo', cliente: null, primo: null };
+    b.set(doc(db, 'utenti', io.uid), u);
+    if (!ricollega) b.set(doc(db, 'nomi', chiave), { il: u.il });
+    await b.commit();
+    io.utente = u; avvisaCambio();
+  }
+
+  // Quanto prende un ordine dai «pronti» (per piatto) e dalle teglie della settimana.
+  const fuori = ['annullato', 'rifiutato', 'daApprovare'];
+  function presi(o) {
+    const m = {};
+    if (o && o.pronto && !fuori.includes(o.stato)) o.righe.forEach(r => { m[r.piatto] = (m[r.piatto] || 0) + r.qta; });
+    return m;
+  }
+  function teglie(o) { const m = {}; if (o && !fuori.includes(o.stato)) { const n = op.teglieOrdine(o); if (n) m[op.settimana(o.entro)] = n; } return m; }
+  const unione = (a, b) => [...new Set([...Object.keys(a), ...Object.keys(b)])];
+  const arrot = x => Math.round(x * 100) / 100;
+
+  // Una scrittura dell'ordine (nuovo o cambiato) con i suoi effetti su pronti, cuori, teglie e contatore.
+  function transazione(vecchio, nuovo) {
+    if (!navigator.onLine) return Promise.reject(errore('unavailable'));
+    const { doc, runTransaction } = F.fs, id = nuovo.id, appr = approvato();
+    return runTransaction(db, async t => {
+      const dPronti = {}, dCuori = {}, dTeglie = {};
+      if (appr) {
+        const a = presi(vecchio), b = presi(nuovo), ta = teglie(vecchio), tb = teglie(nuovo);
+        unione(a, b).forEach(k => { const d = (b[k] || 0) - (a[k] || 0); if (d) dPronti[k] = d; });
+        unione(ta, tb).forEach(k => { const d = (tb[k] || 0) - (ta[k] || 0); if (d) dTeglie[k] = d; });
+        const ca = (vecchio && vecchio.cuori) || {}, cb = nuovo.cuori || {};
+        unione(ca, cb).forEach(k => { const d = (cb[k] ? 1 : 0) - (ca[k] ? 1 : 0); if (d) dCuori[k] = d; });
+      }
+      // prima tutte le letture, poi le scritture (regola delle transazioni)
+      const cont = vecchio ? null : await t.get(doc(db, 'contatori', 'ordini'));
+      const piatti = {};
+      for (const k of unione(dPronti, dCuori)) piatti[k] = await t.get(doc(db, 'piatti', k));
+      const sett = {};
+      for (const k of Object.keys(dTeglie)) sett[k] = await t.get(doc(db, 'settimane', k));
+      const scritto = Object.assign({}, nuovo);
+      if (!vecchio) {
+        if (!cont.exists()) throw errore('unavailable');
+        scritto.n = cont.data().prossimo;
+        Object.assign(scritto, { utente: io.uid, cliente: appr ? io.utente.cliente : null, stato: appr ? 'nuovo' : 'daApprovare' });
+      }
+      const agg = {};
+      Object.keys(dPronti).forEach(k => {
+        const p = piatti[k].exists() ? piatti[k].data() : null, d = dPronti[k];
+        if (d > 0) {   // prende: deve esserci ancora, di oggi
+          if (!p || !p.pronto || p.pronto.giorno !== op.oggi() || p.pronto.qta < d) throw errore('finito', { nome: p ? p.nome : k, piatto: k });
+          agg[k] = { pronto: Object.assign({}, p.pronto, { qta: arrot(p.pronto.qta - d) }) };
+        } else if (p && p.pronto && p.pronto.giorno === nuovo.entro) {   // rimette: solo nello stesso giorno
+          agg[k] = { pronto: Object.assign({}, p.pronto, { qta: arrot(p.pronto.qta - d) }) };
+        }
+      });
+      Object.keys(dCuori).forEach(k => {
+        if (!piatti[k].exists()) return;
+        agg[k] = Object.assign(agg[k] || {}, { cuori: Math.max(0, (piatti[k].data().cuori || 0) + dCuori[k]) });
+      });
+      if (vecchio) {
+        const campi = {};
+        Object.keys(nuovo).forEach(c => { if (chiaro(nuovo[c]) !== chiaro(vecchio[c])) campi[c] = nuovo[c]; });
+        t.update(doc(db, 'ordini', id), campi);
+      } else {
+        t.set(doc(db, 'ordini', id), scritto);
+        t.update(doc(db, 'contatori', 'ordini'), { prossimo: scritto.n + 1, ultimo: id });
+        if (!appr) t.update(doc(db, 'utenti', io.uid), { primo: id });
+      }
+      Object.keys(agg).forEach(k => t.update(doc(db, 'piatti', k), Object.assign(agg[k], { ultimoOrdine: id })));
+      Object.keys(dTeglie).forEach(k => {
+        const prima = sett[k].exists() ? sett[k].data().teglie || 0 : 0;
+        t.set(doc(db, 'settimane', k), { teglie: Math.max(0, prima + dTeglie[k]), ultimo: id });
+      });
+      return scritto;
+    });
+  }
+
+  // Ordini nuovi del cliente: uno alla volta (il contatore sale di 1 per scrittura).
+  // Se uno non parte, l'errore dice quanti sono già partiti.
+  async function inviaOrdini(lista) {
+    let partiti = 0;
+    try { for (const o of lista) { await transazione(null, o); partiti++; } }
+    catch (e) { e.partiti = partiti; throw e; }
+  }
+
+  // Cambi del cliente sui suoi ordini (annulla, risposta alla proposta, «Ho pagato», cuori, modifica).
+  function scriviCliente(S) {
+    if (!io.utente) return Promise.resolve();
+    const cambiati = (S.ordini || []).filter(o => srv['ordini/' + o.id] && chiaro(o) !== chiaro(srv['ordini/' + o.id]));
+    if (!cambiati.length) return ultimaScrittura;
+    inAttesa++;
+    ultimaScrittura = cambiati.reduce((pr, o) => pr.then(() => transazione(srv['ordini/' + o.id], o)), Promise.resolve())
+      .then(() => { inAttesa--; alStato({ rete: true, inAttesa }); },
+        e => { inAttesa--; console.warn('scrittura', e.code); alStato({ errore: e.code, inAttesa }); avvisaCambio(); throw e; });
+    ultimaScrittura.catch(() => {});
+    return ultimaScrittura;
+  }
+
   async function entraGoogle() {
     const au = F.au, provider = new au.GoogleAuthProvider();
     await au.signInWithPopup(auth, provider);
   }
 
   return {
-    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle,
+    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, registra, inviaOrdini,
     confermato: () => ultimaScrittura,
     inAttesa: () => inAttesa
   };

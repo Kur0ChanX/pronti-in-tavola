@@ -92,6 +92,66 @@ const server = http.createServer((req, res) => {
 
     // Copia sul telefono: alla prossima apertura il menù si vede subito, anche prima della rete
     controlla('copia del menù sul telefono', await cliente.evaluate(() => (Dati.copiaLocale() || { piatti: [] }).piatti.length === 23));
+
+    // Ordini veri dei clienti
+    const RIGA = `window.riga = (pid, pronto, qta) => { const p = S.piatti.find(x => x.id === pid), f = p.formati[0];
+      return { piatto: p.id, nome: p.nome, formato: f.id, formatoNome: f.nome, tipo: f.tipo, variante: '', varianteNome: '', qta: qta || 1, prezzo: f.prezzo, note: [], testo: '', pronto }; }`;
+    const oggiPag = await cliente.evaluate(() => oggi());
+    await admin(d => setDoc(doc(d, 'piatti/tiramisu'), { pronto: { formato: 't6', qta: 1, giorno: oggiPag } }, { merge: true }));
+    const nuovo = await apri();
+    await aspetta(nuovo, () => S.piatti.length === 23 && S.piatti.find(p => p.id === 'tiramisu').pronto);
+    await nuovo.evaluate(RIGA);
+    await nuovo.evaluate(() => { P.carrello = [riga('tiramisu', true)]; return inviaVero(); });
+    controlla('primo ordine: chiede «Come ti chiami?»', await nuovo.evaluate(() => UI.foglio && UI.foglio.tipo === 'nome' && !!document.querySelector('#nome-nuovo')));
+    await nuovo.fill('#nome-nuovo', 'Lùcia  Piras');
+    await nuovo.click('[data-a="nome-ok"]');
+    const uidN = await nuovo.evaluate(() => Dati.io.uid);
+    controlla('primo ordine partito «da approvare»', await aspetta(nuovo, () => P.carrello.length === 0 && S.ordini.some(o => o.stato === 'daApprovare')));
+    const nomeN = await admin(d => getDoc(doc(d, 'nomi/lucia-piras')));
+    const uN = (await admin(d => getDoc(doc(d, 'utenti/' + uidN)))).data();
+    controlla('nome segnato una volta (senza accenti né spazi doppi)', nomeN.exists() && uN.nome === 'Lùcia Piras' && uN.stato === 'nuovo' && !!uN.primo, uN);
+    controlla('il nuovo non ha preso il pronto', (await admin(d => getDoc(doc(d, 'piatti/tiramisu')))).data().pronto.qta === 1);
+
+    const doppio = await apri();
+    await aspetta(doppio, () => S.piatti.length === 23);
+    await doppio.evaluate(RIGA);
+    await doppio.evaluate(() => { P.carrello = [riga('tiramisu', true)]; return inviaVero(); });
+    await doppio.fill('#nome-nuovo', 'Lucia Piras');
+    await doppio.click('[data-a="nome-ok"]');
+    controlla('nome già usato: «Sei tu con un telefono nuovo?»', await aspetta(doppio, () => UI.foglio && UI.foglio.usato === 'Lucia Piras' && !!document.querySelector('[data-a="nome-ricollega"]')));
+    await doppio.click('[data-a="nome-ricollega"]');
+    const uidD = await doppio.evaluate(() => Dati.io.uid);
+    controlla('«Sì, sono io»: chiede di ricollegare e l\'ordine parte', await aspetta(doppio, () => P.carrello.length === 0)
+      && (await admin(d => getDoc(doc(d, 'utenti/' + uidD)))).data().stato === 'ricollega');
+
+    // Il cliente approvato (cliente, c1) e un secondo approvato si contendono l'ultimo pronto
+    await admin(async d => {
+      await setDoc(doc(d, 'clienti/c2'), { id: 'c2', nome: 'Lucia Piras', chiave: 'lucia-piras', da: oggiPag });
+      await setDoc(doc(d, 'utenti/' + uidN), { stato: 'approvato', cliente: 'c2' }, { merge: true });
+    });
+    await aspetta(nuovo, () => P.cliente === 'c2');
+    await cliente.evaluate(RIGA);
+    await cliente.evaluate(() => { P.carrello = [riga('tiramisu', true)]; return inviaVero(); });
+    controlla('approvato: prende l\'ultimo pronto', (await admin(d => getDoc(doc(d, 'piatti/tiramisu')))).data().pronto.qta === 0);
+    await nuovo.evaluate(() => { P.carrello = [riga('tiramisu', true)]; return inviaVero(); });
+    controlla('l\'altro legge «l\'ha appena preso qualcun altro» e il piatto torna da prenotare',
+      await nuovo.evaluate(() => P.carrello.length === 1 && P.carrello[0].pronto === false && /appena preso/.test(document.querySelector('#toast').textContent)));
+    await aspetta(cliente, () => S.ordini.some(o => o.pronto && o.stato === 'nuovo'));
+    const oP = await cliente.evaluate(() => (S.ordini.find(o => o.pronto && o.stato === 'nuovo') || {}).id);
+    await cliente.evaluate(id => A['annulla-ordine']({ dataset: { id } }), oP);
+    await cliente.evaluate(() => Dati.confermato());
+    controlla('annulla: il pronto torna a disposizione', (await admin(d => getDoc(doc(d, 'piatti/tiramisu')))).data().pronto.qta === 1);
+
+    // Teglie della settimana e senza rete
+    await cliente.evaluate(() => { UI.entro = piuGiorni(oggi(), 3); P.carrello = [riga('lasagne-ragu', false, 2)]; return inviaVero(); });
+    const sett = await cliente.evaluate(() => settimana(piuGiorni(oggi(), 3)));
+    const st = await admin(d => getDoc(doc(d, 'settimane/' + sett)));
+    controlla('le teglie si contano nella settimana', st.exists() && st.data().teglie === 2, st.exists() && st.data());
+    await cliente.context().setOffline(true);
+    await cliente.evaluate(() => { UI.entro = piuGiorni(oggi(), 3); P.carrello = [riga('lasagne-ragu', false, 1)]; return inviaVero(); });
+    controlla('senza rete l\'ordine resta nel carrello con l\'avviso', await cliente.evaluate(() => P.carrello.length === 1 && UI.riprova === true && /manca la rete/.test(document.querySelector('#toast').textContent)));
+    await cliente.context().setOffline(false);
+    controlla('torna la rete: l\'ordine riparte da solo', await aspetta(cliente, () => P.carrello.length === 0));
   } catch (e) {
     no++; console.log('NO   la prova si è fermata →', e.message.split('\n')[0]);
   }
