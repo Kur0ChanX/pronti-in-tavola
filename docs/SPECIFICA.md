@@ -36,7 +36,7 @@ Monica: home a 4 riquadri, guida della prima volta, notifica (finta nella prova)
 
 ## Prossimi passi (in ordine)
 1. Repository nuovo + ambiente nuovo + ramo unico + kit (Mario crea il repository).
-2. Dati veri condivisi: Firebase come Jona (Firestore + accesso col link d'invito; Monica con accesso suo). Foto: verificare se Firebase Storage chiede il piano a pagamento; se sì, foto piccole dentro Firestore.
+2. Dati veri condivisi (specifica: `docs/SPEC-FIREBASE.md`): Firebase come Jona (Firestore + accesso col link d'invito; Monica con accesso suo). Foto: verificare se Firebase Storage chiede il piano a pagamento; se sì, foto piccole dentro Firestore.
 3. Notifiche vere a Monica (Android, app aggiunta alla schermata Home) e sito su Cloudflare Pages.
 4. Fase 2: dosi per ricetta e **spesa** (totale e per ordine, dispensa, confezioni, reparti, senza rete), sconti.
 5. Fase 3: etichette da stampare, immagine del menù per WhatsApp, incassi del mese, costo per piatto.
