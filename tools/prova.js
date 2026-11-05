@@ -194,6 +194,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.suggerimenti [data-a="sp-sug"]', { hasText: 'Latte' }).count())) throw new Error('manca «Compri spesso»');
     await clic('[data-a="sp-voce"] >> nth=0'); await clic('.foglio [data-a="sp-vrep"][data-v="Dispensa"]'); await clic('.foglio .piede [data-a="chiudi"]');
   });
+  await passo('Monica: immagine del menù da mandare', async () => {
+    await clic('.indietro'); await clic('.riquadro >> nth=1'); await clic('[data-a="menu-immagine"]');
+    await page.locator('.foglio img[alt^="Menù"]').waitFor({ timeout: 5000 });
+    const alta = await page.evaluate(() => { const c = disegnaMenu(); return c.width + 'x' + (c.height > 1000); });
+    if (alta !== '1080xtrue') throw new Error('immagine: ' + alta);
+    await foto('23-menu-immagine'); await clic('.foglio [data-a="chiudi"]'); await clic('.indietro');
+  });
   await passo('Monica: dosi nella scheda del piatto', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await clic('.piatto-riga >> text=Tiramisù');
     const q = page.locator('[data-campo="d.q"][data-ing="mascarpone"]'); await q.scrollIntoViewIfNeeded();
