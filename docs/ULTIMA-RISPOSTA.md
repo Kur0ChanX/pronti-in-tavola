@@ -1,12 +1,26 @@
-# Ultima risposta di Claude (05/11/2026 13:59 ora italiana)
+# Ultima risposta di Claude (05/11/2026 14:29 ora italiana)
 
+Ho capito: l'immagine dell'anteprima va bene, e vuoi la guida per creare Firebase.
 
+✅ **FATTO**
+- Immagine dell'anteprima segnata come approvata (voce C5).
+- Unite su GitHub due copie di sicurezza rimaste dal riavvio. Non si è perso niente.
+
+───
+
+💡 **PARERE**
+Firebase si fa in 3 tappe: 1 progetto (5 minuti), 2 app web, 3 database e accessi. Oggi facciamo la prima.
+Attenzione a una cosa: Monica potrà entrare con Google solo quando il sito sarà online. Quindi dopo Firebase serve l'account Cloudflare dell'app.
+
+───
+
+👉 **DA FARE TU** · Firebase, tappa 1 di 3 (meglio al computer)
+1. Apri questo …
 
 ## Domande a Mario
 
-❓ **DOMANDE**
-1. 🆕 Immagine dell'anteprima del link (prima foto che ti ho mandato)
-📌 Di cosa parliamo: è l'immagine che compare su WhatsApp sotto il link dell'app, quando qualcuno lo gira a un'amica. Va scelta prima che il sito vada online, perché WhatsApp poi se la ricorda.
-1 · Va bene così: logo al centro, «Cucina di casa» e «Ordina e ritira» ai lati (consiglio) · 2 · Da cambiare: dimmi cosa (testi, colori o disposizione) e la rifaccio
-
-Nella voce C5 di Da fare ora c'è anche quando la vedrai: col sito online.
+❓ **DOMANDE** (ancora aperte, rispondi quando vuoi)
+3. Nome della cliente nuova: lo chiediamo al primo ordine (consiglio) o alla prima apertura?
+4. Schermata Clienti e primo ordine (2 foto di prima): sono chiare così?
+5. Lucchetto di Monica (3 foto di prima): è chiaro così?
+6. Lista «Hai detto di no» con «Ripensaci»: 1 sì (consiglio) · 2 no
