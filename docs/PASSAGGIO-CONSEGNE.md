@@ -32,9 +32,7 @@ Sessione attuale: #8 (dopo la #7 `session_01QTFEqRY58R5Wqc31NCsaiq`, chiusa alla
 - Nuovi che prendono i pronti o le teglie: un link girato in un gruppo potrebbe bloccare i piatti; li prende Monica all'approvazione.
 - Due ordini nella stessa scrittura: le regole vogliono il contatore +1 per scrittura → una transazione per ordine.
 - Approvare con le scritture normali di Monica (S confrontato col server, a lotti): non è «tutto o niente» e con l'ultimo pronto conteso si potrebbe andare sotto zero; scelta la transazione con l'annulla inverso.
-- Leggere l'anteprima con `Artifact read` per ripubblicarla (969 KB nel contesto): basta `get_artifact` (solo la versione) e `publish_files`.
 - Lucchetto anche nella versione di prova: nell'anteprima (riquadro di claude.ai) WebAuthn non è permesso e cadrebbe sempre in «senza blocco schermo»; le schermate si mostrano con le foto.
-- Un PIN dell'app come riserva per i telefoni senza blocco schermo: un'altra cosa da ricordare per Monica; un telefono senza blocco è già aperto a tutti.
 - Mettere la chiave senza Google quando manca (dati del sito cancellati a metà): chiunque col telefono potrebbe metterne una sua; serve l'entrata fresca o «Entra di nuovo con Google».
 - Bloccare le scritture di Monica finché non arriva il server (scelta della #5): le modifiche fatte senza rete si perdevano; la coda di Firestore le tiene anche ad app chiusa.
 - Pronti e teglie scritti come numero: Monica con la copia vecchia rimetteva i pronti già presi dai clienti; scelta la differenza (`increment`), con la base aggiornata dopo ogni scrittura.
