@@ -1,7 +1,6 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 05/11 · 🟡 Principale 1 · Decori sardi (trama sullo sfondo e rombi nei titoli): vanno bene così, più visibili o più leggeri? (anteprima versione 12; foto `archivio/foto/decori-1-menu.png`, `archivio/foto/decori-2-titoli.png`)
 - 05/11 · 🟡 Principale 2 · Creare il progetto Firebase con la guida passo passo: scrivere «Firebase» quando ha 10 minuti, meglio al computer
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
 
