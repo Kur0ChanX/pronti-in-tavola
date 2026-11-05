@@ -1118,7 +1118,7 @@ function segnaPronto(p, d) {
   salva(); render();
 }
 let tSalvato = null;
-function salvatoOk() { if (Dati.attivo && !Dati.io.pronto) return; if (Dati.attivo && Dati.inAttesa()) { Dati.confermato().then(salvatoOk, () => {}); return; } UI.salvato = true; render(); clearTimeout(tSalvato); tSalvato = setTimeout(() => { UI.salvato = false; const s = $('.testata .titolo span'); if (s && P.ruolo === 'monica') s.remove(); }, 2500); }
+function salvatoOk() { if (Dati.attivo && !Dati.haDati()) return; if (Dati.attivo && Dati.inAttesa()) { Dati.confermato().then(salvatoOk, () => {}); return; } UI.salvato = true; render(); clearTimeout(tSalvato); tSalvato = setTimeout(() => { UI.salvato = false; const s = $('.testata .titolo span'); if (s && P.ruolo === 'monica') s.remove(); }, 2500); }
 
 /* campi scritti: si salvano da soli */
 function salvaCampo(el) {
@@ -1344,7 +1344,11 @@ Object.assign(A, {
   async 'lucchetto-esci'() {
     if (!L.esci) { L.esci = true; render(); setTimeout(() => { L.esci = false; if (UI.vista === 'impostazioni') render(); }, 5000); return; }
     const uid = Dati.io.uid;
-    try { await Dati.esci(); } catch (e) { mostraToast('Non sono riuscita a uscire. Riprova.'); return; }
+    try { await Dati.esci(); } catch (e) {
+      L.esci = false; render();
+      mostraToast(e.code === 'in-attesa' ? 'Non esco ancora: alcune modifiche non sono salvate. Riprova quando c\'è la rete.' : 'Non sono riuscita a uscire. Riprova.');
+      return;
+    }
     Lucchetto.metti(uid, null); P.ruolo = 'cliente'; salvaP(); location.reload();
   }
 });

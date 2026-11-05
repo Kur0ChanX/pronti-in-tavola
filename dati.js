@@ -74,12 +74,15 @@ const Dati = (() => {
       clienti,
       ordini: tutti('ordini').sort((a, b) => (a.n || 0) - (b.n || 0)),
       prossimoNumero: (srv['contatori/ordini'] || {}).prossimo || 1,
-      settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = srv[k].teglie || 0; return o; }, {}),
+      settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = Math.max(0, srv[k].teglie || 0); return o; }, {}),
       utenti,
       richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
         .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u) }))
     });
-    S.piatti.forEach(p => { p.foto = (srv['foto/' + p.id] || {}).foto || null; });   // le foto sono testo: niente copia
+    S.piatti.forEach(p => {
+      p.foto = (srv['foto/' + p.id] || {}).foto || null;   // le foto sono testo: niente copia
+      if (p.pronto && p.pronto.qta < 0) p.pronto.qta = 0;    // due cali insieme (Monica e un cliente): mai sotto zero
+    });
     return S;
   }
 
@@ -147,12 +150,13 @@ const Dati = (() => {
 
   /* ---------- chi sono: telefono anonimo, o Monica con Google ---------- */
   async function chiSono(user) {
-    const { doc, getDoc, onSnapshot } = F.fs;
+    const { doc, getDoc, getDocFromCache, onSnapshot } = F.fs;
     if (io.uid !== user.uid) { chiudiAscolti(); Object.keys(srv).forEach(k => delete srv[k]); base = null; io.pronto = false; }
     io.uid = user.uid;
     io.entrata = Date.parse(user.metadata && user.metadata.lastSignInTime) || 0;   // per il lucchetto: entrata appena fatta?
     io.nome = user.displayName || '';
-    io.gestore = (await getDoc(doc(db, 'gestori', user.uid)).catch(() => null))?.exists() || false;
+    const rg = doc(db, 'gestori', user.uid);   // senza rete: dalla copia del telefono
+    io.gestore = (await getDoc(rg).catch(() => getDocFromCache(rg)).catch(() => null))?.exists() || false;
     io.utente = null;
     if (!io.gestore) {
       // Il documento utenti/ di questo telefono: quando Monica approva, si riaprono gli ascolti.
@@ -195,16 +199,33 @@ const Dati = (() => {
   function scrivi(S) {
     if (db && !io.gestore && io.pronto) return scriviCliente(S);
     if (!db || !io.gestore) return ultimaScrittura;
-    const { doc, writeBatch, deleteField } = F.fs;
+    const { doc, writeBatch, deleteField, increment } = F.fs;
     /* Confronto con la copia da cui S è nato (base), non con l'ultima arrivata: un cambio del server
-       non ancora in S (Mario, un ordine nuovo) non viene riscritto né cancellato. */
+       non ancora in S (Mario, un ordine nuovo) non viene riscritto né cancellato.
+       La base può venire dalla copia di Firestore sul telefono (app aperta senza rete): le scritture
+       restano in coda, anche ad app chiusa, e partono da sole quando torna la rete. */
     const rif = base || srv, nuovi = documenti(S), b = writeBatch(db);
     let n = 0;
     Object.keys(nuovi).forEach(k => {
       const vecchio = rif[k], nuovo = nuovi[k];
-      if (!vecchio) { b.set(doc(db, k), nuovo); n++; return; }
+      // Teglie della settimana: si scrive la differenza, non il numero, così gli ordini arrivati intanto restano contati
+      if (k.startsWith('settimane/')) {
+        const d = (nuovo.teglie || 0) - ((vecchio || {}).teglie || 0);
+        if (d) { b.set(doc(db, k), { teglie: increment(d) }, { merge: true }); n++; }
+        return;
+      }
+      if (!vecchio) {
+        // senza la copia del server non si creano impostazioni e contatore: sul server potrebbero esserci già
+        if (!io.pronto && /^(impostazioni|contatori)\//.test(k)) return;
+        b.set(doc(db, k), nuovo); n++; return;
+      }
       const campi = {};
       Object.keys(nuovo).forEach(c => { if (chiaro(nuovo[c]) !== chiaro(vecchio[c])) campi[c] = nuovo[c]; });
+      // Pronti dello stesso giorno e formato: solo la differenza, così quelli presi intanto dai clienti non tornano indietro
+      const pv = vecchio.pronto, pn = nuovo.pronto;
+      if (campi.pronto && k.startsWith('piatti/') && pv && pn && chiaro(Object.assign({}, pv, { qta: 0 })) === chiaro(Object.assign({}, pn, { qta: 0 }))) {
+        delete campi.pronto; campi['pronto.qta'] = increment(arrot((pn.qta || 0) - (pv.qta || 0)));
+      }
       if (k.startsWith('impostazioni/')) Object.keys(vecchio).forEach(c => { if (!(c in nuovo)) campi[c] = deleteField(); });
       if (Object.keys(campi).length) { b.update(doc(db, k), campi); n++; }
     });
@@ -212,11 +233,11 @@ const Dati = (() => {
       if (!(k in nuovi) && SCRIVIBILI.some(p => k.startsWith(p)) && !k.startsWith('impostazioni/') && !k.startsWith('contatori/')) { b.delete(doc(db, k)); n++; }
     });
     if (!n) return ultimaScrittura;
-    // la copia del server non è ancora arrivata (app aperta senza rete): niente scritture alla cieca, e lo si dice
-    if (!io.pronto || !base) { alStato({ errore: 'non-pronto' }); return ultimaScrittura; }
+    // S non è nato dai dati di Firestore (solo la copia dell'app, nei primi istanti): niente scritture alla cieca, e lo si dice
+    if (!base) { alStato({ errore: 'non-pronto' }); return ultimaScrittura; }
     inAttesa++;
     clearTimeout(tAvviso);
-    if (!navigator.onLine) alStato({ rete: false, inAttesa });
+    if (!navigator.onLine || !io.pronto) alStato({ rete: false, inAttesa });
     ultimaScrittura = b.commit().then(() => {
       inAttesa--; alStato({ rete: true, inAttesa });
     }, e => {
@@ -423,6 +444,9 @@ const Dati = (() => {
   /* «Esci da questo telefono»: via la copia dei dati (anche quella di Firestore) e l'account;
      poi l'app si ricarica e il telefono torna un cliente anonimo nuovo */
   async function esci() {
+    // modifiche non ancora arrivate al server: uscendo si perderebbero
+    const inviate = await Promise.race([F.fs.waitForPendingWrites(db).then(() => true, () => false), new Promise(r => setTimeout(() => r(false), 3000))]);
+    if (!inviate) throw errore('in-attesa');
     uscito = true;
     chiudiAscolti(); if (ascoltoUtente) { ascoltoUtente(); ascoltoUtente = null; }
     await F.fs.terminate(db).catch(() => {});
@@ -434,6 +458,7 @@ const Dati = (() => {
   return {
     attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi,
     confermato: () => ultimaScrittura,
+    haDati: () => !!base,
     inAttesa: () => inAttesa
   };
 })();
