@@ -16,7 +16,11 @@ def dato(percorso):
 html = (QUI / 'index.html').read_text(encoding='utf-8')
 html = html.replace('<link rel="stylesheet" href="style.css">', '<style>\n' + (QUI / 'style.css').read_text(encoding='utf-8') + '\n</style>')
 for nome in ('data.js', 'dati.js', 'lucchetto.js', 'app.js'):
-    html = html.replace(f'<script src="{nome}"></script>', '<script>\n' + (QUI / nome).read_text(encoding='utf-8') + '\n</script>')
+    codice = (QUI / nome).read_text(encoding='utf-8')
+    if nome == 'dati.js':  # l'anteprima di prova non si collega ai dati veri di Monica
+        codice, n = re.subn(r'const FIREBASE_CONFIG = \{.*?\};', 'const FIREBASE_CONFIG = null;', codice, flags=re.S)
+        assert n == 1, 'FIREBASE_CONFIG non trovata in dati.js'
+    html = html.replace(f'<script src="{nome}"></script>', '<script>\n' + codice + '\n</script>')
 for img in sorted(set(re.findall(r'(?<![/\w])media/[\w.-]+\.(?:png|webp|jpg)', html))):  # non gli indirizzi interi (og:image)
     html = html.replace(img, dato(img))
 (QUI / 'dist').mkdir(exist_ok=True)
