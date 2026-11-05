@@ -24,3 +24,18 @@ continua
 
 ## 2026-11-05 14:27 · 01QTFEqRY58R
 immagine anteprima ok firebase manda guida
+
+## 2026-11-05 14:30 · 01QTFEqRY58R
+Abilito Gemini che cosa ci dà in più?
+
+## 2026-11-05 14:31 · 01QTFEqRY58R
+fatto
+
+## 2026-11-05 14:33 · 01QTFEqRY58R
+dove
+
+## 2026-11-05 14:34 · 01QTFEqRY58R
+salvalo cosí ti ricordi
+
+## 2026-11-05 14:35 · 01QTFEqRY58R
+ogni vokta che vedi che sbagli una guida segna quella giusta su github
