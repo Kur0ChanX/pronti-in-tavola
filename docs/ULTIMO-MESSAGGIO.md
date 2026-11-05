@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (05/11/2026 14:27 ora italiana)
+# Ultimo messaggio di Mario (05/11/2026 14:30 ora italiana)
 
-immagine anteprima ok firebase manda guida
+Abilito Gemini che cosa ci dà in più?
