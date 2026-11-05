@@ -46,7 +46,8 @@ Sessione attuale: #3 (dopo la #2 `session_01QTFEqS28bRVosA9LwXjudR`, chiusa alla
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
-«1 1   2 1 Metti che anche il cliente può inviare a sua volta il link per farlo girare per passaparola, ecco. Solo che quando invia il link gli chiederà al nuovo utente, gli chiederà il nome diverso e l'utente diverso, così Monica traccia di chi fa l'ordine, se no tutti farebbero tutti gli ordini con lo stesso nome e cognome.»
+«Ok, posso creare un account Cloudflare nuovo, ma come faccio se ne devo fare molte app, come faccio a bypassare il sistema di sicurezza di Google che mi dice che ho fatto troppi account, scusa?»
+(Risposta data dalla #2: aggirare i controlli di Google no; Firebase = un progetto nuovo per app sul suo account Google, i limiti gratis sono per progetto; Cloudflare = account nuovo con un altro indirizzo email, o lo stesso perché l'app usa pochissimo. Messaggio prima: «1 1   2 1 Metti che anche il cliente può inviare a sua volta il link…», vedi C11.)
 
 ## Numeri liberi
 Prossimo PT E libero: PT E6; prossimo C libero: C12; prossimo M libero: M1.
