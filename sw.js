@@ -1,0 +1,43 @@
+/* Pronti in Tavola · service worker: l'app si apre anche senza rete (C3).
+   Pagina e file dell'app: prima la rete (le novità arrivano subito); senza rete, o dopo 3 secondi, la copia.
+   Libreria Firebase (versione fissa, uguale a FIREBASE_VERSIONE di dati.js) e caratteri: dalla copia, la rete solo la prima volta.
+   Dati (Firestore) e accesso (Google): non si toccano, li gestisce Firebase con la sua copia. */
+'use strict';
+const VERSIONE_FB = '13.2.0';
+const CACHE = 'pit-' + VERSIONE_FB;
+const FB = 'https://www.gstatic.com/firebasejs/' + VERSIONE_FB + '/';
+const GUSCIO = ['./', 'style.css', 'data.js', 'dati.js', 'lucchetto.js', 'app.js', 'manifest.webmanifest',
+  'media/icon-192.png', 'media/icon-512.png', 'media/logo-480.webp', 'media/logo-firma.webp', 'media/logo-medaglione.webp', 'media/logo-titolo.webp',
+  'media/firma-luna-1.png', 'media/firma-luna-2.png', 'media/firma-luna-3.png', 'media/firma-luna-4.png',
+  'media/ynoy-firma.png', 'media/ynoy-scritta.png', 'media/ynoy-luna-1.png', 'media/ynoy-luna-2.png', 'media/ynoy-luna-3.png', 'media/ynoy-luna-4.png'];
+const LIBRERIA = ['firebase-app.js', 'firebase-firestore.js', 'firebase-auth.js'].map(f => FB + f);
+const fisso = u => u.startsWith(FB) || /^https:\/\/fonts\.(googleapis|gstatic)\.com\//.test(u);
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE)
+    .then(c => c.addAll(GUSCIO).then(() => Promise.all(LIBRERIA.map(u => c.add(new Request(u, { mode: 'cors' })).catch(() => {})))))
+    .then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k.startsWith('pit-') && k !== CACHE).map(k => caches.delete(k))))
+    .then(() => self.clients.claim()));
+});
+
+const metti = (r, x) => { if (x.ok) { const c = x.clone(); caches.open(CACHE).then(k => k.put(r, c)); } return x; };
+function primaRete(r) {
+  const copia = () => caches.match(r, { ignoreSearch: true }).then(m => m || (r.mode === 'navigate' ? caches.match('./') : undefined));
+  return new Promise(fine => {
+    let fatto = false;
+    const dai = x => { if (x && !fatto) { fatto = true; fine(x); } };
+    const t = setTimeout(() => copia().then(dai), 3000);   // rete lentissima: intanto la copia
+    fetch(r).then(x => { clearTimeout(t); dai(metti(r, x)); },
+      () => copia().then(m => { clearTimeout(t); dai(m || Response.error()); }));
+  });
+}
+self.addEventListener('fetch', e => {
+  const r = e.request;
+  if (r.method !== 'GET') return;
+  if (fisso(r.url)) { e.respondWith(caches.match(r).then(m => m || fetch(r).then(x => metti(r, x)))); return; }
+  if (new URL(r.url).origin !== location.origin) return;
+  e.respondWith(primaRete(r));
+});

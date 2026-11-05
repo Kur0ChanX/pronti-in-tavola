@@ -1394,6 +1394,8 @@ document.addEventListener('keydown', e => {
 render();
 apertura();
 if (Dati.attivo) avviaDati();
+/* l'app si apre anche senza rete (sw.js); non nell'anteprima (riquadro) né da file */
+if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && window.top === window) navigator.serviceWorker.register('sw.js').catch(() => {});
 
 /* ---------- dati veri (motore «firebase», dati.js) ---------- */
 let renderDopo = false;
