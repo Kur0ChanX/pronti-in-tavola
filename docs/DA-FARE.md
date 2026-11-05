@@ -1,7 +1,8 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 05/11 · 🟡 Principale 8 · Firebase tappa 4: incollare le regole in console (Firestore → Regole → Pubblica), passi mandati in chat, poi scrivere «fatto»
+- 05/11 · 🟡 Principale 8 · Cloudflare passo 1: creare l'account nuovo solo dell'app (passi mandati in chat), poi scrivere «fatto»
+- 05/11 · 🟡 Principale 8 · App più semplice (C13): le 4 foto vanno bene così? (`archivio/foto/semplice-1-menu.png`, `semplice-2-carrello.png`, `semplice-3-ritiro.png`, `semplice-4-impostazioni-monica.png`)
 - 05/11 · 🟡 Principale 3 · Il nome del cliente nuovo: chiederlo al primo ordine (consiglio: chi è curioso guarda il menù senza ostacoli) o alla prima apertura?
 - 05/11 · 🟡 Principale 4 · Schermata Clienti di Monica (Telefono nuovo, Nuovi, Sì/No) e primo ordine di una cliente nuova: chiare così? (anteprima versione 13; foto `archivio/foto/clienti-1-nuovi.png`, `archivio/foto/clienti-2-primo-ordine.png`)
 - 05/11 · 🟡 Principale 5 · Lucchetto di Monica: le 3 schermate (Proteggi la tua parte, La tua parte è chiusa, Impostazioni → Lucchetto) chiare così? (foto `archivio/foto/lucchetto-1-metti.png`, `lucchetto-2-chiuso.png`, `lucchetto-3-impostazioni.png`)
@@ -19,7 +20,7 @@
 | C9 | Kit RVC: nel pacchetto «indipendente» v35 manca `tools/consegne.py` (lo usano hook, skill `consegne` e `test-scorta.py`); qui copiato da RVC e adattato. Da segnalare alla sessione RVC | Mario → RVC | bassa |
 | C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev`; se cambia, cambiare anche og:url e og:image in `index.html` (la prova `tools/prova.js` lo controlla) | Claude + Mario | con C4 |
 | C12 | Regola da portare nel kit (non sono nella fonte): «guida a mano sbagliata → scrivere subito quella giusta in `docs/GUIDE-GIUSTE.md`» (Mario 05/11). Per ora vale solo qui, nel `CLAUDE.md` | Mario → RVC | bassa |
-| C13 | App più semplice per clienti e Monica (Mario 05/11: «valuta tu le scelte e dimmele»): barra del cliente a 2 voci (Menù, I miei ordini), ritiro dentro «I miei ordini», allergie e «Aa» nel menù senza schermata «Io», nota solo nel carrello, pagamento in una riga se c'è un solo modo, Impostazioni di Monica con «Altre impostazioni» chiuse. Poi foto a Mario | Claude | alta |
+| C13 | App più semplice per clienti e Monica (Mario 05/11: «valuta tu le scelte e dimmele»): barra del cliente a 2 voci (Menù, I miei ordini), ritiro dentro «I miei ordini», allergie e «Aa» nel menù senza schermata «Io», nota solo nel carrello, pagamento in una riga se c'è un solo modo, Impostazioni di Monica con «Altre impostazioni» chiuse. Fatto e provato il 05/11 (anteprima versione 14, 4 foto mandate); manca l'ok di Mario. 👁 Lo vedi: nell'app online, menù con 2 voci in basso e «Aa» in alto · prova: foto dal telefono di Mario | Claude | alta |
 
 ## 1. Claude da solo
 - C1, C3
