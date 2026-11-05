@@ -66,6 +66,10 @@ Fase 2 (costi e dosi): raccolta a parte che legge solo Monica.
 | Annulla 10 secondi | Rimette i campi di prima con una scrittura nuova |
 | Il giorno dopo | I «pronti» si azzerano da soli (data del giorno nel piatto), senza programmi sul server |
 | Impronta non disponibile (telefono vecchio) | Entra col PIN, la sequenza o la password del telefono: le chiede lo stesso Android |
+| Lucchetto, come funziona (fatto 05/11, `lucchetto.js`) | Chiave del telefono (WebAuthn) messa subito dopo «Entra con Google»; a ogni apertura l'impronta si chiede da sola finita l'apertura animata, poi col pulsante. Finché è chiusa la pagina non ha dati. Si richiude se Monica esce dall'app per più di 5 minuti (Impostazioni → Lucchetto: 1-60) |
+| Chiave persa, telefono che non la trova più, sito con indirizzo nuovo | «Non funziona? Entra di nuovo con Google» (solo lo stesso account) → impronta nuova. Senza chiave e senza entrata fresca (5 minuti) la parte non si apre senza Google |
+| Telefono senza blocco schermo | La parte resta aperta, con l'avviso di mettere il blocco schermo; messo il blocco, «Metti l'impronta» nelle Impostazioni |
+| Monica cambia telefono o lo dà via | Impostazioni → «Esci da questo telefono» (due tocchi): via l'account, la copia dei dati (anche quella di Firestore) e la chiave; il telefono torna cliente |
 | Dati di prova | Nella versione vera solo i 23 piatti (caricati alla prima entrata di Monica); clienti e ordini finti no |
 
 ## Come si cambia il codice

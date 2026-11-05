@@ -19,8 +19,9 @@ const Dati = (() => {
   const srv = {};                 // ultima copia del server (o della cache): 'raccolta/id' → dati
   const ascolti = [];             // ascolti attivi da chiudere al cambio di utente
   let ultimaScrittura = Promise.resolve(), inAttesa = 0, tAvviso = null;
-  const io = { uid: null, gestore: false, utente: null, pronto: false };
+  const io = { uid: null, gestore: false, utente: null, pronto: false, entrata: 0, nome: '' };
   let ascoltoUtente = null;   // il documento utenti/ di questo telefono
+  let uscito = false;         // «Esci da questo telefono»: si aspetta solo il ricaricamento
 
   /* JSON con le chiavi in ordine: due oggetti uguali danno lo stesso testo */
   const chiaro = v => JSON.stringify(v, (k, x) => (x && typeof x === 'object' && !Array.isArray(x)
@@ -97,19 +98,28 @@ const Dati = (() => {
   }
 
   /* ---------- ascolti ---------- */
+  /* Con la copia del telefono uguale al server, il passaggio «dalla copia» → «dal server» non porta dati nuovi:
+     senza includeMetadataChanges non arriverebbe mai e Monica, riaperta l'app, non potrebbe salvare. */
   function ascolta(rif, col) {
     const singolo = !col;
-    ascolti.push(F.fs.onSnapshot(rif, snap => {
-      if (singolo) { const k = rif.path; if (snap.exists()) srv[k] = snap.data(); else delete srv[k]; }
-      else {
-        snap.docChanges().forEach(ch => {
-          const k = col + '/' + ch.doc.id;
-          if (ch.type === 'removed') delete srv[k];
-          else srv[k] = col === 'utenti' ? Object.assign({ uid: ch.doc.id }, ch.doc.data()) : ch.doc.data();
+    let primo = true;
+    ascolti.push(F.fs.onSnapshot(rif, { includeMetadataChanges: true }, snap => {
+      let cambiato = primo; primo = false;
+      if (singolo) {
+        const k = rif.path, prima = k in srv ? chiaro(srv[k]) : '';
+        if (snap.exists()) srv[k] = snap.data(); else delete srv[k];
+        if (prima !== (k in srv ? chiaro(srv[k]) : '')) cambiato = true;
+      } else {
+        const ch = snap.docChanges();   // solo i cambi di dati, non quelli dei metadati
+        if (ch.length) cambiato = true;
+        ch.forEach(c => {
+          const k = col + '/' + c.doc.id;
+          if (c.type === 'removed') delete srv[k];
+          else srv[k] = col === 'utenti' ? Object.assign({ uid: c.doc.id }, c.doc.data()) : c.doc.data();
         });
       }
-      if (!snap.metadata.fromCache) io.pronto = true;
-      avvisaCambio();
+      if (!snap.metadata.fromCache && !io.pronto) { io.pronto = true; cambiato = true; }
+      if (cambiato) avvisaCambio();
     }, err => { console.warn('ascolto', col || rif.path, err.code); alStato({ errore: err.code }); }));
   }
   function chiudiAscolti() { while (ascolti.length) ascolti.pop()(); }
@@ -139,6 +149,8 @@ const Dati = (() => {
     const { doc, getDoc, onSnapshot } = F.fs;
     if (io.uid !== user.uid) { chiudiAscolti(); Object.keys(srv).forEach(k => delete srv[k]); io.pronto = false; }
     io.uid = user.uid;
+    io.entrata = Date.parse(user.metadata && user.metadata.lastSignInTime) || 0;   // per il lucchetto: entrata appena fatta?
+    io.nome = user.displayName || '';
     io.gestore = (await getDoc(doc(db, 'gestori', user.uid)).catch(() => null))?.exists() || false;
     io.utente = null;
     if (!io.gestore) {
@@ -169,6 +181,7 @@ const Dati = (() => {
       au.connectAuthEmulator(auth, 'http://127.0.0.1:9099', { disableWarnings: true });
     }
     au.onAuthStateChanged(auth, user => {
+      if (uscito) return;
       if (user) chiSono(user);
       else au.signInAnonymously(auth).catch(e => alStato({ errore: e.code }));
     });
@@ -180,7 +193,7 @@ const Dati = (() => {
   const SCRIVIBILI = ['piatti/', 'foto/', 'impostazioni/', 'clienti/', 'ordini/', 'contatori/'];
   function scrivi(S) {
     if (db && !io.gestore && io.pronto) return scriviCliente(S);
-    if (!db || !io.gestore || !io.pronto) return ultimaScrittura;
+    if (!db || !io.gestore) return ultimaScrittura;
     const { doc, writeBatch, deleteField } = F.fs;
     const nuovi = documenti(S), b = writeBatch(db);
     let n = 0;
@@ -196,6 +209,8 @@ const Dati = (() => {
       if (!(k in nuovi) && SCRIVIBILI.some(p => k.startsWith(p)) && !k.startsWith('impostazioni/') && !k.startsWith('contatori/')) { b.delete(doc(db, k)); n++; }
     });
     if (!n) return ultimaScrittura;
+    // la copia del server non è ancora arrivata (app aperta senza rete): niente scritture alla cieca, e lo si dice
+    if (!io.pronto) { alStato({ errore: 'non-pronto' }); return ultimaScrittura; }
     inAttesa++;
     clearTimeout(tAvviso);
     if (!navigator.onLine) alStato({ rete: false, inAttesa });
@@ -396,9 +411,25 @@ const Dati = (() => {
     const au = F.au, provider = new au.GoogleAuthProvider();
     await au.signInWithPopup(auth, provider);
   }
+  /* il lucchetto non si apre (chiave persa, telefono cambiato): di nuovo Google, solo con lo stesso account */
+  async function rientra() {
+    const au = F.au;
+    await au.reauthenticateWithPopup(auth.currentUser, new au.GoogleAuthProvider());
+    io.entrata = Date.now();
+  }
+  /* «Esci da questo telefono»: via la copia dei dati (anche quella di Firestore) e l'account;
+     poi l'app si ricarica e il telefono torna un cliente anonimo nuovo */
+  async function esci() {
+    uscito = true;
+    chiudiAscolti(); if (ascoltoUtente) { ascoltoUtente(); ascoltoUtente = null; }
+    await F.fs.terminate(db).catch(() => {});
+    await F.fs.clearIndexedDbPersistence(db).catch(() => {});
+    try { localStorage.removeItem(CHIAVE_COPIA); } catch (e) { /* niente */ }
+    await F.au.signOut(auth);
+  }
 
   return {
-    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, registra, inviaOrdini, decidi,
+    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi,
     confermato: () => ultimaScrittura,
     inAttesa: () => inAttesa
   };
