@@ -70,6 +70,8 @@ const ico = n => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 
 /* ---------- dati ---------- */
 function carica() {
+  /* motore «firebase»: la copia del telefono subito, poi i dati veri dal server (dati.js) */
+  if (Dati.attivo) return Dati.copiaLocale() || Object.assign(statoIniziale(), { piatti: [], clienti: [], ordini: [], richieste: [] });
   try {
     const s = JSON.parse(localStorage.getItem(CHIAVE));
     if (s && s.versione === 1) return s;
@@ -96,8 +98,10 @@ const UI = {
 };
 
 function salva() {
+  if (Dati.attivo) return Dati.scrivi(S);
   try { localStorage.setItem(CHIAVE, JSON.stringify(S)); }
   catch (e) { mostraToast('Memoria piena: in questa prova le foto pesano troppo. Togline una.'); }
+  return Promise.resolve();
 }
 function salvaP() { try { localStorage.setItem(CHIAVE_P, JSON.stringify(P)); } catch (e) { /* niente */ } }
 
@@ -204,9 +208,10 @@ function foto(p, cls = '') {
   return `<div class="foto segnaposto ${cls}" aria-hidden="true"><span>${esc(p.nome.charAt(0))}</span></div>`;
 }
 const YN = '<div class="yn" role="img" aria-label="YNOY Corp"><i class="ys"></i><i class="y1"></i><i class="y2"></i><i class="y3"></i><i class="y4"></i></div>';
-const firma = () => `<footer class="firma">Powered by${YN}</footer>`;
+const firma = () => `<footer class="firma">Powered by${YN}${Dati.attivo && !Dati.io.gestore ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
 const filo = () => `<div class="filo" aria-hidden="true">${ico('spiga')}</div>`;
 function striscia() {
+  if (Dati.attivo) return '';
   const n = daGuardare().length;
   return `<div class="prova" role="group" aria-label="Versione di prova">Prova · guarda come
     <button type="button" data-a="ruolo" data-v="cliente" aria-pressed="${P.ruolo === 'cliente'}">Cliente</button>
@@ -862,6 +867,7 @@ function indovinaAllergeni(t) {
 
 const A = {
   annulla() { if (fnAnnulla) { const f = fnAnnulla; fnAnnulla = null; $('#toast').innerHTML = ''; f(); } },
+  'entra-monica'() { Dati.entraGoogle().catch(() => mostraToast('Accesso non riuscito. Riprova.')); },
   ruolo(el) { P.ruolo = el.dataset.v; salvaP(); UI.foglio = null; UI.modifica = null; vai(P.ruolo === 'monica' ? 'home' : 'menu'); if (P.ruolo === 'monica') notificaMonica(); },
   vai(el) { vai(el.dataset.v); },
   cat(el) { UI.cat = el.dataset.v; const t = document.getElementById('cat-' + el.dataset.v); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-a="cat"]').forEach(b => b.setAttribute('aria-pressed', b === el)); },
@@ -1035,7 +1041,7 @@ function segnaPronto(p, d) {
   salva(); render();
 }
 let tSalvato = null;
-function salvatoOk() { UI.salvato = true; render(); clearTimeout(tSalvato); tSalvato = setTimeout(() => { UI.salvato = false; const s = $('.testata .titolo span'); if (s && P.ruolo === 'monica') s.remove(); }, 2500); }
+function salvatoOk() { if (Dati.attivo && Dati.inAttesa()) { Dati.confermato().then(salvatoOk, () => {}); return; } UI.salvato = true; render(); clearTimeout(tSalvato); tSalvato = setTimeout(() => { UI.salvato = false; const s = $('.testata .titolo span'); if (s && P.ruolo === 'monica') s.remove(); }, 2500); }
 
 /* campi scritti: si salvano da soli */
 function salvaCampo(el) {
@@ -1192,3 +1198,26 @@ document.addEventListener('keydown', e => {
 
 render();
 apertura();
+if (Dati.attivo) avviaDati();
+
+/* ---------- dati veri (motore «firebase», dati.js) ---------- */
+let renderDopo = false;
+const staScrivendo = () => { const a = document.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && !!$('#app').contains(a); };
+function avviaDati() {
+  Dati.avvia((nuovo, io) => {
+    if (Dati.preparaVuoto(statoIniziale())) return;
+    S = nuovo;
+    if (!S.ingExtra) S.ingExtra = {};
+    P.ruolo = io.gestore ? 'monica' : 'cliente';
+    P.cliente = io.utente && io.utente.stato === 'approvato' ? io.utente.cliente : null;
+    if (UI.vista === 'home' && P.ruolo === 'cliente') UI.vista = 'menu';
+    /* mentre Monica scrive in un campo non si ridisegna: si aspetta che esca dal campo */
+    if (staScrivendo()) { renderDopo = true; return; }
+    render();
+  }, st => {
+    if (st.errore === 'permission-denied') mostraToast('Non salvato: questa modifica non è permessa.');
+    else if (st.errore) mostraToast('Non salvato: riprova tra poco.');
+    else if (st.rete === false && st.inAttesa) mostraToast('Senza rete: si salverà appena torna.');
+  }).catch(() => mostraToast('Non riesco a caricare il menù: controlla la rete e riapri l\'app.'));
+}
+document.addEventListener('focusout', () => { if (renderDopo) setTimeout(() => { if (!staScrivendo() && renderDopo) { renderDopo = false; render(); } }, 0); });
