@@ -56,7 +56,8 @@ Fase 2 (costi e dosi): raccolta a parte che legge solo Monica.
 | Link girato in un gruppo grande, scherzi | Il nuovo non tocca i pronti né le teglie, fa un solo ordine prima del «Sì»; Monica spegne «Accetta nuovi clienti» e nessun telefono nuovo può più registrarsi |
 | Primo ordine con un piatto pronto | Il primo ordine prenota soltanto; al «Sì» l'app di Monica prende i pronti se ci sono ancora, sennò le propone un altro giorno |
 | Monica dice «No» | Il telefono vede il menù ma non ordina più |
-| Prezzi nell'ordine | Li scrive il telefono del cliente: l'app di Monica ricalcola il totale coi suoi prezzi e avvisa se non torna |
+| Prezzi nell'ordine | Li scrive il telefono del cliente: finché Monica non accetta, la sua app mostra il totale coi suoi prezzi e avvisa se non torna; «Accetta», «Proponi» e «Accetta la modifica» scrivono nell'ordine i prezzi di Monica (le righe già accettate tengono il loro) |
+| Monica e Mario dicono Sì/No allo stesso telefono | Transazione: il secondo legge «Già fatto: l'ha deciso qualcun altro». «Annulla» (10 secondi) rimette telefono, cliente, ordine, pronti e teglie com'erano |
 | Limite di teglie a settimana | Il cliente non vede gli ordini degli altri: conta il documento `settimane/…`, aggiornato con ogni ordine (annullato o rifiutato → si toglie) |
 | Senza rete, cliente | Il menù si vede (copia sul telefono). L'ordine NON parte senza rete: resta nel carrello, avviso chiaro «Non è partito: manca la rete», riparte da solo appena torna, tasto «Riprova» |
 | Senza rete, Monica | Le modifiche restano in coda: «Si salverà appena torna la rete»; «Salvato ✓» solo dopo la conferma del server |
