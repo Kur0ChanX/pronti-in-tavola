@@ -59,7 +59,7 @@ Sessione attuale: #8 (dopo la #7 `session_01QTFEqRY58R5Wqc31NCsaiq`, chiusa alla
 Prima: «se ne parliamo la consulti» · «ogni vokta che vedi che sbagli una guida segna quella giusta su github» · «salvalo cosí ti ricordi» · «fatto» (tappa 1) · «immagine anteprima ok firebase manda guida».
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C13; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C14; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).

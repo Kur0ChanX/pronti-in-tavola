@@ -19,6 +19,7 @@
 | C9 | Kit RVC: nel pacchetto «indipendente» v35 manca `tools/consegne.py` (lo usano hook, skill `consegne` e `test-scorta.py`); qui copiato da RVC e adattato. Da segnalare alla sessione RVC | Mario → RVC | bassa |
 | C10 | Indirizzo del sito da decidere con C4: in `data.js` e nella specifica c'è `pronti-in-tavola-by-ynoy-corp.pages.dev`, in C4 `pronti-in-tavola.pages.dev`; se cambia, cambiare anche og:url e og:image in `index.html` (la prova `tools/prova.js` lo controlla) | Claude + Mario | con C4 |
 | C12 | Regola da portare nel kit (non sono nella fonte): «guida a mano sbagliata → scrivere subito quella giusta in `docs/GUIDE-GIUSTE.md`» (Mario 05/11). Per ora vale solo qui, nel `CLAUDE.md` | Mario → RVC | bassa |
+| C13 | App più semplice per clienti e Monica (Mario 05/11: «valuta tu le scelte e dimmele»): barra del cliente a 2 voci (Menù, I miei ordini), ritiro dentro «I miei ordini», allergie e «Aa» nel menù senza schermata «Io», nota solo nel carrello, pagamento in una riga se c'è un solo modo, Impostazioni di Monica con «Altre impostazioni» chiuse. Poi foto a Mario | Claude | alta |
 
 ## 1. Claude da solo
 - C1, C3
