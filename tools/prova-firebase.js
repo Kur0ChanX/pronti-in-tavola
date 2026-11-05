@@ -252,6 +252,7 @@ const server = http.createServer((req, res) => {
     await monica.click('[data-a="lucchetto-apri"]');
     controlla('impronta giusta col pulsante: si apre', await aspetta(monica, () => L.aperto));
     await monica.evaluate(() => vai('impostazioni'));
+    controlla('dati veri: niente «Ricomincia la prova da capo»', await monica.evaluate(() => !document.querySelector('[data-a="ricomincia"]')));
     await monica.click('[data-a="i-lucchetto"][data-d="1"]');
     await monica.evaluate(() => Dati.confermato());
     const minSrv = (await admin(d => getDoc(doc(d, 'impostazioni/app')))).data().lucchetto;
