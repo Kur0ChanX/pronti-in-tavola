@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (05/11/2026 20:02 ora italiana)
+# Ultima risposta di Claude (05/11/2026 20:36 ora italiana)
 
-Le scelte 1 e 2 sono già nel messaggio sopra. Sessione chiusa, continua nella 9.
+Tutto salvato su GitHub; le prove stanno girando.
