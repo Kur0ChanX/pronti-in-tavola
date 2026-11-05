@@ -3,9 +3,17 @@
    resta spento e l'app usa il motore «prova» di sempre (dati sul telefono). */
 'use strict';
 
-/* Configurazione web di Firebase: non è un segreto (la protezione sono le regole).
-   Si riempie quando Mario crea il progetto. */
-const FIREBASE_CONFIG = null;
+/* Configurazione web di Firebase: non è un segreto (la protezione sono le regole di firestore.rules);
+   chi apre il sito la vede comunque. Progetto «Pronti in Tavola» di Mario, registrata il 05/11/2026.
+   L'anteprima di prova (tools/anteprima.py) la toglie: lì l'app resta sui dati di prova. */
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyDagZOV9P1sER30TLq24i2ybZlZ0sQqFdE',
+  authDomain: 'pronti-in-tavola.firebaseapp.com',
+  projectId: 'pronti-in-tavola',
+  storageBucket: 'pronti-in-tavola.firebasestorage.app',
+  messagingSenderId: '340961319417',
+  appId: '1:340961319417:web:0c1e6c4a9b894bc187c528'
+};
 const FIREBASE_VERSIONE = '13.2.0';
 
 const Dati = (() => {

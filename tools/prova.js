@@ -128,6 +128,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.evaluate(() => document.documentElement.classList.contains('grande')))) throw new Error('niente classe');
     await page.locator('[data-campo="p.grande"]').uncheck();
   });
+  await passo('anteprima di prova senza i dati veri di Monica', async () => {
+    const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
+    if (/pronti-in-tavola\.firebaseapp\.com|AIza[\w-]{30,}/.test(html)) throw new Error('la configurazione vera di Firebase è dentro l\'anteprima');
+    if (!/const FIREBASE_CONFIG = null;/.test(html)) throw new Error('FIREBASE_CONFIG non è null nell\'anteprima');
+  });
   await passo('anteprima del link su WhatsApp', async () => {
     const radice = path.resolve(__dirname, '..');
     const html = fs.readFileSync(path.join(radice, 'index.html'), 'utf8');
