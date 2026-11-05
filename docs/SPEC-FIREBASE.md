@@ -86,3 +86,8 @@ Fase 2 (costi e dosi): raccolta a parte che legge solo Monica.
 2. Registrare l'app web e mandarmi la configurazione (non è segreta).
 3. Accendere Firestore (zona Europa) e l'accesso anonimo e Google.
 4. Entrare una volta nell'app con Google; poi creare `gestori/<id>` per sé e per Monica.
+
+### Dove siamo (05/11, ore 14:30-14:40, dal telefono di Mario)
+- **Passo 1 fatto**: progetto «Pronti in Tavola» creato sul suo account Google, **Piano Spark** (gratis, visto nella foto della console). Gemini in Firebase e Google Analytics: gli ho detto di spegnerli, ma non l'ho verificato.
+- **Passo 2 in corso**: registrare l'app web e incollare in chat il testo di `firebaseConfig` (non è segreto). Nella console di Mario non c'è l'icona **Web** al centro: c'è **+ Aggiungi app** in alto a sinistra, poi si sceglie **Web** (`</>`). Il messaggio «Impossibile caricare Cloud Shell» in basso non conta.
+- Poi: passo 3 (Firestore in Europa, accesso anonimo e Google), `FIREBASE_CONFIG` in `dati.js`, passo 4 (gestori).

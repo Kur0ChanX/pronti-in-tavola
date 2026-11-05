@@ -54,7 +54,7 @@ Sessione attuale: #7 (dopo la #6 `session_01QTFEqQc4xdxWWJgwR1fXZB`, chiusa alla
 ## Prossimi passi
 1. Fatti dalla #7 (05/11): avvio, sveglia delle 21:30 rifatta mia (`trig_01M9LWsjdzhVxHEpJi8KAUQf`), C5 (tag og e immagine), C8 nell'emulatore, finestre senza perdita di testo, testo «Manda questo piatto a un'amica». Prove: app 21 OK; motore 80 OK, 0 NO.
 2. Se Mario risponde «1» alla lista «Hai detto di no»: in fondo alla schermata Clienti, chiusa finché non si tocca; «Ripensaci» = transazione inversa del No (utenti/ → «nuovo», ordine rifiutato → «daApprovare»), con prova nell'emulatore.
-3. Quando Mario scrive «Firebase»: passi a mano uno alla volta (progetto nuovo sul SUO account Google; nomi della console controllati sulla guida ufficiale). Poi la configurazione in `dati.js`, la prima entrata di Monica e la prova del lucchetto sul telefono vero.
+3. **Firebase in corso** (Mario, 05/11 14:30, telefono): progetto creato (passo 1), ora passo 2 «Aggiungi app → Web» e `firebaseConfig` incollato in chat. Dove siamo e le differenze della console: `docs/SPEC-FIREBASE.md` «Dove siamo». Poi passo 3 (Firestore Europa, accessi), la configurazione in `dati.js`, la prima entrata di Monica e la prova del lucchetto sul telefono vero.
 4. C3 notifiche e C4 sito: servono l'account Cloudflare nuovo dell'app (Mario); chiederlo dopo Firebase. Col sito online: provare l'anteprima del link su WhatsApp (C5, «👁»); se l'indirizzo cambia (C10), cambiare anche og:url e og:image in `index.html` (la prova lo segnala).
 
 ## Domande aperte
