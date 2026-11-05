@@ -7,7 +7,7 @@ Sessione attuale: #9 (dopo la #8 `session_01QTFEqSmQascLxb6RP3Wyih`, chiusa alla
 - **Cosa preme a Mario adesso:** avere l'app vera con i dati condivisi e il passaparola, così gli ordini delle amiche arrivano davvero a Monica; senza toccare i limiti delle sue altre app.
 
 ## Stato (05/11 20:00 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Sul repo NON esiste `main`.
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. `main` = versione pubblicata (creata il 05/11, portata a 51b56fc dopo il giro verde in locale: app 23, regole 50, motore 83). Anteprima ripubblicata il 05/11 20:37 (C13, C14, nome del sito).
 - App: verifica `python3 -I tools/anteprima.py && node tools/prova.js` → 23 «OK» e «Nessun errore nella pagina».
 - Motore e regole: `npm install`, poi `npm run prova-firebase` → «83 OK, 0 NO»; `npm run prova-regole` → «50 OK, 0 NO» (regole non toccate; `firestore.rules` è anche quella incollata da Mario nella console).
 - Anteprima su claude.ai (https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH): ancora la versione 13, NON ripubblicata dalla #5 alla #8 (ora cambia molto: app più semplice e rifiutati). Prima di ripubblicare serve `Artifact read` dell'URL, poi publish con `url` e `dist/anteprima.html`.
