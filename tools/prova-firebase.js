@@ -120,14 +120,14 @@ const server = http.createServer((req, res) => {
     controlla('approvato: vede l\'indirizzo senza riaprire l\'app', await aspetta(cliente, () => S.impostazioni.ritiro.via === 'Via di prova 1'));
     controlla('approvato: l\'app sa chi è', await cliente.evaluate(() => P.cliente === 'c1'));
 
-    // Chi scrive in una finestra (la nota del piatto) non perde testo né tastiera quando arriva un cambio
+    // Chi scrive in una finestra (il nome) non perde testo né tastiera quando arriva un cambio
     const oggiC = await cliente.evaluate(() => oggi());
-    await cliente.evaluate(() => apriPiatto('tiramisu'));
-    await cliente.click('#nota-piatto'); await cliente.keyboard.type('senza cacao');
+    await cliente.evaluate(() => { UI.foglio = { tipo: 'nome' }; render(); });
+    await cliente.click('#nome-nuovo'); await cliente.keyboard.type('senza cacao');
     await admin(d => setDoc(doc(d, 'piatti/tiramisu'), { pronto: { formato: 't6', qta: 2, giorno: oggiC } }, { merge: true }));
     await aspetta(cliente, () => (S.piatti.find(p => p.id === 'tiramisu').pronto || {}).qta === 2);
     controlla('finestra: testo e tastiera restano quando arriva un cambio',
-      await cliente.evaluate(() => document.activeElement.id === 'nota-piatto' && document.activeElement.value === 'senza cacao'),
+      await cliente.evaluate(() => document.activeElement.id === 'nome-nuovo' && document.activeElement.value === 'senza cacao'),
       await cliente.evaluate(() => [document.activeElement.id, document.activeElement.value]));
     await cliente.evaluate(() => document.activeElement.blur());
     controlla('finestra: uscita dal campo, la pagina mostra il cambio',
