@@ -87,6 +87,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       return { n: ee.length, fogli: UI.foglio.url.length, w: c.width, h: c.height, all: ee.some(e => e.all.length), giorni: UI.foglio.giorni.length }; });
     if (!x.n || x.fogli !== Math.ceil(x.n / 10) || x.w !== 1240 || x.h !== 1754 || !x.all) throw new Error('etichette: ' + JSON.stringify(x));
     if (x.giorni > 1) { await clic('.foglio [data-a="eti-giorno"] >> nth=1'); await page.locator('.foglio [data-a="eti-giorno"][aria-pressed="true"] >> nth=0').waitFor(); }
+    const sovr = await page.evaluate(() => { const L = 'Forno a 180 °C per 20-25 minuti, coperte con la stagnola, poi lasciare riposare.';
+      disegnaEtichette([{ chi: 'Maria Giovanna Piras Sanna', nome: 'Parmigiana di melanzane alla sarda', variante: 'Con sugo', qta: '1 teglia da 8', note: 'Ben gratinata, poco sale, niente basilico', all: ['glutine', 'latte', 'uova', 'sedano', 'frutta a guscio', 'senape', 'soia'], scalda: L, pezzo: 'Vaschetta 2 di 4' },
+        { chi: 'Gio', nome: 'Pane', variante: '', qta: '1 pezzo', note: '', all: [], scalda: '', pezzo: '' }, ...etichetteDi(UI.foglio.giorno)]);
+      const err = []; ETI_SCATOLE.forEach((bb, i) => bb.forEach((a, k) => { if (a.x0 < a.X0 - 1 || a.x1 > a.X1 + 1 || a.y0 < a.Y0 - 1 || a.y1 > a.Y1 + 1) err.push(i + ' fuori: ' + a.n);
+        bb.slice(k + 1).forEach(b => { if (a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1) err.push(i + ': ' + a.n + ' / ' + b.n); }); })); return err; });
+    if (sovr.length) throw new Error('etichette sovrapposte: ' + sovr.join('; '));
     await page.waitForTimeout(500); await foto('09b-etichette'); await clic('.foglio [data-a="chiudi"]');
   });
   await passo('cliente: accetta la proposta, paga, cambia ordine', async () => {

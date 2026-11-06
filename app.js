@@ -1029,8 +1029,9 @@ function etichetteDi(giorno) {
     const pezzi = ['teglia', 'intera'].includes(r.tipo) && Number.isInteger(r.qta) && r.qta > 1 ? r.qta : 1;
     const e = { chi: chiOrdina(o), n: o.n, nome: r.nome, variante: r.varianteNome || '', qta: pezzi > 1 ? qtaTesto(r.tipo, 1, r.formatoNome) : qtaTesto(r.tipo, r.qta, r.formatoNome),
       note: [...(r.note || []), r.testo].filter(Boolean).join(' · '), all: all.map(x => NOME_ALL[x].toLowerCase()), scalda: (p && p.scalda) || '' };
-    for (let i = 1; i <= pezzi; i++) out.push(Object.assign({}, e, { pezzo: pezzi > 1 ? `${i} di ${pezzi}` : '' }));
+    for (let i = 1; i <= pezzi; i++) out.push(Object.assign({}, e, { ordine: o.id }));
   }));
+  out.forEach(e => { const tutte = out.filter(x => x.ordine === e.ordine); e.pezzo = tutte.length > 1 ? `Vaschetta ${tutte.indexOf(e) + 1} di ${tutte.length}` : ''; });   // quante vaschette ha l'ordine
   return out.slice(0, 100);
 }
 let LOGO_ETI = null;
@@ -1040,6 +1041,7 @@ const caricaLogoEti = async () => {   // logo e font devono essere pronti PRIMA 
   return LOGO_ETI;
 };
 function disegnaEtichette(ee) {
+  window.ETI_SCATOLE = [];
   const W = 1240, H = 1754, LW = 620, LH = 337, TOP = 35, FONT = '"Nunito Sans", system-ui, sans-serif', SERIF = 'Fraunces, Georgia, serif';
   const taglia = (g, t, max) => { t = String(t); while (g.measureText(t).width > max && t.length > 2) t = t.slice(0, -2) + '…'; return t; };
   const tondo = (g, x, y, w, h, r) => { g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r); g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath(); };
@@ -1048,51 +1050,63 @@ function disegnaEtichette(ee) {
     const c = document.createElement('canvas'), g = c.getContext('2d');
     c.width = W; c.height = H; g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, W, H);
     ee.slice(k, k + 10).forEach((e, i) => {
-      const x = (i % 2) * LW, y = TOP + Math.floor(i / 2) * LH, P0 = 44, larg = LW - 2 * P0;
+      const x = (i % 2) * LW, y = TOP + Math.floor(i / 2) * LH;
       g.setLineDash([10, 8]); g.strokeStyle = '#E2D3BC'; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, LW - 2, LH - 2); g.setLineDash([]);   // riga da ritagliare
       g.save(); tondo(g, x + 10, y + 10, LW - 20, LH - 20, 22); g.clip();   // trama sarda «a pibiones», appena visibile (come lo sfondo dell'app)
-      g.fillStyle = '#FFFBF3'; g.fillRect(x, y, LW, LH); g.fillStyle = 'rgba(123,35,24,.085)';
+      g.fillStyle = '#FFFBF3'; g.fillRect(x, y, LW, LH); g.fillStyle = 'rgba(123,35,24,.07)';
       for (let py = 0; py < LH; py += 36) for (let px = 0; px < LW; px += 36) [[18, 4], [25, 11], [32, 18], [25, 25], [18, 32], [11, 25], [4, 18], [11, 11]].forEach(([dx, dy]) => { g.beginPath(); g.arc(x + px + dx, y + py + dy, 1.5, 0, 7); g.fill(); });
       g.restore();
       g.strokeStyle = '#B5482F'; g.lineWidth = 3; tondo(g, x + 10, y + 10, LW - 20, LH - 20, 22); g.stroke();
-      g.strokeStyle = '#E3B9A6'; g.lineWidth = 1.3; tondo(g, x + 25, y + 25, LW - 50, LH - 50, 14); g.stroke();
-      // fascia a zig-zag, come la «greca» dei tessuti sardi, con un puntino ocra su ogni punta
-      g.strokeStyle = '#D79A82'; g.lineWidth = 1.5; g.lineJoin = 'round'; g.fillStyle = '#E3A94F';
-      const zig = (x0, y0, dx, dy, n) => { g.beginPath(); for (let k = 0; k <= n; k++) { const t = k * 9, o = k % 2 ? 3.2 : -3.2; g.lineTo(x0 + dx * t + (dy ? o : 0), y0 + dy * t + (dx ? o : 0)); } g.stroke();
-        for (let k = 1; k < n; k += 2) { const t = k * 9, o = 3.2; g.beginPath(); g.arc(x0 + dx * t + (dy ? o : 0), y0 + dy * t + (dx ? o : 0), 1.7, 0, 7); g.fill(); } };
-      const nx = Math.floor((LW - 120) / 9), ny = Math.floor((LH - 120) / 9);
-      zig(x + 60, y + 17.5, 1, 0, nx); zig(x + 60, y + LH - 17.5, 1, 0, nx); zig(x + 17.5, y + 60, 0, 1, ny); zig(x + LW - 17.5, y + 60, 0, 1, ny);
-      [[34, 34], [LW - 34, 34], [34, LH - 34], [LW - 34, LH - 34]].forEach(([cx, cy]) => {   // rosetta negli angoli
-        g.fillStyle = '#E3A94F'; for (let a = 0; a < 8; a++) { g.beginPath(); g.ellipse(x + cx + Math.cos(a * Math.PI / 4) * 6, y + cy + Math.sin(a * Math.PI / 4) * 6, 3.4, 2, a * Math.PI / 4, 0, 7); g.fill(); }
-        g.fillStyle = '#B5482F'; g.beginPath(); g.arc(x + cx, y + cy, 2.6, 0, 7); g.fill(); });
-      if (LOGO_ETI) g.drawImage(LOGO_ETI, x + LW - P0 - 94, y + 40, 94, 102);
-      g.textAlign = 'left'; g.fillStyle = '#9A5B3C'; g.font = `italic 600 34px ${SERIF}`;
-      g.fillText(taglia(g, 'Per ' + e.chi, larg - 120), x + P0, y + 68);
-      if (e.pezzo) { g.fillStyle = '#9A5B3C'; g.font = `700 22px ${FONT}`; g.fillText(e.pezzo, x + P0, y + 94); }
-      g.fillStyle = '#7B2318'; let fs = 46; g.font = `600 ${fs}px ${SERIF}`;
-      while (g.measureText(e.nome).width > larg - 100 && fs > 30) { fs -= 2; g.font = `600 ${fs}px ${SERIF}`; }
-      g.fillText(taglia(g, e.nome, larg - 100), x + P0, y + 150);
-      // righe sotto il piatto: l'aria tra l'una e l'altra si adatta allo spazio che resta
-      const corpo = [{ t: [e.variante, e.qta].filter(Boolean).join(' · '), f: `700 26px ${FONT}`, c: '#5B4636' }];
-      if (e.note) corpo.push({ t: e.note, f: `800 24px ${FONT}`, c: '#A0451F' });
-      if (e.all.length) {
-        g.font = `800 23px ${FONT}`; const parole = ('Contiene: ' + e.all.join(', ')).split(' '); let riga = '', n = 0;
-        parole.forEach(w => { const t = riga ? riga + ' ' + w : w; if (g.measureText(t).width > larg && riga && n < 1) { corpo.push({ t: riga, f: g.font, c: '#B3261E' }); n++; riga = w; } else riga = t; });
-        corpo.push({ t: riga, f: g.font, c: '#B3261E' });
-      }
-      let righeCottura = [];
-      if (e.scalda) {   // consiglio di cottura, piccolo, in basso a sinistra (max 2 righe)
-        g.font = `italic 700 18px ${FONT}`; const pr = ('Scalda: ' + e.scalda).split(' '); let r = '';
-        pr.forEach(w => { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > 320 && r) { righeCottura.push(r); r = w; } else r = t; }); righeCottura.push(r);
-        if (righeCottura.length > 2) { righeCottura = righeCottura.slice(0, 2); righeCottura[1] = taglia(g, righeCottura[1] + '…', 320); }
-      }
-      const limite = 252, passo = Math.max(28, Math.min(36, (limite - 150) / corpo.length));   // sopra la firma e il consiglio di cottura
-      corpo.forEach((r, k) => { g.font = r.f; g.fillStyle = r.c; g.fillText(taglia(g, r.t, larg), x + P0, y + 150 + passo * (k + 1)); });
-      g.font = `italic 700 18px ${FONT}`; g.fillStyle = '#6B5646';
-      righeCottura.forEach((t, k) => g.fillText(t, x + P0, y + LH - 56 + k * 21 + (righeCottura.length === 1 ? 21 : 0)));
-      g.fillStyle = '#B5482F'; g.font = '700 40px Caveat, "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive'; g.textAlign = 'right';   // la firma di Monica, a mano
-      const fx = x + LW - P0 - 36, fy = y + LH - 48; g.fillText('Buon appetito', fx, fy);
-      g.save(); g.translate(fx + 12, fy - 20); g.beginPath(); g.moveTo(10, 20); g.bezierCurveTo(-8, 8, 0, -6, 10, 3); g.bezierCurveTo(20, -6, 28, 8, 10, 20); g.fill(); g.restore();
+      g.save(); g.strokeStyle = '#B5482F'; g.globalAlpha = .75; g.lineWidth = 2.4; g.lineCap = 'round'; g.setLineDash([9, 7]);   // cucitura da sarta
+      tondo(g, x + 21, y + 21, LW - 42, LH - 42, 13); g.stroke(); g.restore();
+      // zona utile: dentro la cucitura, con margine
+      const X0 = x + 40, X1 = x + LW - 40, Y0 = y + 38, Y1 = y + LH - 36, LGW = 92, LGH = 100, LGX = X1 - LGW, LGB = Y0 + LGH;
+      if (LOGO_ETI) g.drawImage(LOGO_ETI, LGX, Y0 - 4, LGW, LGH);
+      const alto = f => { g.font = f; const m = g.measureText('ÀÈHgjpq'); return [m.actualBoundingBoxAscent, m.actualBoundingBoxDescent]; };
+      // riga in basso: firma a destra, consiglio di cottura a sinistra, mai sotto la firma
+      const fFirma = '700 40px Caveat, "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive';
+      g.font = fFirma; const largFirma = g.measureText('Buon appetito').width + 46, [aF] = alto(fFirma);
+      const baseFirma = Y1 - 4, cimaFirma = baseFirma - aF;
+      const fCott = `italic 700 17px ${FONT}`, largCott = X1 - X0 - largFirma - 20; let righeCott = [];
+      if (e.scalda) { g.font = fCott; let r = ''; ('Scalda: ' + e.scalda).split(' ').forEach(w => { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > largCott && r) { righeCott.push(r); r = w; } else r = t; }); righeCott.push(r);
+        if (righeCott.length > 2) { righeCott = righeCott.slice(0, 2); righeCott[1] = taglia(g, righeCott[1] + '…', largCott); } }
+      const [aC, dC] = alto(fCott), passoC = aC + dC + 5, cimaCott = righeCott.length ? Y1 - dC - (righeCott.length - 1) * passoC - aC : Y1;
+      const fondo = Math.min(cimaFirma, cimaCott) - 10;   // il testo sopra non scende oltre qui
+      // righe di sopra: si misurano, si stringono se serve, poi si distribuisce l'aria che avanza
+      const impagina = (sc, aria) => {
+        const pos = []; let cur = Y0;
+        const metti = (t, f, col, gap, opz = {}) => {
+          let fz = f; const [a, d] = alto(fz); let cima = cur + (pos.length ? gap + aria : 0);
+          let larg = (cima < LGB + 6 ? LGX - 16 : X1) - X0;
+          if (opz.stringi) { let k = 1; while (k > .62) { g.font = fz; if (g.measureText(t).width <= larg) break; k -= .04; fz = f.replace(/(\d+(\.\d+)?)px/, (m0, n) => (n * k).toFixed(1) + 'px'); } }
+          const [a2, d2] = alto(fz); larg = (cima < LGB + 6 ? LGX - 16 : X1) - X0;
+          pos.push({ t, f: fz, col, base: cima + a2, larg, avvolgi: opz.avvolgi }); cur = cima + a2 + d2;
+        };
+        metti('Per ' + e.chi, `italic 600 ${31 * sc}px ${SERIF}`, '#9A5B3C', 0);
+        if (e.pezzo) metti(e.pezzo, `800 ${17 * sc}px ${FONT}`, '#B07A5A', 6 * sc);
+        metti(e.nome, `600 ${44 * sc}px ${SERIF}`, '#7B2318', 14 * sc, { stringi: true });
+        metti([e.variante, e.qta].filter(Boolean).join(' · '), `700 ${25 * sc}px ${FONT}`, '#5B4636', 10 * sc);
+        if (e.note) metti(e.note, `800 ${23 * sc}px ${FONT}`, '#A0451F', 9 * sc);
+        if (e.all.length) {
+          const f = `800 ${22 * sc}px ${FONT}`; g.font = f; const parole = ('Contiene: ' + e.all.join(', ')).split(' '); let r = '', n = 0; const righe = [];
+          parole.forEach(w => { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > X1 - X0 && r && n < 1) { righe.push(r); n++; r = w; } else r = t; }); righe.push(r);
+          righe.forEach((t, k) => metti(t, f, '#B3261E', k ? 3 * sc : 9 * sc));
+        }
+        return { pos, fine: cur };
+      };
+      let sc = 1, lay = impagina(sc, 0);
+      while (lay.fine > fondo && sc > .66) { sc -= .03; lay = impagina(sc, 0); }
+      const spazi = lay.pos.length - 1, avanza = fondo - lay.fine;
+      if (avanza > 0 && spazi > 0) lay = impagina(sc, Math.min(10, avanza / spazi));
+      g.textAlign = 'left';
+      const box = [{ n: 'logo', x0: LGX, x1: LGX + LGW, y0: Y0 - 4, y1: Y0 - 4 + LGH }], misura = (n, t, x0, base, dx) => { const m = g.measureText(t); box.push({ n, x0: dx ? x0 - m.width : x0, x1: dx ? x0 : x0 + m.width, y0: base - m.actualBoundingBoxAscent, y1: base + m.actualBoundingBoxDescent }); };
+      lay.pos.forEach(r => { g.font = r.f; g.fillStyle = r.col; const t = taglia(g, r.t, r.larg); g.fillText(t, X0, r.base); misura(r.t, t, X0, r.base); });
+      g.font = fCott; g.fillStyle = '#6B5646';
+      righeCott.forEach((t, k) => { const b = Y1 - dC - (righeCott.length - 1 - k) * passoC; g.fillText(t, X0, b); misura('cottura', t, X0, b); });
+      g.fillStyle = '#B5482F'; g.font = fFirma; g.textAlign = 'right';   // la firma di Monica, a mano
+      const fx = X1 - 38; g.fillText('Buon appetito', fx, baseFirma); misura('firma', 'Buon appetito', fx, baseFirma, true); box[box.length - 1].x1 = X1;   // cuoricino staccato dalla scritta, dentro il margine
+      box.forEach(b => Object.assign(b, { X0, X1, Y0: Y0 - 4, Y1 })); (window.ETI_SCATOLE = window.ETI_SCATOLE || []).push(box);   // per la prova: niente si sovrappone
+      g.save(); g.translate(fx + 10, baseFirma - 22); g.beginPath(); g.moveTo(10, 20); g.bezierCurveTo(-8, 8, 0, -6, 10, 3); g.bezierCurveTo(20, -6, 28, 8, 10, 20); g.fill(); g.restore();
     });
     pagine.push(c);
   }
