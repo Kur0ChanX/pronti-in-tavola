@@ -1,9 +1,12 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (07/11/2026 00:34 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Ho capito: vuoi che lo risolva davvero. Ho cercato meglio e ho trovato la causa.
+
+✅ FATTO
+- Il pulsante **GitHub** dentro un sito già creato ha un difetto di Cloudflare: non registra il collegamento.
+- La soluzione l'ha trovata un utente con lo stesso problema, e altri l'hanno confermata: il collegamento va fatto dalla strada «nuova applicazione». Quella strada registra GitHub. Dopo, il pulsante dentro il sito funziona.
+- Noi avevamo sempre usato «Continua su Pages», mai il **Connect GitHub** in alto. L'ho scritto nella guida.
 
 ───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+👉 DA FARE TU
+1. Su Cloudflare (account Pronti in Tavola): ☰ …

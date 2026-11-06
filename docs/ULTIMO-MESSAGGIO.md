@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (06/11/2026 19:49 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 00:34 ora italiana)
 
-Una volta che è fatto le etichette, continua con il progetto.
+risolvi per piacere siamo 2 ore cerca bene
