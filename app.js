@@ -1048,41 +1048,50 @@ function disegnaEtichette(ee) {
     const c = document.createElement('canvas'), g = c.getContext('2d');
     c.width = W; c.height = H; g.fillStyle = '#FFFFFF'; g.fillRect(0, 0, W, H);
     ee.slice(k, k + 10).forEach((e, i) => {
-      const x = (i % 2) * LW, y = TOP + Math.floor(i / 2) * LH, P0 = 36, larg = LW - 2 * P0;
+      const x = (i % 2) * LW, y = TOP + Math.floor(i / 2) * LH, P0 = 44, larg = LW - 2 * P0;
       g.setLineDash([10, 8]); g.strokeStyle = '#E2D3BC'; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, LW - 2, LH - 2); g.setLineDash([]);   // riga da ritagliare
-      g.save(); tondo(g, x + 12, y + 12, LW - 24, LH - 24, 22); g.clip();   // trama sarda «a pibiones», appena visibile (come lo sfondo dell'app)
+      g.save(); tondo(g, x + 10, y + 10, LW - 20, LH - 20, 22); g.clip();   // trama sarda «a pibiones», appena visibile (come lo sfondo dell'app)
       g.fillStyle = '#FFFBF3'; g.fillRect(x, y, LW, LH); g.fillStyle = 'rgba(123,35,24,.085)';
       for (let py = 0; py < LH; py += 36) for (let px = 0; px < LW; px += 36) [[18, 4], [25, 11], [32, 18], [25, 25], [18, 32], [11, 25], [4, 18], [11, 11]].forEach(([dx, dy]) => { g.beginPath(); g.arc(x + px + dx, y + py + dy, 1.5, 0, 7); g.fill(); });
       g.restore();
-      g.strokeStyle = '#B5482F'; g.lineWidth = 3; tondo(g, x + 12, y + 12, LW - 24, LH - 24, 22); g.stroke();
-      g.strokeStyle = '#D9A08A'; g.lineWidth = 1.4;   // bordura a rombi, come le cornici dei tappeti sardi
-      for (let d = x + 40; d <= x + LW - 40; d += 18) [y + 19, y + LH - 19].forEach(yb => { g.beginPath(); g.moveTo(d, yb - 4.5); g.lineTo(d + 5.5, yb); g.lineTo(d, yb + 4.5); g.lineTo(d - 5.5, yb); g.closePath(); g.stroke(); });
-      for (let d = y + 40; d <= y + LH - 40; d += 18) [x + 19, x + LW - 19].forEach(xb => { g.beginPath(); g.moveTo(xb, d - 5.5); g.lineTo(xb + 4.5, d); g.lineTo(xb, d + 5.5); g.lineTo(xb - 4.5, d); g.closePath(); g.stroke(); });
-      if (LOGO_ETI) g.drawImage(LOGO_ETI, x + LW - P0 - 86, y + 26, 86, 93);
+      g.strokeStyle = '#B5482F'; g.lineWidth = 3; tondo(g, x + 10, y + 10, LW - 20, LH - 20, 22); g.stroke();
+      g.strokeStyle = '#E3B9A6'; g.lineWidth = 1.3; tondo(g, x + 25, y + 25, LW - 50, LH - 50, 14); g.stroke();
+      // fascia a zig-zag, come la «greca» dei tessuti sardi, con un puntino ocra su ogni punta
+      g.strokeStyle = '#D79A82'; g.lineWidth = 1.5; g.lineJoin = 'round'; g.fillStyle = '#E3A94F';
+      const zig = (x0, y0, dx, dy, n) => { g.beginPath(); for (let k = 0; k <= n; k++) { const t = k * 9, o = k % 2 ? 3.2 : -3.2; g.lineTo(x0 + dx * t + (dy ? o : 0), y0 + dy * t + (dx ? o : 0)); } g.stroke();
+        for (let k = 1; k < n; k += 2) { const t = k * 9, o = 3.2; g.beginPath(); g.arc(x0 + dx * t + (dy ? o : 0), y0 + dy * t + (dx ? o : 0), 1.7, 0, 7); g.fill(); } };
+      const nx = Math.floor((LW - 120) / 9), ny = Math.floor((LH - 120) / 9);
+      zig(x + 60, y + 17.5, 1, 0, nx); zig(x + 60, y + LH - 17.5, 1, 0, nx); zig(x + 17.5, y + 60, 0, 1, ny); zig(x + LW - 17.5, y + 60, 0, 1, ny);
+      [[34, 34], [LW - 34, 34], [34, LH - 34], [LW - 34, LH - 34]].forEach(([cx, cy]) => {   // rosetta negli angoli
+        g.fillStyle = '#E3A94F'; for (let a = 0; a < 8; a++) { g.beginPath(); g.ellipse(x + cx + Math.cos(a * Math.PI / 4) * 6, y + cy + Math.sin(a * Math.PI / 4) * 6, 3.4, 2, a * Math.PI / 4, 0, 7); g.fill(); }
+        g.fillStyle = '#B5482F'; g.beginPath(); g.arc(x + cx, y + cy, 2.6, 0, 7); g.fill(); });
+      if (LOGO_ETI) g.drawImage(LOGO_ETI, x + LW - P0 - 94, y + 40, 94, 102);
       g.textAlign = 'left'; g.fillStyle = '#9A5B3C'; g.font = `italic 600 34px ${SERIF}`;
-      g.fillText(taglia(g, 'Per ' + e.chi, larg - 110), x + P0, y + 68);
-      if (e.pezzo) { g.fillStyle = '#9A5B3C'; g.font = `700 22px ${FONT}`; g.fillText(e.pezzo, x + P0, y + 98); }
+      g.fillText(taglia(g, 'Per ' + e.chi, larg - 120), x + P0, y + 68);
+      if (e.pezzo) { g.fillStyle = '#9A5B3C'; g.font = `700 22px ${FONT}`; g.fillText(e.pezzo, x + P0, y + 94); }
       g.fillStyle = '#7B2318'; let fs = 46; g.font = `600 ${fs}px ${SERIF}`;
-      while (g.measureText(e.nome).width > larg && fs > 28) { fs -= 2; g.font = `600 ${fs}px ${SERIF}`; }
-      g.fillText(taglia(g, e.nome, larg), x + P0, y + 156);
-      g.font = `700 26px ${FONT}`; g.fillStyle = '#5B4636'; g.fillText(taglia(g, [e.variante, e.qta].filter(Boolean).join(' · '), larg), x + P0, y + 188);
-      let yy = y + 212;
-      if (e.note) { g.fillStyle = '#A0451F'; g.font = `800 24px ${FONT}`; g.fillText(taglia(g, e.note, larg), x + P0, yy); yy += 28; }
+      while (g.measureText(e.nome).width > larg - 100 && fs > 30) { fs -= 2; g.font = `600 ${fs}px ${SERIF}`; }
+      g.fillText(taglia(g, e.nome, larg - 100), x + P0, y + 150);
+      // righe sotto il piatto: l'aria tra l'una e l'altra si adatta allo spazio che resta
+      const corpo = [{ t: [e.variante, e.qta].filter(Boolean).join(' · '), f: `700 26px ${FONT}`, c: '#5B4636' }];
+      if (e.note) corpo.push({ t: e.note, f: `800 24px ${FONT}`, c: '#A0451F' });
       if (e.all.length) {
-        g.fillStyle = '#B3261E'; g.font = `800 23px ${FONT}`;
-        const parole = ('Contiene: ' + e.all.join(', ')).split(' '); let riga = '', n = 0;
-        parole.forEach(w => { const t = riga ? riga + ' ' + w : w; if (g.measureText(t).width > larg && riga && n < 1) { g.fillText(riga, x + P0, yy); yy += 28; n++; riga = w; } else riga = t; });
-        g.fillText(taglia(g, riga, larg), x + P0, yy);
+        g.font = `800 23px ${FONT}`; const parole = ('Contiene: ' + e.all.join(', ')).split(' '); let riga = '', n = 0;
+        parole.forEach(w => { const t = riga ? riga + ' ' + w : w; if (g.measureText(t).width > larg && riga && n < 1) { corpo.push({ t: riga, f: g.font, c: '#B3261E' }); n++; riga = w; } else riga = t; });
+        corpo.push({ t: riga, f: g.font, c: '#B3261E' });
       }
+      let righeCottura = [];
       if (e.scalda) {   // consiglio di cottura, piccolo, in basso a sinistra (max 2 righe)
-        g.fillStyle = '#6B5646'; g.font = `italic 700 18px ${FONT}`;
-        const pr = ('Scalda: ' + e.scalda).split(' '); const righe = []; let r = '';
-        pr.forEach(w => { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > 330 && r) { righe.push(r); r = w; } else r = t; }); righe.push(r);
-        const vis = righe.slice(0, 2); if (righe.length > 2) vis[1] = taglia(g, vis[1] + '…', 330);
-        vis.forEach((t, k) => g.fillText(t, x + P0, y + LH - 54 + k * 20 + (vis.length === 1 ? 20 : 0)));
+        g.font = `italic 700 18px ${FONT}`; const pr = ('Scalda: ' + e.scalda).split(' '); let r = '';
+        pr.forEach(w => { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > 320 && r) { righeCottura.push(r); r = w; } else r = t; }); righeCottura.push(r);
+        if (righeCottura.length > 2) { righeCottura = righeCottura.slice(0, 2); righeCottura[1] = taglia(g, righeCottura[1] + '…', 320); }
       }
+      const limite = 252, passo = Math.max(28, Math.min(36, (limite - 150) / corpo.length));   // sopra la firma e il consiglio di cottura
+      corpo.forEach((r, k) => { g.font = r.f; g.fillStyle = r.c; g.fillText(taglia(g, r.t, larg), x + P0, y + 150 + passo * (k + 1)); });
+      g.font = `italic 700 18px ${FONT}`; g.fillStyle = '#6B5646';
+      righeCottura.forEach((t, k) => g.fillText(t, x + P0, y + LH - 56 + k * 21 + (righeCottura.length === 1 ? 21 : 0)));
       g.fillStyle = '#B5482F'; g.font = '700 40px Caveat, "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive'; g.textAlign = 'right';   // la firma di Monica, a mano
-      const fx = x + LW - P0 - 38, fy = y + LH - 48; g.fillText('Buon appetito', fx, fy);
+      const fx = x + LW - P0 - 36, fy = y + LH - 48; g.fillText('Buon appetito', fx, fy);
       g.save(); g.translate(fx + 12, fy - 20); g.beginPath(); g.moveTo(10, 20); g.bezierCurveTo(-8, 8, 0, -6, 10, 3); g.bezierCurveTo(20, -6, 28, 8, 10, 20); g.fill(); g.restore();
     });
     pagine.push(c);
