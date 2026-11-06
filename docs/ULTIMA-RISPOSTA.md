@@ -1,10 +1,13 @@
-# Ultima risposta di Claude (05/11/2026 22:02 ora italiana)
+# Ultima risposta di Claude (05/11/2026 22:13 ora italiana)
 
-Ho raggiunto il limite di questa chat, quindi ho passato il lavoro a una sessione nuova, la #11. Continua da sola e pubblica solo nell'anteprima.
 
-───
-✅ FATTO
-- **Immagine del menù (C7)**: in «I miei piatti» c'è il pulsante «Immagine del menù da mandare». Crea un'immagine con i piatti e i prezzi, da condividere su WhatsApp.
-- Prove dell'app: 29 OK. Anteprima aggiornata alla versione 23: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH
-- Consegne salvate su GitHub e controllate: tutti i controlli sono a posto.
-- **Sessione nuova** aperta: `[segreto tolto dalla scorta]`, «🟢 🍝 Principale 11 · …
+
+## Domande a Mario
+
+❓ **DOMANDE**
+1. 📌 **Di cosa parliamo:** le etichette nuove si stampano per attaccarle sulle vaschette di Monica. Te le trovi in Ordini → Da preparare. Prima di rifinirle mi serve sapere su che carta le stampa.
+   - 1 · Fogli adesivi A4 da 10 etichette (105 × 57 mm). Va bene il foglio di adesso: si stampa e si attacca. **Consiglio questa.**
+   - 2 · Carta normale. Ingrandisco le righe da tagliare: Monica ritaglia e attacca con lo scotch.
+   - 3 · Non ha la stampante. Le etichette si leggono sul telefono e Monica le scrive a mano, oppure le stampa in copisteria.
+
+Se non rispondi, tengo la 1.
