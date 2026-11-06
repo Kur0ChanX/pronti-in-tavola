@@ -117,3 +117,26 @@ spesa solo sul telefono di monica e animazione ynoy è perfetta
 
 ## 2026-11-06 19:24 · 01QTFEqRMnzm
 Non ho capito queste cose delle linguette. Spiegati meglio in modo facile.
+
+## 2026-11-06 19:29 · 01QTFEqRMnzm
+Allora, riguardandolo, numero ordine e ritiro non l'avrei messo, si sa mai che il ritiro cambi. Poi altra cosa, avrei messo il logo, pronti in tavola, avrei messo il loghetto lì nelle etichette e avrei scritto sotto, come se fosse tipo una sua firma, buon appetito. Le etichette servono per capire, visto che nei contenitori sono tutti uguali, che cosa c'è lì. Fa delle etichette carine, simpatiche, insomma, di cucina di Monica, ecco.
+
+## 2026-11-06 19:31 · 01QTFEqRMnzm
+Avrei messo a sinistra tipo per Paolo Sanna, scritto bene, a destra il logo che c'è molto spazio vuoto, e poi avrei messo magari il consiglio di cottura anche in piccolino.
+
+## 2026-11-06 19:33 · 01QTFEqRMnzm
+E lo sfondo, senza fare una cosa pacchiana, puoi mettere qualcosina, sempre quella trama un po' sarda, magari puoi riprendere, per non lasciarlo completamente a tinta unita.
+La scritta scalda e temperatura è un pochettino troppo attaccato alla parte bassa, alla riga della parte bassa. Alzala poco. E poi buon appetito usa un font come se fosse che lo stesse scrivendo lei in corsivo. Un po' come un tratto scritto a mano. Buon appetito il cuoricino.
+
+## 2026-11-06 19:36 · 01QTFEqRMnzm
+Metti in coda che Powered by nell'ingresso di animazione, fallo più piccolo, è troppo grande, e sposta più sotto, sia Powered by che il mio logo,
+
+## 2026-11-06 19:38 · 01QTFEqRMnzm
+Allora, tutte le scritte sono un po' attaccate. Lasagne, la teglia, poco cacao sopra, è tutto un po' appiccicato. Poi i rombetti che hai fatto attorno, boh, sono strani, puoi fare di meglio secondo me. A tema cucina, a tema sardo.
+E forse il loghetto, il logo che c'è nelle etichette in alto a destra, forse è un pochettino troppo nell'angolo. Forse. E fallo poco poco poco più grande. Staccalo dagli angoli e fallo poco poco più grande.
+
+## 2026-11-06 19:42 · 01QTFEqRMnzm
+Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigzag, i fiorellini toglili, al posto del zigzag metti tipo una cucitura da sarta, fatta bene. Fai con cura tutti gli spazi, sposta il loghetto in base a quello che ti serve, insomma. Deve essere tutto ordinato, fatto bene, senza che nulla si sovrapponga. Quello uno di due secondo me la può aiutare, perché almeno gli dice quanti prodotti sono. Secondo me può aiutarli in piccolino a metterlo.
+
+## 2026-11-06 19:49 · 01QTFEqRMnzm
+Una volta che è fatto le etichette, continua con il progetto.

@@ -1,9 +1,9 @@
-# Ultima risposta di Claude (06/11/2026 01:31 ora italiana)
+# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
 
-✅ **FATTO**
-- Ho salvato su GitHub il registro dei consumi che era rimasto fuori. Il ramo è allineato: commit `7e5ed10` uguale su GitHub.
+Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
 
 ───
-⚠️ **Aspettano te**
-- Etichette: su che fogli stampa Monica? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante.
-- Cloudflare passo 2: nel menù tocca **Compute** e mandami la foto.
+✅ **FATTO**
+- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
+- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
+- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
