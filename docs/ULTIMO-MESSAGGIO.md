@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (06/11/2026 01:30 ora italiana)
+# Ultimo messaggio di Mario (06/11/2026 19:24 ora italiana)
 
-spesa solo sul telefono di monica e animazione ynoy è perfetta
+Non ho capito queste cose delle linguette. Spiegati meglio in modo facile.

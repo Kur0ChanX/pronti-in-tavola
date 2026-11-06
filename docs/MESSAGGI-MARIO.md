@@ -114,3 +114,6 @@ Guarda anche la risposta che ho dato nella sessione precedente, la 9, vai avanti
 
 ## 2026-11-06 01:30 · 01QTFEqRJChf
 spesa solo sul telefono di monica e animazione ynoy è perfetta
+
+## 2026-11-06 19:24 · 01QTFEqRMnzm
+Non ho capito queste cose delle linguette. Spiegati meglio in modo facile.
