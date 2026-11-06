@@ -1,9 +1,14 @@
-# Ultima risposta di Claude (06/11/2026 01:31 ora italiana)
+# Ultima risposta di Claude (06/11/2026 19:24 ora italiana)
 
-✅ **FATTO**
-- Ho salvato su GitHub il registro dei consumi che era rimasto fuori. Il ramo è allineato: commit `7e5ed10` uguale su GitHub.
+Ho capito: non ti sono chiare le «linguette» (le scritte in alto nella schermata Ordini) e dove trovare le etichette.
 
 ───
-⚠️ **Aspettano te**
-- Etichette: su che fogli stampa Monica? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante.
-- Cloudflare passo 2: nel menù tocca **Compute** e mandami la foto.
+✅ **FATTO**
+- Ho unito il lavoro salvato in automatico dalla scorta. Ramo allineato a GitHub.
+
+───
+👉 **DA FARE TU** (nell'anteprima)
+1. Tocca in alto **Monica**.
+2. Tocca **Ordini**.
+3. Sotto il titolo vedi 4 bottoncini in fila: **Da guardare · Da preparare · Pronti · Finiti**. Sono le «linguette»: ognuna mostra un gruppo di ordini. Tocca **Da preparare**.
+4. In quella pagina c'è un riquadro «Cosa cucinare». In fondo c'è il pulsante **Etichette per le vaschette**. …
