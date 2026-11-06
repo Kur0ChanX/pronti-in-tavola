@@ -1,10 +1,9 @@
-# Ultima risposta di Claude (05/11/2026 22:02 ora italiana)
+# Ultima risposta di Claude (06/11/2026 01:31 ora italiana)
 
-Ho raggiunto il limite di questa chat, quindi ho passato il lavoro a una sessione nuova, la #11. Continua da sola e pubblica solo nell'anteprima.
+✅ **FATTO**
+- Ho salvato su GitHub il registro dei consumi che era rimasto fuori. Il ramo è allineato: commit `7e5ed10` uguale su GitHub.
 
 ───
-✅ FATTO
-- **Immagine del menù (C7)**: in «I miei piatti» c'è il pulsante «Immagine del menù da mandare». Crea un'immagine con i piatti e i prezzi, da condividere su WhatsApp.
-- Prove dell'app: 29 OK. Anteprima aggiornata alla versione 23: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH
-- Consegne salvate su GitHub e controllate: tutti i controlli sono a posto.
-- **Sessione nuova** aperta: `[segreto tolto dalla scorta]`, «🟢 🍝 Principale 11 · …
+⚠️ **Aspettano te**
+- Etichette: su che fogli stampa Monica? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante.
+- Cloudflare passo 2: nel menù tocca **Compute** e mandami la foto.
