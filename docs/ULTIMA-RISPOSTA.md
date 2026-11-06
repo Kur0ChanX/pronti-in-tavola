@@ -1,9 +1,8 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (06/11/2026 23:38 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Sì: l'account GitHub è uno solo per tutti i progetti, `Kur0ChanX`. Ma dentro ogni progetto ha il suo **repository** (una cartella separata su GitHub). Questa chat vede solo la cartella di Pronti in Tavola.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+💡 **PARERE**
+- La guida di Cloudflare la sto scrivendo nella cartella di Pronti in Tavola (`docs/GUIDE-GIUSTE.md`). È già su GitHub e non si perde.
+- Per farla valere in tutti i progetti va copiata nel kit comune, che sta nella cartella RVC. Da qui non lo apro: collegare un'altra cartella spegne i controlli automatici di questa chat (regola del kit).
+- Quando apri una chat sul progetto …
