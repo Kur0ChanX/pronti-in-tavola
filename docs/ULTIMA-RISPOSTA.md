@@ -1,9 +1,10 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (06/11/2026 23:50 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Il permesso GitHub è già giusto. Nella foto c'è «Only select repositories» e un solo progetto, `Kur0ChanX/pronti-in-tavola`. Non devi cambiare niente e non toccare **Save**.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+Ho salvato la foto nella guida e avvisato la sessione nuova (Principale 12).
+
+👉 **DA FARE TU** (scrivi alla chat «Principale 12»)
+1. Su Cloudflare apri il menù ☰, poi **Recenti**, poi **Workers e Pages**.
+2. Tocca **Crea applicazione**, poi **Continua su Pages**, poi **Connetti GitHub**.
+3. Manda alla chat nuova la foto di cosa compare.
