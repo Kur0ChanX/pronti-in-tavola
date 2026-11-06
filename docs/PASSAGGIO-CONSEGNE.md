@@ -43,7 +43,7 @@ Sessione attuale: #12 (dopo la #11 `session_01QTFEqRMnzmo5dBYtkmvYt4`, chiusa al
 - Push di `main` da sola: bloccato dal permesso automatico; resta a Mario/insieme quando c'è Cloudflare.
 
 ## Prossimi passi
-1. Avvio: titolo verde, ricordare le righe di «Aspetta Mario». Mario deve mandare la foto di GitHub → Settings → **Applications** → **Installed GitHub Apps** → Cloudflare Workers and Pages → **Configure** → «Repository access». Se c'è «All repositories»: fargli scegliere **Only select repositories** → solo `pronti-in-tavola` → **Save**.
+1. Avvio: titolo verde, ricordare le righe di «Aspetta Mario». Permesso GitHub già giusto (foto 06/11 23:49). Dire a Mario di tornare su Cloudflare: ☰ → Recenti → **Workers e Pages** → **Crea applicazione** → **Continua su Pages** → **Connetti GitHub**, e mandare la foto.
 2. Poi Cloudflare: ☰ → Recenti → **Workers e Pages** → **Crea applicazione** → **Continua su Pages** → scegliere `pronti-in-tavola` → nome progetto `pronti-in-tavola`, ramo `main`, build `python3 tools/sito.py`, cartella `sito`, variabile `SKIP_DEPENDENCY_INSTALL`=`1` → salva e distribuisci. Un passo per foto, pulsanti come li vede Mario (scriverli in `docs/GUIDE-GIUSTE.md`). `main` è vecchio: aggiornarlo con Mario dopo il giro completo verde.
 3. Firebase tappa 5 (Mario entra con Google; `gestori/<uid>` per Monica e Mario; prova sui telefoni veri).
 4. Dosi della spesa: bozza di Claude, le controlla Monica. Più avanti chiave `AIza…` ristretta al sito, notifiche (C3).
@@ -52,7 +52,7 @@ Sessione attuale: #12 (dopo la #11 `session_01QTFEqRMnzmo5dBYtkmvYt4`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
-06/11 23:47, una foto di github.com/settings/repositories (pagina «Repositories», non quella dei permessi). Messaggio di testo prima, parola per parola: «dopo pages?». Gli ho risposto di aprire **Applications** → **Installed GitHub Apps** → **Configure** e di mandare la foto alla sessione nuova.
+06/11 23:49, foto di GitHub → Applications → Cloudflare Workers and Pages → «Repository access»: già **Only select repositories**, 1 repository `Kur0ChanX/pronti-in-tavola`. Permesso giusto, niente da cambiare (foto `archivio/foto/github-cloudflare-permesso.jpg`). Prossimo passo: tornare su Cloudflare e riprovare **Connetti GitHub**.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C19; prossimo M libero: M1.
