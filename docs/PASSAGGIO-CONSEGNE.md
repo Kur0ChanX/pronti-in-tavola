@@ -55,7 +55,8 @@ Sessione attuale: #11 (dopo la #10 `session_01QTFEqRJChfyuqj5DHYzUwU`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
-05/11 ~21:35, parola per parola: «Guarda anche la risposta che ho dato nella sessione precedente, la 9, vai avanti da solo e pubblica momentaneamente nell'artefatto di prova, poi piano piano facciamo l'app effettiva, però pubblica lì, e autonomamente, da solo, vai tranquillo, mi fido di te. Da solo che mi devo assentare qualche ora.» (la risposta nella #9 = il nome del cliente, fatto C18).
+06/11 (dopo l'handoff della #10), parola per parola: «spesa solo sul telefono di monica e animazione ynoy è perfetta» → righe tolte da «Aspetta Mario»; la spesa resta solo di Monica (come C15: niente condivisione), C17 approvata.
+Prima: 05/11 ~21:35, parola per parola: «Guarda anche la risposta che ho dato nella sessione precedente, la 9, vai avanti da solo e pubblica momentaneamente nell'artefatto di prova, poi piano piano facciamo l'app effettiva, però pubblica lì, e autonomamente, da solo, vai tranquillo, mi fido di te. Da solo che mi devo assentare qualche ora.» (la risposta nella #9 = il nome del cliente, fatto C18).
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C19; prossimo M libero: M1.
