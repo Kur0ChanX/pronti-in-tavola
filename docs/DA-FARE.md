@@ -4,7 +4,7 @@
 - 06/11 · 🟡 Principale 11 · Etichette (C7): il cuoricino dopo «Buon appetito», 1 · lo lascio (consiglio) · 2 · lo tolgo. Senza risposta resta la 1
 - 06/11 · 🟡 Principale 11 · Etichette (C7): il nome del cliente sopra il piatto, 1 · lo lascio (consiglio) · 2 · lo tolgo. Senza risposta resta la 1
 - 06/11 · 🟡 Principale 11 · Etichette (C7): Monica ha stampante e che fogli? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante. Senza risposta resta la 1
-- 06/11 · 🟡 Principale 12 · Cloudflare passo 8: torna su Cloudflare (☰ → Recenti → **Workers e Pages** → **Crea applicazione** → **Continua su Pages** → **Connetti GitHub**) e manda la foto di cosa compare
+- 07/11 · 🟡 Principale 12 · Cloudflare: GitHub non si collega (è già legato all'altro account Cloudflare). 1 · carico lo zip a mano ora, poi pubblicazione automatica con una chiave nei segreti di GitHub (consiglio) · 2 · tolgo e rimetto l'app Cloudflare su GitHub (rischio per gli altri siti)
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
