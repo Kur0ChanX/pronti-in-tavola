@@ -1,9 +1,11 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (06/11/2026 23:52 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Da GitHub non devi fare niente. Quel menù non serve: chiudilo con la **X** in alto. Poi torni su Cloudflare.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+👉 **DA FARE TU**
+1. Tocca la **X** per chiudere il menù di GitHub.
+2. Apri https://dash.cloudflare.com, nella stessa scheda o in una nuova.
+3. Controlla che in alto ci sia scritto **Pronti in Tavola**.
+4. Tocca ☰ (le tre righe in alto a sinistra), poi **Recenti**, poi **Workers e Pages**.
+5. Tocca **Crea applicazione**, poi il link **Continua su Pages**, poi **Connetti GitHub**.
+6. Manda la foto di cosa compare alla chat **Principale 12**, non qui. Questa è chiusa e l'altra ha già le …
