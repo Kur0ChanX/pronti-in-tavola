@@ -1,9 +1,16 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (07/11/2026 00:03 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Ho capito: la sessione #11 mi ha scritto che Cloudflare non si collega a GitHub e ti riporta sempre alla pagina iniziale. Ho cercato la causa.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+✅ FATTO
+- Causa probabile: il tuo account GitHub può collegarsi a **un solo** account Cloudflare alla volta. Lo dice la guida ufficiale di Cloudflare. Quasi certamente è già collegato al tuo altro account Cloudflare, quindi quello nuovo non lo vede.
+- Ho scritto la nota nella guida (`docs/GUIDE-GIUSTE.md`) e l'ho salvata su GitHub.
+- Ti ho mandato il sito pronto: `sito-pronti.zip`, 746 KB.
+- Ho avvisato la #11 di non darti altri passi su «Connetti …
+
+## Domande a Mario
+
+❓ DOMANDE
+1. 🛑 Cloudflare non si collega a GitHub. Come vuoi aggiornare il sito?
+   1 · carico lo zip a mano adesso, poi aggiornamento automatico con la chiave (consiglio)
+   2 · tolgo e rimetto l'app Cloudflare su GitHub (rischio per gli altri siti)
