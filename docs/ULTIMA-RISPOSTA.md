@@ -1,9 +1,11 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (07/11/2026 00:22 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Ho capito: l'app Cloudflare è stata tolta da Kur0ChanX. GitHub scrive «a job has been queued to uninstall» e nell'elenco c'è solo Claude.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+👉 DA FARE TU
+1. Apri https://dash.cloudflare.com/?to=/:account/workers/services/view/pronti-in-tavola/production/settings
+2. In «Compilazioni» tocca **GitHub**.
+3. Su GitHub scegli **Kur0ChanX** → **Only select repositories** → `pronti-in-tavola` → **Install & Authorize**.
+4. Mandami la foto di dove finisci.
+
+⚠️ Su GitHub vedo anche «Claude: Permission updates requested». Non lo toccare adesso. Dimmelo a fine giornata e lo guardiamo insieme.
