@@ -1028,7 +1028,7 @@ function etichetteDi(giorno) {
     const p = piatto(r.piatto), all = p ? allergeniDi(ingDi(p, r.variante)) : [];
     const pezzi = ['teglia', 'intera'].includes(r.tipo) && Number.isInteger(r.qta) && r.qta > 1 ? r.qta : 1;
     const e = { chi: chiOrdina(o), n: o.n, nome: r.nome, variante: r.varianteNome || '', qta: pezzi > 1 ? qtaTesto(r.tipo, 1, r.formatoNome) : qtaTesto(r.tipo, r.qta, r.formatoNome),
-      note: [...(r.note || []), r.testo].filter(Boolean).join(' · '), all: all.map(x => NOME_ALL[x].toLowerCase()) };
+      note: [...(r.note || []), r.testo].filter(Boolean).join(' · '), all: all.map(x => NOME_ALL[x].toLowerCase()), scalda: (p && p.scalda) || '' };
     for (let i = 1; i <= pezzi; i++) out.push(Object.assign({}, e, { pezzo: pezzi > 1 ? `${i} di ${pezzi}` : '' }));
   }));
   return out.slice(0, 100);
@@ -1048,23 +1048,30 @@ function disegnaEtichette(ee) {
       g.setLineDash([10, 8]); g.strokeStyle = '#E2D3BC'; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, LW - 2, LH - 2); g.setLineDash([]);   // riga da ritagliare
       g.strokeStyle = '#B5482F'; g.lineWidth = 3; tondo(g, x + 12, y + 12, LW - 24, LH - 24, 22); g.stroke();
       g.strokeStyle = '#E8B7A3'; g.lineWidth = 1.5; tondo(g, x + 19, y + 19, LW - 38, LH - 38, 16); g.stroke();
-      if (LOGO_ETI) g.drawImage(LOGO_ETI, x + P0, y + 26, 82, 89);
-      g.textAlign = 'left'; g.fillStyle = '#9A5B3C'; g.font = `italic 600 28px ${SERIF}`;
-      g.fillText(taglia(g, 'Per ' + e.chi, larg - 108 - (e.pezzo ? 90 : 0)), x + P0 + 100, y + 78);
-      if (e.pezzo) { g.textAlign = 'right'; g.fillStyle = '#9A5B3C'; g.font = `700 24px ${FONT}`; g.fillText(e.pezzo, x + LW - P0, y + 76); g.textAlign = 'left'; }
+      if (LOGO_ETI) g.drawImage(LOGO_ETI, x + LW - P0 - 86, y + 26, 86, 93);
+      g.textAlign = 'left'; g.fillStyle = '#9A5B3C'; g.font = `italic 600 34px ${SERIF}`;
+      g.fillText(taglia(g, 'Per ' + e.chi, larg - 110), x + P0, y + 68);
+      if (e.pezzo) { g.fillStyle = '#9A5B3C'; g.font = `700 22px ${FONT}`; g.fillText(e.pezzo, x + P0, y + 98); }
       g.fillStyle = '#7B2318'; let fs = 46; g.font = `600 ${fs}px ${SERIF}`;
       while (g.measureText(e.nome).width > larg && fs > 28) { fs -= 2; g.font = `600 ${fs}px ${SERIF}`; }
-      g.fillText(taglia(g, e.nome, larg), x + P0, y + 152);
+      g.fillText(taglia(g, e.nome, larg), x + P0, y + 156);
       g.font = `700 26px ${FONT}`; g.fillStyle = '#5B4636'; g.fillText(taglia(g, [e.variante, e.qta].filter(Boolean).join(' · '), larg), x + P0, y + 190);
-      let yy = y + 224;
-      if (e.note) { g.fillStyle = '#A0451F'; g.font = `800 25px ${FONT}`; g.fillText(taglia(g, e.note, larg), x + P0, yy); yy += 34; }
+      let yy = y + 218;
+      if (e.note) { g.fillStyle = '#A0451F'; g.font = `800 24px ${FONT}`; g.fillText(taglia(g, e.note, larg), x + P0, yy); yy += 28; }
       if (e.all.length) {
-        g.fillStyle = '#B3261E'; g.font = `800 24px ${FONT}`;
+        g.fillStyle = '#B3261E'; g.font = `800 23px ${FONT}`;
         const parole = ('Contiene: ' + e.all.join(', ')).split(' '); let riga = '', n = 0;
-        parole.forEach(w => { const t = riga ? riga + ' ' + w : w; if (g.measureText(t).width > larg && riga && n < 1) { g.fillText(riga, x + P0, yy); yy += 30; n++; riga = w; } else riga = t; });
+        parole.forEach(w => { const t = riga ? riga + ' ' + w : w; if (g.measureText(t).width > larg && riga && n < 1) { g.fillText(riga, x + P0, yy); yy += 28; n++; riga = w; } else riga = t; });
         g.fillText(taglia(g, riga, larg), x + P0, yy);
       }
-      g.textAlign = 'right'; g.fillStyle = '#B5482F'; g.font = `italic 600 34px ${SERIF}`; g.fillText('Buon appetito! ♥', x + LW - P0, y + LH - 34);   // la firma di Monica
+      if (e.scalda) {   // consiglio di cottura, piccolo, in basso a sinistra (max 2 righe)
+        g.fillStyle = '#6B5646'; g.font = `italic 700 18px ${FONT}`;
+        const pr = ('Scalda: ' + e.scalda).split(' '); const righe = []; let r = '';
+        pr.forEach(w => { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > 330 && r) { righe.push(r); r = w; } else r = t; }); righe.push(r);
+        const vis = righe.slice(0, 2); if (righe.length > 2) vis[1] = taglia(g, vis[1] + '…', 330);
+        vis.forEach((t, k) => g.fillText(t, x + P0, y + LH - 44 + k * 20 + (vis.length === 1 ? 20 : 0)));
+      }
+      g.textAlign = 'right'; g.fillStyle = '#B5482F'; g.font = `italic 600 32px ${SERIF}`; g.fillText('Buon appetito! ♥', x + LW - P0, y + LH - 32);   // la firma di Monica
     });
     pagine.push(c);
   }
