@@ -1,9 +1,7 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (06/11/2026 23:58 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Hai ragione, è un giro. GitHub ha già fatto il suo: l'app è installata (accanto a **Kur0ChanX** ora c'è «Configure»). Cloudflare però ti riporta alla Home invece che alla scelta del repository.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+👉 **DA FARE TU** (due tentativi, uno alla volta)
+1. **Tentativo 1.** Da Cloudflare tocca ☰, poi **Recenti**, poi **Workers e Pages**. Poi **Crea applicazione**, il link **Continua su Pages** e **Connetti GitHub**. Ora che l'app è installata, dovrebbe mostrarti l'**elenco dei repository** invece di mandarti a GitHub. Se vedi `pronti-in-tavola`, toccalo e mandami la foto.
+2. **Tentativo 2**, solo se …
