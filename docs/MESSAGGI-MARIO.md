@@ -140,3 +140,6 @@ Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigz
 
 ## 2026-11-06 19:49 · 01QTFEqRMnzm
 Una volta che è fatto le etichette, continua con il progetto.
+
+## 2026-11-06 23:35 · 01QTFEqRMnzm
+quando ti mando le foto di sito registra i tasti su github per tutti i progetti cosí le guide sono corrette e apprendi aggiornandoti con i oassaggi nei siti corretti, salva solo le pagine  mancanti no duplicati o spreco token
