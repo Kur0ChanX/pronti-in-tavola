@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (06/11/2026 19:49 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 00:25 ora italiana)
 
-Una volta che è fatto le etichette, continua con il progetto.
+mi sono rotto siamo un ora che problemi hai oggi????
