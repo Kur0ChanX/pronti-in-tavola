@@ -1,15 +1,10 @@
-# Ultima risposta di Claude (05/11/2026 21:13 ora italiana)
+# Ultima risposta di Claude (05/11/2026 22:02 ora italiana)
 
-Ho capito: il «carrello» era la lista della spesa, che calcola cosa comprare dagli ordini. Era già nei piani: dovevo collegarla da solo, scusa. Ho scritto l'errore nel diario.
+Ho raggiunto il limite di questa chat, quindi ho passato il lavoro a una sessione nuova, la #11. Continua da sola e pubblica solo nell'anteprima.
 
 ───
 ✅ FATTO
-- La lista della spesa è nell'app di prova: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH (versione 15).
-- Dove si trova: passa a Monica → riquadro «Da preparare» → **Lista della spesa**.
-- Cosa fa: somma gli ingredienti degli ordini accettati (fino a oggi, domani, 3 giorni o una settimana). Toglie quello che Monica ha già in casa e arrotonda alle confezioni (es. «3 × 250 g»). Divide per reparto, ha le …
-
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: la lista della spesa di Monica (foto qui sopra). La usa prima di andare a comprare.
-1. Si capisce così? 1 · sì, va bene · 2 · cambierei qualcosa: scrivimi cosa in una riga.
+- **Immagine del menù (C7)**: in «I miei piatti» c'è il pulsante «Immagine del menù da mandare». Crea un'immagine con i piatti e i prezzi, da condividere su WhatsApp.
+- Prove dell'app: 29 OK. Anteprima aggiornata alla versione 23: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH
+- Consegne salvate su GitHub e controllate: tutti i controlli sono a posto.
+- **Sessione nuova** aperta: `[segreto tolto dalla scorta]`, «🟢 🍝 Principale 11 · …
