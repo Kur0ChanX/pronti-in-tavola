@@ -117,3 +117,9 @@ spesa solo sul telefono di monica e animazione ynoy è perfetta
 
 ## 2026-11-06 19:24 · 01QTFEqRMnzm
 Non ho capito queste cose delle linguette. Spiegati meglio in modo facile.
+
+## 2026-11-06 19:29 · 01QTFEqRMnzm
+Allora, riguardandolo, numero ordine e ritiro non l'avrei messo, si sa mai che il ritiro cambi. Poi altra cosa, avrei messo il logo, pronti in tavola, avrei messo il loghetto lì nelle etichette e avrei scritto sotto, come se fosse tipo una sua firma, buon appetito. Le etichette servono per capire, visto che nei contenitori sono tutti uguali, che cosa c'è lì. Fa delle etichette carine, simpatiche, insomma, di cucina di Monica, ecco.
+
+## 2026-11-06 19:31 · 01QTFEqRMnzm
+Avrei messo a sinistra tipo per Paolo Sanna, scritto bene, a destra il logo che c'è molto spazio vuoto, e poi avrei messo magari il consiglio di cottura anche in piccolino.

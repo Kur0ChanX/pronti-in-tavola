@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (06/11/2026 19:24 ora italiana)
+# Ultimo messaggio di Mario (06/11/2026 19:31 ora italiana)
 
-Non ho capito queste cose delle linguette. Spiegati meglio in modo facile.
+Avrei messo a sinistra tipo per Paolo Sanna, scritto bene, a destra il logo che c'è molto spazio vuoto, e poi avrei messo magari il consiglio di cottura anche in piccolino.
