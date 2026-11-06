@@ -1034,7 +1034,11 @@ function etichetteDi(giorno) {
   return out.slice(0, 100);
 }
 let LOGO_ETI = null;
-const caricaLogoEti = () => new Promise(r => { if (LOGO_ETI) return r(LOGO_ETI); const im = new Image(); im.onload = () => r(LOGO_ETI = im); im.onerror = () => r(null); im.src = LOGO; });
+const caricaLogoEti = async () => {   // logo e font devono essere pronti PRIMA di disegnare sul foglio
+  try { await Promise.all(['700 40px Caveat', 'italic 600 34px Fraunces', '600 46px Fraunces', '700 26px "Nunito Sans"', '800 24px "Nunito Sans"', 'italic 700 18px "Nunito Sans"'].map(f => document.fonts.load(f))); } catch (e) { /* senza font resta quello di sistema */ }
+  if (!LOGO_ETI) LOGO_ETI = await new Promise(r => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = LOGO; });
+  return LOGO_ETI;
+};
 function disegnaEtichette(ee) {
   const W = 1240, H = 1754, LW = 620, LH = 337, TOP = 35, FONT = '"Nunito Sans", system-ui, sans-serif', SERIF = 'Fraunces, Georgia, serif';
   const taglia = (g, t, max) => { t = String(t); while (g.measureText(t).width > max && t.length > 2) t = t.slice(0, -2) + '…'; return t; };
@@ -1046,8 +1050,14 @@ function disegnaEtichette(ee) {
     ee.slice(k, k + 10).forEach((e, i) => {
       const x = (i % 2) * LW, y = TOP + Math.floor(i / 2) * LH, P0 = 36, larg = LW - 2 * P0;
       g.setLineDash([10, 8]); g.strokeStyle = '#E2D3BC'; g.lineWidth = 2; g.strokeRect(x + 1, y + 1, LW - 2, LH - 2); g.setLineDash([]);   // riga da ritagliare
+      g.save(); tondo(g, x + 12, y + 12, LW - 24, LH - 24, 22); g.clip();   // trama sarda «a pibiones», appena visibile (come lo sfondo dell'app)
+      g.fillStyle = '#FFFBF3'; g.fillRect(x, y, LW, LH); g.fillStyle = 'rgba(123,35,24,.085)';
+      for (let py = 0; py < LH; py += 36) for (let px = 0; px < LW; px += 36) [[18, 4], [25, 11], [32, 18], [25, 25], [18, 32], [11, 25], [4, 18], [11, 11]].forEach(([dx, dy]) => { g.beginPath(); g.arc(x + px + dx, y + py + dy, 1.5, 0, 7); g.fill(); });
+      g.restore();
       g.strokeStyle = '#B5482F'; g.lineWidth = 3; tondo(g, x + 12, y + 12, LW - 24, LH - 24, 22); g.stroke();
-      g.strokeStyle = '#E8B7A3'; g.lineWidth = 1.5; tondo(g, x + 19, y + 19, LW - 38, LH - 38, 16); g.stroke();
+      g.strokeStyle = '#D9A08A'; g.lineWidth = 1.4;   // bordura a rombi, come le cornici dei tappeti sardi
+      for (let d = x + 40; d <= x + LW - 40; d += 18) [y + 19, y + LH - 19].forEach(yb => { g.beginPath(); g.moveTo(d, yb - 4.5); g.lineTo(d + 5.5, yb); g.lineTo(d, yb + 4.5); g.lineTo(d - 5.5, yb); g.closePath(); g.stroke(); });
+      for (let d = y + 40; d <= y + LH - 40; d += 18) [x + 19, x + LW - 19].forEach(xb => { g.beginPath(); g.moveTo(xb, d - 5.5); g.lineTo(xb + 4.5, d); g.lineTo(xb, d + 5.5); g.lineTo(xb - 4.5, d); g.closePath(); g.stroke(); });
       if (LOGO_ETI) g.drawImage(LOGO_ETI, x + LW - P0 - 86, y + 26, 86, 93);
       g.textAlign = 'left'; g.fillStyle = '#9A5B3C'; g.font = `italic 600 34px ${SERIF}`;
       g.fillText(taglia(g, 'Per ' + e.chi, larg - 110), x + P0, y + 68);
@@ -1055,8 +1065,8 @@ function disegnaEtichette(ee) {
       g.fillStyle = '#7B2318'; let fs = 46; g.font = `600 ${fs}px ${SERIF}`;
       while (g.measureText(e.nome).width > larg && fs > 28) { fs -= 2; g.font = `600 ${fs}px ${SERIF}`; }
       g.fillText(taglia(g, e.nome, larg), x + P0, y + 156);
-      g.font = `700 26px ${FONT}`; g.fillStyle = '#5B4636'; g.fillText(taglia(g, [e.variante, e.qta].filter(Boolean).join(' · '), larg), x + P0, y + 190);
-      let yy = y + 218;
+      g.font = `700 26px ${FONT}`; g.fillStyle = '#5B4636'; g.fillText(taglia(g, [e.variante, e.qta].filter(Boolean).join(' · '), larg), x + P0, y + 188);
+      let yy = y + 212;
       if (e.note) { g.fillStyle = '#A0451F'; g.font = `800 24px ${FONT}`; g.fillText(taglia(g, e.note, larg), x + P0, yy); yy += 28; }
       if (e.all.length) {
         g.fillStyle = '#B3261E'; g.font = `800 23px ${FONT}`;
@@ -1069,9 +1079,11 @@ function disegnaEtichette(ee) {
         const pr = ('Scalda: ' + e.scalda).split(' '); const righe = []; let r = '';
         pr.forEach(w => { const t = r ? r + ' ' + w : w; if (g.measureText(t).width > 330 && r) { righe.push(r); r = w; } else r = t; }); righe.push(r);
         const vis = righe.slice(0, 2); if (righe.length > 2) vis[1] = taglia(g, vis[1] + '…', 330);
-        vis.forEach((t, k) => g.fillText(t, x + P0, y + LH - 44 + k * 20 + (vis.length === 1 ? 20 : 0)));
+        vis.forEach((t, k) => g.fillText(t, x + P0, y + LH - 54 + k * 20 + (vis.length === 1 ? 20 : 0)));
       }
-      g.textAlign = 'right'; g.fillStyle = '#B5482F'; g.font = `italic 600 32px ${SERIF}`; g.fillText('Buon appetito! ♥', x + LW - P0, y + LH - 32);   // la firma di Monica
+      g.fillStyle = '#B5482F'; g.font = '700 40px Caveat, "Segoe Script", "Brush Script MT", "Snell Roundhand", cursive'; g.textAlign = 'right';   // la firma di Monica, a mano
+      const fx = x + LW - P0 - 38, fy = y + LH - 48; g.fillText('Buon appetito', fx, fy);
+      g.save(); g.translate(fx + 12, fy - 20); g.beginPath(); g.moveTo(10, 20); g.bezierCurveTo(-8, 8, 0, -6, 10, 3); g.bezierCurveTo(20, -6, 28, 8, 10, 20); g.fill(); g.restore();
     });
     pagine.push(c);
   }
