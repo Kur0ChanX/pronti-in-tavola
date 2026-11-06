@@ -1,9 +1,15 @@
-# Ultima risposta di Claude (06/11/2026 01:31 ora italiana)
+# Ultima risposta di Claude (06/11/2026 19:33 ora italiana)
 
-✅ **FATTO**
-- Ho salvato su GitHub il registro dei consumi che era rimasto fuori. Il ramo è allineato: commit `7e5ed10` uguale su GitHub.
+Ho capito: nome a sinistra scritto bene, logo a destra, consiglio di cottura piccolo.
 
 ───
-⚠️ **Aspettano te**
-- Etichette: su che fogli stampa Monica? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante.
-- Cloudflare passo 2: nel menù tocca **Compute** e mandami la foto.
+✅ **FATTO**
+- A sinistra «Per Paolo Sanna», più grande. Se un piatto ha più teglie c'è sotto «1 di 2».
+- Il logo è a destra, più grande.
+- In basso a sinistra c'è il consiglio di cottura in piccolo (es. «Scalda: Forno a 180 °C per 20-25 minuti…»). Al massimo 2 righe. Prende il testo che Monica ha già scritto nel piatto.
+- A destra, in basso, «Buon appetito! ♥».
+- 30 prove OK. Salvato su GitHub, anteprima versione 27. Ti ho mandato la foto.
+
+───
+💡 **PARERE**
+- Il tiramisù non ha il consiglio di cottura …
