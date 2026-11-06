@@ -1,9 +1,13 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (06/11/2026 23:36 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Ho capito: ogni foto di un sito che mi mandi va scritta su GitHub nella guida (pagina e pulsanti esatti), solo le pagine nuove, senza doppioni, così le guide restano giuste.
 
 ───
 ✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+- Lo facevo già con le foto di Cloudflare di stasera. Ora è anche una regola scritta nel `CLAUDE.md` del progetto: la trovo a ogni avvio.
+- Le foto vanno in `archivio/foto/`, i passi in `docs/GUIDE-GIUSTE.md`. Prima guardo se quella pagina c'è già: se c'è, non la riscrivo.
+- Salvato su GitHub.
+
+───
+💡 **PARERE**
+- «Per tutti i progetti» da qui non posso farlo. Il kit comune sta in un altro repo (RVC), e …
