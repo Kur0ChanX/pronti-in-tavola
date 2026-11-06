@@ -1,9 +1,9 @@
-# Ultima risposta di Claude (06/11/2026 01:31 ora italiana)
+# Ultima risposta di Claude (06/11/2026 19:41 ora italiana)
 
-✅ **FATTO**
-- Ho salvato su GitHub il registro dei consumi che era rimasto fuori. Il ramo è allineato: commit `7e5ed10` uguale su GitHub.
+Ho capito: più aria tra le scritte, bordo più bello a tema sardo e cucina, logo staccato dagli angoli e un po' più grande.
 
 ───
-⚠️ **Aspettano te**
-- Etichette: su che fogli stampa Monica? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante.
-- Cloudflare passo 2: nel menù tocca **Compute** e mandami la foto.
+✅ **FATTO**
+- **Più aria**: dopo il piatto le righe (quantità, note, «Contiene») hanno più spazio. Si allargano da sole se c'è posto e si stringono solo se ce n'è poco.
+- **Bordo nuovo**: via i rombetti. Ora c'è una fascia a zig-zag, come la «greca» dei tessuti sardi, con un puntino color grano su ogni punta. Negli angoli ci sono quattro rosette ocra.
+- **Logo**: un po' più grande (94 invece di 86) e staccato dagli angoli. Il nome del piatto si restringe per non …
