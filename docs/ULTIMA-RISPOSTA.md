@@ -1,9 +1,8 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (07/11/2026 00:01 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Sei nel punto giusto. Questa è la procedura guidata (passo 1 di 3: «Seleziona il repository»). Il pezzo che ci serve è più in basso.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+👉 **DA FARE TU**
+1. Scorri la pagina verso il basso, sotto le schede **GitHub** / **GitLab**.
+2. Mandami la foto di cosa vedi. Può essere l'elenco dei tuoi repository, oppure di nuovo un pulsante **Connetti GitHub**.
+3. Non toccare niente prima della foto.
