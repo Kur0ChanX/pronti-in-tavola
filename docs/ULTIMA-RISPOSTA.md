@@ -1,9 +1,11 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (07/11/2026 00:03 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+📌 Di cosa parliamo: come si aggiorna il sito dell'app. Il sito è `pronti-in-tavola.pages.dev`, e lo usano Monica e i clienti. Ogni volta che cambio l'app, il sito deve ricevere la versione nuova.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+## Domande a Mario
+
+❓ 🛑 Come vuoi aggiornare il sito?
+1. Adesso carichi tu lo zip una volta sola. Dopo, il sito si aggiorna da solo a ogni mia modifica, con una chiave salvata nei segreti di GitHub. Gli altri tuoi siti restano come sono. **(consiglio)**
+2. Togli e rimetti l'app Cloudflare su GitHub. Il sito si aggiorna da solo senza chiave, ma gli altri tuoi siti smettono di aggiornarsi finché non li ricolleghi.
+
+Rispondi col numero.
