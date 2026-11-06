@@ -140,3 +140,9 @@ Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigz
 
 ## 2026-11-06 19:49 · 01QTFEqRMnzm
 Una volta che è fatto le etichette, continua con il progetto.
+
+## 2026-11-07 00:12 · 01QTFEqU1M1r
+come tutti gli altri progetti non inventarti nulla manuale tutto plug in play
+
+## 2026-11-07 00:17 · 01QTFEqU1M1r
+mandami il link nel passaggio dove devo cliccare per andare avanti
