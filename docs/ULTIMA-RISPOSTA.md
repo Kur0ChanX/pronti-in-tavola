@@ -1,9 +1,11 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (06/11/2026 23:42 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Ho capito: sei nella pagina Pages, alla scelta del repository. Ho salvato le due foto nella guida.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+👉 **DA FARE TU**
+1. Tocca **Connetti GitHub**.
+2. Si apre una pagina di GitHub, che chiede su quali repository far lavorare Cloudflare. Di solito ci sono due scelte, una per «tutti» e una per «solo alcuni» (in inglese «Only select repositories»). Scegli **solo alcuni** e poi soltanto `pronti-in-tavola`.
+3. **Prima di confermare**, mandami la foto della pagina di GitHub.
+
+⚠️ **ATTENZIONE**
+- Non scegliere «tutti i repository». Cloudflare vedrebbe anche gli altri tuoi progetti, e noi abbiamo …
