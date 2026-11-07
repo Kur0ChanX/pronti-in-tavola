@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 07/11 · 🟡 Principale 13 · Firebase alle 10:30: aggiungere il dominio del sito in Authentication, poi entrare con Google
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
