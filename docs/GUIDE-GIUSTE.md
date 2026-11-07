@@ -10,7 +10,10 @@ Una riga per pagina: servizio · pagina · come ci si arriva · vista il (✅ co
 - Firebase · Crea un database (4 passi) · Firestore → Crea database · ✅ 05/11 foto
 - Firebase · Database (default): Dati, Regole, Indici · `…/project/pronti-in-tavola/firestore` · ✅ 05/11 foto
 - Firebase · Authentication: Utenti, Metodo di accesso, Impostazioni · `…/project/pronti-in-tavola/authentication` · ✅ 05/11 foto
-- Firebase · Authentication → Impostazioni → Domini autorizzati · `…/authentication/settings` · ❔ (guida 07/11)
+- Firebase · menù laterale (☰ in alto a sinistra): Panoramica, Impostazioni, Scorciatoie **Authentication** e **Firestore**, Categorie di prodotti · ✅ 07/11 foto `archivio/foto/firebase-menu-laterale.jpg`
+- Firebase · Authentication, schede (scorrono con le frecce ‹ ›): Metodo di accesso, **Modelli**, **Utilizzo**, **Impostazioni** · ✅ 07/11 foto
+- Firebase · Authentication → Impostazioni: si apre DENTRO il riquadro «Collegamento dell'account utente» (non toccare, lasciare «Collega account con lo stesso indirizzo email»); in alto nel riquadro c'è la freccia **←** che torna all'elenco delle impostazioni · ✅ 07/11 foto `archivio/foto/firebase-auth-impostazioni.jpg`
+- Firebase · elenco delle impostazioni → **Domini autorizzati** · ❔ (dopo la freccia ←, da confermare)
 - Firebase · Firestore → Dati → + Avvia raccolta (gestori) · ❔ (guida 07/11)
 - Cloudflare · menù dell'account, Compute, Workers e Pages, Crea applicazione, Pages · ✅ 06/11 foto `archivio/foto/cloudflare-1…5`
 - Cloudflare · Connetti GitHub (NON funziona per questo conto, vedi sotto) · ✅ 06-07/11 foto 6-7
@@ -19,7 +22,7 @@ Una riga per pagina: servizio · pagina · come ci si arriva · vista il (✅ co
 
 ## Guide pronte (da provare: dopo, ogni passo visto va nell'indice come ✅)
 ### Firebase passo 5 · entrare con Google e diventare gestori (07/11, ~20 minuti)
-1. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/settings → scheda **Impostazioni** → **Domini autorizzati** → **Aggiungi dominio** → incolla `pronti-in-tavola.pronti-in-tavola.workers.dev` → **Aggiungi**. Foto.
+1. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/settings → scheda **Impostazioni** → si apre il riquadro «Collegamento dell'account utente»: tocca la freccia **←** in alto nel riquadro → nell'elenco **Domini autorizzati** → **Aggiungi dominio** → incolla `pronti-in-tavola.pronti-in-tavola.workers.dev` → **Aggiungi**. Foto.
 2. Apri https://pronti-in-tavola.pronti-in-tavola.workers.dev → in fondo **Sei Monica? Entra** → scegli il tuo account Google.
 3. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/users → nella riga con la tua email copia l'**UID utente** (lettere e numeri).
 4. Apri https://console.firebase.google.com/project/pronti-in-tavola/firestore → scheda **Dati** → **+ Avvia raccolta** → ID raccolta `gestori` → **Avanti** → ID documento: incolla l'UID → campo `nome`, tipo `string`, valore `Mario` → **Salva**. Poi ricarica il sito: ora sei gestore.
