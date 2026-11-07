@@ -2200,7 +2200,23 @@ function apertura() {
 const L = { aperto: false, puo: undefined, inCorso: false, tentato: false, errore: '', fallito: false, via: 0, esci: false };
 const FRESCA = 5 * 60000;                          /* entrata con Google da meno di 5 minuti */
 const MINUTI_LUCCHETTO = [1, 2, 5, 8, 10, 15, 30, 60];   /* «si richiude se esci dall'app per…» */
-const minutiLucchetto = () => { const m = Number(S.impostazioni.lucchetto); return MINUTI_LUCCHETTO.includes(m) ? m : 8; };   /* 8 minuti di base (Mario 07/11, C34) */
+/* tre tempi (Mario 07/11, C46): «mario» lo cambia solo Mario, «monica» solo Monica, «ospiti» (gli altri di «Chi gestisce») Mario o Monica.
+   Prima era un numero solo: vale per tutti e tre finché qualcuno non ne cambia uno. */
+function chiLucchetto() {
+  const n = ((Dati.attivo && Dati.io.nomeGestore) || '').trim().toLowerCase();
+  if (/^mario\b/.test(n)) return 'mario';
+  const c = (cuoca().trim().split(/\s+/)[0] || 'monica').toLowerCase();
+  return !n || /^monica\b/.test(n) || n.split(/\s+/)[0] === c ? 'monica' : 'ospiti';
+}
+const tempiLucchetto = () => {
+  const v = S.impostazioni.lucchetto, t = {};
+  for (const k of ['mario', 'monica', 'ospiti']) {
+    const m = Number(v && typeof v === 'object' ? v[k] : v);
+    t[k] = MINUTI_LUCCHETTO.includes(m) ? m : 8;   /* 8 minuti di base (Mario 07/11, C34) */
+  }
+  return t;
+};
+const minutiLucchetto = (chi = chiLucchetto()) => tempiLucchetto()[chi];
 /* l'ultima uscita con la parte aperta resta salvata: se Android chiude l'app (indietro) e Monica rientra subito, niente impronta di nuovo */
 const VIA = 'pit-lucchetto-via';
 const leggiVia = () => { try { return Number(localStorage.getItem(VIA)) || 0; } catch (e) { return 0; } };
@@ -2241,14 +2257,22 @@ function vLucchetto(st) {
     `<button type="button" class="btn pieno grande" data-a="lucchetto-google">Entra con Google</button>`);
 }
 function vSicurezza() {
-  const k = Lucchetto.di(Dati.io.uid) || {}, m = minutiLucchetto();
+  const k = Lucchetto.di(Dati.io.uid) || {}, chi = chiLucchetto(), m = minutiLucchetto(chi), mo = minutiLucchetto('ospiti');
+  const min = x => x === 1 ? 'minuto' : 'minuti';
+  const tuo = chi === 'ospiti'
+    ? `<p style="margin:0">Si richiude se esci dall'app per <b>${m} ${min(m)}</b>. Lo decidono Mario e Monica.</p>`
+    : `<span class="etichetta" style="font-weight:800">Si richiude se esci dall'app per</span>
+      <div class="fila">${passo('i-lucchetto', m, `data-chi="${chi}"`)}<span class="tenue">${min(m)}</span></div>
+      <small class="tenue">Vale solo per te: ${chi === 'mario' ? 'Monica ha il suo tempo' : 'Mario ha il suo tempo'}.</small>`;
+  const ospiti = chi === 'ospiti' ? '' : `<div class="lucchetto-ospiti"><span class="etichetta" style="font-weight:800">Per gli ospiti</span>
+      <small class="tenue">Le altre persone in «Chi gestisce la cucina». Lo cambiate tu e ${chi === 'mario' ? 'Monica' : 'Mario'}.</small>
+      <div class="fila">${passo('i-lucchetto', mo, 'data-chi="ospiti"')}<span class="tenue">${min(mo)}</span></div></div>`;
   return `<section class="scheda"><h2>Lucchetto</h2>
-    ${k.id ? `<p style="margin:0"><b>Acceso.</b> Per aprire la tua parte il telefono chiede l'impronta o il PIN.</p>
-      <span class="etichetta" style="font-weight:800">Si richiude se esci dall'app per</span>
-      <div class="fila">${passo('i-lucchetto', m)}<span class="tenue">${m === 1 ? 'minuto' : 'minuti'}</span></div>`
+    ${k.id ? `<p style="margin:0"><b>Acceso.</b> Per aprire la tua parte il telefono chiede l'impronta o il PIN.</p>${tuo}`
     : L.puo ? `<p style="margin:0"><b>Spento.</b> Mettilo: per aprire la tua parte il telefono chiederà l'impronta o il PIN.</p>
       <button type="button" class="btn pieno" data-a="lucchetto-metti">${ico('lucchetto')}Metti l'impronta</button>`
     : `<p style="margin:0"><b>Spento:</b> il telefono non ha il blocco schermo. Mettilo nelle impostazioni del telefono, poi riapri l'app.</p>`}
+    ${ospiti}
     <button type="button" class="link" data-a="lucchetto-esci" style="color:var(--allarme)">${L.esci ? 'Sicura? Tocca ancora per uscire' : 'Esci da questo telefono'}</button>
     <small class="tenue">Se cambi telefono o lo dai via. Per rientrare: «Area riservata» in fondo alla pagina.</small></section>`;
 }
@@ -2295,8 +2319,10 @@ Object.assign(A, {
     render();
   },
   'i-lucchetto'(el) {
-    const i = MINUTI_LUCCHETTO.indexOf(minutiLucchetto()) + Number(el.dataset.d);
-    cambia('', () => { S.impostazioni.lucchetto = MINUTI_LUCCHETTO[Math.min(MINUTI_LUCCHETTO.length - 1, Math.max(0, i))]; }, false); salvatoOk();
+    const io = chiLucchetto(), chi = el.dataset.chi || io;
+    if (io === 'ospiti' || (chi !== io && chi !== 'ospiti')) return;   // ognuno il suo; gli ospiti li cambiano Mario e Monica
+    const i = MINUTI_LUCCHETTO.indexOf(minutiLucchetto(chi)) + Number(el.dataset.d);
+    cambia('', () => { S.impostazioni.lucchetto = { ...tempiLucchetto(), [chi]: MINUTI_LUCCHETTO[Math.min(MINUTI_LUCCHETTO.length - 1, Math.max(0, i))] }; }, false); salvatoOk();
   },
   async 'lucchetto-esci'() {
     if (!L.esci) { L.esci = true; render(); setTimeout(() => { L.esci = false; if (UI.vista === 'impostazioni') render(); }, 5000); return; }
