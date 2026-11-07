@@ -4,7 +4,7 @@
 Sopra il kit (uguale in tutti i progetti, versione in `docs/kit-progetto/VERSIONE`); qui solo il progetto, che nei dettagli vince. Tetto ~1.000 token.
 - Repo `Kur0ChanX/pronti-in-tavola`, ramo unico **`claude/pronti-ramo-definitivo`** (`.claude/ramo-di-lavoro.txt`). Titoli `<segno> 🍝 <Nome> <numero> · <cosa fa>` (catene in `docs/CHI-FA-COSA.md`). Altri progetti di Mario: nessuno (progetto indipendente: «nessuno», e non nominarli mai).
 - Servizi (Firebase, Cloudflare, GitHub…): quando se ne parla leggo prima `docs/GUIDE-GIUSTE.md`; guida sbagliata → lì quella giusta, subito, con commit. Foto di un sito: pagine nuove e pulsanti esatti lì (foto in `archivio/foto/`).
-- **Link a Mario**: in un riquadro di codice a parte, uno per riquadro (ha Copia; il link cliccabile non si copia, Mario 07/11). Vince su «mai nei riquadri» delle skill.
+- **Link a Mario** (Mario 07/11): «apri questo link» → link CLICCABILE nel testo; «copia questo link» (da mandare o incollare) → riquadro di codice a parte, uno per riquadro (ha Copia). Vince su «mai nei riquadri» delle skill.
 - Il resto quando serve: skill del kit (`consegne` 🔒, `chat-parallela`, `cambio-account` 🔒, `pr`, `nuova-regola`, `ricerca-aggiornata`); regole per zona in `.claude/rules/` (con `paths:`): se lavoro in una zona solo con Bash, prima le leggo.
 
 ## App con prove
