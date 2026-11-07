@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 12:38 · 01QTFEqR4jaQ
-continua
-
-## 2026-11-05 14:27 · 01QTFEqRY58R
-immagine anteprima ok firebase manda guida
-
-## 2026-11-05 14:30 · 01QTFEqRY58R
-Abilito Gemini che cosa ci dà in più?
-
 ## 2026-11-05 14:31 · 01QTFEqRY58R
 fatto
 
@@ -144,3 +135,12 @@ link e passaggi chiari
 
 ## 2026-11-07 01:28 · 01QTFEqU1M1r
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+
+## 2026-11-07 08:33 · 01QTFEqUGCVA
+Sono entrato nell'app, mi ha detto entra con Google. Sono entrato con Google con mario.mishera@gmail.com e adesso mi dice ciao Monica, ma non è giusto, Monica non ha mario.mishera, ma lo stai facendo fare tu apposta o cosa? È una tua scelta questa? Perché Monica si logherà, penso, col suo Gmail che non conosco al momento.
+
+## 2026-11-07 08:44 · 01QTFEqUGCVA
+Ecco qua una cosa, ma l'applicazione è sempre un artefatto o l'applicazione è già finita? Finita nel senso è già su codice, è un'applicazione vera o è una prova questa? Cioè nel senso lo posso inviare a Monica e lei si loga col suo account e io la aggiungo in Firebase come mi hai detto tu, se ho capito bene?
+
+## 2026-11-07 08:47 · 01QTFEqUGCVA
+@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4" Ho un piccolo problemino, cioè a livello che nel senso che si può fare meglio la comunicazione tra noi. Quando clicco un link non me lo fa copiare sullo smartphone. Possiamo fare qualcosa come regola che non pesi sui token? Guarda, ti mando un piccolo video.
