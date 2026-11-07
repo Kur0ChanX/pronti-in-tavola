@@ -11,6 +11,7 @@ Due lati nella stessa app:
 Regola d'oro di Mario: **semplicissima**. Monica fa tutto da sola, a prova di errore; Mario è solo la riserva.
 
 ## Decisioni prese
+- **Icona dell'app** (Mario 07/11): resta quella di oggi, quadrata col medaglione e la scritta «Pronti in Tavola» (`media/icon-192.png`, `icon-512.png`); proposte A/B scartate (Android la mostra comunque quadrata). Niente «maskable»: taglierebbe la scritta in alto.
 - **Invito per chi gestisce** (Mario 07/11, «1 · tutto»): da Impostazioni → «Chi gestisce la cucina» → **Invita chi gestisce con te** parte un messaggio WhatsApp curato col link `#gestore`. Chi lo apre vede «Benvenuta nella tua cucina!», entra con Google e la richiesta (nome + email Google) arriva al gestore in cima alla Home con **Sì, è lei** / **No**. Al sì l'app di Monica si riapre da sola da gestore. Niente console Firebase. Regole: richiesta solo con Google e con la propria email; diventa gestore solo chi ha il sì di un gestore; nessuno toglie sé stesso.
 | Tema | Decisione |
 |---|---|
