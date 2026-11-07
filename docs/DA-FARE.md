@@ -8,6 +8,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C41 | (Mario 07/11 ~19:45) «Al forno da Monica» come sovrapprezzo per piatto, accanto al fritto: il cliente sceglie una cottura sola. Fatto dalla #19, online `851c056`. 👁 Lo vedi: Monica in I miei piatti → piatto → «Cotto da te» mette la cifra; il cliente la vede nella scheda del piatto · prova: tua foto o tuo ok | Claude | 🟢 manca la foto |
 | C36 | (Mario 07/11 ~17:58) Via il riquadro «Apri in Chrome»; spinta forte a installare e notifiche; logo di Monica senza bianco dentro le lettere. Fatto dalla #18 (`primiPassi`, loghi in `media/`). 👁 Lo vedi: apertura e menù sul Samsung di Barbara · prova: foto di Mario | Claude | 🟢 manca la foto |
 | C40 | (Mario 07/11 ~19:00) Tutti gli ordini fatti finora sono prove: Mario non lo trovava (7 tocchi + Altre impostazioni): la #19 l'ha messo in cima alle Impostazioni, scheda «Solo per te, Mario», con foglio di conferma (elenco ordini, cosa cambia, Annulla), online `8973a49`. 👁 Lo vedi: lo tocchi tu, poi incassi a zero · prova: foto di Mario | Mario | 🟢 manca la foto |
 | C39 | (Mario 07/11) Impostazioni di Monica a prova di stupido senza togliere funzioni: scheda del piatto a voci (una aperta alla volta, valore di adesso sotto) fatta dalla #18; prossimo: Impostazioni allo stesso modo. 👁 Lo vedi: un piatto → Prezzi · prova: foto di Mario | Claude | 🟡 |
