@@ -2,49 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 12:38 · 01QTFEqR4jaQ
-continua
-
-## 2026-11-05 14:27 · 01QTFEqRY58R
-immagine anteprima ok firebase manda guida
-
-## 2026-11-05 14:30 · 01QTFEqRY58R
-Abilito Gemini che cosa ci dà in più?
-
-## 2026-11-05 14:31 · 01QTFEqRY58R
-fatto
-
-## 2026-11-05 14:33 · 01QTFEqRY58R
-dove
-
-## 2026-11-05 14:34 · 01QTFEqRY58R
-salvalo cosí ti ricordi
-
-## 2026-11-05 14:35 · 01QTFEqRY58R
-ogni vokta che vedi che sbagli una guida segna quella giusta su github
-
-## 2026-11-05 14:36 · 01QTFEqRY58R
-se ne parliamo la consulti
-
-## 2026-11-05 14:36 · 01QTFEqRY58R
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "[segreto tolto dalla scorta]",
-  authDomain: "pronti-in-tavola.firebaseapp.com",
-  projectId: "pronti-in-tavola",
-  storageBucket: "pronti-in-tavola.firebasestorage.app",
-  messagingSenderId: "340961319417",
-  appId: "1:340961319417:web:0c1e6c4a9b894bc187c528"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
 ## 2026-11-05 14:43 · 01QTFEqSmQas
 porta questa sessione a 320mila in catena a max token prima di passaggio di consegna
 
@@ -144,3 +101,30 @@ link e passaggi chiari
 
 ## 2026-11-07 01:28 · 01QTFEqU1M1r
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+
+## 2026-11-07 02:22 · 01QTFEqRWGjV
+cuoricino ok etichette senza nome cliente ricreale perchè cosi è più facile stampare per prodotto mi devi aiutare per o regalarli una stampante piccola con ricariche economiche che stampa solo quello o una soluzione da spendere poco e fare molte copie togli anche vaschetta 2di2 ecc purtroppo se no ci vuole una stampa per ogni cliente
+
+## 2026-11-07 02:33 · 01QTFEqRWGjV
+metti per tutte e 2 poi vediamo in futuro
+
+## 2026-11-07 02:35 · 01QTFEqRWGjV
+no no in bianco e nero no
+
+## 2026-11-07 02:40 · 01QTFEqRWGjV
+solo etichette a4 per ora
+
+## 2026-11-07 02:49 · 01QTFEqRWGjV
+quanto vi mettiamo per firebase?
+
+## 2026-11-07 02:51 · 01QTFEqRWGjV
+vai avanti da solo firebase facciamo domani
+
+## 2026-11-07 08:03 · 01QTFEqRWGjV
+mandami la guida passo passo di domani e segnati le pagine del sito per imparare  migliorare le guide mel tempo senza doppioni e spreco token
+
+## 2026-11-07 08:15 · 01QTFEqRWGjV
+chi sono?
+
+## 2026-11-07 08:23 · 01QTFEqRWGjV
+l'ho avevo giayfatto 10m fa'
