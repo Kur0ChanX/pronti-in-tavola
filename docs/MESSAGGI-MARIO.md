@@ -2,10 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 14:47 · 01QTFEqSmQas
-tanto alla partenza parte con 100k quindi non sò cosa conviene di piú padsaggio o lunghezza.... manda guida firebase parte 3
-e rendi l'app molto plu in play semplice e chiara per i clienti e Monica valuta tu le scelte e dimmele cos hai scelto, cerca fi capire che non tutti i clienti bazzicando tanto di impostazioni ecc per monica l'aiuto io
-
 ## 2026-11-05 15:04 · 01QTFEqSmQas
 Cavolo, io in un'altra app che avevo creato ho messo Europa 3, avevo messo, ho penso di aver fatto danno, non avevo letto che c'era Europa 8 con Milano. Cambia qualcosa nella mia app per l'albergo RVC?
 
@@ -132,3 +128,6 @@ Ok, però al momento l'applicazione è funzionante al 100%, giusto?
 
 ## 2026-11-07 17:00 · 01QTFEqReKuk
 a monica manca proposta se non va bene la giornata del cliente fallo ora
+
+## 2026-11-07 23:43 · 01QTFEqQ5ALf
+mettimi anche il tempo di Monica
