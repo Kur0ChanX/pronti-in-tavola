@@ -4,6 +4,7 @@
 - 07/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
 - 07/11 · 🟡 Principale 16 · Regole Firebase pubblicate (Mario 07/11 ~16:15, provato: 404 al posto di «permessi negati»). Ora: Home → Inviti → biglietto «Per Monica» su WhatsApp → lei entra col suo Gmail → tu «Sì, è lei».
+- 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
