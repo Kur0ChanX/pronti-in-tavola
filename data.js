@@ -187,7 +187,7 @@ const VERSIONE_APP = '0.9.1';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
   { v: '0.9.1', data: '07/11/2026',
-    nuovo: ['Vapore di cucina dopo lo sblocco: riempie lo schermo, poi si dirada e appare l\'app (fluido anche a 120 Hz)',
+    nuovo: ['Vapore di cottura dopo lo sblocco: prima non si vede nulla, poi la schermata in penombra e sbuffi a ondate fino a vederla nitida (fluido anche a 120 Hz)',
       'Piatti: «Al forno da Monica» col suo sovrapprezzo, accanto al fritto; il cliente sceglie una cottura',
       'Impostazioni: scheda «Solo per te, Mario» con «Segna come PROVA gli ordini fatti finora» e conferma chiara',
       'Barra sviluppatore: si apre e si chiude scorrendo il dito da sinistra a destra in cima allo schermo',
