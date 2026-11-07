@@ -864,9 +864,8 @@ function waOrdine(o, tipo) {
 }
 function cartaOrdineMonica(o) {
   const r = richiestaDi(o), righe = daAccettare(o) ? prezziGiusti(o.righe) : o.righe;
-  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n} · ${o.pronto ? 'pronti subito, ritiro oggi' : ['accettato', 'pronto'].includes(o.stato) ? 'ritiro ' + giornoLungo(o.entro) : 'le serve entro ' + giornoLungo(o.entro)}</span></div>
-    <span class="stato ${o.stato}">${r && r.cliente ? 'Telefono nuovo' : STATO_MONICA[o.stato]}</span></header>${tempiOrdine(o)}`;
-  if (['accettato', 'pronto'].includes(o.stato) && o.entro < oggi()) h += `<span class="eti rischio" style="align-self:flex-start">In ritardo: era per ${giornoLungo(o.entro)}</span>`;
+  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n}</span></div>
+    <span class="stato ${o.stato}">${r && r.cliente ? 'Telefono nuovo' : STATO_MONICA[o.stato]}</span></header>${dateOrdine(o)}${tempiOrdine(o)}`;
   if (r) h += `<div class="avviso">${ico('clienti')}<div>${r.cliente ? `<b>Telefono nuovo.</b> Dice di essere ${esc(r.nome)}, che conosci già. Se è lei, ricollega: vedrà i suoi ordini.`
     : `<b>Prima volta.</b> ${r.tramite ? `Amica di ${esc(r.tramite)}.` : ''} Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.`}</div></div>`;
   if (o.stato === 'proposta') h += `<p class="tenue" style="margin:0">Hai proposto ${giornoLungo(o.proposta)}. Aspetti la risposta. <a class="link" href="${waOrdine(o, 'proposta')}" target="_blank" rel="noopener">Avvisala su WhatsApp</a></p>`;
@@ -898,6 +897,25 @@ function cartaOrdineMonica(o) {
    Nuovi (da guardare) · Oggi (da fare e pronti, anche in ritardo) · Prossimi giorni (per giorno) · Storico (finiti: cerca, filtri, mesi) */
 const FINITI = ['ritirato', 'rifiutato', 'annullato'];
 const giornoDi = o => o.stato === 'proposta' && o.proposta ? o.proposta : o.entro;
+/* scadenze chiare (Mario 07/11: «deve capire in modo facile le scadenze, il giorno che è stato ordinato… che le faciliti l'organizzativo») */
+function scadenza(g, finito) {
+  const d = Math.round((daIso(g) - daIso(oggi())) / 864e5);
+  if (finito) return { t: '', c: '' };
+  if (d < 0) return { t: d === -1 ? 'in ritardo di 1 giorno' : `in ritardo di ${-d} giorni`, c: 'ritardo' };
+  if (d === 0) return { t: 'oggi', c: 'urgente' };
+  if (d === 1) return { t: 'domani', c: 'urgente' };
+  return { t: `tra ${d} giorni`, c: d <= 3 ? 'presto' : 'calmo' };
+}
+const GIORNO_DATA = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
+const dataLunga = g => maiuscola(GIORNO_DATA.format(daIso(g)));
+function dateOrdine(o) {
+  const g = giornoDi(o), fin = FINITI.includes(o.stato), sc = scadenza(g, fin || o.stato === 'pronto');
+  const quando = o.tempi && o.tempi.nuovo ? dataLunga(iso(new Date(o.tempi.nuovo))) + ', ore ' + F_ORA.format(new Date(o.tempi.nuovo)) : o.creato ? dataLunga(o.creato) : '';
+  const cosa = o.stato === 'proposta' ? 'Giorno proposto da te' : fin ? (o.stato === 'ritirato' ? 'Ritirato per' : 'Era per') : ['accettato', 'pronto'].includes(o.stato) ? (o.pronto ? 'Ritiro (pronti subito)' : 'Ritiro') : 'Le serve entro';
+  return `<div class="date-ord">
+    <div class="date-riga"><span class="date-ico">${ico('ritiro')}</span><div><small>${cosa}</small><b>${dataLunga(g)}</b></div>${sc.t ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : ''}</div>
+    ${quando ? `<div class="date-riga tenue"><span class="date-ico">${ico('ordini')}</span><div><small>Ordinato</small><span>${quando}${o.creato ? ` · ${giorniFa(o.creato) === 0 ? 'oggi' : giorniFa(o.creato) === 1 ? 'ieri' : giorniFa(o.creato) + ' giorni fa'}` : ''}</span></div></div>` : ''}</div>`;
+}
 function gruppiOrdini() {
   const g = daGuardare(), oo = S.ordini.filter(o => !g.includes(o)), o0 = oggi();
   const perGiorno = (a, b) => giornoDi(a).localeCompare(giornoDi(b)) || a.n - b.n;
@@ -925,7 +943,7 @@ function rigaOrd(o, conGiorno) {
   return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n).toLowerCase())}">
     <span class="ord-n">n. ${o.n}${conGiorno ? `<small>${F_BREVE.format(daIso(giornoDi(o)))}</small>` : ''}</span>
     <span class="ord-chi"><b>${esc(chi)}</b><small>${esc(cosa)}</small></span>
-    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b><span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span></span></button>`;
+    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && o.stato !== 'proposta' ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
 }
 /* orari di ogni passo (da questa versione: gli ordini vecchi non li hanno) */
 function tempiOrdine(o) {
@@ -963,7 +981,9 @@ function vOrdiniMonica() {
     if (!lista.length) return h + '<p class="tenue">Nessun ordine per i prossimi giorni.</p></main>';
     const giorni = {};
     lista.forEach(o => (giorni[giornoDi(o)] = giorni[giornoDi(o)] || []).push(o));
-    h += Object.entries(giorni).map(([g, oo]) => `<section class="ord-giorno"><h2 class="ord-titolo">${maiuscola(giornoLungo(g))}<small>${oo.length === 1 ? '1 ordine' : oo.length + ' ordini'} · ${euroBreve(arrot(oo.reduce((x, o) => x + totale(o.righe), 0)))}</small></h2>
+    h += `<div class="settimana" aria-label="Prossimi 7 giorni">${[1, 2, 3, 4, 5, 6, 7].map(i => { const g = piuGiorni(o0, i), n = (giorni[g] || []).length, d = daIso(g);
+      return `<button type="button" class="sett-g${n ? ' pieno' : ''}" data-a="ord-giorno" data-v="${g}"${n ? '' : ' disabled'}><small>${i === 1 ? 'domani' : F_GS.format(d)}</small><b>${d.getDate()}</b><span>${n ? n + ' ord.' : '—'}</span></button>`; }).join('')}</div>`;
+    h += Object.entries(giorni).map(([g, oo]) => `<section class="ord-giorno" id="g-${g}"><h2 class="ord-titolo">${maiuscola(giornoLungo(g))}${giornoLungo(g).length < 8 ? ` · ${F_DATA.format(daIso(g))}` : ''}<small>${maiuscola(scadenza(g).t)} · ${oo.length === 1 ? '1 ordine' : oo.length + ' ordini'} · ${euroBreve(arrot(oo.reduce((x, o) => x + totale(o.righe), 0)))}</small></h2>
       ${schedaCucina(oo, 'Da cucinare', false)}<div class="ord-lista">${oo.map(o => rigaOrd(o)).join('')}</div></section>`).join('');
     return h + '</main>';
   }
@@ -1535,7 +1555,7 @@ const A = {
       if (!p.pronto || p.pronto.giorno !== oggi() || p.pronto.qta < r.qta) { mostraToast(`${r.nome}: ne restano ${p.pronto ? p.pronto.qta : 0}. Cambia la quantità.`); return; }
     }
     const nuovo = (righe, entro, pronto) => {
-      const o = { id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), n: S.prossimoNumero++, cliente: P.cliente, righe: righe.map(r => { const x = Object.assign({}, r); delete x.pronto; return x; }), entro, stato: 'nuovo', pronto, paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), cuori: {} };
+      const o = { id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), n: S.prossimoNumero++, cliente: P.cliente, righe: righe.map(r => { const x = Object.assign({}, r); delete x.pronto; return x; }), entro, stato: 'nuovo', pronto, paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), tempi: { nuovo: Date.now() }, cuori: {} };
       S.ordini.push(o);
     };
     if (dopo.length) nuovo(dopo, UI.entro, false);
@@ -1594,6 +1614,7 @@ const A = {
   'ord-apri'(el) { UI.ordAperto = UI.ordAperto === el.dataset.id ? null : el.dataset.id; render(); },
   'ord-filtro'(el) { UI.ordFiltro = el.dataset.v; UI.ordQuanti = 40; render(); },
   'ord-altri'() { UI.ordQuanti += 40; render(); },
+  'ord-giorno'(el) { const x = document.getElementById('g-' + el.dataset.v); if (x) x.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   accetta(el) { const o = ordine(el.dataset.id); cambia(`Accettato: ${cliente(o.cliente).nome}`, () => { o.righe = prezziGiusti(o.righe); segna(o, 'accettato'); }); },
   rifiuta(el) { const o = ordine(el.dataset.id); cambia('Ordine rifiutato', () => { segna(o, 'rifiutato'); rimettiPronti(o); }); },
   'mod-si'(el) { const o = ordine(el.dataset.id); cambia('Modifica accettata', () => { o.righe = prezziGiusti(o.modifica.righe, daAccettare(o) ? [] : o.righe); o.modifica = null; o.esitoModifica = 'si'; }); },
@@ -2033,7 +2054,7 @@ async function inviaVero() {
   if (dopo.length && !UI.entro) return;
   const fai = (righe, entro, pronto) => ({ id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), n: 0, cliente: P.cliente,
     righe: righe.map(r => { const x = Object.assign({}, r); delete x.pronto; return x; }), entro, stato: 'nuovo', pronto, proposta: null,
-    paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), cuori: {}, modifica: null, esitoModifica: '' });
+    paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), tempi: { nuovo: Date.now() }, cuori: {}, modifica: null, esitoModifica: '' });
   const lista = [];
   if (pronti.length) lista.push([pronti, fai(pronti, oggi(), true)]);
   if (dopo.length) lista.push([dopo, fai(dopo, UI.entro, false)]);

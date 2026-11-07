@@ -555,5 +555,25 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ord-aperto { display: flex; flex-direction: column; gap: 4px; padding: 6px; background: #FBF4E8; }
 .ord-tempi { margin: 0; }
 .cerca-ord { width: 100%; min-height: 50px; padding: 10px 14px; border: 1.5px solid #EADBC4; border-radius: 14px; background: #fff; font: inherit; font-size: 1rem; }
-.ord-schede { gap: 6px; }
-.ord-schede .chip { padding: 0 12px; flex: 1 0 auto; justify-content: center; }
+.ord-schede { gap: 4px; }
+.ord-schede .chip { padding: 0 10px; flex: 1 0 auto; justify-content: center; }
+/* scadenze chiare (07/11) */
+.date-ord { display: flex; flex-direction: column; gap: 6px; background: #FBF4E8; border-radius: 12px; padding: 10px 12px; }
+.date-riga { display: grid; grid-template-columns: 26px 1fr auto; gap: 8px; align-items: center; }
+.date-riga > div { display: flex; flex-direction: column; line-height: 1.25; }
+.date-riga small { font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: #6B4A2E; }
+.date-riga b { font-size: 1.02rem; color: var(--inchiostro); }
+.date-ico svg { width: 22px; height: 22px; color: var(--vino); }
+.scad { font-size: .78rem; font-weight: 800; padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+.scad.ritardo { background: var(--allarme); color: #fff; }
+.scad.urgente { background: var(--cotto); color: #fff; }
+.scad.presto { background: var(--grano); color: #4A2A08; }
+.scad.calmo { background: #E2EAD6; color: #2D4220; }
+.settimana { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.sett-g { display: flex; flex-direction: column; align-items: center; padding: 6px 0; border: 1.5px solid #EADBC4; border-radius: 12px; background: #fff; font: inherit; color: #9C8466; cursor: pointer; }
+.sett-g small { font-size: .66rem; font-weight: 700; text-transform: uppercase; }
+.sett-g b { font-family: Fraunces, serif; font-size: 1.15rem; }
+.sett-g span { font-size: .66rem; font-weight: 800; }
+.sett-g.pieno { border-color: var(--vino); color: var(--vino); background: #FFF7EC; }
+.sett-g:disabled { cursor: default; opacity: .7; }
+.ord-giorno { scroll-margin-top: 130px; }
