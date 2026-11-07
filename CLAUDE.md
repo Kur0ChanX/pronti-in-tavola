@@ -1,9 +1,9 @@
 # Pronti in Tavola 🍝 · regole del progetto
 @docs/kit-progetto/REGOLE.md
 
-Sopra il kit (uguale in tutti i progetti, versione in `docs/kit-progetto/VERSIONE`); qui solo il progetto, che nei dettagli vince. Tetto: ~1.000 token (lo controllano `tools/fai-kit.py` e l'hook `kit-check.py`).
+Sopra il kit (uguale in tutti i progetti, versione in `docs/kit-progetto/VERSIONE`); qui solo il progetto, che nei dettagli vince. Tetto ~1.000 token.
 - Repo `Kur0ChanX/pronti-in-tavola`, ramo unico **`claude/pronti-ramo-definitivo`** (`.claude/ramo-di-lavoro.txt`). Titoli `<segno> 🍝 <Nome> <numero> · <cosa fa>` (catene in `docs/CHI-FA-COSA.md`). Altri progetti di Mario: nessuno (progetto indipendente: «nessuno», e non nominarli mai).
-- Guide a mano e servizi (Firebase, Cloudflare, GitHub…): ogni volta che se ne parla, anche per una domanda di Mario, leggo prima `docs/GUIDE-GIUSTE.md`; se una guida si scopre sbagliata, scrivo lì subito quella giusta (come l'ha vista Mario), commit e push. Foto di un sito da Mario: pagina e pulsanti esatti in `docs/GUIDE-GIUSTE.md` (foto in `archivio/foto/`), solo le pagine nuove.
+- Servizi (Firebase, Cloudflare, GitHub…): quando se ne parla leggo prima `docs/GUIDE-GIUSTE.md`; guida sbagliata → lì quella giusta, subito, con commit. Foto di un sito: pagine nuove e pulsanti esatti lì (foto in `archivio/foto/`).
 - **Link a Mario**: in un riquadro di codice a parte, uno per riquadro (ha Copia; il link cliccabile non si copia, Mario 07/11). Vince su «mai nei riquadri» delle skill.
 - Il resto quando serve: skill del kit (`consegne` 🔒, `chat-parallela`, `cambio-account` 🔒, `pr`, `nuova-regola`, `ricerca-aggiornata`); regole per zona in `.claude/rules/` (con `paths:`): se lavoro in una zona solo con Bash, prima le leggo.
 
