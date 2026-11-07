@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (07/11/2026 01:28 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 09:31 ora italiana)
 
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+Le regole tra poco te lo dico, se mi dai il link controllo se mi apre il banner a me, tanto non l'ho ancora salvata su home. E mi raccomando, fai l'icona di quando va nell'app bellina, tipo l'icona pronti in tavola, no?
