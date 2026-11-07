@@ -42,4 +42,4 @@ jobs:
           command: deploy
       - name: Segreti mancanti
         if: env.CF_TOKEN == ''
-        run: echo "Manca CLOUDFLARE_API_TOKEN nei segreti di GitHub: niente pubblicazione."
+        run: echo "Manca CLOUDFLARE_API_TOKEN nei segreti di GitHub, niente pubblicazione."
