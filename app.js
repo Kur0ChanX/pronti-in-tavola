@@ -206,9 +206,9 @@ function giorniPossibili(teglieNuove, da, escludi) {
   }
   return out;
 }
-const STATO_CLIENTE = { nuovo: 'Da confermare', proposta: 'Nuova data', accettato: 'Confermato', pronto: 'Pronto!', ritirato: 'Ritirato', rifiutato: 'Non disponibile', annullato: 'Annullato', daApprovare: 'Aspetta Monica' };
+const STATO_CLIENTE = { nuovo: 'Da confermare', proposta: 'Nuova data', accettato: 'Confermato', pronto: 'Pronto!', ritirato: 'Ritirato', rifiutato: 'Non disponibile', annullato: 'Annullato', daApprovare: 'Aspetta Monica', prova: 'Di prova' };
 const segna = (o, st) => { o.stato = st; o.tempi = Object.assign({}, o.tempi, { [st]: Date.now() }); };
-const STATO_MONICA = { nuovo: 'Nuovo', proposta: 'Aspetta risposta', accettato: 'Da preparare', pronto: 'Pronto', ritirato: 'Ritirato', rifiutato: 'Rifiutato', annullato: 'Annullato dal cliente', daApprovare: 'Cliente nuovo' };
+const STATO_MONICA = { nuovo: 'Nuovo', proposta: 'Aspetta risposta', accettato: 'Da preparare', pronto: 'Pronto', ritirato: 'Ritirato', rifiutato: 'Rifiutato', annullato: 'Annullato dal cliente', daApprovare: 'Cliente nuovo', prova: 'Di prova' };
 const METODO = { contanti: 'Contanti al ritiro', bonifico: 'Bonifico istantaneo', postepay: 'Postepay' };
 /* telefono nuovo che aspetta il Sì di Monica, legato al suo primo ordine */
 const richiestaDi = o => o.stato === 'daApprovare' ? (S.richieste || []).find(r => r.primo === o.id) || null : null;
@@ -223,7 +223,7 @@ const prezziGiusti = (rr, prima = []) => rr.map(r => {
   return Object.assign({}, r, { prezzo: v ? v.prezzo : prezzoOra(r) }, r.fritto ? { frittoPrezzo: fp || 0 } : {});
 });
 const daAccettare = o => ['nuovo', 'daApprovare'].includes(o.stato);
-const daGuardare = () => S.ordini.filter(o => o.stato === 'nuovo' || o.modifica || richiestaDi(o) || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato'));
+const daGuardare = () => S.ordini.filter(o => o.stato !== 'prova' && (o.stato === 'nuovo' || o.modifica || richiestaDi(o) || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato')));
 const mapsLink = () => { const r = S.impostazioni.ritiro; return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.via + ', ' + r.citta)}`; };
 const numero = n => { const d = String(n || '').replace(/\D/g, ''); return d ? (d.length <= 10 ? '39' + d : d) : ''; };
 /* indirizzo del sito: sempre quello di data.js, mai quello salvato nei dati (Mario 07/11: nei dati di Firebase c'era ancora pages.dev, sito mai esistito, e il link dell'invito non si apriva) */
@@ -818,7 +818,7 @@ function cartaOrdineCliente(o) {
 }
 /* I miei ordini (Mario 07/11 «stesso ordine anche per i clienti»): in corso sopra, per data di ritiro; passati sotto, per mese, in righe corte */
 function vOrdiniCliente() {
-  const miei = S.ordini.filter(o => o.cliente === P.cliente);
+  const miei = S.ordini.filter(o => o.cliente === P.cliente && o.stato !== 'prova');   // le prove di Monica il cliente non le vede (C35)
   const inCorso = miei.filter(o => !FINITI.includes(o.stato)).sort((a, b) => a.entro.localeCompare(b.entro) || a.n - b.n);
   const passati = miei.filter(o => FINITI.includes(o.stato)).sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n);
   let h = testataCliente() + '<main class="corpo"><h1>I miei ordini</h1>';
@@ -996,6 +996,8 @@ function cartaOrdineMonica(o) {
     if (totale(righe) !== totale(o.righe)) h += `<p class="tenue piccolo" style="margin:0">Coi tuoi prezzi di oggi. Il cliente vedeva ${euro(totale(o.righe))}: quando accetti, vede il tuo.</p>`;
   }
   if (o.nota) h += `<div class="avviso">${ico('chat')}<div><b>Nota:</b> ${esc(o.nota)}</div></div>`;
+  if (o.stato === 'prova') return h + `<div class="avviso">${ico('aiuto')}<div><b>Ordine di prova.</b> Non conta negli incassi, nella spesa, nelle etichette né nei giorni pieni, e il cliente non lo vede.</div></div>
+    <button type="button" class="btn chiaro pieno" data-a="ord-vero" data-id="${o.id}">Rimetti tra i veri</button></article>`;
   if (!['rifiutato', 'annullato', 'daApprovare'].includes(o.stato)) {
     const pg = o.paga;
     h += `<div class="fila" style="justify-content:space-between"><span><b>${METODO[pg.metodo]}</b> · ${pg.ricevuto ? '<span style="color:var(--basilico);font-weight:800">soldi ricevuti ✓</span>' : pg.dice ? '<span style="color:var(--cotto);font-weight:800">dice che ha pagato: controlla</span>' : 'da ricevere'}</span>
@@ -1010,6 +1012,10 @@ function cartaOrdineMonica(o) {
       ${o.pronto ? '' : `<button type="button" class="link" data-a="proponi" data-id="${o.id}">Il giorno non va più: proponi un altro giorno</button>`}`;
     if (o.stato === 'pronto') h += `<button type="button" class="btn pieno" data-a="ritirato" data-id="${o.id}">${ico('spunta')}Ritirato</button>`;
   }
+  /* C35: un ordine fatto per provare l'app esce da tutti i conti; due tocchi, per non sbagliare */
+  if (o.stato !== 'daApprovare') h += UI.provaSi === o.id
+    ? `<button type="button" class="btn chiaro pieno conferma-prova" data-a="ord-prova" data-id="${o.id}">Tocca ancora: è una prova</button>`
+    : `<button type="button" class="link piccolo" data-a="ord-prova" data-id="${o.id}">È una prova</button>`;
   return h + '</article>';
 }
 /* Ordini di chi gestisce (Mario 07/11: «in modo ordinato, uno storico, quelli in corso, per data… come le app gold standard»):
@@ -1035,14 +1041,22 @@ function dateOrdine(o, cliente) {
     <div class="date-riga"><span class="date-ico">${ico('ritiro')}</span><div><small>${cosa}</small><b>${dataLunga(g)}</b></div>${sc.t ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : ''}</div>
     ${quando ? `<div class="date-riga tenue"><span class="date-ico">${ico('ordini')}</span><div><small>Ordinato</small><span>${quando}${o.creato ? ` · ${giorniFa(o.creato) === 0 ? 'oggi' : giorniFa(o.creato) === 1 ? 'ieri' : giorniFa(o.creato) + ' giorni fa'}` : ''}</span></div></div>` : ''}</div>`;
 }
+function listaProve() {
+  const pp = gruppiOrdini().prove;
+  if (!pp.length) return '';
+  return `<details class="ord-prove"${pp.some(o => o.id === UI.ordAperto) ? ' open' : ''}><summary class="tenue">Ordini di prova (${pp.length})</summary>
+    <p class="tenue piccolo" style="margin:4px 0">Non contano da nessuna parte. Toccane uno per rimetterlo tra i veri.</p>
+    <div class="ord-lista">${pp.map(o => rigaOrd(o, true)).join('')}</div></details>`;
+}
 function gruppiOrdini() {
-  const g = daGuardare(), oo = S.ordini.filter(o => !g.includes(o)), o0 = oggi();
+  const g = daGuardare(), oo = S.ordini.filter(o => !g.includes(o) && o.stato !== 'prova'), o0 = oggi();
   const perGiorno = (a, b) => giornoDi(a).localeCompare(giornoDi(b)) || a.n - b.n;
   return {
     nuovi: g.sort(perGiorno),
     oggi: oo.filter(o => o.stato === 'pronto' || (o.stato === 'accettato' && o.entro <= o0)).sort(perGiorno),
     prossimi: oo.filter(o => (o.stato === 'accettato' && o.entro > o0) || o.stato === 'proposta').sort(perGiorno),
-    storico: oo.filter(o => FINITI.includes(o.stato)).sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n)
+    storico: oo.filter(o => FINITI.includes(o.stato)).sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n),
+    prove: S.ordini.filter(o => o.stato === 'prova').sort((a, b) => b.n - a.n)
   };
 }
 function schedaCucina(oo, titolo = 'Cosa cucinare', conGiorno = true) {
@@ -1062,7 +1076,7 @@ function rigaOrd(o, conGiorno) {
   return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n).toLowerCase())}">
     <span class="ord-n">n. ${o.n}${conGiorno ? `<small>${F_BREVE.format(daIso(giornoDi(o)))}</small>` : ''}</span>
     <span class="ord-chi"><b>${esc(chi)}</b><small>${esc(cosa)}</small></span>
-    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && o.stato !== 'proposta' ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
+    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && !['proposta', 'prova'].includes(o.stato) ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
 }
 /* orari di ogni passo (da questa versione: gli ordini vecchi non li hanno) */
 function tempiOrdine(o) {
@@ -1073,9 +1087,9 @@ function tempiOrdine(o) {
 }
 function vOrdiniMonica() {
   const gr = gruppiOrdini(), o0 = oggi();
-  if (!gr[UI.tab]) UI.tab = gr.nuovi.length ? 'nuovi' : 'oggi';
+  if (!gr[UI.tab] || UI.tab === 'prove') UI.tab = gr.nuovi.length ? 'nuovi' : 'oggi';
   const nomi = { nuovi: 'Nuovi', oggi: 'Oggi', prossimi: 'Prossimi', storico: 'Storico' };
-  let h = testataMonica('Ordini', 'home') + `<main class="corpo"><nav class="schede-cat ord-schede" aria-label="Tipi di ordini" style="top:65px">${Object.keys(gr).map(k =>
+  let h = testataMonica('Ordini', 'home') + `<main class="corpo"><nav class="schede-cat ord-schede" aria-label="Tipi di ordini" style="top:65px">${Object.keys(nomi).map(k =>
     `<button type="button" class="chip" data-a="tab" data-v="${k}" aria-pressed="${UI.tab === k}">${nomi[k]}${k !== 'storico' && gr[k].length ? ` <span class="conta">${gr[k].length}</span>` : ''}</button>`).join('')}</nav>`;
   const lista = gr[UI.tab];
   if (UI.tab === 'nuovi') {
@@ -1111,7 +1125,7 @@ function vOrdiniMonica() {
   const f = UI.ordFiltro || 'tutti', scelti = lista.filter(o => f === 'tutti' || o.stato === f), quanti = UI.ordQuanti || 40;
   h += `<input type="search" class="cerca-ord" data-cercaord="1" placeholder="Cerca un nome, un piatto o un numero" aria-label="Cerca negli ordini" autocomplete="off">
     <div class="scelte">${filtri.map(([k, n]) => `<button type="button" class="chip" data-a="ord-filtro" data-v="${k}" aria-pressed="${f === k}">${n}</button>`).join('')}</div>`;
-  if (!scelti.length) return h + '<p class="tenue">Ancora nessun ordine qui.</p></main>';
+  if (!scelti.length) return h + '<p class="tenue">Ancora nessun ordine qui.</p>' + listaProve() + '</main>';
   const mesi = {};
   scelti.slice(0, quanti).forEach(o => (mesi[o.entro.slice(0, 7)] = mesi[o.entro.slice(0, 7)] || []).push(o));
   h += Object.entries(mesi).map(([m, oo]) => {
@@ -1120,7 +1134,7 @@ function vOrdiniMonica() {
       <div class="ord-lista">${oo.map(o => rigaOrd(o, true)).join('')}</div></section>`;
   }).join('');
   if (scelti.length > quanti) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri (${scelti.length - quanti})</button>`;
-  return h + '<p class="tenue piccolo ord-nessuno nascosto">Nessun ordine trovato.</p></main>';
+  return h + '<p class="tenue piccolo ord-nessuno nascosto">Nessun ordine trovato.</p>' + listaProve() + '</main>';
 }
 
 function vPiatti() {
@@ -1225,7 +1239,7 @@ function bottoniRichiesta(r) {
   return `<div class="fila larga"><button type="button" class="btn verde" data-a="richiesta-si" data-id="${r.id}"${occ}>${ico('spunta')}${r.cliente ? 'Sì, ricollega' : 'Sì, può ordinare'}</button><button type="button" class="btn chiaro" data-a="richiesta-no" data-id="${r.id}"${occ}>No</button></div>`;
 }
 function vClienti() {
-  const conta = id => S.ordini.filter(o => o.cliente === id).length;
+  const conta = id => S.ordini.filter(o => o.cliente === id && o.stato !== 'prova').length;
   const ordineDi = r => { const o = r.primo && ordine(r.primo); return o && o.stato === 'daApprovare' ? o : null; };
   const riga = r => { const o = ordineDi(r);
     return `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">${r.cliente ? 'Dice che ha cambiato telefono' : r.tramite ? 'Amica di ' + esc(r.tramite) : 'Ha trovato il link'}
@@ -1706,6 +1720,16 @@ const A = {
     cambia('Modifica inviata a Monica', () => { o.modifica = { righe, il: oggi() }; o.esitoModifica = ''; }, false);
     avvisaGestori('modifica');
   },
+  'ord-prova'(el) {
+    const id = el.dataset.id;
+    if (UI.provaSi !== id) { UI.provaSi = id; render(); clearTimeout(A._prova); A._prova = setTimeout(() => { if (UI.provaSi === id) { UI.provaSi = null; render(); } }, 4000); return; }
+    UI.provaSi = null; const o = ordine(id);
+    cambia('Spostato negli ordini di prova (in fondo allo Storico)', () => { if (o.stato === 'prova') return; o.statoPrima = o.stato; o.stato = 'prova'; if (!FINITI.includes(o.statoPrima)) rimettiPronti(o); });
+  },
+  'ord-vero'(el) {
+    const o = ordine(el.dataset.id);
+    cambia('Rimesso tra gli ordini veri', () => { if (o.stato !== 'prova') return; o.stato = o.statoPrima || 'ritirato'; delete o.statoPrima; if (!FINITI.includes(o.stato)) riprendiPronti(o); });
+  },
   'annulla-ordine'(el) { const o = ordine(el.dataset.id); cambia('Ordine annullato', () => { o.stato = 'annullato'; rimettiPronti(o); }); },
   'proposta-si'(el) { const o = ordine(el.dataset.id); cambia('Perfetto, giorno confermato', () => { o.entro = o.proposta; o.proposta = null; o.stato = 'accettato'; }, false); avvisaGestori('risposta'); },
   'proposta-altro'(el) { UI.foglio = { tipo: 'giorno', id: el.dataset.id }; UI.proposta = null; render(); },
@@ -1870,6 +1894,7 @@ function decidiProva(r, si) {
   if (ci) o.righe.forEach(x => { const p = piatto(x.piatto); p.pronto.qta = arrot(p.pronto.qta - x.qta); });
   else o.pronto = false;
 }
+function riprendiPronti(o) { if (!o.pronto) return; o.righe.forEach(r => { const p = piatto(r.piatto); if (p && p.pronto && p.pronto.giorno === oggi()) p.pronto.qta = Math.max(0, arrot(p.pronto.qta - r.qta)); }); }
 function rimettiPronti(o) { if (!o.pronto) return; o.righe.forEach(r => { const p = piatto(r.piatto); if (p && p.pronto && p.pronto.giorno === oggi()) p.pronto.qta = arrot(p.pronto.qta + r.qta); }); }
 function segnaPronto(p, d) {
   const fId = p.pronto ? p.pronto.formato : p.formati[0].id, f = p.formati.find(x => x.id === fId) || p.formati[0];

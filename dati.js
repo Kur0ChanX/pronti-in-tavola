@@ -363,7 +363,7 @@ const Dati = (() => {
   }
 
   // Quanto prende un ordine dai «pronti» (per piatto) e dalle teglie della settimana.
-  const fuori = ['annullato', 'rifiutato', 'daApprovare'];
+  const fuori = ['annullato', 'rifiutato', 'daApprovare', 'prova'];
   function presi(o) {
     const m = {};
     if (o && o.pronto && !fuori.includes(o.stato)) o.righe.forEach(r => { m[r.piatto] = (m[r.piatto] || 0) + r.qta; });

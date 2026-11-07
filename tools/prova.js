@@ -131,6 +131,22 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ord-filtro"][data-v="ritirato"]'); await clic('.ord-riga >> nth=0');
     await page.locator('.ord-aperto .ordine-carta').waitFor({ timeout: 3000 });
   });
+  await passo('Monica: ordine di prova con due tocchi, fuori dallo storico, poi rimesso tra i veri (C35)', async () => {
+    const n = (await page.locator('.ord-aperto .ordine-carta .tenue.piccolo').first().innerText()).match(/\d+/)[0];
+    const fuori = async () => (await page.locator('.ord-riga').allInnerTexts()).filter(x => x.includes('n. ' + n)).length;
+    const nelleProve = async () => (await page.locator('.ord-prove .ord-riga').allInnerTexts()).filter(x => x.includes('n. ' + n)).length;
+    await clic('.ord-aperto [data-a="ord-prova"]');
+    if (!(await page.locator('.conferma-prova').count())) throw new Error('manca il secondo tocco di conferma');
+    await clic('.conferma-prova');
+    await page.locator('.ord-prove summary', { hasText: 'Ordini di prova (1)' }).waitFor({ timeout: 3000 });
+    if (await fuori() !== await nelleProve()) throw new Error('l\'ordine n. ' + n + ' di prova è ancora tra i veri');
+    if (/undefined/.test(await page.locator('main').innerText())) throw new Error('«undefined» nella pagina');
+    await page.locator('.ord-prove[open] .ord-aperto [data-a="ord-vero"]').scrollIntoViewIfNeeded(); await foto('14b-ordini-prova');
+    await clic('.ord-prove [data-a="ord-vero"]');
+    await page.waitForTimeout(300);
+    if (await page.locator('.ord-prove').count()) throw new Error('la lista delle prove non si svuota');
+    if (!(await page.locator('.ord-aperto .ordine-carta', { hasText: 'Ordine n. ' + n }).count() + await fuori())) throw new Error('rimesso tra i veri: non torna nello storico');
+  });
   await passo('Monica: modifica piatto e ingredienti nuovi', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await foto('12-piatti');
     await page.locator('.piatto-riga', { hasText: 'Tiramisù' }).locator('.apri').click(); await page.waitForTimeout(300);

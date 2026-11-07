@@ -613,3 +613,7 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .passo-forte .num { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--vino); color: #fff; display: grid; place-items: center; font-weight: 800; }
 .passo-forte.fatto .num { background: #3E7B3A; }
 .passo-forte.fatto b { text-decoration: line-through; opacity: .7; }
+/* C35: ordini di prova, in fondo allo Storico */
+.ord-prove { margin-top: 18px; border-top: 1px dashed var(--riga); padding-top: 10px; }
+.ord-prove summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
+.conferma-prova { border-color: var(--cotto); color: var(--cotto); }
