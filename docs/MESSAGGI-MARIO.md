@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 12:38 · 01QTFEqR4jaQ
-continua
-
 ## 2026-11-05 14:27 · 01QTFEqRY58R
 immagine anteprima ok firebase manda guida
 
@@ -144,3 +141,6 @@ link e passaggi chiari
 
 ## 2026-11-07 01:28 · 01QTFEqU1M1r
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+
+## 2026-11-07 13:08 · 01QTFEqTYwXG
+invito di WhatsApp che invii dall'app non funziona se cliccano non funziona il link e oltre al link di whatsapp volevo un bel biglietto di invito in foto da allegare in automatico su WhatsApp
