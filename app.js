@@ -301,31 +301,43 @@ function cartaHome(dopo) {
 /* invito per gestire (Mario 07/11: «un invito fatto bene, come un'app professionale»): link con #gestore.
    Chi lo apre entra con Google; a Mario arriva la richiesta con Sì/No; al sì l'app si riapre da gestore. */
 function vInvitoGestore() {
-  const io = Dati.io, google = Dati.attivo && io.uid && !io.anonimo, mia = google && io.richiestaMia;
+  const io = Dati.io, google = Dati.attivo && io.uid && !io.anonimo, mia = google && io.richiestaMia, lei = P.invitoGestore === 'm';
   let h = `<main class="corpo benvenuto invito"><img class="benv-logo" src="media/logo-medaglione.webp" alt="Pronti in Tavola con Monica">`;
-  if (!google) return h + `<h1>Benvenuta nella tua cucina!</h1>
-    <p class="tenue">Questa è <b>Pronti in Tavola</b>, l'app preparata per te: qui ricevi gli ordini delle amiche, sistemi i tuoi piatti e vedi cosa preparare.</p>
+  if (!google) return h + `<h1>${lei ? 'Benvenuta nella tua app!' : 'Ti aspettiamo in cucina!'}</h1>
+    <p class="tenue">Questa è <b>Pronti in Tavola</b>, l'app ${lei ? 'preparata per te' : 'della cucina'}: qui ricevi gli ordini delle amiche, sistemi i tuoi piatti e vedi cosa preparare.</p>
     <section class="scheda passi-invito"><h2>Due passi e ci sei</h2>
       <div class="passo-invito"><span class="num">1</span><div><b>Entra con il tuo account Google</b><br><span class="tenue piccolo">Serve una volta sola: così l'app sa che sei tu.</span></div></div>
       <div class="passo-invito"><span class="num">2</span><div><b>Mettila sul telefono</b><br><span class="tenue piccolo">Te lo mostriamo subito dopo, con un tocco.</span></div></div>
       <button type="button" class="btn pieno grande" data-a="inv-google"${UI.invInvio ? ' disabled' : ''}>${UI.invInvio ? 'Un attimo…' : 'Entra con Google'}</button></section>
     <p class="tenue piccolo" style="text-align:center">Non ti aspettavi questo messaggio? Chiudi pure la pagina.</p></main>`;
-  if (!mia) return h + `<h1>Ci sei quasi!</h1><p class="tenue">Sei entrata come <b>${esc(io.email)}</b>. Manca un tocco per avvisare Mario.</p>
+  if (!mia) return h + `<h1>Ci sei quasi!</h1><p class="tenue">${lei ? 'Sei entrata' : 'Hai fatto l\'accesso'} come <b>${esc(io.email)}</b>. Manca un tocco per avvisare Mario.</p>
     <button type="button" class="btn pieno grande" data-a="inv-chiedi"${UI.invInvio ? ' disabled' : ''}>${UI.invInvio ? 'Un attimo…' : 'Avvisa Mario'}</button>
     <button type="button" class="link" data-a="inv-altro">Non sei tu? Entra con un altro account</button></main>`;
-  const testo = 'Ciao Mario! Sono entrata in Pronti in Tavola: quando puoi, dimmi di sì dall\'app 😊';
+  const testo = `Ciao! ${lei ? 'Sono entrata' : 'Ho fatto l\'accesso'} in Pronti in Tavola: quando puoi, dimmi di sì dall'app 😊`;
   return h + `<h1>Fatto!</h1><p class="tenue">Mario ha ricevuto la tua richiesta. Appena dice sì, la tua cucina si apre da sola, qui.</p>
-    <div class="avviso verde">${ico('spunta')}<div>Sei entrata come <b>${esc(io.email)}</b>.</div></div>
+    <div class="avviso verde">${ico('spunta')}<div>${lei ? 'Sei entrata' : 'Hai fatto l\'accesso'} come <b>${esc(io.email)}</b>.</div></div>
     <a class="btn chiaro pieno" href="${wa('', testo)}" target="_blank" rel="noopener">${ico('chat')}Scrivi a Mario su WhatsApp</a>
     ${cartaHome(telefono() === 'ios' ? 'Su iPhone: dopo, apri l\'app dall\'icona e tocca «Sei Monica? Entra» in fondo, con lo stesso Google.' : '')}
     <button type="button" class="link" data-a="inv-altro">Non sei tu? Entra con un altro account</button></main>`;
 }
 /* testo dell'invito che Mario manda dall'app */
-const testoInvitoGestore = () => `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore`;
+const testoInvitoGestore = (tipo = 'g') => tipo === 'a'
+  ? `Ciao! 🍝 Ti faccio vedere Pronti in Tavola: la cucina di casa di ${S.impostazioni.paga.intestataria || 'Monica'}, a ${citta()}. Guardi il menù coi prezzi, ordini con pochi tocchi e passi a ritirare.\n\nTocca qui:\n${SITO}#da=monica`
+  : tipo === 'm'
+  ? `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore-m`
+  : `Ciao! 👩‍🍳 Ti invito a gestire con me Pronti in Tavola: qui arrivano gli ordini, si sistemano i piatti e si vede cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore`;
 /* biglietto d'invito in foto (Mario 07/11: «un bel biglietto di invito in foto da allegare in automatico su WhatsApp»):
    si disegna qui, poi va su WhatsApp insieme al messaggio col link; dove il telefono non sa allegarlo, si mostra da salvare */
 function caricaImg(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
-async function disegnaInvito() {
+/* i tre biglietti: 'm' = per Monica (Mario 07/11: «benvenuta nella tua app»), 'g' = per chiunque gestisca (frasi per tutti), 'a' = per gli amici clienti */
+const citta = () => String((S.impostazioni.ritiro || {}).citta || 'Olbia').replace(/[\d\s]+/, ' ').trim();
+const BIGLIETTI = () => ({
+  m: { titolo: 'Benvenuta nella tua app!', sotto: 'Pronti in Tavola è pronta per te', righe: ['Ricevi gli ordini delle amiche', 'Sistemi i tuoi piatti e i prezzi', 'Vedi cosa preparare ogni giorno'], box: ['Tocca il link nel messaggio', 'ed entra con Google: basta un minuto'] },
+  g: { titolo: 'Ti aspettiamo in cucina!', sotto: 'Gestisci con noi Pronti in Tavola', righe: ['Ricevi gli ordini degli amici', 'Sistemi i piatti e i prezzi', 'Vedi cosa preparare ogni giorno'], box: ['Tocca il link nel messaggio', 'ed entra con Google: basta un minuto'] },
+  a: { titolo: 'Assaggia la cucina di casa', sotto: 'Piatti fatti a mano, pronti da ritirare', righe: ['Guarda il menù coi prezzi', 'Ordina con pochi tocchi', 'Ritiri a ' + citta() + ', senza pensieri'], box: ['Tocca il link nel messaggio', 'e scegli cosa ti va'] }
+});
+async function disegnaInvito(tipo = 'g') {
+  const B = BIGLIETTI()[tipo] || BIGLIETTI().g;
   const L = 1080, A = 1350, c = document.createElement('canvas'), g = c.getContext('2d');
   c.width = L; c.height = A;
   try { await document.fonts.ready; } catch (e) { /* senza i caratteri va bene lo stesso */ }
@@ -339,9 +351,9 @@ async function disegnaInvito() {
   g.fillText('UN INVITO PER TE', L / 2, 130);
   if ('letterSpacing' in g) g.letterSpacing = '0px';
   if (logo) { const d = 360, r = Math.min(d / logo.width, d / logo.height); g.drawImage(logo, (L - logo.width * r) / 2, 165, logo.width * r, logo.height * r); }
-  g.fillStyle = '#7B2318'; g.font = '600 82px Fraunces, Georgia, serif'; g.fillText('Benvenuta in cucina!', L / 2, 640);
-  g.fillStyle = '#2B1A12'; g.font = '600 40px "Nunito Sans", system-ui, sans-serif'; g.fillText('La tua app Pronti in Tavola è pronta', L / 2, 710);
-  const righe = ['Ricevi gli ordini delle amiche', 'Sistemi i tuoi piatti e i prezzi', 'Vedi cosa preparare ogni giorno'];
+  g.fillStyle = '#7B2318'; let ft = 82; do { g.font = `600 ${ft}px Fraunces, Georgia, serif`; ft -= 4; } while (g.measureText(B.titolo).width > L - 160 && ft > 40); g.fillText(B.titolo, L / 2, 640);
+  g.fillStyle = '#2B1A12'; g.font = '600 40px "Nunito Sans", system-ui, sans-serif'; g.fillText(B.sotto, L / 2, 710);
+  const righe = B.righe;
   g.font = '700 38px "Nunito Sans", system-ui, sans-serif';
   const larga = Math.max(...righe.map(t => g.measureText(t).width)), x0 = (L - larga - 70) / 2;
   righe.forEach((t, i) => {
@@ -353,26 +365,26 @@ async function disegnaInvito() {
   });
   const bx = 120, by = 1045, bw = L - 240, bh = 150;
   g.fillStyle = '#7B2318'; g.beginPath(); (g.roundRect ? g.roundRect(bx, by, bw, bh, 30) : g.rect(bx, by, bw, bh)); g.fill();
-  g.fillStyle = '#FFFFFF'; g.font = '800 44px "Nunito Sans", system-ui, sans-serif'; g.fillText('Tocca il link nel messaggio', L / 2, by + 66);
-  g.font = '600 32px "Nunito Sans", system-ui, sans-serif'; g.fillText('ed entra con Google: basta un minuto', L / 2, by + 115);
+  g.fillStyle = '#FFFFFF'; g.font = '800 44px "Nunito Sans", system-ui, sans-serif'; g.fillText(B.box[0], L / 2, by + 66);
+  g.font = '600 32px "Nunito Sans", system-ui, sans-serif'; g.fillText(B.box[1], L / 2, by + 115);
   const da = (Dati.attivo && Dati.io.nomeGestore) || '';
   g.fillStyle = '#9A5B3C'; g.font = 'italic 600 40px Fraunces, Georgia, serif';
   g.fillText(da ? 'Con affetto, ' + da : 'Pronti in Tavola · Olbia', L / 2, 1272);
   return c;
 }
-async function mandaInvito() {
+async function mandaInvito(tipo = 'g') {
   if (UI.invPrepara) return;
-  UI.invPrepara = true; render();
-  const testo = testoInvitoGestore();
+  UI.invPrepara = tipo; render();
+  const testo = testoInvitoGestore(tipo);
   try {
-    const c = await disegnaInvito();
+    const c = await disegnaInvito(tipo);
     const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.9));
     const file = blob && new File([blob], 'invito-pronti-in-tavola.jpg', { type: 'image/jpeg' });
     if (file && navigator.canShare && navigator.canShare({ files: [file], text: testo })) {
       try { await navigator.share({ files: [file], text: testo }); return; }
       catch (e) { if (e && e.name === 'AbortError') return; }   // iPhone: troppo tempo dal tocco → sotto, il pulsante per riprovare
     }
-    UI.invFile = file;
+    UI.invFile = file; UI.invTipo = tipo;
     UI.foglio = { tipo: 'invito-img', url: c.toDataURL('image/jpeg', 0.9) };
   } catch (e) {
     window.open(wa('', testo), '_blank', 'noopener');
@@ -383,9 +395,10 @@ function foglioInvitoImg() {
     <p class="tenue" style="margin:0">${puoiAllegare() ? 'Tocca il pulsante sotto e scegli WhatsApp: parte la foto col messaggio.' : 'Questo telefono non sa allegare la foto da solo: tienila premuta per salvarla, poi mandala su WhatsApp dopo il messaggio.'}</p>
     <img src="${UI.foglio.url}" alt="Biglietto d'invito a Pronti in Tavola" style="width:100%;border-radius:12px;border:1px solid var(--riga)"></div>
     <div class="piede">${puoiAllegare() ? `<button type="button" class="btn pieno" data-a="inv-condividi">${ico('chat')}Manda foto e messaggio</button>`
-      : `<a class="btn pieno" href="${wa('', testoInvitoGestore())}" target="_blank" rel="noopener">${ico('chat')}Manda il messaggio col link</a>`}</div>`;
+      : `<a class="btn pieno" href="${wa('', testoInvitoGestore(UI.invTipo))}" target="_blank" rel="noopener">${ico('chat')}Manda il messaggio col link</a>`}</div>`;
 }
-const puoiAllegare = () => !!(UI.invFile && navigator.canShare && navigator.canShare({ files: [UI.invFile], text: testoInvitoGestore() }));
+const puoiAllegare = () => !!(UI.invFile && navigator.canShare && navigator.canShare({ files: [UI.invFile], text: testoInvitoGestore(UI.invTipo) }));
+const bottoneBiglietto = (tipo, testo, cls) => `<button type="button" class="btn ${cls}" data-a="inv-manda" data-v="${tipo}"${UI.invPrepara ? ' disabled' : ''}>${ico('invito')}${UI.invPrepara === tipo ? 'Preparo il biglietto…' : testo}</button>`;
 /* richieste di chi vuole gestire: in cima alla Home e nelle Impostazioni */
 function richiesteGestore() {
   const rr = (Dati.attivo && Dati.io.richiesteGestore) || [];
@@ -400,7 +413,7 @@ function chiGestisce() {
       ${g.uid === Dati.io.uid ? '' : `<button type="button" class="btn chiaro piccolo" data-a="gest-togli" data-id="${esc(g.uid)}">${UI.gestTogli === g.uid ? 'Tocca ancora per togliere' : 'Togli'}</button>`}</div>`).join('')}
     ${richiesteGestore()}
     <p class="tenue" style="margin:0">Manda l'invito a chi deve gestire con te: entra col suo Google e tu dici sì da qui.</p>
-    <button type="button" class="btn pieno" data-a="inv-manda"${UI.invPrepara ? ' disabled' : ''}>${ico('invito')}${UI.invPrepara ? 'Preparo il biglietto…' : 'Invita chi gestisce con te'}</button></section>`;
+    ${bottoneBiglietto('m', 'Invita Monica', 'pieno')}${bottoneBiglietto('g', 'Invita un\'altra persona', 'chiaro pieno')}</section>`;
 }
 function vBenvenuto() {
   const b = UI.benv || {};
@@ -929,12 +942,11 @@ function vClienti() {
   const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
   const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
     <button type="button" class="btn verde piccolo" data-a="rifiutato-si" data-id="${r.id}"${UI.decido === r.id ? ' disabled' : ''}>${ico('spunta')}Accetta</button></div>`;
-  const testo = `Ciao! Qui vedi cosa cucino e puoi ordinare: ${SITO}#da=monica`;
   return `${testataMonica('Clienti', 'home')}<main class="corpo">
     ${telefoni.length ? `<section class="scheda"><h2>Telefono nuovo</h2><p class="tenue" style="margin:0">Hanno lo stesso nome di un tuo cliente. Se è proprio lei, ricollega: ritrova i suoi ordini.</p>${telefoni.map(riga).join('')}</section>` : ''}
     ${nuovi.length ? `<section class="scheda"><h2>Nuovi</h2><p class="tenue" style="margin:0">Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.</p>${nuovi.map(riga).join('')}</section>` : ''}
     <section class="scheda"><h2>Fai conoscere la tua cucina</h2><p class="tenue" style="margin:0">Manda il link a chi vuoi: vede il menù e al primo ordine scrive il suo nome. Poi decidi tu.</p>
-      <a class="btn pieno" href="${wa('', testo)}" target="_blank" rel="noopener">${ico('invito')}Manda il link su WhatsApp</a>
+      ${bottoneBiglietto('a', 'Manda l\'invito su WhatsApp', 'pieno')}
       <label class="interr"><span>Accetta clienti nuovi<small>Spento: chi ha il link vede il menù, ma non può fare il primo ordine.</small></span><input type="checkbox" data-campo="i.nuovi" ${S.impostazioni.nuovi !== false ? 'checked' : ''}></label></section>
     <section class="scheda"><h2>I tuoi clienti</h2>${S.clienti.map(c => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><div><b>${esc(c.nome)}</b><br><span class="tenue piccolo">${c.invitato && !conta(c.id) ? 'Invitata, non ha ancora ordinato' : `${conta(c.id)} ordini · dal ${F_DATA.format(daIso(c.da))}`}</span></div></div>`).join('')}</section>
     ${rifiutati.length ? `<section class="scheda"><button type="button" class="link" data-a="rifiutati-apri" aria-expanded="${!!UI.rifiutati}" style="text-align:left">Persone rifiutate (${rifiutati.length}) ${UI.rifiutati ? '▲' : '▼'}</button>
@@ -1278,8 +1290,8 @@ function foglioEtichette() {
 
 const A = {
   'menu-immagine'() { mandaMenu(); },
-  'inv-manda'() { mandaInvito(); },
-  async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore() }); chiudiFoglio(); } catch (e) { /* annullato */ } },
+  'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
+  async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore(UI.invTipo) }); chiudiFoglio(); } catch (e) { /* annullato */ } },
   etichette() { apriEtichette(); },
   'eti-giorno'(el) { apriEtichette(el.dataset.v); },
   'eti-manda'() { mandaEtichette(); },
@@ -1811,7 +1823,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'ing-spesa-nuova') { e.preventDefault(); A['sp-agg'](); }
 });
 
-if (location.hash === '#gestore') { P.invitoGestore = true; if (Dati.attivo) salvaP(); }
+if (/^#gestore(-m)?$/.test(location.hash)) { P.invitoGestore = location.hash === '#gestore-m' ? 'm' : true; if (Dati.attivo) salvaP(); }
 render();
 apertura();
 if (Dati.attivo) avviaDati();
