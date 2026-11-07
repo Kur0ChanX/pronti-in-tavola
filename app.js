@@ -162,8 +162,8 @@ function qtaTesto(tipo, q, formatoNome) {
   return `${q} ${q === 1 ? 'intera' : 'intere'}`;
 }
 const descRiga = r => [r.varianteNome, qtaTesto(r.tipo, r.qta, r.formatoNome), r.fritto ? 'fritto da Monica' : ''].filter(Boolean).join(' · ');
-/* «Fritto da Monica» (Mario 07/11, C30): sovrapprezzo che Monica mette per ogni piatto; per pezzo, teglia o vaschetta, una volta sola se al chilo */
-const extraFritto = r => r.fritto ? arrot((r.frittoPrezzo || 0) * (r.tipo === 'kg' ? 1 : r.qta)) : 0;
+/* «Fritto da Monica» (Mario 07/11, C30): sovrapprezzo che Monica mette per ogni piatto; una cifra sola per il piatto, qualunque quantità (Mario: «non a pezzo ma a prodotto complessivo») */
+const extraFritto = r => r.fritto ? arrot(r.frittoPrezzo || 0) : 0;
 const prezzoRiga = r => arrot(r.prezzo * r.qta + extraFritto(r));
 const totale = rr => arrot(rr.reduce((s, r) => s + prezzoRiga(r), 0));
 const quanti = rr => rr.length;
@@ -698,9 +698,9 @@ function foglioPiatto() {
   h += `<div class="gruppo"><span class="etichetta">Allergeni</span>${all.length ? `<div class="allergeni">${all.map(a => `<span class="${mie.has(a) ? 'mio' : ''}">${NOME_ALL[a]}</span>`).join('')}</div>` : '<span class="tenue">Nessuno dei 14 allergeni di legge.</span>'}
     <span class="tenue piccolo">Calcolati dagli ingredienti. La cucina è di casa: per allergie gravi chiedi a Monica.</span></div>`;
   if (p.fritto > 0 && !anteprima) h += `<div class="gruppo fritto-scelta"><span class="etichetta">Da cuocere a casa o già fritto?</span>
-    <div class="scelte"><button type="button" class="scelta" data-a="sel-fritto" data-v="no" aria-pressed="${!s.fritto}">Lo cuocio io<small>prezzo del menù</small></button><button type="button" class="scelta" data-a="sel-fritto" data-v="si" aria-pressed="${!!s.fritto}">Fritto da Monica<small>+ ${euro(p.fritto)}${f.tipo === 'kg' ? '' : f.tipo === 'teglia' ? ' a teglia' : ' l\'uno'}</small></button></div>
+    <div class="scelte"><button type="button" class="scelta" data-a="sel-fritto" data-v="no" aria-pressed="${!s.fritto}">Lo cuocio io<small>prezzo del menù</small></button><button type="button" class="scelta" data-a="sel-fritto" data-v="si" aria-pressed="${!!s.fritto}">Fritto da Monica<small>+ ${euro(p.fritto)} in tutto</small></button></div>
     <span class="tenue piccolo">Il prezzo del menù è da cuocere a casa. Se lo vuoi già fritto, pronto da gustare, lo cucina Monica.</span></div>`;
-  else if (p.fritto > 0) h += `<div class="avviso">${ico('fiamma')}<div>Prezzo da cuocere a casa. <b>Fritto da Monica: + ${euro(p.fritto)}</b>${f.tipo === 'kg' ? '' : f.tipo === 'teglia' ? ' a teglia' : ' l\'uno'}.</div></div>`;
+  else if (p.fritto > 0) h += `<div class="avviso">${ico('fiamma')}<div>Prezzo da cuocere a casa. <b>Fritto da Monica: + ${euro(p.fritto)}</b> in tutto.</div></div>`;
   if (p.scalda) h += `<div class="avviso">${ico('orologio')}<div><b>Come si prepara a casa</b><br>${esc(p.scalda)}</div></div>`;
   if (!anteprima) {
     if (p.note.length) h += `<div class="gruppo"><span class="etichetta">Vuoi qualcosa di diverso?</span><div class="scelte">${p.note.map(n =>
@@ -1173,8 +1173,8 @@ function vPiatto(id) {
   h += `<section class="scheda"><h2>Richieste veloci</h2><p class="tenue" style="margin:0">Tasti pronti per il cliente, es. «Poco sale».</p>
     <div class="ingr-lista">${p.note.map((n, i) => `<span class="chip">${esc(n)}<button type="button" data-a="nota-togli" data-i="${i}" aria-label="Togli ${esc(n)}">${ico('x')}</button></span>`).join('')}</div>
     <div class="fila" style="flex-wrap:nowrap"><input type="text" id="nota-nuova" placeholder="es. Senza cipolla" aria-label="Nuova richiesta veloce"><button type="button" class="btn piccolo" data-a="nota-aggiungi">Aggiungi</button></div></section>`;
-  h += `<section class="scheda"><h2>Fritto da te</h2><p class="tenue" style="margin:0">Quanto costa in più se il cliente lo vuole già fritto. Lascia 0 se non lo friggi.</p>
-    <div class="formato-riga"><b>+ euro${p.formati.some(f => f.tipo === 'kg') ? '' : p.formati.some(f => f.tipo === 'teglia') ? ' a teglia' : ' a pezzo'}</b><input type="number" inputmode="decimal" step="0.5" min="0" max="99" data-campo="p.fritto" value="${p.fritto || 0}" aria-label="Sovrapprezzo fritto in euro"><span></span></div></section>`;
+  h += `<section class="scheda"><h2>Fritto da te</h2><p class="tenue" style="margin:0">Quanto costa in più se il cliente lo vuole già fritto: una cifra sola, qualunque quantità prenda. Lascia 0 se non lo friggi.</p>
+    <div class="formato-riga"><b>+ euro in tutto</b><input type="number" inputmode="decimal" step="0.5" min="0" max="99" data-campo="p.fritto" value="${p.fritto || 0}" aria-label="Sovrapprezzo fritto in euro"><span></span></div></section>`;
   h += `<section class="scheda"><h2>Come si prepara a casa</h2><textarea data-campo="p.scalda" placeholder="es. Forno a 180 °C per 20 minuti" aria-label="Come si prepara a casa">${esc(p.scalda)}</textarea></section>`;
   h += `<section class="scheda"><label class="interr"><span>Nel menù<small>Spento: i clienti non lo vedono</small></span><input type="checkbox" data-campo="disp" data-id="${p.id}" ${p.disponibile ? 'checked' : ''}></label>
     <label class="interr"><span>Novità<small>Etichetta «Novità» per 2 settimane</small></span><input type="checkbox" data-campo="p.novita" ${novita(p) ? 'checked' : ''}></label></section>`;

@@ -330,6 +330,11 @@ const server = http.createServer((req, res) => {
     controlla('spento: il telefono nuovo legge «non prende clienti nuovi»', await aspetta(quarto, () => /non prende clienti nuovi/.test(document.querySelector('#toast').textContent)));
 
     // e) lucchetto: riaperta l'app si chiude, si apre da solo con l'impronta, si richiude fuori dall'app
+    // C34: rientro entro 8 minuti (Android chiude l'app con «indietro»): niente impronta di nuovo
+    await monica.evaluate(() => localStorage.setItem('pit-lucchetto-via', String(Date.now() - 2 * 60000)));
+    await monica.reload();
+    controlla('riaperta dopo 2 minuti: resta aperta, niente impronta', await aspetta(monica, () => L.aperto && statoLucchetto() === ''));
+    await monica.evaluate(() => { L.aperto = false; localStorage.removeItem('pit-lucchetto-via'); });   // uscita vecchia (oltre 8 minuti): niente rientro libero
     await monica.reload();
     controlla('riaperta l\'app: la parte è chiusa, nessun cliente nella pagina', await aspetta(monica, () => !!document.querySelector('[data-a="lucchetto-apri"]')
       && !/Sara Mura|Paolo Sanna|Ordini/.test(document.querySelector('#app').textContent)));
@@ -341,8 +346,8 @@ const server = http.createServer((req, res) => {
     await fuori(monica, 1);
     controlla('fuori dall\'app 1 minuto: resta aperta', await monica.evaluate(() => L.aperto));
     await monica.impronta(false);
-    await fuori(monica, 6);
-    controlla('fuori 6 minuti e impronta sbagliata: resta chiusa con l\'avviso', await aspetta(monica, () => !L.aperto && !L.inCorso && /Non si è aperta/.test(document.querySelector('#app').textContent)));
+    await fuori(monica, 9);
+    controlla('fuori 9 minuti (oltre gli 8 di base) e impronta sbagliata: resta chiusa con l\'avviso', await aspetta(monica, () => !L.aperto && !L.inCorso && /Non si è aperta/.test(document.querySelector('#app').textContent)));
     await monica.impronta(true);
     await monica.click('[data-a="lucchetto-apri"]');
     controlla('impronta giusta col pulsante: si apre', await aspetta(monica, () => L.aperto));

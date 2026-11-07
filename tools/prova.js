@@ -315,7 +315,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.foglio [data-a="sel-fritto"][data-v="si"]'); await foto('31-fritto');
     await clic('.foglio [data-a="aggiungi"]'); await page.waitForTimeout(500);
     const t = await page.evaluate(() => totale(P.carrello) + '/' + P.carrello[0].fritto);
-    const atteso = Math.round((r.prezzo * r.qta + 1.5 * (r.kg ? 1 : r.qta)) * 100) / 100 + '/true';
+    const atteso = Math.round((r.prezzo * r.qta + 1.5) * 100) / 100 + '/true';   // fritto: una cifra sola per il piatto
     if (t !== atteso) throw new Error('totale col fritto: ' + t + ', atteso ' + atteso);
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
