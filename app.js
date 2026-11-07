@@ -49,6 +49,7 @@ const PATH = {
   piatti: '<path d="M3 17h18M5 17a7 7 0 0 1 14 0M12 7V5M10 5h4"/>',
   clienti: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 15c2 .7 3.2 2.3 3.8 5"/>',
   impostazioni: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  scarica: '<path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/>',
   chat: '<path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 10h6M9 13h4"/>',
   telefono: '<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',
   mappa: '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
@@ -270,6 +271,30 @@ function serveBenvenuto() {
   if (P.ruolo !== 'cliente' || UI.senzaNome) return false;
   return Dati.attivo ? !!Dati.io.uid && Dati.io.letto && !Dati.io.utente : !P.benvenuto;
 }
+/* app sulla schermata Home «a prova di stupido» (Mario 07/11): Android = un tocco (beforeinstallprompt);
+   se il telefono non lo offre, i passi veri di Chrome (foto di Mario: ⋮ → «Installa e crea scorciatoia»); iPhone = passi di Safari.
+   Già installata: non si mostra niente. */
+let installa = null;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); installa = e; render(); });
+addEventListener('appinstalled', () => { installa = null; P.installata = true; salvaP(); render(); mostraToast('Fatto! Trovi Pronti in Tavola tra le app del telefono.'); });
+const suHome = () => P.installata || (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
+const telefono = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ? 'ios' : 'android';
+function cartaHome(dopo) {
+  if (suHome()) return '';
+  const passi = pp => pp.map((t, i) => `<div class="passo-invito"><span class="num">${i + 1}</span><div>${t}</div></div>`).join('');
+  let h = `<section class="scheda passi-invito carta-home"><h2>${ico('scarica')}Metti l'app sul telefono</h2><p class="tenue" style="margin:0">Così la apri con un tocco, come le altre app.</p>`;
+  if (installa) h += `<button type="button" class="btn pieno grande" data-a="installa">Mettila sul telefono</button>`;
+  else if (telefono() === 'ios') h += passi([
+    'Apri questa pagina con <b>Safari</b> (l\'icona della bussola).',
+    'Tocca <b>⋯</b> (o <b>aA</b>) accanto all\'indirizzo, poi <b>Condividi</b>: il quadrato con la freccia in su.',
+    'Scorri in giù e tocca <b>Aggiungi alla schermata Home</b>, poi <b>Aggiungi</b> in alto a destra.']);
+  else h += passi([
+    'Tocca i <b>tre puntini ⋮</b> in alto a destra.',
+    'Scorri fino in fondo e tocca <b>Installa e crea scorciatoia</b> (su alcuni telefoni: <b>Aggiungi a schermata Home</b>).',
+    'Tocca <b>Installa</b>.']) + `<p class="tenue piccolo" style="margin:8px 0 0">Non vedi i tre puntini in alto? Sei dentro WhatsApp: tocca ⋮ e poi <b>Apri in Chrome</b>.</p>`;
+  if (dopo) h += `<p class="tenue piccolo" style="margin:8px 0 0">${dopo}</p>`;
+  return h + '</section>';
+}
 /* invito per gestire (Mario 07/11: «un invito fatto bene, come un'app professionale»): link con #gestore.
    Chi lo apre entra con Google; a Mario arriva la richiesta con Sì/No; al sì l'app si riapre da gestore. */
 function vInvitoGestore() {
@@ -278,8 +303,8 @@ function vInvitoGestore() {
   if (!google) return h + `<h1>Benvenuta nella tua cucina!</h1>
     <p class="tenue">Questa è <b>Pronti in Tavola</b>, l'app preparata per te: qui ricevi gli ordini delle amiche, sistemi i tuoi piatti e vedi cosa preparare.</p>
     <section class="scheda passi-invito"><h2>Due passi e ci sei</h2>
-      <div class="passo-invito"><span class="num">1</span><div><b>Mettila sulla schermata Home</b><br><span class="tenue piccolo">Tocca i tre puntini ⋮ in alto a destra, poi «Aggiungi a schermata Home». Così la apri come un'app.</span></div></div>
-      <div class="passo-invito"><span class="num">2</span><div><b>Entra con il tuo account Google</b><br><span class="tenue piccolo">Serve una volta sola. Poi la apri con l'impronta.</span></div></div>
+      <div class="passo-invito"><span class="num">1</span><div><b>Entra con il tuo account Google</b><br><span class="tenue piccolo">Serve una volta sola: così l'app sa che sei tu.</span></div></div>
+      <div class="passo-invito"><span class="num">2</span><div><b>Mettila sul telefono</b><br><span class="tenue piccolo">Te lo mostriamo subito dopo, con un tocco.</span></div></div>
       <button type="button" class="btn pieno grande" data-a="inv-google"${UI.invInvio ? ' disabled' : ''}>${UI.invInvio ? 'Un attimo…' : 'Entra con Google'}</button></section>
     <p class="tenue piccolo" style="text-align:center">Non ti aspettavi questo messaggio? Chiudi pure la pagina.</p></main>`;
   if (!mia) return h + `<h1>Ci sei quasi!</h1><p class="tenue">Sei entrata come <b>${esc(io.email)}</b>. Manca un tocco per avvisare Mario.</p>
@@ -289,6 +314,7 @@ function vInvitoGestore() {
   return h + `<h1>Fatto!</h1><p class="tenue">Mario ha ricevuto la tua richiesta. Appena dice sì, la tua cucina si apre da sola, qui.</p>
     <div class="avviso verde">${ico('spunta')}<div>Sei entrata come <b>${esc(io.email)}</b>.</div></div>
     <a class="btn chiaro pieno" href="${wa('', testo)}" target="_blank" rel="noopener">${ico('chat')}Scrivi a Mario su WhatsApp</a>
+    ${cartaHome(telefono() === 'ios' ? 'Su iPhone: dopo, apri l\'app dall\'icona e tocca «Sei Monica? Entra» in fondo, con lo stesso Google.' : '')}
     <button type="button" class="link" data-a="inv-altro">Non sei tu? Entra con un altro account</button></main>`;
 }
 /* testo dell'invito che Mario manda dall'app */
@@ -605,6 +631,7 @@ function vHome() {
   if (pausaOra()) h += `<div class="avviso">${ico('pausa')}<div><b>Sei in pausa fino a ${giornoLungo(imp.pausa.fino)}.</b> I clienti possono ordinare solo per dopo.
     <div class="fila" style="margin-top:10px"><button type="button" class="btn piccolo" data-a="riprendi">Riprendi adesso</button></div></div></div>`;
   h += richiesteGestore();
+  if (!P.homeNo) h += cartaHome().replace('</section>', '<button type="button" class="link" data-a="home-no">Non ora</button></section>');
   h += `<div><h1>Ciao ${esc((Dati.attivo && Dati.io.nomeGestore) || 'Monica')}</h1><p class="tenue" style="margin:4px 0 0">${n ? `Hai <b>${n}</b> ${n === 1 ? 'cosa' : 'cose'} da guardare negli ordini.` : 'Nessun ordine nuovo da guardare.'}</p></div>
     <div class="riquadri">
       <button type="button" class="riquadro primo" data-a="vai" data-v="ordini">${ico('ordini')}${n ? `<span class="pallino">${n}</span>` : ''}<div><b>Ordini</b><br><small>Accetta e prepara</small></div></button>
@@ -1208,6 +1235,14 @@ const A = {
     catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Accesso non riuscito. Riprova.'); }
     UI.invInvio = false; render();
   },
+  async installa() {
+    if (!installa) return;
+    const e = installa; installa = null;
+    await e.prompt(); const r = await e.userChoice.catch(() => null);
+    if (r && r.outcome === 'accepted') { P.installata = true; salvaP(); }
+    render();
+  },
+  'home-no'() { P.homeNo = true; salvaP(); render(); },
   async 'inv-chiedi'() {
     UI.invInvio = true; render();
     try { await Dati.chiediGestore(); } catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è partita. Riprova tra poco.'); }
