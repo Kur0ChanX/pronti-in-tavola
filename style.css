@@ -624,8 +624,11 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 /* modalità sviluppatore (solo Mario) */
 .prova.dev { background: #1F2A44; }
 .prova.dev .dev-v { margin-left: auto; opacity: .7; font-size: .8rem; }
+.vapore { position: fixed; inset: 0; z-index: 9999; }
+.vapore canvas { width: 100%; height: 100%; display: block; }
 .dev-scheda, .mario-scheda { border: 2px dashed #1F2A44; display: grid; gap: 8px; }
-.dev-nov ul { margin: 4px 0 0; padding-left: 20px; }
+.dev-nov ul { margin: 2px 0 0; padding-left: 20px; }
+.dev-tipo { margin-top: 6px; font-weight: 800; font-size: .9rem; }
 .dev-nov li { margin: 2px 0; }
 /* scheda del piatto a voci (Mario 07/11): una voce aperta alla volta */
 .sez-lista { display: grid; gap: 10px; }

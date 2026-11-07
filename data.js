@@ -183,25 +183,29 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9';
+const VERSIONE_APP = '0.9.1';
+/* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
-  { v: '0.9', data: '07/11/2026', cosa: [
-    'Piatti: «Al forno da Monica» col suo sovrapprezzo, accanto al fritto; il cliente sceglie una cottura',
-    'Impostazioni: scheda «Solo per te, Mario» in cima, con «Segna come PROVA gli ordini fatti finora» e conferma chiara',
-    'Modalità sviluppatore: 7 tocchi sulla firma, guarda come cliente, versione e novità',
-    'Ordini di prova: il cliente nuovo sceglie «Ordino davvero» o «Sto solo provando l\'app» prima di inviare',
-    'Monica vede le prove col bollino PROVA; non contano negli incassi né nella spesa',
-    'Persona nuova che ordina: a Monica la notifica «accettala» che resta e vibra',
-    'Cliente in attesa: «Attendi che Monica accetti» in giallo, sempre visibile',
-    'Via il riquadro «Apri in Chrome»: ora «Due tocchi e sei a posto» (installa e notifiche)',
-    'Logo di Monica senza bianco dentro le lettere'] },
-  { v: '0.8', data: '07/11/2026', cosa: [
-    'Notifiche che aprono il punto giusto; persone nuove subito a Monica',
-    'Solo tema chiaro; niente lampeggio nelle scelte; lucchetto dopo 8 minuti',
-    'Fritto da Monica: sovrapprezzo unico per piatto',
-    'Proposta di un altro giorno anche per cliente nuovo; avviso «è pronto» al cliente'] },
-  { v: '0.7', data: '05-07/11/2026', cosa: [
-    'Pagina Ordini a 4 schede, promemoria della sera, «I miei ordini» del cliente',
-    'Inviti in foto su WhatsApp, sito online, dati su Firebase',
-    'Lista della spesa, incassi, costo per piatto, etichette'] }
+  { v: '0.9.1', data: '07/11/2026',
+    nuovo: ['Vapore di cucina dopo lo sblocco: riempie lo schermo, poi si dirada e appare l\'app (fluido anche a 120 Hz)',
+      'Piatti: «Al forno da Monica» col suo sovrapprezzo, accanto al fritto; il cliente sceglie una cottura',
+      'Impostazioni: scheda «Solo per te, Mario» con «Segna come PROVA gli ordini fatti finora» e conferma chiara',
+      'Barra sviluppatore: si apre e si chiude scorrendo il dito da sinistra a destra in cima allo schermo'],
+    migliorato: ['Novità divise in Nuovo, Migliorato e Corretto', 'Nella scheda del piatto «Fritto da te» diventa «Cotto da te»'],
+    corretto: ['Il pulsante per segnare le prove era nascosto (7 tocchi + Altre impostazioni)'] },
+  { v: '0.9', data: '07/11/2026',
+    nuovo: ['Modalità sviluppatore: 7 tocchi sulla firma, guarda come cliente, versione e novità',
+      'Ordini di prova: il cliente nuovo sceglie «Ordino davvero» o «Sto solo provando l\'app» prima di inviare',
+      'Monica vede le prove col bollino PROVA; non contano negli incassi né nella spesa'],
+    migliorato: ['Persona nuova che ordina: a Monica la notifica «accettala» che resta e vibra',
+      'Cliente in attesa: «Attendi che Monica accetti» in giallo, sempre visibile',
+      'Via il riquadro «Apri in Chrome»: ora «Due tocchi e sei a posto» (installa e notifiche)'],
+    corretto: ['Logo di Monica senza bianco dentro le lettere'] },
+  { v: '0.8', data: '07/11/2026',
+    nuovo: ['Fritto da Monica: sovrapprezzo unico per piatto', 'Proposta di un altro giorno anche per cliente nuovo; avviso «è pronto» al cliente'],
+    migliorato: ['Notifiche che aprono il punto giusto; persone nuove subito a Monica', 'Lucchetto dopo 8 minuti'],
+    corretto: ['Solo tema chiaro (niente pagina scura); niente lampeggio nelle scelte'] },
+  { v: '0.7', data: '05-07/11/2026',
+    nuovo: ['Pagina Ordini a 4 schede, promemoria della sera, «I miei ordini» del cliente',
+      'Inviti in foto su WhatsApp, sito online, dati su Firebase', 'Lista della spesa, incassi, costo per piatto, etichette'] }
 ];

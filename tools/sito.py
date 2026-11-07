@@ -14,7 +14,7 @@ import sys
 
 RADICE = pathlib.Path(__file__).resolve().parent.parent
 USCITA = RADICE / 'sito'
-FILE_APP = ['index.html', 'style.css', 'data.js', 'dati.js', 'lucchetto.js', 'app.js',
+FILE_APP = ['index.html', 'style.css', 'data.js', 'dati.js', 'lucchetto.js', 'vapore.js', 'app.js',
             'spesa.js', 'sw.js', 'manifest.webmanifest']
 MEDIA = re.compile(r'media/[A-Za-z0-9._-]+\.(?:png|jpg|jpeg|webp|svg|ico)')
 

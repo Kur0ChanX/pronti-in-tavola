@@ -244,12 +244,23 @@ const YN = '<div class="yn" role="img" aria-label="YNOY Corp"><i class="ys"></i>
 const puoSviluppare = () => P.ruolo === 'monica' || UI.devCliente ? (!Dati.attivo || (Dati.io.gestore && /^mario\b/i.test(Dati.io.nomeGestore || ''))) : false;
 const sviluppatore = () => !!P.sviluppatore && (puoSviluppare() || !!UI.devCliente);
 function barraDev() {
-  if (!sviluppatore()) return '';
+  if (!sviluppatore() || !(UI.barraDev || UI.devCliente)) return '';   // guardando come cliente resta, per poter tornare
   return `<div class="prova dev" role="group" aria-label="Modalità sviluppatore">Sviluppatore · guarda come
     <button type="button" data-a="dev-come" data-v="cliente" aria-pressed="${!!UI.devCliente}">Cliente</button>
     <button type="button" data-a="dev-come" data-v="" aria-pressed="${!UI.devCliente}">Gestore</button>
     <span class="dev-v">v${VERSIONE_APP}</span></div>`;
 }
+/* barra sviluppatore: scorri il dito da sinistra a destra in cima allo schermo (Mario 07/11).
+   È un gesto di lato: il «tira giù per ricaricare» è in verticale, quindi non si toccano. */
+(() => {
+  let x0 = null, y0 = 0, t0 = 0;
+  addEventListener('touchstart', e => { const t = e.touches[0]; x0 = e.touches.length === 1 && t.clientY < 140 && t.clientX < innerWidth * .6 ? t.clientX : null; y0 = t.clientY; t0 = Date.now(); }, { passive: true });
+  addEventListener('touchend', e => {
+    if (x0 === null) return; const t = e.changedTouches[0], dx = t.clientX - x0, dy = Math.abs(t.clientY - y0); x0 = null;
+    if (dx < 90 || dy > 40 || dy > dx * .35 || Date.now() - t0 > 700 || !Dati.attivo || !sviluppatore()) return;
+    UI.barraDev = !UI.barraDev; render(); mostraToast(UI.barraDev ? 'Barra sviluppatore aperta. Scorri di nuovo per chiuderla.' : 'Barra sviluppatore chiusa.');
+  }, { passive: true });
+})();
 const firma = () => `<footer class="firma" data-a="firma-tocco">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' && !P.invitoGestore ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
 const filo = () => `<div class="filo" aria-hidden="true">${ico('spiga')}</div>`;
 function striscia() {
@@ -1308,8 +1319,12 @@ function sezioneDev() {
     <p style="margin:0"><b>Versione ${VERSIONE_APP}</b> · ${esc(NOVITA[0].data)}</p>
     <p class="tenue piccolo" style="margin:0">La vedi solo tu, su questo telefono. Monica non vede niente di questa parte.</p>
     <button type="button" class="btn chiaro" data-a="dev-come" data-v="cliente">Guarda l'app come un cliente</button>
+    ${Dati.attivo ? '<p class="tenue piccolo" style="margin:0">Barra «guarda come» in alto: scorri il dito da sinistra a destra in cima allo schermo (apre e chiude).</p>' : ''}
+    <h3 style="margin:8px 0 0">Vapore dopo lo sblocco</h3>
+    <div class="scelte">${Object.entries(Vapore.STILI).map(([k, n]) => `<button type="button" class="chip" data-a="dev-vapore" data-v="${k}" aria-pressed="${(P.vapore || 'A') === k}">${k} · ${n}</button>`).join('')}</div>
+    <p class="tenue piccolo" style="margin:0">Tocca per vederlo e sceglierlo su questo telefono.</p>
     <h3 style="margin:8px 0 0">Novità</h3>
-    ${ultime.map(n => `<div class="dev-nov"><b>${esc(n.v)} · ${esc(n.data)}</b><ul>${n.cosa.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`).join('')}
+    ${ultime.map(n => `<div class="dev-nov"><b>${esc(n.v)} · ${esc(n.data)}</b>${[['nuovo', '✨ Nuovo'], ['migliorato', '⬆️ Migliorato'], ['corretto', '🔧 Corretto']].filter(([k]) => (n[k] || []).length).map(([k, t]) => `<div class="dev-tipo">${t}</div><ul>${n[k].map(c => `<li>${esc(c)}</li>`).join('')}</ul>`).join('')}</div>`).join('')}
     ${NOVITA.length > 3 && !UI.devTutte ? '<button type="button" class="link" data-a="dev-tutte">Tutte le novità</button>' : ''}
     <button type="button" class="link piccolo" data-a="dev-esci">Esci dalla modalità sviluppatore</button></section>`;
 }
@@ -1803,7 +1818,7 @@ const A = {
     if (!puoSviluppare() || P.sviluppatore) return;
     const t = Date.now(); UI.firmaTocchi = (UI.firmaTocchi || []).filter(x => t - x < 4000).concat(t);
     const manca = 7 - UI.firmaTocchi.length;
-    if (manca <= 0) { P.sviluppatore = true; UI.firmaTocchi = []; salvaP(); render(); mostraToast('Ora sei sviluppatore: la trovi in Impostazioni e nella barra in alto.'); }
+    if (manca <= 0) { P.sviluppatore = true; UI.firmaTocchi = []; salvaP(); render(); mostraToast('Ora sei sviluppatore: la trovi in Impostazioni. Barra in alto: scorri il dito da sinistra a destra in cima.'); }
     else if (manca <= 3) mostraToast(manca === 1 ? 'Ancora 1 tocco per la modalità sviluppatore' : `Ancora ${manca} tocchi per la modalità sviluppatore`);
   },
   'dev-come'(el) {
@@ -1817,6 +1832,7 @@ const A = {
     const oo = S.ordini.filter(o => !diProva(o)); UI.foglio = null;
     cambia(`${oo.length} ${oo.length === 1 ? 'ordine segnato' : 'ordini segnati'} come PROVA: non contano più negli incassi né nella spesa`, () => { oo.forEach(o => { o.prova = true; }); });
   },
+  'dev-vapore'(el) { P.vapore = el.dataset.v; salvaP(); render(); Vapore.parti(P.vapore); },
   'dev-tutte'() { UI.devTutte = true; render(); },
   'dev-esci'() { P.sviluppatore = false; UI.devCliente = false; salvaP(); render(); mostraToast('Modalità sviluppatore spenta.'); },
   'ordine-prova'(el) { UI.prova = !!el.dataset.v; render(); },
@@ -2212,9 +2228,10 @@ function provaApri() {
 async function apriLucchetto() {
   if (L.inCorso) return;
   L.inCorso = true; L.errore = ''; render();
-  try { await Lucchetto.apri(Dati.io.uid); L.aperto = true; }
+  try { await Lucchetto.apri(Dati.io.uid); L.aperto = true; L.vapore = true; }
   catch (e) { L.errore = e.name === 'NotAllowedError' ? 'Non si è aperta. Tocca il pulsante e riprova.' : 'Il telefono non riesce a usare l\'impronta. Riprova, o entra di nuovo con Google.'; }
   L.inCorso = false; render();
+  if (L.vapore) { L.vapore = false; Vapore.parti(P.vapore || 'A'); }   // vapore di cucina dopo lo sblocco (Mario 07/11)
 }
 /* uscita dall'app più lunga dei minuti scelti: si richiude */
 document.addEventListener('visibilitychange', () => {
