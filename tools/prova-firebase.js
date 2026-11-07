@@ -252,7 +252,7 @@ const server = http.createServer((req, res) => {
     await monica.evaluate(() => vai('clienti'));
     controlla('Monica vede «Telefono nuovo» con «Sì, ricollega»', await monica.evaluate(id => /Telefono nuovo/.test(document.querySelector('main').textContent)
       && /ricollega/.test((document.querySelector(`[data-a="richiesta-si"][data-id="${id}"]`) || {}).textContent || ''), uidD));
-    await monica.click(`[data-a="richiesta-si"][data-id="${uidD}"]`);
+    await monica.locator(`[data-a="richiesta-si"][data-id="${uidD}"]`).last().click();
     controlla('Ricollega: il telefono nuovo torna di Lucia Piras', await aspetta(doppio, () => P.cliente === 'c2') && (await uD()).stato === 'approvato');
     const primoD = (await uD()).primo;
     const oD = (await admin(d => getDoc(doc(d, 'ordini/' + primoD)))).data();
@@ -285,7 +285,7 @@ const server = http.createServer((req, res) => {
     await monica.evaluate(() => { UI.tab = 'guardare'; vai('ordini'); });
     controlla('il primo ordine di Sara Mura è in «Da guardare» con Sì e No', await monica.evaluate(id => /Sara Mura/.test(document.querySelector('main').textContent)
       && !!document.querySelector(`[data-a="richiesta-si"][data-id="${id}"]`) && !!document.querySelector(`[data-a="richiesta-no"][data-id="${id}"]`), uidT));
-    await monica.click(`[data-a="richiesta-si"][data-id="${uidT}"]`);
+    await monica.locator(`[data-a="richiesta-si"][data-id="${uidT}"]`).last().click();
     controlla('pronto finito: l\'ordine resta da fare in un altro giorno', await aspetta(monica, id => S.ordini.some(o => o.utente === id && o.stato === 'nuovo' && o.pronto === false)
       && /proponi un altro giorno/.test(document.querySelector('#toast').textContent), uidT));
     const uT = (await admin(d => getDoc(doc(d, 'utenti/' + uidT)))).data();
@@ -296,7 +296,7 @@ const server = http.createServer((req, res) => {
 
     // c) No: il telefono non può più ordinare
     await aspetta(monica, id => !!document.querySelector(`[data-a="richiesta-no"][data-id="${id}"]`), uidT);
-    await monica.click(`[data-a="richiesta-no"][data-id="${uidT}"]`);
+    await monica.locator(`[data-a="richiesta-no"][data-id="${uidT}"]`).last().click();
     controlla('No: ordine rifiutato e il telefono resta fuori', await aspetta(terzo, () => Dati.io.utente && Dati.io.utente.stato === 'no' && S.ordini.some(o => o.stato === 'rifiutato')));
     // c2) «Persone rifiutate»: un No sbagliato si corregge con «Accetta» (un tocco: Sì come sempre), poi di nuovo No
     await aspetta(monica, id => (S.rifiutati || []).some(r => r.id === id), uidT);
