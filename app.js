@@ -1291,6 +1291,7 @@ function render() {
   document.documentElement.classList.toggle('grande', !!P.grande);
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
+  const orizz = [...document.querySelectorAll('.giorni, .settimana, .scelte')].map(x => x.scrollLeft);   // file che scorrono di lato: restano dove erano (C31)
   const chiuso = statoLucchetto();   /* la parte di Monica col lucchetto: nessun dato nella pagina finché non si apre */
   const invito = !chiuso && P.invitoGestore && P.ruolo !== 'monica';
   const benv = !chiuso && (invito || serveBenvenuto());
@@ -1305,7 +1306,10 @@ function render() {
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
-  if (fh && chiaveFoglio === ultimoFoglio) $('.foglio').scrollTop = fy;
+  /* stesso foglio ridisegnato (più/meno, scelta del giorno): niente animazione d'entrata, resta fermo dov'era (Mario 07/11, C29 C31) */
+  if (fh && chiaveFoglio === ultimoFoglio) { $('.velo').classList.add('fermo'); $('.foglio').scrollTop = fy; }
+  document.querySelectorAll('.giorni, .settimana, .scelte').forEach((x, i) => { if (orizz[i]) x.scrollLeft = orizz[i]; });
+  if (UI.tocco) { const [a, v] = UI.tocco.split('|'); document.querySelectorAll(`[data-a="${a}"][aria-pressed="true"]`).forEach(b => { if ((b.dataset.v || '') === v) b.classList.add('scatta'); }); UI.tocco = null; }
   if (UI.vista !== ultimaVista && $('main.corpo')) $('main.corpo').classList.add('entra');
   $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
@@ -1970,14 +1974,22 @@ function apertura() {
    · 'metti' (appena entrata con Google: mette il lucchetto) · 'google' (chiave mancante: di nuovo Google). */
 const L = { aperto: false, puo: undefined, inCorso: false, tentato: false, errore: '', fallito: false, via: 0, esci: false };
 const FRESCA = 5 * 60000;                          /* entrata con Google da meno di 5 minuti */
-const MINUTI_LUCCHETTO = [1, 2, 5, 10, 15, 30, 60];   /* «si richiude se esci dall'app per…» */
-const minutiLucchetto = () => { const m = Number(S.impostazioni.lucchetto); return MINUTI_LUCCHETTO.includes(m) ? m : 5; };
+const MINUTI_LUCCHETTO = [1, 2, 5, 8, 10, 15, 30, 60];   /* «si richiude se esci dall'app per…» */
+const minutiLucchetto = () => { const m = Number(S.impostazioni.lucchetto); return MINUTI_LUCCHETTO.includes(m) ? m : 8; };   /* 8 minuti di base (Mario 07/11, C34) */
+/* l'ultima uscita con la parte aperta resta salvata: se Android chiude l'app (indietro) e Monica rientra subito, niente impronta di nuovo */
+const VIA = 'pit-lucchetto-via';
+const leggiVia = () => { try { return Number(localStorage.getItem(VIA)) || 0; } catch (e) { return 0; } };
+const scriviVia = t => { try { t ? localStorage.setItem(VIA, String(t)) : localStorage.removeItem(VIA); } catch (e) { /* senza memoria: chiede l'impronta */ } };
 function statoLucchetto() {
   if (!Dati.attivo || P.ruolo !== 'monica' || L.aperto) return '';
   const io = Dati.io;
   if (!io.uid || !io.gestore || L.puo === undefined) return 'attendi';
   const k = Lucchetto.di(io.uid);
-  if (k && k.id) return 'chiuso';
+  if (k && k.id) {
+    const via = leggiVia();
+    if (via && Date.now() - via < minutiLucchetto() * 60000) { L.aperto = true; return ''; }
+    return 'chiuso';
+  }
   if (k && k.senza && !L.puo) { L.aperto = true; return ''; }
   if (Date.now() - (io.entrata || 0) < FRESCA || (k && k.senza)) {
     if (L.puo) return 'metti';
@@ -2029,10 +2041,10 @@ async function apriLucchetto() {
 }
 /* uscita dall'app più lunga dei minuti scelti: si richiude */
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'hidden') { L.via = Date.now(); return; }
+  if (document.visibilityState === 'hidden') { L.via = Date.now(); scriviVia(L.aperto ? L.via : 0); return; }
   const k = Dati.attivo ? Lucchetto.di(Dati.io.uid) : null;
   if (L.aperto && k && k.id && L.via && Date.now() - L.via >= minutiLucchetto() * 60000) {
-    L.aperto = false; L.tentato = false; L.errore = ''; UI.foglio = null; render();
+    L.aperto = false; L.tentato = false; L.errore = ''; UI.foglio = null; scriviVia(0); render();
   }
   L.via = 0; provaApri();
 });
@@ -2063,7 +2075,7 @@ Object.assign(A, {
   async 'lucchetto-esci'() {
     if (!L.esci) { L.esci = true; render(); setTimeout(() => { L.esci = false; if (UI.vista === 'impostazioni') render(); }, 5000); return; }
     const uid = Dati.io.uid;
-    try { await Dati.esci(); } catch (e) {
+    try { scriviVia(0); await Dati.esci(); } catch (e) {
       L.esci = false; render();
       mostraToast(e.code === 'in-attesa' ? 'Non esco ancora: alcune modifiche non sono salvate. Riprova quando c\'è la rete.' : 'Non sono riuscita a uscire. Riprova.');
       return;
@@ -2077,6 +2089,7 @@ if (Dati.attivo) Lucchetto.disponibile().then(v => { L.puo = v; render(); });
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-a]');
   if (!el) return;
+  UI.tocco = el.dataset.a + '|' + (el.dataset.v || '');   // solo il pulsante appena toccato fa lo «scatto» (C29)
   const f = A[el.dataset.a];
   if (f) f(el, e);
 });
