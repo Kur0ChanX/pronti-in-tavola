@@ -200,10 +200,18 @@ const Dati = (() => {
     if (io.gestore) {
       ['clienti', 'ordini', 'utenti'].forEach(c => ascolta(collection(db, c), c));
       ascolta(doc(db, 'impostazioni', 'approvati')); ascolta(doc(db, 'impostazioni', 'monica')); ascolta(doc(db, 'impostazioni', 'spesa')); ascolta(doc(db, 'contatori', 'ordini'));
+      // chi gestisce e chi chiede di gestire (invito per Monica)
+      ascolti.push(F.fs.onSnapshot(collection(db, 'gestori'), s => { io.gestoriLista = s.docs.map(d => ({ uid: d.id, nome: d.data().nome || '' })); avvisaCambio(); if (op.ridisegna) op.ridisegna(); }, () => {}));
+      ascolti.push(F.fs.onSnapshot(collection(db, 'richiesteGestore'), s => { io.richiesteGestore = s.docs.map(d => Object.assign({ uid: d.id }, d.data())); avvisaCambio(); if (op.ridisegna) op.ridisegna(); }, () => {}));
       return;
     }
     ascolta(doc(db, 'contatori', 'ordini'));
     ascolta(query(collection(db, 'ordini'), where('utente', '==', io.uid)), 'ordini');
+    if (!io.anonimo) {
+      // entrata con Google dall'invito: la sua richiesta, e il sì del gestore (allora l'app si riapre da gestore)
+      ascolti.push(F.fs.onSnapshot(doc(db, 'richiesteGestore', io.uid), s => { io.richiestaMia = s.exists() ? s.data() : null; if (op.ridisegna) op.ridisegna(); }, () => {}));
+      ascolti.push(F.fs.onSnapshot(doc(db, 'gestori', io.uid), s => { if (s.exists() && !io.gestore) location.reload(); }, () => {}));
+    }
     const u = io.utente;
     if (u && u.stato === 'approvato' && u.cliente) {
       ascolta(doc(db, 'impostazioni', 'approvati'));
@@ -219,6 +227,7 @@ const Dati = (() => {
     io.uid = user.uid;
     io.entrata = Date.parse(user.metadata && user.metadata.lastSignInTime) || 0;   // per il lucchetto: entrata appena fatta?
     io.nome = user.displayName || '';
+    io.anonimo = !!user.isAnonymous; io.email = user.email || '';
     const rg = doc(db, 'gestori', user.uid);   // senza rete: dalla copia del telefono
     const sg = await getDoc(rg).catch(() => getDocFromCache(rg)).catch(() => null);
     io.gestore = sg?.exists() || false;
@@ -234,7 +243,7 @@ const Dati = (() => {
         if (ora !== prima) { prima = ora; apriAscolti(); }
         avvisaCambio();
       }, () => { io.utente = null; io.letto = true; apriAscolti(); });
-    } else apriAscolti();
+    } else { ascoltoUtente && ascoltoUtente(); ascoltoUtente = null; apriAscolti(); }
   }
   async function avvia(cambio, statoRete, opzioni) {
     alCambio = cambio; alStato = statoRete || (() => {}); op = opzioni || {};
@@ -517,6 +526,27 @@ const Dati = (() => {
   }
   /* «Esci da questo telefono»: via la copia dei dati (anche quella di Firestore) e l'account;
      poi l'app si ricarica e il telefono torna un cliente anonimo nuovo */
+  /* invito per gestire: chi è entrato con Google chiede; un gestore dice sì o no; un gestore ne toglie un altro (mai sé stesso) */
+  async function chiediGestore() {
+    const u = auth.currentUser;
+    if (!u || u.isAnonymous) throw errore('google');
+    if (!navigator.onLine) throw errore('unavailable');
+    const { doc, setDoc } = F.fs;
+    await setDoc(doc(db, 'richiesteGestore', u.uid), { nome: String(u.displayName || u.email || 'Senza nome').slice(0, 60), email: u.email, quando: new Date().toISOString().slice(0, 16) });
+  }
+  async function decidiGestore(uid, nome, si) {
+    if (!io.gestore) throw errore('permission-denied');
+    if (!navigator.onLine) throw errore('unavailable');
+    const { doc, writeBatch } = F.fs, b = writeBatch(db);
+    if (si) b.set(doc(db, 'gestori', uid), { nome: String(nome || 'Gestore').slice(0, 40) });
+    b.delete(doc(db, 'richiesteGestore', uid));
+    await b.commit();
+  }
+  async function togliGestore(uid) {
+    if (!io.gestore || uid === io.uid) throw errore('permission-denied');
+    if (!navigator.onLine) throw errore('unavailable');
+    await F.fs.deleteDoc(F.fs.doc(db, 'gestori', uid));
+  }
   async function esci() {
     // modifiche non ancora arrivate al server: uscendo si perderebbero
     const inviate = await Promise.race([F.fs.waitForPendingWrites(db).then(() => true, () => false), new Promise(r => setTimeout(() => r(false), 3000))]);
@@ -530,7 +560,7 @@ const Dati = (() => {
   }
 
   return {
-    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi,
+    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi, chiediGestore, decidiGestore, togliGestore,
     confermato: () => ultimaScrittura,
     haDati: () => !!base,
     fotoDalServer: () => fotoDalServer,
