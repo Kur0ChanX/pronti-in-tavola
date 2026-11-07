@@ -1,9 +1,21 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (07/11/2026 01:13 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Ho capito: anche questa strada è finita di nuovo sulla pagina di GitHub. Sono due tentativi uguali falliti, quindi mi fermo e cambio strada.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+💡 PARERE
+Ora vedo la causa vera, da una tua foto di prima: quando tocchi GitHub, il telefono ti chiede «Chrome o Mi Browser». Quindi GitHub si apre in un **altro browser**. Cloudflare non riceve la risposta, perché aspetta nel browser di partenza. Per questo torni sempre su GitHub.
+
+Su un **PC**, in un solo browser, questo problema non c'è. Bastano circa 5 minuti (stima).
+
+Hai il 6% di batteria ed è l'una di notte. Il sito intanto è online e funziona.
+
+## Domande a Mario
+
+❓ DOMANDE
+📌 Di cosa parliamo: l'aggiornamento automatico del sito. Sul telefono non si collega, perché GitHub si apre in un altro browser.
+1 · domani dal PC, in un solo browser: ti do link e passi uno per volta (consiglio)
+2 · lascio stare: quando serve ti mando lo zip e lo carichi
+
+Ho scritto nel diario degli errori questa lezione: cercare subito i problemi noti e cambiare strada dopo 2 giri uguali.
+
+Buonanotte Mario.
