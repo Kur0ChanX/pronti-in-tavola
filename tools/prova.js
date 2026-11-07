@@ -61,6 +61,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('carrello: giorno, bonifico, invio', async () => {
     await clic('.testata [data-v="carrello"]'); await foto('04-carrello');
     await clic('.giorno:not([disabled])');
+    if (await page.locator('[data-a="ordine-prova"]').count() !== 2) throw new Error('manca la scelta «Ordino davvero / Sto solo provando»');
+    await clic('[data-a="ordine-prova"][data-v="1"]'); await clic('[data-a="ordine-prova"][data-v=""]');   // ci ripensa: ordine vero
+    if (await page.locator('[data-a="ordine-prova"][data-v=""][aria-pressed="true"]').count() !== 1) throw new Error('la scelta «Ordino davvero» non resta');
     await clic('[data-a="invia"]'); await page.waitForTimeout(500); await foto('05-inviato');
     if (!(await page.locator('.inviato').count())) throw new Error('niente conferma');
   });
@@ -139,6 +142,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.conferma-prova').count())) throw new Error('manca il secondo tocco di conferma');
     await clic('.conferma-prova');
     await page.locator('.ord-prove summary', { hasText: 'Ordini di prova (1)' }).waitFor({ timeout: 3000 });
+    if (!(await page.locator('.ord-aperto .bollino-prova').count())) throw new Error('manca la scritta PROVA sull\'ordine');
     if (await fuori() !== await nelleProve()) throw new Error('l\'ordine n. ' + n + ' di prova è ancora tra i veri');
     if (/undefined/.test(await page.locator('main').innerText())) throw new Error('«undefined» nella pagina');
     await page.locator('.ord-prove[open] .ord-aperto [data-a="ord-vero"]').scrollIntoViewIfNeeded(); await foto('14b-ordini-prova');

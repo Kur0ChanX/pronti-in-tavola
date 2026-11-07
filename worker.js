@@ -16,7 +16,7 @@ import { DurableObject } from 'cloudflare:workers';
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
 const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
-const TIPI_GESTORE = ['ordine', 'primo', 'richiesta', 'risposta', 'modifica'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
+const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
 const PAUSA_MS = 15 * 1000;     // e non più di uno ogni 15 secondi
 
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');

@@ -83,7 +83,7 @@ function spesaDalServer() {
    (o ritirati) dopo, non in SPESA.cotti, lo consumano. Se annulli il «pronto», torna. */
 const COTTI = ['pronto', 'ritirato'];
 function consumati() {
-  const oo = S.ordini.filter(o => COTTI.includes(o.stato) && !SPESA.cotti[o.id]);
+  const oo = S.ordini.filter(o => COTTI.includes(o.stato) && !o.prova && !SPESA.cotti[o.id]);
   return oo.length ? calcolaSpesa(oo).tot : {};
 }
 function casaDi(id) { return Math.max(0, arrot((SPESA.casa[id] || 0) - (consumati()[id] || 0))); }
@@ -110,7 +110,7 @@ function basiRiga(r, p) {
 function ordiniSpesa() {
   const fino = fineSpesa();
   const stati = SPESA.anche ? ['accettato', 'nuovo', 'proposta'] : ['accettato'];
-  return S.ordini.filter(o => stati.includes(o.stato) && o.entro <= fino).sort((a, b) => a.entro.localeCompare(b.entro));
+  return S.ordini.filter(o => stati.includes(o.stato) && !o.prova && o.entro <= fino).sort((a, b) => a.entro.localeCompare(b.entro));
 }
 function calcolaSpesa(oo) {
   const tot = {}, per = [], mancano = {};

@@ -43,6 +43,7 @@ self.addEventListener('push', e => {
       pronto: ['Il tuo ordine è pronto! 🍝', 'Passa a ritirarlo quando vuoi. Tocca per vedere l\'indirizzo.'],
       proposta: ['Monica ti propone un altro giorno 🍝', 'Tocca per rispondere: «Va bene» o «Un altro giorno».'],
       richiesta: ['Una persona nuova vuole ordinare 🍝', 'Tocca per vedere chi è e accettarla.'],
+      ordineProva: ['🧪 Ordine di PROVA', 'Un cliente sta provando l\'app: non è da cucinare. Tocca per vederlo.'],
       primo: ['Una persona nuova ha ordinato: accettala 🍝', 'Il suo primo ordine aspetta il tuo sì. Tocca per vedere chi è.'],
       risposta: ['Un cliente ha risposto sul giorno 🍝', 'Tocca per vedere la sua risposta.'],
       modifica: ['Un cliente chiede una modifica 🍝', 'Tocca per vedere cosa cambia.'],
