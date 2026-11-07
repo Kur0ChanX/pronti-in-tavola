@@ -352,20 +352,33 @@ function cartaNotifica() {
 /* notifiche vere degli ordini (C3): solo sul sito vero, dove c'è worker.js */
 const sulSito = () => Dati.attivo && location.origin === new URL(SITO).origin;
 function avvisaGestori() { if (sulSito()) fetch('/api/avvisa', { method: 'POST', keepalive: true }).catch(() => {}); }
+/* iscrive (o rinnova) questo telefono presso worker.js; ridà la funzione per altre chiamate col token */
+async function iscriviTelefono(tok) {
+  const { chiave } = await (await fetch('/api/chiave')).json();
+  const reg = await navigator.serviceWorker.ready, b = Uint8Array.from(atob(chiave.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((chiave.length + 3) % 4)), c => c.charCodeAt(0));
+  let sub = await reg.pushManager.getSubscription();
+  if (sub && sub.options && sub.options.applicationServerKey && new Uint8Array(sub.options.applicationServerKey).join() !== b.join()) { await sub.unsubscribe(); sub = null; }
+  sub = sub || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b });
+  const post = (u, corpo) => fetch(u, { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify(corpo || {}) });
+  const r = await post('/api/iscrivi', { sub: sub.toJSON() });
+  if (!r.ok) throw new Error(((await r.json().catch(() => ({}))).errore) || 'iscrizione rifiutata');
+  return post;
+}
+/* rinnovo da solo (07/11: iscrizione scaduta → 410, il telefono non suonava): a ogni apertura del gestore iscritto,
+   in silenzio, si rimanda l'iscrizione di oggi (se il telefono l'ha cambiata, quella vecchia non vale più) */
+let rinnovato = false;
+async function rinnovaAvvisi() {
+  if (rinnovato || !P.avvisiAttivi || !sulSito() || !('Notification' in window) || Notification.permission !== 'granted') return;
+  rinnovato = true;
+  try { const tok = await Dati.token(); if (tok) await iscriviTelefono(tok); } catch (e) { rinnovato = false; }
+}
 async function attivaAvvisi() {
   UI.notProva = true; UI.notEsito = null; render();
   try {
     const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
     if (perm !== 'granted') throw new Error('permesso non dato: senza «Consenti» le notifiche non arrivano');
     const tok = await Dati.token(); if (!tok) throw new Error('entra prima con Google');
-    const { chiave } = await (await fetch('/api/chiave')).json();
-    const reg = await navigator.serviceWorker.ready, b = Uint8Array.from(atob(chiave.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((chiave.length + 3) % 4)), c => c.charCodeAt(0));
-    let sub = await reg.pushManager.getSubscription();
-    if (sub && sub.options && sub.options.applicationServerKey && new Uint8Array(sub.options.applicationServerKey).join() !== b.join()) { await sub.unsubscribe(); sub = null; }
-    sub = sub || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b });
-    const post = (u, corpo) => fetch(u, { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify(corpo || {}) });
-    const r = await post('/api/iscrivi', { sub: sub.toJSON() });
-    if (!r.ok) throw new Error(((await r.json().catch(() => ({}))).errore) || 'iscrizione rifiutata');
+    const post = await iscriviTelefono(tok);
     const p = await (await post('/api/prova')).json();
     P.avvisiAttivi = true; salvaP();
     UI.notEsito = { ok: true, t: `Fatto! Da ora ogni ordine nuovo ti suona qui. È partita una notifica di prova${p.telefoni > 1 ? ` (${p.telefoni} telefoni iscritti)` : ''}: guarda in alto.` };
@@ -1908,7 +1921,7 @@ function avviaDati() {
     if (Dati.preparaVuoto(statoIniziale())) return;
     S = nuovo;
     if (!S.ingExtra) S.ingExtra = {};
-    if (io.gestore) spesaDalServer();
+    if (io.gestore) { spesaDalServer(); rinnovaAvvisi(); }
     if (io.gestore && P.invitoGestore) { P.invitoGestore = false; salvaP(); }
     P.ruolo = io.gestore ? 'monica' : 'cliente';
     P.cliente = io.utente && io.utente.stato === 'approvato' ? io.utente.cliente : null;

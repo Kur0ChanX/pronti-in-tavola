@@ -37,6 +37,12 @@ function primaRete(r) {
 self.addEventListener('push', e => {
   e.waitUntil(self.registration.showNotification('Pronti in Tavola', { body: 'Hai un ordine nuovo da guardare 🍝', icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: 'ordine', renotify: true, data: { url: './' } }));
 });
+/* iscrizione scaduta o cambiata dal telefono: se ne prende subito una nuova con la stessa chiave;
+   la manda a worker.js l'app alla prossima apertura (rinnovaAvvisi), perché qui manca l'accesso Google */
+self.addEventListener('pushsubscriptionchange', e => {
+  const k = e.oldSubscription && e.oldSubscription.options && e.oldSubscription.options.applicationServerKey;
+  if (k) e.waitUntil(self.registration.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: k }).catch(() => {}));
+});
 /* tocco sulla notifica: apre l'app (o la porta davanti se è già aperta) */
 self.addEventListener('notificationclick', e => {
   e.notification.close();
