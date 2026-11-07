@@ -220,7 +220,9 @@ const Dati = (() => {
     io.entrata = Date.parse(user.metadata && user.metadata.lastSignInTime) || 0;   // per il lucchetto: entrata appena fatta?
     io.nome = user.displayName || '';
     const rg = doc(db, 'gestori', user.uid);   // senza rete: dalla copia del telefono
-    io.gestore = (await getDoc(rg).catch(() => getDocFromCache(rg)).catch(() => null))?.exists() || false;
+    const sg = await getDoc(rg).catch(() => getDocFromCache(rg)).catch(() => null);
+    io.gestore = sg?.exists() || false;
+    io.nomeGestore = (io.gestore && sg.data() && sg.data().nome) || '';   // «Ciao <nome>» nella Home del gestore
     io.utente = null; io.letto = io.gestore;
     if (!io.gestore) {
       // Il documento utenti/ di questo telefono: quando Monica approva, si riaprono gli ascolti.
