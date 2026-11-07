@@ -48,6 +48,7 @@
 | C14 | «Persone rifiutate» (Mario 05/11 «1 ok»): fatta il 05/11, in fondo a Clienti; il 05/11 (#10) il cliente legge dal vivo anche un «Accetta» + «Annulla» (`rileggiUtente` in `dati.js`). Manca: riprovarlo con due telefoni veri. 👁 Lo vedi: nell'app online, dopo un No, in Clienti compare «Persone rifiutate (1)» · prova: foto dal telefono di Mario | Claude | media |
 | C19 | Stampante per le etichette di Monica (Mario 07/11: «solo etichette A4 per ora»; stampantina bianco e nero NO): scegliere più avanti, es. Epson EcoTank ET-2870 ~180-210 € + fogli adesivi A4 da 10 (105×57); prezzi da ricontrollare | Mario + Claude | bassa |
 | C20 | Portare nel kit la regola «link a Mario: riquadro con Copia (cliccabile solo se Mario deve aprirlo)» (ora solo nel `CLAUDE.md` di questo progetto; `domande` e `ricerca-aggiornata` dicono ancora «mai nei riquadri»). 👁 Lo vedi: nei miei messaggi in chat, link nel riquadro con Copia · prova: la tua prossima foto di un link copiato | Claude (sessione del kit) | 🟡 |
+- 07/11 · 🟢 Principale 20 · Idee per l'app (`docs/IDEE-2026-11-07.md`): quali fare e in che ordine?
 
 ## 1. Claude da solo
 - C1, C3
