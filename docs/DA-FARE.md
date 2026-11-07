@@ -1,10 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 13 · Etichette (C7): il cuoricino dopo «Buon appetito», 1 · lo lascio (consiglio) · 2 · lo tolgo. Senza risposta resta la 1
-- 07/11 · 🟡 Principale 13 · Etichette (C7): il nome del cliente sopra il piatto, 1 · lo lascio (consiglio) · 2 · lo tolgo. Senza risposta resta la 1
-- 07/11 · 🟡 Principale 13 · Etichette (C7): Monica ha stampante e che fogli? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante. Senza risposta resta la 1
-- 07/11 · 🟡 Principale 13 · Guarda sul sito vero le etichette (Ordini → Da preparare) e scrivi «ok» o cosa non va
+- 07/11 · 🟡 Principale 13 · Etichette (C7): quale stampante per Monica? 1 · stampantina termica Niimbot B1 (consiglio) · 2 · fogli adesivi A4 con una stampante di casa · 3 · tutte e due
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|

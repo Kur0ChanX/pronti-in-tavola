@@ -1022,18 +1022,23 @@ function foglioMenuImg() {
 
 /* ---------- etichette per le vaschette (A4, 10 per foglio da 105 x 57 mm) ---------- */
 const ordiniDaCucinare = () => S.ordini.filter(o => o.stato === 'accettato' && !o.modifica);
-function etichetteDi(giorno) {
-  const out = [];
-  ordiniDaCucinare().filter(o => o.entro === giorno).sort((a, b) => a.n - b.n).forEach(o => o.righe.forEach(r => {
+function etichetteDi(giorno) {   // per prodotto, senza nome del cliente: le uguali stanno vicine e si stampano in serie (Mario 07/11)
+  const gruppi = new Map();
+  ordiniDaCucinare().filter(o => o.entro === giorno).forEach(o => o.righe.forEach(r => {
     const p = piatto(r.piatto), all = p ? allergeniDi(ingDi(p, r.variante)) : [];
     const pezzi = ['teglia', 'intera'].includes(r.tipo) && Number.isInteger(r.qta) && r.qta > 1 ? r.qta : 1;
-    const e = { chi: chiOrdina(o), n: o.n, nome: r.nome, variante: r.varianteNome || '', qta: pezzi > 1 ? qtaTesto(r.tipo, 1, r.formatoNome) : qtaTesto(r.tipo, r.qta, r.formatoNome),
+    const e = { nome: r.nome, variante: r.varianteNome || '', qta: pezzi > 1 ? qtaTesto(r.tipo, 1, r.formatoNome) : qtaTesto(r.tipo, r.qta, r.formatoNome),
       note: [...(r.note || []), r.testo].filter(Boolean).join(' · '), all: all.map(x => NOME_ALL[x].toLowerCase()), scalda: (p && p.scalda) || '' };
-    for (let i = 1; i <= pezzi; i++) out.push(Object.assign({}, e, { ordine: o.id }));
+    const k = [e.nome, e.variante, e.qta, e.note].join('|');
+    if (!gruppi.has(k)) gruppi.set(k, { e, quante: 0 });
+    gruppi.get(k).quante += pezzi;
   }));
-  out.forEach(e => { const tutte = out.filter(x => x.ordine === e.ordine); e.pezzo = tutte.length > 1 ? `Vaschetta ${tutte.indexOf(e) + 1} di ${tutte.length}` : ''; });   // quante vaschette ha l'ordine
+  const out = [];
+  [...gruppi.values()].sort((a, b) => a.e.nome.localeCompare(b.e.nome, 'it') || a.e.note.length - b.e.note.length)
+    .forEach(g => { for (let i = 0; i < g.quante; i++) out.push(g.e); });
   return out.slice(0, 100);
 }
+const riassuntoEti = ee => { const m = new Map(); ee.forEach(e => { const t = [e.nome, e.variante, e.qta, e.note].filter(Boolean).join(' · '); m.set(t, (m.get(t) || 0) + 1); }); return [...m]; };
 let LOGO_ETI = null;
 const caricaLogoEti = async () => {   // logo e font devono essere pronti PRIMA di disegnare sul foglio
   try { await Promise.all(['700 40px Caveat', 'italic 600 34px Fraunces', '600 46px Fraunces', '700 26px "Nunito Sans"', '800 24px "Nunito Sans"', 'italic 700 18px "Nunito Sans"'].map(f => document.fonts.load(f))); } catch (e) { /* senza font resta quello di sistema */ }
@@ -1082,9 +1087,7 @@ function disegnaEtichette(ee) {
           const [a2, d2] = alto(fz); larg = (cima < LGB + 6 ? LGX - 16 : X1) - X0;
           pos.push({ t, f: fz, col, base: cima + a2, larg, avvolgi: opz.avvolgi }); cur = cima + a2 + d2;
         };
-        metti('Per ' + e.chi, `italic 600 ${31 * sc}px ${SERIF}`, '#9A5B3C', 0);
-        if (e.pezzo) metti(e.pezzo, `800 ${17 * sc}px ${FONT}`, '#B07A5A', 6 * sc);
-        metti(e.nome, `600 ${44 * sc}px ${SERIF}`, '#7B2318', 14 * sc, { stringi: true });
+        metti(e.nome, `600 ${44 * sc}px ${SERIF}`, '#7B2318', 0, { stringi: true });
         metti([e.variante, e.qta].filter(Boolean).join(' · '), `700 ${25 * sc}px ${FONT}`, '#5B4636', 10 * sc);
         if (e.note) metti(e.note, `800 ${23 * sc}px ${FONT}`, '#A0451F', 9 * sc);
         if (e.all.length) {
@@ -1117,7 +1120,7 @@ async function apriEtichette(giorno) {
   if (!giorni.length) return;
   if (!giorni.includes(giorno)) giorno = giorni[0];
   const ee = etichetteDi(giorno); await caricaLogoEti();
-  UI.foglio = { tipo: 'etichette', giorni, giorno, quante: ee.length, url: disegnaEtichette(ee).map(c => c.toDataURL('image/png')) };
+  UI.foglio = { tipo: 'etichette', giorni, giorno, quante: ee.length, conti: riassuntoEti(ee), url: disegnaEtichette(ee).map(c => c.toDataURL('image/png')) };
   render();
 }
 async function mandaEtichette() {
@@ -1128,7 +1131,8 @@ function foglioEtichette() {
   const f = UI.foglio, fogli = f.url.length;
   return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Etichette per le vaschette</h1>
     ${f.giorni.length > 1 ? `<div class="fila" style="flex-wrap:wrap;gap:8px">${f.giorni.map(g => `<button type="button" class="chip" data-a="eti-giorno" data-v="${g}" aria-pressed="${g === f.giorno}">${maiuscola(giornoLungo(g))}</button>`).join('')}</div>` : `<p style="margin:0"><b>${maiuscola(giornoLungo(f.giorno))}</b></p>`}
-    <p class="tenue" style="margin:0">${f.quante} ${f.quante === 1 ? 'etichetta' : 'etichette'}, ${fogli} ${fogli === 1 ? 'foglio' : 'fogli'} A4. Ogni etichetta dice cosa c'è nella vaschetta. Stampa su fogli adesivi da 10 (105 × 57 mm) oppure su carta normale e ritaglia lungo le righe. Tieni premuto su un foglio per salvarlo o condividerlo.</p>
+    <p class="tenue" style="margin:0">${f.quante} ${f.quante === 1 ? 'etichetta' : 'etichette'}, ${fogli} ${fogli === 1 ? 'foglio' : 'fogli'} A4. Le etichette uguali sono vicine, una per vaschetta, senza nome: vanno bene per chiunque. Stampa su fogli adesivi da 10 (105 × 57 mm) oppure su carta normale e ritaglia lungo le righe. Tieni premuto su un foglio per salvarlo o condividerlo.</p>
+    <ul style="margin:0;padding-left:20px">${(f.conti || []).map(([t, n]) => `<li><b>${n}</b> × ${esc(t)}</li>`).join('')}</ul>
     ${f.url.map((u, i) => `<img src="${u}" alt="Foglio ${i + 1} delle etichette" style="width:100%;border-radius:8px;border:1px solid var(--riga);background:#fff">`).join('')}</div>
     ${Dati.attivo && navigator.canShare ? `<div class="piede"><button type="button" class="btn pieno" data-a="eti-manda">Condividi per stampare</button></div>` : ''}`;
 }
