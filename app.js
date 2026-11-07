@@ -347,8 +347,10 @@ function cartaNotifica() {
     ${esito ? `<div class="avviso ${esito.ok ? 'verde' : ''}">${ico(esito.ok ? 'spunta' : 'x')}<div>${esc(esito.t)}</div></div>` : ''}
     ${(st === 'granted' || st === 'default') && sulSito() && Dati.io.gestore ? `<button type="button" class="btn pieno" data-a="avvisi-attiva"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : P.avvisiAttivi ? 'Iscrivi di nuovo questo telefono' : 'Tocca qui: ricevi gli ordini su questo telefono'}</button>
     <p class="tenue piccolo" style="margin:0">${P.avvisiAttivi ? '✅ Questo telefono è iscritto: a ogni ordine nuovo suona.' : '❌ Questo telefono NON è ancora iscritto agli ordini.'}</p>` : ''}
+    ${(st === 'granted' || st === 'default') && sulSito() && !Dati.io.gestore && P.cliente ? `<button type="button" class="btn pieno" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : P.avvisiCliente ? 'Riattiva l\'avviso su questo telefono' : 'Avvisami quando il mio ordine è pronto'}</button>
+    <p class="tenue piccolo" style="margin:0">${P.avvisiCliente ? '✅ Avviso attivo: quando Monica segna «pronto», ti suona il telefono.' : 'Se preferisci, Monica ti scrive anche su WhatsApp come sempre.'}</p>` : ''}
     ${st === 'granted' || st === 'default' ? `<button type="button" class="btn chiaro pieno" data-a="notifica-prova"${UI.notProva ? ' disabled' : ''}>${ico('chat')}${UI.notProva ? 'Un attimo…' : 'Prova le notifiche'}</button>` : ''}
-    <p class="tenue piccolo" style="margin:0">${Dati.attivo && Dati.io.gestore ? '«Ricevi gli ordini» iscrive questo telefono: a ogni ordine nuovo suona. «Prova» controlla solo che il telefono le sappia mostrare.' : 'Per ora è solo una prova su questo telefono: le notifiche per i clienti arriveranno più avanti.'}</p></section>`;
+    <p class="tenue piccolo" style="margin:0">${Dati.attivo && Dati.io.gestore ? '«Ricevi gli ordini» iscrive questo telefono: a ogni ordine nuovo suona. «Prova» controlla solo che il telefono le sappia mostrare.' : '«Prova» controlla solo che il telefono sappia mostrare le notifiche.'}</p></section>`;
 }
 /* notifiche vere degli ordini (C3): solo sul sito vero, dove c'è worker.js */
 const sulSito = () => Dati.attivo && location.origin === new URL(SITO).origin;
@@ -369,6 +371,7 @@ async function iscriviTelefono(tok) {
    in silenzio, si rimanda l'iscrizione di oggi (se il telefono l'ha cambiata, quella vecchia non vale più) */
 let rinnovato = false;
 async function rinnovaAvvisi() {
+  if (!rinnovato && P.avvisiCliente && !Dati.io.gestore && sulSito() && 'Notification' in window && Notification.permission === 'granted') { rinnovato = true; iscriviCliente().catch(() => { rinnovato = false; }); return; }
   if (rinnovato || !P.avvisiAttivi || !sulSito() || !('Notification' in window) || Notification.permission !== 'granted') return;
   rinnovato = true;
   try { const tok = await Dati.token(); if (tok) await iscriviTelefono(tok); } catch (e) { rinnovato = false; }
@@ -384,6 +387,30 @@ function inviaAgenda() {
   agendaMandata = j;
   Dati.token().then(tok => tok && fetch('/api/agenda', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: j }))
     .then(r => { if (!r || !r.ok) agendaMandata = ''; }).catch(() => { agendaMandata = ''; });
+}
+/* avviso «il tuo ordine è pronto» al cliente (C25, Mario 07/11 «sia da app se vuole sia WhatsApp, può scegliere») */
+async function iscriviCliente() {
+  const tok = await Dati.tokenCliente(); if (!tok) throw new Error('apri l\'app dal link di Monica');
+  const { chiave } = await (await fetch('/api/chiave')).json();
+  const reg = await navigator.serviceWorker.ready, b = Uint8Array.from(atob(chiave.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((chiave.length + 3) % 4)), c => c.charCodeAt(0));
+  const sub = await reg.pushManager.getSubscription() || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b });
+  const r = await fetch('/api/cliente', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ sub: sub.toJSON() }) });
+  if (!r.ok) throw new Error(((await r.json().catch(() => ({}))).errore) || 'iscrizione rifiutata');
+}
+async function attivaAvvisiCliente() {
+  UI.notProva = true; UI.notEsito = null; render();
+  try {
+    const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+    if (perm !== 'granted') throw new Error('permesso non dato: senza «Consenti» non arrivano');
+    await iscriviCliente();
+    P.avvisiCliente = true; salvaP();
+    UI.notEsito = { ok: true, t: 'Fatto! Quando il tuo ordine è pronto, ti arriva un avviso qui.' };
+  } catch (e) { UI.notEsito = { ok: false, t: 'Non attivato: ' + ((e && e.message) || 'errore sconosciuto') + '.' }; }
+  finally { UI.notProva = false; render(); }
+}
+function avvisaCliente(o) {
+  if (!sulSito() || !o.cliente) return;
+  Dati.token().then(tok => tok && fetch('/api/pronto', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ cliente: o.cliente }) })).catch(() => {});
 }
 async function attivaAvvisi() {
   UI.notProva = true; UI.notEsito = null; render();
@@ -1513,6 +1540,7 @@ const A = {
   'menu-immagine'() { mandaMenu(); },
   'notifica-prova'() { provaNotifica(); },
   'avvisi-attiva'() { attivaAvvisi(); },
+  'avvisi-cliente'() { attivaAvvisiCliente(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
   async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore(UI.invTipo) }); chiudiFoglio(); } catch (e) { /* annullato */ } },
   etichette() { apriEtichette(); },
@@ -1679,8 +1707,8 @@ const A = {
   rifiuta(el) { const o = ordine(el.dataset.id); cambia('Ordine rifiutato', () => { segna(o, 'rifiutato'); rimettiPronti(o); }); },
   'mod-si'(el) { const o = ordine(el.dataset.id); cambia('Modifica accettata', () => { o.righe = prezziGiusti(o.modifica.righe, daAccettare(o) ? [] : o.righe); o.modifica = null; o.esitoModifica = 'si'; }); },
   'mod-no'(el) { const o = ordine(el.dataset.id); cambia('Modifica rifiutata', () => { o.modifica = null; o.esitoModifica = 'no'; }); },
-  pronto(el) { const o = ordine(el.dataset.id); setTimeout(() => cambia('Segnato pronto', () => { segna(o, 'pronto'); }), 60); },
-  'pronto-muto'(el) { const o = ordine(el.dataset.id); cambia('Segnato pronto', () => { segna(o, 'pronto'); }); },
+  pronto(el) { const o = ordine(el.dataset.id); setTimeout(() => { cambia('Segnato pronto', () => { segna(o, 'pronto'); }); avvisaCliente(o); }, 60); },
+  'pronto-muto'(el) { const o = ordine(el.dataset.id); cambia('Segnato pronto', () => { segna(o, 'pronto'); }); avvisaCliente(o); },
   ritirato(el) { const o = ordine(el.dataset.id); cambia('Ritirato', () => { segna(o, 'ritirato'); }); },
   ricevuto(el) { const o = ordine(el.dataset.id); cambia('Soldi ricevuti', () => { o.paga.ricevuto = true; o.paga.dice = false; }); },
   'apri-pronti'() { UI.foglio = { tipo: 'pronti' }; render(); },
@@ -2102,6 +2130,7 @@ function avviaDati() {
     if (io.gestore && P.invitoGestore) { P.invitoGestore = false; salvaP(); }
     P.ruolo = io.gestore ? 'monica' : 'cliente';
     P.cliente = io.utente && io.utente.stato === 'approvato' ? io.utente.cliente : null;
+    if (P.cliente) rinnovaAvvisi();
     if (UI.vista === 'home' && P.ruolo === 'cliente') UI.vista = 'menu';
     /* mentre Monica scrive in un campo non si ridisegna: si aspetta che esca dal campo */
     if (staScrivendo()) { renderDopo = true; return; }
