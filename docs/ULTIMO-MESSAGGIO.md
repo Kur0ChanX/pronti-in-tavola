@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (07/11/2026 01:28 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 01:43 ora italiana)
 
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+Ma sei sicuro che non mi stai facendo fare tutta questa guerra e poi c'è già quello che dobbiamo fare, è già attivo, per quello fa così? Sei sicuro?
