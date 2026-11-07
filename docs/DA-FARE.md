@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 07/11 · 🟡 Principale 13 · Guarda nell'anteprima le etichette «Stampantina (rotolo)» e «Fogli A4» (Ordini → Da preparare) e scrivi «ok» o cosa non va
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
