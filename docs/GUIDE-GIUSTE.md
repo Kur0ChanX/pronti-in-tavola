@@ -3,6 +3,28 @@
 Ogni volta che vedo che una guida data a Mario era sbagliata (pulsante o voce che non c'è, ordine diverso), scrivo qui subito la versione giusta, come l'ha vista lui. Prima di dare di nuovo una guida allo stesso servizio, leggo qui: vale più della guida ufficiale.
 Una voce per passo: servizio · data · cosa avevo scritto · cosa c'è davvero (nomi esatti dei pulsanti) · da dove l'ho saputo (foto o parole di Mario).
 
+## Indice delle pagine (leggere prima questo, poi solo la riga che serve con `grep -n`)
+Una riga per pagina: servizio · pagina · come ci si arriva · vista il (✅ con foto o parole di Mario, ❔ da confermare). Pagina nuova vista da Mario → una riga qui + il dettaglio sotto, mai due volte la stessa pagina; se cambia, si corregge la riga.
+- Firebase · Crea progetto · console.firebase.google.com → Crea un progetto · ✅ 05/11
+- Firebase · Registra app web · sotto il nome del progetto **+ Aggiungi app** → Web · ✅ 05/11
+- Firebase · Crea un database (4 passi) · Firestore → Crea database · ✅ 05/11 foto
+- Firebase · Database (default): Dati, Regole, Indici · `…/project/pronti-in-tavola/firestore` · ✅ 05/11 foto
+- Firebase · Authentication: Utenti, Metodo di accesso, Impostazioni · `…/project/pronti-in-tavola/authentication` · ✅ 05/11 foto
+- Firebase · Authentication → Impostazioni → Domini autorizzati · `…/authentication/settings` · ❔ (guida 07/11)
+- Firebase · Firestore → Dati → + Avvia raccolta (gestori) · ❔ (guida 07/11)
+- Cloudflare · menù dell'account, Compute, Workers e Pages, Crea applicazione, Pages · ✅ 06/11 foto `archivio/foto/cloudflare-1…5`
+- Cloudflare · Connetti GitHub (NON funziona per questo conto, vedi sotto) · ✅ 06-07/11 foto 6-7
+- Cloudflare · Carica e distribuisci, Sito pubblicato, Impostazioni → Compilazioni → Crea token · ✅ 07/11 foto 8-10
+- GitHub · Settings → Secrets and variables → Actions (segreti del sito) · ✅ 07/11 parole di Mario «fatto»
+
+## Guide pronte (da provare: dopo, ogni passo visto va nell'indice come ✅)
+### Firebase passo 5 · entrare con Google e diventare gestori (07/11, ~20 minuti)
+1. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/settings → scheda **Impostazioni** → **Domini autorizzati** → **Aggiungi dominio** → incolla `pronti-in-tavola.pronti-in-tavola.workers.dev` → **Aggiungi**. Foto.
+2. Apri https://pronti-in-tavola.pronti-in-tavola.workers.dev → in fondo **Sei Monica? Entra** → scegli il tuo account Google.
+3. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/users → nella riga con la tua email copia l'**UID utente** (lettere e numeri).
+4. Apri https://console.firebase.google.com/project/pronti-in-tavola/firestore → scheda **Dati** → **+ Avvia raccolta** → ID raccolta `gestori` → **Avanti** → ID documento: incolla l'UID → campo `nome`, tipo `string`, valore `Mario` → **Salva**.
+5. Monica fa il passo 2 sul suo telefono; tu rifai 3 e 4 con il suo UID e valore `Monica`.
+
 ## Firebase (console in italiano, aperta dal telefono di Mario, tema scuro)
 - **Creare il progetto** (05/11/2026, foto di Mario): finestra **Creare un progetto**. In fondo c'è l'interruttore **Abilita Gemini in Firebase** («Azione consigliata»), già acceso: va spento. Pulsanti **Continua** e **Indietro**. A fine corsa la Panoramica mostra il nome e **Piano Spark** (il gratis).
 - **Registrare l'app web** (05/11/2026): avevo scritto «icona **Web** `</>` al centro della Panoramica». **Sbagliato.** Giusto: sotto il nome del progetto, in alto a sinistra, **+ Aggiungi app**, poi la piattaforma **Web** (`</>`). Si apre **Registra app**: campo **Nickname app**, casella «Inoltre, configura **Firebase Hosting** per questa app» (lasciare vuota), pulsante **Registra app**; il passo 2 si chiama **Aggiungi SDK Firebase** e mostra `firebaseConfig`.
