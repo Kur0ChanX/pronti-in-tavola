@@ -5,6 +5,8 @@ Una voce per passo: servizio · data · cosa avevo scritto · cosa c'è davvero 
 
 ## Indice delle pagine (leggere prima questo, poi solo la riga che serve con `grep -n`)
 Una riga per pagina: servizio · pagina · come ci si arriva · vista il (✅ con foto o parole di Mario, ❔ da confermare). Pagina nuova vista da Mario → una riga qui + il dettaglio sotto, mai due volte la stessa pagina; se cambia, si corregge la riga.
+- Chrome Android · menu ⋮ (tre puntini in alto a destra): in fondo **Installa e crea scorciatoia** (non «Aggiungi a schermata Home») · foto `archivio/foto/chrome-android-menu-07-11.jpg` · ✅ 07/11 foto
+- Safari iPhone (iOS 26) · ⋯ o **aA** accanto all'indirizzo → **Condividi** → **Aggiungi alla schermata Home** → **Aggiungi** · dalla guida Apple, nomi italiani da confermare con una foto · ❔
 - Firebase · Crea progetto · console.firebase.google.com → Crea un progetto · ✅ 05/11
 - Firebase · Registra app web · sotto il nome del progetto **+ Aggiungi app** → Web · ✅ 05/11
 - Firebase · Crea un database (4 passi) · Firestore → Crea database · ✅ 05/11 foto
