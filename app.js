@@ -850,6 +850,7 @@ function cartaOrdineCliente(o) {
   const az = [];
   if (['nuovo', 'accettato'].includes(o.stato) && !o.pronto && !o.modifica) az.push(`<button type="button" class="btn chiaro" data-a="modifica" data-id="${o.id}">${ico('matita')}Cambia l'ordine</button>`);
   if (o.stato === 'pronto') az.push(`<a class="btn" href="${mapsLink()}" target="_blank" rel="noopener">${ico('ritiro')}Come arrivare</a>`);
+  if (o.stato === 'pronto' || (o.stato === 'accettato' && o.entro === oggi())) h += sonoQui(o);
   if (o.stato === 'ritirato' || chiuso) az.push(`<button type="button" class="btn chiaro" data-a="riordina" data-id="${o.id}">Ordina di nuovo</button>`);
   if (az.length) h += `<div class="fila larga">${az.join('')}</div>`;
   if (o.stato === 'nuovo' && !o.modifica) h += `<button type="button" class="link" data-a="annulla-ordine" data-id="${o.id}">Annulla l'ordine</button>`;
@@ -873,6 +874,13 @@ function vOrdiniCliente() {
     if (passati.length > (UI.ordQuanti || 40)) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri</button>`;
   }
   return h + cartaNotifica() + '</main>';
+}
+/* «Sono qui» (Mario 07/11, idea presa dal ritiro in auto): il cliente sotto casa avvisa Monica con un tocco */
+function sonoQui(o) {
+  const t = (UI.qui || {})[o.id], fatto = t && Date.now() - t < 60000;
+  if (UI.quiEsito && UI.quiEsito.id === o.id && UI.quiEsito.senza) return `<div class="avviso">${ico('occhio')}<div><b>Monica non ha le notifiche accese.</b> Scrivile tu:
+    <a class="btn piccolo" style="margin-top:8px" href="${wa(S.impostazioni.whatsapp, `Ciao Monica, sono qui sotto per il ritiro (ordine n. ${o.n}).`)}" target="_blank" rel="noopener">Scrivi su WhatsApp</a></div></div>`;
+  return `<button type="button" class="btn verde pieno grande sono-qui" data-a="sono-qui" data-id="${o.id}" ${fatto || UI.quiInvio ? 'disabled' : ''}>${ico('ritiro')}${UI.quiInvio === o.id ? 'Un attimo…' : fatto ? 'Monica sa che sei qui ✓' : 'Sono qui sotto: avvisa Monica'}</button>`;
 }
 function rigaCliente(o) {
   if (UI.ordAperto === o.id) return `<div class="ord-aperto">${cartaOrdineCliente(o)}<button type="button" class="link" data-a="ord-apri" data-id="${o.id}">Chiudi</button></div>`;
@@ -2303,6 +2311,25 @@ document.addEventListener('visibilitychange', () => {
   L.via = 0; provaApri();
 });
 Object.assign(A, {
+  async 'sono-qui'(el) {
+    const o = S.ordini.find(x => x.id === el.dataset.id);
+    if (!o || UI.quiInvio) return;
+    if (!sulSito()) { mostraToast('Qui è l\'anteprima: l\'avviso a Monica parte solo dall\'app vera.'); return; }
+    UI.quiInvio = o.id; UI.quiEsito = null; render();
+    try {
+      const tok = await Dati.token();
+      const r = await fetch('/api/qui', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' },
+        body: JSON.stringify({ n: o.n, nome: nomeCliente() || '', prova: diProva(o) }) });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.errore || 'errore');
+      UI.qui = { ...(UI.qui || {}), [o.id]: Date.now() };
+      if (d.fermo === 'pausa') mostraToast('Monica è già avvisata: aspetta un minuto prima di riavvisarla.');
+      else if (!d.mandati) UI.quiEsito = { id: o.id, senza: true };
+      else mostraToast('Fatto ✓ A Monica è suonato l\'avviso: arriva!');
+      setTimeout(render, 61000);
+    } catch (e) { mostraToast('Non è partito (manca la rete?). Riprova, o scrivi a Monica su WhatsApp.'); }
+    UI.quiInvio = null; render();
+  },
   'lucchetto-apri'() { L.tentato = true; apriLucchetto(); },
   async 'lucchetto-metti'() {
     if (L.inCorso) return;
@@ -2407,6 +2434,12 @@ function vaiDaNotifica() {
   if (!t) return;
   setTimeout(() => { UI.avvisoTesto = ''; const n = $('.notifica'); if (n) n.remove(); }, 9000);
   UI.foglio = null; UI.modifica = null; UI.inCima = true;
+  if (P.ruolo === 'monica' && /^qui(_\d+)?$/.test(t)) {   // «sono qui»: si apre l'ordine di chi aspetta sotto casa
+    const o = S.ordini.find(x => x.n === Number(t.slice(4)));
+    UI.vista = 'ordini'; UI.tab = o && o.entro > oggi() ? 'prossimi' : 'oggi'; UI.ordAperto = o ? o.id : null;
+    UI.avvisoTesto = o ? `${nomeBreve((cliente(o.cliente) || {}).nome || 'Il cliente')} è qui sotto: ordine n. ${o.n} aperto qui sotto.` : 'Un cliente è qui sotto per il ritiro.';
+    return;
+  }
   if (P.ruolo === 'monica') {
     if (t === 'promemoria') { UI.vista = 'ordini'; UI.tab = 'prossimi'; UI.ordAperto = null; UI.avvisoTesto = 'Ecco gli ordini dei prossimi giorni: in cima quelli di domani.'; return; }
     if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }   // il riquadro delle persone nuove si apre da solo

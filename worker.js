@@ -7,6 +7,7 @@
    - POST /api/agenda   → chi gestisce manda quanti ordini ha per ogni giorno (solo numeri, niente nomi)
    - POST /api/cliente  → il cliente approvato iscrive il suo telefono per «il tuo ordine è pronto» (token anonimo, controllo utenti/<uid>)
    - POST /api/pronto   → chi gestisce avvisa un cliente: { cliente, tipo: 'pronto' | 'proposta' }
+   - POST /api/qui      → il cliente approvato dice «sono qui sotto» per il ritiro: a chi gestisce suona «<nome> è qui» (Mario 07/11)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -16,7 +17,7 @@ import { DurableObject } from 'cloudflare:workers';
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
 const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
-const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
+const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
 const PAUSA_MS = 15 * 1000;     // e non più di uno ogni 15 secondi
 
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -73,9 +74,9 @@ export class Avvisi extends DurableObject {
     return true;
   }
 
-  async manda(soloUid, per, perCliente) {
+  async manda(soloUid, per, perCliente, extra) {
     const chiave = perCliente ? 'clienti' : 'iscritti';
-    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { tipo: TIPI_GESTORE.includes(per) ? per : 'ordine', quando: Date.now() });
+    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) ? per : 'ordine', quando: Date.now() });
     const tutti = (await this.ctx.storage.get(chiave)) || [];
     const dest = perCliente ? tutti.filter(x => x.cliente === perCliente) : tutti.filter(x => !soloUid || x.uid === soloUid);
     if (perCliente) {   // il testo «è pronto» vale solo per i telefoni di quel cliente
@@ -134,6 +135,17 @@ export class Avvisi extends DurableObject {
     return this.manda(null, 'promemoria');
   }
 
+  /* «sono qui» (Mario 07/11): solo clienti approvati, uno ogni minuto per cliente, nome e numero d'ordine puliti */
+  async qui(cliente, b) {
+    const arr = (await this.ctx.storage.get('arrivi')) || {};
+    if (arr[cliente] && Date.now() - arr[cliente] < 60000) return { fermo: 'pausa' };
+    arr[cliente] = Date.now();
+    await this.ctx.storage.put('arrivi', Object.fromEntries(Object.entries(arr).sort((x, y) => y[1] - x[1]).slice(0, 100)));
+    const nome = String((b && b.nome) || 'Un cliente').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 40) || 'Un cliente';
+    const n = Number.isInteger(b && b.n) && b.n > 0 && b.n < 1e6 ? b.n : 0;
+    return this.manda(null, 'qui', null, { nome, n, prova: !!(b && b.prova) });
+  }
+
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
   async avvisa(tipo) {
     const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('conto')) || {};
@@ -160,6 +172,11 @@ export default {
         if (!c) return json({ errore: 'prima Monica deve approvarti' }, 403);
         const b = await req.json().catch(() => null);
         return (await av.iscriviCliente(c, b && b.sub)) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
+      }
+      if (url.pathname === '/api/qui') {
+        const c = await clienteDa(req);
+        if (!c) return json({ errore: 'prima Monica deve approvarti' }, 403);
+        return json(await av.qui(c, await req.json().catch(() => null)));
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
