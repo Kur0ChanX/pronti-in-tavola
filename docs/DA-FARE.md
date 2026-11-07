@@ -5,6 +5,7 @@
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
 - 07/11 · 🟡 Principale 18 · Invito a Monica mandato (Mario 07/11). Quando lei entra col suo Gmail, a te arriva la richiesta: tocca «Sì, è lei» e mandami la foto.
 - 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
+- 07/11 · 🟡 Principale 18 · Ordine di prova scelto dal cliente prima di inviare: strada 1 (sempre), 2 (solo prima dell'ok di Monica, consiglio) o 3 (link di prova)? Serve ripubblicare le regole Firebase.
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
