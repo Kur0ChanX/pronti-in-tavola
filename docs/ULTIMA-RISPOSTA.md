@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (07/11/2026 01:13 ora italiana)
+# Ultima risposta di Claude (07/11/2026 08:53 ora italiana)
 
-Titolo giallo. Aspetto la tua risposta.
+Promessa registrata in C20.
