@@ -2200,7 +2200,7 @@ function apertura() {
 const L = { aperto: false, puo: undefined, inCorso: false, tentato: false, errore: '', fallito: false, via: 0, esci: false };
 const FRESCA = 5 * 60000;                          /* entrata con Google da meno di 5 minuti */
 const MINUTI_LUCCHETTO = [1, 2, 5, 8, 10, 15, 30, 60];   /* «si richiude se esci dall'app per…» */
-/* tre tempi (Mario 07/11, C46): «mario» lo cambia solo Mario, «monica» solo Monica, «ospiti» (gli altri di «Chi gestisce») Mario o Monica.
+/* tre tempi (Mario 07/11, C46): «mario» lo cambia solo Mario, «monica» Monica e Mario (08/11), «ospiti» (gli altri di «Chi gestisce») Mario o Monica.
    Prima era un numero solo: vale per tutti e tre finché qualcuno non ne cambia uno. */
 function chiLucchetto() {
   const n = ((Dati.attivo && Dati.io.nomeGestore) || '').trim().toLowerCase();
@@ -2264,7 +2264,11 @@ function vSicurezza() {
     : `<span class="etichetta" style="font-weight:800">Si richiude se esci dall'app per</span>
       <div class="fila">${passo('i-lucchetto', m, `data-chi="${chi}"`)}<span class="tenue">${min(m)}</span></div>
       <small class="tenue">Vale solo per te: ${chi === 'mario' ? 'Monica ha il suo tempo' : 'Mario ha il suo tempo'}.</small>`;
-  const ospiti = chi === 'ospiti' ? '' : `<div class="lucchetto-ospiti"><span class="etichetta" style="font-weight:800">Per gli ospiti</span>
+  const mm = minutiLucchetto('monica');
+  const monica = chi !== 'mario' ? '' : `<div class="lucchetto-ospiti"><span class="etichetta" style="font-weight:800">Per Monica</span>
+      <small class="tenue">Lo può cambiare anche lei dal suo telefono.</small>
+      <div class="fila">${passo('i-lucchetto', mm, 'data-chi="monica"')}<span class="tenue">${min(mm)}</span></div></div>`;
+  const ospiti = chi === 'ospiti' ? '' : `${monica}<div class="lucchetto-ospiti"><span class="etichetta" style="font-weight:800">Per gli ospiti</span>
       <small class="tenue">Le altre persone in «Chi gestisce la cucina». Lo cambiate tu e ${chi === 'mario' ? 'Monica' : 'Mario'}.</small>
       <div class="fila">${passo('i-lucchetto', mo, 'data-chi="ospiti"')}<span class="tenue">${min(mo)}</span></div></div>`;
   return `<section class="scheda"><h2>Lucchetto</h2>
@@ -2320,7 +2324,7 @@ Object.assign(A, {
   },
   'i-lucchetto'(el) {
     const io = chiLucchetto(), chi = el.dataset.chi || io;
-    if (io === 'ospiti' || (chi !== io && chi !== 'ospiti')) return;   // ognuno il suo; gli ospiti li cambiano Mario e Monica
+    if (io === 'ospiti' || (chi !== io && chi !== 'ospiti' && !(io === 'mario' && chi === 'monica'))) return;   // ognuno il suo; Mario anche quello di Monica (Mario 08/11); gli ospiti Mario e Monica
     const i = MINUTI_LUCCHETTO.indexOf(minutiLucchetto(chi)) + Number(el.dataset.d);
     cambia('', () => { S.impostazioni.lucchetto = { ...tempiLucchetto(), [chi]: MINUTI_LUCCHETTO[Math.min(MINUTI_LUCCHETTO.length - 1, Math.max(0, i))] }; }, false); salvatoOk();
   },
