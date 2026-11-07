@@ -1,7 +1,6 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 13 · Etichette (C7): quale stampante per Monica? 1 · stampantina termica Niimbot B1 (consiglio) · 2 · fogli adesivi A4 con una stampante di casa · 3 · tutte e due
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|

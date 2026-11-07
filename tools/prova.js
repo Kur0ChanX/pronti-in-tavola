@@ -89,6 +89,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const gr = await page.evaluate(() => { const ee = etichetteDi(UI.foglio.giorno), k = ee.map(e => [e.nome, e.variante, e.qta, e.note].join('|'));
       return { nome: ee.some(e => e.chi || e.pezzo), sparse: k.some((v, i) => k.indexOf(v) < i - 1 && k[i - 1] !== v), conti: UI.foglio.conti.reduce((t, c) => t + c[1], 0) === ee.length }; });
     if (gr.nome || gr.sparse || !gr.conti) throw new Error('etichette per prodotto: ' + JSON.stringify(gr));
+    await clic('.foglio [data-a="eti-modo"][data-v="rotolo"]'); await page.locator('.foglio img[alt^="Etichetta:"]').first().waitFor({ timeout: 5000 });
+    const rt = await page.evaluate(() => ({ n: UI.foglio.termiche.length, conti: UI.foglio.conti.length, copie: UI.foglio.termiche.reduce((t, x) => t + x.n, 0), tutte: UI.foglio.quante,
+}));
+    if (!rt.n || rt.n !== rt.conti || rt.copie !== rt.tutte) throw new Error('etichette stampantina: ' + JSON.stringify(rt));
+    await page.waitForTimeout(300); await foto('09c-etichette-rotolo');
+    await clic('.foglio [data-a="eti-modo"][data-v="a4"]'); await page.locator('.foglio img[alt^="Foglio 1"]').waitFor({ timeout: 5000 });
     if (x.giorni > 1) { await clic('.foglio [data-a="eti-giorno"] >> nth=1'); await page.locator('.foglio [data-a="eti-giorno"][aria-pressed="true"] >> nth=0').waitFor(); }
     const sovr = await page.evaluate(() => { const L = 'Forno a 180 °C per 20-25 minuti, coperte con la stagnola, poi lasciare riposare.';
       disegnaEtichette([{ chi: 'Maria Giovanna Piras Sanna', nome: 'Parmigiana di melanzane alla sarda', variante: 'Con sugo', qta: '1 teglia da 8', note: 'Ben gratinata, poco sale, niente basilico', all: ['glutine', 'latte', 'uova', 'sedano', 'frutta a guscio', 'senape', 'soia'], scalda: L, pezzo: 'Vaschetta 2 di 4' },

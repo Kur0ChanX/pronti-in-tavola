@@ -1115,33 +1115,66 @@ function disegnaEtichette(ee) {
   }
   return pagine;
 }
-async function apriEtichette(giorno) {
+function disegnaTermiche(ee) {   // stampantina termica: 50 × 30 mm, bianco e nero, UNA per prodotto (le copie le sceglie Monica nella sua app)
+  const W = 800, H = 480, M = 22, FONT = '"Nunito Sans", system-ui, sans-serif', SERIF = 'Fraunces, Georgia, serif', out = [];
+  const testo = x => [x.nome, x.variante, x.qta, x.note].filter(Boolean).join(' · ');
+  riassuntoEti(ee).forEach(([t, n]) => {
+    const e = ee.find(x => testo(x) === t);
+    const c = document.createElement('canvas'), g = c.getContext('2d'); c.width = W; c.height = H;
+    g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.fillStyle = '#000'; g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+    const righe = (t, f, max) => { g.font = f; const r = []; let cur = ''; String(t).split(' ').forEach(w => { const x = cur ? cur + ' ' + w : w; if (g.measureText(x).width > W - 2 * M && cur) { r.push(cur); cur = w; } else cur = x; }); r.push(cur);
+      if (r.length > max) { r.length = max; while (g.measureText(r[max - 1] + '…').width > W - 2 * M && r[max - 1].length > 2) r[max - 1] = r[max - 1].slice(0, -1); r[max - 1] += '…'; } return r; };
+    const blocchi = sc => [
+      { r: righe(e.nome, `700 ${76 * sc}px ${SERIF}`, 2), f: `700 ${76 * sc}px ${SERIF}`, h: 80 * sc },
+      { r: righe([e.variante, e.qta].filter(Boolean).join(' · '), `700 ${44 * sc}px ${FONT}`, 1), f: `700 ${44 * sc}px ${FONT}`, h: 50 * sc },
+      e.note ? { r: righe('» ' + e.note, `900 ${42 * sc}px ${FONT}`, 2), f: `900 ${42 * sc}px ${FONT}`, h: 48 * sc } : null,
+      e.all.length ? { r: righe('Contiene: ' + e.all.join(', '), `900 ${38 * sc}px ${FONT}`, 2), f: `900 ${38 * sc}px ${FONT}`, h: 44 * sc } : null,
+      e.scalda ? { r: righe('Scalda: ' + e.scalda, `italic 700 ${32 * sc}px ${FONT}`, 2), f: `italic 700 ${32 * sc}px ${FONT}`, h: 37 * sc } : null
+    ].filter(b => b && b.r[0]);
+    let sc = 1, bb = blocchi(sc); const alt = b => b.reduce((t, x) => t + x.r.length * x.h, 0) + (b.length - 1) * 8;
+    while (alt(bb) > H - 2 * M - 40 && sc > .55) { sc -= .05; bb = blocchi(sc); }
+    let y = M;
+    bb.forEach(b => { g.font = b.f; b.r.forEach(t => { y += b.h; g.fillText(t, M, y - b.h * .22); }); y += 8; });
+    g.font = `700 30px Caveat, cursive`; g.textAlign = 'right'; g.fillText('Pronti in Tavola · Buon appetito ♥', W - M, H - M);
+    out.push({ n, testo: t, url: c.toDataURL('image/png') });
+  });
+  return out;
+}
+async function apriEtichette(giorno, scelto) {
   const giorni = [...new Set(ordiniDaCucinare().map(o => o.entro))].sort();
   if (!giorni.length) return;
   if (!giorni.includes(giorno)) giorno = giorni[0];
   const ee = etichetteDi(giorno); await caricaLogoEti();
-  UI.foglio = { tipo: 'etichette', giorni, giorno, quante: ee.length, conti: riassuntoEti(ee), url: disegnaEtichette(ee).map(c => c.toDataURL('image/png')) };
+  let modo = scelto || 'a4'; if (!scelto) try { modo = localStorage.getItem('pit-eti-modo') || 'a4'; } catch (e) { /* senza memoria: A4 */ }
+  UI.foglio = { tipo: 'etichette', giorni, giorno, modo, quante: ee.length, conti: riassuntoEti(ee),
+    url: modo === 'a4' ? disegnaEtichette(ee).map(c => c.toDataURL('image/png')) : [], termiche: modo === 'rotolo' ? disegnaTermiche(ee) : [] };
   render();
 }
 async function mandaEtichette() {
-  const ff = await Promise.all(UI.foglio.url.map(async (u, i) => new File([await (await fetch(u)).blob()], `etichette-${UI.foglio.giorno}-${i + 1}.png`, { type: 'image/png' })));
+  const f = UI.foglio, lista = f.modo === 'rotolo' ? f.termiche.map(t => ({ u: t.url, n: `${t.n}-copie-${t.testo.slice(0, 30).replace(/[^\w]+/g, '-')}.png` })) : f.url.map((u, i) => ({ u, n: `etichette-${f.giorno}-${i + 1}.png` }));
+  const ff = await Promise.all(lista.map(async x => new File([await (await fetch(x.u)).blob()], x.n, { type: 'image/png' })));
   try { if (navigator.canShare && navigator.canShare({ files: ff })) await navigator.share({ files: ff }); } catch (e) { /* annullato */ }
 }
 function foglioEtichette() {
-  const f = UI.foglio, fogli = f.url.length;
+  const f = UI.foglio, fogli = f.url.length, rotolo = f.modo === 'rotolo';
   return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Etichette per le vaschette</h1>
     ${f.giorni.length > 1 ? `<div class="fila" style="flex-wrap:wrap;gap:8px">${f.giorni.map(g => `<button type="button" class="chip" data-a="eti-giorno" data-v="${g}" aria-pressed="${g === f.giorno}">${maiuscola(giornoLungo(g))}</button>`).join('')}</div>` : `<p style="margin:0"><b>${maiuscola(giornoLungo(f.giorno))}</b></p>`}
-    <p class="tenue" style="margin:0">${f.quante} ${f.quante === 1 ? 'etichetta' : 'etichette'}, ${fogli} ${fogli === 1 ? 'foglio' : 'fogli'} A4. Le etichette uguali sono vicine, una per vaschetta, senza nome: vanno bene per chiunque. Stampa su fogli adesivi da 10 (105 × 57 mm) oppure su carta normale e ritaglia lungo le righe. Tieni premuto su un foglio per salvarlo o condividerlo.</p>
-    <ul style="margin:0;padding-left:20px">${(f.conti || []).map(([t, n]) => `<li><b>${n}</b> × ${esc(t)}</li>`).join('')}</ul>
-    ${f.url.map((u, i) => `<img src="${u}" alt="Foglio ${i + 1} delle etichette" style="width:100%;border-radius:8px;border:1px solid var(--riga);background:#fff">`).join('')}</div>
+    <span class="etichetta" style="font-weight:800">Come stampi?</span>
+    <div class="scelte"><button type="button" class="chip" data-a="eti-modo" data-v="rotolo" aria-pressed="${rotolo}">Stampantina (rotolo)</button><button type="button" class="chip" data-a="eti-modo" data-v="a4" aria-pressed="${!rotolo}">Fogli A4</button></div>
+    ${rotolo ? `<p class="tenue" style="margin:0">Una etichetta per piatto, in bianco e nero, 50 × 30 mm. Condividila con l'app della stampantina e scegli quante copie: il numero è scritto sotto.</p>
+      ${f.termiche.map(t => `<div style="display:grid;gap:6px"><img src="${t.url}" alt="Etichetta: ${esc(t.testo)}" style="width:100%;max-width:400px;border-radius:6px;border:1px solid var(--riga);background:#fff"><p style="margin:0"><b>Stampa ${t.n} ${t.n === 1 ? 'copia' : 'copie'}</b> · ${esc(t.testo)}</p></div>`).join('')}`
+    : `<p class="tenue" style="margin:0">${f.quante} ${f.quante === 1 ? 'etichetta' : 'etichette'}, ${fogli} ${fogli === 1 ? 'foglio' : 'fogli'} A4. Le etichette uguali sono vicine, una per vaschetta, senza nome: vanno bene per chiunque. Stampa su fogli adesivi da 10 (105 × 57 mm) oppure su carta normale e ritaglia lungo le righe. Tieni premuto su un foglio per salvarlo o condividerlo.</p>
+      <ul style="margin:0;padding-left:20px">${(f.conti || []).map(([t, n]) => `<li><b>${n}</b> × ${esc(t)}</li>`).join('')}</ul>
+      ${f.url.map((u, i) => `<img src="${u}" alt="Foglio ${i + 1} delle etichette" style="width:100%;border-radius:8px;border:1px solid var(--riga);background:#fff">`).join('')}`}</div>
     ${Dati.attivo && navigator.canShare ? `<div class="piede"><button type="button" class="btn pieno" data-a="eti-manda">Condividi per stampare</button></div>` : ''}`;
 }
 
 const A = {
   'menu-immagine'() { mandaMenu(); },
   etichette() { apriEtichette(); },
-  'eti-giorno'(el) { apriEtichette(el.dataset.v); },
+  'eti-giorno'(el) { apriEtichette(el.dataset.v, UI.foglio.modo); },
   'eti-manda'() { mandaEtichette(); },
+  'eti-modo'(el) { try { localStorage.setItem('pit-eti-modo', el.dataset.v); } catch (e) { /* resta per questa volta */ } apriEtichette(UI.foglio.giorno, el.dataset.v); },
   annulla() { if (fnAnnulla) { const f = fnAnnulla; fnAnnulla = null; $('#toast').innerHTML = ''; f(); } },
   async 'nome-ok'() {
     const i = $('#nome-nuovo'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
