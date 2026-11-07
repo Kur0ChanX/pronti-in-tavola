@@ -1354,37 +1354,51 @@ function foglioTuttiProva() {
     <p class="tenue piccolo" style="margin:0">Se sbagli, subito dopo puoi toccare «Annulla».</p></div>
     <div class="piede"><button type="button" class="btn pieno" data-a="tutti-prova-si">Sì, segnali come PROVA</button><button type="button" class="btn chiaro pieno" data-a="chiudi">No, lascia così</button></div>`;
 }
+/* Impostazioni a voci (Mario 07/11, «va bene consiglio»): come la scheda del piatto, si vedono solo i titoli
+   col riassunto; un tocco apre solo quella parte. Nessuna funzione tolta. */
+function listaSez(parti) {
+  return `<div class="sez-lista">${parti.map(([k, t, r, x]) =>
+    `<details class="sez" data-sez="${k}"${UI.sez === k ? ' open' : ''}><summary><span><b>${t}</b><small>${esc(r)}</small></span>${ico('indietro')}</summary>${x}</details>`).join('')}</div>`;
+}
 function vImpostazioni() {
   const i = S.impostazioni;
   const sw = (campo, val, t, s) => `<label class="interr"><span>${t}${s ? `<small>${s}</small>` : ''}</span><input type="checkbox" data-campo="${campo}" ${val ? 'checked' : ''}></label>`;
+  const data = g => g ? F_BREVE.format(daIso(g)) : '';
+  const pagamenti = [i.paga.contanti && 'contanti', i.paga.bonifico && 'bonifico', i.paga.postepay && 'Postepay'].filter(Boolean).join(', ').replace(/^./, c => c.toUpperCase()) || 'Nessuno scelto';
+  const tue = [
+    ['imp-pausa', 'Pausa', i.pausa.attiva ? `In pausa${i.pausa.fino ? ' fino al ' + data(i.pausa.fino) : ''}` : 'Non sei in pausa', `<section class="scheda sez-dentro">${sw('i.pausa.attiva', i.pausa.attiva, 'Sono in pausa', 'I clienti ordinano solo per dopo')}
+      ${i.pausa.attiva ? `<label for="pausa-fino" style="font-weight:800">Fino a (compreso)</label><input type="date" id="pausa-fino" data-campo="i.pausa.fino" value="${i.pausa.fino}">` : ''}</section>`],
+    ['imp-pronti', 'Pronti subito', `Ritiro entro le ${i.prontiFino}`, `<section class="scheda sez-dentro"><label for="pronti-fino" style="font-weight:800">Ritiro entro le</label><input type="time" id="pronti-fino" data-campo="i.prontiFino" value="${esc(i.prontiFino)}"></section>`],
+    ['imp-ritiro', 'Dove ritirano', i.ritiro.via ? [i.ritiro.via, i.ritiro.citta].filter(Boolean).join(', ') : 'Da scrivere', `<section class="scheda sez-dentro"><p class="tenue piccolo" style="margin:0">L'indirizzo di casa tua: lo vedono solo i clienti che hai accettato, con il pulsante della mappa.</p><label for="rit-via" style="font-weight:800">Via e numero</label><input type="text" id="rit-via" data-campo="i.ritiro.via" value="${esc(i.ritiro.via)}" placeholder="es. Via Roma 12" autocomplete="street-address"><label for="rit-citta" style="font-weight:800">Città</label><input type="text" id="rit-citta" data-campo="i.ritiro.citta" value="${esc(i.ritiro.citta)}" placeholder="es. Olbia">
+      <label for="rit-nota" style="font-weight:800">Come trovarti</label><input type="text" id="rit-nota" data-campo="i.ritiro.nota" value="${esc(i.ritiro.nota)}" placeholder="es. citofono Rossi, 2° piano, portone verde"></section>`],
+    ['imp-numeri', 'Numeri', i.whatsapp ? `WhatsApp ${i.whatsapp}` : 'Da scrivere', `<section class="scheda sez-dentro"><label for="n-wa" style="font-weight:800">WhatsApp di ${esc(cuoca())}<small class="tenue" style="display:block;font-weight:400">I clienti scrivono qui per gli ordini</small></label><input type="tel" id="n-wa" data-campo="i.whatsapp" value="${esc(i.whatsapp)}" placeholder="es. 333 123 4567">
+      <label for="n-mario" style="font-weight:800">Numero di Mario<small class="tenue" style="display:block;font-weight:400">Per «Chiedi a Mario»: chi ha un problema con l'app scrive a lui</small></label><input type="tel" id="n-mario" data-campo="i.mario" value="${esc(i.mario)}" placeholder="es. 333 123 4567"></section>`],
+    ['imp-paga', 'Pagamenti', pagamenti, `<section class="scheda sez-dentro">${sw('i.paga.contanti', i.paga.contanti, 'Contanti al ritiro')}${sw('i.paga.bonifico', i.paga.bonifico, 'Bonifico istantaneo')}
+      ${i.paga.bonifico ? `<input type="text" data-campo="i.paga.iban" value="${esc(i.paga.iban)}" placeholder="IBAN, es. IT60 X054 2811 1010 0000 0123 456" aria-label="IBAN"><input type="text" data-campo="i.paga.intestataria" value="${esc(i.paga.intestataria)}" placeholder="Intestato a" aria-label="Intestato a">` : ''}
+      ${sw('i.paga.postepay', i.paga.postepay, 'Postepay a Postepay')}${i.paga.postepay ? `<input type="tel" data-campo="i.paga.telefonoPostepay" value="${esc(i.paga.telefonoPostepay)}" placeholder="Numero collegato alla Postepay" aria-label="Numero Postepay">` : ''}</section>`],
+    ['imp-vista', 'Testo grande e guida', P.grande ? 'Testo grande acceso' : 'Testo normale', `<section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
+      <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>`]
+  ];
+  if (Dati.attivo) tue.push(['imp-gestori', 'Chi gestisce la cucina', 'Persone che entrano come te', chiGestisce()]);
+  tue.push(['imp-notifiche', 'Notifiche', 'Avvisi degli ordini su questo telefono', cartaNotifica()]);
+  if (Dati.attivo) tue.push(['imp-lucchetto', 'Lucchetto', 'Impronta o PIN per aprire la tua parte', vSicurezza()]);
+  const rare = [
+    ['imp-anticipo', 'Giorni di anticipo', i.anticipo === 0 ? 'Anche per oggi' : `${i.anticipo} ${i.anticipo === 1 ? 'giorno' : 'giorni'} prima`, `<section class="scheda sez-dentro"><p class="tenue" style="margin:0">Quanti giorni prima devono ordinare.</p>
+      <div class="fila">${passo('i-anticipo', i.anticipo)}<span class="tenue">${i.anticipo === 0 ? 'anche per oggi' : i.anticipo === 1 ? 'giorno' : 'giorni'}</span></div></section>`],
+    ['imp-limite', 'Limite della settimana', i.limite.attivo ? `${i.limite.teglie} teglie e torte` : 'Nessun limite', `<section class="scheda sez-dentro">${sw('i.limite.attivo', i.limite.attivo, 'Metti un limite', 'Arrivata al limite, i giorni di quella settimana si chiudono')}
+      ${i.limite.attivo ? `<div class="fila">${passo('i-limite', i.limite.teglie)}<span class="tenue">teglie e torte a settimana</span></div>` : ''}</section>`],
+    ['imp-natale', 'Menù di Natale', i.natale.attivo ? `Acceso${i.natale.entro ? ', ordini entro il ' + data(i.natale.entro) : ''}` : 'Spento', `<section class="scheda sez-dentro natale-imp">${sw('i.natale.attivo', i.natale.attivo, 'Mostra il menù di Natale', 'Compare in cima, con la sua data limite')}
+      ${i.natale.attivo ? `<label for="natale-entro" style="font-weight:800">Ordini entro</label><input type="date" id="natale-entro" data-campo="i.natale.entro" value="${i.natale.entro}">
+      <span class="etichetta" style="font-weight:800">Piatti del menù di Natale</span><div class="scelte">${visibili().map(p => `<button type="button" class="chip" data-a="natale-piatto" data-id="${p.id}" aria-pressed="${i.natale.piatti.includes(p.id)}">${esc(p.nome)}</button>`).join('')}</div>` : ''}</section>`]
+  ];
   return `${testataMonica('Impostazioni', 'home')}<main class="corpo">
     ${schedaMario()}
-    <section class="scheda"><h2>Pausa</h2>${sw('i.pausa.attiva', i.pausa.attiva, 'Sono in pausa', 'I clienti ordinano solo per dopo')}
-      ${i.pausa.attiva ? `<label for="pausa-fino" style="font-weight:800">Fino a (compreso)</label><input type="date" id="pausa-fino" data-campo="i.pausa.fino" value="${i.pausa.fino}">` : ''}</section>
-    <section class="scheda"><h2>Pronti subito</h2><label for="pronti-fino" style="font-weight:800">Ritiro entro le</label><input type="time" id="pronti-fino" data-campo="i.prontiFino" value="${esc(i.prontiFino)}"></section>
-    ${Dati.attivo ? chiGestisce() : ''}
-    <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
-      <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>
-    ${cartaNotifica()}
-    <button type="button" class="btn chiaro pieno" data-a="altre-imp" aria-expanded="${!!UI.altreImp}">${ico('impostazioni')}${UI.altreImp ? 'Chiudi le altre impostazioni' : 'Altre impostazioni (le sistema Mario)'}</button>
-    ${UI.altreImp ? `<p class="tenue piccolo" style="margin:0">Cose che si cambiano di rado: nel dubbio chiedi a Mario.</p>
-    <section class="scheda"><h2>Giorni di anticipo</h2><p class="tenue" style="margin:0">Quanti giorni prima devono ordinare.</p>
-      <div class="fila">${passo('i-anticipo', i.anticipo)}<span class="tenue">${i.anticipo === 0 ? 'anche per oggi' : i.anticipo === 1 ? 'giorno' : 'giorni'}</span></div></section>
-    <section class="scheda"><h2>Limite della settimana</h2>${sw('i.limite.attivo', i.limite.attivo, 'Metti un limite', 'Arrivata al limite, i giorni di quella settimana si chiudono')}
-      ${i.limite.attivo ? `<div class="fila">${passo('i-limite', i.limite.teglie)}<span class="tenue">teglie e torte a settimana</span></div>` : ''}</section>
-    <section class="scheda natale-imp"><h2>Menù di Natale</h2>${sw('i.natale.attivo', i.natale.attivo, 'Mostra il menù di Natale', 'Compare in cima, con la sua data limite')}
-      ${i.natale.attivo ? `<label for="natale-entro" style="font-weight:800">Ordini entro</label><input type="date" id="natale-entro" data-campo="i.natale.entro" value="${i.natale.entro}">
-      <span class="etichetta" style="font-weight:800">Piatti del menù di Natale</span><div class="scelte">${visibili().map(p => `<button type="button" class="chip" data-a="natale-piatto" data-id="${p.id}" aria-pressed="${i.natale.piatti.includes(p.id)}">${esc(p.nome)}</button>`).join('')}</div>` : ''}</section>
-    <section class="scheda"><h2>Pagamenti</h2>${sw('i.paga.contanti', i.paga.contanti, 'Contanti al ritiro')}${sw('i.paga.bonifico', i.paga.bonifico, 'Bonifico istantaneo')}
-      ${i.paga.bonifico ? `<input type="text" data-campo="i.paga.iban" value="${esc(i.paga.iban)}" placeholder="IBAN, es. IT60 X054 2811 1010 0000 0123 456" aria-label="IBAN"><input type="text" data-campo="i.paga.intestataria" value="${esc(i.paga.intestataria)}" placeholder="Intestato a" aria-label="Intestato a">` : ''}
-      ${sw('i.paga.postepay', i.paga.postepay, 'Postepay a Postepay')}${i.paga.postepay ? `<input type="tel" data-campo="i.paga.telefonoPostepay" value="${esc(i.paga.telefonoPostepay)}" placeholder="Numero collegato alla Postepay" aria-label="Numero Postepay">` : ''}</section>
-    <section class="scheda"><h2>Dove ritirano</h2><p class="tenue piccolo" style="margin:0">L'indirizzo di casa tua: lo vedono solo i clienti che hai accettato, con il pulsante della mappa.</p><label for="rit-via" style="font-weight:800">Via e numero</label><input type="text" id="rit-via" data-campo="i.ritiro.via" value="${esc(i.ritiro.via)}" placeholder="es. Via Roma 12" autocomplete="street-address"><label for="rit-citta" style="font-weight:800">Città</label><input type="text" id="rit-citta" data-campo="i.ritiro.citta" value="${esc(i.ritiro.citta)}" placeholder="es. Olbia">
-      <label for="rit-nota" style="font-weight:800">Come trovarti</label><input type="text" id="rit-nota" data-campo="i.ritiro.nota" value="${esc(i.ritiro.nota)}" placeholder="es. citofono Rossi, 2° piano, portone verde"></section>
-    <section class="scheda"><h2>Numeri</h2><label for="n-wa" style="font-weight:800">WhatsApp di ${esc(cuoca())}<small class="tenue" style="display:block;font-weight:400">I clienti scrivono qui per gli ordini</small></label><input type="tel" id="n-wa" data-campo="i.whatsapp" value="${esc(i.whatsapp)}" placeholder="es. 333 123 4567">
-      <label for="n-mario" style="font-weight:800">Numero di Mario<small class="tenue" style="display:block;font-weight:400">Per «Chiedi a Mario»: chi ha un problema con l'app scrive a lui</small></label><input type="tel" id="n-mario" data-campo="i.mario" value="${esc(i.mario)}" placeholder="es. 333 123 4567"></section>
-    ${Dati.attivo ? vSicurezza() : ''}
+    <p class="tenue piccolo" style="margin:0">Tocca una voce per cambiarla. Si salva da sola.</p>
+    ${listaSez(tue)}
+    <h3 class="tenue" style="margin:14px 0 0;font-size:.95rem">Si cambiano di rado · nel dubbio chiedi a Mario</h3>
+    ${listaSez(rare)}
     ${sezioneDev()}
-    ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}` : ''}</main>`;
+    ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}</main>`;
 }
 
 function foglioPronti() {
@@ -1762,7 +1776,6 @@ const A = {
   cat(el) { UI.cat = el.dataset.v; const t = document.getElementById('cat-' + el.dataset.v); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-a="cat"]').forEach(b => b.setAttribute('aria-pressed', b === el)); },
   piatto(el) { apriPiatto(el.dataset.id, !!el.dataset.pronto); },
   chiudi() { chiudiFoglio(); },
-  'altre-imp'() { UI.altreImp = !UI.altreImp; render(); },
   'apri-allergie'() { UI.foglio = { tipo: 'allergie' }; render(); },
   'testo-grande'() { P.grande = !P.grande; salvaP(); render(); mostraToast(P.grande ? 'Testo grande' : 'Testo normale'); },
   'chiudi-fuori'(el, e) { if (e.target === el) A.chiudi(); },

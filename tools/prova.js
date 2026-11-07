@@ -166,7 +166,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.indietro'); await clic('.indietro'); await clic('[data-a="apri-pronti"]');
     await page.locator('.foglio .gruppo', { hasText: 'Tiramisù' }).locator('[data-a="pr-qta"][data-d="1"]').click(); await page.waitForTimeout(200);
     await clic('.foglio .piede [data-a="chiudi"]');
-    await clic('.riquadro >> nth=3'); await clic('[data-a="altre-imp"]'); await page.locator('[data-campo="i.natale.attivo"]').check(); await page.waitForTimeout(300);
+    await clic('.riquadro >> nth=3'); if (await page.locator('details.sez[open]').count()) throw new Error('voci delle impostazioni già aperte');
+    await clic('details.sez[data-sez="imp-natale"] > summary'); await page.locator('[data-campo="i.natale.attivo"]').check(); await page.waitForTimeout(300);
     await foto('14-impostazioni');
   });
   await passo('sviluppatore: 7 tocchi sulla firma, versione e novità, guarda come cliente', async () => {
@@ -343,7 +344,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.locator('.menu-foto-edit img').count() !== 1) throw new Error('togli non va');
   });
   await passo('testo grande', async () => {
-    await clic('.indietro'); await clic('.riquadro >> nth=3'); await page.locator('[data-campo="p.grande"]').check(); await page.waitForTimeout(200);
+    await clic('.indietro'); await clic('.riquadro >> nth=3'); await clic('details.sez[data-sez="imp-vista"] > summary'); await page.locator('[data-campo="p.grande"]').check(); await page.waitForTimeout(200);
     if (!(await page.evaluate(() => document.documentElement.classList.contains('grande')))) throw new Error('niente classe');
     await page.locator('[data-campo="p.grande"]').uncheck();
   });
