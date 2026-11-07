@@ -12,7 +12,7 @@ Sessione attuale: #15 (dopo la #14 `session_01QTFEqUGCVAK7QVViob8YER`, chiusa al
 - Motore e regole: `npm install`, poi `npm run prova-firebase` → «86 OK, 0 NO»; `npm run prova-regole` → «51 OK, 0 NO» (05/11 ~21:50, due giri verdi; `dati.js` e regole non toccati dopo).
 - Sito: `python3 -I tools/sito.py` → «OK sito: 9 file dell'app + 13 immagini» (tolte le 4 lune della firma).
 - Sito vero: https://pronti-in-tavola.pronti-in-tavola.workers.dev si pubblica da solo a ogni push di file dell'app (verifica: `gh api "repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/runs?per_page=1" --jq ".workflow_runs[0].conclusion"` → success; curl → 200).
-- Anteprima (https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH): versione 35 (07/11). Ripubblicare: `Artifact` con `url` e `dist/anteprima.html` (se rifiutato: pubblicare di nuovo senza modifiche dopo il Read suggerito). Avviso `downloads` del publish: il pulsante «Scarica l'immagine» nell'anteprima non funziona (ci vuole `downloads`).
+- Anteprima (https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH): versione 36 (07/11, #15, uguale al codice). Ripubblicare: `Artifact` con `url` e `dist/anteprima.html` (se rifiutato: pubblicare di nuovo senza modifiche dopo il Read suggerito). Avviso `downloads` del publish: il pulsante «Scarica l'immagine» nell'anteprima non funziona (ci vuole `downloads`).
 - Kit RVC 35.0. Verifica: `for t in tools/test-*.py; do python3 -I $t; done` → tutti verdi.
 - Soglia 320k: vale solo se l'id della sessione è quello della riga «Principale» di `docs/CHI-FA-COSA.md`: la sessione nuova ci mette il suo.
 
@@ -38,7 +38,7 @@ Sessione attuale: #15 (dopo la #14 `session_01QTFEqUGCVAK7QVViob8YER`, chiusa al
 1. Avvio: titolo verde. Aspettare da Mario: foto delle regole pubblicate in Firebase (link `https://console.firebase.google.com/project/pronti-in-tavola/firestore/rules`, nel riquadro), foto del bannerino «Installa app» e dell'icona sul telefono.
 2. Poi Mario manda l'invito (Impostazioni → «Invita chi gestisce con te»). Seguire Monica: Google → richiesta → Mario tocca «Sì, è lei» → la sua app si riapre da gestore. Se qualcosa non va: `dati.js` `chiediGestore` e le regole. Togliere poi le righe di «Aspetta Mario» chiuse.
 3. Risposte aperte di Mario: scheda «Metti l'app sul telefono» ok? 7 regole per il kit ok? (con la 5 riscritta). Proposta da fare: la stessa scheda anche ai clienti.
-4. Poi: menù vero con Monica (piatti), chiudere le promesse 👁 a lotti sul sito vero; anteprima artefatto da ripubblicare (versione 35, il codice è più avanti).
+4. Poi: menù vero con Monica (piatti), chiudere le promesse 👁 a lotti sul sito vero.
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
