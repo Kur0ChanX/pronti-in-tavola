@@ -34,8 +34,16 @@ function primaRete(r) {
   });
 }
 /* notifica degli ordini (worker.js la manda senza contenuto: il testo è qui) */
+/* che notifica è lo dice /api/ultimo (ordine nuovo o promemoria della sera); senza risposta: ordine nuovo */
 self.addEventListener('push', e => {
-  e.waitUntil(self.registration.showNotification('Pronti in Tavola', { body: 'Hai un ordine nuovo da guardare 🍝', icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: 'ordine', renotify: true, data: { url: './' } }));
+  const mostra = u => {
+    const sera = u && u.tipo === 'promemoria' && u.n > 0;
+    return self.registration.showNotification(sera ? 'Domani si cucina 🍝' : 'Pronti in Tavola', {
+      body: sera ? `Domani hai ${u.n === 1 ? '1 ordine' : u.n + ' ordini'} da preparare. Tocca per vedere cosa cucinare.` : 'Hai un ordine nuovo da guardare 🍝',
+      icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: sera ? 'promemoria' : 'ordine', renotify: true, data: { url: './' } });
+  };
+  e.waitUntil(fetch('/api/ultimo', { cache: 'no-store' }).then(r => r.json()).catch(() => null)
+    .then(u => mostra(u && u.quando && Date.now() - u.quando < 6 * 3600e3 ? u : null)));
 });
 /* iscrizione scaduta o cambiata dal telefono: se ne prende subito una nuova con la stessa chiave;
    la manda a worker.js l'app alla prossima apertura (rinnovaAvvisi), perché qui manca l'accesso Google */

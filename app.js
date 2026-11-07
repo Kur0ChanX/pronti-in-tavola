@@ -373,6 +373,18 @@ async function rinnovaAvvisi() {
   rinnovato = true;
   try { const tok = await Dati.token(); if (tok) await iscriviTelefono(tok); } catch (e) { rinnovato = false; }
 }
+/* agenda per il promemoria della sera (Mario 07/11): quanti ordini accettati per ogni giorno, solo numeri */
+let agendaMandata = '';
+function inviaAgenda() {
+  if (!sulSito() || !Dati.io.gestore) return;
+  const a = {};
+  S.ordini.filter(o => ['accettato', 'pronto'].includes(o.stato) && o.entro >= oggi()).forEach(o => { a[o.entro] = (a[o.entro] || 0) + 1; });
+  const j = JSON.stringify(a);
+  if (j === agendaMandata) return;
+  agendaMandata = j;
+  Dati.token().then(tok => tok && fetch('/api/agenda', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: j }))
+    .then(r => { if (!r || !r.ok) agendaMandata = ''; }).catch(() => { agendaMandata = ''; });
+}
 async function attivaAvvisi() {
   UI.notProva = true; UI.notEsito = null; render();
   try {
@@ -694,8 +706,8 @@ function boxPaga(o) {
 }
 function cartaOrdineCliente(o) {
   const chiuso = ['rifiutato', 'annullato'].includes(o.stato);
-  let h = `<article class="scheda ordine-carta"><header><div><h3>Ordine n. ${o.n}</h3><span class="tenue piccolo">${o.pronto ? 'Pronti subito, ritiro oggi' : ['accettato', 'pronto', 'ritirato'].includes(o.stato) ? 'Ritiro: ' + giornoLungo(o.entro) : 'Ti serve entro ' + giornoLungo(o.entro)}</span></div>
-    <span class="stato ${o.stato}">${STATO_CLIENTE[o.stato]}</span></header>`;
+  let h = `<article class="scheda ordine-carta"><header><div><h3>Ordine n. ${o.n}</h3></div>
+    <span class="stato ${o.stato}">${STATO_CLIENTE[o.stato]}</span></header>${dateOrdine(o, true)}`;
   if (!chiuso) h += tappe(o);
   if (o.stato === 'proposta') h += `<div class="fumetto"><b>Monica propone ${giornoLungo(o.proposta)}. Ti va bene?</b>
     <div class="fila larga"><button type="button" class="btn verde" data-a="proposta-si" data-id="${o.id}">Va bene</button><button type="button" class="btn chiaro" data-a="proposta-altro" data-id="${o.id}">Un altro giorno</button></div></div>`;
@@ -718,12 +730,32 @@ function cartaOrdineCliente(o) {
   if (o.stato === 'nuovo' && !o.modifica) h += `<button type="button" class="link" data-a="annulla-ordine" data-id="${o.id}">Annulla l'ordine</button>`;
   return h + '</article>';
 }
+/* I miei ordini (Mario 07/11 «stesso ordine anche per i clienti»): in corso sopra, per data di ritiro; passati sotto, per mese, in righe corte */
 function vOrdiniCliente() {
-  const lista = S.ordini.filter(o => o.cliente === P.cliente).sort((a, b) => b.n - a.n);
+  const miei = S.ordini.filter(o => o.cliente === P.cliente);
+  const inCorso = miei.filter(o => !FINITI.includes(o.stato)).sort((a, b) => a.entro.localeCompare(b.entro) || a.n - b.n);
+  const passati = miei.filter(o => FINITI.includes(o.stato)).sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n);
   let h = testataCliente() + '<main class="corpo"><h1>I miei ordini</h1>';
-  if (!lista.length) h += '<p class="tenue">Non hai ancora ordinato.</p>';
-  /* l'indirizzo sta dopo l'ordine più recente: si trova senza scorrere anche con tanti ordini vecchi */
-  return h + lista.slice(0, 1).map(cartaOrdineCliente).join('') + schedaRitiro() + lista.slice(1).map(cartaOrdineCliente).join('') + cartaNotifica() + '</main>';
+  if (!miei.length) h += '<p class="tenue">Non hai ancora ordinato.</p>';
+  if (inCorso.length) h += `<h2 class="ord-titolo">In corso (${inCorso.length})</h2>` + inCorso.map(cartaOrdineCliente).join('');
+  /* l'indirizzo sta subito dopo gli ordini in corso: si trova senza scorrere anche con tanti ordini vecchi */
+  h += schedaRitiro();
+  if (passati.length) {
+    const mesi = {};
+    passati.slice(0, UI.ordQuanti || 40).forEach(o => (mesi[o.entro.slice(0, 7)] = mesi[o.entro.slice(0, 7)] || []).push(o));
+    h += `<h2 class="ord-titolo">Ordini passati</h2>` + Object.entries(mesi).map(([m, oo]) => `<section class="ord-giorno"><h3 class="ord-mese">${maiuscola(new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(daIso(m + '-15')))}</h3>
+      <div class="ord-lista">${oo.map(rigaCliente).join('')}</div></section>`).join('');
+    if (passati.length > (UI.ordQuanti || 40)) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri</button>`;
+  }
+  return h + cartaNotifica() + '</main>';
+}
+function rigaCliente(o) {
+  if (UI.ordAperto === o.id) return `<div class="ord-aperto">${cartaOrdineCliente(o)}<button type="button" class="link" data-a="ord-apri" data-id="${o.id}">Chiudi</button></div>`;
+  const cosa = o.righe.map(r => `${qtaTesto(r.tipo, r.qta, r.formatoNome)} ${r.nome}`).join(', ');
+  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}">
+    <span class="ord-n">n. ${o.n}<small>${F_BREVE.format(daIso(o.entro))}</small></span>
+    <span class="ord-chi"><b>${esc(cosa)}</b></span>
+    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b><span class="stato ${o.stato}">${STATO_CLIENTE[o.stato]}</span></span></button>`;
 }
 
 function vModifica() {
@@ -908,10 +940,10 @@ function scadenza(g, finito) {
 }
 const GIORNO_DATA = new Intl.DateTimeFormat('it-IT', { weekday: 'long', day: 'numeric', month: 'long' });
 const dataLunga = g => maiuscola(GIORNO_DATA.format(daIso(g)));
-function dateOrdine(o) {
-  const g = giornoDi(o), fin = FINITI.includes(o.stato), sc = scadenza(g, fin || o.stato === 'pronto');
+function dateOrdine(o, cliente) {
+  const g = cliente ? o.entro : giornoDi(o), fin = FINITI.includes(o.stato), sc = scadenza(g, fin || o.stato === 'pronto');
   const quando = o.tempi && o.tempi.nuovo ? dataLunga(iso(new Date(o.tempi.nuovo))) + ', ore ' + F_ORA.format(new Date(o.tempi.nuovo)) : o.creato ? dataLunga(o.creato) : '';
-  const cosa = o.stato === 'proposta' ? 'Giorno proposto da te' : fin ? (o.stato === 'ritirato' ? 'Ritirato per' : 'Era per') : ['accettato', 'pronto'].includes(o.stato) ? (o.pronto ? 'Ritiro (pronti subito)' : 'Ritiro') : 'Le serve entro';
+  const cosa = o.stato === 'proposta' && !cliente ? 'Giorno proposto da te' : fin ? (o.stato === 'ritirato' ? 'Ritirato per' : 'Era per') : ['accettato', 'pronto'].includes(o.stato) ? (o.pronto ? 'Ritiro (pronti subito)' : 'Ritiro') : cliente ? 'Ti serve entro' : 'Le serve entro';
   return `<div class="date-ord">
     <div class="date-riga"><span class="date-ico">${ico('ritiro')}</span><div><small>${cosa}</small><b>${dataLunga(g)}</b></div>${sc.t ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : ''}</div>
     ${quando ? `<div class="date-riga tenue"><span class="date-ico">${ico('ordini')}</span><div><small>Ordinato</small><span>${quando}${o.creato ? ` · ${giorniFa(o.creato) === 0 ? 'oggi' : giorniFa(o.creato) === 1 ? 'ieri' : giorniFa(o.creato) + ' giorni fa'}` : ''}</span></div></div>` : ''}</div>`;
@@ -2028,7 +2060,7 @@ function avviaDati() {
     if (Dati.preparaVuoto(statoIniziale())) return;
     S = nuovo;
     if (!S.ingExtra) S.ingExtra = {};
-    if (io.gestore) { spesaDalServer(); rinnovaAvvisi(); }
+    if (io.gestore) { spesaDalServer(); rinnovaAvvisi(); setTimeout(inviaAgenda, 0); }
     if (io.gestore && P.invitoGestore) { P.invitoGestore = false; salvaP(); }
     P.ruolo = io.gestore ? 'monica' : 'cliente';
     P.cliente = io.utente && io.utente.stato === 'approvato' ? io.utente.cliente : null;

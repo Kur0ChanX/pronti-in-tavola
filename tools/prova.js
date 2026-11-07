@@ -66,7 +66,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   });
   await passo('due ordini creati (pronti + da preparare)', async () => {
     await clic('[data-a="vai"][data-v="ordini"]');
-    const n = await page.locator('.ordine-carta').count(); if (n !== 3) throw new Error('ordini cliente: ' + n);
+    const n = await page.locator('.ordine-carta').count(), v = await page.locator('.ord-riga').count();
+    if (n !== 2 || v !== 1) throw new Error(`ordini cliente: ${n} in corso, ${v} passati`);
+    await foto('06b-miei-ordini'); await clic('.ord-riga'); await page.locator('.ord-aperto .ordine-carta').waitFor({ timeout: 3000 }); await clic('.ord-aperto [data-a="ord-apri"]');
   });
 
   await passo('Monica: notifica e guida', async () => {

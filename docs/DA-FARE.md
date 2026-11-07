@@ -1,13 +1,12 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 16 · Ordini nuovi (C24): ti piacciono le 3 foto (1 sì · 2 cambia qualcosa)? E faccio lo stesso ordine anche per «I miei ordini» dei clienti (1 sì · 2 no)?
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
 - 07/11 · 🟡 Principale 14 · Invito per Monica fatto: Mario incolla le regole nuove (Firestore → Regole → Pubblica), poi da Impostazioni tocca «Invita chi gestisce con te» e lo manda a Monica; al suo arrivo tocca «Sì, è lei». 👁 Lo vedi: sul sito, Home di Monica «Ciao Monica» · prova: foto della sua Home
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C24 | Pagina Ordini nuova (Mario 07/11), fatta dalla #16 (dettagli in `docs/SPECIFICA.md` e `docs/DA-FARE-FATTE.md`). Manca: stessa cura per «I miei ordini» del cliente (proposta). 👁 Lo vedi: sul sito, Home → Ordini, coi dati veri · prova: tua foto o tuo ok | Claude | |
+| C24 | Pagina Ordini nuova (Mario 07/11), fatta dalla #16 (dettagli in `docs/SPECIFICA.md` e `docs/DA-FARE-FATTE.md`). Mario 07/11 «tutto come consiglio»: fatti anche «I miei ordini» del cliente (in corso + passati per mese) e promemoria della sera (cron 18:00 UTC in `wrangler.jsonc`, `/api/agenda`, `/api/ultimo`). Manca: vedere arrivare il primo promemoria vero. 👁 Lo vedi: sul sito, Home → Ordini, coi dati veri · prova: tua foto o tuo ok | Claude | |
 | C22 | Apertura su iPhone (Mario 07/11, foto `archivio/foto/iphone-apertura-medaglione-bianco-07-11.jpg`): medaglione bianco. Corretto solo per iPhone in `style.css` (niente filtro animato, PT E16); non provato su un iPhone vero (qui solo Chrome). 👁 Lo vedi: sull'iPhone, aprendo il sito da ospite, il medaglione colorato nell'apertura · prova: foto dall'iPhone | Claude | alta |
 | C21 | Biglietti d'invito in foto su WhatsApp (`BIGLIETTI`, `mandaInvito` in `app.js`): Monica, chiunque gestisca, amici (con la voce di Monica, Mario 07/11: «io gestisco e basta»); anche nella Home, scheda «Inviti». Manca: prova vera sul telefono; la pagina d'arrivo dice «Avvisa Mario» anche se invita Monica. 👁 Lo vedi: sul sito, Impostazioni → «Invita Monica» e Clienti → «Manda l'invito su WhatsApp» · prova: foto della chat con foto e link che si apre | Claude | alta |
 | C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica (anche: niente striscia «Prova» né «Ricomincia», ex C8) | Claude | alta |

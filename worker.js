@@ -4,6 +4,9 @@
    - POST /api/iscrivi  → chi gestisce iscrive il suo telefono (serve il suo accesso Google: lo controlla Firestore)
    - POST /api/prova    → notifica di prova ai telefoni di chi chiama (stesso controllo)
    - POST /api/avvisa   → «c'è un ordine nuovo» a tutti i telefoni di chi gestisce (chiunque, ma con un tetto)
+   - POST /api/agenda   → chi gestisce manda quanti ordini ha per ogni giorno (solo numeri, niente nomi)
+   - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
+   - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
@@ -54,7 +57,8 @@ export class Avvisi extends DurableObject {
     return true;
   }
 
-  async manda(soloUid) {
+  async manda(soloUid, per) {
+    if (per !== 'promemoria') await this.ctx.storage.put('ultimo', { tipo: 'ordine', quando: Date.now() });
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
     const dest = tutti.filter(x => !soloUid || x.uid === soloUid);
     const k = await this.chiavi();
@@ -74,9 +78,27 @@ export class Avvisi extends DurableObject {
     }
     if (morti.length) await this.ctx.storage.put('iscritti', tutti.filter(x => !morti.includes(x.endpoint)));
     const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
-    diario.push({ quando: new Date().toISOString(), per: soloUid ? 'prova' : 'ordine', telefoni: dest.length, esiti });
+    diario.push({ quando: new Date().toISOString(), per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti });
     await this.ctx.storage.put('diario', diario);
     return { mandati: ok, telefoni: dest.length };
+  }
+
+  /* agenda: { '2026-11-09': 3, … } solo numeri, al massimo 31 giorni */
+  async agenda(a) {
+    if (!a || typeof a !== 'object') return false;
+    const pulita = {};
+    for (const [g, n] of Object.entries(a).slice(0, 31)) if (/^\d{4}-\d{2}-\d{2}$/.test(g) && Number.isInteger(n) && n > 0 && n < 100) pulita[g] = n;
+    await this.ctx.storage.put('agenda', pulita);
+    return true;
+  }
+  async ultimo() { return (await this.ctx.storage.get('ultimo')) || { tipo: 'ordine' }; }
+  /* promemoria della sera: domani (ora di Roma) ha ordini? */
+  async promemoria() {
+    const domani = new Date(Date.now() + 864e5).toLocaleDateString('sv-SE', { timeZone: 'Europe/Rome' });
+    const n = ((await this.ctx.storage.get('agenda')) || {})[domani] || 0;
+    if (!n) return { fermo: 'niente domani' };
+    await this.ctx.storage.put('ultimo', { tipo: 'promemoria', n, giorno: domani, quando: Date.now() });
+    return this.manda(null, 'promemoria');
   }
 
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
@@ -97,6 +119,7 @@ export default {
     try {
       if (url.pathname === '/api/chiave' && req.method === 'GET') return json({ chiave: await av.chiavePubblica() });
       if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato());
+      if (url.pathname === '/api/ultimo' && req.method === 'GET') return json(await av.ultimo());
       if (req.method !== 'POST') return json({ errore: 'metodo' }, 405);
       if (url.pathname === '/api/avvisa') return json(await av.avvisa());
       const uid = await gestoreDa(req);
@@ -106,9 +129,14 @@ export default {
         return (await av.iscrivi(uid, b && b.sub)) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
       }
       if (url.pathname === '/api/prova') return json(await av.manda(uid));
+      if (url.pathname === '/api/agenda') return (await av.agenda(await req.json().catch(() => null))) ? json({ ok: true }) : json({ errore: 'agenda non valida' }, 400);
       return json({ errore: 'non trovato' }, 404);
     } catch (e) {
       return json({ errore: String(e && e.message || e) }, 500);
     }
+  },
+  /* ogni sera: promemoria per domani */
+  async scheduled(ev, env, ctx) {
+    ctx.waitUntil(env.AVVISI.get(env.AVVISI.idFromName('cucina')).promemoria());
   }
 };
