@@ -37,3 +37,4 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 - **RVC E65** Dopo «worker process was restarted»: se il mio ultimo passo era uno strumento e non il resoconto a Mario, il turno NON è finito: continuo e scrivo il resoconto.
 - **RVC E66** `effort_level` assente in `get_session` = Mario non l'ha scelto nel selettore: non prova «normale». `"effortLevel"` in `.claude/settings.json` vale anche nel cloud.
 - **RVC E67** File con righe lunghissime (tabelle): `grep -n -o '.\{0,80\}parola.\{0,80\}'`, mai `grep` semplice (una riga sola = migliaia di token).
+- **PT E12** (07/11/2026) Dicevo «no, sbagliato» a una foto senza dire PERCHÉ (UID in «ID raccolta» invece che in «ID documento»): 3 volte, Mario irritato. Davanti a un errore in un passo a mano: spiega subito dove va ogni cosa (metafora) e quale casella è quella sbagliata.
