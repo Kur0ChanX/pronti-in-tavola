@@ -386,6 +386,20 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const atteso = Math.round((r.prezzo * r.qta + 2) * 100) / 100 + '/true/false/true';
     if (t !== atteso) throw new Error('totale al forno: ' + t + ', atteso ' + atteso);
   });
+  await passo('cliente: «Sono qui sotto» sull\'ordine pronto, non su quelli passati (Mario 07/11)', async () => {
+    const id = await page.evaluate(() => {
+      const o = S.ordini.find(x => x.cliente === P.cliente && x.stato === 'accettato') || S.ordini.find(x => x.stato === 'accettato');
+      P.cliente = o.cliente; o.stato = 'pronto'; UI.vista = 'ordini'; UI.ordAperto = null; render(); return o.id;
+    });
+    await page.waitForTimeout(300);
+    if (await page.locator(`[data-a="sono-qui"][data-id="${id}"]`).count() !== 1) throw new Error('manca «Sono qui» sull\'ordine pronto');
+    await page.locator(`[data-a="sono-qui"][data-id="${id}"]`).scrollIntoViewIfNeeded(); await foto('32-sono-qui');
+    await clic(`[data-a="sono-qui"][data-id="${id}"]`); await page.waitForTimeout(300);
+    if (!(await page.locator('.toast, .avviso-toast, [role="status"]').allInnerTexts()).join(' ').includes('anteprima')) throw new Error('nell\'anteprima «Sono qui» non spiega che parte solo dall\'app vera');
+    const passati = await page.evaluate(() => S.ordini.filter(x => x.cliente === P.cliente && ['ritirato', 'rifiutato', 'annullato'].includes(x.stato)).map(x => x.id));
+    for (const p of passati) if (await page.locator(`[data-a="sono-qui"][data-id="${p}"]`).count()) throw new Error('«Sono qui» su un ordine passato');
+    await page.evaluate(id => { S.ordini.find(x => x.id === id).stato = 'accettato'; }, id);
+  });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
     if (/pronti-in-tavola\.firebaseapp\.com|AIza[\w-]{30,}/.test(html)) throw new Error('la configurazione vera di Firebase è dentro l\'anteprima');
