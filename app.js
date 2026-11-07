@@ -4,7 +4,6 @@
 'use strict';
 /* arrivo da «Apri in Chrome» (C28): l'indirizzo non può portare il «#…» (inviti, #da=), viaggia in ?h= e qui torna al suo posto */
 (() => { try { const h = new URLSearchParams(location.search).get('h'); if (h && !location.hash) history.replaceState(null, '', location.pathname + '#' + h); } catch (e) { /* niente */ } })();
-const HASH_ARRIVO = location.hash;   // il «#…» com'era all'arrivo (l'app poi lo toglie): serve ad «Apri in Chrome»
 
 const CHIAVE = 'pit-prova-v1', CHIAVE_P = 'pit-telefono-v1';
 const LOGO = 'media/logo-480.webp';
@@ -299,6 +298,10 @@ function cartaHome(dopo) {
     'Apri questa pagina con <b>Safari</b> (l\'icona della bussola).',
     'Tocca <b>⋯</b> (o <b>aA</b>) accanto all\'indirizzo, poi <b>Condividi</b>: il quadrato con la freccia in su.',
     'Scorri in giù e tocca <b>Aggiungi alla schermata Home</b>, poi <b>Aggiungi</b> in alto a destra.']);
+  else if (suSamsung) h += passi([
+    'Tocca le <b>tre righe ≡</b> in basso a destra.',
+    'Tocca <b>Aggiungi pagina a</b>, poi <b>Schermata Home</b>.',
+    'Tocca <b>Aggiungi</b>.']);
   else h += passi([
     'Tocca i <b>tre puntini ⋮</b> in alto a destra.',
     'Scorri fino in fondo e tocca <b>Installa e crea scorciatoia</b> (su alcuni telefoni: <b>Aggiungi a schermata Home</b>).',
@@ -605,30 +608,28 @@ function carosello() {
 }
 /* in cima al menù del cliente (Mario 07/11, C32 C33): installa l'app e attiva le notifiche, subito, un tocco ciascuno;
    e chi aspetta l'ok di Monica lo legge chiaro. Le notifiche le chiede il telefono solo dopo un tocco: da sole non si può. */
-/* Samsung Internet scurisce da solo tutti i siti e ignora «solo chiaro» (Mario 07/11, telefoni di Monica e Barbara): un tocco per aprire in Chrome */
+/* Samsung Internet scurisce da solo i siti (PT E19): niente più riquadro «Apri in Chrome» (Mario 07/11 C36):
+   si spinge forte a installare l'app e attivare le notifiche; il bottone usa l'installazione del telefono se c'è. */
 const suSamsung = /SamsungBrowser/i.test(navigator.userAgent) && !/Android.*wv/.test(navigator.userAgent);
-function linkChrome() {
-  const u = new URL(location.href), h = (HASH_ARRIVO || location.hash).replace(/^#vai=.*/, '').slice(1);
-  const dove = u.host + u.pathname + (h ? '?h=' + encodeURIComponent(h) : '');
-  return `intent://${dove}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(u.origin + u.pathname)};end`;
-}
-function bannerSamsung() {
-  if (!suSamsung || P.samsungVia || suHome()) return '';
-  return `<div class="scheda banner-chrome" style="margin:10px 12px 0"><b>Su questo telefono l'app si vede scura e confusa.</b>
-    <span class="tenue piccolo">Il browser Samsung la scurisce da solo. In Chrome si vede bene, ed è da lì che si installa.</span>
-    <div class="fila larga"><a class="btn pieno" href="${esc(linkChrome())}">Apri in Chrome</a><button type="button" class="btn chiaro" data-a="samsung-via">Resto qui</button></div></div>`;
-}
 function primiPassi() {
   if (UI.modifica || UI.passiVia) return '';
   const u = Dati.attivo ? Dati.io.utente : null, attesa = u && ['nuovo', 'ricollega'].includes(u.stato);
-  const notif = sulSito() && P.cliente && !P.avvisiCliente && 'Notification' in window && Notification.permission !== 'denied';
-  const app = !suHome();
+  const notifOk = sulSito() && P.cliente && 'Notification' in window && Notification.permission !== 'denied';
+  const notif = notifOk && !P.avvisiCliente, app = !suHome();
   if (!attesa && !notif && !app) return '';
   let h = '<section class="scheda primi-passi">';
   if (attesa) h += `<div class="avviso">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta</b> per ordinare da lei. Di solito risponde in giornata.</div></div>`;
-  if (app || notif) h += `<div class="fila larga">${app ? `<button type="button" class="btn pieno" data-a="${installa ? 'installa' : 'passi-app'}">${ico('scarica')}Installa l'app</button>` : ''}${notif ? `<button type="button" class="btn ${app ? 'chiaro' : 'pieno'}" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : 'Attiva le notifiche'}</button>` : ''}</div>
-    ${UI.notEsito && notif ? `<p class="tenue piccolo" style="margin:0">${esc(UI.notEsito.t)}</p>` : ''}
-    ${UI.passiApp ? cartaHome() : ''}<button type="button" class="link piccolo" data-a="passi-via">Non ora</button>`;
+  if (app || notif) {
+    const passo = (n, fatto, tit, perche, btn) => `<div class="passo-forte${fatto ? ' fatto' : ''}"><span class="num">${fatto ? '✓' : n}</span><div><b>${tit}</b><span class="tenue piccolo">${perche}</span>${fatto ? '' : btn}</div></div>`;
+    const due = notifOk || P.avvisiCliente;
+    h += `<h2 class="pp-titolo">${due ? 'Due tocchi' : 'Un tocco'} e sei a posto</h2>`
+      + passo(1, !app, "Metti l'app sul telefono", 'La ritrovi tra le app, come WhatsApp: niente più link da cercare.',
+        `<button type="button" class="btn pieno grande" data-a="${installa ? 'installa' : 'passi-app'}">${ico('scarica')}Installa l'app</button>`)
+      + (due ? passo(2, !notif, 'Attiva le notifiche', 'Monica ti avvisa quando il tuo ordine è pronto o se ti propone un altro giorno.',
+        `<button type="button" class="btn ${app ? 'chiaro' : 'pieno'} grande" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : 'Attiva le notifiche'}</button>`) : '')
+      + `${UI.notEsito && notif ? `<p class="tenue piccolo" style="margin:0">${esc(UI.notEsito.t)}</p>` : ''}
+    ${UI.passiApp ? cartaHome() : ''}<button type="button" class="link piccolo" data-a="passi-via">Più tardi</button>`;
+  }
   return h + '</section>';
 }
 function vMenu() {
@@ -1338,7 +1339,7 @@ function render() {
   const invito = !chiuso && P.invitoGestore && P.ruolo !== 'monica';
   const benv = !chiuso && (invito || serveBenvenuto());
   if (!chiuso) controllaRichieste();
-  $('#app').innerHTML = striscia() + bannerSamsung() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : invito ? vInvitoGestore() : benv ? vBenvenuto() : vistaCliente()) + firma()
+  $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : invito ? vInvitoGestore() : benv ? vBenvenuto() : vistaCliente()) + firma()
     + (UI.avvisoTesto && !chiuso ? `<div class="notifica" role="status"><img src="media/icon-192.png" alt=""><div><b>Dalla notifica</b><span>${esc(UI.avvisoTesto)}</span></div></div>` : '');
   $('#barra').innerHTML = P.ruolo === 'cliente' && !benv ? barraCliente() : '';
   $('#barra').classList.toggle('nascosto', P.ruolo !== 'cliente' || benv);
@@ -1592,7 +1593,6 @@ const A = {
   'avvisi-attiva'() { attivaAvvisi(); },
   'avvisi-cliente'() { attivaAvvisiCliente(); },
   'sel-fritto'(el) { UI.sel.fritto = el.dataset.v === 'si'; render(); },
-  'samsung-via'() { P.samsungVia = true; salvaP(); render(); },
   'passi-app'() { UI.passiApp = !UI.passiApp; render(); },
   'passi-via'() { UI.passiVia = true; render(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },

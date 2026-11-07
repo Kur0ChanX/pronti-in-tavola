@@ -604,3 +604,12 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
   #app, .barra nav, .foglio { max-width: 960px; }
   .riquadri { grid-template-columns: repeat(4, 1fr); }
 }
+/* C36: spinta forte a installare e notifiche (cliente) */
+.primi-passi { border: 2px solid var(--vino); }
+.primi-passi .pp-titolo { margin: 0 0 4px; font-size: 1.25rem; }
+.passo-forte { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; }
+.passo-forte + .passo-forte { border-top: 1px dashed var(--riga); }
+.passo-forte > div { display: grid; gap: 6px; flex: 1; }
+.passo-forte .num { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--vino); color: #fff; display: grid; place-items: center; font-weight: 800; }
+.passo-forte.fatto .num { background: #3E7B3A; }
+.passo-forte.fatto b { text-decoration: line-through; opacity: .7; }
