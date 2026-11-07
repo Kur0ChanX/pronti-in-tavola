@@ -14,6 +14,7 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 - **PT E8** (05/11/2026) Mario: «il carrello che ti avevo detto» = la **lista della spesa** (Fase 2, C6: dosi per ricetta → spesa dagli ordini). Ho cercato solo «carrello» e ho chiesto a lui e alla #8. Prima di dire «non lo trovo»: cercare anche i sinonimi e le voci di Da fare (spesa, dosi, ingredienti), e proporre la più probabile.
 - **PT E9** (07/11/2026) Cloudflare↔GitHub: 2 ore di giri sul telefono (Mario: «siamo 2 ore, cerca bene», «non inventarti nulla»). Prima di guidare un collegamento fra servizi: cercare SUBITO bug noti e soluzioni nei forum, dare link diretti provati e passi chiari; dopo 2 giri uguali fermarsi e cambiare strada (es. PC invece del telefono).
 - **PT E10** (07/11/2026) Ho dato la colpa al browser del telefono (2 volte) senza prova: anche dal PC il giro è uguale (Mario: «mi stai prendendo in giro»). Una causa si dice solo quando un esperimento la conferma; altrimenti «ipotesi».
+- **PT E11** (07/11/2026) Ho proposto e fatto le etichette per la stampantina termica in bianco e nero: Mario «in bianco e nero no». Le etichette restano a colori; prima di proporre un modo di stampa, chiedere se il colore serve.
 
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.

@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 13 · Guarda nell'anteprima le etichette «Stampantina (rotolo)» e «Fogli A4» (Ordini → Da preparare) e scrivi «ok» o cosa non va
+- 07/11 · 🟡 Principale 13 · Etichette (C7): stampante a colori per Monica? 1 · ne ha già una (dimmi quale) · 2 · comprarne una a serbatoi, Epson EcoTank ET-2870 ~180-210 € (consiglio)
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
