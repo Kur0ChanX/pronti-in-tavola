@@ -4,6 +4,7 @@
 - 07/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
 - 07/11 · 🟡 Principale 18 · Invito a Monica mandato (Mario 07/11). Quando lei entra col suo Gmail, a te arriva la richiesta: tocca «Sì, è lei» e mandami la foto.
 - 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
+- 07/11 · 🟡 Principale 19 · Impostazioni di Monica divise in voci da aprire (come la scheda del piatto): 1 sì (consiglio) · 2 no.
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
