@@ -617,3 +617,5 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ord-prove { margin-top: 18px; border-top: 1px dashed var(--riga); padding-top: 10px; }
 .ord-prove summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
 .conferma-prova { border-color: var(--cotto); color: var(--cotto); }
+/* cliente in attesa dell'ok di Monica: ben visibile (Mario 07/11) */
+.attesa-forte { background: #FCE7B8; border: 2px solid #D9A441; color: #4A2A08; font-size: 1.02rem; }

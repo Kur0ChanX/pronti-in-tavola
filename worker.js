@@ -16,7 +16,7 @@ import { DurableObject } from 'cloudflare:workers';
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
 const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
-const TIPI_GESTORE = ['ordine', 'richiesta', 'risposta', 'modifica'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
+const TIPI_GESTORE = ['ordine', 'primo', 'richiesta', 'risposta', 'modifica'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
 const PAUSA_MS = 15 * 1000;     // e non più di uno ogni 15 secondi
 
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -138,7 +138,7 @@ export class Avvisi extends DurableObject {
   async avvisa(tipo) {
     const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('conto')) || {};
     if (c.giorno === oggi && c.n >= TETTO_GIORNO) return { fermo: 'tetto' };
-    if (c.ultimo && Date.now() - c.ultimo < PAUSA_MS) return { fermo: 'pausa' };
+    if (c.ultimo && Date.now() - c.ultimo < PAUSA_MS && tipo !== 'primo') return { fermo: 'pausa' };   // il primo ordine di una persona nuova passa sempre
     await this.ctx.storage.put('conto', { giorno: oggi, n: (c.giorno === oggi ? c.n : 0) + 1, ultimo: Date.now() });
     return this.manda(null, TIPI_GESTORE.includes(tipo) ? tipo : 'ordine');
   }

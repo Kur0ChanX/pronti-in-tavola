@@ -3,13 +3,13 @@
 ## 0. Aspetta Mario
 - 07/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
-- 07/11 · 🟡 Principale 16 · Regole Firebase pubblicate (Mario 07/11 ~16:15, provato: 404 al posto di «permessi negati»). Ora: Home → Inviti → biglietto «Per Monica» su WhatsApp → lei entra col suo Gmail → tu «Sì, è lei».
+- 07/11 · 🟡 Principale 18 · Invito a Monica mandato (Mario 07/11). Quando lei entra col suo Gmail, a te arriva la richiesta: tocca «Sì, è lei» e mandami la foto.
 - 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
-- 07/11 · 🟡 Principale 17 · Ordine «Non è partito»: quel telefono aveva già mandato un ordine prima? Correzione online, da riprovare (chiudi app e riapri).
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C36 | (Mario 07/11 ~17:58) Via il riquadro «Apri in Chrome»; spinta forte a installare e notifiche; logo di Monica senza bianco dentro le lettere. Fatto dalla #18 (`primiPassi`, loghi in `media/`). 👁 Lo vedi: apertura e menù sul Samsung di Barbara · prova: foto di Mario | Claude | 🟢 manca la foto |
+| C37 | (Mario 07/11) Ordine di una persona nuova: a Monica non arrivava l'avviso «accettala» (arrivava solo «ordine nuovo»). Fatto dalla #18: notifica «Una persona nuova ha ordinato: accettala» che resta sullo schermo e vibra, senza pausa; al cliente «Attendi che Monica accetti la tua richiesta» in giallo nel menù, dopo l'invio e in «I miei ordini». 👁 Lo vedi: un cliente nuovo ordina → notifica sul telefono di Monica · prova: foto di Mario | Claude | 🟢 manca la foto |
 | C35 | (Mario 07/11 ~17:55) Ordini di prova: fatto dalla #18 (stato `prova` + `statoPrima`; «È una prova» con due tocchi nella scheda dell'ordine; lista «Ordini di prova (N)» in fondo a Storico con «Rimetti tra i veri»; fuori da incassi, spesa, etichette, giorni pieni, «I miei ordini» del cliente). 👁 Lo vedi: Ordini → un ordine → «È una prova» · prova: foto di Mario | Claude | 🟢 manca la foto |
 | C27 | (Mario 07/11 ~17:20) Tocco sulla notifica → l'app apre subito cosa è successo (ordine nuovo, richiesta, proposta, giorno spostato) con un riquadro in alto. 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
 | C28 | (Mario 07/11 ~17:20; Barbara 17:50 ancora scura su Samsung Internet → pulsante «Apri in Chrome», PT E19) Solo tema chiaro, mai scuro (foto `archivio/foto/apertura-scura-monica-07-11.jpg`: apertura scura, medaglione non scontornato). 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |

@@ -611,14 +611,18 @@ function carosello() {
 /* Samsung Internet scurisce da solo i siti (PT E19): niente più riquadro «Apri in Chrome» (Mario 07/11 C36):
    si spinge forte a installare l'app e attivare le notifiche; il bottone usa l'installazione del telefono se c'è. */
 const suSamsung = /SamsungBrowser/i.test(navigator.userAgent) && !/Android.*wv/.test(navigator.userAgent);
+/* Mario 07/11: il cliente non ancora accettato lo legge chiaro, sempre (anche dopo «Più tardi»), nel menù, dopo l'invio e nei suoi ordini */
+const inAttesa = () => { const u = Dati.attivo ? Dati.io.utente : null; return !!(u && ['nuovo', 'ricollega'].includes(u.stato)); };
+const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta.</b><br>Monica ti conosce e ti dice di sì dall'app: di solito in giornata. Il tuo primo ordine lo vede lei e te lo conferma.</div></div>` : '';
 function primiPassi() {
-  if (UI.modifica || UI.passiVia) return '';
-  const u = Dati.attivo ? Dati.io.utente : null, attesa = u && ['nuovo', 'ricollega'].includes(u.stato);
+  if (UI.modifica) return '';
+  if (UI.passiVia) return avvisoAttesa();
+  const attesa = inAttesa();
   const notifOk = sulSito() && P.cliente && 'Notification' in window && Notification.permission !== 'denied';
   const notif = notifOk && !P.avvisiCliente, app = !suHome();
   if (!attesa && !notif && !app) return '';
   let h = '<section class="scheda primi-passi">';
-  if (attesa) h += `<div class="avviso">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta</b> per ordinare da lei. Di solito risponde in giornata.</div></div>`;
+  if (attesa) h += avvisoAttesa();
   if (app || notif) {
     const passo = (n, fatto, tit, perche, btn) => `<div class="passo-forte${fatto ? ' fatto' : ''}"><span class="num">${fatto ? '✓' : n}</span><div><b>${tit}</b><span class="tenue piccolo">${perche}</span>${fatto ? '' : btn}</div></div>`;
     const due = notifOk || P.avvisiCliente;
@@ -762,7 +766,7 @@ function vCarrello() {
 
 function vInviato() {
   return `${testataCliente()}<main class="corpo"><div class="inviato"><div class="scoppio">${Array.from({ length: 10 }, (_, i) => `<i style="--a:${i * 36}deg"></i>`).join('')}<div class="spunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div></div>
-    <h1>Ordine inviato!</h1><p class="tenue" style="margin:0">${Dati.attivo && Dati.io.utente && Dati.io.utente.stato !== 'approvato'
+    <h1>Ordine inviato!</h1>${avvisoAttesa()}<p class="tenue" style="margin:0">${Dati.attivo && Dati.io.utente && Dati.io.utente.stato !== 'approvato'
       ? 'È il tuo primo ordine: Monica lo guarda e ti conferma lei.' : 'Monica lo vede appena apre l\'app e ti conferma lei il giorno.'}<br>Lo segui in «I miei ordini».</p>
     <div class="fila larga" style="width:100%"><button type="button" class="btn" data-a="vai" data-v="ordini">I miei ordini</button><button type="button" class="btn chiaro" data-a="vai" data-v="menu">Torna al menù</button></div></div></main>`;
 }
@@ -821,7 +825,7 @@ function vOrdiniCliente() {
   const miei = S.ordini.filter(o => o.cliente === P.cliente && o.stato !== 'prova');   // le prove di Monica il cliente non le vede (C35)
   const inCorso = miei.filter(o => !FINITI.includes(o.stato)).sort((a, b) => a.entro.localeCompare(b.entro) || a.n - b.n);
   const passati = miei.filter(o => FINITI.includes(o.stato)).sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n);
-  let h = testataCliente() + '<main class="corpo"><h1>I miei ordini</h1>';
+  let h = testataCliente() + '<main class="corpo"><h1>I miei ordini</h1>' + avvisoAttesa();
   if (!miei.length) h += '<p class="tenue">Non hai ancora ordinato.</p>';
   if (inCorso.length) h += `<h2 class="ord-titolo">In corso (${inCorso.length})</h2>` + inCorso.map(cartaOrdineCliente).join('');
   /* l'indirizzo sta subito dopo gli ordini in corso: si trova senza scorrere anche con tanti ordini vecchi */
@@ -2223,7 +2227,7 @@ function vaiDaNotifica() {
   UI.foglio = null; UI.modifica = null; UI.inCima = true;
   if (P.ruolo === 'monica') {
     if (t === 'promemoria') { UI.vista = 'ordini'; UI.tab = 'prossimi'; UI.ordAperto = null; UI.avvisoTesto = 'Ecco gli ordini dei prossimi giorni: in cima quelli di domani.'; return; }
-    if (t === 'richiesta') { UI.richViste = []; UI.vista = 'ordini'; return; }   // il riquadro delle persone nuove si apre da solo
+    if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }   // il riquadro delle persone nuove si apre da solo
     const g = daGuardare().slice().sort((a, b) => (b.tempi && b.tempi.nuovo || 0) - (a.tempi && a.tempi.nuovo || 0) || b.n - a.n);
     UI.vista = 'ordini'; UI.tab = 'nuovi'; UI.ordAperto = g.length ? g[0].id : null;
     UI.avvisoTesto = { ordine: 'Ordine nuovo: lo vedi qui sotto, già aperto.', risposta: 'Il cliente ha risposto sul giorno: lo vedi qui sotto.', modifica: 'Il cliente chiede una modifica: la vedi qui sotto.' }[t] || '';
@@ -2313,7 +2317,7 @@ async function inviaVero() {
   UI.invio = true; UI.riprova = false; render();
   try {
     await Dati.inviaOrdini(lista.map(x => x[1]));
-    avvisaGestori();
+    avvisaGestori(daApprovare ? 'primo' : 'ordine');   // persona nuova: a Monica «accettala», in evidenza
     P.carrello = []; UI.entro = null; UI.nota = ''; UI.invio = false; salvaP(); vai('inviato');
   } catch (e) {
     UI.invio = false;

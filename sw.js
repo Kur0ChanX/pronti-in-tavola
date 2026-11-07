@@ -43,13 +43,15 @@ self.addEventListener('push', e => {
       pronto: ['Il tuo ordine è pronto! 🍝', 'Passa a ritirarlo quando vuoi. Tocca per vedere l\'indirizzo.'],
       proposta: ['Monica ti propone un altro giorno 🍝', 'Tocca per rispondere: «Va bene» o «Un altro giorno».'],
       richiesta: ['Una persona nuova vuole ordinare 🍝', 'Tocca per vedere chi è e accettarla.'],
+      primo: ['Una persona nuova ha ordinato: accettala 🍝', 'Il suo primo ordine aspetta il tuo sì. Tocca per vedere chi è.'],
       risposta: ['Un cliente ha risposto sul giorno 🍝', 'Tocca per vedere la sua risposta.'],
       modifica: ['Un cliente chiede una modifica 🍝', 'Tocca per vedere cosa cambia.'],
       ordine: ['Pronti in Tavola', 'Hai un ordine nuovo da guardare 🍝']
     };
     const tipo = t === 'promemoria' && !(u.n > 0) ? 'ordine' : (T[t] ? t : 'ordine');
     return self.registration.showNotification(T[tipo][0], {
-      body: T[tipo][1], icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: tipo, renotify: true, data: { url: './#vai=' + tipo, tipo } });
+      body: T[tipo][1], icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: tipo, renotify: true,
+      requireInteraction: ['richiesta', 'primo', 'ordine'].includes(tipo), vibrate: [300, 150, 300, 150, 300], data: { url: './#vai=' + tipo, tipo } });
   };
   e.waitUntil(self.registration.pushManager.getSubscription().catch(() => null)
     .then(sub => fetch('/api/ultimo' + (sub ? '?e=' + encodeURIComponent(sub.endpoint) : ''), { cache: 'no-store' })).then(r => r.json()).catch(() => null)
