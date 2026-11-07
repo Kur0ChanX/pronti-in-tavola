@@ -1,7 +1,17 @@
-# Ultima risposta di Claude (07/11/2026 16:52 ora italiana)
+# Ultima risposta di Claude (07/11/2026 23:49 ora italiana)
 
-📌 Di cosa parliamo: è la domanda di prima, sulla copia mensile degli ordini in un file Excel, per non perderli se i dati online si guastano.
-1. Salvataggio mensile:
-   1 · sì, ora: in Impostazioni compare «Scarica gli ordini del mese» (consiglio)
-   2 · più avanti, dopo la prova da Monica
-   3 · no, restano solo online
+Ho capito: vuoi poter cambiare anche il tempo del lucchetto di Monica.
+
+───
+✅ FATTO
+- Nella voce «Lucchetto» ora vedi tre tempi: **il tuo**, **Per Monica** e **Per gli ospiti** (foto qui sopra).
+- Monica può ancora cambiare il suo tempo. Sotto il suo c'è scritto «Lo può cambiare anche Mario».
+- Le prove sono tutte verdi (39 su 39) e ho controllato che ognuno cambi solo i tempi che gli spettano. È già sul sito vero e nell'[anteprima](https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH).
+
+───
+💡 PARERE
+- Se tu e Monica cambiate il suo tempo, vale l'ultimo che lo ha cambiato.
+
+───
+👉 DA FARE TU
+1. …
