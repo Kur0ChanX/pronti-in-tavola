@@ -20,3 +20,4 @@ La storia dei lavori finiti (in `docs/DA-FARE.md` resta solo cosa manca).
 
 - 07/11 (#15) C21: link dell'invito corretto (`SITO` da `data.js`, PT E15); 3 biglietti d'invito in foto (Monica `#gestore-m`, chiunque `#gestore`, amici `#da=monica`), foto `archivio/foto/biglietti-invito-tre-07-11.jpg`.
 - 07/11 (#15) C3: testi finti «ti arriva la notifica» tolti (PT E17); pulsante «Prova le notifiche» (`cartaNotifica`, `provaNotifica`, tocco in `sw.js`), provato in Chromium: notifica mostrata.
+- 07/11 (#15) C3: `worker.js` (oggetto «Avvisi»: chiavi VAPID create da lui, iscritti, tetto 60/giorno e 15 s), `/api/chiave|iscrivi|prova|avvisa`, controllo gestore via Firestore col token Google; provato in locale e sul sito (chiave 200, iscrivi senza Google 403), firma ES256 verificata.
