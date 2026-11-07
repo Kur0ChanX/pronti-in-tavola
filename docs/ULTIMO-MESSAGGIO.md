@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (07/11/2026 01:28 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 09:33 ora italiana)
 
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+Guarda, io direi quella oggi perché su Android le icone sono sempre quadrate, anche se me la fai tonda, lei risulterà una cornice quadrata, cioè non ha molto senso, ecco. Quindi fai quella quadrata con scritto pronti in tavola pure, forse è su oggi.
