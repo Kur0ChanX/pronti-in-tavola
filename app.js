@@ -163,9 +163,10 @@ function qtaTesto(tipo, q, formatoNome) {
   if (tipo === 'teglia') return `${q} ${q === 1 ? 'teglia' : 'teglie'}${String(formatoNome || '').replace(/^Teglia/i, '')}`;
   return `${q} ${q === 1 ? 'intera' : 'intere'}`;
 }
-const descRiga = r => [r.varianteNome, qtaTesto(r.tipo, r.qta, r.formatoNome), r.fritto ? 'fritto da Monica' : ''].filter(Boolean).join(' · ');
+const descRiga = r => [r.varianteNome, qtaTesto(r.tipo, r.qta, r.formatoNome), r.fritto ? 'fritto da Monica' : r.forno ? 'al forno da Monica' : ''].filter(Boolean).join(' · ');
 /* «Fritto da Monica» (Mario 07/11, C30): sovrapprezzo che Monica mette per ogni piatto; una cifra sola per il piatto, qualunque quantità (Mario: «non a pezzo ma a prodotto complessivo») */
-const extraFritto = r => r.fritto ? arrot(r.frittoPrezzo || 0) : 0;
+/* «Al forno da Monica» (Mario 07/11): come il fritto, sovrapprezzo unico per piatto; il cliente sceglie una sola cottura */
+const extraFritto = r => r.fritto ? arrot(r.frittoPrezzo || 0) : r.forno ? arrot(r.fornoPrezzo || 0) : 0;
 const prezzoRiga = r => arrot(r.prezzo * r.qta + extraFritto(r));
 const totale = rr => arrot(rr.reduce((s, r) => s + prezzoRiga(r), 0));
 const quanti = rr => rr.length;
@@ -220,7 +221,8 @@ const prezzoOra = r => { const p = piatto(r.piatto); return p && p.formati.some(
 const prezziGiusti = (rr, prima = []) => rr.map(r => {
   const v = prima.find(x => x.piatto === r.piatto && x.formato === r.formato && (x.variante || '') === (r.variante || ''));
   const p = piatto(r.piatto), fp = v && v.fritto ? v.frittoPrezzo : (p && p.fritto > 0 ? p.fritto : r.frittoPrezzo);
-  return Object.assign({}, r, { prezzo: v ? v.prezzo : prezzoOra(r) }, r.fritto ? { frittoPrezzo: fp || 0 } : {});
+  const fo = v && v.forno ? v.fornoPrezzo : (p && p.forno > 0 ? p.forno : r.fornoPrezzo);
+  return Object.assign({}, r, { prezzo: v ? v.prezzo : prezzoOra(r) }, r.fritto ? { frittoPrezzo: fp || 0 } : {}, r.forno ? { fornoPrezzo: fo || 0 } : {});
 });
 const daAccettare = o => ['nuovo', 'daApprovare'].includes(o.stato);
 const daGuardare = () => S.ordini.filter(o => o.stato !== 'prova' && (o.stato === 'nuovo' || o.modifica || richiestaDi(o) || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato')));
@@ -728,10 +730,11 @@ function foglioPiatto() {
   h += `<div class="gruppo"><span class="etichetta">Ingredienti</span><p class="ingr">${esc(ing.map(i => ING(i).n).join(', ')) || 'Monica li sta scrivendo.'}</p></div>`;
   h += `<div class="gruppo"><span class="etichetta">Allergeni</span>${all.length ? `<div class="allergeni">${all.map(a => `<span class="${mie.has(a) ? 'mio' : ''}">${NOME_ALL[a]}</span>`).join('')}</div>` : '<span class="tenue">Nessuno dei 14 allergeni di legge.</span>'}
     <span class="tenue piccolo">Calcolati dagli ingredienti. La cucina è di casa: per allergie gravi chiedi a Monica.</span></div>`;
-  if (p.fritto > 0 && !anteprima) h += `<div class="gruppo fritto-scelta"><span class="etichetta">Da cuocere a casa o già fritto?</span>
-    <div class="scelte"><button type="button" class="scelta" data-a="sel-fritto" data-v="no" aria-pressed="${!s.fritto}">Lo cuocio io<small>prezzo del menù</small></button><button type="button" class="scelta" data-a="sel-fritto" data-v="si" aria-pressed="${!!s.fritto}">Fritto da Monica<small>+ ${euro(p.fritto)} in tutto</small></button></div>
-    <span class="tenue piccolo">Il prezzo del menù è da cuocere a casa. Se lo vuoi già fritto, pronto da gustare, lo cucina Monica.</span></div>`;
-  else if (p.fritto > 0) h += `<div class="avviso">${ico('fiamma')}<div>Prezzo da cuocere a casa. <b>Fritto da Monica: + ${euro(p.fritto)}</b> in tutto.</div></div>`;
+  const fr = p.fritto > 0, fo = p.forno > 0;
+  if ((fr || fo) && !anteprima) h += `<div class="gruppo fritto-scelta"><span class="etichetta">Lo cuoci tu o lo cuoce Monica?</span>
+    <div class="scelte"><button type="button" class="scelta" data-a="sel-fritto" data-v="no" aria-pressed="${!s.fritto && !s.forno}">Lo cuocio io<small>prezzo del menù</small></button>${fr ? `<button type="button" class="scelta" data-a="sel-fritto" data-v="si" aria-pressed="${!!s.fritto}">Fritto da Monica<small>+ ${euro(p.fritto)} in tutto</small></button>` : ''}${fo ? `<button type="button" class="scelta" data-a="sel-fritto" data-v="forno" aria-pressed="${!!s.forno}">Al forno da Monica<small>+ ${euro(p.forno)} in tutto</small></button>` : ''}</div>
+    <span class="tenue piccolo">Il prezzo del menù è da cuocere a casa. Se lo vuoi già cotto, pronto da gustare, lo cucina Monica.</span></div>`;
+  else if (fr || fo) h += `<div class="avviso">${ico('fiamma')}<div>Prezzo da cuocere a casa.${fr ? ` <b>Fritto da Monica: + ${euro(p.fritto)}</b> in tutto.` : ''}${fo ? ` <b>Al forno da Monica: + ${euro(p.forno)}</b> in tutto.` : ''}</div></div>`;
   if (p.scalda) h += `<div class="avviso">${ico('orologio')}<div><b>Come si prepara a casa</b><br>${esc(p.scalda)}</div></div>`;
   if (!anteprima) {
     if (p.note.length) h += `<div class="gruppo"><span class="etichetta">Vuoi qualcosa di diverso?</span><div class="scelte">${p.note.map(n =>
@@ -739,7 +742,7 @@ function foglioPiatto() {
     h += `<a class="link" href="${wa('', testoWa)}" target="_blank" rel="noopener">Manda questo piatto a un'amica</a>`;
   }
   h += '</div>';
-  if (!anteprima) h += `<div class="piede"><button type="button" class="btn pieno" data-a="aggiungi">${UI.modifica ? 'Aggiungi alla modifica' : pronto ? 'Lo prendo oggi' : 'Aggiungi'} · ${euro(prezzoRiga({ prezzo, qta: s.qta, tipo: f.tipo, fritto: s.fritto && p.fritto > 0, frittoPrezzo: p.fritto }))}</button></div>`;
+  if (!anteprima) h += `<div class="piede"><button type="button" class="btn pieno" data-a="aggiungi">${UI.modifica ? 'Aggiungi alla modifica' : pronto ? 'Lo prendo oggi' : 'Aggiungi'} · ${euro(prezzoRiga({ prezzo, qta: s.qta, tipo: f.tipo, fritto: s.fritto && p.fritto > 0, frittoPrezzo: p.fritto, forno: s.forno && p.forno > 0, fornoPrezzo: p.forno }))}</button></div>`;
   return h;
 }
 
@@ -1239,8 +1242,10 @@ function vPiatto(id) {
   parti.push(['richieste', 'Richieste veloci', p.note.length ? breve(p.note.join(', '), 60) : 'Nessuna', `<section class="scheda"><h2>Richieste veloci</h2><p class="tenue" style="margin:0">Tasti pronti per il cliente, es. «Poco sale».</p>
     <div class="ingr-lista">${p.note.map((n, i) => `<span class="chip">${esc(n)}<button type="button" data-a="nota-togli" data-i="${i}" aria-label="Togli ${esc(n)}">${ico('x')}</button></span>`).join('')}</div>
     <div class="fila" style="flex-wrap:nowrap"><input type="text" id="nota-nuova" placeholder="es. Senza cipolla" aria-label="Nuova richiesta veloce"><button type="button" class="btn piccolo" data-a="nota-aggiungi">Aggiungi</button></div></section>`]);
-  parti.push(['fritto', 'Fritto da te', p.fritto ? `+${euroBreve(p.fritto)} se lo vuole fritto` : 'No', `<section class="scheda"><h2>Fritto da te</h2><p class="tenue" style="margin:0">Quanto costa in più se il cliente lo vuole già fritto: una cifra sola, qualunque quantità prenda. Lascia 0 se non lo friggi.</p>
-    <div class="formato-riga"><b>+ euro in tutto</b><input type="number" inputmode="decimal" step="0.5" min="0" max="99" data-campo="p.fritto" value="${p.fritto || 0}" aria-label="Sovrapprezzo fritto in euro"><span></span></div></section>`]);
+  const cot = [p.fritto ? `fritto +${euroBreve(p.fritto)}` : '', p.forno ? `al forno +${euroBreve(p.forno)}` : ''].filter(Boolean).join(' · ');
+  parti.push(['fritto', 'Cotto da te', cot || 'No', `<section class="scheda"><h2>Cotto da te</h2><p class="tenue" style="margin:0">Quanto costa in più se il cliente lo vuole già cotto da te: una cifra sola, qualunque quantità prenda. Lascia 0 se quella cottura non la fai.</p>
+    <div class="formato-riga"><b>Fritto: + euro</b><input type="number" inputmode="decimal" step="0.5" min="0" max="99" data-campo="p.fritto" value="${p.fritto || 0}" aria-label="Sovrapprezzo fritto in euro"><span></span></div>
+    <div class="formato-riga"><b>Al forno: + euro</b><input type="number" inputmode="decimal" step="0.5" min="0" max="99" data-campo="p.forno" value="${p.forno || 0}" aria-label="Sovrapprezzo al forno in euro"><span></span></div></section>`]);
   parti.push(['casa', 'Come si prepara a casa', p.scalda ? breve(p.scalda, 60) : 'Non scritto', `<section class="scheda"><h2>Come si prepara a casa</h2><textarea data-campo="p.scalda" placeholder="es. Forno a 180 °C per 20 minuti" aria-label="Come si prepara a casa">${esc(p.scalda)}</textarea></section>`]);
   parti.push(['novita', 'Etichetta «Novità»', novita(p) ? 'Accesa' : 'Spenta', `<section class="scheda"><label class="interr"><span>Novità<small>Etichetta «Novità» per 2 settimane</small></span><input type="checkbox" data-campo="p.novita" ${novita(p) ? 'checked' : ''}></label></section>`]);
   const ordine = ['pronto', 'prezzi', 'gusti', 'foto', 'nome', 'ingredienti', 'dosi', 'richieste', 'fritto', 'casa', 'novita'];
@@ -1457,7 +1462,7 @@ function vai(v) {
   UI.vista = v; UI.foglio = null; UI.salvato = false; render();
 }
 function aggiungiRiga(lista, r) {
-  const k = x => [x.piatto, x.formato, x.variante, x.note.join(','), x.testo, !!x.pronto, !!x.fritto].join('|');
+  const k = x => [x.piatto, x.formato, x.variante, x.note.join(','), x.testo, !!x.pronto, !!x.fritto, !!x.forno].join('|');
   const c = lista.find(x => k(x) === k(r));
   if (c) c.qta = arrot(c.qta + r.qta); else lista.push(r);
 }
@@ -1676,7 +1681,7 @@ const A = {
   'notifica-prova'() { provaNotifica(); },
   'avvisi-attiva'() { attivaAvvisi(); },
   'avvisi-cliente'() { attivaAvvisiCliente(); },
-  'sel-fritto'(el) { UI.sel.fritto = el.dataset.v === 'si'; render(); },
+  'sel-fritto'(el) { UI.sel.fritto = el.dataset.v === 'si'; UI.sel.forno = el.dataset.v === 'forno'; render(); },
   'passi-app'() { UI.passiApp = !UI.passiApp; render(); },
   'passi-via'() { UI.passiVia = true; render(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
@@ -1750,7 +1755,7 @@ const A = {
   aggiungi(el) {
     if (!UI.foglio) return;
     const p = piatto(UI.foglio.id), s = UI.sel, f = p.formati.find(x => x.id === s.formato), v = p.varianti.find(x => x.id === s.variante);
-    const r = { piatto: p.id, nome: p.nome, formato: f.id, formatoNome: f.nome, tipo: f.tipo, variante: v ? v.id : '', varianteNome: v ? v.nome : '', qta: s.qta, prezzo: prezzoDi(p, f.id, s.variante), note: s.note.slice(), testo: s.testo.trim(), pronto: !!UI.foglio.pronto, fritto: !!(s.fritto && p.fritto > 0), frittoPrezzo: s.fritto && p.fritto > 0 ? p.fritto : 0 };
+    const r = { piatto: p.id, nome: p.nome, formato: f.id, formatoNome: f.nome, tipo: f.tipo, variante: v ? v.id : '', varianteNome: v ? v.nome : '', qta: s.qta, prezzo: prezzoDi(p, f.id, s.variante), note: s.note.slice(), testo: s.testo.trim(), pronto: !!UI.foglio.pronto, fritto: !!(s.fritto && p.fritto > 0), frittoPrezzo: s.fritto && p.fritto > 0 ? p.fritto : 0, forno: !!(s.forno && !s.fritto && p.forno > 0), fornoPrezzo: s.forno && !s.fritto && p.forno > 0 ? p.forno : 0 };
     if (UI.modifica) { delete r.pronto; aggiungiRiga(UI.modifica.righe, r); UI.foglio = null; UI.vista = 'modifica'; render(); mostraToast(`Aggiunto alla modifica: ${p.nome}`); return; }
     aggiungiRiga(P.carrello, r); salvaP();
     const da = el.getBoundingClientRect();
@@ -2015,6 +2020,7 @@ function salvaCampo(el) {
     const p = piatto(pid), k = c.slice(2);
     if (k === 'prezzo') { const f = p.formati.find(x => x.id === el.dataset.f); f.prezzo = Math.max(0, Number(val) || 0); }
     else if (k === 'fritto') p.fritto = Math.min(99, Math.max(0, Math.round((Number(String(val).replace(',', '.')) || 0) * 100) / 100));
+    else if (k === 'forno') p.forno = Math.min(99, Math.max(0, Math.round((Number(String(val).replace(',', '.')) || 0) * 100) / 100));
     else if (k === 'nome' && !val.trim()) { mostraToast('Il nome non può restare vuoto.'); render(); return; }
     else p[k] = val;
     salva(); salvatoOk(); return;

@@ -360,6 +360,20 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const atteso = Math.round((r.prezzo * r.qta + 1.5) * 100) / 100 + '/true';   // fritto: una cifra sola per il piatto
     if (t !== atteso) throw new Error('totale col fritto: ' + t + ', atteso ' + atteso);
   });
+  await passo('cliente: «Al forno da Monica», una cottura sola (Mario 07/11)', async () => {
+    const r = await page.evaluate(() => {
+      const p = S.piatti.find(x => x.formati.some(f => f.tipo === 'pz')) || S.piatti[0]; p.fritto = 1.5; p.forno = 2;
+      P.carrello = []; apriPiatto(p.id); render();
+      return { prezzo: prezzoDi(p, UI.sel.formato, UI.sel.variante), qta: UI.sel.qta };
+    });
+    await clic('.foglio [data-a="sel-fritto"][data-v="si"]'); await clic('.foglio [data-a="sel-fritto"][data-v="forno"]'); await foto('31b-forno');
+    if (!(await page.locator('.foglio [data-a="aggiungi"]').innerText()).includes(String(Math.round((r.prezzo * r.qta + 2) * 100) / 100).replace('.', ','))) throw new Error('pulsante Aggiungi senza il forno');
+    if (await page.locator('.foglio [data-a="sel-fritto"][aria-pressed="true"]').count() !== 1) throw new Error('più cotture scelte insieme');
+    await clic('.foglio [data-a="aggiungi"]'); await page.waitForTimeout(500);
+    const t = await page.evaluate(() => totale(P.carrello) + '/' + P.carrello[0].forno + '/' + P.carrello[0].fritto + '/' + descRiga(P.carrello[0]).includes('al forno'));
+    const atteso = Math.round((r.prezzo * r.qta + 2) * 100) / 100 + '/true/false/true';
+    if (t !== atteso) throw new Error('totale al forno: ' + t + ', atteso ' + atteso);
+  });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
     if (/pronti-in-tavola\.firebaseapp\.com|AIza[\w-]{30,}/.test(html)) throw new Error('la configurazione vera di Firebase è dentro l\'anteprima');
