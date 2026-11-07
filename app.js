@@ -1378,10 +1378,10 @@ function vImpostazioni() {
     <section class="scheda"><h2>Pagamenti</h2>${sw('i.paga.contanti', i.paga.contanti, 'Contanti al ritiro')}${sw('i.paga.bonifico', i.paga.bonifico, 'Bonifico istantaneo')}
       ${i.paga.bonifico ? `<input type="text" data-campo="i.paga.iban" value="${esc(i.paga.iban)}" placeholder="IBAN, es. IT60 X054 2811 1010 0000 0123 456" aria-label="IBAN"><input type="text" data-campo="i.paga.intestataria" value="${esc(i.paga.intestataria)}" placeholder="Intestato a" aria-label="Intestato a">` : ''}
       ${sw('i.paga.postepay', i.paga.postepay, 'Postepay a Postepay')}${i.paga.postepay ? `<input type="tel" data-campo="i.paga.telefonoPostepay" value="${esc(i.paga.telefonoPostepay)}" placeholder="Numero collegato alla Postepay" aria-label="Numero Postepay">` : ''}</section>
-    <section class="scheda"><h2>Dove ritirano</h2><input type="text" data-campo="i.ritiro.via" value="${esc(i.ritiro.via)}" aria-label="Via"><input type="text" data-campo="i.ritiro.citta" value="${esc(i.ritiro.citta)}" aria-label="Città">
-      <label for="rit-nota" style="font-weight:800">Come trovarti</label><input type="text" id="rit-nota" data-campo="i.ritiro.nota" value="${esc(i.ritiro.nota)}"></section>
-    <section class="scheda"><h2>Numeri</h2><label for="n-wa" style="font-weight:800">Il tuo WhatsApp</label><input type="tel" id="n-wa" data-campo="i.whatsapp" value="${esc(i.whatsapp)}" placeholder="es. 333 123 4567">
-      <label for="n-mario" style="font-weight:800">Numero di Mario (per «Chiedi a Mario»)</label><input type="tel" id="n-mario" data-campo="i.mario" value="${esc(i.mario)}" placeholder="es. 333 123 4567"></section>
+    <section class="scheda"><h2>Dove ritirano</h2><p class="tenue piccolo" style="margin:0">L'indirizzo di casa tua: lo vedono solo i clienti che hai accettato, con il pulsante della mappa.</p><label for="rit-via" style="font-weight:800">Via e numero</label><input type="text" id="rit-via" data-campo="i.ritiro.via" value="${esc(i.ritiro.via)}" placeholder="es. Via Roma 12" autocomplete="street-address"><label for="rit-citta" style="font-weight:800">Città</label><input type="text" id="rit-citta" data-campo="i.ritiro.citta" value="${esc(i.ritiro.citta)}" placeholder="es. Olbia">
+      <label for="rit-nota" style="font-weight:800">Come trovarti</label><input type="text" id="rit-nota" data-campo="i.ritiro.nota" value="${esc(i.ritiro.nota)}" placeholder="es. citofono Rossi, 2° piano, portone verde"></section>
+    <section class="scheda"><h2>Numeri</h2><label for="n-wa" style="font-weight:800">WhatsApp di ${esc(cuoca())}<small class="tenue" style="display:block;font-weight:400">I clienti scrivono qui per gli ordini</small></label><input type="tel" id="n-wa" data-campo="i.whatsapp" value="${esc(i.whatsapp)}" placeholder="es. 333 123 4567">
+      <label for="n-mario" style="font-weight:800">Numero di Mario<small class="tenue" style="display:block;font-weight:400">Per «Chiedi a Mario»: chi ha un problema con l'app scrive a lui</small></label><input type="tel" id="n-mario" data-campo="i.mario" value="${esc(i.mario)}" placeholder="es. 333 123 4567"></section>
     ${Dati.attivo ? vSicurezza() : ''}
     ${sezioneDev()}
     ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}` : ''}</main>`;
@@ -2162,7 +2162,9 @@ function apertura() {
   const esci = () => {
     if (!d.isConnected || d.classList.contains('esce')) return;
     clearTimeout(tEsci); d.classList.add('esce');
-    setTimeout(() => { d.remove(); const m = $('main.corpo'); if (m) { m.classList.remove('entra'); void m.offsetWidth; m.classList.add('entra'); } provaApri(); }, 560);
+    /* la Home entra MENTRE l'apertura svanisce (Mario 07/11: prima spariva e rientrava dopo, «movimento scattoso») */
+    const m = $('main.corpo'); if (m) { m.classList.remove('entra'); void m.offsetWidth; m.classList.add('entra'); }
+    setTimeout(() => { d.remove(); provaApri(); }, 560);
   };
   const parti = () => {
     if (partita) return; partita = true;

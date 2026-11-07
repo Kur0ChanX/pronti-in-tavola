@@ -193,7 +193,7 @@ const NOVITA = [
       'Barra sviluppatore: si apre e si chiude scorrendo il dito da sinistra a destra in cima allo schermo',
       'Ordini di prova: «Archivia» con due tocchi (uno o tutti), spariscono dalle schede; «Archiviati» per ripristinarli'],
     migliorato: ['Cliente: in fondo «Area riservata» piccola e discreta al posto di «Sei Monica? Entra»; via «(se vuoi)» dalla nota', 'Novità divise in Nuovo, Migliorato e Corretto', 'Nella scheda del piatto «Fritto da te» diventa «Cotto da te»'],
-    corretto: ['Il pulsante per segnare le prove era nascosto (7 tocchi + Altre impostazioni)'] },
+    corretto: ['Il pulsante per segnare le prove era nascosto (7 tocchi + Altre impostazioni)', 'Fine dell\'apertura senza scatto: la Home entra mentre il logo svanisce', 'Impostazioni: «Dove ritirano» con le scritte Via e Città ed esempi; WhatsApp di Monica e numero di Mario spiegati'] },
   { v: '0.9', data: '07/11/2026',
     nuovo: ['Modalità sviluppatore: 7 tocchi sulla firma, guarda come cliente, versione e novità',
       'Ordini di prova: il cliente nuovo sceglie «Ordino davvero» o «Sto solo provando l\'app» prima di inviare',

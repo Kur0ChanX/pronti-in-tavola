@@ -2,16 +2,17 @@
 "account": "377be6",
 "sessione": "5f405e8f4063",
 "giorno": "2026-11-07",
-"turni": 9,
-"peso": 2197358,
-"uscita": 53018,
-"contesto_max": 269397,
+"turni": 10,
+"peso": 2440206,
+"uscita": 59477,
+"contesto_max": 283384,
 "anomalie": [
 "1 uscite di strumento enormi (120 KB la più grande): leggere a pezzi (grep -n, sed -n)",
 "1 uscite di strumento enormi (95 KB la più grande): leggere a pezzi (grep -n, sed -n)",
 "5 uscite di strumento enormi (414 KB la più grande): leggere a pezzi (grep -n, sed -n)",
 "avvio pesante: 232k token dopo il primo turno (tetto 130k)",
 "2 uscite di strumento enormi (377 KB la più grande): leggere a pezzi (grep -n, sed -n)",
-"avvio pesante: 262k token dopo il primo turno (tetto 130k)"
+"avvio pesante: 262k token dopo il primo turno (tetto 130k)",
+"1 uscite di strumento enormi (450 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ]
 }
