@@ -6,9 +6,11 @@
 - 07/11 · 🟡 Principale 16 · Regole Firebase pubblicate (Mario 07/11 ~16:15, provato: 404 al posto di «permessi negati»). Ora: Home → Inviti → biglietto «Per Monica» su WhatsApp → lei entra col suo Gmail → tu «Sì, è lei».
 - 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 - 07/11 · 🟡 Principale 17 · Ordine «Non è partito»: quel telefono aveva già mandato un ordine prima? Correzione online, da riprovare (chiudi app e riapri).
+- 07/11 · 🟡 Principale 17 · Samsung di Barbara: «Apri in Chrome» rende l’app chiara? 1 sì · 2 no (foto).
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C35 | (Mario 07/11 ~17:55) Ordini di prova: Monica segna un ordine «È una prova» con doppio tocco (per non cancellare per sbaglio); va in una lista un po' nascosta (es. in fondo a Storico «Ordini di prova (N)», con «Rimetti tra i veri»), fuori da incassi, statistiche, agenda, spesa, etichette, contatori; il cliente non lo vede più. Idea: stato `prova` + `statoPrima` (FINITI e `fuori` in `dati.js` da aggiornare, `rimettiPronti`, `contaSettimane`). 👁 Lo vedi: Ordini → un ordine → «È una prova» · prova: foto di Mario | Claude | 🔴 |
 | C27 | (Mario 07/11 ~17:20) Tocco sulla notifica → l'app apre subito cosa è successo (ordine nuovo, richiesta, proposta, giorno spostato) con un riquadro in alto. 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
 | C28 | (Mario 07/11 ~17:20; Barbara 17:50 ancora scura su Samsung Internet → pulsante «Apri in Chrome», PT E19) Solo tema chiaro, mai scuro (foto `archivio/foto/apertura-scura-monica-07-11.jpg`: apertura scura, medaglione non scontornato). 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
 | C29 | (Mario 07/11 ~17:20) Più/meno sui piatti: il pulsante e la scritta lampeggiano a ogni tocco: niente lampeggio. 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
