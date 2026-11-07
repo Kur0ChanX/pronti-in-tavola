@@ -1,7 +1,14 @@
-# Ultima risposta di Claude (07/11/2026 16:52 ora italiana)
+# Ultima risposta di Claude (07/11/2026 23:50 ora italiana)
 
-📌 Di cosa parliamo: è la domanda di prima, sulla copia mensile degli ordini in un file Excel, per non perderli se i dati online si guastano.
-1. Salvataggio mensile:
-   1 · sì, ora: in Impostazioni compare «Scarica gli ordini del mese» (consiglio)
-   2 · più avanti, dopo la prova da Monica
-   3 · no, restano solo online
+
+
+## Domande a Mario
+
+❓ DOMANDE
+
+📌 Di cosa parliamo: le 12 idee del messaggio qui sopra, per far crescere l'app. Mi serve sapere da quali partire, perché da sola non comincio lavori nuovi.
+
+1. Quali idee faccio prima?
+   - 1 · Le 3 che consiglio: «Sono qui», votazione del piatto, modalità cucina. Sono veloci e si notano subito. ⭐ Consiglio
+   - 2 · Prima le idee per i clienti (fasce di ritiro, tessera a timbri, «restano 3 porzioni»). Fanno tornare chi ordina, ma Monica le userà meno.
+   - 3 · Prima le idee per Monica (previsione delle teglie, riepilogo della domenica, «Ti manca Laura»). Le fanno risparmiare …
