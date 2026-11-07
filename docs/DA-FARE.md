@@ -1,9 +1,9 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 16 · Monica: regole Firebase da pubblicare (testo dato) · telefono Android o iPhone · 🛑 «foto del menù» (copertina nel menù o immagine da mandare, 1-2 foto) · «quantità» = dosi o tetto al giorno · allergeni · notifiche ai clienti.
+- 07/11 · 🟡 Principale 16 · Monica: telefono Android o iPhone · 🛑 «foto del menù» (copertina nel menù o immagine da mandare, 1-2 foto) · «quantità» = dosi o tetto al giorno · allergeni · notifiche ai clienti.
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
-- 07/11 · 🟡 Principale 14 · Invito per Monica fatto: Mario incolla le regole nuove (Firestore → Regole → Pubblica), poi da Impostazioni tocca «Invita chi gestisce con te» e lo manda a Monica; al suo arrivo tocca «Sì, è lei». 👁 Lo vedi: sul sito, Home di Monica «Ciao Monica» · prova: foto della sua Home
+- 07/11 · 🟡 Principale 16 · Regole Firebase pubblicate (Mario 07/11 ~16:15, provato: 404 al posto di «permessi negati»). Ora: Home → Inviti → biglietto «Per Monica» su WhatsApp → lei entra col suo Gmail → tu «Sì, è lei».
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
