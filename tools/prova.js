@@ -78,7 +78,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.riquadro.primo'); await foto('08-ordini');
     await page.locator('.ordine-carta', { hasText: 'Ordine n. 6' }).locator('[data-a="accetta"]').click(); await page.waitForTimeout(250);
     await page.locator('.ordine-carta', { hasText: 'Ordine n. 5' }).locator('[data-a="proponi"]').click(); await page.waitForTimeout(250); await clic('.foglio .giorno >> nth=3'); await clic('[data-a="conferma-giorno"]');
-    await clic('[data-a="tab"][data-v="preparare"]'); await foto('09-da-preparare');
+    await clic('[data-a="tab"][data-v="prossimi"]'); await foto('09-prossimi');
   });
   await passo('Monica: etichette per le vaschette', async () => {
     await clic('[data-a="etichette"]');
@@ -109,8 +109,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await foto('11-modifica'); await clic('[data-a="mod-si"]');
   });
   await passo('Monica: pronto e ritirato', async () => {
-    await clic('[data-a="tab"][data-v="preparare"]'); await clic('[data-a="pronto-muto"]');
-    await clic('[data-a="tab"][data-v="pronti"]'); await clic('[data-a="ritirato"]');
+    await clic('[data-a="tab"][data-v="oggi"]'); await clic('[data-a="pronto-muto"]'); await foto('13-oggi'); await clic('[data-a="ritirato"]');
+    await clic('[data-a="tab"][data-v="prossimi"]'); await page.locator('.ord-riga', { hasText: 'n. 2' }).click(); await page.waitForTimeout(250);
+    await page.locator('.ord-aperto [data-a="pronto-muto"]').waitFor({ timeout: 3000 }); await clic('.ord-aperto [data-a="ord-apri"]');
+  });
+  await passo('Monica: storico con cerca e filtri', async () => {
+    await clic('[data-a="tab"][data-v="storico"]'); await foto('14-storico');
+    const prima = await page.locator('.ord-riga:visible').count();
+    await page.fill('.cerca-ord', 'zzzz'); await page.waitForTimeout(150);
+    if (await page.locator('.ord-riga:visible').count() !== 0 || !(await page.locator('.ord-nessuno').isVisible())) throw new Error('la ricerca non nasconde le righe');
+    await page.fill('.cerca-ord', ''); await page.waitForTimeout(150);
+    if (await page.locator('.ord-riga:visible').count() !== prima || prima < 1) throw new Error('storico vuoto o ricerca che non torna indietro: ' + prima);
+    await clic('[data-a="ord-filtro"][data-v="ritirato"]'); await clic('.ord-riga >> nth=0');
+    await page.locator('.ord-aperto .ordine-carta').waitFor({ timeout: 3000 });
   });
   await passo('Monica: modifica piatto e ingredienti nuovi', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await foto('12-piatti');

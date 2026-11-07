@@ -533,3 +533,27 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .carta-home h2 { display: flex; gap: 8px; align-items: center; }
 .carta-home .link { display: block; margin: 10px auto 0; }
 .carta-home h2 svg { width: 26px; height: 26px; flex: none; }
+
+/* ordini di chi gestisce: Nuovi · Oggi · Prossimi giorni · Storico (07/11) */
+.chip .conta { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 2px; border-radius: 999px; background: var(--cotto); color: #fff; font-size: .75rem; line-height: 20px; text-align: center; }
+.riepilogo { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.riepilogo div { background: #fff; border: 1px solid #EADBC4; border-radius: 12px; padding: 8px 4px; text-align: center; display: flex; flex-direction: column; }
+.riepilogo b { font-family: Fraunces, serif; font-size: 1.25rem; color: var(--vino); }
+.riepilogo span { font-size: .72rem; color: #6B4A2E; }
+.ord-titolo { font-size: 1.05rem; margin: 10px 0 0; display: flex; flex-direction: column; }
+.ord-titolo small { font-family: 'Nunito Sans', sans-serif; font-weight: 700; font-size: .8rem; color: #6B4A2E; }
+.ord-giorno { display: flex; flex-direction: column; gap: 8px; }
+.ord-lista { display: flex; flex-direction: column; background: #fff; border: 1px solid #EADBC4; border-radius: 14px; overflow: hidden; }
+.ord-riga { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; width: 100%; padding: 12px; background: none; border: 0; border-bottom: 1px solid #F1E6D2; text-align: left; font: inherit; color: inherit; cursor: pointer; min-height: 56px; }
+.ord-riga:last-child { border-bottom: 0; }
+.ord-riga:active { background: #FBF4E8; }
+.ord-n { font-weight: 800; font-size: .85rem; color: var(--vino); display: flex; flex-direction: column; white-space: nowrap; }
+.ord-n small { font-weight: 600; color: #6B4A2E; font-size: .72rem; }
+.ord-chi { display: flex; flex-direction: column; min-width: 0; }
+.ord-chi small { color: #6B4A2E; font-size: .8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ord-dx { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.ord-aperto { display: flex; flex-direction: column; gap: 4px; padding: 6px; background: #FBF4E8; }
+.ord-tempi { margin: 0; }
+.cerca-ord { width: 100%; min-height: 50px; padding: 10px 14px; border: 1.5px solid #EADBC4; border-radius: 14px; background: #fff; font: inherit; font-size: 1rem; }
+.ord-schede { gap: 6px; }
+.ord-schede .chip { padding: 0 12px; flex: 1 0 auto; justify-content: center; }

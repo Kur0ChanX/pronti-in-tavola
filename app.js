@@ -96,7 +96,7 @@ let P = caricaP(); /* cose di questo telefono: ruolo, carrello, allergie */
 const UI = {
   vista: P.ruolo === 'monica' ? 'home' : 'menu',
   foglio: null, sel: null, entro: null, metodo: '', nota: '',
-  tab: 'guardare', modifica: null, nuovo: null, guidaPasso: 0, proposta: null, salvato: false
+  tab: 'oggi', ordAperto: null, ordFiltro: 'tutti', ordQuanti: 40, modifica: null, nuovo: null, guidaPasso: 0, proposta: null, salvato: false
 };
 
 function salva() {
@@ -202,6 +202,7 @@ function giorniPossibili(teglieNuove, da, escludi) {
   return out;
 }
 const STATO_CLIENTE = { nuovo: 'Da confermare', proposta: 'Nuova data', accettato: 'Confermato', pronto: 'Pronto!', ritirato: 'Ritirato', rifiutato: 'Non disponibile', annullato: 'Annullato', daApprovare: 'Aspetta Monica' };
+const segna = (o, st) => { o.stato = st; o.tempi = Object.assign({}, o.tempi, { [st]: Date.now() }); };
 const STATO_MONICA = { nuovo: 'Nuovo', proposta: 'Aspetta risposta', accettato: 'Da preparare', pronto: 'Pronto', ritirato: 'Ritirato', rifiutato: 'Rifiutato', annullato: 'Annullato dal cliente', daApprovare: 'Cliente nuovo' };
 const METODO = { contanti: 'Contanti al ritiro', bonifico: 'Bonifico istantaneo', postepay: 'Postepay' };
 /* telefono nuovo che aspetta il Sì di Monica, legato al suo primo ordine */
@@ -864,7 +865,8 @@ function waOrdine(o, tipo) {
 function cartaOrdineMonica(o) {
   const r = richiestaDi(o), righe = daAccettare(o) ? prezziGiusti(o.righe) : o.righe;
   let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n} · ${o.pronto ? 'pronti subito, ritiro oggi' : ['accettato', 'pronto'].includes(o.stato) ? 'ritiro ' + giornoLungo(o.entro) : 'le serve entro ' + giornoLungo(o.entro)}</span></div>
-    <span class="stato ${o.stato}">${r && r.cliente ? 'Telefono nuovo' : STATO_MONICA[o.stato]}</span></header>`;
+    <span class="stato ${o.stato}">${r && r.cliente ? 'Telefono nuovo' : STATO_MONICA[o.stato]}</span></header>${tempiOrdine(o)}`;
+  if (['accettato', 'pronto'].includes(o.stato) && o.entro < oggi()) h += `<span class="eti rischio" style="align-self:flex-start">In ritardo: era per ${giornoLungo(o.entro)}</span>`;
   if (r) h += `<div class="avviso">${ico('clienti')}<div>${r.cliente ? `<b>Telefono nuovo.</b> Dice di essere ${esc(r.nome)}, che conosci già. Se è lei, ricollega: vedrà i suoi ordini.`
     : `<b>Prima volta.</b> ${r.tramite ? `Amica di ${esc(r.tramite)}.` : ''} Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.`}</div></div>`;
   if (o.stato === 'proposta') h += `<p class="tenue" style="margin:0">Hai proposto ${giornoLungo(o.proposta)}. Aspetti la risposta. <a class="link" href="${waOrdine(o, 'proposta')}" target="_blank" rel="noopener">Avvisala su WhatsApp</a></p>`;
@@ -892,25 +894,94 @@ function cartaOrdineMonica(o) {
   }
   return h + '</article>';
 }
-function vOrdiniMonica() {
-  const gruppi = {
-    guardare: daGuardare().sort((a, b) => a.entro.localeCompare(b.entro)),
-    preparare: S.ordini.filter(o => (o.stato === 'accettato' || o.stato === 'proposta') && !o.modifica).sort((a, b) => a.entro.localeCompare(b.entro)),
-    pronti: S.ordini.filter(o => o.stato === 'pronto' && !o.modifica),
-    finiti: S.ordini.filter(o => ['ritirato', 'rifiutato', 'annullato'].includes(o.stato) && !daGuardare().includes(o)).sort((a, b) => b.n - a.n).slice(0, 20)
+/* Ordini di chi gestisce (Mario 07/11: «in modo ordinato, uno storico, quelli in corso, per data… come le app gold standard»):
+   Nuovi (da guardare) · Oggi (da fare e pronti, anche in ritardo) · Prossimi giorni (per giorno) · Storico (finiti: cerca, filtri, mesi) */
+const FINITI = ['ritirato', 'rifiutato', 'annullato'];
+const giornoDi = o => o.stato === 'proposta' && o.proposta ? o.proposta : o.entro;
+function gruppiOrdini() {
+  const g = daGuardare(), oo = S.ordini.filter(o => !g.includes(o)), o0 = oggi();
+  const perGiorno = (a, b) => giornoDi(a).localeCompare(giornoDi(b)) || a.n - b.n;
+  return {
+    nuovi: g.sort(perGiorno),
+    oggi: oo.filter(o => o.stato === 'pronto' || (o.stato === 'accettato' && o.entro <= o0)).sort(perGiorno),
+    prossimi: oo.filter(o => (o.stato === 'accettato' && o.entro > o0) || o.stato === 'proposta').sort(perGiorno),
+    storico: oo.filter(o => FINITI.includes(o.stato)).sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n)
   };
-  const nomi = { guardare: 'Da guardare', preparare: 'Da preparare', pronti: 'Pronti', finiti: 'Finiti' };
-  let h = testataMonica('Ordini', 'home') + `<main class="corpo"><nav class="schede-cat" aria-label="Tipi di ordini" style="top:65px">${Object.keys(gruppi).map(k =>
-    `<button type="button" class="chip" data-a="tab" data-v="${k}" aria-pressed="${UI.tab === k}">${nomi[k]}${k !== 'finiti' ? ` (${gruppi[k].length})` : ''}</button>`).join('')}</nav>`;
-  const lista = gruppi[UI.tab];
-  if (UI.tab === 'preparare') {
-    const cucina = daCucinare(lista.filter(o => o.stato === 'accettato'));
-    if (cucina.length) h += `<section class="scheda"><h2>Cosa cucinare</h2>${cucina.map(([g, piatti]) => `<div class="gruppo"><span class="etichetta">${maiuscola(giornoLungo(g))}</span>
-      <ul style="margin:0;padding-left:18px">${Object.values(piatti).map(x => `<li><b>${esc(x.nome)}</b>${x.varianteNome ? ' ' + esc(x.varianteNome.toLowerCase()) : ''}: ${qtaTesto(x.tipo, x.qta, x.formatoNome)}${x.note.length ? `<br><span style="color:var(--cotto);font-weight:800">${esc(x.note.join(' · '))}</span>` : ''}</li>`).join('')}</ul></div>`).join('')}
-      <button type="button" class="btn chiaro pieno" data-a="etichette">${ico('spunta')}Etichette per le vaschette</button></section>`;
+}
+function schedaCucina(oo, titolo = 'Cosa cucinare', conGiorno = true) {
+  const cucina = daCucinare(oo.filter(o => o.stato === 'accettato'));
+  if (!cucina.length) return '';
+  return `<section class="scheda"><h2>${titolo}</h2>${cucina.map(([g, piatti]) => `<div class="gruppo">${conGiorno ? `<span class="etichetta">${maiuscola(giornoLungo(g))}${g < oggi() ? ' · in ritardo' : ''}</span>` : ''}
+    <ul style="margin:0;padding-left:18px">${Object.values(piatti).map(x => `<li><b>${esc(x.nome)}</b>${x.varianteNome ? ' ' + esc(x.varianteNome.toLowerCase()) : ''}: ${qtaTesto(x.tipo, x.qta, x.formatoNome)}${x.note.length ? `<br><span style="color:var(--cotto);font-weight:800">${esc(x.note.join(' · '))}</span>` : ''}</li>`).join('')}</ul></div>`).join('')}
+    <button type="button" class="btn chiaro pieno" data-a="etichette">${ico('spunta')}Etichette per le vaschette</button></section>`;
+}
+/* riga corta di un ordine: un tocco la apre (scheda intera con i pulsanti) */
+const F_ORA = new Intl.DateTimeFormat('it-IT', { hour: '2-digit', minute: '2-digit' });
+const F_BREVE = new Intl.DateTimeFormat('it-IT', { weekday: 'short', day: 'numeric', month: 'short' });
+function rigaOrd(o, conGiorno) {
+  if (UI.ordAperto === o.id) return `<div class="ord-aperto">${cartaOrdineMonica(o)}<button type="button" class="link" data-a="ord-apri" data-id="${o.id}">Chiudi</button></div>`;
+  const cosa = o.righe.map(r => `${qtaTesto(r.tipo, r.qta, r.formatoNome)} ${r.nome}`).join(', ');
+  const chi = chiOrdina(o);
+  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n).toLowerCase())}">
+    <span class="ord-n">n. ${o.n}${conGiorno ? `<small>${F_BREVE.format(daIso(giornoDi(o)))}</small>` : ''}</span>
+    <span class="ord-chi"><b>${esc(chi)}</b><small>${esc(cosa)}</small></span>
+    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b><span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span></span></button>`;
+}
+/* orari di ogni passo (da questa versione: gli ordini vecchi non li hanno) */
+function tempiOrdine(o) {
+  const t = o.tempi || {}, passi = [['accettato', 'Accettato'], ['pronto', 'Pronto'], ['ritirato', 'Ritirato'], ['rifiutato', 'Rifiutato']].filter(([k]) => t[k]);
+  if (!passi.length) return '';
+  const quando = ms => { const d = new Date(ms); return (iso(d) === oggi() ? '' : F_BREVE.format(d) + ' ') + F_ORA.format(d); };
+  return `<p class="tenue piccolo ord-tempi">${passi.map(([k, n]) => `${n} ${quando(t[k])}`).join(' · ')}</p>`;
+}
+function vOrdiniMonica() {
+  const gr = gruppiOrdini(), o0 = oggi();
+  if (!gr[UI.tab]) UI.tab = gr.nuovi.length ? 'nuovi' : 'oggi';
+  const nomi = { nuovi: 'Nuovi', oggi: 'Oggi', prossimi: 'Prossimi', storico: 'Storico' };
+  let h = testataMonica('Ordini', 'home') + `<main class="corpo"><nav class="schede-cat ord-schede" aria-label="Tipi di ordini" style="top:65px">${Object.keys(gr).map(k =>
+    `<button type="button" class="chip" data-a="tab" data-v="${k}" aria-pressed="${UI.tab === k}">${nomi[k]}${k !== 'storico' && gr[k].length ? ` <span class="conta">${gr[k].length}</span>` : ''}</button>`).join('')}</nav>`;
+  const lista = gr[UI.tab];
+  if (UI.tab === 'nuovi') {
+    if (!lista.length) h += '<p class="tenue">Niente da guardare. Gli ordini nuovi compaiono qui (e ti suona il telefono).</p>';
+    return h + lista.map(cartaOrdineMonica).join('') + '</main>';
   }
-  if (!lista.length) h += `<p class="tenue">${{ guardare: 'Niente da guardare. Gli ordini nuovi compaiono qui.', preparare: 'Niente da preparare.', pronti: 'Nessun ordine pronto da ritirare.', finiti: 'Ancora nessun ordine finito.' }[UI.tab]}</p>`;
-  return h + lista.map(cartaOrdineMonica).join('') + '</main>';
+  if (UI.tab === 'oggi') {
+    const fare = lista.filter(o => o.stato === 'accettato'), pronti = lista.filter(o => o.stato === 'pronto');
+    const ritirati = S.ordini.filter(o => o.stato === 'ritirato' && o.entro === o0);
+    const incasso = S.ordini.filter(o => VALIDI.includes(o.stato) && o.entro === o0).reduce((x, o) => x + totale(o.righe), 0);
+    const ritardo = lista.filter(o => o.entro < o0).length;
+    h += `<div class="riepilogo"><div><b>${fare.length}</b><span>da preparare</span></div><div><b>${pronti.length}</b><span>pronti</span></div><div><b>${ritirati.length}</b><span>ritirati</span></div><div><b>${euroBreve(arrot(incasso))}</b><span>di oggi</span></div></div>`;
+    if (ritardo) h += `<div class="avviso">${ico('aiuto')}<div><b>${ritardo === 1 ? '1 ordine' : ritardo + ' ordini'} di giorni passati</b> non ancora ritirati: sono qui sotto, segnati «in ritardo».</div></div>`;
+    h += schedaCucina(fare, 'Da cucinare');
+    if (!lista.length) h += '<p class="tenue">Oggi niente da preparare né da far ritirare.</p>';
+    if (fare.length) h += `<h2 class="ord-titolo">Da preparare (${fare.length})</h2>` + fare.map(cartaOrdineMonica).join('');
+    if (pronti.length) h += `<h2 class="ord-titolo">Pronti, aspettano il ritiro (${pronti.length})</h2>` + pronti.map(cartaOrdineMonica).join('');
+    if (ritirati.length) h += `<h2 class="ord-titolo">Già ritirati oggi (${ritirati.length})</h2><div class="ord-lista">${ritirati.map(o => rigaOrd(o)).join('')}</div>`;
+    return h + '</main>';
+  }
+  if (UI.tab === 'prossimi') {
+    if (!lista.length) return h + '<p class="tenue">Nessun ordine per i prossimi giorni.</p></main>';
+    const giorni = {};
+    lista.forEach(o => (giorni[giornoDi(o)] = giorni[giornoDi(o)] || []).push(o));
+    h += Object.entries(giorni).map(([g, oo]) => `<section class="ord-giorno"><h2 class="ord-titolo">${maiuscola(giornoLungo(g))}<small>${oo.length === 1 ? '1 ordine' : oo.length + ' ordini'} · ${euroBreve(arrot(oo.reduce((x, o) => x + totale(o.righe), 0)))}</small></h2>
+      ${schedaCucina(oo, 'Da cucinare', false)}<div class="ord-lista">${oo.map(o => rigaOrd(o)).join('')}</div></section>`).join('');
+    return h + '</main>';
+  }
+  /* storico */
+  const filtri = [['tutti', 'Tutti'], ['ritirato', 'Ritirati'], ['annullato', 'Annullati'], ['rifiutato', 'Rifiutati']];
+  const f = UI.ordFiltro || 'tutti', scelti = lista.filter(o => f === 'tutti' || o.stato === f), quanti = UI.ordQuanti || 40;
+  h += `<input type="search" class="cerca-ord" data-cercaord="1" placeholder="Cerca un nome, un piatto o un numero" aria-label="Cerca negli ordini" autocomplete="off">
+    <div class="scelte">${filtri.map(([k, n]) => `<button type="button" class="chip" data-a="ord-filtro" data-v="${k}" aria-pressed="${f === k}">${n}</button>`).join('')}</div>`;
+  if (!scelti.length) return h + '<p class="tenue">Ancora nessun ordine qui.</p></main>';
+  const mesi = {};
+  scelti.slice(0, quanti).forEach(o => (mesi[o.entro.slice(0, 7)] = mesi[o.entro.slice(0, 7)] || []).push(o));
+  h += Object.entries(mesi).map(([m, oo]) => {
+    const tutti = lista.filter(o => o.entro.slice(0, 7) === m && o.stato === 'ritirato');
+    return `<section class="ord-giorno"><h2 class="ord-titolo">${maiuscola(new Intl.DateTimeFormat('it-IT', { month: 'long', year: 'numeric' }).format(daIso(m + '-15')))}<small>${tutti.length === 1 ? '1 ritirato' : tutti.length + ' ritirati'} · ${euroBreve(arrot(tutti.reduce((x, o) => x + totale(o.righe), 0)))}</small></h2>
+      <div class="ord-lista">${oo.map(o => rigaOrd(o, true)).join('')}</div></section>`;
+  }).join('');
+  if (scelti.length > quanti) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri (${scelti.length - quanti})</button>`;
+  return h + '<p class="tenue piccolo ord-nessuno nascosto">Nessun ordine trovato.</p></main>';
 }
 
 function vPiatti() {
@@ -1149,7 +1220,7 @@ function render() {
 function vai(v) {
   clearTimeout(tToast); $('#toast').innerHTML = ''; fnAnnulla = null;
   if (v === 'nuovo') UI.nuovo = { passo: 1, nome: '', cat: '', modo: '', prezzi: {} };
-  if (v === 'ordini' && P.ruolo === 'monica' && daGuardare().length) UI.tab = 'guardare';
+  if (v === 'ordini' && P.ruolo === 'monica') { UI.tab = daGuardare().length ? 'nuovi' : 'oggi'; UI.ordAperto = null; }
   UI.vista = v; UI.foglio = null; UI.salvato = false; render();
 }
 function aggiungiRiga(lista, r) {
@@ -1519,14 +1590,17 @@ const A = {
   'guida-avanti'() { if (UI.guidaPasso < GUIDA.length - 1) UI.guidaPasso++; else { P.guida = true; salvaP(); UI.guidaPasso = 0; } render(); },
   'rivedi-guida'() { P.guida = false; salvaP(); UI.guidaPasso = 0; vai('home'); },
   riprendi() { cambia('Pausa finita: sei di nuovo aperta', () => { S.impostazioni.pausa.attiva = false; }); },
-  tab(el) { UI.tab = el.dataset.v; render(); },
-  accetta(el) { const o = ordine(el.dataset.id); cambia(`Accettato: ${cliente(o.cliente).nome}`, () => { o.righe = prezziGiusti(o.righe); o.stato = 'accettato'; }); },
-  rifiuta(el) { const o = ordine(el.dataset.id); cambia('Ordine rifiutato', () => { o.stato = 'rifiutato'; rimettiPronti(o); }); },
+  tab(el) { UI.tab = el.dataset.v; UI.ordAperto = null; render(); },
+  'ord-apri'(el) { UI.ordAperto = UI.ordAperto === el.dataset.id ? null : el.dataset.id; render(); },
+  'ord-filtro'(el) { UI.ordFiltro = el.dataset.v; UI.ordQuanti = 40; render(); },
+  'ord-altri'() { UI.ordQuanti += 40; render(); },
+  accetta(el) { const o = ordine(el.dataset.id); cambia(`Accettato: ${cliente(o.cliente).nome}`, () => { o.righe = prezziGiusti(o.righe); segna(o, 'accettato'); }); },
+  rifiuta(el) { const o = ordine(el.dataset.id); cambia('Ordine rifiutato', () => { segna(o, 'rifiutato'); rimettiPronti(o); }); },
   'mod-si'(el) { const o = ordine(el.dataset.id); cambia('Modifica accettata', () => { o.righe = prezziGiusti(o.modifica.righe, daAccettare(o) ? [] : o.righe); o.modifica = null; o.esitoModifica = 'si'; }); },
   'mod-no'(el) { const o = ordine(el.dataset.id); cambia('Modifica rifiutata', () => { o.modifica = null; o.esitoModifica = 'no'; }); },
-  pronto(el) { const o = ordine(el.dataset.id); setTimeout(() => cambia('Segnato pronto', () => { o.stato = 'pronto'; }), 60); },
-  'pronto-muto'(el) { const o = ordine(el.dataset.id); cambia('Segnato pronto', () => { o.stato = 'pronto'; }); },
-  ritirato(el) { const o = ordine(el.dataset.id); cambia('Ritirato', () => { o.stato = 'ritirato'; }); },
+  pronto(el) { const o = ordine(el.dataset.id); setTimeout(() => cambia('Segnato pronto', () => { segna(o, 'pronto'); }), 60); },
+  'pronto-muto'(el) { const o = ordine(el.dataset.id); cambia('Segnato pronto', () => { segna(o, 'pronto'); }); },
+  ritirato(el) { const o = ordine(el.dataset.id); cambia('Ritirato', () => { segna(o, 'ritirato'); }); },
   ricevuto(el) { const o = ordine(el.dataset.id); cambia('Soldi ricevuti', () => { o.paga.ricevuto = true; o.paga.dice = false; }); },
   'apri-pronti'() { UI.foglio = { tipo: 'pronti' }; render(); },
   'pr-formato'(el) { const p = piatto(el.dataset.id); const q = p.pronto && p.pronto.giorno === oggi() ? p.pronto.qta : 0; p.pronto = { formato: el.dataset.v, qta: q, giorno: oggi() }; salva(); render(); },
@@ -1888,11 +1962,23 @@ document.addEventListener('change', e => {
   if (el.id === 'file-foto') { caricaFoto(el); return; }
   if (el.dataset.campo && !['sel.testo', 'nota'].includes(el.dataset.campo)) salvaCampo(el);
 });
+/* cerca nello storico senza ridisegnare (la tastiera resta aperta): nasconde le righe che non c'entrano */
+function cercaOrdini(q) {
+  const t = q.trim().toLowerCase();
+  let visti = 0;
+  document.querySelectorAll('.ord-giorno').forEach(sez => {
+    let qui = 0;
+    sez.querySelectorAll('.ord-riga').forEach(r => { const si = !t || r.dataset.testo.includes(t); r.classList.toggle('nascosto', !si); if (si) qui++; });
+    sez.classList.toggle('nascosto', !qui); visti += qui;
+  });
+  const n = $('.ord-nessuno'); if (n) n.classList.toggle('nascosto', visti > 0);
+}
 document.addEventListener('input', e => {
   const el = e.target;
   if (el.dataset.campo === 'sel.testo' || el.dataset.campo === 'nota') salvaCampo(el);
   if (el.dataset.cerca) suggerisci(el);
   if (el.dataset.spcerca) suggerisciSpesa(el);
+  if (el.dataset.cercaord) cercaOrdini(el.value);
   if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;   // resta anche se la pagina si ridisegna (una foto che arriva)
 });
 document.addEventListener('keydown', e => {

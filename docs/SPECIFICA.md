@@ -34,6 +34,7 @@ Regola d'oro di Mario: **semplicissima**. Monica fa tutto da sola, a prova di er
 | Indipendenza | L'app non usa i limiti gratuiti di altre app (Firebase, Cloudflare) e non pesa su di esse: account e progetti solo suoi (Mario 05/11). Firebase: progetto nuovo sull'account Google di Mario (limiti per progetto). Cloudflare: account nuovo solo dell'app, mai condiviso neanche all'1% (Mario 05/11) |
 | Ambiente | Progetto tutto separato: repository suo, ambiente Claude Code nuovo, ramo unico nuovo, kit RVC installato |
 
+- **Ordini di chi gestisce** (Mario 07/11, «come le app gold standard», C24): 4 schede. Nuovi = da guardare. Oggi = riepilogo (da preparare, pronti, ritirati, euro di oggi), da cucinare, schede intere coi pulsanti, «in ritardo» per i giorni passati. Prossimi = per giorno, con totale e da cucinare, righe corte che si aprono. Storico = finiti per mese (ritirati e incasso), cerca per nome/piatto/numero, filtri. Ogni passo segna l'ora (`tempi`).
 ## Fatto nella v0.1 (prova)
 Pagina di prova con i dati salvati sul telefono: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH
 Cliente: menù vero (23 piatti dal menù di ottobre), pronti subito, gusti e formati, note veloci, allergie, carrello con due ritiri, giorni (pausa e limite), pagamenti, ordini con tappe, proposta di giorno, «Ho pagato», modifica dell'ordine con approvazione, «Mi è piaciuto», ordina di nuovo, dove ritirare con Maps, testo grande.

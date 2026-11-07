@@ -47,7 +47,7 @@ Sessione attuale: #16 (dopo la #15 `session_01QTFEqTYwXGNgw6wWru51gn`, chiusa al
 07/11 ~14:23, parola per parola: «è verde dice abilitato ma non ha suonato» → letto `/api/stato`: ordine arrivato quando non c'era nessun telefono iscritto, poi iscrizione nuova e prova accettata da Google (201); gli ho chiesto se la prova è arrivata e di rifare un ordine da ospite.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C24; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C25; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
