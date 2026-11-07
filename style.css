@@ -579,3 +579,11 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ord-giorno { scroll-margin-top: 130px; }
 .ord-mese { font-size: .95rem; margin: 4px 0 0; color: #6B4A2E; }
 .ord-chi b { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* foto del menù (07/11) */
+.carosello { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 0 16px; scrollbar-width: none; }
+.carosello::-webkit-scrollbar { display: none; }
+.carosello img { flex: 0 0 88%; max-height: 62vh; object-fit: cover; border-radius: 16px; scroll-snap-align: center; background: #F1E6D2; }
+.carosello img:only-child { flex-basis: 100%; }
+.menu-foto-edit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.menu-foto-edit .mf { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.menu-foto-edit img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; }

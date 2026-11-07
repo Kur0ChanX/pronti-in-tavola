@@ -551,9 +551,25 @@ function testataSemplice(titolo, indietro, etichetta = 'Indietro') {
     <div class="titolo"><b>${esc(titolo)}</b></div></header>`;
 }
 
+/* foto del menù (Mario 07/11: «cambiare la foto del menù… caricare 3 foto»): Monica le mette in «I miei piatti», i clienti le vedono in cima al menù */
+const versioneFotoApp = f => { let h = 0; for (let i = 0; i < f.length; i++) h = (h * 31 + f.charCodeAt(i)) | 0; return f.length.toString(36) + '-' + (h >>> 0).toString(36); };
+const fotoMenu = () => (S.menuFoto || []).filter(Boolean);
+function schedaFotoMenu() {
+  const ff = (S.menuFoto || []).slice(0, 3);
+  return `<section class="scheda"><h2>Foto del menù</h2><p class="tenue" style="margin:0">Fino a 3 foto: i clienti le vedono in cima al menù, una dopo l'altra.</p>
+    <div class="menu-foto-edit">${ff.map((f, i) => `<div class="mf">${f ? `<img src="${f}" alt="Foto ${i + 1} del menù">` : '<span class="tenue piccolo">In arrivo…</span>'}
+      <label class="btn chiaro piccolo" for="file-menu-${i}">Cambia</label><input type="file" id="file-menu-${i}" accept="image/*" class="nascosto file-menu" data-i="${i}">
+      <button type="button" class="link" data-a="menu-foto-togli" data-i="${i}">Togli</button></div>`).join('')}</div>
+    ${ff.length < 3 ? `<label class="btn chiaro pieno" for="file-menu-${ff.length}">${ico('foto')}Aggiungi una foto del menù</label><input type="file" id="file-menu-${ff.length}" accept="image/*" class="nascosto file-menu" data-i="${ff.length}">` : ''}</section>`;
+}
+function carosello() {
+  const ff = fotoMenu();
+  if (!ff.length) return '';
+  return `<div class="carosello" aria-label="Foto del menù">${ff.map((f, i) => `<img src="${f}" alt="Foto ${i + 1} del menù" loading="${i ? 'lazy' : 'eager'}">`).join('')}</div>${ff.length > 1 ? '<p class="tenue piccolo" style="margin:-4px 0 0;text-align:center">Scorri le foto →</p>' : ''}`;
+}
 function vMenu() {
   const imp = S.impostazioni, cats = CATEGORIE.filter(([k]) => visibili().some(p => p.cat === k && p.disponibile));
-  let h = testataCliente() + '<main class="corpo">';
+  let h = testataCliente() + '<main class="corpo">' + (UI.modifica ? '' : carosello());
   if (UI.modifica) {
     const o = S.ordini.find(x => x.id === UI.modifica.ordine);
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
@@ -1042,6 +1058,7 @@ function vPiatti() {
   const daControllare = visibili().filter(p => !p.controllato).length;
   if (daControllare) h += `<div class="avviso">${ico('aiuto')}<div>Ho preparato una bozza di ingredienti e allergeni per <b>${daControllare} piatti</b>. Aprili uno alla volta e controlla.</div></div>`;
   h += `<button type="button" class="btn chiaro pieno" data-a="menu-immagine">${ico('chat')}Immagine del menù da mandare</button>`;
+  h += schedaFotoMenu();
   CATEGORIE.forEach(([k, n]) => {
     const pp = visibili().filter(p => p.cat === k);
     if (!pp.length) return;
@@ -1646,6 +1663,7 @@ const A = {
   'ord-apri'(el) { UI.ordAperto = UI.ordAperto === el.dataset.id ? null : el.dataset.id; render(); },
   'ord-filtro'(el) { UI.ordFiltro = el.dataset.v; UI.ordQuanti = 40; render(); },
   'ord-altri'() { UI.ordQuanti += 40; render(); },
+  'menu-foto-togli'(el) { const i = Number(el.dataset.i); if ((S.menuFoto || []).some(f => !f)) { mostraToast('Le foto stanno ancora arrivando: riprova tra poco.'); return; } cambia('Foto del menù tolta', () => { S.menuFoto = (S.menuFoto || []).filter((f, j) => j !== i); S.impostazioni.menuFotoV = S.menuFoto.map(versioneFotoApp); }); },
   'ord-giorno'(el) { const x = document.getElementById('g-' + el.dataset.v); if (x) x.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   accetta(el) { const o = ordine(el.dataset.id); cambia(`Accettato: ${cliente(o.cliente).nome}`, () => { o.righe = prezziGiusti(o.righe); segna(o, 'accettato'); }); },
   rifiuta(el) { const o = ordine(el.dataset.id); cambia('Ordine rifiutato', () => { segna(o, 'rifiutato'); rimettiPronti(o); }); },
@@ -1792,9 +1810,10 @@ function salvaCampo(el) {
 
 /* foto: ridotta e migliorata (più luce, colori caldi) */
 const TETTO_FOTO = 390000;   // caratteri della foto (circa 290 KB)
-function caricaFoto(input) {
+function caricaFoto(input, fatto) {
   const file = input.files && input.files[0], id = input.dataset.id;
   if (!file) return;
+  input.value = '';
   const url = URL.createObjectURL(file), img = new Image();
   img.onload = () => {
     const s = Math.min(1, 900 / Math.max(img.width, img.height));
@@ -1813,7 +1832,7 @@ function caricaFoto(input) {
     }
     URL.revokeObjectURL(url);
     if (dati.length > TETTO_FOTO) { mostraToast('Questa foto è troppo pesante. Prova con un\'altra.'); return; }
-    cambia('Foto aggiunta e migliorata', () => { piatto(id).foto = dati; });
+    if (fatto) fatto(dati); else cambia('Foto aggiunta e migliorata', () => { piatto(id).foto = dati; });
   };
   img.onerror = () => { URL.revokeObjectURL(url); mostraToast('Questa foto non si apre. Prova con un\'altra.'); };
   img.src = url;
@@ -2013,6 +2032,15 @@ document.addEventListener('click', e => {
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.id === 'file-foto') { caricaFoto(el); return; }
+  if (el.classList.contains('file-menu')) {
+    const i = Number(el.dataset.i);
+    caricaFoto(el, dati => cambia(i < (S.menuFoto || []).length ? 'Foto del menù cambiata' : 'Foto del menù aggiunta', () => {
+      S.menuFoto = (S.menuFoto || []).slice(0, 3); S.menuFoto[i] = dati;
+      const vv = S.impostazioni.menuFotoV || [];
+      S.impostazioni.menuFotoV = S.menuFoto.map((f, j) => f ? versioneFotoApp(f) : vv[j] || null);
+    }));
+    return;
+  }
   if (el.dataset.campo && !['sel.testo', 'nota'].includes(el.dataset.campo)) salvaCampo(el);
 });
 /* cerca nello storico senza ridisegnare (la tastiera resta aperta): nasconde le righe che non c'entrano */

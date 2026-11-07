@@ -46,7 +46,9 @@ const Dati = (() => {
     d['impostazioni/approvati'] = { ritiro: imp.ritiro || {}, whatsapp: imp.whatsapp || '',
       pagaDati: { iban: paga.iban || '', intestataria: paga.intestataria || '', telefonoPostepay: paga.telefonoPostepay || '' } };
     d['impostazioni/monica'] = { mario: imp.mario || '' };
-    if (S.spesa) d['impostazioni/spesa'] = copia(S.spesa);   // lista della spesa e dosi: solo di Monica (C15)
+    if (S.spesa) d['impostazioni/spesa'] = copia(S.spesa);
+    // foto del menù (fino a 3, Mario 07/11): come quelle dei piatti, ognuna nel suo documento foto/menu-N
+    (S.menuFoto || []).forEach((f, i) => { if (f) d['foto/menu-' + (i + 1)] = { foto: f }; });   // lista della spesa e dosi: solo di Monica (C15)
     ['ritiro', 'whatsapp', 'mario'].forEach(k => delete imp[k]);
     imp.paga = { contanti: !!paga.contanti, bonifico: !!paga.bonifico, postepay: !!paga.postepay };
     d['impostazioni/app'] = Object.assign(imp, { ingExtra: S.ingExtra || {}, soloContanti: !!S.soloContanti });
@@ -99,6 +101,7 @@ const Dati = (() => {
       p.foto = (srv['foto/' + p.id] || {}).foto || null;   // le foto sono testo: niente copia
       if (p.pronto && p.pronto.qta < 0) p.pronto.qta = 0;    // due cali insieme (Monica e un cliente): mai sotto zero
     });
+    S.menuFoto = (imp.menuFotoV || []).map((v, i) => (srv['foto/menu-' + (i + 1)] || {}).foto || null);
     return S;
   }
 
@@ -128,7 +131,8 @@ const Dati = (() => {
   let fotoDalServer = 0;
   function prendiFoto() {
     const { doc, getDoc, getDocFromCache } = F.fs;
-    tutti('piatti').forEach(p => {
+    const menu = ((srv['impostazioni/app'] || {}).menuFotoV || []).map((v, i) => ({ id: 'menu-' + (i + 1), fotoV: v }));
+    [...tutti('piatti'), ...menu].forEach(p => {
       const k = 'foto/' + p.id, v = p.fotoV || null;
       if (!v) { if (k in srv) { delete srv[k]; delete fotoVer[k]; avvisaCambio(); } return; }
       if (fotoVer[k] === v || fotoInArrivo[k] === v) return;

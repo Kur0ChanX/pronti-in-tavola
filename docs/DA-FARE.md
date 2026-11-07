@@ -1,13 +1,14 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 16 · Monica: telefono Android o iPhone · 🛑 «foto del menù» (copertina nel menù o immagine da mandare, 1-2 foto) · «quantità» = dosi o tetto al giorno · allergeni · notifiche ai clienti.
+- 07/11 · 🟡 Principale 16 · Foto del menù fatte (3 in cima al menù): ok? E «Manda le foto del menù» su WhatsApp al posto dell'immagine fatta dall'app (1 sì · 2 no)?
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
 - 07/11 · 🟡 Principale 16 · Regole Firebase pubblicate (Mario 07/11 ~16:15, provato: 404 al posto di «permessi negati»). Ora: Home → Inviti → biglietto «Per Monica» su WhatsApp → lei entra col suo Gmail → tu «Sì, è lei».
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C24 | Pagina Ordini nuova (Mario 07/11), fatta dalla #16 (dettagli in `docs/SPECIFICA.md` e `docs/DA-FARE-FATTE.md`). Manca: vedere arrivare il primo promemoria vero (solo se domani ci sono ordini accettati). 👁 Lo vedi: notifica «Domani si cucina» sul telefono la sera prima · prova: voce «promemoria» 201 in `/api/stato`; e sul sito, Home → Ordini, coi dati veri · prova: tua foto o tuo ok | Claude | |
+| C25 | Avviso al cliente quando l'ordine è pronto (Mario 07/11: «sia da app se vuole sia WhatsApp, può scegliere»): il cliente attiva le notifiche da «I miei ordini»; «È pronto» manda la notifica se c'è, WhatsApp resta. Serve: iscrizione cliente in `worker.js` col token anonimo (controllo `utenti/<uid>`), `/api/ultimo` per telefono, `/api/pronto` dal gestore. Monica: Android (Mario 07/11). Numero WhatsApp di Monica: lo mette Mario in Impostazioni (dato in chat, mai nel codice). | Claude | |
 | C22 | Apertura su iPhone (Mario 07/11, foto `archivio/foto/iphone-apertura-medaglione-bianco-07-11.jpg`): medaglione bianco. Corretto solo per iPhone in `style.css` (niente filtro animato, PT E16); non provato su un iPhone vero (qui solo Chrome). 👁 Lo vedi: sull'iPhone, aprendo il sito da ospite, il medaglione colorato nell'apertura · prova: foto dall'iPhone | Claude | alta |
 | C21 | Biglietti d'invito in foto su WhatsApp (`BIGLIETTI`, `mandaInvito` in `app.js`): Monica, chiunque gestisca, amici (con la voce di Monica, Mario 07/11: «io gestisco e basta»); anche nella Home, scheda «Inviti». Manca: prova vera sul telefono; la pagina d'arrivo dice «Avvisa Mario» anche se invita Monica. 👁 Lo vedi: sul sito, Impostazioni → «Invita Monica» e Clienti → «Manda l'invito su WhatsApp» · prova: foto della chat con foto e link che si apre | Claude | alta |
 | C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica (anche: niente striscia «Prova» né «Ricomincia», ex C8) | Claude | alta |
