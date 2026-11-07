@@ -310,7 +310,7 @@ async function benvEntra(ricollega) {
 function testataCliente() {
   const n = quanti(P.carrello);
   return `<header class="testata"><img class="marchio" src="${LOGO}" alt="">
-    <div class="titolo"><b>Pronti in Tavola</b><span>Ciao ${esc(nomeBreve(nomeCliente()))}!</span></div>
+    <div class="titolo"><b>Pronti in Tavola</b><span>${(n => n && n !== 'Cliente' ? `Ciao ${esc(n)}!` : 'Benvenuti da Monica!')(nomeBreve(nomeCliente() || ''))}</span></div>
     <button type="button" class="icona aa" data-a="testo-grande" aria-pressed="${!!P.grande}" aria-label="Testo più grande">Aa</button>
     <button type="button" class="icona" data-a="vai" data-v="carrello" aria-label="Il tuo ordine: ${n} piatti">${ico('carrello')}${n ? `<span class="pallino">${n}</span>` : ''}</button></header>`;
 }
@@ -351,6 +351,9 @@ function vMenu() {
     : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b><br><small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`;
   h += `<nav class="schede-cat" aria-label="Parti del menù">${cats.map(([k, n]) => `<button type="button" class="chip" data-a="cat" data-v="${k}" aria-pressed="${UI.cat === k}">${n}</button>`).join('')}
 </nav>`;
+  if (!cats.length && !pronti.length) h += Dati.attivo && !Dati.io.pronto
+    ? `<p class="tenue" style="text-align:center;margin:24px 0">Carico il menù…</p>`
+    : `<div class="avviso">${ico('cuore')}<div><b>Monica sta preparando il menù.</b><br>Torna a trovarci presto!</div></div>`;
   cats.forEach(([k, n], i) => {
     if (i) h += filo();
     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
