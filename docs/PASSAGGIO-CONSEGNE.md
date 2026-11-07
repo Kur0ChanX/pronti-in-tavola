@@ -47,7 +47,7 @@ Sessione attuale: #15 (dopo la #14 `session_01QTFEqUGCVAK7QVViob8YER`, chiusa al
 07/11 ~09:33, parola per parola: «Guarda, io direi quella oggi perché su Android le icone sono sempre quadrate, anche se me la fai tonda, lei risulterà una cornice quadrata, cioè non ha molto senso, ecco. Quindi fai quella quadrata con scritto pronti in tavola pure, forse è su oggi.» → icona di oggi tenuta; gli ho chiesto foto del bannerino e dell'icona installata.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C22; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C23; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).

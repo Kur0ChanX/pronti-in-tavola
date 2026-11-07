@@ -6,6 +6,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C22 | Apertura su iPhone (Mario 07/11, foto `archivio/foto/iphone-apertura-medaglione-bianco-07-11.jpg`): medaglione bianco. Corretto solo per iPhone in `style.css` (niente filtro animato, PT E16); non provato su un iPhone vero (qui solo Chrome). 👁 Lo vedi: sull'iPhone, aprendo il sito da ospite, il medaglione colorato nell'apertura · prova: foto dall'iPhone | Claude | alta |
 | C21 | Biglietti d'invito in foto su WhatsApp (`BIGLIETTI`, `mandaInvito` in `app.js`): Monica, chiunque gestisca, amici (con la voce di Monica, Mario 07/11: «io gestisco e basta»); anche nella Home, scheda «Inviti». Manca: prova vera sul telefono; la pagina d'arrivo dice «Avvisa Mario» anche se invita Monica. 👁 Lo vedi: sul sito, Impostazioni → «Invita Monica» e Clienti → «Manda l'invito su WhatsApp» · prova: foto della chat con foto e link che si apre | Claude | alta |
 | C1 | Dati veri con Firebase (piano Spark). Pronti e provati nell'emulatore: regole, motore `dati.js`, ordini, schermate dei clienti nuovi, lucchetto (storia in `docs/DA-FARE-FATTE.md`). Manca: progetto vero di Mario, prova sul telefono vero di Monica (anche: niente striscia «Prova» né «Ricomincia», ex C8) | Claude | alta |
 | C3 | Notifiche vere a Monica (Android, app sulla schermata Home) con un Worker di Cloudflare nell'account dell'app: serve C4. Fatto il 05/11: l'app si apre senza rete (`sw.js`, `manifest.webmanifest`) | Claude | media |

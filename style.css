@@ -408,6 +408,13 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
 @keyframes alone { 0% { opacity: 0; transform: scale(.85); } 60% { opacity: 1; } 100% { opacity: .65; transform: scale(1.03); } }
 @keyframes anello { to { stroke-dashoffset: 0; } }
 @keyframes svanisce { to { opacity: 0; } }
+/* iPhone (Mario 07/11, foto: medaglione bianco nell'apertura da ospite): Safari sbaglia il filtro animato
+   da sfocatura a ombra e dipinge un riquadro vuoto. Lì solo dissolvenza e zoom, ombra sotto con un alone */
+@supports (-webkit-touch-callout: none) {
+  .apertura .l-med { filter: none; animation-name: medaglioneIos; }
+  .apertura .luce { mix-blend-mode: normal; opacity: .5; }
+}
+@keyframes medaglioneIos { from { opacity: 0; transform: scale(.93); } to { opacity: 1; transform: none; } }
 @keyframes medaglione { from { opacity: 0; transform: scale(.93); filter: blur(12px); } to { opacity: 1; transform: none; filter: blur(0) drop-shadow(0 20px 24px rgba(90, 40, 14, .2)); } }
 @keyframes svela { from { -webkit-mask-position: 100% 0; mask-position: 100% 0; } to { -webkit-mask-position: 0 0; mask-position: 0 0; } }
 @keyframes luce { from { background-position: 150% 0; } to { background-position: -50% 0; } }
