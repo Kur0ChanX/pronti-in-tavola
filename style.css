@@ -622,3 +622,9 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 /* ordine di prova: si vede subito (Mario 07/11) */
 .bollino-prova { display: inline-block; background: #6B3FA0; color: #fff; font-size: .75rem; font-weight: 800; letter-spacing: .04em; border-radius: 999px; padding: 2px 8px; margin-right: 6px; vertical-align: middle; }
 .avviso-prova { background: #EFE6F8; color: #3D1F63; border: 2px solid #6B3FA0; }
+/* modalità sviluppatore (solo Mario) */
+.prova.dev { background: #1F2A44; }
+.prova.dev .dev-v { margin-left: auto; opacity: .7; font-size: .8rem; }
+.dev-scheda { border: 2px dashed #1F2A44; display: grid; gap: 8px; }
+.dev-nov ul { margin: 4px 0 0; padding-left: 20px; }
+.dev-nov li { margin: 2px 0; }

@@ -238,10 +238,20 @@ function foto(p, cls = '') {
   return `<div class="foto segnaposto ${cls}" aria-hidden="true"><span>${esc(p.nome.charAt(0))}</span></div>`;
 }
 const YN = '<div class="yn" role="img" aria-label="YNOY Corp"><i class="ys"></i><i class="y1"></i><i class="y2"></i><i class="y3"></i><i class="y4"></i></div>';
-const firma = () => `<footer class="firma">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' && !P.invitoGestore ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
+/* Modalità sviluppatore (Mario 07/11): 7 tocchi sulla firma, solo per il gestore «Mario» (o nell'anteprima), solo su quel telefono */
+const puoSviluppare = () => P.ruolo === 'monica' || UI.devCliente ? (!Dati.attivo || (Dati.io.gestore && /^mario\b/i.test(Dati.io.nomeGestore || ''))) : false;
+const sviluppatore = () => !!P.sviluppatore && (puoSviluppare() || !!UI.devCliente);
+function barraDev() {
+  if (!sviluppatore()) return '';
+  return `<div class="prova dev" role="group" aria-label="Modalità sviluppatore">Sviluppatore · guarda come
+    <button type="button" data-a="dev-come" data-v="cliente" aria-pressed="${!!UI.devCliente}">Cliente</button>
+    <button type="button" data-a="dev-come" data-v="" aria-pressed="${!UI.devCliente}">Gestore</button>
+    <span class="dev-v">v${VERSIONE_APP}</span></div>`;
+}
+const firma = () => `<footer class="firma" data-a="firma-tocco">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' && !P.invitoGestore ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
 const filo = () => `<div class="filo" aria-hidden="true">${ico('spiga')}</div>`;
 function striscia() {
-  if (Dati.attivo) return '';
+  if (Dati.attivo) return barraDev();
   const n = daGuardare().length;
   return `<div class="prova" role="group" aria-label="Versione di prova">Prova · guarda come
     <button type="button" data-a="ruolo" data-v="cliente" aria-pressed="${P.ruolo === 'cliente'}">Cliente</button>
@@ -277,7 +287,7 @@ function rigaOrdine(r, extra = '') {
 const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && Dati.io.utente.nome) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
 /* il benvenuto: alla prima apertura il cliente nuovo scrive nome e cognome, senza non si entra (nell'anteprima: una volta per telefono) */
 function serveBenvenuto() {
-  if (P.ruolo !== 'cliente' || UI.senzaNome) return false;
+  if (P.ruolo !== 'cliente' || UI.senzaNome || UI.devCliente) return false;   // lo sviluppatore che guarda come cliente non si registra
   return Dati.attivo ? !!Dati.io.uid && Dati.io.letto && !Dati.io.utente : !P.benvenuto;
 }
 /* app sulla schermata Home «a prova di stupido» (Mario 07/11): Android = un tocco (beforeinstallprompt);
@@ -1279,6 +1289,18 @@ function vClienti() {
       ${UI.rifiutati ? `<p class="tenue" style="margin:0">Hai detto di no a queste persone: non vedono l'indirizzo e non possono ordinare. Se hai sbagliato, tocca «Accetta»: da quel momento sono tue clienti.</p>${rifiutati.map(rigaRifiutato).join('')}` : ''}</section>` : ''}</main>`;
 }
 
+function sezioneDev() {
+  if (!sviluppatore()) return '';
+  const ultime = NOVITA.slice(0, UI.devTutte ? NOVITA.length : 3);
+  return `<section class="scheda dev-scheda"><h2>Sviluppatore</h2>
+    <p style="margin:0"><b>Versione ${VERSIONE_APP}</b> · ${esc(NOVITA[0].data)}</p>
+    <p class="tenue piccolo" style="margin:0">La vedi solo tu, su questo telefono. Monica non vede niente di questa parte.</p>
+    <button type="button" class="btn chiaro" data-a="dev-come" data-v="cliente">Guarda l'app come un cliente</button>
+    <h3 style="margin:8px 0 0">Novità</h3>
+    ${ultime.map(n => `<div class="dev-nov"><b>${esc(n.v)} · ${esc(n.data)}</b><ul>${n.cosa.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`).join('')}
+    ${NOVITA.length > 3 && !UI.devTutte ? '<button type="button" class="link" data-a="dev-tutte">Tutte le novità</button>' : ''}
+    <button type="button" class="link piccolo" data-a="dev-esci">Esci dalla modalità sviluppatore</button></section>`;
+}
 function vImpostazioni() {
   const i = S.impostazioni;
   const sw = (campo, val, t, s) => `<label class="interr"><span>${t}${s ? `<small>${s}</small>` : ''}</span><input type="checkbox" data-campo="${campo}" ${val ? 'checked' : ''}></label>`;
@@ -1307,6 +1329,7 @@ function vImpostazioni() {
     <section class="scheda"><h2>Numeri</h2><label for="n-wa" style="font-weight:800">Il tuo WhatsApp</label><input type="tel" id="n-wa" data-campo="i.whatsapp" value="${esc(i.whatsapp)}" placeholder="es. 333 123 4567">
       <label for="n-mario" style="font-weight:800">Numero di Mario (per «Chiedi a Mario»)</label><input type="tel" id="n-mario" data-campo="i.mario" value="${esc(i.mario)}" placeholder="es. 333 123 4567"></section>
     ${Dati.attivo ? vSicurezza() : ''}
+    ${sezioneDev()}
     ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}` : ''}</main>`;
 }
 
@@ -1716,6 +1739,7 @@ const A = {
   entro(el) { UI.entro = el.dataset.v; render(); },
   metodo(el) { UI.metodo = el.dataset.v; render(); },
   invia() {
+    if (UI.devCliente && Dati.attivo) { P.carrello = []; UI.entro = null; UI.nota = ''; UI.prova = undefined; salvaP(); mostraToast('Modalità sviluppatore: ordine NON inviato a Monica. Per un ordine vero usa un altro telefono.'); vai('inviato'); return; }
     if (sceltaManca()) { mostraToast('Scegli prima: ordini davvero o stai provando l\'app?'); return; }
     if (Dati.attivo) { inviaVero(); return; }
     const c = P.carrello, pronti = c.filter(r => r.pronto), dopo = c.filter(r => !r.pronto);
@@ -1743,6 +1767,21 @@ const A = {
     cambia('Modifica inviata a Monica', () => { o.modifica = { righe, il: oggi() }; o.esitoModifica = ''; }, false);
     avvisaGestori('modifica');
   },
+  'firma-tocco'(el, e) {
+    if (e && e.target.closest('button')) return;
+    if (!puoSviluppare() || P.sviluppatore) return;
+    const t = Date.now(); UI.firmaTocchi = (UI.firmaTocchi || []).filter(x => t - x < 4000).concat(t);
+    const manca = 7 - UI.firmaTocchi.length;
+    if (manca <= 0) { P.sviluppatore = true; UI.firmaTocchi = []; salvaP(); render(); mostraToast('Ora sei sviluppatore: la trovi in Impostazioni e nella barra in alto.'); }
+    else if (manca <= 3) mostraToast(manca === 1 ? 'Ancora 1 tocco per la modalità sviluppatore' : `Ancora ${manca} tocchi per la modalità sviluppatore`);
+  },
+  'dev-come'(el) {
+    UI.devCliente = el.dataset.v === 'cliente'; UI.foglio = null; UI.modifica = null;
+    if (Dati.attivo) P.ruolo = UI.devCliente ? 'cliente' : 'monica'; else { P.ruolo = UI.devCliente ? 'cliente' : 'monica'; salvaP(); }
+    vai(UI.devCliente ? 'menu' : 'home');
+  },
+  'dev-tutte'() { UI.devTutte = true; render(); },
+  'dev-esci'() { P.sviluppatore = false; UI.devCliente = false; salvaP(); render(); mostraToast('Modalità sviluppatore spenta.'); },
   'ordine-prova'(el) { UI.prova = !!el.dataset.v; render(); },
   'ord-prova'(el) {
     const id = el.dataset.id;
@@ -2295,7 +2334,7 @@ function avviaDati() {
     if (!S.ingExtra) S.ingExtra = {};
     if (io.gestore) { spesaDalServer(); rinnovaAvvisi(); setTimeout(inviaAgenda, 0); }
     if (io.gestore && P.invitoGestore) { P.invitoGestore = false; salvaP(); }
-    P.ruolo = io.gestore ? 'monica' : 'cliente';
+    P.ruolo = io.gestore ? (UI.devCliente ? 'cliente' : 'monica') : 'cliente';
     P.cliente = io.utente && io.utente.stato === 'approvato' ? io.utente.cliente : null;
     if (P.cliente) rinnovaAvvisi();
     if (UI.vista === 'home' && P.ruolo === 'cliente') UI.vista = 'menu';

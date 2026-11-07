@@ -167,6 +167,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.riquadro >> nth=3'); await clic('[data-a="altre-imp"]'); await page.locator('[data-campo="i.natale.attivo"]').check(); await page.waitForTimeout(300);
     await foto('14-impostazioni');
   });
+  await passo('sviluppatore: 7 tocchi sulla firma, versione e novità, guarda come cliente', async () => {
+    if (await page.locator('.dev-scheda').count()) throw new Error('sezione sviluppatore visibile senza sbloccarla');
+    for (let i = 0; i < 7; i++) await page.locator('footer.firma').click({ position: { x: 20, y: 10 } });
+    await page.waitForTimeout(300);
+    await page.locator('.dev-scheda').waitFor({ timeout: 3000 });
+    const t = await page.locator('.dev-scheda').innerText(); if (!/Versione \d/.test(t) || !/Novità/.test(t)) throw new Error('mancano versione o novità');
+    await page.locator('.dev-scheda').scrollIntoViewIfNeeded(); await foto('14c-sviluppatore');
+    await clic('.dev-scheda [data-a="dev-come"]'); await page.locator('.voce').first().waitFor({ timeout: 3000 });
+    await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
+  });
   await passo('cliente: menù di Natale e tiramisù pronto', async () => {
     await clic('[data-a="ruolo"][data-v="cliente"]'); await page.waitForTimeout(300); await foto('15-menu-natale');
     if (!(await page.locator('.natale').count())) throw new Error('natale assente');

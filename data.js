@@ -181,3 +181,25 @@ function statoIniziale() {
     }
   };
 }
+
+/* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
+const VERSIONE_APP = '0.9';
+const NOVITA = [
+  { v: '0.9', data: '07/11/2026', cosa: [
+    'Modalità sviluppatore: 7 tocchi sulla firma, guarda come cliente, versione e novità',
+    'Ordini di prova: il cliente nuovo sceglie «Ordino davvero» o «Sto solo provando l\'app» prima di inviare',
+    'Monica vede le prove col bollino PROVA; non contano negli incassi né nella spesa',
+    'Persona nuova che ordina: a Monica la notifica «accettala» che resta e vibra',
+    'Cliente in attesa: «Attendi che Monica accetti» in giallo, sempre visibile',
+    'Via il riquadro «Apri in Chrome»: ora «Due tocchi e sei a posto» (installa e notifiche)',
+    'Logo di Monica senza bianco dentro le lettere'] },
+  { v: '0.8', data: '07/11/2026', cosa: [
+    'Notifiche che aprono il punto giusto; persone nuove subito a Monica',
+    'Solo tema chiaro; niente lampeggio nelle scelte; lucchetto dopo 8 minuti',
+    'Fritto da Monica: sovrapprezzo unico per piatto',
+    'Proposta di un altro giorno anche per cliente nuovo; avviso «è pronto» al cliente'] },
+  { v: '0.7', data: '05-07/11/2026', cosa: [
+    'Pagina Ordini a 4 schede, promemoria della sera, «I miei ordini» del cliente',
+    'Inviti in foto su WhatsApp, sito online, dati su Firebase',
+    'Lista della spesa, incassi, costo per piatto, etichette'] }
+];
