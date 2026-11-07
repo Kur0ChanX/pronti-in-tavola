@@ -22,7 +22,7 @@ Una riga per pagina: servizio · pagina · come ci si arriva · vista il (✅ co
 1. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/settings → scheda **Impostazioni** → **Domini autorizzati** → **Aggiungi dominio** → incolla `pronti-in-tavola.pronti-in-tavola.workers.dev` → **Aggiungi**. Foto.
 2. Apri https://pronti-in-tavola.pronti-in-tavola.workers.dev → in fondo **Sei Monica? Entra** → scegli il tuo account Google.
 3. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/users → nella riga con la tua email copia l'**UID utente** (lettere e numeri).
-4. Apri https://console.firebase.google.com/project/pronti-in-tavola/firestore → scheda **Dati** → **+ Avvia raccolta** → ID raccolta `gestori` → **Avanti** → ID documento: incolla l'UID → campo `nome`, tipo `string`, valore `Mario` → **Salva**.
+4. Apri https://console.firebase.google.com/project/pronti-in-tavola/firestore → scheda **Dati** → **+ Avvia raccolta** → ID raccolta `gestori` → **Avanti** → ID documento: incolla l'UID → campo `nome`, tipo `string`, valore `Mario` → **Salva**. Poi ricarica il sito: ora sei gestore.
 5. Monica fa il passo 2 sul suo telefono; tu rifai 3 e 4 con il suo UID e valore `Monica`.
 
 ## Firebase (console in italiano, aperta dal telefono di Mario, tema scuro)
