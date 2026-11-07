@@ -322,7 +322,7 @@ function vInvitoGestore() {
 }
 /* testo dell'invito che Mario manda dall'app */
 const testoInvitoGestore = (tipo = 'g') => tipo === 'a'
-  ? `Ciao! 🍝 Ti faccio vedere Pronti in Tavola: la cucina di casa di ${S.impostazioni.paga.intestataria || 'Monica'}, a ${citta()}. Guardi il menù coi prezzi, ordini con pochi tocchi e passi a ritirare.\n\nTocca qui:\n${SITO}#da=monica`
+  ? `Ciao! Sono ${cuoca()} 🍝 Ho aperto Pronti in Tavola, la mia cucina di casa a ${citta()}: guardi il menù coi prezzi, ordini con pochi tocchi e passi da me a ritirare.\n\nTocca qui:\n${SITO}#da=monica`
   : tipo === 'm'
   ? `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore-m`
   : `Ciao! 👩‍🍳 Ti invito a gestire con me Pronti in Tavola: qui arrivano gli ordini, si sistemano i piatti e si vede cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore`;
@@ -330,11 +330,13 @@ const testoInvitoGestore = (tipo = 'g') => tipo === 'a'
    si disegna qui, poi va su WhatsApp insieme al messaggio col link; dove il telefono non sa allegarlo, si mostra da salvare */
 function caricaImg(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
 /* i tre biglietti: 'm' = per Monica (Mario 07/11: «benvenuta nella tua app»), 'g' = per chiunque gestisca (frasi per tutti), 'a' = per gli amici clienti */
+/* chi cucina: l'invito agli amici parla con la sua voce (Mario 07/11: «è Monica che invita, io gestisco e basta») */
+const cuoca = () => (S.impostazioni.paga || {}).intestataria || 'Monica';
 const citta = () => String((S.impostazioni.ritiro || {}).citta || 'Olbia').replace(/[\d\s]+/, ' ').trim();
 const BIGLIETTI = () => ({
   m: { titolo: 'Benvenuta nella tua app!', sotto: 'Pronti in Tavola è pronta per te', righe: ['Ricevi gli ordini delle amiche', 'Sistemi i tuoi piatti e i prezzi', 'Vedi cosa preparare ogni giorno'], box: ['Tocca il link nel messaggio', 'ed entra con Google: basta un minuto'] },
   g: { titolo: 'Ti aspettiamo in cucina!', sotto: 'Gestisci con noi Pronti in Tavola', righe: ['Ricevi gli ordini degli amici', 'Sistemi i piatti e i prezzi', 'Vedi cosa preparare ogni giorno'], box: ['Tocca il link nel messaggio', 'ed entra con Google: basta un minuto'] },
-  a: { titolo: 'Assaggia la cucina di casa', sotto: 'Piatti fatti a mano, pronti da ritirare', righe: ['Guarda il menù coi prezzi', 'Ordina con pochi tocchi', 'Ritiri a ' + citta() + ', senza pensieri'], box: ['Tocca il link nel messaggio', 'e scegli cosa ti va'] }
+  a: { titolo: 'Assaggia la mia cucina!', sotto: 'Piatti fatti a mano da me, pronti da ritirare', firma: cuoca(), righe: ['Guarda il menù coi prezzi', 'Ordina con pochi tocchi', 'Ritiri a ' + citta() + ', senza pensieri'], box: ['Tocca il link nel messaggio', 'e scegli cosa ti va'] }
 });
 async function disegnaInvito(tipo = 'g') {
   const B = BIGLIETTI()[tipo] || BIGLIETTI().g;
@@ -367,7 +369,7 @@ async function disegnaInvito(tipo = 'g') {
   g.fillStyle = '#7B2318'; g.beginPath(); (g.roundRect ? g.roundRect(bx, by, bw, bh, 30) : g.rect(bx, by, bw, bh)); g.fill();
   g.fillStyle = '#FFFFFF'; g.font = '800 44px "Nunito Sans", system-ui, sans-serif'; g.fillText(B.box[0], L / 2, by + 66);
   g.font = '600 32px "Nunito Sans", system-ui, sans-serif'; g.fillText(B.box[1], L / 2, by + 115);
-  const da = (Dati.attivo && Dati.io.nomeGestore) || '';
+  const da = B.firma || (Dati.attivo && Dati.io.nomeGestore) || '';
   g.fillStyle = '#9A5B3C'; g.font = 'italic 600 40px Fraunces, Georgia, serif';
   g.fillText(da ? 'Con affetto, ' + da : 'Pronti in Tavola · Olbia', L / 2, 1272);
   return c;
@@ -725,6 +727,10 @@ function vHome() {
     <section class="scheda"><h2>Da preparare</h2>${agenda()}
       <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>`;
   h += incassi();
+  /* inviti anche dalla Home (Mario 07/11: «mettili nella mia app gli inviti ora»); «Invita Monica» solo a chi non è lei */
+  const nonLei = Dati.attivo && Dati.io.nomeGestore && Dati.io.nomeGestore !== cuoca();
+  h += `<section class="scheda"><h2>Inviti</h2><p class="tenue" style="margin:0">Parte un biglietto in foto col link, pronto per WhatsApp.</p>
+    ${bottoneBiglietto('a', 'Invita le amiche', 'pieno')}${nonLei ? bottoneBiglietto('m', 'Invita ' + cuoca(), 'chiaro pieno') : ''}</section>`;
   return h + '</main>';
 }
 /* incassi del mese (Fase 3, C7): per il giorno del ritiro; solo ordini accettati, pronti o ritirati */
