@@ -643,3 +643,6 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .sez[open] > summary { border-bottom: 1px dashed var(--riga); }
 .sez > .scheda { box-shadow: none; margin: 0; background: transparent; }
 .sez > .scheda > h2:first-child { display: none; }
+.conferma-prova { border-color: var(--cotto); color: var(--cotto); }
+.arch-riga { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--riga); }
+.riservata { background: none; border: 0; padding: 10px 8px 0; font: inherit; font-size: .72rem; letter-spacing: .04em; color: var(--tenue); opacity: .75; cursor: pointer; }

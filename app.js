@@ -225,7 +225,7 @@ const prezziGiusti = (rr, prima = []) => rr.map(r => {
   return Object.assign({}, r, { prezzo: v ? v.prezzo : prezzoOra(r) }, r.fritto ? { frittoPrezzo: fp || 0 } : {}, r.forno ? { fornoPrezzo: fo || 0 } : {});
 });
 const daAccettare = o => ['nuovo', 'daApprovare'].includes(o.stato);
-const daGuardare = () => S.ordini.filter(o => o.stato !== 'prova' && (o.stato === 'nuovo' || o.modifica || richiestaDi(o) || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato')));
+const daGuardare = () => S.ordini.filter(o => !o.archiviato && o.stato !== 'prova' && (o.stato === 'nuovo' || o.modifica || richiestaDi(o) || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato')));
 const mapsLink = () => { const r = S.impostazioni.ritiro; return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.via + ', ' + r.citta)}`; };
 const numero = n => { const d = String(n || '').replace(/\D/g, ''); return d ? (d.length <= 10 ? '39' + d : d) : ''; };
 /* indirizzo del sito: sempre quello di data.js, mai quello salvato nei dati (Mario 07/11: nei dati di Firebase c'era ancora pages.dev, sito mai esistito, e il link dell'invito non si apriva) */
@@ -261,7 +261,7 @@ function barraDev() {
     UI.barraDev = !UI.barraDev; render(); mostraToast(UI.barraDev ? 'Barra sviluppatore aperta. Scorri di nuovo per chiuderla.' : 'Barra sviluppatore chiusa.');
   }, { passive: true });
 })();
-const firma = () => `<footer class="firma" data-a="firma-tocco">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' && !P.invitoGestore ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
+const firma = () => `<footer class="firma" data-a="firma-tocco">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' && !P.invitoGestore ? '<br><button type="button" class="riservata" data-a="entra-monica">Area riservata</button>' : ''}</footer>`;
 const filo = () => `<div class="filo" aria-hidden="true">${ico('spiga')}</div>`;
 function striscia() {
   if (Dati.attivo) return barraDev();
@@ -351,7 +351,7 @@ function vInvitoGestore() {
   return h + `<h1>Fatto!</h1><p class="tenue">Mario ha ricevuto la tua richiesta. Appena dice sì, la tua cucina si apre da sola, qui.</p>
     <div class="avviso verde">${ico('spunta')}<div>${lei ? 'Sei entrata' : 'Hai fatto l\'accesso'} come <b>${esc(io.email)}</b>.</div></div>
     <a class="btn chiaro pieno" href="${wa('', testo)}" target="_blank" rel="noopener">${ico('chat')}Scrivi a Mario su WhatsApp</a>
-    ${cartaHome(telefono() === 'ios' ? 'Su iPhone: dopo, apri l\'app dall\'icona e tocca «Sei Monica? Entra» in fondo, con lo stesso Google.' : '')}
+    ${cartaHome(telefono() === 'ios' ? 'Su iPhone: dopo, apri l\'app dall\'icona e tocca «Area riservata» in fondo, con lo stesso Google.' : '')}
     <button type="button" class="link" data-a="inv-altro">Non sei tu? Entra con un altro account</button></main>`;
 }
 /* testo dell'invito che Mario manda dall'app */
@@ -792,7 +792,7 @@ function vCarrello() {
   }
   h += metodi.length === 1 && metodi[0] === 'contanti' ? `<p class="paga-riga">${ico('spunta')}Paghi in contanti quando ritiri.</p>` : `<section class="scheda"><h2>Come paghi</h2><div class="scelte">${metodi.map(m => `<button type="button" class="scelta" data-a="metodo" data-v="${m}" aria-pressed="${UI.metodo === m}">${METODO[m]}</button>`).join('')}</div>
     <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>`;
-  h += `    <div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica? (se vuoi)</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>
+  h += `    <div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica?</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>
     <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
     ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
     ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : sceltaManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima: ordini davvero o provi l\'app?</span>' : ''}`;
@@ -1053,6 +1053,8 @@ function cartaOrdineMonica(o) {
     if (o.stato === 'pronto') h += `<button type="button" class="btn pieno" data-a="ritirato" data-id="${o.id}">${ico('spunta')}Ritirato</button>`;
   }
   /* C35: un ordine fatto per provare l'app esce da tutti i conti; due tocchi, per non sbagliare */
+  if (diProva(o)) h += UI.archSi === o.id ? `<button type="button" class="btn chiaro pieno conferma-prova" data-a="arch-prova" data-id="${o.id}">Tocca ancora: archivia questa prova</button>`
+    : `<button type="button" class="btn chiaro" data-a="arch-prova" data-id="${o.id}">Archivia questa prova</button>`;
   if (o.prova) h += `<button type="button" class="link piccolo" data-a="ord-vero" data-id="${o.id}">Non è una prova: rimettilo tra i veri</button>`;
   else if (o.stato !== 'daApprovare') h += UI.provaSi === o.id
     ? `<button type="button" class="btn chiaro pieno conferma-prova" data-a="ord-prova" data-id="${o.id}">Tocca ancora: è una prova</button>`
@@ -1086,22 +1088,28 @@ function dateOrdine(o, cliente) {
     <div class="date-riga"><span class="date-ico">${ico('ritiro')}</span><div><small>${cosa}</small><b>${dataLunga(g)}</b></div>${sc.t ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : ''}</div>
     ${quando ? `<div class="date-riga tenue"><span class="date-ico">${ico('ordini')}</span><div><small>Ordinato</small><span>${quando}${o.creato ? ` · ${giorniFa(o.creato) === 0 ? 'oggi' : giorniFa(o.creato) === 1 ? 'ieri' : giorniFa(o.creato) + ' giorni fa'}` : ''}</span></div></div>` : ''}</div>`;
 }
+/* Prove archiviate (Mario 07/11): spariscono da tutte le schede; due tocchi per non sbagliare, «Annulla» subito dopo */
+const proveDaArchiviare = () => S.ordini.filter(o => diProva(o) && !o.archiviato);
 function listaProve() {
-  const pp = gruppiOrdini().prove;
-  if (!pp.length) return '';
-  return `<details class="ord-prove"${pp.some(o => o.id === UI.ordAperto) ? ' open' : ''}><summary class="tenue">Ordini di prova (${pp.length})</summary>
+  const { prove: pp, archiviati: aa } = gruppiOrdini(), tutte = proveDaArchiviare().length;
+  if (!pp.length && !aa.length && !tutte) return '';
+  return `<details class="ord-prove"${pp.some(o => o.id === UI.ordAperto) || UI.vediArch || UI.archSi === 'tutte' ? ' open' : ''}><summary class="tenue">Ordini di prova (${pp.length})</summary>
     <p class="tenue piccolo" style="margin:4px 0">Prove finite: non contano negli incassi né nella spesa. Toccane una per rimetterla tra i veri.</p>
-    <div class="ord-lista">${pp.map(o => rigaOrd(o, true)).join('')}</div></details>`;
+    <div class="ord-lista">${pp.map(o => rigaOrd(o, true)).join('')}</div>
+    ${tutte ? `<button type="button" class="btn chiaro pieno${UI.archSi === 'tutte' ? ' conferma-prova' : ''}" data-a="arch-prova" data-id="tutte">${UI.archSi === 'tutte' ? `Tocca ancora: archivia ${tutte === 1 ? 'la prova' : `le ${tutte} prove`}` : `Archivia tutte le prove (${tutte})`}</button>` : ''}
+    ${aa.length ? `<button type="button" class="link piccolo" data-a="vedi-arch">${UI.vediArch ? 'Nascondi gli archiviati' : `Archiviati (${aa.length})`}</button>
+      ${UI.vediArch ? `<div class="ord-lista">${aa.map(o => `<div class="arch-riga"><span>n. ${o.n} · ${esc(chiOrdina(o))}</span><button type="button" class="link piccolo" data-a="disarch" data-id="${o.id}">Ripristina</button></div>`).join('')}</div>` : ''}` : ''}</details>`;
 }
 function gruppiOrdini() {
-  const g = daGuardare(), oo = S.ordini.filter(o => !g.includes(o) && o.stato !== 'prova'), o0 = oggi(), finita = o => o.stato === 'prova' || (o.prova && FINITI.includes(o.stato));
+  const g = daGuardare(), oo = S.ordini.filter(o => !g.includes(o) && o.stato !== 'prova' && !o.archiviato), o0 = oggi(), finita = o => o.stato === 'prova' || (o.prova && FINITI.includes(o.stato));
   const perGiorno = (a, b) => giornoDi(a).localeCompare(giornoDi(b)) || a.n - b.n;
   return {
     nuovi: g.sort(perGiorno),
     oggi: oo.filter(o => o.stato === 'pronto' || (o.stato === 'accettato' && o.entro <= o0)).sort(perGiorno),
     prossimi: oo.filter(o => (o.stato === 'accettato' && o.entro > o0) || o.stato === 'proposta').sort(perGiorno),
     storico: oo.filter(o => FINITI.includes(o.stato) && !o.prova).sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n),
-    prove: S.ordini.filter(finita).sort((a, b) => b.n - a.n)
+    prove: S.ordini.filter(o => finita(o) && !o.archiviato).sort((a, b) => b.n - a.n),
+    archiviati: S.ordini.filter(o => o.archiviato).sort((a, b) => b.n - a.n)
   };
 }
 function schedaCucina(oo, titolo = 'Cosa cucinare', conGiorno = true) {
@@ -1575,7 +1583,7 @@ function foglioMenuImg() {
 }
 
 /* ---------- etichette per le vaschette (A4, 10 per foglio da 105 x 57 mm) ---------- */
-const ordiniDaCucinare = () => S.ordini.filter(o => o.stato === 'accettato' && !o.modifica);
+const ordiniDaCucinare = () => S.ordini.filter(o => o.stato === 'accettato' && !o.modifica && !o.archiviato);
 function etichetteDi(giorno) {   // per prodotto, senza nome del cliente: le uguali stanno vicine e si stampano in serie (Mario 07/11)
   const gruppi = new Map();
   ordiniDaCucinare().filter(o => o.entro === giorno).forEach(o => o.righe.forEach(r => {
@@ -1842,6 +1850,15 @@ const A = {
     UI.provaSi = null; const o = ordine(id);
     cambia(FINITI.includes(o.stato) ? 'Spostato negli ordini di prova (in fondo allo Storico)' : 'Segnato come PROVA: non conta negli incassi né nella spesa', () => { o.prova = true; });
   },
+  'arch-prova'(el) {
+    const id = el.dataset.id;
+    if (UI.archSi !== id) { UI.archSi = id; render(); clearTimeout(A._arch); A._arch = setTimeout(() => { if (UI.archSi === id) { UI.archSi = null; render(); } }, 4000); return; }
+    UI.archSi = null; const oo = id === 'tutte' ? proveDaArchiviare() : [ordine(id)].filter(Boolean);
+    if (UI.ordAperto && oo.some(o => o.id === UI.ordAperto)) UI.ordAperto = null;
+    cambia(oo.length === 1 ? 'Prova archiviata' : `${oo.length} prove archiviate`, () => { oo.forEach(o => { o.archiviato = true; }); });
+  },
+  'vedi-arch'() { UI.vediArch = !UI.vediArch; render(); },
+  'disarch'(el) { const o = ordine(el.dataset.id); if (o) cambia('Prova ripristinata', () => { o.archiviato = false; }); },
   'ord-vero'(el) {
     const o = ordine(el.dataset.id);
     cambia('Rimesso tra gli ordini veri', () => { o.prova = false; o.provaCliente = false; if (o.stato !== 'prova') return; o.stato = o.statoPrima || 'ritirato'; delete o.statoPrima; if (!FINITI.includes(o.stato)) riprendiPronti(o); });
@@ -2218,7 +2235,7 @@ function vSicurezza() {
       <button type="button" class="btn pieno" data-a="lucchetto-metti">${ico('lucchetto')}Metti l'impronta</button>`
     : `<p style="margin:0"><b>Spento:</b> il telefono non ha il blocco schermo. Mettilo nelle impostazioni del telefono, poi riapri l'app.</p>`}
     <button type="button" class="link" data-a="lucchetto-esci" style="color:var(--allarme)">${L.esci ? 'Sicura? Tocca ancora per uscire' : 'Esci da questo telefono'}</button>
-    <small class="tenue">Se cambi telefono o lo dai via. Per rientrare: «Sei Monica? Entra» in fondo alla pagina.</small></section>`;
+    <small class="tenue">Se cambi telefono o lo dai via. Per rientrare: «Area riservata» in fondo alla pagina.</small></section>`;
 }
 /* l'impronta si chiede da sola una volta, finita l'apertura animata; poi col pulsante */
 function provaApri() {

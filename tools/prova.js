@@ -186,6 +186,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.dev-scheda [data-a="dev-come"]'); await page.locator('.voce').first().waitFor({ timeout: 3000 });
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
   });
+  await passo('ordini di prova: archivia con due tocchi, poi ripristina (Mario 07/11)', async () => {
+    await page.evaluate(() => { P.ruolo = 'monica'; S.ordini.slice(0, 2).forEach(o => { o.prova = true; }); salva(); vai('ordini'); });
+    await page.waitForTimeout(300); await clic('[data-a="tab"][data-v="storico"]'); await page.locator('.ord-prove summary').click({ timeout: 4000 });
+    await clic('[data-a="arch-prova"][data-id="tutte"]');
+    if (await page.evaluate(() => S.ordini.some(o => o.archiviato))) throw new Error('archiviate con un tocco solo');
+    await clic('[data-a="arch-prova"][data-id="tutte"]'); await page.waitForTimeout(300);
+    const r = await page.evaluate(() => { const g = gruppiOrdini(); return [S.ordini.filter(o => o.archiviato).length, [...g.nuovi, ...g.oggi, ...g.prossimi, ...g.storico, ...g.prove].some(o => o.archiviato)].join('/'); });
+    if (r !== '2/false') throw new Error('archivio: ' + r);
+    await foto('14e-archivio-prove');
+    await page.evaluate(() => { S.ordini.forEach(o => { o.prova = false; o.archiviato = false; }); salva(); vai('home'); });   // le prove dopo usano gli ordini veri
+  });
   await passo('cliente: menù di Natale e tiramisù pronto', async () => {
     await clic('[data-a="ruolo"][data-v="cliente"]'); await page.waitForTimeout(300); await foto('15-menu-natale');
     if (!(await page.locator('.natale').count())) throw new Error('natale assente');

@@ -8,6 +8,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C44 | (Mario 07/11 ~20:10) Ordini di prova archiviabili con due tocchi (uno o tutti) + «Archiviati» per ripristinare; cliente: «Area riservata» discreta al posto di «Sei Monica? Entra», via «(se vuoi)». 👁 Lo vedi: Ordini → Storico → «Ordini di prova» → «Archivia tutte le prove»; dal telefono di un cliente, in fondo al carrello · prova: tua foto o tuo ok | Claude | 🟢 manca la foto |
 | C41 | (Mario 07/11 ~19:45) «Al forno da Monica» come sovrapprezzo per piatto, accanto al fritto: il cliente sceglie una cottura sola. Fatto dalla #19, online `851c056`. 👁 Lo vedi: Monica in I miei piatti → piatto → «Cotto da te» mette la cifra; il cliente la vede nella scheda del piatto · prova: tua foto o tuo ok | Claude | 🟢 manca la foto |
 | C42 | (Mario 07/11 ~19:55) Vapore di cucina dopo lo sblocco, 3 stili (A pentola · B nebbia · C coperchio) in `vapore.js`; video mandati, Mario sceglie; ora è attivo A. 👁 Lo vedi: sblocchi con impronta o PIN e parte il vapore; per provarli tutti, Impostazioni → Sviluppatore → «Vapore dopo lo sblocco» · prova: tua scelta e tuo ok |  Claude | 🟡 aspetta la scelta |
 | C43 | (Mario 07/11 ~19:55) Barra sviluppatore «guarda come»: si apre scorrendo il dito da sinistra a destra in cima, senza disturbare il «tira giù per ricaricare»; novità divise in Nuovo · Migliorato · Corretto. 👁 Lo vedi: sul tuo telefono, in cima a qualunque pagina; novità in Impostazioni → Sviluppatore · prova: tua foto o tuo ok | Claude | 🟢 manca la foto |
