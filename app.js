@@ -1303,6 +1303,7 @@ function sezioneDev() {
     <p style="margin:0"><b>Versione ${VERSIONE_APP}</b> · ${esc(NOVITA[0].data)}</p>
     <p class="tenue piccolo" style="margin:0">La vedi solo tu, su questo telefono. Monica non vede niente di questa parte.</p>
     <button type="button" class="btn chiaro" data-a="dev-come" data-v="cliente">Guarda l'app come un cliente</button>
+    ${(() => { const n = S.ordini.filter(o => !diProva(o)).length; return n ? `<button type="button" class="btn chiaro${UI.tuttiProvaSi ? ' conferma-prova' : ''}" data-a="dev-tutti-prova">${UI.tuttiProvaSi ? `Tocca ancora: ${n} ordini diventano PROVA` : `Segna come PROVA tutti gli ordini fatti finora (${n})`}</button>` : '<p class="tenue piccolo" style="margin:0">Tutti gli ordini fatti finora sono segnati come PROVA.</p>'; })()}
     <h3 style="margin:8px 0 0">Novità</h3>
     ${ultime.map(n => `<div class="dev-nov"><b>${esc(n.v)} · ${esc(n.data)}</b><ul>${n.cosa.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`).join('')}
     ${NOVITA.length > 3 && !UI.devTutte ? '<button type="button" class="link" data-a="dev-tutte">Tutte le novità</button>' : ''}
@@ -1786,6 +1787,11 @@ const A = {
     UI.devCliente = el.dataset.v === 'cliente'; UI.foglio = null; UI.modifica = null;
     if (Dati.attivo) P.ruolo = UI.devCliente ? 'cliente' : 'monica'; else { P.ruolo = UI.devCliente ? 'cliente' : 'monica'; salvaP(); }
     vai(UI.devCliente ? 'menu' : 'home');
+  },
+  'dev-tutti-prova'() {
+    if (!UI.tuttiProvaSi) { UI.tuttiProvaSi = true; render(); setTimeout(() => { if (UI.tuttiProvaSi) { UI.tuttiProvaSi = false; render(); } }, 4000); return; }
+    UI.tuttiProvaSi = false; const oo = S.ordini.filter(o => !diProva(o));
+    cambia(`${oo.length} ordini segnati come PROVA: non contano più negli incassi né nella spesa`, () => { oo.forEach(o => { o.prova = true; }); });
   },
   'dev-tutte'() { UI.devTutte = true; render(); },
   'dev-esci'() { P.sviluppatore = false; UI.devCliente = false; salvaP(); render(); mostraToast('Modalità sviluppatore spenta.'); },
