@@ -39,6 +39,11 @@ export class Avvisi extends DurableObject {
     return k;
   }
   async chiavePubblica() { return (await this.chiavi()).pub; }
+  /* per capire i guasti (Mario 07/11: notifica non arrivata): quanti telefoni e gli ultimi 10 invii, senza indirizzi */
+  async stato() {
+    const tutti = (await this.ctx.storage.get('iscritti')) || [];
+    return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [] };
+  }
 
   async iscrivi(uid, sub) {
     if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint) || sub.endpoint.length > 1000) return false;
@@ -54,7 +59,7 @@ export class Avvisi extends DurableObject {
     const dest = tutti.filter(x => !soloUid || x.uid === soloUid);
     const k = await this.chiavi();
     const priv = await crypto.subtle.importKey('jwk', k.priv, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
-    const morti = [];
+    const morti = [], esiti = [];
     let ok = 0;
     for (const s of dest) {
       const aud = new URL(s.endpoint).origin;
@@ -63,10 +68,14 @@ export class Avvisi extends DurableObject {
       const firma = b64u(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, priv, new TextEncoder().encode(testa + '.' + corpo)));
       try {
         const r = await fetch(s.endpoint, { method: 'POST', headers: { authorization: `vapid t=${testa}.${corpo}.${firma}, k=${k.pub}`, ttl: '86400', urgency: 'high', 'content-length': '0' } });
+        esiti.push(r.status + (r.ok ? '' : ' ' + (await r.text()).slice(0, 120)));
         if (r.status === 404 || r.status === 410) morti.push(s.endpoint); else if (r.ok) ok++;
-      } catch (e) { /* il prossimo avviso riprova */ }
+      } catch (e) { esiti.push('errore ' + String(e && e.message || e).slice(0, 120)); }
     }
     if (morti.length) await this.ctx.storage.put('iscritti', tutti.filter(x => !morti.includes(x.endpoint)));
+    const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
+    diario.push({ quando: new Date().toISOString(), per: soloUid ? 'prova' : 'ordine', telefoni: dest.length, esiti });
+    await this.ctx.storage.put('diario', diario);
     return { mandati: ok, telefoni: dest.length };
   }
 
@@ -87,6 +96,7 @@ export default {
     const av = env.AVVISI.get(env.AVVISI.idFromName('cucina'));
     try {
       if (url.pathname === '/api/chiave' && req.method === 'GET') return json({ chiave: await av.chiavePubblica() });
+      if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato());
       if (req.method !== 'POST') return json({ errore: 'metodo' }, 405);
       if (url.pathname === '/api/avvisa') return json(await av.avvisa());
       const uid = await gestoreDa(req);
