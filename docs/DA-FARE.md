@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 07/11 · 🟡 Principale 16 · Ordini nuovi (C24): ti piacciono le 3 foto (1 sì · 2 cambia qualcosa)? E faccio lo stesso ordine anche per «I miei ordini» dei clienti (1 sì · 2 no)?
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
 - 07/11 · 🟡 Principale 14 · Invito per Monica fatto: Mario incolla le regole nuove (Firestore → Regole → Pubblica), poi da Impostazioni tocca «Invita chi gestisce con te» e lo manda a Monica; al suo arrivo tocca «Sì, è lei». 👁 Lo vedi: sul sito, Home di Monica «Ciao Monica» · prova: foto della sua Home
 
