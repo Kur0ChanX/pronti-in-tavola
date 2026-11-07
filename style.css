@@ -616,7 +616,6 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 /* C35: ordini di prova, in fondo allo Storico */
 .ord-prove { margin-top: 18px; border-top: 1px dashed var(--riga); padding-top: 10px; }
 .ord-prove summary { cursor: pointer; font-weight: 700; padding: 6px 0; }
-.conferma-prova { border-color: var(--cotto); color: var(--cotto); }
 /* cliente in attesa dell'ok di Monica: ben visibile (Mario 07/11) */
 .attesa-forte { background: #FCE7B8; border: 2px solid #D9A441; color: #4A2A08; font-size: 1.02rem; }
 /* ordine di prova: si vede subito (Mario 07/11) */
@@ -625,7 +624,7 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 /* modalità sviluppatore (solo Mario) */
 .prova.dev { background: #1F2A44; }
 .prova.dev .dev-v { margin-left: auto; opacity: .7; font-size: .8rem; }
-.dev-scheda { border: 2px dashed #1F2A44; display: grid; gap: 8px; }
+.dev-scheda, .mario-scheda { border: 2px dashed #1F2A44; display: grid; gap: 8px; }
 .dev-nov ul { margin: 4px 0 0; padding-left: 20px; }
 .dev-nov li { margin: 2px 0; }
 /* scheda del piatto a voci (Mario 07/11): una voce aperta alla volta */

@@ -176,7 +176,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.dev-scheda').waitFor({ timeout: 3000 });
     const t = await page.locator('.dev-scheda').innerText(); if (!/Versione \d/.test(t) || !/Novità/.test(t)) throw new Error('mancano versione o novità');
     await page.locator('.dev-scheda').scrollIntoViewIfNeeded(); await foto('14c-sviluppatore');
-    await clic('[data-a="dev-tutti-prova"]'); await clic('[data-a="dev-tutti-prova"]');
+    await clic('.mario-scheda [data-a="tutti-prova-apri"]'); await page.locator('.foglio .lista-prova li').first().waitFor({ timeout: 3000 });
+    await foto('14d-tutti-prova');
+    await clic('.foglio .piede [data-a="chiudi"]');
+    if (!(await page.evaluate(() => S.ordini.some(o => !diProva(o))))) throw new Error('«No, lascia così» ha segnato gli ordini');
+    await clic('.mario-scheda [data-a="tutti-prova-apri"]'); await clic('[data-a="tutti-prova-si"]');
     if (await page.evaluate(() => S.ordini.some(o => !diProva(o)))) throw new Error('restano ordini non di prova');
     await page.evaluate(() => { S.ordini.forEach(o => { o.prova = false; }); salva(); render(); });   // le prove dopo usano gli ordini veri
     await clic('.dev-scheda [data-a="dev-come"]'); await page.locator('.voce').first().waitFor({ timeout: 3000 });

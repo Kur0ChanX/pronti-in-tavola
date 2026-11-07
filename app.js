@@ -1303,16 +1303,34 @@ function sezioneDev() {
     <p style="margin:0"><b>Versione ${VERSIONE_APP}</b> · ${esc(NOVITA[0].data)}</p>
     <p class="tenue piccolo" style="margin:0">La vedi solo tu, su questo telefono. Monica non vede niente di questa parte.</p>
     <button type="button" class="btn chiaro" data-a="dev-come" data-v="cliente">Guarda l'app come un cliente</button>
-    ${(() => { const n = S.ordini.filter(o => !diProva(o)).length; return n ? `<button type="button" class="btn chiaro${UI.tuttiProvaSi ? ' conferma-prova' : ''}" data-a="dev-tutti-prova">${UI.tuttiProvaSi ? `Tocca ancora: ${n} ordini diventano PROVA` : `Segna come PROVA tutti gli ordini fatti finora (${n})`}</button>` : '<p class="tenue piccolo" style="margin:0">Tutti gli ordini fatti finora sono segnati come PROVA.</p>'; })()}
     <h3 style="margin:8px 0 0">Novità</h3>
     ${ultime.map(n => `<div class="dev-nov"><b>${esc(n.v)} · ${esc(n.data)}</b><ul>${n.cosa.map(c => `<li>${esc(c)}</li>`).join('')}</ul></div>`).join('')}
     ${NOVITA.length > 3 && !UI.devTutte ? '<button type="button" class="link" data-a="dev-tutte">Tutte le novità</button>' : ''}
     <button type="button" class="link piccolo" data-a="dev-esci">Esci dalla modalità sviluppatore</button></section>`;
 }
+/* Solo per Mario (07/11): ordini fatti per provare → PROVA, in vista nelle Impostazioni, con conferma a foglio */
+function schedaMario() {
+  if (P.ruolo !== 'monica' || UI.devCliente || !puoSviluppare()) return '';
+  const n = S.ordini.filter(o => !diProva(o)).length;
+  return `<section class="scheda mario-scheda"><h2>Solo per te, Mario</h2>
+    <p class="tenue piccolo" style="margin:0">La vedi solo tu. Monica non vede questa scheda.</p>
+    ${n ? `<button type="button" class="btn chiaro" data-a="tutti-prova-apri">Segna come PROVA gli ordini fatti finora (${n})</button>`
+      : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}</section>`;
+}
+function foglioTuttiProva() {
+  const oo = S.ordini.filter(o => !diProva(o)).sort((x, y) => x.n - y.n), n = oo.length;
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro">
+    <h1>${n === 1 ? 'Questo ordine diventa PROVA?' : `Questi ${n} ordini diventano PROVA?`}</h1>
+    <ul class="lista-prova" style="margin:0;padding-left:20px">${oo.map(o => `<li><b>${esc(nomeBreve((cliente(o.cliente) || {}).nome || 'Cliente'))}</b> · ordine n. ${o.n}</li>`).join('')}</ul>
+    <div class="avviso">${ico('occhio')}<div>Dopo, con il bollino <b>PROVA</b>:<br>· non contano negli <b>incassi</b><br>· non vanno nella <b>lista della spesa</b><br>· restano nello storico, non si cancellano.</div></div>
+    <p class="tenue piccolo" style="margin:0">Se sbagli, subito dopo puoi toccare «Annulla».</p></div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="tutti-prova-si">Sì, segnali come PROVA</button><button type="button" class="btn chiaro pieno" data-a="chiudi">No, lascia così</button></div>`;
+}
 function vImpostazioni() {
   const i = S.impostazioni;
   const sw = (campo, val, t, s) => `<label class="interr"><span>${t}${s ? `<small>${s}</small>` : ''}</span><input type="checkbox" data-campo="${campo}" ${val ? 'checked' : ''}></label>`;
   return `${testataMonica('Impostazioni', 'home')}<main class="corpo">
+    ${schedaMario()}
     <section class="scheda"><h2>Pausa</h2>${sw('i.pausa.attiva', i.pausa.attiva, 'Sono in pausa', 'I clienti ordinano solo per dopo')}
       ${i.pausa.attiva ? `<label for="pausa-fino" style="font-weight:800">Fino a (compreso)</label><input type="date" id="pausa-fino" data-campo="i.pausa.fino" value="${i.pausa.fino}">` : ''}</section>
     <section class="scheda"><h2>Pronti subito</h2><label for="pronti-fino" style="font-weight:800">Ritiro entro le</label><input type="time" id="pronti-fino" data-campo="i.prontiFino" value="${esc(i.prontiFino)}"></section>
@@ -1413,7 +1431,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1788,10 +1806,11 @@ const A = {
     if (Dati.attivo) P.ruolo = UI.devCliente ? 'cliente' : 'monica'; else { P.ruolo = UI.devCliente ? 'cliente' : 'monica'; salvaP(); }
     vai(UI.devCliente ? 'menu' : 'home');
   },
-  'dev-tutti-prova'() {
-    if (!UI.tuttiProvaSi) { UI.tuttiProvaSi = true; render(); setTimeout(() => { if (UI.tuttiProvaSi) { UI.tuttiProvaSi = false; render(); } }, 4000); return; }
-    UI.tuttiProvaSi = false; const oo = S.ordini.filter(o => !diProva(o));
-    cambia(`${oo.length} ordini segnati come PROVA: non contano più negli incassi né nella spesa`, () => { oo.forEach(o => { o.prova = true; }); });
+  'tutti-prova-apri'() { UI.foglio = { tipo: 'tutti-prova' }; render(); },
+  'tutti-prova-si'() {
+    if (!puoSviluppare()) return;
+    const oo = S.ordini.filter(o => !diProva(o)); UI.foglio = null;
+    cambia(`${oo.length} ${oo.length === 1 ? 'ordine segnato' : 'ordini segnati'} come PROVA: non contano più negli incassi né nella spesa`, () => { oo.forEach(o => { o.prova = true; }); });
   },
   'dev-tutte'() { UI.devTutte = true; render(); },
   'dev-esci'() { P.sviluppatore = false; UI.devCliente = false; salvaP(); render(); mostraToast('Modalità sviluppatore spenta.'); },

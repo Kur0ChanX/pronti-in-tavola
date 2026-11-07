@@ -186,6 +186,7 @@ function statoIniziale() {
 const VERSIONE_APP = '0.9';
 const NOVITA = [
   { v: '0.9', data: '07/11/2026', cosa: [
+    'Impostazioni: scheda «Solo per te, Mario» in cima, con «Segna come PROVA gli ordini fatti finora» e conferma chiara',
     'Modalità sviluppatore: 7 tocchi sulla firma, guarda come cliente, versione e novità',
     'Ordini di prova: il cliente nuovo sceglie «Ordino davvero» o «Sto solo provando l\'app» prima di inviare',
     'Monica vede le prove col bollino PROVA; non contano negli incassi né nella spesa',
