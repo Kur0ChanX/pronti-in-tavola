@@ -2,56 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 12:38 · 01QTFEqR4jaQ
-continua
-
-## 2026-11-05 14:27 · 01QTFEqRY58R
-immagine anteprima ok firebase manda guida
-
-## 2026-11-05 14:30 · 01QTFEqRY58R
-Abilito Gemini che cosa ci dà in più?
-
-## 2026-11-05 14:31 · 01QTFEqRY58R
-fatto
-
-## 2026-11-05 14:33 · 01QTFEqRY58R
-dove
-
-## 2026-11-05 14:34 · 01QTFEqRY58R
-salvalo cosí ti ricordi
-
-## 2026-11-05 14:35 · 01QTFEqRY58R
-ogni vokta che vedi che sbagli una guida segna quella giusta su github
-
-## 2026-11-05 14:36 · 01QTFEqRY58R
-se ne parliamo la consulti
-
-## 2026-11-05 14:36 · 01QTFEqRY58R
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "[segreto tolto dalla scorta]",
-  authDomain: "pronti-in-tavola.firebaseapp.com",
-  projectId: "pronti-in-tavola",
-  storageBucket: "pronti-in-tavola.firebasestorage.app",
-  messagingSenderId: "340961319417",
-  appId: "1:340961319417:web:0c1e6c4a9b894bc187c528"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-
-## 2026-11-05 14:43 · 01QTFEqSmQas
-porta questa sessione a 320mila in catena a max token prima di passaggio di consegna
-
-## 2026-11-05 14:47 · 01QTFEqSmQas
-tanto alla partenza parte con 100k quindi non sò cosa conviene di piú padsaggio o lunghezza.... manda guida firebase parte 3
-e rendi l'app molto plu in play semplice e chiara per i clienti e Monica valuta tu le scelte e dimmele cos hai scelto, cerca fi capire che non tutti i clienti bazzicando tanto di impostazioni ecc per monica l'aiuto io
-
 ## 2026-11-05 15:04 · 01QTFEqSmQas
 Cavolo, io in un'altra app che avevo creato ho messo Europa 3, avevo messo, ho penso di aver fatto danno, non avevo letto che c'era Europa 8 con Milano. Cambia qualcosa nella mia app per l'albergo RVC?
 
@@ -144,3 +94,37 @@ link e passaggi chiari
 
 ## 2026-11-07 01:28 · 01QTFEqU1M1r
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+
+## 2026-11-07 08:33 · 01QTFEqUGCVA
+Sono entrato nell'app, mi ha detto entra con Google. Sono entrato con Google con mario.mishera@gmail.com e adesso mi dice ciao Monica, ma non è giusto, Monica non ha mario.mishera, ma lo stai facendo fare tu apposta o cosa? È una tua scelta questa? Perché Monica si logherà, penso, col suo Gmail che non conosco al momento.
+
+## 2026-11-07 08:44 · 01QTFEqUGCVA
+Ecco qua una cosa, ma l'applicazione è sempre un artefatto o l'applicazione è già finita? Finita nel senso è già su codice, è un'applicazione vera o è una prova questa? Cioè nel senso lo posso inviare a Monica e lei si loga col suo account e io la aggiungo in Firebase come mi hai detto tu, se ho capito bene?
+
+## 2026-11-07 08:47 · 01QTFEqUGCVA
+@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4" Ho un piccolo problemino, cioè a livello che nel senso che si può fare meglio la comunicazione tra noi. Quando clicco un link non me lo fa copiare sullo smartphone. Possiamo fare qualcosa come regola che non pesi sui token? Guarda, ti mando un piccolo video.
+
+## 2026-11-07 08:48 · 01QTFEqUGCVA
+3
+
+## 2026-11-07 08:49 · 01QTFEqUGCVA
+Anzi di fare il doppione, non puoi cercare un metodo che posso cliccare e sia copiare insieme?
+
+## 2026-11-07 08:51 · 01QTFEqUGCVA
+@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4" Allora, tenendo premuto non mi fa copiare nessuna delle tre, però ho visto come dal video, se io clicco la riga sopra me la fa copiare, e poi scendo giù e riesco a copiarlo, però è troppo macchinoso. Riesci a trovare una soluzione oppure facciamo la doppia riga? Riesci a inventarti qualcosa?
+
+## 2026-11-07 08:52 · 01QTFEqUGCVA
+No, adesso lo copia, però non è cliccabile.
+
+## 2026-11-07 08:54 · 01QTFEqUGCVA
+Scusa, anzi di mandargli questo, perché non gli mandiamo un invito fatto bene, carino, come un'app professionale, anzi di mandargli un link così sputato? È una cosa, perché non ci hai pensato tu e fai le cose in modo superficiale? Non è da te. Sei tu che mi dai queste idee per fare le cose fatte bene, non te le devo dire io. Hai sempre fatto così all'inizio, adesso piano piano ti stai facendo le cose un po' da robot, un po' senza inventiva, con poche soluzioni, con poche strategie, idee geniali.
+
+## 2026-11-07 09:00 · 01QTFEqUGCVA
+Un'altra cosa, tutte le regole che abbiamo fatto su questo progetto, solo su questo progetto di Monica, lo voglio implementare anche in un altro account. Se mi dai il metodo migliore, cosa ne so, quella delle foto della guida, questa che ti sto dicendo di l'ultimo messaggio che ti ho mandato, quella del copia e del link cliccabile, queste qua, quelle che ti ho detto in questo progetto, ecco, lo voglio portare su un altro account di Claude.
+
+## 2026-11-07 09:06 · 01QTFEqUGCVA
+Dimmi quali sono le 7 regole, così verifico se mi vanno bene tutte. E poi, visto che ci sono, che ti sto scrivendo, procedi con l'invito. Sì, tutto consigliato.
+
+## 2026-11-07 09:21 · 01QTFEqUGCVA
+No, il problema non è eh, il- quindi le cose per persone vere, inviti, messaggi, no, ma non intendevo quello, io intendo un discorso generale, non solo per gli inviti, cioè non creare una categoria, perché sennò poi quella regola si forma solo per gli inviti, eccetera. Quando dici funzioni nuove, prima un messaggio con una persona vera, poi il nome. Boh, non capisco, io parlavo in generale del messaggio che ti ho mandato, adesso te lo rimando quel messaggio. Parlavo in generale per fare un'attenzione generale, non solo per una cosa.
+È una cosa, perché non ci hai pensato tu e fai le cose in modo superficiale? Non è da te. Sei tu che mi dai queste idee per fare le cose fatte bene, non te le devo dire io. Hai sempre fatto così all'inizio, adesso piano piano ti stai facendo le cose un po' da robot, un po' senza inventiva, con poche soluzioni, con poche strategie, idee geniali.
