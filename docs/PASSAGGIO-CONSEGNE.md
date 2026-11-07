@@ -35,7 +35,7 @@ Aperta da Mario a mano (lineage 0). Nessuna sveglia attiva.
 
 ## Prossimi passi
 1. Avvio: titolo verde; ricorda a Mario le righe di «Aspetta Mario».
-2. C46 lucchetto a tre: oggi un solo tempo `S.impostazioni.lucchetto` (MINUTI_LUCCHETTO, `minutiLucchetto()`, `vSicurezza`, azione `i-lucchetto`). Mario vuole 3 tempi: uno solo per lui (gestore «Mario», nella scheda «Solo per te, Mario»), uno per Monica (voce Lucchetto) e uno per gli «ospiti» (gli altri gestori di «Chi gestisce»; chi lo cambia: proporrei Mario e Monica). Prima chiarire con Mario in una riga chi sono gli ospiti, poi oggetto `lucchetto: { mario, monica, ospiti }` con lettura del vecchio numero.
+2. FATTO dalla #20 (v0.9.2), aspetta la foto di Mario. Era: C46 lucchetto a tre: oggi un solo tempo `S.impostazioni.lucchetto` (MINUTI_LUCCHETTO, `minutiLucchetto()`, `vSicurezza`, azione `i-lucchetto`). Mario vuole 3 tempi: uno solo per lui (gestore «Mario», nella scheda «Solo per te, Mario»), uno per Monica (voce Lucchetto) e uno per gli «ospiti» (gli altri gestori di «Chi gestisce»; chi lo cambia: proporrei Mario e Monica). Prima chiarire con Mario in una riga chi sono gli ospiti, poi oggetto `lucchetto: { mario, monica, ospiti }` con lettura del vecchio numero.
 3. Aspetta le foto di Mario: archivio prove, Impostazioni a voci, vapore, swipe barra, forno, Area riservata.
 4. Proposta fatta (non chiesta): apertura senza stacco fra il logo di Android e il nostro. Promesse 👁 a lotti (C23).
 

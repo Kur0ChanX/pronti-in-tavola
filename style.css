@@ -647,3 +647,4 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .arch-riga { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px dashed var(--riga); }
 .riservata { background: none; border: 0; padding: 10px 8px 0; font: inherit; font-size: .72rem; letter-spacing: .04em; color: var(--tenue); opacity: .75; cursor: pointer; }
 .sez .sez-dentro { box-shadow: none; background: none; padding-top: 0; }
+.lucchetto-ospiti { display: grid; gap: 6px; border-top: 1px dashed var(--riga); padding-top: 12px; }

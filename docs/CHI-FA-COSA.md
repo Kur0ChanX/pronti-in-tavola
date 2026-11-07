@@ -3,7 +3,7 @@
 ## Catene
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
-| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 19 | `session_01QTFEqSoUrDejRJvbneWDZk` | |
+| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 20 | `session_01QTFEqQ5ALfYoXwjP9VcG8k` | |
 
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
