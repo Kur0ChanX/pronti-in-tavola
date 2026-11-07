@@ -1,9 +1,13 @@
-# Ultima risposta di Claude (06/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (07/11/2026 01:10 ora italiana)
 
-Ho capito: rifare le etichette con cura, senza niente sovrapposto, con una cucitura da sarta al posto dello zig-zag, «1 di 2» in piccolo, e poi andare avanti col progetto.
+Ecco link e passi.
 
-───
-✅ **FATTO**
-- **Bordo**: tolti lo zig-zag e i fiorellini. Al loro posto c'è una cucitura da sarta (punti tratteggiati arrotondati) dentro la cornice.
-- **Niente si sovrappone**: ora l'app misura ogni scritta prima di disegnarla. Se lo spazio non basta, rimpicciolisce un po' tutto. Se ne avanza, lo divide tra le righe.
-- **Nuova prova automatica**: controlla che le scritte non si tocchino e non escano dai bordi, anche …
+👉 DA FARE TU
+1. Apri questo link: https://dash.cloudflare.com/?to=/:account/workers-and-pages/create
+2. Se ti chiede l'account, tocca **Pronti in Tavola**.
+3. Si apre «Crea qualcosa di nuovo». Tocca **Connect GitHub**, il primo pulsante in alto.
+   ⚠️ NON toccare «Continua su Pages», che è in fondo.
+4. Se GitHub ti chiede dove installare, tocca **Kur0ChanX** e poi **Install & Authorize** (o **Save**).
+5. Quando torni su Cloudflare e vedi `pronti-in-tavola` nell'elenco, **fermati**. Non toccare niente e mandami la foto.
+
+Se invece finisci di nuovo su una pagina di GitHub, …
