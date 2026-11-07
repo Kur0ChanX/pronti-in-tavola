@@ -10,7 +10,7 @@
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C27 | (Mario 07/11 ~17:20) Tocco sulla notifica → l'app apre subito cosa è successo (ordine nuovo, richiesta, proposta, giorno spostato) con un riquadro in alto. 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
-| C28 | (Mario 07/11 ~17:20) Solo tema chiaro, mai scuro (foto `archivio/foto/apertura-scura-monica-07-11.jpg`: apertura scura, medaglione non scontornato). 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
+| C28 | (Mario 07/11 ~17:20; Barbara 17:50 ancora scura su Samsung Internet → pulsante «Apri in Chrome», PT E19) Solo tema chiaro, mai scuro (foto `archivio/foto/apertura-scura-monica-07-11.jpg`: apertura scura, medaglione non scontornato). 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
 | C29 | (Mario 07/11 ~17:20) Più/meno sui piatti: il pulsante e la scritta lampeggiano a ogni tocco: niente lampeggio. 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
 | C30 | (Mario 07/11 ~17:20) Sovrapprezzo «Fritto da Monica» per ogni piatto (lo mette Monica nella scheda del piatto); il cliente vede che il prezzo è da cuocere a casa e può scegliere «Lo vuoi fritto da Monica? +X €». 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |
 | C31 | (Mario 07/11 ~17:20) Proponi un altro giorno: toccando un giorno il foglio si ricarica e torna in cima (sembra che non hai toccato): niente animazione. 👁 Lo vedi: sul telefono di Monica o del cliente · prova: foto di Mario | Claude | 🔴 |

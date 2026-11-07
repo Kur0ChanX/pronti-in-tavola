@@ -2,6 +2,9 @@
    Versione di prova: i dati restano su questo telefono (localStorage).
    Nella versione vera solo lo strato «Dati» (carica, salva) passa a Firebase: il resto non cambia. */
 'use strict';
+/* arrivo da «Apri in Chrome» (C28): l'indirizzo non può portare il «#…» (inviti, #da=), viaggia in ?h= e qui torna al suo posto */
+(() => { try { const h = new URLSearchParams(location.search).get('h'); if (h && !location.hash) history.replaceState(null, '', location.pathname + '#' + h); } catch (e) { /* niente */ } })();
+const HASH_ARRIVO = location.hash;   // il «#…» com'era all'arrivo (l'app poi lo toglie): serve ad «Apri in Chrome»
 
 const CHIAVE = 'pit-prova-v1', CHIAVE_P = 'pit-telefono-v1';
 const LOGO = 'media/logo-480.webp';
@@ -602,6 +605,19 @@ function carosello() {
 }
 /* in cima al menù del cliente (Mario 07/11, C32 C33): installa l'app e attiva le notifiche, subito, un tocco ciascuno;
    e chi aspetta l'ok di Monica lo legge chiaro. Le notifiche le chiede il telefono solo dopo un tocco: da sole non si può. */
+/* Samsung Internet scurisce da solo tutti i siti e ignora «solo chiaro» (Mario 07/11, telefoni di Monica e Barbara): un tocco per aprire in Chrome */
+const suSamsung = /SamsungBrowser/i.test(navigator.userAgent) && !/Android.*wv/.test(navigator.userAgent);
+function linkChrome() {
+  const u = new URL(location.href), h = (HASH_ARRIVO || location.hash).replace(/^#vai=.*/, '').slice(1);
+  const dove = u.host + u.pathname + (h ? '?h=' + encodeURIComponent(h) : '');
+  return `intent://${dove}#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=${encodeURIComponent(u.origin + u.pathname)};end`;
+}
+function bannerSamsung() {
+  if (!suSamsung || P.samsungVia || suHome()) return '';
+  return `<div class="scheda banner-chrome" style="margin:10px 12px 0"><b>Su questo telefono l'app si vede scura e confusa.</b>
+    <span class="tenue piccolo">Il browser Samsung la scurisce da solo. In Chrome si vede bene, ed è da lì che si installa.</span>
+    <div class="fila larga"><a class="btn pieno" href="${esc(linkChrome())}">Apri in Chrome</a><button type="button" class="btn chiaro" data-a="samsung-via">Resto qui</button></div></div>`;
+}
 function primiPassi() {
   if (UI.modifica || UI.passiVia) return '';
   const u = Dati.attivo ? Dati.io.utente : null, attesa = u && ['nuovo', 'ricollega'].includes(u.stato);
@@ -1322,7 +1338,7 @@ function render() {
   const invito = !chiuso && P.invitoGestore && P.ruolo !== 'monica';
   const benv = !chiuso && (invito || serveBenvenuto());
   if (!chiuso) controllaRichieste();
-  $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : invito ? vInvitoGestore() : benv ? vBenvenuto() : vistaCliente()) + firma()
+  $('#app').innerHTML = striscia() + bannerSamsung() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : invito ? vInvitoGestore() : benv ? vBenvenuto() : vistaCliente()) + firma()
     + (UI.avvisoTesto && !chiuso ? `<div class="notifica" role="status"><img src="media/icon-192.png" alt=""><div><b>Dalla notifica</b><span>${esc(UI.avvisoTesto)}</span></div></div>` : '');
   $('#barra').innerHTML = P.ruolo === 'cliente' && !benv ? barraCliente() : '';
   $('#barra').classList.toggle('nascosto', P.ruolo !== 'cliente' || benv);
@@ -1576,6 +1592,7 @@ const A = {
   'avvisi-attiva'() { attivaAvvisi(); },
   'avvisi-cliente'() { attivaAvvisiCliente(); },
   'sel-fritto'(el) { UI.sel.fritto = el.dataset.v === 'si'; render(); },
+  'samsung-via'() { P.samsungVia = true; salvaP(); render(); },
   'passi-app'() { UI.passiApp = !UI.passiApp; render(); },
   'passi-via'() { UI.passiVia = true; render(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
