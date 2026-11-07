@@ -1,6 +1,10 @@
 {
   "name": "pronti-in-tavola",
   "compatibility_date": "2026-11-01",
-  "assets": { "directory": "./sito" },
+  "main": "worker.js",
+  // i file dell'app; il Worker risponde prima solo per /api/* (notifiche degli ordini, C3)
+  "assets": { "directory": "./sito", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
+  "durable_objects": { "bindings": [{ "name": "AVVISI", "class_name": "Avvisi" }] },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Avvisi"] }],
   "preview_urls": false
 }

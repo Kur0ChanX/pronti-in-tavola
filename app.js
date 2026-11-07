@@ -344,8 +344,33 @@ function cartaNotifica() {
   }[st];
   return `<section class="scheda"><h2>Notifiche</h2><p class="tenue" style="margin:0">${msg}</p>
     ${esito ? `<div class="avviso ${esito.ok ? 'verde' : ''}">${ico(esito.ok ? 'spunta' : 'x')}<div>${esc(esito.t)}</div></div>` : ''}
+    ${(st === 'granted' || st === 'default') && sulSito() && Dati.io.gestore ? `<button type="button" class="btn pieno" data-a="avvisi-attiva"${UI.notProva ? ' disabled' : ''}>${ico('spunta')}${UI.notProva ? 'Un attimo…' : P.avvisiAttivi ? 'Riattiva gli ordini su questo telefono' : 'Ricevi gli ordini su questo telefono'}</button>` : ''}
     ${st === 'granted' || st === 'default' ? `<button type="button" class="btn chiaro pieno" data-a="notifica-prova"${UI.notProva ? ' disabled' : ''}>${ico('chat')}${UI.notProva ? 'Un attimo…' : 'Prova le notifiche'}</button>` : ''}
-    <p class="tenue piccolo" style="margin:0">Per ora è solo una prova su questo telefono: le notifiche degli ordini arriveranno più avanti.</p></section>`;
+    <p class="tenue piccolo" style="margin:0">${Dati.attivo && Dati.io.gestore ? '«Ricevi gli ordini» iscrive questo telefono: a ogni ordine nuovo suona. «Prova» controlla solo che il telefono le sappia mostrare.' : 'Per ora è solo una prova su questo telefono: le notifiche per i clienti arriveranno più avanti.'}</p></section>`;
+}
+/* notifiche vere degli ordini (C3): solo sul sito vero, dove c'è worker.js */
+const sulSito = () => Dati.attivo && location.origin === new URL(SITO).origin;
+function avvisaGestori() { if (sulSito()) fetch('/api/avvisa', { method: 'POST', keepalive: true }).catch(() => {}); }
+async function attivaAvvisi() {
+  UI.notProva = true; UI.notEsito = null; render();
+  try {
+    const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+    if (perm !== 'granted') throw new Error('permesso non dato: senza «Consenti» le notifiche non arrivano');
+    const tok = await Dati.token(); if (!tok) throw new Error('entra prima con Google');
+    const { chiave } = await (await fetch('/api/chiave')).json();
+    const reg = await navigator.serviceWorker.ready, b = Uint8Array.from(atob(chiave.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((chiave.length + 3) % 4)), c => c.charCodeAt(0));
+    let sub = await reg.pushManager.getSubscription();
+    if (sub && sub.options && sub.options.applicationServerKey && new Uint8Array(sub.options.applicationServerKey).join() !== b.join()) { await sub.unsubscribe(); sub = null; }
+    sub = sub || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b });
+    const post = (u, corpo) => fetch(u, { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify(corpo || {}) });
+    const r = await post('/api/iscrivi', { sub: sub.toJSON() });
+    if (!r.ok) throw new Error(((await r.json().catch(() => ({}))).errore) || 'iscrizione rifiutata');
+    const p = await (await post('/api/prova')).json();
+    P.avvisiAttivi = true; salvaP();
+    UI.notEsito = { ok: true, t: `Fatto! Da ora ogni ordine nuovo ti suona qui. È partita una notifica di prova${p.telefoni > 1 ? ` (${p.telefoni} telefoni iscritti)` : ''}: guarda in alto.` };
+  } catch (e) {
+    UI.notEsito = { ok: false, t: 'Non attivate: ' + ((e && e.message) || 'errore sconosciuto') + '.' };
+  } finally { UI.notProva = false; render(); }
 }
 async function provaNotifica() {
   UI.notProva = true; UI.notEsito = null; render();
@@ -1331,6 +1356,7 @@ function foglioEtichette() {
 const A = {
   'menu-immagine'() { mandaMenu(); },
   'notifica-prova'() { provaNotifica(); },
+  'avvisi-attiva'() { attivaAvvisi(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
   async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore(UI.invTipo) }); chiudiFoglio(); } catch (e) { /* annullato */ } },
   etichette() { apriEtichette(); },
@@ -1914,6 +1940,7 @@ async function inviaVero() {
   UI.invio = true; UI.riprova = false; render();
   try {
     await Dati.inviaOrdini(lista.map(x => x[1]));
+    avvisaGestori();
     P.carrello = []; UI.entro = null; UI.nota = ''; UI.invio = false; salvaP(); vai('inviato');
   } catch (e) {
     UI.invio = false;

@@ -33,6 +33,10 @@ function primaRete(r) {
       () => copia().then(m => { clearTimeout(t); dai(m || Response.error()); }));
   });
 }
+/* notifica degli ordini (worker.js la manda senza contenuto: il testo è qui) */
+self.addEventListener('push', e => {
+  e.waitUntil(self.registration.showNotification('Pronti in Tavola', { body: 'Hai un ordine nuovo da guardare 🍝', icon: 'media/icon-192.png', badge: 'media/icon-192.png', tag: 'ordine', renotify: true, data: { url: './' } }));
+});
 /* tocco sulla notifica: apre l'app (o la porta davanti se è già aperta) */
 self.addEventListener('notificationclick', e => {
   e.notification.close();

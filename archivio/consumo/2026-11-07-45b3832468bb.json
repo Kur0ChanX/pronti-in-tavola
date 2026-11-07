@@ -2,11 +2,12 @@
 "account": "377be6",
 "sessione": "45b3832468bb",
 "giorno": "2026-11-07",
-"turni": 6,
-"peso": 740173,
-"uscita": 14299,
-"contesto_max": 231612,
+"turni": 7,
+"peso": 1330831,
+"uscita": 25988,
+"contesto_max": 251555,
 "anomalie": [
-"un turno ha aggiunto 115k token al contesto"
+"un turno ha aggiunto 115k token al contesto",
+"1 uscite di strumento enormi (128 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ]
 }

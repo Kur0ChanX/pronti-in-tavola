@@ -561,6 +561,7 @@ const Dati = (() => {
 
   return {
     attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi, chiediGestore, decidiGestore, togliGestore,
+    token: () => (auth && auth.currentUser && !auth.currentUser.isAnonymous) ? auth.currentUser.getIdToken() : Promise.resolve(null),   // per le notifiche (worker.js)
     confermato: () => ultimaScrittura,
     haDati: () => !!base,
     fotoDalServer: () => fotoDalServer,
