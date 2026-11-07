@@ -62,6 +62,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.testata [data-v="carrello"]'); await foto('04-carrello');
     await clic('.giorno:not([disabled])');
     if (await page.locator('[data-a="ordine-prova"]').count() !== 2) throw new Error('manca la scelta «Ordino davvero / Sto solo provando»');
+    if (!(await page.locator('[data-a="invia"][disabled]').count())) throw new Error('«Invia» attivo senza la scelta davvero/prova');
     await clic('[data-a="ordine-prova"][data-v="1"]'); await clic('[data-a="ordine-prova"][data-v=""]');   // ci ripensa: ordine vero
     if (await page.locator('[data-a="ordine-prova"][data-v=""][aria-pressed="true"]').count() !== 1) throw new Error('la scelta «Ordino davvero» non resta');
     await clic('[data-a="invia"]'); await page.waitForTimeout(500); await foto('05-inviato');

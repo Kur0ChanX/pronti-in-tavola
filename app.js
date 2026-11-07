@@ -734,13 +734,15 @@ function foglioPiatto() {
 }
 
 /* chi non è ancora stato accettato da Monica dice se ordina davvero o prova l'app (Mario 07/11) */
+/* scelta obbligatoria (Mario 07/11): senza, «Invia» non parte */
+const sceltaManca = () => puoProvare() && UI.prova === undefined;
 const puoProvare = () => !UI.modifica && (!Dati.attivo || (Dati.io.utente && Dati.io.utente.stato !== 'approvato'));
 function sceltaProva() {
   if (!puoProvare()) return '';
   return `<section class="scheda"><h2>Ordini davvero o provi l'app?</h2><div class="scelte">
-    <button type="button" class="scelta" data-a="ordine-prova" data-v="" aria-pressed="${!UI.prova}">Ordino davvero</button>
-    <button type="button" class="scelta" data-a="ordine-prova" data-v="1" aria-pressed="${!!UI.prova}">🧪 Sto solo provando l'app</button></div>
-    <span class="tenue piccolo">${UI.prova ? 'Monica lo vede con la scritta PROVA e non lo cucina.' : 'Monica lo prepara per te.'}</span></section>`;
+    <button type="button" class="scelta" data-a="ordine-prova" data-v="" aria-pressed="${UI.prova === false}">Ordino davvero</button>
+    <button type="button" class="scelta" data-a="ordine-prova" data-v="1" aria-pressed="${UI.prova === true}">Sto solo provando l'app</button></div>
+    <span class="tenue piccolo">${UI.prova === undefined ? 'Scegli una delle due: serve per inviare.' : UI.prova ? 'Monica lo vede con la scritta PROVA e non lo cucina.' : 'Monica lo prepara per te.'}</span></section>`;
 }
 function vCarrello() {
   const c = P.carrello;
@@ -768,8 +770,8 @@ function vCarrello() {
     <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>`;
   h += `    <div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica? (se vuoi)</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>
     <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
-    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
-    ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : ''}`;
+    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
+    ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : sceltaManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima: ordini davvero o provi l\'app?</span>' : ''}`;
   return h + '</main>';
 }
 
@@ -1039,7 +1041,7 @@ const FINITI = ['ritirato', 'rifiutato', 'annullato'];
 /* ordine di prova (Mario 07/11): fa il giro normale (notifiche, Nuovi, Oggi) con «PROVA» ben visibile; fuori da incassi e spesa; finito, va negli «Ordini di prova».
    stato 'prova' = vecchio modo (C35 prima versione), trattato come una prova finita */
 const diProva = o => !!o.prova || o.stato === 'prova';
-const bollinoProva = o => diProva(o) ? '<span class="bollino-prova">🧪 PROVA</span>' : '';
+const bollinoProva = o => diProva(o) ? '<span class="bollino-prova">PROVA</span>' : '';
 const giornoDi = o => o.stato === 'proposta' && o.proposta ? o.proposta : o.entro;
 /* scadenze chiare (Mario 07/11: «deve capire in modo facile le scadenze, il giorno che è stato ordinato… che le faciliti l'organizzativo») */
 function scadenza(g, finito) {
@@ -1714,6 +1716,7 @@ const A = {
   entro(el) { UI.entro = el.dataset.v; render(); },
   metodo(el) { UI.metodo = el.dataset.v; render(); },
   invia() {
+    if (sceltaManca()) { mostraToast('Scegli prima: ordini davvero o stai provando l\'app?'); return; }
     if (Dati.attivo) { inviaVero(); return; }
     const c = P.carrello, pronti = c.filter(r => r.pronto), dopo = c.filter(r => !r.pronto);
     for (const r of pronti) {
@@ -1722,12 +1725,12 @@ const A = {
     }
     const nuovo = (righe, entro, pronto) => {
       const o = { id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5), n: S.prossimoNumero++, cliente: P.cliente, righe: righe.map(r => { const x = Object.assign({}, r); delete x.pronto; return x; }), entro, stato: 'nuovo', pronto, paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), tempi: { nuovo: Date.now() }, cuori: {} };
-      if (UI.prova && puoProvare()) Object.assign(o, { prova: true, provaCliente: true });
+      if (UI.prova === true && puoProvare()) Object.assign(o, { prova: true, provaCliente: true });
       S.ordini.push(o);
     };
     if (dopo.length) nuovo(dopo, UI.entro, false);
     if (pronti.length) { nuovo(pronti, oggi(), true); pronti.forEach(r => { const p = piatto(r.piatto); p.pronto.qta = arrot(p.pronto.qta - r.qta); }); }
-    P.carrello = []; UI.entro = null; UI.nota = ''; UI.prova = false; salva(); salvaP(); vai('inviato');
+    P.carrello = []; UI.entro = null; UI.nota = ''; UI.prova = undefined; salva(); salvaP(); vai('inviato');
   },
   modifica(el) { const o = ordine(el.dataset.id); UI.modifica = { ordine: o.id, righe: JSON.parse(JSON.stringify(o.righe)) }; vai('modifica'); },
   'modifica-esci'() { UI.modifica = null; vai('ordini'); },
@@ -2316,7 +2319,7 @@ async function inviaVero() {
   if (Dati.io.utente.stato === 'no') { mostraToast('Monica per ora non può prendere il tuo ordine.'); return; }
   const c = P.carrello, pronti = c.filter(r => r.pronto), dopo = c.filter(r => !r.pronto);
   if (dopo.length && !UI.entro) return;
-  const prova = puoProvare() && !!UI.prova;
+  const prova = puoProvare() && UI.prova === true;
   const fai = (righe, entro, pronto) => ({ id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), n: 0, cliente: P.cliente,
     righe: righe.map(r => { const x = Object.assign({}, r); delete x.pronto; return x; }), entro, stato: 'nuovo', pronto, proposta: null,
     paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), tempi: { nuovo: Date.now() }, cuori: {}, modifica: null, esitoModifica: '', ...(prova ? { prova: true, provaCliente: true } : {}) });
@@ -2336,7 +2339,7 @@ async function inviaVero() {
   try {
     await Dati.inviaOrdini(lista.map(x => x[1]));
     avvisaGestori(prova ? 'ordineProva' : daApprovare ? 'primo' : 'ordine');
-    UI.prova = false;   // persona nuova: a Monica «accettala», in evidenza
+    UI.prova = undefined;   // persona nuova: a Monica «accettala», in evidenza
     P.carrello = []; UI.entro = null; UI.nota = ''; UI.invio = false; salvaP(); vai('inviato');
   } catch (e) {
     UI.invio = false;
