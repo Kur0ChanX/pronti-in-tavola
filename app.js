@@ -275,7 +275,8 @@ function serveBenvenuto() {
    se il telefono non lo offre, i passi veri di Chrome (foto di Mario: ⋮ → «Installa e crea scorciatoia»); iPhone = passi di Safari.
    Già installata: non si mostra niente. */
 let installa = null;
-addEventListener('beforeinstallprompt', e => { e.preventDefault(); installa = e; render(); });
+/* niente preventDefault: così Chrome mostra da solo il suo bannerino «Installa app» in alto (come in altri siti); il pulsante resta per chi lo chiude */
+addEventListener('beforeinstallprompt', e => { installa = e; render(); });
 addEventListener('appinstalled', () => { installa = null; P.installata = true; salvaP(); render(); mostraToast('Fatto! Trovi Pronti in Tavola tra le app del telefono.'); });
 const suHome = () => P.installata || (window.matchMedia && matchMedia('(display-mode: standalone)').matches) || navigator.standalone === true;
 const telefono = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1) ? 'ios' : 'android';
