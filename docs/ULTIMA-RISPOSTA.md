@@ -1,15 +1,13 @@
-# Ultima risposta di Claude (07/11/2026 09:37 ora italiana)
+# Ultima risposta di Claude (07/11/2026 13:12 ora italiana)
 
+Ho capito: il link dell'invito non si apre quando lo toccano. In più vuoi un bel biglietto in foto, allegato da solo al messaggio su WhatsApp.
 
+✅ FATTO
+- **Link corretto.** Il link prendeva un indirizzo vecchio salvato nei dati di Firebase (`pages.dev`, un sito che non esiste). Adesso l'app usa sempre l'indirizzo giusto, `workers.dev`. Nella prova il link esce così: `…workers.dev/#gestore`.
+- **Biglietto in foto.** Tocchi «Invita chi gestisce con te» e scegli WhatsApp: parte la foto e, sotto, il messaggio col link. Su iPhone, se non parte subito, compare il pulsante «Manda foto e messaggio». …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-
-📌 Di cosa parliamo: la scheda «Metti l'app sul telefono» si apre dal benvenuto di chi gestisce. Spiega come mettere l'icona dell'app sul telefono.
-1. La scheda va bene così? 1 · sì, resta com'è · 2 · no, la cambio come mi dici (prima mi mandi una foto). Consiglio 1.
-
-📌 Di cosa parliamo: le 7 regole nuove per tutti i tuoi progetti sono nel file `archivio/regole-per-il-kit-2026-11-07.md`. La 5 dice: io ti propongo idee senza che tu le chieda, ma decidi sempre tu.
-2. Le portiamo nel kit? 1 · sì, la sessione del kit le aggiunge · 2 · no, prima le rileggiamo insieme. Consiglio 1.
-
-📌 Di …
+📌 Di cosa parliamo: è il titolo del biglietto e della pagina che si apre dal link. Ora c'è «Benvenuta in cucina!».
+1. Come lo scriviamo? 1 · «Benvenuta», perché l'invito è per Monica · 2 · una frase che va bene per tutti, «Ti aspettiamo in cucina!», se un giorno inviti anche un uomo. Consiglio 1: ora serve solo a Monica, e al femminile è più caldo.
