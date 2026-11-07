@@ -378,7 +378,7 @@ async function provaNotifica() {
     const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
     if (perm !== 'granted') { UI.notEsito = { ok: false, t: 'Permesso non dato: senza «Consenti» le notifiche non arrivano.' }; return; }
     const reg = await navigator.serviceWorker.ready;
-    await reg.showNotification('Pronti in Tavola', { body: 'Le notifiche funzionano! Così saprai subito degli ordini.', icon: 'media/icon-192.png', badge: 'media/icon-192.png', tag: 'prova', data: { url: location.pathname } });
+    await reg.showNotification('Pronti in Tavola', { body: 'Le notifiche funzionano! Così saprai subito degli ordini.', icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: 'prova', data: { url: location.pathname } });
     UI.notEsito = { ok: true, t: 'Notifica mandata: guarda in alto sul telefono. Non c\'è? Controlla che il telefono non sia in «Non disturbare».' };
   } catch (e) {
     UI.notEsito = { ok: false, t: 'Non è partita: ' + ((e && e.message) || 'errore sconosciuto') + '.' };
