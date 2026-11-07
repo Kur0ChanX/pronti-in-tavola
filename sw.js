@@ -37,10 +37,19 @@ function primaRete(r) {
 /* che notifica è lo dice /api/ultimo (ordine nuovo o promemoria della sera); senza risposta: ordine nuovo */
 self.addEventListener('push', e => {
   const mostra = u => {
-    const sera = u && u.tipo === 'promemoria' && u.n > 0, pronto = u && u.tipo === 'pronto', prop = u && u.tipo === 'proposta';
-    return self.registration.showNotification(sera ? 'Domani si cucina 🍝' : pronto ? 'Il tuo ordine è pronto! 🍝' : prop ? 'Monica ti propone un altro giorno 🍝' : 'Pronti in Tavola', {
-      body: sera ? `Domani hai ${u.n === 1 ? '1 ordine' : u.n + ' ordini'} da preparare. Tocca per vedere cosa cucinare.` : pronto ? 'Passa a ritirarlo quando vuoi. Tocca per vedere l\'indirizzo.' : prop ? 'Tocca per rispondere: «Va bene» o «Un altro giorno».' : 'Hai un ordine nuovo da guardare 🍝',
-      icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: sera ? 'promemoria' : pronto ? 'pronto' : prop ? 'proposta' : 'ordine', renotify: true, data: { url: './' } });
+    const t = (u && u.tipo) || 'ordine';
+    const T = {   // titolo, testo (C27: il tocco apre il punto giusto dell'app)
+      promemoria: ['Domani si cucina 🍝', `Domani hai ${u && u.n === 1 ? '1 ordine' : ((u && u.n) || 0) + ' ordini'} da preparare. Tocca per vedere cosa cucinare.`],
+      pronto: ['Il tuo ordine è pronto! 🍝', 'Passa a ritirarlo quando vuoi. Tocca per vedere l\'indirizzo.'],
+      proposta: ['Monica ti propone un altro giorno 🍝', 'Tocca per rispondere: «Va bene» o «Un altro giorno».'],
+      richiesta: ['Una persona nuova vuole ordinare 🍝', 'Tocca per vedere chi è e accettarla.'],
+      risposta: ['Un cliente ha risposto sul giorno 🍝', 'Tocca per vedere la sua risposta.'],
+      modifica: ['Un cliente chiede una modifica 🍝', 'Tocca per vedere cosa cambia.'],
+      ordine: ['Pronti in Tavola', 'Hai un ordine nuovo da guardare 🍝']
+    };
+    const tipo = t === 'promemoria' && !(u.n > 0) ? 'ordine' : (T[t] ? t : 'ordine');
+    return self.registration.showNotification(T[tipo][0], {
+      body: T[tipo][1], icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: tipo, renotify: true, data: { url: './#vai=' + tipo, tipo } });
   };
   e.waitUntil(self.registration.pushManager.getSubscription().catch(() => null)
     .then(sub => fetch('/api/ultimo' + (sub ? '?e=' + encodeURIComponent(sub.endpoint) : ''), { cache: 'no-store' })).then(r => r.json()).catch(() => null)
@@ -56,8 +65,9 @@ self.addEventListener('pushsubscriptionchange', e => {
 self.addEventListener('notificationclick', e => {
   e.notification.close();
   e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cc => {
-    const c = cc.find(x => new URL(x.url).origin === location.origin);
-    return c ? c.focus() : clients.openWindow((e.notification.data && e.notification.data.url) || './');
+    const c = cc.find(x => new URL(x.url).origin === location.origin), d = e.notification.data || {};
+    if (c) { c.postMessage({ vai: d.tipo || 'ordine' }); return c.focus(); }   // app già aperta: le dice cosa mostrare
+    return clients.openWindow(d.url || './');
   }));
 });
 self.addEventListener('fetch', e => {

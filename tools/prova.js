@@ -186,6 +186,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const o = await page.evaluate(() => { const x = S.ordini.find(y => y.id === 'o9'); return x.stato + '/' + !!x.cliente + '/' + !!x.proposta; });
     if (o !== 'proposta/true/true') throw new Error('cliente nuovo con proposta: ' + o);
   });
+  await passo('Monica: riquadro delle persone nuove e tocco sulla notifica (C27, C33)', async () => {
+    await page.evaluate(() => { S.richieste.push({ id: 'r8', nome: 'Gina Prova', tramite: 'Laura' }); UI.provaRichieste = true; render(); });
+    await page.locator('.foglio', { hasText: 'Gina Prova' }).waitFor({ timeout: 3000 }); await foto('17d-richieste');
+    await clic('.foglio [data-a="richiesta-si"][data-id="r8"]'); await page.waitForTimeout(300);
+    if (await page.locator('.foglio', { hasText: 'Gina Prova' }).count()) throw new Error('il riquadro non si chiude dopo il sì');
+    await page.evaluate(() => { UI.provaRichieste = false; UI.vaiDopo = 'ordine'; vaiDaNotifica(); render(); });
+    await page.locator('.notifica', { hasText: 'Ordine nuovo' }).waitFor({ timeout: 3000 }); await foto('17e-da-notifica');
+    if (await page.evaluate(() => UI.vista) !== 'ordini') throw new Error('il tocco sulla notifica non apre gli ordini');
+    await clic('[data-a="tab"][data-v="oggi"]');
+    if (await page.locator('.notifica').count()) throw new Error('il riquadro della notifica non sparisce al tocco');
+  });
   await passo('Monica: incassi del mese nella Home', async () => {
     await clic('.indietro');
     const atteso = await page.evaluate(() => { const c = contiMese(oggi().slice(0, 7)); return euro(c.presi + c.daPrendere); });
@@ -294,6 +305,18 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="aggiungi"]'); await clic('.testata [data-v="carrello"]');
     if (!(await page.locator('.paga-riga').count())) throw new Error('pagamento non in una riga');
     if ((await page.locator('textarea').count()) !== 1) throw new Error('caselle di testo nel carrello: ' + await page.locator('textarea').count());
+  });
+  await passo('cliente: «Fritto da Monica» col sovrapprezzo del piatto (C30)', async () => {
+    const r = await page.evaluate(() => {
+      const p = S.piatti.find(x => x.formati.some(f => f.tipo === 'pz')) || S.piatti[0]; p.fritto = 1.5;
+      P.ruolo = 'cliente'; UI.vista = 'menu'; P.carrello = []; apriPiatto(p.id); render();
+      return { id: p.id, prezzo: prezzoDi(p, UI.sel.formato, UI.sel.variante), qta: UI.sel.qta, kg: p.formati[0].tipo === 'kg' };
+    });
+    await clic('.foglio [data-a="sel-fritto"][data-v="si"]'); await foto('31-fritto');
+    await clic('.foglio [data-a="aggiungi"]'); await page.waitForTimeout(500);
+    const t = await page.evaluate(() => totale(P.carrello) + '/' + P.carrello[0].fritto);
+    const atteso = Math.round((r.prezzo * r.qta + 1.5 * (r.kg ? 1 : r.qta)) * 100) / 100 + '/true';
+    if (t !== atteso) throw new Error('totale col fritto: ' + t + ', atteso ' + atteso);
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');

@@ -16,6 +16,7 @@ import { DurableObject } from 'cloudflare:workers';
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
 const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
+const TIPI_GESTORE = ['ordine', 'richiesta', 'risposta', 'modifica'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
 const PAUSA_MS = 15 * 1000;     // e non più di uno ogni 15 secondi
 
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -74,7 +75,7 @@ export class Avvisi extends DurableObject {
 
   async manda(soloUid, per, perCliente) {
     const chiave = perCliente ? 'clienti' : 'iscritti';
-    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { tipo: 'ordine', quando: Date.now() });
+    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { tipo: TIPI_GESTORE.includes(per) ? per : 'ordine', quando: Date.now() });
     const tutti = (await this.ctx.storage.get(chiave)) || [];
     const dest = perCliente ? tutti.filter(x => x.cliente === perCliente) : tutti.filter(x => !soloUid || x.uid === soloUid);
     if (perCliente) {   // il testo «è pronto» vale solo per i telefoni di quel cliente
@@ -134,12 +135,12 @@ export class Avvisi extends DurableObject {
   }
 
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
-  async avvisa() {
+  async avvisa(tipo) {
     const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('conto')) || {};
     if (c.giorno === oggi && c.n >= TETTO_GIORNO) return { fermo: 'tetto' };
     if (c.ultimo && Date.now() - c.ultimo < PAUSA_MS) return { fermo: 'pausa' };
     await this.ctx.storage.put('conto', { giorno: oggi, n: (c.giorno === oggi ? c.n : 0) + 1, ultimo: Date.now() });
-    return this.manda(null);
+    return this.manda(null, TIPI_GESTORE.includes(tipo) ? tipo : 'ordine');
   }
 }
 
@@ -153,7 +154,7 @@ export default {
       if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato());
       if (url.pathname === '/api/ultimo' && req.method === 'GET') return json(await av.ultimo(url.searchParams.get('e') || ''));
       if (req.method !== 'POST') return json({ errore: 'metodo' }, 405);
-      if (url.pathname === '/api/avvisa') return json(await av.avvisa());
+      if (url.pathname === '/api/avvisa') { const b = await req.json().catch(() => null); return json(await av.avvisa(b && b.tipo)); }
       if (url.pathname === '/api/cliente') {
         const c = await clienteDa(req);
         if (!c) return json({ errore: 'prima Monica deve approvarti' }, 403);
