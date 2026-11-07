@@ -607,7 +607,7 @@ function vMenu() {
   cats.forEach(([k, n], i) => {
     if (i) h += filo();
     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
-      <div>${visibili().filter(p => p.cat === k && p.disponibile).map(voce).join('')}</div></section>`;
+      <div class="voci">${visibili().filter(p => p.cat === k && p.disponibile).map(voce).join('')}</div></section>`;
   });
   return h + '</main>';
 }

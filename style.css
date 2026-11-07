@@ -587,3 +587,19 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .menu-foto-edit { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .menu-foto-edit .mf { display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .menu-foto-edit img { width: 100%; aspect-ratio: 3/4; object-fit: cover; border-radius: 10px; }
+
+/* tablet (Mario 07/11: «impaginato bene anche su tablet Android e iPad»): più largo, piatti e ordini su due colonne */
+@media (min-width: 700px) {
+  #app, .barra nav, .foglio { max-width: 820px; }
+  .toast, .notifica, .guida .scheda { max-width: 620px; }
+  .corpo { padding-left: 28px; padding-right: 28px; }
+  .schede-cat { margin: 0 -28px; padding: 8px 28px; }
+  .carosello { margin: 0 -28px; padding: 0 28px; }
+  .voci { display: grid; grid-template-columns: 1fr 1fr; column-gap: 24px; }
+  .riquadri { grid-template-columns: repeat(4, 1fr); }
+  .riepilogo b { font-size: 1.5rem; }
+}
+@media (min-width: 1000px) {
+  #app, .barra nav, .foglio { max-width: 960px; }
+  .riquadri { grid-template-columns: repeat(4, 1fr); }
+}
