@@ -592,7 +592,7 @@ function vCarrello() {
 function vInviato() {
   return `${testataCliente()}<main class="corpo"><div class="inviato"><div class="scoppio">${Array.from({ length: 10 }, (_, i) => `<i style="--a:${i * 36}deg"></i>`).join('')}<div class="spunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div></div>
     <h1>Ordine inviato!</h1><p class="tenue" style="margin:0">${Dati.attivo && Dati.io.utente && Dati.io.utente.stato !== 'approvato'
-      ? 'È il tuo primo ordine: Monica lo guarda e ti conferma lei.' : 'A Monica è arrivata la notifica. Ti conferma lei il giorno.'}<br>Lo segui in «I miei ordini».</p>
+      ? 'È il tuo primo ordine: Monica lo guarda e ti conferma lei.' : 'Monica lo vede appena apre l\'app e ti conferma lei il giorno.'}<br>Lo segui in «I miei ordini».</p>
     <div class="fila larga" style="width:100%"><button type="button" class="btn" data-a="vai" data-v="ordini">I miei ordini</button><button type="button" class="btn chiaro" data-a="vai" data-v="menu">Torna al menù</button></div></div></main>`;
 }
 
@@ -837,7 +837,7 @@ function vOrdiniMonica() {
       <ul style="margin:0;padding-left:18px">${Object.values(piatti).map(x => `<li><b>${esc(x.nome)}</b>${x.varianteNome ? ' ' + esc(x.varianteNome.toLowerCase()) : ''}: ${qtaTesto(x.tipo, x.qta, x.formatoNome)}${x.note.length ? `<br><span style="color:var(--cotto);font-weight:800">${esc(x.note.join(' · '))}</span>` : ''}</li>`).join('')}</ul></div>`).join('')}
       <button type="button" class="btn chiaro pieno" data-a="etichette">${ico('spunta')}Etichette per le vaschette</button></section>`;
   }
-  if (!lista.length) h += `<p class="tenue">${{ guardare: 'Niente da guardare. Ti arriva una notifica a ogni ordine nuovo.', preparare: 'Niente da preparare.', pronti: 'Nessun ordine pronto da ritirare.', finiti: 'Ancora nessun ordine finito.' }[UI.tab]}</p>`;
+  if (!lista.length) h += `<p class="tenue">${{ guardare: 'Niente da guardare. Gli ordini nuovi compaiono qui.', preparare: 'Niente da preparare.', pronti: 'Nessun ordine pronto da ritirare.', finiti: 'Ancora nessun ordine finito.' }[UI.tab]}</p>`;
   return h + lista.map(cartaOrdineMonica).join('') + '</main>';
 }
 
@@ -1010,7 +1010,7 @@ function foglioGiorni() {
 }
 
 const GUIDA = [
-  ['Qui arrivano gli ordini', 'Il numero ti dice quanti ne devi guardare. A ogni ordine nuovo ti arriva anche la notifica sul telefono.'],
+  ['Qui arrivano gli ordini', 'Il numero ti dice quanti ne devi guardare.'],
   ['I tuoi piatti', 'In «I miei piatti» cambi foto, prezzi e ingredienti. Con «Segna cosa hai pronto» dici ai clienti cosa c\'è già.'],
   ['Non puoi rompere niente', 'Ogni modifica si salva da sola. Se sbagli, tocca «Annulla» in basso. Se ti blocchi, il punto di domanda in alto scrive a Mario.']
 ];
