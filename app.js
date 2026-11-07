@@ -219,6 +219,8 @@ const daAccettare = o => ['nuovo', 'daApprovare'].includes(o.stato);
 const daGuardare = () => S.ordini.filter(o => o.stato === 'nuovo' || o.modifica || richiestaDi(o) || (o.paga.dice && !o.paga.ricevuto && o.stato !== 'annullato'));
 const mapsLink = () => { const r = S.impostazioni.ritiro; return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.via + ', ' + r.citta)}`; };
 const numero = n => { const d = String(n || '').replace(/\D/g, ''); return d ? (d.length <= 10 ? '39' + d : d) : ''; };
+/* indirizzo del sito: sempre quello di data.js, mai quello salvato nei dati (Mario 07/11: nei dati di Firebase c'era ancora pages.dev, sito mai esistito, e il link dell'invito non si apriva) */
+const SITO = statoIniziale().impostazioni.indirizzoApp;
 const wa = (num, testo) => `https://wa.me/${numero(num)}?text=${encodeURIComponent(testo)}`;
 const firmaMsg = '\nMonica · Pronti in Tavola';
 function righeDaCarrello(rr) { return rr.map(r => Object.assign({}, r)); }
@@ -319,7 +321,71 @@ function vInvitoGestore() {
     <button type="button" class="link" data-a="inv-altro">Non sei tu? Entra con un altro account</button></main>`;
 }
 /* testo dell'invito che Mario manda dall'app */
-const testoInvitoGestore = () => `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${S.impostazioni.indirizzoApp}#gestore`;
+const testoInvitoGestore = () => `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore`;
+/* biglietto d'invito in foto (Mario 07/11: «un bel biglietto di invito in foto da allegare in automatico su WhatsApp»):
+   si disegna qui, poi va su WhatsApp insieme al messaggio col link; dove il telefono non sa allegarlo, si mostra da salvare */
+function caricaImg(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
+async function disegnaInvito() {
+  const L = 1080, A = 1350, c = document.createElement('canvas'), g = c.getContext('2d');
+  c.width = L; c.height = A;
+  try { await document.fonts.ready; } catch (e) { /* senza i caratteri va bene lo stesso */ }
+  const logo = await caricaImg('media/logo-medaglione.webp');
+  g.fillStyle = '#FBF5EA'; g.fillRect(0, 0, L, A);
+  g.strokeStyle = '#7B2318'; g.lineWidth = 8; g.strokeRect(28, 28, L - 56, A - 56);
+  g.strokeStyle = '#C9A27A'; g.lineWidth = 2; g.strokeRect(48, 48, L - 96, A - 96);
+  g.textAlign = 'center';
+  g.fillStyle = '#9A5B3C'; g.font = '800 30px "Nunito Sans", system-ui, sans-serif';
+  if ('letterSpacing' in g) g.letterSpacing = '8px';
+  g.fillText('UN INVITO PER TE', L / 2, 130);
+  if ('letterSpacing' in g) g.letterSpacing = '0px';
+  if (logo) { const d = 360, r = Math.min(d / logo.width, d / logo.height); g.drawImage(logo, (L - logo.width * r) / 2, 165, logo.width * r, logo.height * r); }
+  g.fillStyle = '#7B2318'; g.font = '600 82px Fraunces, Georgia, serif'; g.fillText('Benvenuta in cucina!', L / 2, 640);
+  g.fillStyle = '#2B1A12'; g.font = '600 40px "Nunito Sans", system-ui, sans-serif'; g.fillText('La tua app Pronti in Tavola è pronta', L / 2, 710);
+  const righe = ['Ricevi gli ordini delle amiche', 'Sistemi i tuoi piatti e i prezzi', 'Vedi cosa preparare ogni giorno'];
+  g.font = '700 38px "Nunito Sans", system-ui, sans-serif';
+  const larga = Math.max(...righe.map(t => g.measureText(t).width)), x0 = (L - larga - 70) / 2;
+  righe.forEach((t, i) => {
+    const y = 815 + i * 78;
+    g.fillStyle = '#7B2318'; g.beginPath(); g.arc(x0 + 22, y - 13, 22, 0, Math.PI * 2); g.fill();
+    g.strokeStyle = '#FBF5EA'; g.lineWidth = 6; g.lineCap = 'round'; g.lineJoin = 'round';
+    g.beginPath(); g.moveTo(x0 + 11, y - 13); g.lineTo(x0 + 19, y - 4); g.lineTo(x0 + 34, y - 22); g.stroke();
+    g.textAlign = 'left'; g.fillStyle = '#2B1A12'; g.fillText(t, x0 + 70, y); g.textAlign = 'center';
+  });
+  const bx = 120, by = 1045, bw = L - 240, bh = 150;
+  g.fillStyle = '#7B2318'; g.beginPath(); (g.roundRect ? g.roundRect(bx, by, bw, bh, 30) : g.rect(bx, by, bw, bh)); g.fill();
+  g.fillStyle = '#FFFFFF'; g.font = '800 44px "Nunito Sans", system-ui, sans-serif'; g.fillText('Tocca il link nel messaggio', L / 2, by + 66);
+  g.font = '600 32px "Nunito Sans", system-ui, sans-serif'; g.fillText('ed entra con Google: basta un minuto', L / 2, by + 115);
+  const da = (Dati.attivo && Dati.io.nomeGestore) || '';
+  g.fillStyle = '#9A5B3C'; g.font = 'italic 600 40px Fraunces, Georgia, serif';
+  g.fillText(da ? 'Con affetto, ' + da : 'Pronti in Tavola · Olbia', L / 2, 1272);
+  return c;
+}
+async function mandaInvito() {
+  if (UI.invPrepara) return;
+  UI.invPrepara = true; render();
+  const testo = testoInvitoGestore();
+  try {
+    const c = await disegnaInvito();
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.9));
+    const file = blob && new File([blob], 'invito-pronti-in-tavola.jpg', { type: 'image/jpeg' });
+    if (file && navigator.canShare && navigator.canShare({ files: [file], text: testo })) {
+      try { await navigator.share({ files: [file], text: testo }); return; }
+      catch (e) { if (e && e.name === 'AbortError') return; }   // iPhone: troppo tempo dal tocco → sotto, il pulsante per riprovare
+    }
+    UI.invFile = file;
+    UI.foglio = { tipo: 'invito-img', url: c.toDataURL('image/jpeg', 0.9) };
+  } catch (e) {
+    window.open(wa('', testo), '_blank', 'noopener');
+  } finally { UI.invPrepara = false; render(); }
+}
+function foglioInvitoImg() {
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Il tuo invito</h1>
+    <p class="tenue" style="margin:0">${puoiAllegare() ? 'Tocca il pulsante sotto e scegli WhatsApp: parte la foto col messaggio.' : 'Questo telefono non sa allegare la foto da solo: tienila premuta per salvarla, poi mandala su WhatsApp dopo il messaggio.'}</p>
+    <img src="${UI.foglio.url}" alt="Biglietto d'invito a Pronti in Tavola" style="width:100%;border-radius:12px;border:1px solid var(--riga)"></div>
+    <div class="piede">${puoiAllegare() ? `<button type="button" class="btn pieno" data-a="inv-condividi">${ico('chat')}Manda foto e messaggio</button>`
+      : `<a class="btn pieno" href="${wa('', testoInvitoGestore())}" target="_blank" rel="noopener">${ico('chat')}Manda il messaggio col link</a>`}</div>`;
+}
+const puoiAllegare = () => !!(UI.invFile && navigator.canShare && navigator.canShare({ files: [UI.invFile], text: testoInvitoGestore() }));
 /* richieste di chi vuole gestire: in cima alla Home e nelle Impostazioni */
 function richiesteGestore() {
   const rr = (Dati.attivo && Dati.io.richiesteGestore) || [];
@@ -334,7 +400,7 @@ function chiGestisce() {
       ${g.uid === Dati.io.uid ? '' : `<button type="button" class="btn chiaro piccolo" data-a="gest-togli" data-id="${esc(g.uid)}">${UI.gestTogli === g.uid ? 'Tocca ancora per togliere' : 'Togli'}</button>`}</div>`).join('')}
     ${richiesteGestore()}
     <p class="tenue" style="margin:0">Manda l'invito a chi deve gestire con te: entra col suo Google e tu dici sì da qui.</p>
-    <a class="btn pieno" href="${wa('', testoInvitoGestore())}" target="_blank" rel="noopener">${ico('invito')}Invita chi gestisce con te</a></section>`;
+    <button type="button" class="btn pieno" data-a="inv-manda"${UI.invPrepara ? ' disabled' : ''}>${ico('invito')}${UI.invPrepara ? 'Preparo il biglietto…' : 'Invita chi gestisce con te'}</button></section>`;
 }
 function vBenvenuto() {
   const b = UI.benv || {};
@@ -443,7 +509,7 @@ function foglioPiatto() {
   const f = p.formati.find(x => x.id === s.formato) || p.formati[0];
   const prezzo = prezzoDi(p, f.id, s.variante), ing = ingDi(p, s.variante), all = allergeniDi(ing), mie = new Set(P.allergie);
   const etiQta = { teglia: 'Quante teglie?', kg: 'Quanti chili?', pz: 'Quanti pezzi?', intera: 'Quante?' }[f.tipo];
-  const testoWa = `Guarda cosa cucina Monica: ${p.nome}. Puoi ordinare anche tu da qui: ${S.impostazioni.indirizzoApp}${!Dati.attivo ? '' : P.ruolo === 'monica' ? '#da=monica' : P.cliente ? '#da=' + P.cliente : ''}`;
+  const testoWa = `Guarda cosa cucina Monica: ${p.nome}. Puoi ordinare anche tu da qui: ${SITO}${!Dati.attivo ? '' : P.ruolo === 'monica' ? '#da=monica' : P.cliente ? '#da=' + P.cliente : ''}`;
   let h = `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div>
     ${foto(p, 'grande')}<div class="dentro">
     <div class="sezione"><h1>${esc(p.nome)}</h1>${p.sotto ? `<p class="tenue" style="margin:0">${esc(p.sotto)}</p>` : ''}${etichette(p, false)}</div>`;
@@ -699,7 +765,7 @@ function waOrdine(o, tipo) {
   const c = cliente(o.cliente), r = S.impostazioni.ritiro;
   const testi = {
     pronto: `Ciao ${nomeBreve(c.nome)}! Il tuo ordine n. ${o.n} è pronto.\nTotale: ${euro(totale(o.righe))}\nRitira qui: ${r.via}, ${r.citta}\n${mapsLink()}\n${r.nota}`,
-    proposta: `Ciao ${nomeBreve(c.nome)}! Per il tuo ordine n. ${o.n} ti propongo ${giornoLungo(o.proposta)}. Rispondi dall'app con un tocco: ${S.impostazioni.indirizzoApp}`,
+    proposta: `Ciao ${nomeBreve(c.nome)}! Per il tuo ordine n. ${o.n} ti propongo ${giornoLungo(o.proposta)}. Rispondi dall'app con un tocco: ${SITO}`,
     accettato: `Ciao ${nomeBreve(c.nome)}! Ho confermato il tuo ordine n. ${o.n} per ${giornoLungo(o.entro)}.`
   };
   return wa(c.telefono || '', testi[tipo] + firmaMsg);
@@ -863,7 +929,7 @@ function vClienti() {
   const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
   const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
     <button type="button" class="btn verde piccolo" data-a="rifiutato-si" data-id="${r.id}"${UI.decido === r.id ? ' disabled' : ''}>${ico('spunta')}Accetta</button></div>`;
-  const testo = `Ciao! Qui vedi cosa cucino e puoi ordinare: ${S.impostazioni.indirizzoApp}#da=monica`;
+  const testo = `Ciao! Qui vedi cosa cucino e puoi ordinare: ${SITO}#da=monica`;
   return `${testataMonica('Clienti', 'home')}<main class="corpo">
     ${telefoni.length ? `<section class="scheda"><h2>Telefono nuovo</h2><p class="tenue" style="margin:0">Hanno lo stesso nome di un tuo cliente. Se è proprio lei, ricollega: ritrova i suoi ordini.</p>${telefoni.map(riga).join('')}</section>` : ''}
     ${nuovi.length ? `<section class="scheda"><h2>Nuovi</h2><p class="tenue" style="margin:0">Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.</p>${nuovi.map(riga).join('')}</section>` : ''}
@@ -974,7 +1040,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1074,7 +1140,7 @@ function disegnaMenu() {
     y += 30;
   });
   g.textAlign = 'center'; g.fillStyle = '#9A5B3C'; g.font = '700 32px "Nunito Sans", system-ui, sans-serif';
-  g.fillText('Ordina da qui: ' + String(S.impostazioni.indirizzoApp || '').replace(/^https?:\/\//, '').replace(/\/$/, ''), L / 2, y + 40);
+  g.fillText('Ordina da qui: ' + SITO.replace(/^https?:\/\//, '').replace(/\/$/, ''), L / 2, y + 40);
   return c;
 }
 async function mandaMenu() {
@@ -1082,7 +1148,7 @@ async function mandaMenu() {
   const blob = await new Promise(r => c.toBlob(r, 'image/png'));
   const file = blob && new File([blob], 'menu-pronti-in-tavola.png', { type: 'image/png' });
   try {
-    if (file && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: 'Il menù di Monica: ' + S.impostazioni.indirizzoApp + '#da=monica' }); return; }
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: 'Il menù di Monica: ' + SITO + '#da=monica' }); return; }
   } catch (e) { if (e && e.name === 'AbortError') return; }
   UI.foglio = { tipo: 'menu-img', url: c.toDataURL('image/png') }; render();
 }
@@ -1212,6 +1278,8 @@ function foglioEtichette() {
 
 const A = {
   'menu-immagine'() { mandaMenu(); },
+  'inv-manda'() { mandaInvito(); },
+  async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore() }); chiudiFoglio(); } catch (e) { /* annullato */ } },
   etichette() { apriEtichette(); },
   'eti-giorno'(el) { apriEtichette(el.dataset.v); },
   'eti-manda'() { mandaEtichette(); },
