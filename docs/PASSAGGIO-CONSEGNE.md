@@ -48,7 +48,7 @@ Sessione attuale: #14 (dopo la #13 `session_01QTFEqRWGjVRKYQHYMEokrS`, chiusa al
 07/11 ~08:25, parola per parola: «È la terza volta che ti faccio vedere questo e mi dici che non va bene. Ma perché mi dici che non va bene se è giusto? Secondo me è giusto. Perché mi stai facendo entrare in un loop? Se ho messo questo codice significa che ho già guardato, sono Monica, questo qui è il mio Gmail e l'ho incollato dove mi hai detto tu. Perché mi dici no, hai incollato una cosa sbagliata? Perché mi dici questo? Correggiti.» (foto: UID nella casella «ID raccolta»). Io ho risposto con la metafora cartella/foglio; aspetta la foto del passo 2. Dopo l'handoff (08:3x) Mario ha scritto: «Gestori dove lo trovo? Non lo riesco a trovare.» → `gestori` non esiste da cercare: lo SCRIVE lui, a mano, nella casella «ID raccolta» del passo 1 (la #13 gli ha risposto con i passi esatti). Guida: se trova l'ID raccolta preriempito col suo codice, cancellarlo e scrivere gestori.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C19; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C21; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-sonnet-5-5** (Sonnet 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
