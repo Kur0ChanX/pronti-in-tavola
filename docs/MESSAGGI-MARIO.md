@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 14:27 · 01QTFEqRY58R
-immagine anteprima ok firebase manda guida
-
-## 2026-11-05 14:30 · 01QTFEqRY58R
-Abilito Gemini che cosa ci dà in più?
-
-## 2026-11-05 14:31 · 01QTFEqRY58R
-fatto
-
 ## 2026-11-05 14:33 · 01QTFEqRY58R
 dove
 
@@ -144,3 +135,16 @@ link e passaggi chiari
 
 ## 2026-11-07 13:08 · 01QTFEqTYwXG
 invito di WhatsApp che invii dall'app non funziona se cliccano non funziona il link e oltre al link di whatsapp volevo un bel biglietto di invito in foto da allegare in automatico su WhatsApp
+
+## 2026-11-07 13:11 · 01QTFEqTYwXG
+facciamo benvenuta o benvenuto?
+
+## 2026-11-07 13:26 · 01QTFEqTYwXG
+una frase per tutti  per tutti e quella per monica benvenuta nella tua app ecc ecc 
+
+fammi ora quello per i miei amici per farla vedere
+
+## 2026-11-07 13:30 · 01QTFEqTYwXG
+per i miei amici è monica che invita fallo cosi come se monica invitasse
+io gestisco e basta
+mettili nella mia app gli inviti ora
