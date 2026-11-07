@@ -15,3 +15,5 @@ Spostate qui dalle consegne della #13 per tenerle snelle.
 - Cloudflare «Connetti GitHub» (Pages, Worker → Compilazioni → GitHub, flusso «Connect GitHub» nuovo): torna sempre a `github.com/settings/installations` senza registrare, da telefono E da PC. Probabile: Kur0ChanX già legato all'altro account Cloudflare. Disinstallare l'autorizzazione toccherebbe gli altri progetti: no. Scelto «Crea token» + GitHub Actions.
 - Dare la colpa al browser del telefono: smentito dal video dal PC (PT E10).
 - Link `dash.cloudflare.com/?to=/:account/...` dal telefono: portano alla scelta dell'account e poi alla Home, non alla pagina.
+- Stampantina termica Niimbot B1 (50×30, bianco e nero) per le etichette: fatta e tolta, Mario vuole il colore. Stampante a serbatoi (Epson EcoTank ET-2870 ~180-210 €) proposta, non decisa: «solo A4 per ora».
+- Dire «sbagliato» a una foto senza spiegare dove va ogni casella: 3 giri persi (PT E12).

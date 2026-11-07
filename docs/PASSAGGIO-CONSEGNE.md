@@ -30,9 +30,8 @@ Sessione attuale: #18 (dopo la #17 `session_01QTFEqReKukg9yQkyif4p9v`, chiusa al
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Quelle delle sessioni 1-7: `docs/lavori-in-corso/strade-scartate-sessioni-1-7.md` (link unico + richiesta, email-link, leggere `nomi/` dal telefono, lucchetto in anteprima, pronti come numero, ascoltare `foto/`, Gemini acceso, ecc.).
-- Stampantina termica Niimbot B1 (50×30, bianco e nero) per le etichette: fatta e tolta, Mario vuole il colore. Stampante a serbatoi (Epson EcoTank ET-2870 ~180-210 €) proposta, non decisa: «solo A4 per ora».
-- Dire «sbagliato» a una foto senza spiegare dove va ogni casella: 3 giri persi (PT E12).
-- Quelle delle sessioni 8-13 (Cloudflare «Connetti GitHub», dosi, rilettura del «No», ecc.): `docs/lavori-in-corso/strade-scartate-sessioni-8-13.md`.
+- `color-scheme: only light` contro il modo scuro di Samsung Internet: non basta (PT E19).
+- Quelle delle sessioni 8-16 (Cloudflare «Connetti GitHub», dosi, stampantina, ecc.): `docs/lavori-in-corso/strade-scartate-sessioni-8-13.md`.
 
 ## Prossimi passi
 1. Avvio: titolo verde; cancella la sveglia `trig_012LLDESAgvxgVojqSWyQBt9` e rifalla tua per le 18:05 UTC se non è passata.
