@@ -3,6 +3,7 @@
 ## 0. Aspetta Mario
 - 07/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
 - 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
+- 07/11 · 🟡 Principale 20 · Altre 10 idee (13-22 in `docs/IDEE-2026-11-07.md`): quali fare dopo «Sono qui»?
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
