@@ -50,7 +50,7 @@ Sessione attuale: #13 (dopo la #12 `session_01QTFEqU1M1r3a31XVoaAGAe`, chiusa al
 ## Prossimi passi
 1. Avvio: titolo verde, ricordare le 3 righe delle etichette. Primo messaggio corto: il sito si aggiorna da solo (prova: ultimo giro `sito.yml` verde).
 2. Etichette (C7): con le risposte di Mario (o i consigli se tace) rifinire; poi chiudere le promesse 👁 a lotti (lista della spesa, benvenuto, ecc.) facendole vedere sul sito vero `…workers.dev`.
-3. Firebase tappa 5: Mario entra con Google sul sito vero; aggiungere il dominio `pronti-in-tavola.pronti-in-tavola.workers.dev` ai domini autorizzati di Firebase Authentication (passo a mano di Mario, guida in `docs/GUIDE-GIUSTE.md` se c'è); `gestori/<uid>` per Monica e Mario.
+3. (#13, 07/11) Sito vero già su Firebase: entrata anonima e lettura OK (prova Playwright), menù vuoto perché Monica non è ancora entrata; Firebase avvisa «dominio non autorizzato per OAuth» → Google non va finché Mario non aggiunge il dominio. Mario: «firebase facciamo domani». Firebase tappa 5: Mario entra con Google sul sito vero; aggiungere il dominio `pronti-in-tavola.pronti-in-tavola.workers.dev` ai domini autorizzati di Firebase Authentication (passo a mano di Mario, guida in `docs/GUIDE-GIUSTE.md` se c'è); `gestori/<uid>` per Monica e Mario.
 4. Chiedere a Mario della richiesta «Claude: Permission updates requested» su GitHub (cosa chiede, se serve).
 5. Più avanti: `main` e PR come da regole; dosi della spesa; chiave Firebase ristretta al sito.
 
