@@ -228,7 +228,7 @@ function foto(p, cls = '') {
   return `<div class="foto segnaposto ${cls}" aria-hidden="true"><span>${esc(p.nome.charAt(0))}</span></div>`;
 }
 const YN = '<div class="yn" role="img" aria-label="YNOY Corp"><i class="ys"></i><i class="y1"></i><i class="y2"></i><i class="y3"></i><i class="y4"></i></div>';
-const firma = () => `<footer class="firma">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
+const firma = () => `<footer class="firma">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' && !P.invitoGestore ? '<br><button type="button" class="btn chiaro piccolo" data-a="entra-monica">Sei Monica? Entra</button>' : ''}</footer>`;
 const filo = () => `<div class="filo" aria-hidden="true">${ico('spiga')}</div>`;
 function striscia() {
   if (Dati.attivo) return '';
@@ -269,6 +269,45 @@ const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && Dati.io.utente.nome)
 function serveBenvenuto() {
   if (P.ruolo !== 'cliente' || UI.senzaNome) return false;
   return Dati.attivo ? !!Dati.io.uid && Dati.io.letto && !Dati.io.utente : !P.benvenuto;
+}
+/* invito per gestire (Mario 07/11: «un invito fatto bene, come un'app professionale»): link con #gestore.
+   Chi lo apre entra con Google; a Mario arriva la richiesta con Sì/No; al sì l'app si riapre da gestore. */
+function vInvitoGestore() {
+  const io = Dati.io, google = Dati.attivo && io.uid && !io.anonimo, mia = google && io.richiestaMia;
+  let h = `<main class="corpo benvenuto invito"><img class="benv-logo" src="media/logo-medaglione.webp" alt="Pronti in Tavola con Monica">`;
+  if (!google) return h + `<h1>Benvenuta nella tua cucina!</h1>
+    <p class="tenue">Questa è <b>Pronti in Tavola</b>, l'app preparata per te: qui ricevi gli ordini delle amiche, sistemi i tuoi piatti e vedi cosa preparare.</p>
+    <section class="scheda passi-invito"><h2>Due passi e ci sei</h2>
+      <div class="passo-invito"><span class="num">1</span><div><b>Mettila sulla schermata Home</b><br><span class="tenue piccolo">Tocca i tre puntini ⋮ in alto a destra, poi «Aggiungi a schermata Home». Così la apri come un'app.</span></div></div>
+      <div class="passo-invito"><span class="num">2</span><div><b>Entra con il tuo account Google</b><br><span class="tenue piccolo">Serve una volta sola. Poi la apri con l'impronta.</span></div></div>
+      <button type="button" class="btn pieno grande" data-a="inv-google"${UI.invInvio ? ' disabled' : ''}>${UI.invInvio ? 'Un attimo…' : 'Entra con Google'}</button></section>
+    <p class="tenue piccolo" style="text-align:center">Non ti aspettavi questo messaggio? Chiudi pure la pagina.</p></main>`;
+  if (!mia) return h + `<h1>Ci sei quasi!</h1><p class="tenue">Sei entrata come <b>${esc(io.email)}</b>. Manca un tocco per avvisare Mario.</p>
+    <button type="button" class="btn pieno grande" data-a="inv-chiedi"${UI.invInvio ? ' disabled' : ''}>${UI.invInvio ? 'Un attimo…' : 'Avvisa Mario'}</button>
+    <button type="button" class="link" data-a="inv-altro">Non sei tu? Entra con un altro account</button></main>`;
+  const testo = 'Ciao Mario! Sono entrata in Pronti in Tavola: quando puoi, dimmi di sì dall\'app 😊';
+  return h + `<h1>Fatto!</h1><p class="tenue">Mario ha ricevuto la tua richiesta. Appena dice sì, la tua cucina si apre da sola, qui.</p>
+    <div class="avviso verde">${ico('spunta')}<div>Sei entrata come <b>${esc(io.email)}</b>.</div></div>
+    <a class="btn chiaro pieno" href="${wa('', testo)}" target="_blank" rel="noopener">${ico('chat')}Scrivi a Mario su WhatsApp</a>
+    <button type="button" class="link" data-a="inv-altro">Non sei tu? Entra con un altro account</button></main>`;
+}
+/* testo dell'invito che Mario manda dall'app */
+const testoInvitoGestore = () => `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${S.impostazioni.indirizzoApp}#gestore`;
+/* richieste di chi vuole gestire: in cima alla Home e nelle Impostazioni */
+function richiesteGestore() {
+  const rr = (Dati.attivo && Dati.io.richiesteGestore) || [];
+  return rr.map(r => `<div class="avviso">${ico('clienti')}<div><b>${esc(r.nome)}</b> chiede di gestire la cucina con te.<br><span class="tenue piccolo">${esc(r.email)}</span>
+    <div class="fila" style="margin-top:10px"><button type="button" class="btn verde piccolo" data-a="gest-si" data-id="${esc(r.uid)}"${UI.gestDecido ? ' disabled' : ''}>${ico('spunta')}Sì, è lei</button>
+    <button type="button" class="btn chiaro piccolo" data-a="gest-no" data-id="${esc(r.uid)}"${UI.gestDecido ? ' disabled' : ''}>No</button></div></div></div>`).join('');
+}
+function chiGestisce() {
+  const gg = (Dati.attivo && Dati.io.gestoriLista) || [];
+  return `<section class="scheda"><h2>Chi gestisce la cucina</h2>
+    ${gg.map(g => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(g.nome || 'Senza nome')}${g.uid === Dati.io.uid ? ' (tu)' : ''}</b>
+      ${g.uid === Dati.io.uid ? '' : `<button type="button" class="btn chiaro piccolo" data-a="gest-togli" data-id="${esc(g.uid)}">${UI.gestTogli === g.uid ? 'Tocca ancora per togliere' : 'Togli'}</button>`}</div>`).join('')}
+    ${richiesteGestore()}
+    <p class="tenue" style="margin:0">Manda l'invito a chi deve gestire con te: entra col suo Google e tu dici sì da qui.</p>
+    <a class="btn pieno" href="${wa('', testoInvitoGestore())}" target="_blank" rel="noopener">${ico('invito')}Invita chi gestisce con te</a></section>`;
 }
 function vBenvenuto() {
   const b = UI.benv || {};
@@ -565,6 +604,7 @@ function vHome() {
   let h = testataMonica('Pronti in Tavola') + '<main class="corpo">';
   if (pausaOra()) h += `<div class="avviso">${ico('pausa')}<div><b>Sei in pausa fino a ${giornoLungo(imp.pausa.fino)}.</b> I clienti possono ordinare solo per dopo.
     <div class="fila" style="margin-top:10px"><button type="button" class="btn piccolo" data-a="riprendi">Riprendi adesso</button></div></div></div>`;
+  h += richiesteGestore();
   h += `<div><h1>Ciao ${esc((Dati.attivo && Dati.io.nomeGestore) || 'Monica')}</h1><p class="tenue" style="margin:4px 0 0">${n ? `Hai <b>${n}</b> ${n === 1 ? 'cosa' : 'cose'} da guardare negli ordini.` : 'Nessun ordine nuovo da guardare.'}</p></div>
     <div class="riquadri">
       <button type="button" class="riquadro primo" data-a="vai" data-v="ordini">${ico('ordini')}${n ? `<span class="pallino">${n}</span>` : ''}<div><b>Ordini</b><br><small>Accetta e prepara</small></div></button>
@@ -814,6 +854,7 @@ function vImpostazioni() {
     <section class="scheda"><h2>Pausa</h2>${sw('i.pausa.attiva', i.pausa.attiva, 'Sono in pausa', 'I clienti ordinano solo per dopo')}
       ${i.pausa.attiva ? `<label for="pausa-fino" style="font-weight:800">Fino a (compreso)</label><input type="date" id="pausa-fino" data-campo="i.pausa.fino" value="${i.pausa.fino}">` : ''}</section>
     <section class="scheda"><h2>Pronti subito</h2><label for="pronti-fino" style="font-weight:800">Ritiro entro le</label><input type="time" id="pronti-fino" data-campo="i.prontiFino" value="${esc(i.prontiFino)}"></section>
+    ${Dati.attivo ? chiGestisce() : ''}
     <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
       <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>
     <button type="button" class="btn chiaro pieno" data-a="altre-imp" aria-expanded="${!!UI.altreImp}">${ico('impostazioni')}${UI.altreImp ? 'Chiudi le altre impostazioni' : 'Altre impostazioni (le sistema Mario)'}</button>
@@ -896,8 +937,9 @@ function render() {
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
   const chiuso = statoLucchetto();   /* la parte di Monica col lucchetto: nessun dato nella pagina finché non si apre */
-  const benv = !chiuso && serveBenvenuto();
-  $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : benv ? vBenvenuto() : vistaCliente()) + firma();
+  const invito = !chiuso && P.invitoGestore && P.ruolo !== 'monica';
+  const benv = !chiuso && (invito || serveBenvenuto());
+  $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : invito ? vInvitoGestore() : benv ? vBenvenuto() : vistaCliente()) + firma();
   $('#barra').innerHTML = P.ruolo === 'cliente' && !benv ? barraCliente() : '';
   $('#barra').classList.toggle('nascosto', P.ruolo !== 'cliente' || benv);
   document.body.classList.toggle('con-barra', P.ruolo === 'cliente' && !benv);
@@ -1159,6 +1201,28 @@ const A = {
   'benv-altro'() { UI.benv.usato = ''; render(); const i = $('#benv-cognome'); if (i) i.focus(); },
   'benv-guarda'() { UI.senzaNome = true; render(); },
   'nome-altro'() { UI.foglio = { tipo: 'nome' }; render(); const i = $('#nome-nuovo'); if (i) i.focus(); },
+  async 'inv-google'() {
+    if (!Dati.attivo) { mostraToast('Nell\'anteprima non si entra con Google: prova sul sito vero.'); return; }
+    UI.invInvio = true; render();
+    try { await Dati.entraGoogle(); await Dati.chiediGestore(); }
+    catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Accesso non riuscito. Riprova.'); }
+    UI.invInvio = false; render();
+  },
+  async 'inv-chiedi'() {
+    UI.invInvio = true; render();
+    try { await Dati.chiediGestore(); } catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è partita. Riprova tra poco.'); }
+    UI.invInvio = false; render();
+  },
+  async 'inv-altro'() { await Dati.esci().catch(() => {}); location.reload(); },
+  async 'gest-si'(el) { return decidiGestore(el.dataset.id, true); },
+  async 'gest-no'(el) { return decidiGestore(el.dataset.id, false); },
+  async 'gest-togli'(el) {
+    const id = el.dataset.id;
+    if (UI.gestTogli !== id) { UI.gestTogli = id; render(); setTimeout(() => { if (UI.gestTogli === id) { UI.gestTogli = null; render(); } }, 5000); return; }
+    UI.gestTogli = null;
+    try { await Dati.togliGestore(id); mostraToast('Tolto: non gestisce più la cucina.'); } catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); }
+    render();
+  },
   'entra-monica'() { Dati.entraGoogle().catch(() => mostraToast('Accesso non riuscito. Riprova.')); },
   ruolo(el) { P.ruolo = el.dataset.v; salvaP(); UI.foglio = null; UI.modifica = null; vai(P.ruolo === 'monica' ? 'home' : 'menu'); if (P.ruolo === 'monica') notificaMonica(); },
   vai(el) { vai(el.dataset.v); },
@@ -1643,6 +1707,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && e.target.id === 'ing-spesa-nuova') { e.preventDefault(); A['sp-agg'](); }
 });
 
+if (location.hash === '#gestore') { P.invitoGestore = true; if (Dati.attivo) salvaP(); }
 render();
 apertura();
 if (Dati.attivo) avviaDati();
@@ -1660,6 +1725,7 @@ function avviaDati() {
     S = nuovo;
     if (!S.ingExtra) S.ingExtra = {};
     if (io.gestore) spesaDalServer();
+    if (io.gestore && P.invitoGestore) { P.invitoGestore = false; salvaP(); }
     P.ruolo = io.gestore ? 'monica' : 'cliente';
     P.cliente = io.utente && io.utente.stato === 'approvato' ? io.utente.cliente : null;
     if (UI.vista === 'home' && P.ruolo === 'cliente') UI.vista = 'menu';
@@ -1671,7 +1737,7 @@ function avviaDati() {
     else if (st.errore === 'non-pronto') mostraToast('Non salvato: l\'app non è ancora collegata. Rifallo appena c\'è la rete.');
     else if (st.errore) mostraToast('Non salvato: riprova tra poco.');
     else if (st.rete === false && st.inAttesa) mostraToast('Senza rete: si salverà appena torna.');
-  }, { oggi, settimana, teglieOrdine, contaSettimane }).catch(() => mostraToast('Non riesco a caricare il menù: controlla la rete e riapri l\'app.'));
+  }, { oggi, settimana, teglieOrdine, contaSettimane, ridisegna: () => { if (staScrivendo()) renderDopo = true; else render(); } }).catch(() => mostraToast('Non riesco a caricare il menù: controlla la rete e riapri l\'app.'));
 }
 addEventListener('online', () => { if (UI.riprova && P.carrello.length) inviaVero(); });
 
@@ -1702,6 +1768,14 @@ async function inviaVero() {
     else mostraToast('Non è partito. Riprova tra poco.');
     salvaP(); render();
   }
+}
+async function decidiGestore(uid, si) {
+  const r = ((Dati.io.richiesteGestore) || []).find(x => x.uid === uid);
+  if (!r) return;
+  UI.gestDecido = true; render();
+  try { await Dati.decidiGestore(uid, nomeBreve(r.nome), si); mostraToast(si ? `Fatto: ${nomeBreve(r.nome)} ora gestisce la cucina con te.` : 'Va bene: richiesta tolta.'); }
+  catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); }
+  UI.gestDecido = false; render();
 }
 function erroreNome(e, nome) {
   if (e.code === 'permission-denied' && nome) { UI.foglio = { tipo: 'nome', usato: nome }; render(); return; }

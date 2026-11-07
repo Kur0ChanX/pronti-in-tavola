@@ -509,6 +509,10 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .benv-logo { width: min(52vw, 220px); height: auto; margin: 8px auto 0; display: block; animation: scatto .6s cubic-bezier(.3, 1.6, .5, 1) both; }
 .benvenuto h1 { font-family: var(--display); color: var(--vino); margin: 4px 0 0; font-size: 2rem; }
 .benvenuto .avviso small { display: block; margin-top: 8px; color: var(--tenue); }
+.passi-invito .passo-invito { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px dashed var(--riga); }
+.passi-invito .num { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--vino); color: #fff; display: grid; place-items: center; font-weight: 800; }
+.passi-invito .btn { margin-top: 14px; }
+.invito .link { display: block; margin: 12px auto 0; }
 
 /* incassi del mese nella Home di Monica (C7) */
 .incassi summary { display: flex; align-items: center; gap: 8px; cursor: pointer; }

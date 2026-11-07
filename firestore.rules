@@ -44,6 +44,19 @@ service cloud.firestore {
       allow write: if gestore();
     }
 
+    // Richiesta di chi apre l'invito per gestire (Monica): solo con Google, col SUO indirizzo.
+    // Diventa gestore solo quando un gestore dice sì (scrive gestori/<uid>).
+    match /richiesteGestore/{uid} {
+      allow read: if (entrato() && io() == uid) || gestore();
+      allow create, update: if entrato() && io() == uid
+        && request.auth.token.firebase.sign_in_provider == 'google.com'
+        && request.resource.data.keys().hasOnly(['nome', 'email', 'quando'])
+        && request.resource.data.nome is string && request.resource.data.nome.size() > 0 && request.resource.data.nome.size() <= 60
+        && request.resource.data.email == request.auth.token.email
+        && request.resource.data.quando is string && request.resource.data.quando.size() <= 30;
+      allow delete: if (entrato() && io() == uid) || gestore();
+    }
+
     match /piatti/{id} {
       allow read: if entrato();
       allow write: if gestore();
