@@ -2167,9 +2167,18 @@ async function inviaVero() {
   const fai = (righe, entro, pronto) => ({ id: 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), n: 0, cliente: P.cliente,
     righe: righe.map(r => { const x = Object.assign({}, r); delete x.pronto; return x; }), entro, stato: 'nuovo', pronto, proposta: null,
     paga: { metodo: UI.metodo || 'contanti', dice: false, ricevuto: false }, nota: UI.nota.trim(), creato: oggi(), tempi: { nuovo: Date.now() }, cuori: {}, modifica: null, esitoModifica: '' });
+  /* telefono non ancora approvato da Monica: un solo ordine alla volta (regole dei dati). Prima dava «Non è partito» (Mario 07/11) */
+  const u = Dati.io.utente, daApprovare = u.stato !== 'approvato';
+  if (daApprovare && u.primo) {
+    const p = ordine(u.primo);
+    if (!p || p.stato !== 'annullato') { mostraToast('Il tuo primo ordine aspetta l\'ok di Monica: appena risponde puoi ordinare ancora. Vuoi aggiungere piatti? Annullalo in «I miei ordini» e rifallo tutto insieme.'); return; }
+  }
   const lista = [];
-  if (pronti.length) lista.push([pronti, fai(pronti, oggi(), true)]);
-  if (dopo.length) lista.push([dopo, fai(dopo, UI.entro, false)]);
+  if (daApprovare && pronti.length && dopo.length) lista.push([c.slice(), fai(c, UI.entro, false)]);   // primo ordine: tutto insieme, nel giorno scelto
+  else {
+    if (pronti.length) lista.push([pronti, fai(pronti, oggi(), true)]);
+    if (dopo.length) lista.push([dopo, fai(dopo, UI.entro, false)]);
+  }
   UI.invio = true; UI.riprova = false; render();
   try {
     await Dati.inviaOrdini(lista.map(x => x[1]));
@@ -2182,7 +2191,7 @@ async function inviaVero() {
       P.carrello.forEach(r => { if (r.pronto && r.piatto === e.piatto) r.pronto = false; });
       mostraToast(`Mi dispiace: ${e.nome} pronto l'ha appena preso qualcun altro. Ora è da prenotare: scegli il giorno.`);
     } else if (e.code === 'unavailable' || !navigator.onLine) { UI.riprova = true; mostraToast('Non è partito: manca la rete. Riparte da solo appena torna.'); }
-    else mostraToast('Non è partito. Riprova tra poco.');
+    else { console.warn('ordine', e && e.code); mostraToast(e && e.code === 'permission-denied' ? 'Non è partito: Monica deve ancora darti l\'ok. Scrivile su WhatsApp o riprova più tardi.' : `Non è partito (${(e && e.code) || 'errore'}). Riprova tra poco.`); }
     salvaP(); render();
   }
 }
