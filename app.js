@@ -408,9 +408,9 @@ async function attivaAvvisiCliente() {
   } catch (e) { UI.notEsito = { ok: false, t: 'Non attivato: ' + ((e && e.message) || 'errore sconosciuto') + '.' }; }
   finally { UI.notProva = false; render(); }
 }
-function avvisaCliente(o) {
+function avvisaCliente(o, tipo = 'pronto') {   // tipo: 'pronto' o 'proposta' (Monica propone un altro giorno)
   if (!sulSito() || !o.cliente) return;
-  Dati.token().then(tok => tok && fetch('/api/pronto', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ cliente: o.cliente }) })).catch(() => {});
+  Dati.token().then(tok => tok && fetch('/api/pronto', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ cliente: o.cliente, tipo }) })).catch(() => {});
 }
 async function attivaAvvisi() {
   UI.notProva = true; UI.notEsito = null; render();
@@ -960,12 +960,13 @@ function cartaOrdineMonica(o) {
     h += `<div class="fila" style="justify-content:space-between"><span><b>${METODO[pg.metodo]}</b> · ${pg.ricevuto ? '<span style="color:var(--basilico);font-weight:800">soldi ricevuti ✓</span>' : pg.dice ? '<span style="color:var(--cotto);font-weight:800">dice che ha pagato: controlla</span>' : 'da ricevere'}</span>
       ${!pg.ricevuto && (pg.dice || ['accettato', 'pronto', 'ritirato'].includes(o.stato) && (pg.metodo !== 'contanti' || o.stato !== 'accettato')) ? `<button type="button" class="btn chiaro piccolo" data-a="ricevuto" data-id="${o.id}">${ico('euro')}Soldi ricevuti</button>` : ''}</div>`;
   }
-  if (r) h += bottoniRichiesta(r);
+  if (r) h += bottoniRichiesta(r) + (!r.cliente && o.stato === 'daApprovare' && !o.pronto ? `<button type="button" class="link" data-a="richiesta-proponi" data-id="${r.id}" data-o="${o.id}"${UI.decido === r.id ? ' disabled' : ''}>Sì, ma il giorno non mi va: proponi un altro giorno</button>` : '');
   if (!o.modifica) {
     if (o.stato === 'nuovo') h += `<div class="fila larga"><button type="button" class="btn verde" data-a="accetta" data-id="${o.id}">${ico('spunta')}Accetta</button>${o.pronto ? '' : `<button type="button" class="btn chiaro" data-a="proponi" data-id="${o.id}">Proponi un altro giorno</button>`}</div>
       <button type="button" class="link" data-a="rifiuta" data-id="${o.id}">Non posso farlo</button>`;
     if (o.stato === 'accettato') h += `<a class="btn verde pieno" data-a="pronto" data-id="${o.id}" href="${waOrdine(o, 'pronto')}" target="_blank" rel="noopener">${ico('chat')}È pronto: avvisa su WhatsApp</a>
-      <button type="button" class="link" data-a="pronto-muto" data-id="${o.id}">Segna pronto senza messaggio</button>`;
+      <button type="button" class="link" data-a="pronto-muto" data-id="${o.id}">Segna pronto senza messaggio</button>
+      ${o.pronto ? '' : `<button type="button" class="link" data-a="proponi" data-id="${o.id}">Il giorno non va più: proponi un altro giorno</button>`}`;
     if (o.stato === 'pronto') h += `<button type="button" class="btn pieno" data-a="ritirato" data-id="${o.id}">${ico('spunta')}Ritirato</button>`;
   }
   return h + '</article>';
@@ -1659,7 +1660,11 @@ const A = {
   'conferma-giorno'() {
     const { tipo, id } = UI.foglio, o = ordine(id), g = UI.proposta;
     UI.foglio = null; UI.proposta = null;
-    if (tipo === 'proponi') cambia(`Proposta mandata: ${giornoLungo(g)}`, () => { if (daAccettare(o)) o.righe = prezziGiusti(o.righe); o.proposta = g; o.stato = 'proposta'; });
+    if (tipo === 'proponi') {
+      if (!o || !['nuovo', 'accettato'].includes(o.stato)) { mostraToast('Aspetta un attimo e riprova: l\'ordine si sta aggiornando'); render(); return; }
+      cambia(`Proposta mandata: ${giornoLungo(g)}`, () => { if (daAccettare(o)) o.righe = prezziGiusti(o.righe); o.proposta = g; o.stato = 'proposta'; });
+      avvisaCliente(o, 'proposta');
+    }
     else cambia('Nuovo giorno mandato a Monica', () => { o.entro = g; o.proposta = null; o.stato = 'nuovo'; }, false);
   },
   'ho-pagato'(el) { const o = ordine(el.dataset.id); cambia('Grazie! Monica controlla e conferma.', () => { o.paga.dice = true; }, false); },
@@ -1762,6 +1767,14 @@ const A = {
   rimetti(el) { cambia('Rimesso nel menù', () => { piatto(el.dataset.id).cestino = null; }); },
   'richiesta-si'(el) { return decidiRichiesta(el.dataset.id, true); },
   'richiesta-no'(el) { return decidiRichiesta(el.dataset.id, false); },
+  /* cliente nuovo col giorno che non va (Monica 07/11): prima il sì, poi appena l'ordine è «Nuovo» si apre la scelta del giorno */
+  async 'richiesta-proponi'(el) {
+    const oid = el.dataset.o;
+    await decidiRichiesta(el.dataset.id, true);
+    for (let i = 0; i < 20 && !(ordine(oid) && ordine(oid).stato === 'nuovo'); i++) await new Promise(f => setTimeout(f, 300));
+    if (!ordine(oid) || ordine(oid).stato !== 'nuovo') return;
+    UI.foglio = { tipo: 'proponi', id: oid }; UI.proposta = null; render();
+  },
   'rifiutato-si'(el) { return decidiRichiesta(el.dataset.id, true); },
   'rifiutati-apri'() { UI.rifiutati = !UI.rifiutati; render(); },
   'i-anticipo'(el) { cambia('', () => { S.impostazioni.anticipo = Math.min(14, Math.max(0, S.impostazioni.anticipo + Number(el.dataset.d))); }, false); salvatoOk(); },

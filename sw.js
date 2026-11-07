@@ -37,10 +37,10 @@ function primaRete(r) {
 /* che notifica è lo dice /api/ultimo (ordine nuovo o promemoria della sera); senza risposta: ordine nuovo */
 self.addEventListener('push', e => {
   const mostra = u => {
-    const sera = u && u.tipo === 'promemoria' && u.n > 0, pronto = u && u.tipo === 'pronto';
-    return self.registration.showNotification(sera ? 'Domani si cucina 🍝' : pronto ? 'Il tuo ordine è pronto! 🍝' : 'Pronti in Tavola', {
-      body: sera ? `Domani hai ${u.n === 1 ? '1 ordine' : u.n + ' ordini'} da preparare. Tocca per vedere cosa cucinare.` : pronto ? 'Passa a ritirarlo quando vuoi. Tocca per vedere l\'indirizzo.' : 'Hai un ordine nuovo da guardare 🍝',
-      icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: sera ? 'promemoria' : pronto ? 'pronto' : 'ordine', renotify: true, data: { url: './' } });
+    const sera = u && u.tipo === 'promemoria' && u.n > 0, pronto = u && u.tipo === 'pronto', prop = u && u.tipo === 'proposta';
+    return self.registration.showNotification(sera ? 'Domani si cucina 🍝' : pronto ? 'Il tuo ordine è pronto! 🍝' : prop ? 'Monica ti propone un altro giorno 🍝' : 'Pronti in Tavola', {
+      body: sera ? `Domani hai ${u.n === 1 ? '1 ordine' : u.n + ' ordini'} da preparare. Tocca per vedere cosa cucinare.` : pronto ? 'Passa a ritirarlo quando vuoi. Tocca per vedere l\'indirizzo.' : prop ? 'Tocca per rispondere: «Va bene» o «Un altro giorno».' : 'Hai un ordine nuovo da guardare 🍝',
+      icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: sera ? 'promemoria' : pronto ? 'pronto' : prop ? 'proposta' : 'ordine', renotify: true, data: { url: './' } });
   };
   e.waitUntil(self.registration.pushManager.getSubscription().catch(() => null)
     .then(sub => fetch('/api/ultimo' + (sub ? '?e=' + encodeURIComponent(sub.endpoint) : ''), { cache: 'no-store' })).then(r => r.json()).catch(() => null)

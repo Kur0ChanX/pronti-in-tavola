@@ -6,7 +6,7 @@
    - POST /api/avvisa   → «c'è un ordine nuovo» a tutti i telefoni di chi gestisce (chiunque, ma con un tetto)
    - POST /api/agenda   → chi gestisce manda quanti ordini ha per ogni giorno (solo numeri, niente nomi)
    - POST /api/cliente  → il cliente approvato iscrive il suo telefono per «il tuo ordine è pronto» (token anonimo, controllo utenti/<uid>)
-   - POST /api/pronto   → chi gestisce avvisa un cliente: { cliente }
+   - POST /api/pronto   → chi gestisce avvisa un cliente: { cliente, tipo: 'pronto' | 'proposta' }
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -79,7 +79,7 @@ export class Avvisi extends DurableObject {
     const dest = perCliente ? tutti.filter(x => x.cliente === perCliente) : tutti.filter(x => !soloUid || x.uid === soloUid);
     if (perCliente) {   // il testo «è pronto» vale solo per i telefoni di quel cliente
       const pu = (await this.ctx.storage.get('ultimoPer')) || {};
-      dest.forEach(x => { pu[x.endpoint] = { tipo: 'pronto', quando: Date.now() }; });
+      dest.forEach(x => { pu[x.endpoint] = { tipo: per === 'proposta' ? 'proposta' : 'pronto', quando: Date.now() }; });
       const tieni = Object.entries(pu).sort((a, b) => b[1].quando - a[1].quando).slice(0, 200);
       await this.ctx.storage.put('ultimoPer', Object.fromEntries(tieni));
     }
@@ -170,7 +170,7 @@ export default {
       if (url.pathname === '/api/pronto') {
         const b = await req.json().catch(() => null), c = b && b.cliente;
         if (typeof c !== 'string' || !/^[\w-]{1,80}$/.test(c)) return json({ errore: 'cliente non valido' }, 400);
-        return json(await av.manda(null, 'pronto', c));
+        return json(await av.manda(null, b.tipo === 'proposta' ? 'proposta' : 'pronto', c));
       }
       if (url.pathname === '/api/agenda') return (await av.agenda(await req.json().catch(() => null))) ? json({ ok: true }) : json({ errore: 'agenda non valida' }, 400);
       return json({ errore: 'non trovato' }, 404);

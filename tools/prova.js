@@ -81,6 +81,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.ordine-carta', { hasText: 'Ordine n. 6' }).locator('[data-a="accetta"]').click(); await page.waitForTimeout(250);
     await page.locator('.ordine-carta', { hasText: 'Ordine n. 5' }).locator('[data-a="proponi"]').click(); await page.waitForTimeout(250); await clic('.foglio .giorno >> nth=3'); await clic('[data-a="conferma-giorno"]');
     await clic('[data-a="tab"][data-v="prossimi"]'); await foto('09-prossimi');
+    await clic('[data-a="tab"][data-v="nuovi"]');   // cliente nuovo: «Sì, ma proponi un altro giorno» (Monica 07/11)
+    if (!(await page.locator('.ordine-carta [data-a="richiesta-proponi"]').count())) throw new Error('manca la proposta per il cliente nuovo');
+    await clic('[data-a="tab"][data-v="prossimi"]');
   });
   await passo('Monica: etichette per le vaschette', async () => {
     await clic('[data-a="etichette"]');
@@ -113,7 +116,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('Monica: pronto e ritirato', async () => {
     await clic('[data-a="tab"][data-v="oggi"]'); await clic('[data-a="pronto-muto"]'); await foto('13-oggi'); await clic('[data-a="ritirato"]');
     await clic('[data-a="tab"][data-v="prossimi"]'); await page.locator('.ord-riga', { hasText: 'n. 2' }).click(); await page.waitForTimeout(250);
-    await page.locator('.ord-aperto [data-a="pronto-muto"]').waitFor({ timeout: 3000 }); await clic('.ord-aperto [data-a="ord-apri"]');
+    await page.locator('.ord-aperto [data-a="pronto-muto"]').waitFor({ timeout: 3000 });
+    if (!(await page.locator('.ord-aperto [data-a="proponi"]').count())) throw new Error('ordine già accettato: manca «proponi un altro giorno»');
+    await page.locator('.ord-aperto [data-a="proponi"]').scrollIntoViewIfNeeded(); await foto('13b-accettato-proponi');
+    await clic('.ord-aperto [data-a="ord-apri"]');
   });
   await passo('Monica: storico con cerca e filtri', async () => {
     await clic('[data-a="tab"][data-v="storico"]'); await foto('14-storico');
@@ -168,6 +174,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="richiesta-si"][data-id="r2"]');
     const r = await page.evaluate(() => S.richieste.length + '/' + S.clienti.filter(c => c.nome === 'Paolo Sanna').length);
     if (r !== '0/1') throw new Error('ricollega: ' + r);
+  });
+  await passo('Monica: cliente nuovo col giorno che non va → sì e proposta', async () => {
+    await page.evaluate(() => { const o = JSON.parse(JSON.stringify(S.ordini.find(y => y.id === 'o4')));
+      Object.assign(o, { id: 'o9', n: 99, stato: 'daApprovare', cliente: null, pronto: false, proposta: null });
+      S.ordini.push(o); S.richieste.push({ id: 'r9', nome: 'Anna Prova', primo: 'o9' }); render(); });
+    await clic('.indietro'); await clic('.riquadro.primo'); await clic('[data-a="tab"][data-v="nuovi"]');
+    await page.locator('.ordine-carta [data-a="richiesta-proponi"][data-id="r9"]').scrollIntoViewIfNeeded(); await foto('17b-nuovo-proponi');
+    await clic('.ordine-carta [data-a="richiesta-proponi"][data-id="r9"]'); await page.waitForTimeout(400); await foto('17c-scegli-giorno');
+    await clic('.foglio .giorno >> nth=2'); await clic('[data-a="conferma-giorno"]');
+    const o = await page.evaluate(() => { const x = S.ordini.find(y => y.id === 'o9'); return x.stato + '/' + !!x.cliente + '/' + !!x.proposta; });
+    if (o !== 'proposta/true/true') throw new Error('cliente nuovo con proposta: ' + o);
   });
   await passo('Monica: incassi del mese nella Home', async () => {
     await clic('.indietro');
