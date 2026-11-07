@@ -1,0 +1,45 @@
+# Pubblica il sito su Cloudflare (Worker «pronti-in-tavola») a ogni cambio dell'app.
+# Segreti (GitHub → Settings → Secrets and variables → Actions):
+#   CLOUDFLARE_API_TOKEN  = chiave da «Crea token» del Worker (vale solo per questo sito)
+#   CLOUDFLARE_ACCOUNT_ID = ID dell'account Cloudflare «Pronti in Tavola»
+# Senza segreti il giro non pubblica e resta verde.
+name: Pubblica sito
+
+on:
+  push:
+    branches: [claude/pronti-ramo-definitivo]
+    paths:
+      - '*.js'
+      - '*.html'
+      - '*.css'
+      - 'manifest.webmanifest'
+      - 'media/**'
+      - 'tools/sito.py'
+      - 'wrangler.jsonc'
+      - '.github/workflows/sito.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: pubblica-sito
+  cancel-in-progress: true
+
+jobs:
+  pubblica:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepara la cartella del sito
+        run: python3 tools/sito.py
+      - name: Pubblica su Cloudflare
+        if: env.CF_TOKEN != ''
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
+      - name: Segreti mancanti
+        if: env.CF_TOKEN == ''
+        run: echo "Manca CLOUDFLARE_API_TOKEN nei segreti di GitHub: niente pubblicazione."
