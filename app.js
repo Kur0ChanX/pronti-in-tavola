@@ -326,6 +326,39 @@ const testoInvitoGestore = (tipo = 'g') => tipo === 'a'
   : tipo === 'm'
   ? `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore-m`
   : `Ciao! 👩‍🍳 Ti invito a gestire con me Pronti in Tavola: qui arrivano gli ordini, si sistemano i piatti e si vede cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore`;
+/* prova delle notifiche (Mario 07/11: «fai test notifica nell'app»): una notifica vera su QUESTO telefono, senza server.
+   Dice se il telefono le sa mostrare e se il permesso c'è; le notifiche degli ordini arrivano dopo, col Worker (C3). */
+function statoNotifiche() {
+  if (!('Notification' in window) || !('serviceWorker' in navigator)) return telefono() === 'ios' && !standalone() ? 'ios-home' : 'no';
+  return Notification.permission;   // 'granted', 'denied', 'default'
+}
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+function cartaNotifica() {
+  const st = statoNotifiche(), esito = UI.notEsito;
+  const msg = {
+    'ios-home': 'Su iPhone le notifiche arrivano solo dall\'app messa sulla schermata Home: mettila lì (Condividi → «Aggiungi alla schermata Home») e riprova dall\'icona.',
+    no: 'Questo browser non sa mostrare notifiche. Prova con Chrome, o dall\'app sulla schermata Home.',
+    denied: 'Le notifiche sono bloccate per questo sito. Riaprile dalle impostazioni del browser: lucchetto accanto all\'indirizzo → Notifiche → Consenti.',
+    granted: 'Permesso dato. Tocca il pulsante: deve arrivarti una notifica di prova.',
+    default: 'Tocca il pulsante: il telefono ti chiede il permesso, rispondi «Consenti».'
+  }[st];
+  return `<section class="scheda"><h2>Notifiche</h2><p class="tenue" style="margin:0">${msg}</p>
+    ${esito ? `<div class="avviso ${esito.ok ? 'verde' : ''}">${ico(esito.ok ? 'spunta' : 'x')}<div>${esc(esito.t)}</div></div>` : ''}
+    ${st === 'granted' || st === 'default' ? `<button type="button" class="btn chiaro pieno" data-a="notifica-prova"${UI.notProva ? ' disabled' : ''}>${ico('chat')}${UI.notProva ? 'Un attimo…' : 'Prova le notifiche'}</button>` : ''}
+    <p class="tenue piccolo" style="margin:0">Per ora è solo una prova su questo telefono: le notifiche degli ordini arriveranno più avanti.</p></section>`;
+}
+async function provaNotifica() {
+  UI.notProva = true; UI.notEsito = null; render();
+  try {
+    const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+    if (perm !== 'granted') { UI.notEsito = { ok: false, t: 'Permesso non dato: senza «Consenti» le notifiche non arrivano.' }; return; }
+    const reg = await navigator.serviceWorker.ready;
+    await reg.showNotification('Pronti in Tavola', { body: 'Le notifiche funzionano! Così saprai subito degli ordini.', icon: 'media/icon-192.png', badge: 'media/icon-192.png', tag: 'prova', data: { url: location.pathname } });
+    UI.notEsito = { ok: true, t: 'Notifica mandata: guarda in alto sul telefono. Non c\'è? Controlla che il telefono non sia in «Non disturbare».' };
+  } catch (e) {
+    UI.notEsito = { ok: false, t: 'Non è partita: ' + ((e && e.message) || 'errore sconosciuto') + '.' };
+  } finally { UI.notProva = false; render(); }
+}
 /* biglietto d'invito in foto (Mario 07/11: «un bel biglietto di invito in foto da allegare in automatico su WhatsApp»):
    si disegna qui, poi va su WhatsApp insieme al messaggio col link; dove il telefono non sa allegarlo, si mostra da salvare */
 function caricaImg(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
@@ -650,7 +683,7 @@ function vOrdiniCliente() {
   let h = testataCliente() + '<main class="corpo"><h1>I miei ordini</h1>';
   if (!lista.length) h += '<p class="tenue">Non hai ancora ordinato.</p>';
   /* l'indirizzo sta dopo l'ordine più recente: si trova senza scorrere anche con tanti ordini vecchi */
-  return h + lista.slice(0, 1).map(cartaOrdineCliente).join('') + schedaRitiro() + lista.slice(1).map(cartaOrdineCliente).join('') + '</main>';
+  return h + lista.slice(0, 1).map(cartaOrdineCliente).join('') + schedaRitiro() + lista.slice(1).map(cartaOrdineCliente).join('') + cartaNotifica() + '</main>';
 }
 
 function vModifica() {
@@ -969,6 +1002,7 @@ function vImpostazioni() {
     ${Dati.attivo ? chiGestisce() : ''}
     <section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
       <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>
+    ${cartaNotifica()}
     <button type="button" class="btn chiaro pieno" data-a="altre-imp" aria-expanded="${!!UI.altreImp}">${ico('impostazioni')}${UI.altreImp ? 'Chiudi le altre impostazioni' : 'Altre impostazioni (le sistema Mario)'}</button>
     ${UI.altreImp ? `<p class="tenue piccolo" style="margin:0">Cose che si cambiano di rado: nel dubbio chiedi a Mario.</p>
     <section class="scheda"><h2>Giorni di anticipo</h2><p class="tenue" style="margin:0">Quanti giorni prima devono ordinare.</p>
@@ -1296,6 +1330,7 @@ function foglioEtichette() {
 
 const A = {
   'menu-immagine'() { mandaMenu(); },
+  'notifica-prova'() { provaNotifica(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
   async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore(UI.invTipo) }); chiudiFoglio(); } catch (e) { /* annullato */ } },
   etichette() { apriEtichette(); },

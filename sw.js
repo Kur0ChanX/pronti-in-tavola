@@ -33,6 +33,14 @@ function primaRete(r) {
       () => copia().then(m => { clearTimeout(t); dai(m || Response.error()); }));
   });
 }
+/* tocco sulla notifica: apre l'app (o la porta davanti se è già aperta) */
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cc => {
+    const c = cc.find(x => new URL(x.url).origin === location.origin);
+    return c ? c.focus() : clients.openWindow((e.notification.data && e.notification.data.url) || './');
+  }));
+});
 self.addEventListener('fetch', e => {
   const r = e.request;
   if (r.method !== 'GET') return;
