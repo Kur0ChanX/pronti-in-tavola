@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 12:38 · 01QTFEqR4jaQ
-continua
-
 ## 2026-11-05 14:27 · 01QTFEqRY58R
 immagine anteprima ok firebase manda guida
 
@@ -143,4 +140,7 @@ risolvi per piacere siamo 2 ore cerca bene
 link e passaggi chiari
 
 ## 2026-11-07 01:28 · 01QTFEqU1M1r
+@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+
+## 2026-11-07 01:35 · 01QTFEqU1M1r
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
