@@ -29,6 +29,7 @@
 
 ## 1. Claude da solo
 - C1, C3
+- **C23** Promesse 👁 a lotti (07/11, #16): appena le notifiche suonano, mando a Mario le 13 promesse aperte a gruppi da guardare sul sito vero. 👁 Lo vedi: sul tuo telefono, nell'app del sito vero · prova: tue foto o lettura dei dati veri, una per gruppo.
 
 ## 2. Claude dopo scelta o ok di Mario
 - C4 (serve l'account Cloudflare), C6, C7
