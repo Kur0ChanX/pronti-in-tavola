@@ -628,3 +628,16 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .dev-scheda { border: 2px dashed #1F2A44; display: grid; gap: 8px; }
 .dev-nov ul { margin: 4px 0 0; padding-left: 20px; }
 .dev-nov li { margin: 2px 0; }
+/* scheda del piatto a voci (Mario 07/11): una voce aperta alla volta */
+.sez-lista { display: grid; gap: 10px; }
+.sez { background: var(--carta, #FFFDF8); border-radius: var(--r); box-shadow: 0 1px 3px rgba(60, 30, 10, .12); }
+.sez > summary { list-style: none; display: flex; align-items: center; gap: 12px; padding: 16px; cursor: pointer; min-height: 64px; }
+.sez > summary::-webkit-details-marker { display: none; }
+.sez > summary > span { flex: 1; display: grid; gap: 2px; }
+.sez > summary b { font-size: 1.08rem; }
+.sez > summary small { color: var(--tenue, #7A6A5C); font-size: .92rem; }
+.sez > summary svg { width: 22px; height: 22px; flex: none; transform: rotate(-90deg); transition: transform .2s; color: var(--vino); }
+.sez[open] > summary svg { transform: rotate(90deg); }
+.sez[open] > summary { border-bottom: 1px dashed var(--riga); }
+.sez > .scheda { box-shadow: none; margin: 0; background: transparent; }
+.sez > .scheda > h2:first-child { display: none; }

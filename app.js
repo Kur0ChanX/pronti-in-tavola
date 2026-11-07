@@ -1207,39 +1207,46 @@ function vPiatto(id) {
   const qp = p.pronto && p.pronto.giorno === oggi() ? p.pronto.qta : 0;
   const all = allergeniDi(tuttiIng(p));
   const mancano = [['t6', 'Teglia da 6'], ['t8', 'Teglia da 8'], ['kg', 'Al chilo'], ['pz', 'Al pezzo'], ['intera', 'Intera']].filter(([k]) => !p.formati.some(f => f.id === k));
+  const parti = [];   // [chiave, titolo, riassunto, html della sezione]
+  const breve = (t, n = 38) => t.length > n ? t.slice(0, n - 1) + '…' : t;
   let h = testataMonica(p.nome, 'piatti') + '<main class="corpo">';
-  h += `<section class="scheda" style="padding:0;overflow:hidden">${foto(p, 'grande')}<div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
+  /* Mario 07/11: scheda del piatto «a prova di stupido» per Monica: un elenco di voci col valore di adesso; se ne apre una alla volta */
+  h += `<section class="scheda"><label class="interr"><span>Nel menù<small>Spento: i clienti non lo vedono</small></span><input type="checkbox" data-campo="disp" data-id="${p.id}" ${p.disponibile ? 'checked' : ''}></label></section>`;
+  parti.push(['foto', 'Foto', p.foto ? 'C\'è la foto' : 'Manca: tocca per aggiungerla', `<section class="scheda" style="padding:0;overflow:hidden">${foto(p, 'grande')}<div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
     <label class="btn chiaro pieno" for="file-foto">${ico('foto')}${p.foto ? 'Cambia la foto' : 'Aggiungi una foto'}</label><input type="file" id="file-foto" accept="image/*" class="nascosto" data-id="${p.id}">
     <span class="tenue piccolo">La foto viene migliorata da sola: più luce e colori caldi.</span>
-    ${p.foto ? '<button type="button" class="link" data-a="togli-foto">Togli la foto</button>' : ''}</div></section>`;
-  h += `<section class="scheda"><h2>Pronto subito oggi</h2><p class="tenue" style="margin:0">Ne hai già pronto? Scrivi quanti: i clienti lo vedono in cima al menù e non devono prenotare.</p>
+    ${p.foto ? '<button type="button" class="link" data-a="togli-foto">Togli la foto</button>' : ''}</div></section>`]);
+  parti.push(['pronto', 'Pronto subito oggi', qp ? `${fp.tipo === 'kg' ? NUM.format(qp) + ' kg' : qp} pronti oggi` : 'Nessuno pronto', `<section class="scheda"><h2>Pronto subito oggi</h2><p class="tenue" style="margin:0">Ne hai già pronto? Scrivi quanti: i clienti lo vedono in cima al menù e non devono prenotare.</p>
     ${p.formati.length > 1 ? `<div class="scelte">${p.formati.map(f => `<button type="button" class="scelta" data-a="p-pronto-formato" data-v="${f.id}" aria-pressed="${fp.id === f.id}">${esc(f.nome)}</button>`).join('')}</div>` : ''}
-    <div class="fila">${passo('p-pronto', fp.tipo === 'kg' ? NUM.format(qp) + ' kg' : qp)}<span class="tenue">${qp ? 'Si azzera da solo domani.' : 'Nessuno pronto.'}</span></div></section>`;
-  h += `<section class="scheda"><h2>Nome</h2><input type="text" data-campo="p.nome" value="${esc(p.nome)}" aria-label="Nome del piatto">
+    <div class="fila">${passo('p-pronto', fp.tipo === 'kg' ? NUM.format(qp) + ' kg' : qp)}<span class="tenue">${qp ? 'Si azzera da solo domani.' : 'Nessuno pronto.'}</span></div></section>`]);
+  parti.push(['nome', 'Nome e parte del menù', breve(`${p.nome} · ${(CATEGORIE.find(([k]) => k === p.cat) || ['', ''])[1]}`), `<section class="scheda"><h2>Nome</h2><input type="text" data-campo="p.nome" value="${esc(p.nome)}" aria-label="Nome del piatto">
     <label class="etichetta" for="p-sotto" style="font-weight:800">Una riga sotto il nome (se vuoi)</label><input type="text" id="p-sotto" data-campo="p.sotto" value="${esc(p.sotto)}" placeholder="es. da friggere a casa">
-    <span class="etichetta" style="font-weight:800">Parte del menù</span><div class="scelte">${CATEGORIE.map(([k, n]) => `<button type="button" class="scelta" data-a="p-cat" data-v="${k}" aria-pressed="${p.cat === k}">${n}</button>`).join('')}</div></section>`;
-  h += `<section class="scheda"><h2>Prezzi</h2>${p.formati.map(f => `<div class="formato-riga"><b>${esc(f.nome)}</b><input type="number" inputmode="decimal" step="0.5" min="0" data-campo="p.prezzo" data-f="${f.id}" value="${f.prezzo}" aria-label="Prezzo ${esc(f.nome)} in euro">
+    <span class="etichetta" style="font-weight:800">Parte del menù</span><div class="scelte">${CATEGORIE.map(([k, n]) => `<button type="button" class="scelta" data-a="p-cat" data-v="${k}" aria-pressed="${p.cat === k}">${n}</button>`).join('')}</div></section>`]);
+  parti.push(['prezzi', 'Prezzi e formati', breve(p.formati.map(f => `${f.nome}: ${euroBreve(f.prezzo)}`).join(' · '), 60), `<section class="scheda"><h2>Prezzi</h2>${p.formati.map(f => `<div class="formato-riga"><b>${esc(f.nome)}</b><input type="number" inputmode="decimal" step="0.5" min="0" data-campo="p.prezzo" data-f="${f.id}" value="${f.prezzo}" aria-label="Prezzo ${esc(f.nome)} in euro">
       ${p.formati.length > 1 ? `<button type="button" class="icona" data-a="p-formato-togli" data-f="${f.id}" aria-label="Togli ${esc(f.nome)}">${ico('cestino')}</button>` : '<span></span>'}</div>`).join('')}
     <span class="tenue piccolo">Prezzo in euro${p.formati.some(f => f.tipo === 'kg') ? ', al chilo' : ''}.</span>
-    ${mancano.length ? `<span class="etichetta" style="font-weight:800">Aggiungi un formato</span><div class="scelte">${mancano.map(([k, n]) => `<button type="button" class="chip" data-a="p-formato-aggiungi" data-v="${k}">${ico('piu')}${n}</button>`).join('')}</div>` : ''}</section>`;
-  h += `<section class="scheda"><h2>Gusti</h2><p class="tenue" style="margin:0">Se il piatto ha più gusti (es. ricotta, spinaci), il cliente sceglie.</p>
+    ${mancano.length ? `<span class="etichetta" style="font-weight:800">Aggiungi un formato</span><div class="scelte">${mancano.map(([k, n]) => `<button type="button" class="chip" data-a="p-formato-aggiungi" data-v="${k}">${ico('piu')}${n}</button>`).join('')}</div>` : ''}</section>`]);
+  parti.push(['gusti', 'Gusti', p.varianti.length ? breve(`${p.varianti.length}: ${p.varianti.map(v => v.nome).join(', ')}`, 60) : 'Nessuno: tocca per aggiungerne', `<section class="scheda"><h2>Gusti</h2><p class="tenue" style="margin:0">Se il piatto ha più gusti (es. ricotta, spinaci), il cliente sceglie.</p>
     ${p.varianti.map(v => `<div class="scheda" style="box-shadow:none;background:#fff"><div class="fila" style="flex-wrap:nowrap"><input type="text" data-campo="v.nome" data-v="${v.id}" value="${esc(v.nome)}" aria-label="Nome del gusto">
       <button type="button" class="icona" data-a="v-togli" data-v="${v.id}" aria-label="Togli il gusto ${esc(v.nome)}">${ico('cestino')}</button></div>
       <label class="piccolo" style="font-weight:800">Prezzo diverso (${esc(p.formati[0].nome.toLowerCase())}, se serve)</label><input type="number" inputmode="decimal" step="0.5" data-campo="v.prezzo" data-v="${v.id}" value="${v.prezzi && v.prezzi[p.formati[0].id] != null ? v.prezzi[p.formati[0].id] : ''}" placeholder="uguale">
       <span class="piccolo" style="font-weight:800">Ingredienti in più</span>${editorIng(p, v.id)}</div>`).join('')}
-    <button type="button" class="btn chiaro" data-a="v-aggiungi">${ico('piu')}Aggiungi un gusto</button></section>`;
-  h += `<section class="scheda"><h2>Ingredienti</h2>${editorIng(p, 'base')}
+    <button type="button" class="btn chiaro" data-a="v-aggiungi">${ico('piu')}Aggiungi un gusto</button></section>`]);
+  parti.push(['ingredienti', 'Ingredienti e allergeni', all.length ? breve(all.map(a => NOME_ALL[a]).join(', '), 60) : 'Nessun allergene', `<section class="scheda"><h2>Ingredienti</h2>${editorIng(p, 'base')}
     <span class="etichetta" style="font-weight:800">Allergeni, calcolati da soli</span>${all.length ? `<div class="allergeni">${all.map(a => `<span>${NOME_ALL[a]}</span>`).join('')}</div>` : '<span class="tenue">Nessuno.</span>'}
-    ${vegetariano(p) ? '<span class="eti veg" style="align-self:flex-start">Vegetariano: lo scrivo da solo nel menù</span>' : ''}</section>`;
-  h += sezioneDosi(p);
-  h += `<section class="scheda"><h2>Richieste veloci</h2><p class="tenue" style="margin:0">Tasti pronti per il cliente, es. «Poco sale».</p>
+    ${vegetariano(p) ? '<span class="eti veg" style="align-self:flex-start">Vegetariano: lo scrivo da solo nel menù</span>' : ''}</section>`]);
+  parti.push(['dosi', 'Dosi e costo', 'Per la lista della spesa', sezioneDosi(p)]);
+  parti.push(['richieste', 'Richieste veloci', p.note.length ? breve(p.note.join(', '), 60) : 'Nessuna', `<section class="scheda"><h2>Richieste veloci</h2><p class="tenue" style="margin:0">Tasti pronti per il cliente, es. «Poco sale».</p>
     <div class="ingr-lista">${p.note.map((n, i) => `<span class="chip">${esc(n)}<button type="button" data-a="nota-togli" data-i="${i}" aria-label="Togli ${esc(n)}">${ico('x')}</button></span>`).join('')}</div>
-    <div class="fila" style="flex-wrap:nowrap"><input type="text" id="nota-nuova" placeholder="es. Senza cipolla" aria-label="Nuova richiesta veloce"><button type="button" class="btn piccolo" data-a="nota-aggiungi">Aggiungi</button></div></section>`;
-  h += `<section class="scheda"><h2>Fritto da te</h2><p class="tenue" style="margin:0">Quanto costa in più se il cliente lo vuole già fritto: una cifra sola, qualunque quantità prenda. Lascia 0 se non lo friggi.</p>
-    <div class="formato-riga"><b>+ euro in tutto</b><input type="number" inputmode="decimal" step="0.5" min="0" max="99" data-campo="p.fritto" value="${p.fritto || 0}" aria-label="Sovrapprezzo fritto in euro"><span></span></div></section>`;
-  h += `<section class="scheda"><h2>Come si prepara a casa</h2><textarea data-campo="p.scalda" placeholder="es. Forno a 180 °C per 20 minuti" aria-label="Come si prepara a casa">${esc(p.scalda)}</textarea></section>`;
-  h += `<section class="scheda"><label class="interr"><span>Nel menù<small>Spento: i clienti non lo vedono</small></span><input type="checkbox" data-campo="disp" data-id="${p.id}" ${p.disponibile ? 'checked' : ''}></label>
-    <label class="interr"><span>Novità<small>Etichetta «Novità» per 2 settimane</small></span><input type="checkbox" data-campo="p.novita" ${novita(p) ? 'checked' : ''}></label></section>`;
+    <div class="fila" style="flex-wrap:nowrap"><input type="text" id="nota-nuova" placeholder="es. Senza cipolla" aria-label="Nuova richiesta veloce"><button type="button" class="btn piccolo" data-a="nota-aggiungi">Aggiungi</button></div></section>`]);
+  parti.push(['fritto', 'Fritto da te', p.fritto ? `+${euroBreve(p.fritto)} se lo vuole fritto` : 'No', `<section class="scheda"><h2>Fritto da te</h2><p class="tenue" style="margin:0">Quanto costa in più se il cliente lo vuole già fritto: una cifra sola, qualunque quantità prenda. Lascia 0 se non lo friggi.</p>
+    <div class="formato-riga"><b>+ euro in tutto</b><input type="number" inputmode="decimal" step="0.5" min="0" max="99" data-campo="p.fritto" value="${p.fritto || 0}" aria-label="Sovrapprezzo fritto in euro"><span></span></div></section>`]);
+  parti.push(['casa', 'Come si prepara a casa', p.scalda ? breve(p.scalda, 60) : 'Non scritto', `<section class="scheda"><h2>Come si prepara a casa</h2><textarea data-campo="p.scalda" placeholder="es. Forno a 180 °C per 20 minuti" aria-label="Come si prepara a casa">${esc(p.scalda)}</textarea></section>`]);
+  parti.push(['novita', 'Etichetta «Novità»', novita(p) ? 'Accesa' : 'Spenta', `<section class="scheda"><label class="interr"><span>Novità<small>Etichetta «Novità» per 2 settimane</small></span><input type="checkbox" data-campo="p.novita" ${novita(p) ? 'checked' : ''}></label></section>`]);
+  const ordine = ['pronto', 'prezzi', 'gusti', 'foto', 'nome', 'ingredienti', 'dosi', 'richieste', 'fritto', 'casa', 'novita'];
+  parti.sort((a, b) => ordine.indexOf(a[0]) - ordine.indexOf(b[0]));
+  h += `<p class="tenue piccolo" style="margin:0">Tocca una voce per cambiarla. Si salva da sola.</p><div class="sez-lista">${parti.map(([k, t, r, x]) =>
+    `<details class="sez" data-sez="${k}"${UI.sez === k ? ' open' : ''}><summary><span><b>${t}</b><small>${esc(r)}</small></span>${ico('indietro')}</summary>${x}</details>`).join('')}</div>`;
   h += p.controllato ? `<div class="avviso verde">${ico('spunta')}<div>Hai controllato ingredienti e allergeni.</div></div>`
     : `<div class="avviso"><div style="width:100%"><b>Questa è una mia bozza.</b> Controlla ingredienti, allergeni e istruzioni, poi tocca qui.<div class="fila" style="margin-top:10px"><button type="button" class="btn verde piccolo" data-a="controllato">${ico('spunta')}Ho controllato tutto</button></div></div></div>`;
   h += `<button type="button" class="btn chiaro pieno" data-a="anteprima">${ico('occhio')}Come lo vede il cliente</button>
@@ -2233,6 +2240,12 @@ document.addEventListener('click', e => {
   const f = A[el.dataset.a];
   if (f) f(el, e);
 });
+document.addEventListener('toggle', e => {
+  const d = e.target;
+  if (!d.matches || !d.matches('details.sez')) return;
+  if (d.open) { UI.sez = d.dataset.sez; document.querySelectorAll('details.sez[open]').forEach(x => { if (x !== d) x.open = false; }); setTimeout(() => d.scrollIntoView({ block: 'nearest', behavior: 'smooth' }), 50); }
+  else if (UI.sez === d.dataset.sez) UI.sez = null;
+}, true);
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.id === 'file-foto') { caricaFoto(el); return; }

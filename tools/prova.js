@@ -155,6 +155,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('Monica: modifica piatto e ingredienti nuovi', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await foto('12-piatti');
     await page.locator('.piatto-riga', { hasText: 'Tiramisù' }).locator('.apri').click(); await page.waitForTimeout(300);
+    if (await page.locator('details.sez[open]').count()) throw new Error('una voce del piatto è già aperta');
+    await clic('details.sez[data-sez="ingredienti"] > summary');
     await page.fill('#ing-base', 'liquore marsala, granella di pistacchio'); await clic('[data-a="ing-aggiungi"][data-s="base"]');
     await foto('13-piatto-modifica');
     const t = await page.locator('main').innerText(); if (!/Frutta a guscio/.test(t) || !/Solfiti/.test(t)) throw new Error('allergeni nuovi non trovati');
@@ -293,6 +295,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   });
   await passo('Monica: dosi nella scheda del piatto', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await clic('.piatto-riga >> text=Tiramisù');
+    await clic('details.sez[data-sez="dosi"] > summary');
+    if (await page.locator('details.sez[open]').count() !== 1) throw new Error('aperte più voci insieme');
     const q = page.locator('[data-campo="d.q"][data-ing="mascarpone"]'); await q.scrollIntoViewIfNeeded();
     if (await q.inputValue() !== '85') throw new Error('dose mascarpone: ' + await q.inputValue());
     // costo: mascarpone 2,50 € per 250 g → 85 g = 0,85 € a porzione → teglia da 6 = 5,10 € (gli altri senza prezzo)
