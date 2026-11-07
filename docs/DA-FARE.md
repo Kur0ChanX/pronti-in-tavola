@@ -4,7 +4,6 @@
 - 06/11 · 🟡 Principale 11 · Etichette (C7): il cuoricino dopo «Buon appetito», 1 · lo lascio (consiglio) · 2 · lo tolgo. Senza risposta resta la 1
 - 06/11 · 🟡 Principale 11 · Etichette (C7): il nome del cliente sopra il piatto, 1 · lo lascio (consiglio) · 2 · lo tolgo. Senza risposta resta la 1
 - 06/11 · 🟡 Principale 11 · Etichette (C7): Monica ha stampante e che fogli? 1 · adesivi A4 da 10 (consiglio) · 2 · carta da ritagliare · 3 · niente stampante. Senza risposta resta la 1
-- 07/11 · 🛑 · 🟡 Principale 12 · Cloudflare: il collegamento GitHub non va neanche dal PC (Kur0ChanX già legato all'altro account Cloudflare). 1 · «Crea token» solo per questo sito + aggiornamento automatico da GitHub, 3 minuti (consiglio) · 2 · zip a mano
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|

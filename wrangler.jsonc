@@ -1,5 +1,6 @@
 {
   "name": "pronti-in-tavola",
   "compatibility_date": "2026-11-01",
-  "assets": { "directory": "./sito" }
+  "assets": { "directory": "./sito" },
+  "preview_urls": false
 }
