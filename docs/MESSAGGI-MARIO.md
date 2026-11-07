@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 12:38 · 01QTFEqR4jaQ
-continua
-
-## 2026-11-05 14:27 · 01QTFEqRY58R
-immagine anteprima ok firebase manda guida
-
-## 2026-11-05 14:30 · 01QTFEqRY58R
-Abilito Gemini che cosa ci dà in più?
-
 ## 2026-11-05 14:31 · 01QTFEqRY58R
 fatto
 
@@ -144,3 +135,12 @@ link e passaggi chiari
 
 ## 2026-11-07 01:28 · 01QTFEqU1M1r
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+
+## 2026-11-07 02:22 · 01QTFEqRWGjV
+cuoricino ok etichette senza nome cliente ricreale perchè cosi è più facile stampare per prodotto mi devi aiutare per o regalarli una stampante piccola con ricariche economiche che stampa solo quello o una soluzione da spendere poco e fare molte copie togli anche vaschetta 2di2 ecc purtroppo se no ci vuole una stampa per ogni cliente
+
+## 2026-11-07 02:33 · 01QTFEqRWGjV
+metti per tutte e 2 poi vediamo in futuro
+
+## 2026-11-07 02:35 · 01QTFEqRWGjV
+no no in bianco e nero no
