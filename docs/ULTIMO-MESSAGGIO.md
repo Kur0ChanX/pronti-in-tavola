@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (07/11/2026 01:28 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 08:03 ora italiana)
 
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+mandami la guida passo passo di domani e segnati le pagine del sito per imparare  migliorare le guide mel tempo senza doppioni e spreco token
