@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (07/11/2026 01:28 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 08:49 ora italiana)
 
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+Anzi di fare il doppione, non puoi cercare un metodo che posso cliccare e sia copiare insieme?
