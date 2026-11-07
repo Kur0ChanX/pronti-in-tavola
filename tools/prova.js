@@ -243,19 +243,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.evaluate(() => SPESA.dosi.tiramisu.mascarpone) !== 100) throw new Error('dose non salvata');
     await clic('.indietro');   // resta in «I miei piatti»: la prova dopo parte da una schermata interna
   });
-  await passo('foto del menù: Monica ne carica 2, il cliente le vede in cima', async () => {
+  await passo('foto del menù: Monica ne carica 2 e le può mandare, i clienti per ora no', async () => {
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
     while (await page.locator('.indietro').count()) { await clic('.indietro'); await page.waitForTimeout(150); }
     await clic('.riquadro >> nth=1');
     await page.setInputFiles('#file-menu-0', 'media/anteprima-link-1.jpg'); await page.locator('.menu-foto-edit img').first().waitFor({ timeout: 5000 });
     await page.setInputFiles('#file-menu-1', 'media/icon-512.png'); await page.waitForTimeout(800);
+    if (!(await page.locator('[data-a="menu-foto-manda"]').count())) throw new Error('manca «Manda le foto»');
     if (await page.locator('.menu-foto-edit img').count() !== 2) throw new Error('foto del menù: ' + await page.locator('.menu-foto-edit img').count());
     await page.locator('.menu-foto-edit').scrollIntoViewIfNeeded(); await foto('22-foto-menu-monica');
     await clic('[data-a="ruolo"][data-v="cliente"]'); await page.waitForTimeout(300);
     if (await page.locator('.barra [data-v="menu"]').count()) await clic('.barra [data-v="menu"]');
-    await page.locator('.carosello img').first().waitFor({ timeout: 5000 });
-    if (await page.locator('.carosello img').count() !== 2) throw new Error('carosello: ' + await page.locator('.carosello img').count());
-    await foto('23-foto-menu-cliente');
+    await page.waitForTimeout(400);
+    if (await page.locator('.carosello img').count() !== 0) throw new Error('le foto del menù non devono ancora vedersi ai clienti');
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
     while (await page.locator('.indietro').count()) { await clic('.indietro'); await page.waitForTimeout(150); }
     await clic('.riquadro >> nth=1'); await clic('[data-a="menu-foto-togli"][data-i="1"]');

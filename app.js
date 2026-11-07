@@ -556,10 +556,11 @@ const versioneFotoApp = f => { let h = 0; for (let i = 0; i < f.length; i++) h =
 const fotoMenu = () => (S.menuFoto || []).filter(Boolean);
 function schedaFotoMenu() {
   const ff = (S.menuFoto || []).slice(0, 3);
-  return `<section class="scheda"><h2>Foto del menù</h2><p class="tenue" style="margin:0">Fino a 3 foto: i clienti le vedono in cima al menù, una dopo l'altra.</p>
+  return `<section class="scheda"><h2>Foto del menù</h2><p class="tenue" style="margin:0">Fino a 3 foto. Per ora le vedi solo tu: le mandi tu su WhatsApp con il pulsante qui sotto.</p>
     <div class="menu-foto-edit">${ff.map((f, i) => `<div class="mf">${f ? `<img src="${f}" alt="Foto ${i + 1} del menù">` : '<span class="tenue piccolo">In arrivo…</span>'}
       <label class="btn chiaro piccolo" for="file-menu-${i}">Cambia</label><input type="file" id="file-menu-${i}" accept="image/*" class="nascosto file-menu" data-i="${i}">
       <button type="button" class="link" data-a="menu-foto-togli" data-i="${i}">Togli</button></div>`).join('')}</div>
+    ${fotoMenu().length ? `<button type="button" class="btn pieno" data-a="menu-foto-manda">${ico('chat')}Manda le foto su WhatsApp</button>` : ''}
     ${ff.length < 3 ? `<label class="btn chiaro pieno" for="file-menu-${ff.length}">${ico('foto')}Aggiungi una foto del menù</label><input type="file" id="file-menu-${ff.length}" accept="image/*" class="nascosto file-menu" data-i="${ff.length}">` : ''}</section>`;
 }
 function carosello() {
@@ -569,7 +570,8 @@ function carosello() {
 }
 function vMenu() {
   const imp = S.impostazioni, cats = CATEGORIE.filter(([k]) => visibili().some(p => p.cat === k && p.disponibile));
-  let h = testataCliente() + '<main class="corpo">' + (UI.modifica ? '' : carosello());
+  /* foto del menù ai clienti: in attesa (Mario 07/11 «non sono molto convinto, aspettiamo»): per ora Monica le manda e basta */
+  let h = testataCliente() + '<main class="corpo">' + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
   if (UI.modifica) {
     const o = S.ordini.find(x => x.id === UI.modifica.ordine);
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
@@ -1663,6 +1665,14 @@ const A = {
   'ord-apri'(el) { UI.ordAperto = UI.ordAperto === el.dataset.id ? null : el.dataset.id; render(); },
   'ord-filtro'(el) { UI.ordFiltro = el.dataset.v; UI.ordQuanti = 40; render(); },
   'ord-altri'() { UI.ordQuanti += 40; render(); },
+  async 'menu-foto-manda'() {
+    const ff = fotoMenu().map((f, i) => { const b = atob(f.split(',')[1]); const a = new Uint8Array(b.length); for (let j = 0; j < b.length; j++) a[j] = b.charCodeAt(j); return new File([a], `menu-${i + 1}.jpg`, { type: 'image/jpeg' }); });
+    const testo = `Il menù di ${cuoca()} 🍝 Per ordinare: ${SITO}`;
+    try {
+      if (navigator.canShare && navigator.canShare({ files: ff })) await navigator.share({ files: ff, text: testo });
+      else mostraToast('Questo telefono non sa allegare le foto: tienile premute per salvarle, poi mandale da WhatsApp.');
+    } catch (e) { if (!e || e.name !== 'AbortError') mostraToast('Non sono partite: riprova.'); }
+  },
   'menu-foto-togli'(el) { const i = Number(el.dataset.i); if ((S.menuFoto || []).some(f => !f)) { mostraToast('Le foto stanno ancora arrivando: riprova tra poco.'); return; } cambia('Foto del menù tolta', () => { S.menuFoto = (S.menuFoto || []).filter((f, j) => j !== i); S.impostazioni.menuFotoV = S.menuFoto.map(versioneFotoApp); }); },
   'ord-giorno'(el) { const x = document.getElementById('g-' + el.dataset.v); if (x) x.scrollIntoView({ behavior: 'smooth', block: 'start' }); },
   accetta(el) { const o = ordine(el.dataset.id); cambia(`Accettato: ${cliente(o.cliente).nome}`, () => { o.righe = prezziGiusti(o.righe); segna(o, 'accettato'); }); },

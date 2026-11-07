@@ -2,13 +2,14 @@
 "account": "377be6",
 "sessione": "d32f59aa5d51",
 "giorno": "2026-11-07",
-"turni": 8,
-"peso": 1955318,
-"uscita": 60573,
-"contesto_max": 264499,
+"turni": 9,
+"peso": 2541935,
+"uscita": 75415,
+"contesto_max": 294334,
 "anomalie": [
 "5 uscite di strumento enormi (105 KB la più grande): leggere a pezzi (grep -n, sed -n)",
 "2 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)",
-"1 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+"1 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"2 uscite di strumento enormi (374 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ]
 }

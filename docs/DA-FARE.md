@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 16 · Foto del menù fatte (3 in cima al menù): ok? E «Manda le foto del menù» su WhatsApp al posto dell'immagine fatta dall'app (1 sì · 2 no)?
+- 07/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
 - 07/11 · 🟡 Principale 16 · Regole Firebase pubblicate (Mario 07/11 ~16:15, provato: 404 al posto di «permessi negati»). Ora: Home → Inviti → biglietto «Per Monica» su WhatsApp → lei entra col suo Gmail → tu «Sì, è lei».
 
