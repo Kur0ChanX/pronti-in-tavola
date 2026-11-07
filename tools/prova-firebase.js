@@ -194,6 +194,11 @@ const server = http.createServer((req, res) => {
     const uidN = await nuovo.evaluate(() => Dati.io.uid);
     controlla('primo ordine partito «da approvare»', await aspetta(nuovo, () => P.carrello.length === 0 && S.ordini.some(o => o.stato === 'daApprovare')),
       await nuovo.evaluate(() => [__t, S.impostazioni.nuovi, UI.foglio, UI.invio, P.carrello.length, navigator.onLine]));
+    // secondo ordine prima dell'ok di Monica: messaggio chiaro, niente «Non è partito» (Mario 07/11)
+    await nuovo.evaluate(() => { __t.length = 0; P.carrello = [riga('tiramisu', true)]; return inviaVero(); });
+    controlla('secondo ordine prima dell\'ok: spiega che aspetta Monica', await aspetta(nuovo, () => __t.some(t => /aspetta l'ok di Monica/.test(t))),
+      await nuovo.evaluate(() => __t));
+    await nuovo.evaluate(() => { P.carrello = []; });
     const nomeN = await admin(d => getDoc(doc(d, 'nomi/lucia-piras')));
     const uN = (await admin(d => getDoc(doc(d, 'utenti/' + uidN)))).data();
     controlla('nome segnato una volta (senza accenti né spazi doppi)', nomeN.exists() && uN.nome === 'Lùcia Piras' && uN.stato === 'nuovo' && !!uN.primo, uN);
