@@ -1,3 +1,4 @@
-# Ultimo messaggio di Mario (07/11/2026 01:28 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 09:21 ora italiana)
 
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+No, il problema non è eh, il- quindi le cose per persone vere, inviti, messaggi, no, ma non intendevo quello, io intendo un discorso generale, non solo per gli inviti, cioè non creare una categoria, perché sennò poi quella regola si forma solo per gli inviti, eccetera. Quando dici funzioni nuove, prima un messaggio con una persona vera, poi il nome. Boh, non capisco, io parlavo in generale del messaggio che ti ho mandato, adesso te lo rimando quel messaggio. Parlavo in generale per fare un'attenzione generale, non solo per una cosa.
+È una cosa, perché non ci hai pensato tu e fai le cose in modo superficiale? Non è da te. Sei tu che mi dai queste idee per fare le cose fatte bene, non te le devo dire io. Hai sempre fatto così all'inizio, adesso piano piano ti stai facendo le cose un po' da robot, un po' senza inventiva, con poche soluzioni, con poche strategie, idee geniali.
