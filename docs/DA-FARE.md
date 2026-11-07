@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 07/11 · 🟡 Principale 13 · Firebase passi a mano: quando partiamo? 1 · adesso · 2 · domani (consiglio)
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
