@@ -2,7 +2,6 @@
 
 ## 0. Aspetta Mario
 - 07/11 · 🟡 Principale 14 · Firebase: `gestori/<UID Mario>` creato; manca la foto della Home «Ciao Mario» sul sito. Poi Monica entra col SUO Gmail e si crea `gestori/<UID Monica>` con `nome` = `Monica`. 👁 Lo vedi: sul sito, Home dopo il login di Monica · prova: foto della sua Home «Ciao Monica» coi dati veri
-- 07/11 · 🟡 Principale 14 · Invito per Monica: scegliere 1 (tutto: messaggio, benvenuto, richiesta Sì/No) · 2 (solo messaggio e benvenuto) · 3 (prima i testi). Intanto niente link a Monica.
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|

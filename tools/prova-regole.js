@@ -243,6 +243,25 @@ async function semina(env) {
     }
   });
   await caso('foto troppo grande: no', () => assertFails(setDoc(doc(db('monica'), 'foto/lasagne'), { foto: 'x'.repeat(400001) })));
+  // Invito per gestire: richiesta con Google, sì solo da un gestore.
+  const goo = (uid, email) => env.authenticatedContext(uid, { email, firebase: { sign_in_provider: 'google.com' } }).firestore();
+  const ric = { nome: 'Monica Miscera', email: 'monica@example.com', quando: '2026-11-07T09:00' };
+  await caso('richiesta per gestire: con Google e la sua email sì', () => assertSucceeds(setDoc(doc(goo('mon', 'monica@example.com'), 'richiesteGestore/mon'), ric)));
+  await caso('richiesta per gestire: email non sua no', () => assertFails(setDoc(doc(goo('mon', 'altra@example.com'), 'richiesteGestore/mon'), ric)));
+  await caso('richiesta per gestire: telefono anonimo no', () => assertFails(setDoc(doc(db('mon'), 'richiesteGestore/mon'), ric)));
+  await caso('richiesta per gestire: a nome di un altro no', () => assertFails(setDoc(doc(goo('mon', 'monica@example.com'), 'richiesteGestore/altro'), ric)));
+  await caso('richiesta per gestire: campi in più no', () => assertFails(setDoc(doc(goo('mon', 'monica@example.com'), 'richiesteGestore/mon'), Object.assign({ gestore: true }, ric))));
+  await caso('richieste per gestire: le legge il gestore, non un cliente', async () => {
+    await senzaRegole(d => setDoc(doc(d, 'richiesteGestore/mon'), ric));
+    await assertSucceeds(getDocs(collection(db('monica'), 'richiesteGestore')));
+    await assertFails(getDocs(collection(db('tel1'), 'richiesteGestore')));
+  });
+  await caso('il gestore dice sì: gestori/<uid> e richiesta tolta', async () => {
+    await senzaRegole(d => setDoc(doc(d, 'richiesteGestore/mon'), ric));
+    const b = writeBatch(db('monica')); b.set(doc(db('monica'), 'gestori/mon'), { nome: 'Monica' }); b.delete(doc(db('monica'), 'richiesteGestore/mon'));
+    await assertSucceeds(b.commit());
+  });
+  await caso('chi ha chiesto non si fa gestore da solo', () => assertFails(setDoc(doc(goo('mon', 'monica@example.com'), 'gestori/mon'), { nome: 'Monica' })));
   await caso('nessuno si fa gestore da solo', () => assertFails(setDoc(doc(db('tel1'), 'gestori/tel1'), { nome: 'io' })));
 
   console.log(`\n${ok} OK, ${no} NO`);

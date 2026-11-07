@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (07/11/2026 01:28 ora italiana)
+# Ultimo messaggio di Mario (07/11/2026 09:06 ora italiana)
 
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
+Dimmi quali sono le 7 regole, così verifico se mi vanno bene tutte. E poi, visto che ci sono, che ti sto scrivendo, procedi con l'invito. Sì, tutto consigliato.
