@@ -27,7 +27,7 @@ function datiAI() {
     piatti: visibili().map(p => ({ id: p.id, nome: p.nome, cat: p.cat, nelMenu: !!p.disponibile, descrizione: p.sotto || '', prontiOggi: p.pronto && p.pronto.giorno === oggi() ? p.pronto.qta : 0,
       formati: p.formati.map(f => ({ id: f.id, nome: f.nome, prezzo: f.prezzo })) })),
     ordini, incassiMese: { giaPresi: c.presi, daPrendere: c.daPrendere, ordini: c.oo.length },
-    impostazioniExtra: OPZIONI.map(o => ({ chiave: o.k, nome: o.nome, tipo: o.tipo, valore: o.tipo === 'messaggio' ? String(opz(o.k)).slice(0, 160) : opz(o.k), cosa: o.aiuto })) };
+    impostazioniExtra: OPZIONI.map(o => ({ chiave: o.k, nome: o.nome, tipo: o.tipo, valore: o.tipo === 'messaggio' ? String(opz(o.k)).slice(0, 160) : o.tipo === 'parti' ? opz(o.k).map(c => c[1]).join(', ') : opz(o.k), cosa: o.aiuto + (o.perAI ? ' · ' + o.perAI : '') })) };
 }
 
 /* ---------- ogni azione controllata sui dati di ADESSO ----------
@@ -90,7 +90,7 @@ function controllaAI(a) {
       return { titolo: `${p.nome}: descrizione`, prima: p.sotto || '(vuota)', dopo: t, campi: [['testo', 'text', 'Descrizione']], fai: () => { p.sotto = t; } };
     }
     case 'nuovo_piatto': {
-      const nome = String(a.nome || '').replace(/[<>]/g, '').trim().slice(0, 50), cat = CATEGORIE.some(c => c[0] === a.cat) ? a.cat : 'primi';
+      const nome = String(a.nome || '').replace(/[<>]/g, '').trim().slice(0, 50), cat = CATEGORIE.some(c => c[0] === a.cat) ? a.cat : (CATEGORIE.find(c => c[0] === 'primi') || CATEGORIE[0])[0];
       const pr = a.prezzi || {}, modo = ['teglie', 'kg', 'pz', 'intera'].includes(a.modo) ? a.modo : 'intera';
       const chiavi = modo === 'teglie' ? ['t6', 't8'] : [modo === 'intera' ? 'intera' : modo], val = Object.fromEntries(chiavi.map(k => [k, numeroAI(pr[k])]));
       if (!nome) return { no: 'Come si chiama il piatto nuovo?' };
@@ -126,6 +126,12 @@ function controllaAI(a) {
       if (!d && o) {   // impostazioni in più (opzioni.js, C88)
         const v = valoreOpz(o, a.valore), campi = ['numero', 'euro', 'testo', 'ora'].includes(o.tipo) ? [['valore', o.tipo === 'numero' || o.tipo === 'euro' ? 'number' : o.tipo === 'ora' ? 'time' : 'text', o.nome]] : [];
         if (v === undefined) return { no: `${o.nome}: il valore non mi torna, correggilo qui.`, campi };
+        if (o.tipo === 'parti') {   // C92: una parte con dei piatti non si toglie (nemmeno rinominandola a voce: il nome si cambia toccandolo)
+          const piene = partiPiene(v);
+          if (piene.length) return { no: `«${piene[0][1]}» ha dei piatti: non la tolgo. Per cambiarle il nome toccalo in Impostazioni → Parti del menù.` };
+          const nuove = v.filter(c => !opz('parti').some(x => x[0] === c[0])).map(c => c[1]);
+          return { titolo: 'Impostazioni · Parti del menù', prima: testoOpz(o, opz(o.k)), dopo: (nuove.length ? `Nuova: ${nuove.join(', ')} · ` : '') + testoOpz(o, v), campi: [], fai: () => { S.impostazioni.parti = v; } };
+        }
         if (JSON.stringify(v) === JSON.stringify(opz(o.k))) return { no: `${o.nome}: è già così (${testoOpz(o, v)}).` };
         return { titolo: `Impostazioni · ${o.nome}`, prima: testoOpz(o, opz(o.k)), dopo: o.tipo === 'messaggio' ? String(v).slice(0, 120) : testoOpz(o, v), campi, fai: () => { S.impostazioni[o.k] = v; } };
       }
@@ -529,6 +535,8 @@ function capisciDove(testo) {
   const domanda = /\bcome\b|\bdove\b|non (so|trovo|riesco|capisco)|si fa|posso|aiut|portami|fammi vedere|apri|vai /.test(t);
   const voglio = domanda || /vogli|vorrei|devo|cambi|modific|sistem|aggiung|mett|togli|scriv|attiv|accend|spegn|impost/.test(t);
   if (!voglio) return null;
+  const np = !/\bcome\b|\bdove\b/.test(t) && t.replace(/[.!?,;:"«»]+/g, ' ').replace(/\s+/g, ' ').trim().match(/(?:aggiung\w*|mett\w*|crea\w*)\s+(?:anche\s+)?(?:la|una|il)?\s*(?:parte|categoria|sezione)\s+(?:nuova\s+)?(?:dei\s+|degli\s+|delle\s+|di\s+|chiamata\s+)?([a-z][a-z ']{1,28}?)\s*(?:nel menu|al menu|in fondo|$)/);
+  if (np) { const nome = np[1].trim(); return [{ azione: 'impostazione', chiave: 'parti', valore: [...opz('parti'), [null, nome]], detta: nome }]; }   // «aggiungi la parte secondi» anche senza rete (C92)
   const chiavi = Object.keys(DOVE_AI).filter(k => DOVE_AI[k].parole.test(t));
   if (!chiavi.length) return null;
   const k = chiavi.find(x => VOCI_PIATTO.includes(x)) || chiavi.find(x => DOVE_AI[x].sez) || chiavi[0], v = DOVE_AI[k];   // la voce precisa vince sulla pagina («ordine minimo» → Ordine minimo, non Ordini)
@@ -543,6 +551,7 @@ function capisciDove(testo) {
 function rispostaDove(aa) {
   const c = controllaAI(aa[0]);
   if (c.no) return { testo: c.no, azioni: [] };
+  if (aa[0].azione === 'impostazione') return { testo: `Aggiungo «${aa[0].detta}» alle parti del menù: controlla e conferma qui sotto.`, azioni: aa };
   if (aa.length > 1) return { testo: `Quale piatto? Ne ho trovati ${aa.length}: tocca quello giusto.`, azioni: aa };
   return { testo: `Ti porto in ${c.titolo}. ${c.dopo}`, azioni: aa };
 }

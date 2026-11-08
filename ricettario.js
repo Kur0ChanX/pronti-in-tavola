@@ -780,7 +780,7 @@ Object.assign(A, {
   'ric-menu'(el) {   // dalla ricetta un piatto nuovo: nome e portata già scritti, Monica sceglie come lo vende e il prezzo
     const r = ricetta(el.dataset.v); if (!r) return;
     vai('nuovo');
-    Object.assign(UI.nuovo, { nome: r.nome.replace(/\s*\(.*\)$/, '').slice(0, 60), cat: { antipasti: 'stuzzichini', primi: 'primi', dolci: 'dolci' }[r.categoria] || '', ricetta: r.id });
+    Object.assign(UI.nuovo, { nome: r.nome.replace(/\s*\(.*\)$/, '').slice(0, 60), cat: (k => CATEGORIE.some(c => c[0] === k) ? k : '')({ antipasti: 'stuzzichini', primi: 'primi', secondi: 'secondi', dolci: 'dolci' }[r.categoria]), ricetta: r.id });
     render(); mostraToast('Controlla il nome e tocca Avanti.');
   },
   'ric-dado'() { UI.dado = (UI.dado || 0) + 1; render(); },
