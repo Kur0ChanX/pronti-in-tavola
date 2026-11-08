@@ -1,0 +1,12 @@
+{
+"account": "108763",
+"sessione": "e07f243d3616",
+"giorno": "2026-11-08",
+"turni": 2,
+"peso": 1512594,
+"uscita": 46286,
+"contesto_max": 234224,
+"anomalie": [
+"avvio pesante: 182k token dopo il primo turno (tetto 130k)"
+]
+}
