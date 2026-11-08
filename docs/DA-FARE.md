@@ -1,11 +1,11 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 08/11 · 🟡 Principale 31 · Controllo automatico dei numeri di versione doppi fra chat parallele: 1 lo aggiungo (consiglio) · 2 lascia così.
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C89 | (Mario 08/11 ~16:00 «consiglio» = 1) Controllo automatico che ferma una chat prima di salvare un numero di versione (`VERSIONE_APP`) o un C già presi su origin (hook prima del push; regola del kit → skill `nuova-regola`, chiedere se vale per tutti i progetti). | Claude | 🟡 |
 | C88 | (Mario 08/11 ~18:40 «aggiungi tantissime impostazioni da modificare… studio di tutto quello che può chiederci… col comando vocale la porta dove ha richiesto») v0.9.57: 14 regole nuove in Impostazioni → «Altre regole dell'app» + ricerca; aiutante «Portami lì» e azione impostazione. Lotto 2 (idee) in `docs/SPEC-IMPOSTAZIONI.md`. 👁 Lo vedi: Impostazioni → in cima «Cerca» → scrivi «minimo» → «Ordine minimo» · prova: tua foto | Claude | 🟢 manca la tua prova |
 | C87 | (Mario 08/11 ~18:20 «aiutante di Monica: portala direttamente lì, es. foto della parmigiana… molto completo»; «se non si può modificare, messaggio a me su WhatsApp coi dettagli») v0.9.56: «Portami lì» per voci del piatto, Impostazioni e pagine, anche senza rete; cose non fattibili → WhatsApp a Mario. 👁 Lo vedi: Home → «Chiedi all'aiutante» → «come cambio la foto delle melanzane alla parmigiana?» → ti porta in Foto · prova: tua foto | Claude | 🟢 manca la tua prova |
 | C86 | (Mario 08/11 ~18:00, foto Panade di carne «la quantità che Monica mette degli ingredienti è valida per 12 pezzi») v0.9.55: nei piatti a pezzi le dosi si scrivono per un impasto; per le panade 12 pezzi già pronti, numero cambiabile («Le dosi sono per quanti pezzi?»); dentro restano per 1 pezzo (lista e costi uguali). 👁 Lo vedi: I miei piatti → Panade di carne → Dosi e costo → «Quanto ti serve per 12 pezzi» · prova: tua foto | Claude | 🟢 manca la tua prova |
