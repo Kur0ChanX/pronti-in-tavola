@@ -113,26 +113,26 @@ async function ponteAI(env, messaggi) {
   }
   return null;
 }
-/* prova delle AI (Mario 08/11 «posso provare se risponde Groq?»): una domanda piccolissima a ogni modello, uno alla volta.
+/* prova delle AI (Mario 08/11 «posso provare se risponde Groq?»). 400 token: con 30 i modelli che «pensano» li finivano e rispondevano vuoto (foto di Mario 08/11 12:35): una domanda piccolissima a ogni modello, uno alla volta.
    Solo chi gestisce; costa pochissimo (poche decine di neuroni, 2 richieste Groq). */
 async function provaAI(env) {
   const msg = [{ role: 'user', content: 'Rispondi solo con la parola: pronto' }];
   const giro = async (nome, fn) => {
     const t0 = Date.now();
-    try { const x = testoDi(await fn()).replace(/<think>[\s\S]*?<\/think>/g, '').trim(); return { nome, ok: !!x, ms: Date.now() - t0, testo: x.slice(0, 40) }; }
+    try { const x = testoDi(await fn()).replace(/<think>[\s\S]*?<\/think>/g, '').trim(); return x ? { nome, ok: true, ms: Date.now() - t0, testo: x.slice(0, 40) } : { nome, ok: false, ms: Date.now() - t0, errore: 'risposta vuota (ha usato tutto il tempo per pensare)' }; }
     catch (e) { return { nome, ok: false, ms: Date.now() - t0, errore: String(e && e.message || e).slice(0, 120) }; }
   };
   const esiti = [];
   for (const m of [MODELLO_AI, ...RISERVE]) {
     const nome = 'Cloudflare · ' + m.split('/').pop();
-    esiti.push(env.AI ? await giro(nome, () => env.AI.run(m, { messages: msg, max_completion_tokens: 30, temperature: 0 })) : { nome, ok: false, errore: 'AI non collegata' });
+    esiti.push(env.AI ? await giro(nome, () => env.AI.run(m, { messages: msg, max_completion_tokens: 400, temperature: 0, reasoning_effort: 'low' })) : { nome, ok: false, errore: 'AI non collegata' });
   }
   for (const m of PONTE) {
     const nome = 'Groq · ' + m.split('/').pop();
     if (!env.GROQ_API_KEY) { esiti.push({ nome, ok: false, errore: 'chiave GROQ_API_KEY assente nel sito' }); continue; }
     esiti.push(await giro(nome, async () => {
       const r = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { authorization: 'Bearer ' + env.GROQ_API_KEY, 'content-type': 'application/json' },
-        body: JSON.stringify({ model: m, messages: msg, temperature: 0, max_tokens: 30 }) });
+        body: JSON.stringify({ model: m, messages: msg, temperature: 0, max_tokens: 400, ...(/gpt-oss/.test(m) ? { reasoning_effort: 'low' } : {}) }) });
       if (!r.ok) throw new Error('Groq risponde ' + r.status + (r.status === 401 ? ' (chiave sbagliata)' : r.status === 429 ? ' (limite raggiunto)' : r.status === 404 ? ' (modello non trovato)' : ''));
       return r.json();
     }));

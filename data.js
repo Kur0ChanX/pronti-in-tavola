@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.37';
+const VERSIONE_APP = '0.9.38';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.38', data: '08/11/2026', ora: '12:55',
+    corretto: ['«Prova le AI adesso»: Cloudflare sembrava spento, ma la prova dava troppo poco spazio alla risposta; ora se una AI non risponde dice il perché'] },
   { v: '0.9.37', data: '08/11/2026', ora: '12:40',
     nuovo: ['Velocità della voce: la sceglie Mario in «Solo per te, Mario» (da 0,7 a 1,3, con «▶️ Senti») e vale anche per Monica; di base un po\' più lenta di prima'] },
   { v: '0.9.36', data: '08/11/2026', ora: '12:16',
