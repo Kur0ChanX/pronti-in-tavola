@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.58';
+const VERSIONE_APP = '0.9.59';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.59', data: '08/11/2026',
+    nuovo: ['Impostazioni → «Parti del menù»: Monica rinomina, sposta e aggiunge le parti (es. «Secondi»); una parte con dei piatti non si toglie', 'A voce all\'aiutante: «aggiungi la parte secondi» (anche senza rete), poi conferma', 'Impostazioni: saluto in cima al menù, frase della pausa, altri modi di pagare (es. Satispay), messaggio d\'invito per gli amici, titolo e sottotitolo del biglietto'],
+    migliorato: ['Piatti dal ricettario nella parte «Secondi» se c\'è'] },
   { v: '0.9.58', data: '08/11/2026',
     nuovo: ['Impostazioni: 14 regole nuove che Monica cambia da sola (avviso in cima al menù, giorni di chiusura, ora limite, giorni avanti, ordine minimo, orari di ritiro, nota dei clienti, durata «Novità», aiutante dei clienti, i 3 messaggi WhatsApp e la firma, tempo di «Annulla»)', 'In cima a Impostazioni «🔎 Cerca un\'impostazione»', 'L\'aiutante porta a ognuna di queste voci e le può cambiare (tu confermi)'] ,
     migliorato: ['Invito su WhatsApp per le amiche: «la mia cucina casalinga»'] },
