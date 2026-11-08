@@ -801,3 +801,7 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 /* versione sempre in vista per Mario (08/11): piccola, in alto a destra, non copre niente */
 .versione-mini { display: block; margin: 0 0 0 auto; padding: 2px 10px; min-height: 0; background: none; border: 0; color: var(--tenue, #7a6a5a); font-size: .72rem; text-align: right; opacity: .8; }
 .versione-mini small { font-size: .62rem; opacity: .85; }
+
+/* «Sistema la foto» (Mario 08/11): anteprima che si trascina col dito, senza far scorrere il foglio */
+.rit-cornice { width: 100%; background: #2B2420; border-radius: 14px; overflow: hidden; display: flex; justify-content: center; }
+.rit-cornice canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: 52vh; touch-action: none; cursor: grab; }

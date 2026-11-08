@@ -348,8 +348,27 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
     while (await page.locator('.indietro').count()) { await clic('.indietro'); await page.waitForTimeout(150); }
     await clic('.riquadro >> nth=1');
-    await page.setInputFiles('#file-menu-0', 'media/anteprima-link-1.jpg'); await page.locator('.menu-foto-edit img').first().waitFor({ timeout: 5000 });
-    await page.setInputFiles('#file-menu-1', 'media/icon-512.png'); await page.waitForTimeout(800);
+    // «Sistema la foto» (Mario 08/11 «un editor di ritaglio… molto plug and play»): si apre prima di salvare; quadrata + ruota + trascina → foto quadrata
+    await page.setInputFiles('#file-menu-0', 'media/anteprima-link-1.jpg');
+    await page.locator('#rit-tela').waitFor({ timeout: 5000 });
+    if (await page.locator('[data-a="rit-forma"][data-v="intera"]').getAttribute('aria-pressed') !== 'true') throw new Error('per le foto del menù la forma di base deve essere «Intera»');
+    await clic('[data-a="rit-forma"][data-v="11"]'); await clic('[data-a="rit-ruota"]');
+    const tela = await page.locator('#rit-tela').boundingBox();
+    const prima = await page.evaluate(() => UI.rit.cx + ',' + UI.rit.cy);
+    await page.mouse.move(tela.x + tela.width / 2, tela.y + tela.height / 2); await page.mouse.down(); await page.mouse.move(tela.x + tela.width / 2 + 40, tela.y + tela.height / 2 + 30, { steps: 4 }); await page.mouse.up();
+    await page.locator('[data-rit="luce"]').fill('1.3');
+    if (await page.evaluate(() => UI.rit.luce) !== 1.3) throw new Error('la luce non cambia');
+    if (await page.evaluate(() => UI.rit.cx + ',' + UI.rit.cy) === prima && await page.evaluate(() => UI.rit.base.width !== UI.rit.base.height)) throw new Error('trascinare non sposta la foto');
+    await foto('22a-sistema-la-foto');
+    await clic('[data-a="rit-ok"]'); await page.locator('.menu-foto-edit img').first().waitFor({ timeout: 5000 });
+    const lati = await page.evaluate(() => new Promise(ok => { const i = new Image(); i.onload = () => ok([i.width, i.height]); i.src = S.menuFoto[0]; }));
+    if (lati[0] !== lati[1]) throw new Error('la foto ritagliata «Quadrata» non è quadrata: ' + lati);
+    // Annulla: chiude senza salvare niente
+    await page.setInputFiles('#file-menu-1', 'media/icon-512.png'); await page.locator('#rit-tela').waitFor({ timeout: 5000 });
+    await clic('.foglio [data-a="chiudi"]'); await page.waitForTimeout(400);
+    if (await page.locator('.menu-foto-edit img').count() !== 1) throw new Error('«Annulla» ha salvato la foto lo stesso');
+    await page.setInputFiles('#file-menu-1', 'media/icon-512.png'); await page.locator('#rit-tela').waitFor({ timeout: 5000 });
+    await clic('[data-a="rit-ok"]'); await page.waitForTimeout(800);
     if (!(await page.locator('[data-a="menu-foto-manda"]').count())) throw new Error('manca «Manda le foto»');
     if (await page.locator('.menu-foto-edit img').count() !== 2) throw new Error('foto del menù: ' + await page.locator('.menu-foto-edit img').count());
     await page.locator('.menu-foto-edit').scrollIntoViewIfNeeded(); await foto('22-foto-menu-monica');

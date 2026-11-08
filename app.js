@@ -1555,10 +1555,11 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
+  if (UI.foglio && UI.foglio.tipo === 'ritaglio') ritAnteprima();
   /* stesso foglio ridisegnato (più/meno, scelta del giorno): niente animazione d'entrata, resta fermo dov'era (Mario 07/11, C29 C31) */
   if (fh && chiaveFoglio === ultimoFoglio) { $('.velo').classList.add('fermo'); $('.foglio').scrollTop = fy; }
   document.querySelectorAll('.giorni, .settimana, .scelte').forEach((x, i) => { if (orizz[i]) x.scrollLeft = orizz[i]; });
@@ -2192,37 +2193,111 @@ function salvaCampo(el) {
   }
 }
 
-/* foto: ridotta e migliorata (più luce, colori caldi) */
+/* foto: prima «Sistema la foto» (Mario 08/11 ~15:40 «quando scarica le foto da internet le vuole ritagliare… un editor di ritaglio,
+   qualche piccola opzione base… molto plug and play»): forma (come nel menù 4:3, quadrata, intera), sposta col dito, ingrandisci,
+   ruota, luce, colori, «✨ Migliora» (il ritocco caldo di prima, acceso per Monica, spento per Mario). Poi ridotta sotto il tetto. */
 const TETTO_FOTO = 390000;   // caratteri della foto (circa 290 KB)
-function caricaFoto(input, fatto, nome) {
+function caricaFoto(input, fatto, nome, forma) {
   const file = input.files && input.files[0], id = input.dataset.id;
   if (!file) return;
   input.value = '';
-  const mario = puoSviluppare();   // Mario carica foto già ritoccate da lui: niente filtro caldo e niente copia originale
+  const mario = puoSviluppare();   // Mario carica foto già ritoccate da lui: niente filtro caldo di base e niente copia originale
   if (!mario && sulSito()) mandaOriginale(file, nome || (piatto(id) || {}).nome || 'foto');
   const url = URL.createObjectURL(file), img = new Image();
   img.onload = () => {
-    const s = Math.min(1, 900 / Math.max(img.width, img.height));
-    const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
-    const x = c.getContext('2d');
-    if (!mario) x.filter = 'brightness(1.06) saturate(1.12) contrast(1.04)';
-    x.drawImage(img, 0, 0, c.width, c.height);
-    if (!mario) { x.filter = 'none'; x.globalCompositeOperation = 'soft-light'; x.fillStyle = 'rgba(255,170,90,.16)'; x.fillRect(0, 0, c.width, c.height); }
-    // tetto 300 KB (il server ne accetta fino a 400.000 caratteri): prima qualità più bassa, poi foto più piccola
-    let q = 0.8, dati = c.toDataURL('image/jpeg', q);
-    while (dati.length > TETTO_FOTO && q > 0.55) { q -= 0.1; dati = c.toDataURL('image/jpeg', q); }
-    while (dati.length > TETTO_FOTO && c.width > 300) {
-      const p = document.createElement('canvas'); p.width = Math.round(c.width * 0.8); p.height = Math.round(c.height * 0.8);
-      p.getContext('2d').drawImage(c, 0, 0, p.width, p.height); c.width = p.width; c.height = p.height; c.getContext('2d').drawImage(p, 0, 0);
-      dati = c.toDataURL('image/jpeg', q);
-    }
     URL.revokeObjectURL(url);
-    if (dati.length > TETTO_FOTO) { mostraToast('Questa foto è troppo pesante. Prova con un\'altra.'); return; }
-    if (fatto) fatto(dati); else cambia(mario ? 'Foto aggiunta' : 'Foto aggiunta e migliorata', () => { piatto(id).foto = dati; });
+    UI.rit = { img, rot: 0, forma: forma || '43', zoom: 1, cx: .5, cy: .5, luce: 1, colori: 1, migliora: !mario, fatto, id, mario };
+    ritRuotata();
+    UI.foglio = { tipo: 'ritaglio' }; render();
   };
   img.onerror = () => { URL.revokeObjectURL(url); mostraToast('Questa foto non si apre. Prova con un\'altra.'); };
   img.src = url;
 }
+/* foto girata (0-3 quarti di giro) e già ridotta a 1600 px: è la base di anteprima e foto finale */
+function ritRuotata() {
+  const R = UI.rit, im = R.img, s = Math.min(1, 1600 / Math.max(im.width, im.height)), w = Math.round(im.width * s), h = Math.round(im.height * s);
+  const c = document.createElement('canvas'), dritta = R.rot % 2 === 0;
+  c.width = dritta ? w : h; c.height = dritta ? h : w;
+  const x = c.getContext('2d'); x.translate(c.width / 2, c.height / 2); x.rotate(R.rot * Math.PI / 2); x.drawImage(im, -w / 2, -h / 2, w, h);
+  R.base = c;
+}
+const RIT_FORME = [['43', 'Come nel menù'], ['11', 'Quadrata'], ['intera', 'Intera']];
+/* pezzo di foto scelto: rettangolo della forma, il più grande che entra, diviso per lo zoom, centrato dove ha messo il dito */
+function ritRiquadro() {
+  const R = UI.rit, W = R.base.width, H = R.base.height, a = R.forma === '43' ? 4 / 3 : R.forma === '11' ? 1 : W / H;
+  const cw0 = Math.min(W, H * a), cw = cw0 / R.zoom, ch = cw / a;
+  R.cx = Math.min(1 - cw / W / 2, Math.max(cw / W / 2, R.cx)); R.cy = Math.min(1 - ch / H / 2, Math.max(ch / H / 2, R.cy));
+  return { sx: R.cx * W - cw / 2, sy: R.cy * H - ch / 2, cw, ch };
+}
+function ritDisegna(c, larga) {
+  const R = UI.rit, q = ritRiquadro();
+  c.width = Math.round(larga); c.height = Math.round(larga * q.ch / q.cw);
+  const x = c.getContext('2d');
+  const extra = R.migliora ? [1.06, 1.12, 1.04] : [1, 1, 1];
+  x.filter = `brightness(${(R.luce * extra[0]).toFixed(3)}) saturate(${(R.colori * extra[1]).toFixed(3)}) contrast(${extra[2]})`;
+  x.drawImage(R.base, q.sx, q.sy, q.cw, q.ch, 0, 0, c.width, c.height);
+  x.filter = 'none';
+  if (R.migliora) { x.globalCompositeOperation = 'soft-light'; x.fillStyle = 'rgba(255,170,90,.16)'; x.fillRect(0, 0, c.width, c.height); x.globalCompositeOperation = 'source-over'; }
+}
+function ritAnteprima() {
+  const c = $('#rit-tela'); if (!c || !UI.rit) return;
+  ritDisegna(c, Math.min(1000, (c.parentElement.clientWidth || 320) * (window.devicePixelRatio || 1)));
+}
+function foglioRitaglio() {
+  const R = UI.rit;
+  if (!R) return '';
+  const fs = RIT_FORME.map(([k, t]) => `<button type="button" class="chip" data-a="rit-forma" data-v="${k}" aria-pressed="${R.forma === k}">${t}</button>`).join('');
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Annulla">${ico('x')}</button></div><div class="dentro"><h1>Sistema la foto</h1>
+    <div class="rit-cornice"><canvas id="rit-tela" aria-label="Anteprima della foto: trascina col dito per spostarla"></canvas></div>
+    <p class="tenue piccolo" style="margin:-8px 0 0">Trascina la foto col dito per scegliere il pezzo da tenere.</p>
+    <div class="scelte" role="group" aria-label="Forma">${fs}</div>
+    <label>Ingrandisci<input type="range" min="1" max="4" step="0.05" value="${R.zoom}" data-rit="zoom" ${R.forma === 'intera' ? 'disabled' : ''}></label>
+    <label>Luce<input type="range" min="0.6" max="1.6" step="0.02" value="${R.luce}" data-rit="luce"></label>
+    <label>Colori<input type="range" min="0" max="2" step="0.02" value="${R.colori}" data-rit="colori"></label>
+    <div class="fila" style="flex-wrap:wrap;gap:8px"><button type="button" class="btn chiaro" data-a="rit-ruota">↻ Ruota</button>
+      <button type="button" class="chip" data-a="rit-migliora" aria-pressed="${R.migliora}">✨ Migliora</button>
+      <button type="button" class="link" data-a="rit-reset">Rimetti com'era</button></div></div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="rit-ok">Usa questa foto</button></div>`;
+}
+/* foto finale: al massimo 900 px di lato, poi sotto il tetto (prima qualità più bassa, poi foto più piccola) */
+function ritFinisci() {
+  const R = UI.rit, q = ritRiquadro(), c = document.createElement('canvas');
+  const larga = q.cw >= q.ch ? Math.min(900, q.cw) : Math.min(900, q.ch) * q.cw / q.ch;
+  ritDisegna(c, larga);
+  let k = 0.8, dati = c.toDataURL('image/jpeg', k);
+  while (dati.length > TETTO_FOTO && k > 0.55) { k -= 0.1; dati = c.toDataURL('image/jpeg', k); }
+  while (dati.length > TETTO_FOTO && c.width > 300) {
+    const p = document.createElement('canvas'); p.width = Math.round(c.width * 0.8); p.height = Math.round(c.height * 0.8);
+    p.getContext('2d').drawImage(c, 0, 0, p.width, p.height); c.width = p.width; c.height = p.height; c.getContext('2d').drawImage(p, 0, 0);
+    dati = c.toDataURL('image/jpeg', k);
+  }
+  UI.rit = null;
+  chiudiFoglio(() => {
+    if (dati.length > TETTO_FOTO) { mostraToast('Questa foto è troppo pesante. Prova con un\'altra.'); return; }
+    if (R.fatto) R.fatto(dati); else cambia('Foto aggiunta', () => { piatto(R.id).foto = dati; });
+  });
+}
+Object.assign(A, {
+  'rit-forma'(el) { UI.rit.forma = el.dataset.v; UI.rit.zoom = 1; render(); },
+  'rit-ruota'() { const R = UI.rit; R.rot = (R.rot + 1) % 4; R.cx = R.cy = .5; ritRuotata(); render(); },
+  'rit-migliora'() { UI.rit.migliora = !UI.rit.migliora; render(); },
+  'rit-reset'() { const R = UI.rit; Object.assign(R, { rot: 0, zoom: 1, cx: .5, cy: .5, luce: 1, colori: 1, migliora: !R.mario }); ritRuotata(); render(); },
+  'rit-ok'() { if (UI.rit) ritFinisci(); },
+});
+document.addEventListener('input', e => { const k = e.target.dataset && e.target.dataset.rit; if (k && UI.rit) { UI.rit[k] = Number(e.target.value); ritAnteprima(); } });
+/* trascinare la foto col dito (o col mouse) sull'anteprima */
+(() => {
+  let su = null;
+  document.addEventListener('pointerdown', e => { if (e.target.id === 'rit-tela' && UI.rit) { su = { x: e.clientX, y: e.clientY }; e.target.setPointerCapture(e.pointerId); } });
+  document.addEventListener('pointermove', e => {
+    if (!su || !UI.rit) return;
+    const c = $('#rit-tela'); if (!c) { su = null; return; }
+    const R = UI.rit, q = ritRiquadro(), k = q.cw / c.getBoundingClientRect().width;
+    R.cx -= (e.clientX - su.x) * k / R.base.width; R.cy -= (e.clientY - su.y) * k / R.base.height;
+    su = { x: e.clientX, y: e.clientY }; ritAnteprima();
+  });
+  addEventListener('pointerup', () => { su = null; }); addEventListener('pointercancel', () => { su = null; });
+})();
 
 /* FOTO ORIGINALI (Mario 08/11 «riesci a farmela scaricare originale di ottima qualità»): la foto di Monica così com'è
    va in coda sul telefono e poi al server (/api/originali); Mario la scarica da «Solo per te, Mario». */
@@ -2533,7 +2608,7 @@ document.addEventListener('change', e => {
       S.menuFoto = (S.menuFoto || []).slice(0, 3); S.menuFoto[i] = dati;
       const vv = S.impostazioni.menuFotoV || [];
       S.impostazioni.menuFotoV = S.menuFoto.map((f, j) => f ? versioneFotoApp(f) : vv[j] || null);
-    }), 'Foto del menù ' + (i + 1));
+    }), 'Foto del menù ' + (i + 1), 'intera');
     return;
   }
   if (el.dataset.campo && !['sel.testo', 'nota'].includes(el.dataset.campo)) salvaCampo(el);

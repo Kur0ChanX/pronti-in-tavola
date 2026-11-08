@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.49';
+const VERSIONE_APP = '0.9.50';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.50', data: '08/11/2026',
+    nuovo: ['Foto dei piatti: prima di salvarla si apre «Sistema la foto». Puoi ritagliarla (come nel menù, quadrata o intera), spostarla col dito, ingrandirla, ruotarla, cambiare luce e colori; «✨ Migliora» le dà il ritocco caldo'] },
   { v: '0.9.49', data: '08/11/2026',
     migliorato: ['Quanto ti costa un piatto: i prezzi si scrivono lì, toccando l\'ingrediente (prima diceva di cercare una matita nella lista della spesa)'] },
   { v: '0.9.48', data: '08/11/2026',
