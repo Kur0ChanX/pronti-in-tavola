@@ -81,7 +81,14 @@ const Dati = (() => {
     const utenti = tutti('utenti'), clienti = tutti('clienti');
     const nomeDi = id => (clienti.find(c => c.id === id) || {}).nome || (id === 'monica' ? 'Monica' : '');
     // «Telefono nuovo»: lo stesso nome di un cliente che c'è già (se no è come un nuovo)
-    const vecchioDi = u => u.stato === 'ricollega' ? (clienti.find(c => c.chiave === u.chiave) || {}).id || null : null;
+    // (C93) o un altro telefono con lo stesso nome già approvato (browser e poi app installata su iPhone)
+    const vecchioDi = u => u.stato === 'ricollega' ? (clienti.find(c => c.chiave === u.chiave) || {}).id
+      || (utenti.find(x => x.uid !== u.uid && x.chiave === u.chiave && x.stato === 'approvato' && x.cliente) || {}).cliente || null : null;
+    // (C93) Lo stesso nome in attesa su due telefoni (browser e app installata): Monica vede UNA richiesta,
+    // la più nuova ('ricollega' viene dopo 'nuovo'); il Sì o il No vale anche per le altre («gemelli»).
+    const attesa = utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega');
+    const peso = u => (u.stato === 'ricollega' ? 2 : 1) * 1e9 + (u.primo ? 1 : 0);
+    const capi = attesa.filter(u => !attesa.some(x => x !== u && x.chiave === u.chiave && (peso(x) > peso(u) || (peso(x) === peso(u) && x.uid > u.uid))));
     // Copia profonda: cambiare S non deve cambiare la copia del server, se no non si vede la differenza.
     const S = copia({
       versione: 1, motore: 'firebase', soloContanti, ingExtra, impostazioni: imp,
@@ -92,8 +99,8 @@ const Dati = (() => {
       settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = Math.max(0, srv[k].teglie || 0); return o; }, {}),
       utenti,
       spesa: srv['impostazioni/spesa'] || null,
-      richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
-        .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u) })),
+      richieste: capi.map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u),
+        gemelli: attesa.filter(x => x !== u && x.chiave === u.chiave).map(x => x.uid) })),
       // «Persone rifiutate»: i telefoni a cui Monica ha detto No (può cambiare idea con «Accetta»)
       rifiutati: utenti.filter(u => u.stato === 'no').map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, primo: u.primo || null }))
     });
@@ -467,7 +474,15 @@ const Dati = (() => {
       const stato = eraNo ? (u.era || (tutti('clienti').some(c => c.chiave === u.chiave) ? 'ricollega' : 'nuovo')) : u.stato;
       const oS = u.primo ? await t.get(doc(db, 'ordini', u.primo)) : null;
       const o = oS && oS.exists() && (oS.data().stato === 'daApprovare' || (eraNo && oS.data().stato === 'rifiutato' && !oS.data().cliente)) ? oS.data() : null;
-      const vecchio = si && stato === 'ricollega' ? tutti('clienti').find(c => c.chiave === u.chiave) : null;
+      let vecchio = si && stato === 'ricollega' ? tutti('clienti').find(c => c.chiave === u.chiave) : null;
+      // (C93) Nessun cliente ancora con quel nome: forse un altro telefono con lo stesso nome è appena stato approvato
+      // (la copia locale dei clienti può non averlo ancora): lo leggo dentro la transazione, così mai due clienti uguali.
+      if (si && !vecchio && u.chiave) {
+        for (const x of tutti('utenti').filter(x => x.uid !== uid && x.chiave === u.chiave)) {
+          const xS = await t.get(doc(db, 'utenti', x.uid));
+          if (xS.exists() && xS.data().stato === 'approvato' && xS.data().cliente) { vecchio = { id: xS.data().cliente }; break; }
+        }
+      }
       const cliente = si ? (vecchio ? vecchio.id : nuovoId) : null;
       const dopo = o ? Object.assign({}, o, si ? { stato: 'nuovo', cliente } : { stato: 'rifiutato' }) : null;
       const vuole = presi(dopo), piatti = {}, finiti = [];

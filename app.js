@@ -586,7 +586,17 @@ function chiGestisce() {
     <p class="tenue" style="margin:0">Manda l'invito a chi deve gestire con te: entra col suo Google e tu dici sì da qui.</p>
     ${bottoneBiglietto('m', 'Invita Monica', 'pieno')}${bottoneBiglietto('g', 'Invita un\'altra persona', 'chiaro pieno')}</section>`;
 }
+/* (C93) Il nome resta anche in un cookie: iPhone copia i cookie nell'app quando la metti nella schermata Home (iOS 17.2+),
+   così l'app installata ti riconosce da sola con un tocco («Sei Sabrina Rossi? Sì, sono io»). Solo il nome, niente altro. */
+function nomeRicordato() {
+  try { const m = document.cookie.match(/(?:^|;\s*)pit_nome=([^;]*)/); return m ? decodeURIComponent(m[1]).replace(/\s+/g, ' ').trim().slice(0, 60) : ''; } catch (e) { return ''; }
+}
+function ricordaNome(n) {
+  if (!n || n === nomeRicordato()) return;
+  try { document.cookie = `pit_nome=${encodeURIComponent(n)}; max-age=31536000; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`; } catch (e) { /* cookie spenti: si scrive il nome a mano */ }
+}
 function vBenvenuto() {
+  if (!UI.benv) { const r = nomeRicordato(), i = r.indexOf(' '); if (i > 0) UI.benv = { nome: r.slice(0, i), cognome: r.slice(i + 1), ricordato: r }; }
   const b = UI.benv || {};
   let h = `<main class="corpo benvenuto"><img class="benv-logo" src="media/logo-medaglione.webp" alt="Pronti in Tavola con Monica">
     <h1>Benvenuti da Monica!</h1><p class="tenue">Monica cucina per te a Olbia. Prima di entrare, dicci come ti chiami: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>`;
@@ -596,6 +606,9 @@ function vBenvenuto() {
     <input type="text" id="benv-nome" autocomplete="given-name" autocapitalize="words" maxlength="30" placeholder="es. Laura" value="${esc(b.nome || '')}">
     <label class="etichetta" for="benv-cognome" style="font-weight:800">Il tuo cognome</label>
     <input type="text" id="benv-cognome" autocomplete="family-name" autocapitalize="words" maxlength="30" placeholder="es. Sanna" value="${esc(b.cognome || '')}" enterkeyhint="go"></section>`;
+  if (b.ricordato && !b.usato) return h.replace(/<p class="tenue">[\s\S]*?<\/p>/, '') + `<section class="scheda benv-ricordato"><h2>Bentornati!</h2><p style="font-size:1.15em;margin:6px 0 14px">Sei <b>${esc(b.ricordato)}</b>?</p>
+    <button type="button" class="btn verde pieno" data-a="benv-ricordato"${UI.benvInvio ? ' disabled' : ''}>${UI.benvInvio ? 'Un attimo…' : `${ico('spunta')}Sì, sono io`}</button>
+    <button type="button" class="btn chiaro pieno" style="margin-top:10px" data-a="benv-non-io">No, sono un'altra persona</button></section></main>`;
   if (b.usato) h += `<div class="avviso"><div><b>«${esc(b.usato)}» c'è già.</b> Sei tu con un telefono nuovo?
     <div class="fila" style="margin-top:10px"><button type="button" class="btn" data-a="benv-ricollega">Sì, sono io</button><button type="button" class="btn chiaro" data-a="benv-altro">No, è un'altra persona</button></div>
     <small>Se è un'altra persona con lo stesso nome, aggiungi qualcosa (es. «Laura Sanna B.»).</small></div></div>`;
@@ -604,13 +617,19 @@ function vBenvenuto() {
 }
 async function benvEntra(ricollega) {
   const prendi = id => { const i = document.getElementById(id); return i ? i.value.replace(/\s+/g, ' ').trim() : ''; };
-  const b = UI.benv = Object.assign({}, UI.benv, ricollega ? {} : { nome: prendi('benv-nome'), cognome: prendi('benv-cognome') });
+  const ricordato = ricollega === 'ricordato';   // (C93) dal cookie: prima come nome nuovo, se c'è già come telefono nuovo
+  if (ricordato) ricollega = false;
+  const b = UI.benv = Object.assign({}, UI.benv, ricollega || ricordato ? {} : { nome: prendi('benv-nome'), cognome: prendi('benv-cognome') });
   if (b.nome.length < 2) { mostraToast('Scrivi il tuo nome.'); const i = $('#benv-nome'); if (i) i.focus(); return; }
   if (b.cognome.length < 2) { mostraToast('Scrivi anche il cognome.'); const i = $('#benv-cognome'); if (i) i.focus(); return; }
-  const tutto = ricollega ? b.usato : [b.nome, b.cognome].map(x => x.split(' ').map(maiuscola).join(' ')).join(' ');
+  const tutto = ricollega ? b.usato : ricordato ? b.ricordato : [b.nome, b.cognome].map(x => x.split(' ').map(maiuscola).join(' ')).join(' ');
   if (Dati.attivo) {
     UI.benvInvio = true; render();
-    try { await Dati.registra(tutto, P.tramite || '', !!ricollega); avvisaGestori('richiesta'); }
+    try {
+      try { await Dati.registra(tutto, P.tramite || '', !!ricollega); }
+      catch (e) { if (!(ricordato && e.code === 'permission-denied')) throw e; await Dati.registra(tutto, P.tramite || '', true); }
+      avvisaGestori('richiesta'); ricordaNome(tutto);
+    }
     catch (e) {
       UI.benvInvio = false;
       if (e.code === 'permission-denied' && !ricollega) { UI.benv.usato = tutto; render(); return; }
@@ -618,7 +637,7 @@ async function benvEntra(ricollega) {
       render(); mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); return;
     }
     UI.benvInvio = false;
-  } else { P.benvenuto = true; P.nomeProva = tutto; salvaP(); }
+  } else { P.benvenuto = true; P.nomeProva = tutto; salvaP(); ricordaNome(tutto); }
   UI.benv = null; vai('menu');
   mostraToast(`Ciao ${nomeBreve(tutto)}! Ecco il menù di Monica.`);
 }
@@ -1559,6 +1578,7 @@ function render() {
   const invito = !chiuso && P.invitoGestore && P.ruolo !== 'monica';
   const benv = !chiuso && (invito || serveBenvenuto());
   if (!chiuso) controllaRichieste();
+  if (P.ruolo !== 'monica' && Dati.attivo && Dati.io.utente && Dati.io.utente.nome && !Dati.io.gestore) ricordaNome(Dati.io.utente.nome);   // (C93) anche chi si era registrato prima
   $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : invito ? vInvitoGestore() : benv ? vBenvenuto() : vistaCliente()) + firma()
     + (UI.avvisoTesto && !chiuso ? `<div class="notifica" role="status"><img src="media/icon-192.png" alt=""><div><b>Dalla notifica</b><span>${esc(UI.avvisoTesto)}</span></div></div>` : '');
   $('#barra').innerHTML = P.ruolo === 'cliente' && !benv ? barraCliente() : '';
@@ -1846,6 +1866,8 @@ const A = {
   },
   'benv-entra'() { benvEntra(false); },
   'benv-ricollega'() { benvEntra(true); },
+  'benv-ricordato'() { benvEntra('ricordato'); },
+  'benv-non-io'() { UI.benv = { nome: '', cognome: '', ricordato: '' }; render(); const i = $('#benv-nome'); if (i) i.focus(); },
   'benv-altro'() { UI.benv.usato = ''; render(); const i = $('#benv-cognome'); if (i) i.focus(); },
   'benv-guarda'() { UI.senzaNome = true; render(); },
   'nome-altro'() { UI.foglio = { tipo: 'nome' }; render(); const i = $('#nome-nuovo'); if (i) i.focus(); },
@@ -2148,9 +2170,13 @@ async function decidiRichiesta(id, si) {
   UI.decido = id; render();
   try {
     const esito = await Dati.decidi(id, si);
+    // (C93) lo stesso nome in attesa su un altro telefono (browser e app installata): stessa decisione, stesso cliente
+    const fatti = [esito];
+    for (const g of r.gemelli || []) { try { const e2 = await Dati.decidi(g, si); fatti.push(e2); esito.finiti.push(...e2.finiti.filter(f => !esito.finiti.includes(f))); } catch (e) { /* già deciso */ } }
+    const annullaTutti = async () => { for (const f of fatti.slice().reverse()) await f.annulla(); };
     UI.decido = null; render();
     mostraToast(esito.finiti.length ? `${msg}. I pronti sono finiti (${esito.finiti.join(', ')}): proponi un altro giorno.` : msg, () => {
-      esito.annulla().then(() => mostraToast('Annullato'),
+      annullaTutti().then(() => mostraToast('Annullato'),
         e => mostraToast(e.code === 'gia' ? 'Non si può più annullare: è già cambiato.' : 'Non annullato: controlla la rete e riprova.'));
     });
   } catch (e) {
