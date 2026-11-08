@@ -1,6 +1,8 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 08/11 · 📒 Aiuto 1 · Regime leggero solo per Pronti in Tavola (avvio a dieta, prove solo del pezzo cambiato, comandi raggruppati, meno rituali; le regole 🔒 restano): 1 sì tutto (consiglio) · 2 solo prove e avvio · 3 no
+- 08/11 · 📒 Aiuto 1 · Divisione dei lavori: 1 principale = ricettario, voce, versioni; Aiuto 1 = Impostazioni di Monica a voci (C39) + pulizia prove fuori dal ricettario (consiglio) · 2 Aiuto 1 fa solo il regime leggero e chiude · 3 altro
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
