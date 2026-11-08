@@ -522,6 +522,21 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.dev-nov', { hasText: '0.7 · tappa 1' }).scrollIntoViewIfNeeded(); await foto('37-cronologia');
     await page.evaluate(() => { P.sviluppatore = false; UI.devTutte = false; render(); });
   });
+  await passo('sviluppatore: tocco sul numerino della versione → tutti gli aggiornamenti con data e ora (Mario 08/11)', async () => {
+    // la barra sviluppatore esiste solo col server vero (Dati.attivo): qui lo si finge per il tempo del passo, poi si rimette com'era
+    await page.evaluate(() => { window._prima = { attivo: Dati.attivo, gestore: Dati.io.gestore, nome: Dati.io.nomeGestore }; Dati.attivo = true; Dati.io.gestore = true; Dati.io.nomeGestore = 'Mario';
+      P.ruolo = 'monica'; P.sviluppatore = true; UI.barraDev = true; UI.devCliente = false; UI.vista = 'impostazioni'; UI.foglio = null; render(); });
+    if (!(await page.locator('.prova.dev .dev-v').count())) throw new Error('numerino della versione non visibile nella barra sviluppatore');
+    await clic('.prova.dev .dev-v');
+    const quante = await page.locator('.foglio .dev-nov').count();
+    if (quante < 15) throw new Error('il foglio degli aggiornamenti è incompleto: ' + quante);
+    const testo = await page.locator('.foglio .dev-nov').first().innerText();
+    if (!/\d\d\/\d\d\/\d{4}/.test(testo) || !/ore \d\d:\d\d/.test(testo)) throw new Error('nel foglio manca data o ora dell\'ultima versione: ' + testo.slice(0, 80));
+    await foto('37b-aggiornamenti-dal-numerino');
+    await clic('.foglio [data-a="chiudi"]');
+    if (await page.evaluate(() => !!UI.foglio)) throw new Error('il foglio degli aggiornamenti non si chiude');
+    await page.evaluate(() => { Dati.attivo = _prima.attivo; Dati.io.gestore = _prima.gestore; Dati.io.nomeGestore = _prima.nome; P.sviluppatore = false; UI.barraDev = false; render(); });
+  });
   await passo('ricettario (C55): GialloZafferano dentro l\'app (finto server), preferite, porzioni, spesa, cucina guidata, ricetta mia', async () => {
     await page.evaluate(() => {
       P.ruolo = 'monica'; S.impostazioni.ricettario = true;
