@@ -324,17 +324,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await foto('23-menu-immagine'); await clic('.foglio [data-a="chiudi"]');
   });
   await passo('Monica: dosi nella scheda del piatto', async () => {
-    await clic('.indietro'); await clic('.riquadro >> nth=1'); await clic('.piatto-riga >> text=Tiramisù');
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'piatto:tiramisu'; render(); });   // autonoma
     await clic('details.sez[data-sez="dosi"] > summary');
     if (await page.locator('details.sez[open]').count() !== 1) throw new Error('aperte più voci insieme');
     const q = page.locator('[data-campo="d.q"][data-ing="mascarpone"]'); await q.scrollIntoViewIfNeeded();
-    if (await q.inputValue() !== '85') throw new Error('dose mascarpone: ' + await q.inputValue());
+    if (await q.inputValue() !== '510') throw new Error('dose mascarpone per la teglia da 6 (85 × 6): ' + await q.inputValue());
+    if (!(await page.locator('.formato-riga', { hasText: 'teglia da 8: 680 g' }).count())) throw new Error('manca la teglia da 8 calcolata');
     // costo: mascarpone 2,50 € per 250 g → 85 g = 0,85 € a porzione → teglia da 6 = 5,10 € (gli altri senza prezzo)
     await page.evaluate(() => { SPESA.ing.mascarpone = Object.assign({}, SPESA.ing.mascarpone, { prezzo: 2.5 }); render(); });
     if (!(await page.locator('.fila', { hasText: 'ti costa 5,10' }).count())) throw new Error('costo del tiramisù: ' + await page.locator('.scheda', { hasText: 'Quanto ti costa' }).innerText());
-    await q.fill('100'); await q.dispatchEvent('change'); await foto('21-dosi');
-    if (await page.evaluate(() => SPESA.dosi.tiramisu.mascarpone) !== 100) throw new Error('dose non salvata');
-    await clic('.indietro');   // resta in «I miei piatti»: la prova dopo parte da una schermata interna
+    await q.fill('600'); await q.dispatchEvent('change'); await foto('21-dosi');
+    if (await page.evaluate(() => SPESA.dosi.tiramisu.mascarpone) !== 100) throw new Error('dose non salvata (600 per la teglia da 6 = 100 a porzione)');
+    if (!(await page.locator('.formato-riga', { hasText: 'teglia da 8: 800 g' }).count())) throw new Error('teglia da 8 non ricalcolata');
+    await page.evaluate(() => { UI.vista = 'piatti'; render(); });   // resta in «I miei piatti»: la prova dopo parte da una schermata interna
   });
   await passo('foto del menù: Monica ne carica 2 e le può mandare, i clienti per ora no', async () => {
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
@@ -718,6 +720,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // mani libere: il comando detto «avanti» porta al passo dopo
     await page.evaluate(() => { vai('cucina:gz:Seadas-sebadas'); UI.cucina.passo = 0; UI.cucina.voce = false; comandoCucina('avanti'); });
     if (await page.evaluate(() => UI.cucina.passo) !== 1) throw new Error('il comando «avanti» non va al passo dopo');
+    if (await page.evaluate(() => document.querySelector('main.corpo').classList.contains('entra'))) throw new Error('cucina guidata con l\'animazione d\'entrata: col telefono occupato dalla voce la pagina resta vuota');
     await page.evaluate(() => { comandoCucina('stop'); vai('ricettario'); });
     // ispirate ai piatti di Monica
     await page.evaluate(() => { try { localStorage.removeItem('pit-ric-ispira'); } catch (e) { /* niente */ }
@@ -834,6 +837,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const img = path.join(radice, og('image').slice(indirizzo.length));
     if (!fs.existsSync(img)) throw new Error('manca il file ' + path.relative(radice, img));
     if (fs.statSync(img).size >= 300 * 1024) throw new Error('immagine oltre 300 KB');
+  });
+  await passo('aggiornamento: avvisa, riavvia e riprende dalla stessa schermata', async () => {   // autonoma, ultima (ricarica la pagina)
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'piatto:tiramisu'; render(); document.activeElement && document.activeElement.blur(); nuovaVersione = '9.9.9'; riavviaQuandoPuoi(); });
+    if (!(await page.locator('.toast', { hasText: "C'è l'aggiornamento 9.9.9" }).count())) throw new Error('manca l\'avviso');
+    await page.waitForEvent('load', { timeout: 15000 });
+    await page.waitForFunction(() => typeof UI !== 'undefined' && UI.vista === 'piatto:tiramisu', null, { timeout: 15000 });
+    if (!(await page.locator('.toast', { hasText: 'App aggiornata' }).count())) throw new Error('manca «App aggiornata»');
+    if (await page.locator('.apertura').count()) throw new Error('dopo l\'aggiornamento riparte l\'apertura animata');
   });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();

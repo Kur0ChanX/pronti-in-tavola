@@ -1555,7 +1555,7 @@ function render() {
   if (fh && chiaveFoglio === ultimoFoglio) { $('.velo').classList.add('fermo'); $('.foglio').scrollTop = fy; }
   document.querySelectorAll('.giorni, .settimana, .scelte').forEach((x, i) => { if (orizz[i]) x.scrollLeft = orizz[i]; });
   if (UI.tocco) { const [a, v] = UI.tocco.split('|'); document.querySelectorAll(`[data-a="${a}"][aria-pressed="true"]`).forEach(b => { if ((b.dataset.v || '') === v) b.classList.add('scatta'); }); UI.tocco = null; }
-  if (UI.vista !== ultimaVista && $('main.corpo')) $('main.corpo').classList.add('entra');
+  if (UI.vista !== ultimaVista && $('main.corpo') && !/^cucina:/.test(UI.vista)) $('main.corpo').classList.add('entra');   // cucina guidata: niente entrata, la voce sul telefono blocca le animazioni e la pagina restava vuota (Mario 08/11)
   $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
   if (UI.vista === ultimaVista) window.scrollTo(0, y); else window.scrollTo(0, 0);
@@ -2647,11 +2647,50 @@ function controllaRichieste() {
   UI.foglio = { tipo: 'richieste' };
 }
 if (/^#gestore(-m)?$/.test(location.hash)) { P.invitoGestore = location.hash === '#gestore-m' ? 'm' : true; if (Dati.attivo) salvaP(); }
+const RIPRESA = riprendiDopoAggiornamento();
 render();
-apertura();
+if (RIPRESA) { requestAnimationFrame(() => window.scrollTo(0, RIPRESA.y || 0)); mostraToast(`App aggiornata alla ${VERSIONE_APP} ✅`); } else apertura();
 if (Dati.attivo) avviaDati();
 /* l'app si apre anche senza rete (sw.js); non nell'anteprima (riquadro) né da file */
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && window.top === window) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+/* ---------- aggiornamento da solo (Mario 08/11 «segnalalo, riavvia e continua da dove era rimasta») ----------
+   Ogni 5 minuti e a ogni ritorno nell'app legge la versione sul sito; se è nuova: avviso, riavvio e stessa schermata.
+   Mai mentre si scrive o con un foglio aperto: aspetta che la persona finisca. */
+const CHIAVE_RIPRESA = 'pit-ripresa';
+let nuovaVersione = '', tRiavvio = null;
+async function controllaAggiornamento() {
+  if (!/^https?:$/.test(location.protocol) || window.top !== window || !navigator.onLine) return;
+  try {
+    const t = await (await fetch('data.js?v=' + Date.now(), { cache: 'no-store' })).text();
+    const m = t.match(/VERSIONE_APP = '([\d.]+)'/);
+    if (m && m[1] !== VERSIONE_APP) { nuovaVersione = m[1]; riavviaQuandoPuoi(); }
+  } catch (e) { /* senza rete: riprova più tardi */ }
+}
+function riavviaQuandoPuoi() {
+  clearTimeout(tRiavvio);
+  if (document.visibilityState !== 'visible' || staScrivendo() || UI.foglio || $('.apertura') || (Dati.attivo && Dati.inAttesa && Dati.inAttesa())) { tRiavvio = setTimeout(riavviaQuandoPuoi, 5000); return; }
+  mostraToast(`C'è l'aggiornamento ${nuovaVersione}: riavvio l'app…`);
+  tRiavvio = setTimeout(() => {
+    if (staScrivendo() || UI.foglio) { riavviaQuandoPuoi(); return; }   // ha toccato qualcosa nel frattempo
+    const r = { v: nuovaVersione, quando: Date.now(), y: window.scrollY, aperto: L.aperto,
+      ui: { vista: UI.vista, tab: UI.tab, ordAperto: UI.ordAperto, ordFiltro: UI.ordFiltro, spesaTab: UI.spesaTab } };
+    try { sessionStorage.setItem(CHIAVE_RIPRESA, JSON.stringify(r)); } catch (e) { /* riparte dall'inizio */ }
+    location.reload();
+  }, 2500);
+}
+/* dopo il riavvio: stessa schermata, stesso punto; il lucchetto resta aperto se lo era (riavvio di pochi secondi) */
+function riprendiDopoAggiornamento() {
+  let r = null;
+  try { r = JSON.parse(sessionStorage.getItem('pit-ripresa') || 'null'); sessionStorage.removeItem('pit-ripresa'); } catch (e) { return null; }
+  if (!r || !r.ui || Date.now() - r.quando > 60000) return null;
+  Object.entries(r.ui).forEach(([k, v]) => { if (v !== undefined && v !== null) UI[k] = v; });
+  if (r.aperto) L.aperto = true;
+  return r;
+}
+setInterval(controllaAggiornamento, 5 * 60000);
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') controllaAggiornamento(); });
+setTimeout(controllaAggiornamento, 20000);
 
 /* ---------- dati veri (motore «firebase», dati.js) ---------- */
 let renderDopo = false;

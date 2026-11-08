@@ -9,3 +9,4 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 📗 Aiuto 2 (bug, `01WTjqUxGGtu`) | C74 dosi a teglia da 6, C75 aggiornamento da solo, C76 cucina guidata vuota | spesa.js, app.js (fondo, render), ricettario.js (vCucina), data.js NOVITA, tools/prova.js | 08/11 14:30 |
