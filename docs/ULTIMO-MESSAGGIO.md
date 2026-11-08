@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (08/11/2026 13:25 ora italiana)
+# Ultimo messaggio di Mario (08/11/2026 13:51 ora italiana)
 
-salvataggio excell per ora no
+Controlla tutte le ricette e falle come giallo zafferano uguali paro paro
