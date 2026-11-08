@@ -2148,9 +2148,13 @@ async function decidiRichiesta(id, si) {
   UI.decido = id; render();
   try {
     const esito = await Dati.decidi(id, si);
+    // (C93) lo stesso nome in attesa su un altro telefono (browser e app installata): stessa decisione, stesso cliente
+    const fatti = [esito];
+    for (const g of r.gemelli || []) { try { const e2 = await Dati.decidi(g, si); fatti.push(e2); esito.finiti.push(...e2.finiti.filter(f => !esito.finiti.includes(f))); } catch (e) { /* già deciso */ } }
+    const annullaTutti = async () => { for (const f of fatti.slice().reverse()) await f.annulla(); };
     UI.decido = null; render();
     mostraToast(esito.finiti.length ? `${msg}. I pronti sono finiti (${esito.finiti.join(', ')}): proponi un altro giorno.` : msg, () => {
-      esito.annulla().then(() => mostraToast('Annullato'),
+      annullaTutti().then(() => mostraToast('Annullato'),
         e => mostraToast(e.code === 'gia' ? 'Non si può più annullare: è già cambiato.' : 'Non annullato: controlla la rete e riprova.'));
     });
   } catch (e) {
