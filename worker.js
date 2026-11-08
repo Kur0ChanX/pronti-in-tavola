@@ -709,7 +709,11 @@ export class Ricettario extends DurableObject {
     return true;
   }
   /* il tuo ricettario: elenco, aggiungi (niente doppioni: stesso id = una riga), togli */
-  scelte() { return this.sql.exec('SELECT id, url, nome, zona, categoria, foto, aggiunta FROM scelte ORDER BY aggiunta DESC').toArray(); }
+  /* C69: col tempo, la difficoltà e gli ingredienti presi dall'archivio, così il telefono filtra da solo, anche senza rete */
+  scelte() { return this.sql.exec(`SELECT s.id, s.url, s.nome, s.zona, s.categoria, s.foto, s.aggiunta,
+      COALESCE(NULLIF(json_extract(r.json, '$.totale'), 0), IFNULL(json_extract(r.json, '$.prep'), 0) + IFNULL(json_extract(r.json, '$.cottura'), 0)) AS totale,
+      IFNULL(json_extract(r.json, '$.difficolta'), '') AS difficolta, IFNULL(substr(r.cerca, 1, 250), '') AS cerca
+    FROM scelte s LEFT JOIN ricette r ON r.id = s.id ORDER BY s.aggiunta DESC`).toArray(); }
   aggiungi(x) {
     if (!x || !/^gz:[\w%-]+$/.test(x.id || '') || !x.nome) return false;
     const pulito = (v, n) => String(v || '').slice(0, n);
