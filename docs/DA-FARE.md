@@ -2,7 +2,7 @@
 
 ## 0. Aspetta Mario
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
-- 08/11 · 🛑 · 🟡 Principale 30 · Ascolta le 4 voci di prova (C70.2): quale ti piace più di Piper? (Supertonic pesa ~400 MB sul telefono)
+- 08/11 · 🛑 · 🟡 Principale 30 · Voce: le 4 di prova «sembrano straniere» (Mario ~15:10). Scelta: 1 voce Google del telefono · 2 Microsoft Isabella di nuovo · 3 voce a pagamento (Aura-2 Cinzia, chiave) · 4 resta Piper
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|

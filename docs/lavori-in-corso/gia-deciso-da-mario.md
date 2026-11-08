@@ -6,3 +6,4 @@ Spostato dalle consegne il 08/11 (#27). Si aggiorna qui.
 
 - 08/11 ~13:00 · Salvataggio mensile degli ordini in Excel: «per ora no». Non riproporlo da solo.
 - 08/11 ~14:00 · Ricette di GialloZafferano: «uguali paro paro» all'originale (testo, foto, numerini frase↔foto). Niente aggiunte nostre nei passi. Ogni ricetta nuova passa dal lettore `gz.mjs` (prova: `node tools/prova-gz.mjs`).
+- 08/11 ~15:10 · Voci Supertonic 3 e Kokoro (Sara, Nicola): NO, «tono, pause e accenti sembrano stranieri».
