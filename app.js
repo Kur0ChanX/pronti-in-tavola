@@ -975,7 +975,7 @@ function vHome() {
       <button type="button" class="btn ${pronti.length ? 'chiaro' : ''} pieno" data-a="apri-pronti">${ico('fiamma')}${pronti.length ? 'Cambia i pronti' : 'Segna cosa hai pronto'}</button></section>
     <section class="scheda"><h2>Da preparare</h2>${agenda()}
       <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>
-    ${typeof vRicettario === 'function' ? `<button type="button" class="riquadro ric-home" data-a="vai" data-v="ricettario">${ico('piatti')}<div><b>Ricettario</b><br><small>Ricette sarde e italiane, passo passo</small></div></button>` : ''}`;
+    ${typeof vRicettario === 'function' && S.impostazioni.ricettario ? `<button type="button" class="riquadro ric-home" data-a="vai" data-v="ricettario">${ico('piatti')}<div><b>Ricettario</b><br><small>Ricette sarde e italiane, passo passo</small></div></button>` : ''}`;
   h += incassi();
   /* inviti anche dalla Home (Mario 07/11: «mettili nella mia app gli inviti ora»); «Invita Monica» solo a chi non è lei */
   const nonLei = Dati.attivo && Dati.io.nomeGestore && Dati.io.nomeGestore !== cuoca();
