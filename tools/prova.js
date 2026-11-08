@@ -525,7 +525,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('ricettario (C55): GialloZafferano dentro l\'app (finto server), preferite, porzioni, spesa, cucina guidata, ricetta mia', async () => {
     await page.evaluate(() => {
       P.ruolo = 'monica'; S.impostazioni.ricettario = true;
-      try { localStorage.removeItem('pit-ric-cache'); localStorage.removeItem('pit-ric-pref'); localStorage.removeItem('pit-ric-mie'); } catch (e) { /* niente */ }
+      try { localStorage.removeItem('pit-ric-cache'); localStorage.removeItem('pit-ric-pref'); localStorage.removeItem('pit-ric-mie'); localStorage.removeItem('pit-ric-note'); } catch (e) { /* niente */ }
       const finta = { url: 'https://ricette.giallozafferano.it/Seadas-sebadas.html', id: 'gz:Seadas-sebadas', nome: 'Seadas (sebadas)', intro: 'Dolce gallurese di formaggio e miele.', foto: '', porzioni: 4, prep: 60, cottura: 10,
         difficolta: 'Media', costo: 'Medio', ingredienti: [{ nome: 'Semola', q: 250, u: 'g', nota: '' }, { nome: 'Pecorino fresco', q: 300, u: 'g', nota: '' }, { nome: 'Miele', q: null, u: '', nota: '' }, { nome: 'Strutto', q: 25, u: 'g', nota: '' }, { nome: 'Acqua', q: 120, u: 'ml', nota: '' }, { nome: 'Limone', q: 1, u: '', nota: '' }],
         passi: [{ t: 'Impastate semola e strutto.', foto: ['data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2230%22%3E%3Crect width=%2240%22 height=%2230%22 fill=%22%23c96%22/%3E%3C/svg%3E#1', 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2230%22%3E%3Crect width=%2240%22 height=%2230%22 fill=%22%23c96%22/%3E%3C/svg%3E#2'] }, { t: 'Lasciate riposare 30 minuti.', foto: [] }, { t: 'Friggete e servite col miele.', foto: [] }], conserva: '', consiglio: '', autore: '', hls: '', mp4: '' };
@@ -537,6 +537,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.locator('.ric-cerca svg path, .ric-cerca svg circle').count() < 1) throw new Error('manca la lente');
     await foto('30-ricettario');
     await clic('[data-a="ric-esplora"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
+    // cosa cucino con quello che ho: gli ingredienti diventano una ricerca
+    await page.fill('#ric-casa', 'zucchine, uova'); await page.press('#ric-casa', 'Enter');
+    await page.locator('.scheda h2', { hasText: 'zucchine uova' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
     await clic('[data-a="ric-cerca-gz"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 });
@@ -562,7 +565,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('[data-a="ric-timer"]').click({ timeout: 3000 }); await page.waitForTimeout(1200);
     if (!/Mancano/.test(await page.locator('[data-a="ric-timer"]').innerText())) throw new Error('il timer non parte');
     await foto('32-cucina-guidata');
-    await clic('[data-a="ric-timer"]'); await clic('.indietro'); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
+    // due timer insieme: quello del passo e uno veloce; il primo si ferma da solo, l'altro resta
+    await clic('[data-a="ric-altro"]'); await clic('[data-a="ric-timer-libero"][data-v="5"]'); await page.waitForTimeout(300);
+    if (await page.evaluate(() => RIC.timers.length) !== 2) throw new Error('i due timer non partono insieme');
+    if (await page.locator('[data-a="ric-timer-via"]').count() !== 1) throw new Error('manca il «Ferma» del secondo timer');
+    await clic('[data-a="ric-timer"]'); if (await page.evaluate(() => RIC.timers.length) !== 1) throw new Error('fermare un timer li ferma tutti');
+    await clic('[data-a="ric-timer-via"]'); if (await page.evaluate(() => RIC.timers.length) !== 0) throw new Error('il «Ferma» non ferma il timer');
+    await clic('.indietro'); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
+    // note mie sulla ricetta: si salvano e si vedono nella cucina guidata
+    await page.fill('#ric-nota', 'Metà zucchero'); await page.waitForTimeout(100);
+    if (await page.evaluate(() => notaRic('gz:Seadas-sebadas')) !== 'Metà zucchero') throw new Error('la nota non si salva');
+    await clic('[data-a="vai"][data-v^="cucina:"]'); await page.locator('.ric-passo').waitFor({ timeout: 3000 });
+    if (!(await page.locator('.avviso', { hasText: 'Metà zucchero' }).count())) throw new Error('la nota non si vede nella cucina guidata');
+    await clic('.indietro'); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
     // senza rete: la preferita si riapre dalla copia sul telefono
     await page.evaluate(() => { RIC.chiedi = async () => { throw new Error('senza rete'); }; vai('ricetta:gz:Seadas-sebadas'); });
     await page.locator('.ric-ing').waitFor({ timeout: 3000 });

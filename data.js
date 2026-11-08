@@ -183,9 +183,15 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.17';
+const VERSIONE_APP = '0.9.18';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.18', data: '08/11/2026',
+    nuovo: ['Ricettario: «Cosa cucino con quello che ho?» scrivi 2 o 3 ingredienti (es. zucchine, uova) e trovi le ricette che li usano',
+      'Ricettario: «Le tue note» su ogni ricetta, anche di GialloZafferano (es. «metà zucchero»); le rivedi nella cucina guidata',
+      'Cucina guidata: più timer insieme, anche di ricette diverse, ognuno col suo «Ferma»; timer veloci da 5 a 45 minuti in ogni passo',
+      'Esplora GialloZafferano: 40 temi, con più piatti sardi (culurgiones, fregola, porceddu, carasau, bottarga, mirto…)'],
+    migliorato: ['Le ricette dell\'elenco senza foto prendono quella della ricetta già aperta'] },
   { v: '0.9.17', data: '08/11/2026',
     nuovo: ['Ricettario: foto dei passaggi che si ingrandiscono (tocca, scorri col dito, allarga con due dita)',
       'Ricettario: «Esplora GialloZafferano» con 24 temi (dolci sardi, pasta fresca, pesce, torte salate…) che si aprono nell\'app',
