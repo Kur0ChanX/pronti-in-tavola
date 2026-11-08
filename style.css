@@ -828,3 +828,11 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 .ai-lampo { animation: aiLampo 1.6s ease 2; }
 @keyframes aiLampo { 50% { box-shadow: 0 0 0 4px var(--vino); } }
 @media (prefers-reduced-motion: reduce) { .ai-lampo { animation: none; box-shadow: 0 0 0 3px var(--vino); } }
+/* guida corta «metti l'app sul telefono» a due schede (Mario 08/11) */
+.guida-inst { margin-top: 10px; display: grid; gap: 8px; }
+.gi-tabs { display: grid; grid-template-columns: 1fr 1fr; background: var(--crema, #f3ece2); border-radius: 12px; padding: 4px; gap: 4px; }
+.gi-tab { border: 0; background: transparent; border-radius: 9px; min-height: 40px; font-weight: 700; color: inherit; }
+.gi-tab[aria-pressed="true"] { background: #fff; color: var(--vino); box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+.gi-passi { margin: 0; padding-left: 1.4em; display: grid; gap: 6px; line-height: 1.35; }
+.gi-passi li::marker { color: var(--vino); font-weight: 800; }
+.ico-in { width: 1.1em; height: 1.1em; vertical-align: -0.15em; color: var(--vino); }
