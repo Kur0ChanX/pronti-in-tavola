@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.8';
+const VERSIONE_APP = '0.9.9';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.9', data: '08/11/2026',
+    nuovo: ['«Sono qui sotto»: con l\'app aperta il telefono di chi gestisce squilla forte e vibra come una chiamata, con una schermata grande «Ho visto, scendo»; la notifica torna altre 2 volte finché non la apri'],
+    migliorato: ['Clienti: il tasto si chiama «Scrivimi»'] },
   { v: '0.9.8', data: '08/11/2026',
     nuovo: ['Aiutante AI per i clienti: allergie, ingredienti, prezzi, stato dell\'ordine, «metti nel carrello» con conferma. Si spegne in Impostazioni → Solo per te, Mario', 'Solo per te, Mario: quante domande all\'AI oggi (chi gestisce e clienti) e i limiti gratuiti spiegati'] },
   { v: '0.9.7', data: '08/11/2026',

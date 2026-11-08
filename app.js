@@ -297,7 +297,7 @@ function rigaOrdine(r, extra = '') {
 
 /* ================= CLIENTE ================= */
 /* nome del cliente di questo telefono: quello scritto nel benvenuto (Mario 05/11: «entra nome e cognome… e gli dici ciao, il suo nome») */
-/* «Scrivi a Monica» (Mario 08/11): messaggio già iniziato, professionale, il cliente scrive solo la domanda.
+/* «Scrivimi» (Mario 08/11, prima «Scrivi a Monica»): messaggio già iniziato, professionale, il cliente scrive solo la domanda.
    Il numero di Monica ce l'hanno solo i clienti approvati (impostazioni/approvati): senza numero niente tasto. */
 function waMonica(o) {
   /* nome e cognome scritti all'entrata; se manca (es. Mario che guarda come cliente) quello di chi gestisce, poi quello di prova */
@@ -305,7 +305,7 @@ function waMonica(o) {
   const testa = o ? `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola per l'ordine n. ${o.n} (ritiro ${giornoLungo(o.entro)}).${firma}` : `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${firma}`;
   return wa(S.impostazioni.whatsapp, `${testa}\n\nVolevo chiederti: `);
 }
-const tastoMonica = () => S.impostazioni.whatsapp ? `<a class="wa-monica" href="${waMonica()}" target="_blank" rel="noopener" aria-label="Scrivi a Monica su WhatsApp">${ico('chat')}<span>Scrivi a Monica</span></a>` : '';
+const tastoMonica = () => S.impostazioni.whatsapp ? `<a class="wa-monica" href="${waMonica()}" target="_blank" rel="noopener" aria-label="Scrivimi su WhatsApp">${ico('chat')}<span>Scrivimi</span></a>` : '';
 const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && Dati.io.utente.nome) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
 /* il benvenuto: alla prima apertura il cliente nuovo scrive nome e cognome, senza non si entra (nell'anteprima: una volta per telefono) */
 function serveBenvenuto() {
@@ -862,7 +862,7 @@ function cartaOrdineCliente(o) {
   if (o.stato === 'pronto' || (o.stato === 'accettato' && o.entro === oggi())) h += sonoQui(o);
   if (o.stato === 'ritirato' || chiuso) az.push(`<button type="button" class="btn chiaro" data-a="riordina" data-id="${o.id}">Ordina di nuovo</button>`);
   if (az.length) h += `<div class="fila larga">${az.join('')}</div>`;
-  if (S.impostazioni.whatsapp && !chiuso) h += `<a class="link wa-ordine" href="${waMonica(o)}" target="_blank" rel="noopener">${ico('chat')}Domande su quest'ordine? Scrivi a Monica</a>`;
+  if (S.impostazioni.whatsapp && !chiuso) h += `<a class="link wa-ordine" href="${waMonica(o)}" target="_blank" rel="noopener">${ico('chat')}Domande su quest'ordine? Scrivimi</a>`;
   if (o.stato === 'nuovo' && !o.modifica) h += `<button type="button" class="link" data-a="annulla-ordine" data-id="${o.id}">Annulla l'ordine</button>`;
   return h + '</article>';
 }
@@ -920,7 +920,7 @@ function schedaRitiro() {
     <div><b style="font-size:1.2rem;font-family:var(--display)">${esc(r.via)}</b><br><span class="tenue">${esc(r.citta)}</span></div>
     ${r.nota ? `<p class="tenue" style="margin:0">${esc(r.nota)}</p>` : ''}
     <a class="btn pieno" href="${mapsLink()}" target="_blank" rel="noopener">${ico('mappa')}Apri in Maps</a>
-    ${num ? `<div class="fila larga"><a class="btn chiaro" href="${wa(num, 'Ciao Monica! ')}" target="_blank" rel="noopener">${ico('chat')}Scrivi a Monica</a>
+    ${num ? `<div class="fila larga"><a class="btn chiaro" href="${waMonica()}" target="_blank" rel="noopener">${ico('chat')}Scrivimi</a>
       <a class="btn chiaro" href="tel:+${numero(num)}">${ico('telefono')}Chiama</a></div>` : ''}
   </section>`;
 }
@@ -2454,6 +2454,46 @@ document.addEventListener('keydown', e => {
 /* tocco su una notifica (C27): sw.js apre «#vai=<tipo>» o, con l'app già aperta, lo manda come messaggio */
 const vaiHash = location.hash.match(/^#vai=(\w{1,20})$/);
 if (vaiHash) { UI.vaiDopo = vaiHash[1]; history.replaceState(null, '', location.pathname + location.search); }
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.suona && P.ruolo === 'monica') suoneria(e.data.suona); });
+/* «Sono qui sotto» con l'app aperta (C51, Mario 08/11 «tipo suoneria alto volume»): squillo a due toni a volume pieno,
+   vibrazione come una chiamata, schermata grande finché Monica tocca «Ho visto». Si ferma da solo dopo 45 secondi.
+   Il volume vero lo decide il telefono (volume suoneria/notifiche); con «Non disturbare» Android può tacere. */
+PATH.campana = '<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/>';
+function suoneria(u) {
+  fermaSuoneria();
+  const el = document.createElement('div'), nome = String((u && u.nome) || 'Un cliente').slice(0, 40), n = Number(u && u.n) || 0;
+  el.className = 'squillo'; el.setAttribute('role', 'alertdialog'); el.setAttribute('aria-label', `${nome} è qui sotto`);
+  el.innerHTML = `<div class="squillo-dentro"><div class="squillo-campana">${ico('campana')}</div><h1>${esc(nome)} è qui sotto!</h1>
+    <p>${u && u.prova ? 'PROVA · ' : ''}${n ? `Ordine n. ${n}. ` : ''}Aspetta per il ritiro.</p>
+    <button type="button" class="btn pieno" id="squillo-ok">${ico('spunta')}Ho visto, scendo</button></div>`;
+  document.body.appendChild(el);
+  const ok = () => { fermaSuoneria(); vistoQui(); UI.vaiDopo = n ? 'qui_' + n : 'qui'; vaiDaNotifica(); render(); };
+  el.querySelector('#squillo-ok').addEventListener('click', ok);
+  const AC = window.AudioContext || window.webkitAudioContext, sq = SUONERIA;
+  try {
+    if (AC) {
+      sq.ctx = new AC(); if (sq.ctx.state === 'suspended') sq.ctx.resume();
+      const g = sq.ctx.createGain(); g.gain.value = 1; g.connect(sq.ctx.destination);
+      const squilla = () => {   // «drin drin»: due toni alternati per 1,2 secondi, poi 1,8 di pausa
+        const t0 = sq.ctx.currentTime;
+        for (let i = 0; i < 24; i++) { const o = sq.ctx.createOscillator(), v = sq.ctx.createGain(); o.type = 'square'; o.frequency.value = i % 2 ? 1300 : 1000;
+          v.gain.setValueAtTime(0.9, t0 + i * 0.05); v.gain.setValueAtTime(0, t0 + i * 0.05 + 0.048); o.connect(v); v.connect(g); o.start(t0 + i * 0.05); o.stop(t0 + i * 0.05 + 0.05); }
+      };
+      squilla(); sq.giro = setInterval(squilla, 3000);
+    }
+  } catch (e) { /* senza audio resta la vibrazione e la schermata */ }
+  if (navigator.vibrate) { navigator.vibrate([1000, 400, 1000, 400, 1000]); sq.vib = setInterval(() => navigator.vibrate([1000, 400, 1000, 400, 1000]), 4500); }
+  sq.fine = setTimeout(fermaSuoneria, 45000);
+}
+const SUONERIA = {};
+function fermaSuoneria() {
+  const sq = SUONERIA; clearInterval(sq.giro); clearInterval(sq.vib); clearTimeout(sq.fine);
+  if (navigator.vibrate) navigator.vibrate(0);
+  if (sq.ctx) { try { sq.ctx.close(); } catch (e) { /* già chiuso */ } sq.ctx = null; }
+  const el = $('.squillo'); if (el) el.remove();
+}
+/* «ho visto»: il server smette di far risuonare la notifica (anche sugli altri telefoni di chi gestisce) */
+function vistoQui() { if (sulSito()) Dati.token().then(tok => tok && fetch('/api/visto-qui', { method: 'POST', headers: { authorization: 'Bearer ' + tok } })).catch(() => {}); }
 if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data && e.data.vai) { UI.vaiDopo = String(e.data.vai); if (S && P.ruolo) { vaiDaNotifica(); render(); } } });
 function vaiDaNotifica() {
   const t = UI.vaiDopo; UI.vaiDopo = null;
@@ -2461,6 +2501,7 @@ function vaiDaNotifica() {
   setTimeout(() => { UI.avvisoTesto = ''; const n = $('.notifica'); if (n) n.remove(); }, 9000);
   UI.foglio = null; UI.modifica = null; UI.inCima = true;
   if (P.ruolo === 'monica' && /^qui(_\d+)?$/.test(t)) {   // «sono qui»: si apre l'ordine di chi aspetta sotto casa
+    fermaSuoneria(); vistoQui();   // aperta dalla notifica: smette di squillare
     const o = S.ordini.find(x => x.n === Number(t.slice(4)));
     UI.vista = 'ordini'; UI.tab = o && o.entro > oggi() ? 'prossimi' : 'oggi'; UI.ordAperto = o ? o.id : null;
     UI.avvisoTesto = o ? `${nomeBreve((cliente(o.cliente) || {}).nome || 'Il cliente')} è qui sotto: ordine n. ${o.n} aperto qui sotto.` : 'Un cliente è qui sotto per il ritiro.';

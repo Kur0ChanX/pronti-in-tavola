@@ -398,7 +398,7 @@ function controllaAIC(a) {
     case 'scrivi_monica': {
       if (!S.impostazioni.whatsapp) return { no: '' };
       const t = String(a.testo || '').trim().slice(0, 300);
-      return { titolo: 'Scrivi a Monica', dopo: t, etichetta: 'Apri WhatsApp', link: waMonica().replace(/(text=[^&]*)$/, m => m + encodeURIComponent(t)) };
+      return { titolo: 'Scrivimi', dopo: t, etichetta: 'Apri WhatsApp', link: waMonica().replace(/(text=[^&]*)$/, m => m + encodeURIComponent(t)) };
     }
     default: return { no: '' };
   }

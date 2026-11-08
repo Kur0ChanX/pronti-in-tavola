@@ -12,6 +12,7 @@
                           l'app la mostra e la fa solo dopo «Sì, fallo» (Mario 08/11). Tetto: 150 richieste al giorno.
    - POST /api/aiuto-cliente → aiutante dei CLIENTI approvati (C50): menù, prezzi, allergeni, i SUOI ordini, «metti nel carrello».
                           Acceso di base, spento se Mario mette impostazioni/app.aiClienti = false; chi gestisce può provarlo sempre. Tetto: 10 a cliente, 60 in tutto al giorno.
+   - POST /api/visto-qui → chi gestisce ha visto «sono qui»: la notifica smette di risuonare (C51)
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
@@ -240,7 +241,21 @@ export class Avvisi extends DurableObject {
     await this.ctx.storage.put('arrivi', Object.fromEntries(Object.entries(arr).sort((x, y) => y[1] - x[1]).slice(0, 100)));
     const nome = String((b && b.nome) || 'Un cliente').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 40) || 'Un cliente';
     const n = Number.isInteger(b && b.n) && b.n > 0 && b.n < 1e6 ? b.n : 0;
-    return this.manda(null, 'qui', null, { nome, n, prova: !!(b && b.prova) });
+    const extra = { nome, n, prova: !!(b && b.prova) };
+    /* suoneria (Mario 08/11 «far suonare il telefono a Monica tipo suoneria»): la notifica torna altre 2 volte,
+       ogni 25 secondi, finché chi gestisce non la apre o tocca «Ho visto» (/api/visto-qui) */
+    await this.ctx.storage.put('squillo', { extra, volte: 1 });
+    await this.ctx.storage.setAlarm(Date.now() + 25000);
+    return this.manda(null, 'qui', null, extra);
+  }
+  async vistoQui() { await this.ctx.storage.delete('squillo'); return { ok: true }; }
+  async alarm() {
+    const sq = await this.ctx.storage.get('squillo');
+    if (!sq) return;
+    if (sq.volte >= 3) { await this.ctx.storage.delete('squillo'); return; }
+    await this.ctx.storage.put('squillo', { extra: sq.extra, volte: sq.volte + 1 });
+    await this.manda(null, 'qui', null, sq.extra);
+    if (sq.volte + 1 < 3) await this.ctx.storage.setAlarm(Date.now() + 25000); else await this.ctx.storage.delete('squillo');
   }
 
   /* aiutante: quante richieste oggi (tetto per restare nel gratuito) */
@@ -315,6 +330,7 @@ export default {
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
+      if (url.pathname === '/api/visto-qui') return json(await av.vistoQui());
       if (url.pathname === '/api/iscrivi') {
         const b = await req.json().catch(() => null);
         return (await av.iscrivi(uid, b && b.sub)) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);

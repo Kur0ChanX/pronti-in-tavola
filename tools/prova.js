@@ -466,7 +466,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(p => { S.impostazioni.anticipo = p; }, prima);
     await page.evaluate(() => { UI.vista = 'home'; render(); });
   });
-  await passo('cliente: «Scrivi a Monica» su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
+  await passo('cliente: «Scrivimi» su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
     await page.waitForTimeout(1500);
     const h = decodeURIComponent(await page.locator('.wa-monica').getAttribute('href'));
@@ -501,6 +501,18 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.ai-esito', { hasText: 'Nel carrello' }).count())) throw new Error('manca «✓ Nel carrello»');
     await page.evaluate(() => { P.carrello = []; salvaP(); S.impostazioni.aiClienti = false; UI.vista = 'menu'; render(); });
     if (await page.locator('.ai-cliente').count()) throw new Error('rispento ma ancora visibile');
+  });
+  await passo('cliente: tasto «Scrivimi»; Monica: «Sono qui» squilla con l\'app aperta e si ferma con «Ho visto» (C51)', async () => {
+    await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
+    if (!(await page.locator('.wa-monica', { hasText: 'Scrivimi' }).count())) throw new Error('il tasto non dice «Scrivimi»');
+    await page.evaluate(() => { S.impostazioni.whatsapp = ''; P.ruolo = 'monica'; UI.vista = 'home'; render(); });
+    const n = await page.evaluate(() => S.ordini.find(o => !o.archiviato).n);
+    await page.evaluate(n => suoneria({ nome: 'Laura Rossi', n }), n);
+    if (!(await page.locator('.squillo', { hasText: 'Laura Rossi è qui sotto' }).count())) throw new Error('niente schermata della suoneria');
+    await foto('36-suoneria');
+    await clic('#squillo-ok');
+    if (await page.locator('.squillo').count()) throw new Error('«Ho visto» non ferma la suoneria');
+    if (await page.evaluate(() => UI.vista) !== 'ordini') throw new Error('«Ho visto» non apre gli ordini');
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
