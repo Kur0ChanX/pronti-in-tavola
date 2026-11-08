@@ -2,21 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 21:33 · 01QTFEqRJChf
-Guarda anche la risposta che ho dato nella sessione precedente, la 9, vai avanti da solo e pubblica momentaneamente nell'artefatto di prova, poi piano piano facciamo l'app effettiva, però pubblica lì, e autonomamente, da solo, vai tranquillo, mi fido di te. Da solo che mi devo assentare qualche ora.
-
-## 2026-11-06 01:30 · 01QTFEqRJChf
-spesa solo sul telefono di monica e animazione ynoy è perfetta
-
-## 2026-11-06 19:24 · 01QTFEqRMnzm
-Non ho capito queste cose delle linguette. Spiegati meglio in modo facile.
-
-## 2026-11-06 19:29 · 01QTFEqRMnzm
-Allora, riguardandolo, numero ordine e ritiro non l'avrei messo, si sa mai che il ritiro cambi. Poi altra cosa, avrei messo il logo, pronti in tavola, avrei messo il loghetto lì nelle etichette e avrei scritto sotto, come se fosse tipo una sua firma, buon appetito. Le etichette servono per capire, visto che nei contenitori sono tutti uguali, che cosa c'è lì. Fa delle etichette carine, simpatiche, insomma, di cucina di Monica, ecco.
-
-## 2026-11-06 19:31 · 01QTFEqRMnzm
-Avrei messo a sinistra tipo per Paolo Sanna, scritto bene, a destra il logo che c'è molto spazio vuoto, e poi avrei messo magari il consiglio di cottura anche in piccolino.
-
 ## 2026-11-06 19:33 · 01QTFEqRMnzm
 E lo sfondo, senza fare una cosa pacchiana, puoi mettere qualcosina, sempre quella trama un po' sarda, magari puoi riprendere, per non lasciarlo completamente a tinta unita.
 La scritta scalda e temperatura è un pochettino troppo attaccato alla parte bassa, alla riga della parte bassa. Alzala poco. E poi buon appetito usa un font come se fosse che lo stesse scrivendo lei in corsivo. Un po' come un tratto scritto a mano. Buon appetito il cuoricino.
@@ -133,3 +118,18 @@ Allora, visto che lo utilizza solo Monica, si potrebbe quest'app non deve, cioè
 
 ## 2026-11-08 13:25 · 01WTjqUx82oy
 salvataggio excell per ora no
+
+## 2026-11-08 13:43 · 01WTjqUx82oy
+Pensi che i passi di tutte le ricette caricate siano completi e chiare? o ci sono buchi riguardale tutte migliorale e le nuove le carichi dora in poi migliorate
+
+## 2026-11-08 13:51 · 01WTjqUx82oy
+Controlla tutte le ricette e falle come giallo zafferano uguali paro paro
+
+## 2026-11-08 14:22 · 01WTjqUx82oy
+hai guardato tutte le ricette e hai kesso la regola delle migliorie nelle prossime caricate?
+
+## 2026-11-08 14:31 · 01WTjqUx82oy
+riscrivimi la domanda 4 voci l'ho persa
+
+## 2026-11-08 14:33 · 01WTjqUx82oy
+non mi piacciono come tono e pause e accenti sembrano stranieri ai altre alternative?
