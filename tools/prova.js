@@ -15,7 +15,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   page.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) errori.push('console: ' + m.text()); });
   const foto = async n => page.screenshot({ path: `${OUT}/${n}.png` });
   const clic = async (sel, opz) => { await page.locator(sel).first().click(opz); await page.waitForTimeout(250); };
-  const passo = async (nome, fn) => { if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test(nome)) return; try { await fn(); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(0, 3).join(' | ')); } };
+  const passo = async (nome, fn) => { if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test(nome)) return; try { await Promise.race([fn(), new Promise((_, no) => setTimeout(() => no(new Error('BLOCCATA oltre 120 s (la prova non deve mai restare appesa)')), 120000))]); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(0, 3).join(' | ')); } };
 
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
@@ -569,7 +569,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
     await clic('[data-a="ric-cerca-gz"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 });
     await clic('[data-a="ric-chiudi-cerca"]');
-    await page.locator('.ric-carta').first().click(); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
+    await page.locator('.ric-elenco .ric-carta', { hasText: 'Seadas' }).first().click({ timeout: 3000 }); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
     const prima = await page.locator('.ric-ing li').first().innerText();
     await clic('[data-a="ric-porz"][data-v="1"]'); await clic('[data-a="ric-porz"][data-v="1"]');
     const dopo = await page.locator('.ric-ing li').first().innerText();
@@ -585,7 +585,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.ric-ing input').first().check(); await clic('[data-a="ric-spesa"]'); await page.waitForTimeout(200);
     const aggiunte = await page.evaluate(() => SPESA.mia.length) - voci;
     if (aggiunte < 4) throw new Error('nella spesa solo ' + aggiunte + ' ingredienti');
-    await clic('[data-a="vai"][data-v^="cucina:"]'); await page.locator('.ric-passo').waitFor({ timeout: 3000 });
+    // ▶️ fa partire la voce da sola al primo passo (Mario 08/11 «non si attiva la voce in automatico»)
+    await page.evaluate(() => { window._detto = []; window._parlaVera = parlaAI; parlaAI = (t, f) => { _detto.push(t); if (f) f(); }; });
+    await clic('[data-a="ric-play"]'); await page.locator('.ric-passo').waitFor({ timeout: 3000 }); await page.waitForTimeout(100);
+    if (!/^Passo 1\./.test(await page.evaluate(() => _detto[0] || ''))) throw new Error('▶️ non fa leggere il primo passo da solo: ' + await page.evaluate(() => JSON.stringify(_detto)));
+    await page.evaluate(() => { parlaAI = _parlaVera; });
     await clic('[data-a="ric-passo"][data-v="1"]');
     await page.locator('[data-a="ric-timer"]').click({ timeout: 3000 }); await page.waitForTimeout(1200);
     if (!/Mancano/.test(await page.locator('[data-a="ric-timer"]').innerText())) throw new Error('il timer non parte');
@@ -604,7 +608,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // note mie sulla ricetta: si salvano e si vedono nella cucina guidata
     await page.fill('#ric-nota', 'Metà zucchero'); await page.waitForTimeout(100);
     if (await page.evaluate(() => notaRic('gz:Seadas-sebadas')) !== 'Metà zucchero') throw new Error('la nota non si salva');
-    await clic('[data-a="vai"][data-v^="cucina:"]'); await page.locator('.ric-passo').waitFor({ timeout: 3000 });
+    await clic('[data-a="ric-play"]'); await page.locator('.ric-passo').waitFor({ timeout: 3000 });
     if (!(await page.locator('.avviso', { hasText: 'Metà zucchero' }).count())) throw new Error('la nota non si vede nella cucina guidata');
     await clic('.indietro'); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
     // metti nel menù: dalla ricetta al piatto nuovo, collegato alla ricetta
