@@ -961,6 +961,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r[1]) throw new Error('dopo il sì il foglio delle notifiche si riproporrebbe');
     if (!/appena Monica ti conferma/.test(r[2] || '')) throw new Error('messaggio sbagliato: ' + r[2]);
   });
+  await passo('gestore: ultimi avvisi mandati in Notifiche (C97, Mario 08/11 «non mi è arrivata nessuna notifica»)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const ora = new Date().toISOString(), prima = [UI.diarioAvvisi, UI.diarioChiesto];
+      UI.diarioChiesto = true;
+      UI.diarioAvvisi = { questo: false, ultimi: [{ quando: ora, per: 'richiesta', telefoni: 2, esiti: ['201', '201'] }, { quando: ora, per: 'ordine', telefoni: 0, esiti: [], fermo: 'pausa' }, { quando: ora, per: 'primo', telefoni: 2, esiti: ['201', '410 '] }] };
+      const h = diarioAvvisi(); UI.diarioAvvisi = { errore: true }; const err = diarioAvvisi();
+      [UI.diarioAvvisi, UI.diarioChiesto] = prima; return [h, err];
+    });
+    for (const t of ['NON conosce questo telefono', 'Persona nuova da accettare · ✅ 2 telefoni', 'non partito (appena dopo un altro)', '⚠️ 1 su 2 telefoni', 'oggi '])
+      if (!r[0].includes(t)) throw new Error('manca «' + t + '» negli ultimi avvisi');
+    if (r[0].indexOf('primo ordine') > r[0].indexOf('da accettare')) throw new Error('gli avvisi non sono dal più nuovo');
+    if (!/non riesco a leggerli/.test(r[1])) throw new Error('senza rete manca il messaggio');
+  });
   await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
