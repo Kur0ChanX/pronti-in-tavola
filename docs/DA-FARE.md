@@ -1,8 +1,9 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 07/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
-- 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
+- 08/11 · 🟡 Principale 21 · Prova l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
+- 08/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
+- 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
