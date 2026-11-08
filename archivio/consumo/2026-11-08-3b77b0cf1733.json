@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "3b77b0cf1733",
 "giorno": "2026-11-08",
-"turni": 6,
-"peso": 1382283,
-"uscita": 38438,
-"contesto_max": 244004,
+"turni": 8,
+"peso": 1492400,
+"uscita": 40156,
+"contesto_max": 250179,
 "anomalie": [
 "avvio pesante: 175k token dopo il primo turno (tetto 130k)"
 ]
