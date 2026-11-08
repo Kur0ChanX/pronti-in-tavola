@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.60';
+const VERSIONE_APP = '0.9.61';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.61', data: '08/11/2026',
+    migliorato: ['Cliente che mette l\'app nella schermata Home dopo essersi registrato: l\'app la riconosce da sola («Sei Sabrina Rossi? Sì, sono io», un tocco)'],
+    corretto: ['Stessa persona registrata nel browser e poi nell\'app installata: Monica vede una sola richiesta e il suo Sì fa un solo cliente, mai doppioni'] },
   { v: '0.9.60', data: '08/11/2026',
     nuovo: ['Impostazioni → «Parti del menù»: Monica rinomina, sposta e aggiunge le parti (es. «Secondi»); una parte con dei piatti non si toglie', 'A voce all\'aiutante: «aggiungi la parte secondi» (anche senza rete), poi conferma', 'Impostazioni: saluto in cima al menù, frase della pausa, altri modi di pagare (es. Satispay), messaggio d\'invito per gli amici, titolo e sottotitolo del biglietto'],
     migliorato: ['Piatti dal ricettario nella parte «Secondi» se c\'è'] },
