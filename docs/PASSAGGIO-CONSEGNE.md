@@ -45,7 +45,7 @@ Aperta dalla #19 con `create_session` (catena 2). Nessuna sveglia attiva.
 08/11 ~02:40, parola per parola: «ma utilizza limiti di altri progetti?» → risposto dalla #20: no, i 10.000 neuroni al giorno sono dell'account Cloudflare «Pronti in Tavola», solo dell'app (PT E5). Prima: «cerca la miglior ia gratuita per Queste cose / iniziaml assistente per monica non clienti» (passo 2).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C48; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C50; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
