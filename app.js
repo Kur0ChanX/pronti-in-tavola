@@ -1364,7 +1364,8 @@ function schedaMario() {
     ${n ? `<button type="button" class="btn chiaro" data-a="tutti-prova-apri">Segna come PROVA gli ordini fatti finora (${n})</button>`
       : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
-    ${contoAI()}</section>`;
+    ${contoAI()}
+    ${provaAIhtml()}</section>`;
 }
 /* domande all'AI di oggi (C50: Mario vuole capire i limiti). Il conto lo tiene il server; qui si chiede una volta ogni 2 minuti */
 function contoAI() {
@@ -1376,6 +1377,13 @@ function contoAI() {
   }
   const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (tetto ${c.tetti.clienti}, ${c.tetti.aCliente} a testa).` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
   return `<p class="tenue piccolo" style="margin:0">${riga}<br>Limite gratuito vero: 10.000 «neuroni» al giorno per tutto l'account (si azzera all'una di notte, ora italiana). Una domanda ne usa circa 150-300: stima 30-60 risposte al giorno in tutto. Finiti: «riprova domani», nessun costo.</p>`;
+}
+/* Prova le AI (Mario 08/11): un tocco, ogni AI risponde o dice perché no */
+function provaAIhtml() {
+  const p = UI.provaAI;
+  const righe = p && p.esiti ? `<ul class="piccolo" style="margin:0;padding-left:20px">${p.esiti.map(e => `<li>${e.ok ? '✅' : '❌'} <b>${esc(e.nome)}</b> · ${e.ok ? `risponde (${(e.ms / 1000).toFixed(1)} s)` : esc(e.errore || 'non risponde')}</li>`).join('')}</ul>
+    <p class="tenue piccolo" style="margin:0">Groq è la riserva: entra da sola solo quando finiscono le risposte gratuite di Cloudflare.</p>` : p && p.errore ? `<p class="piccolo" style="margin:0">${esc(p.errore)}</p>` : '';
+  return `<button type="button" class="btn chiaro" data-a="prova-ai" ${p && p.inCorso ? 'disabled' : ''}>${p && p.inCorso ? 'Sto provando le AI… (circa 20 secondi)' : 'Prova le AI adesso (Cloudflare e Groq)'}</button>${righe}`;
 }
 function foglioTuttiProva() {
   const oo = S.ordini.filter(o => !diProva(o)).sort((x, y) => x.n - y.n), n = oo.length;
@@ -1889,6 +1897,14 @@ const A = {
   },
   'dev-vapore'(el) { P.vapore = el.dataset.v; salvaP(); render(); Vapore.parti(P.vapore); },
   'dev-tutte'() { UI.devTutte = true; render(); },
+  'prova-ai'() {
+    if (!sulSito()) { UI.provaAI = { errore: 'La prova delle AI funziona solo nell\'app vera, non nell\'anteprima.' }; render(); return; }
+    UI.provaAI = { inCorso: true }; render();
+    Dati.token().then(tok => fetch('/api/prova-ai', { method: 'POST', headers: { authorization: 'Bearer ' + tok } }))
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(r.status)))
+      .then(j => { UI.provaAI = j; }, () => { UI.provaAI = { errore: 'Prova non riuscita: controlla la rete e riprova.' }; })
+      .finally(() => render());
+  },
   'dev-esci'() { P.sviluppatore = false; UI.devCliente = false; salvaP(); render(); mostraToast('Modalità sviluppatore spenta.'); },
   'ordine-prova'(el) { UI.prova = !!el.dataset.v; render(); },
   'ord-prova'(el) {

@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 08/11 · 🟡 Principale 23 · Ricettario (C55): 4 domande (lavori aperti oltre 30, ricette, foto, cucina guidata).
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
@@ -8,6 +9,8 @@
 |---|---|---|---|
 | C44 | (Mario 07/11 ~20:10) Ordini di prova archiviabili con due tocchi (uno o tutti) + «Archiviati» per ripristinare; cliente: «Area riservata» discreta al posto di «Sei Monica? Entra», via «(se vuoi)». 👁 Lo vedi: Ordini → Storico → «Ordini di prova» → «Archivia tutte le prove»; dal telefono di un cliente, in fondo al carrello · prova: tua foto o tuo ok | Claude | 🟢 manca la foto |
 | C41 | (Mario 07/11 ~19:45) «Al forno da Monica» come sovrapprezzo per piatto, accanto al fritto: il cliente sceglie una cottura sola. Fatto dalla #19, online `851c056`. 👁 Lo vedi: Monica in I miei piatti → piatto → «Cotto da te» mette la cifra; il cliente la vede nella scheda del piatto · prova: tua foto o tuo ok | Claude | 🟢 manca la foto |
+| C54 | (Mario 08/11 ~04:20 «nelle impostazioni sviluppatore posso provare se risponde Groq?») Tasto «Prova le AI adesso» in «Solo per te, Mario» (v0.9.13): prova Cloudflare (3 modelli) e Groq (2), dice chi risponde e in quanti secondi. 👁 Lo vedi: Impostazioni → «Solo per te, Mario» → «Prova le AI adesso» → righe ✅/❌ · prova: tua foto | Claude | 🟢 manca la foto |
+| C55 | (Mario 08/11 ~04:20) Ricettario per Monica e Mario (non clienti), stile GialloZafferano, cucina italiana e sarda, passo passo con foto. Aspetta le risposte di Mario (domande 1-4 del messaggio delle ~04:30), poi specifica in `docs/`, poi codice. | Claude + Mario | 🟡 aspetta la scelta |
 | C53 | (Mario 08/11 ~04:05 «mi apre una pagina sbagliata… non posso entrare su dev… non deve succedere più») App bloccata all'apertura dalla v0.9.8: corretta in v0.9.12, con la prova «sito vero» che la controlla sempre. 👁 Lo vedi: chiudi e riapri l'app: sei di nuovo Mario (Home di chi gestisce) e la parte Sviluppatore si apre · prova: tuo ok | Claude | 🔴 aspetta il tuo ok |
 | C52 | (Mario 08/11 ~03:30) Cronologia completa degli aggiornamenti dalla 0.1 a oggi nella sua pagina: fatta dalla #22 (v0.9.11). 👁 Lo vedi: Impostazioni → Sviluppatore → «Tutta la cronologia, dalla 0.1» · prova: tua foto o tuo ok | Claude | 🟢 manca la tua prova |
 | C51 | (Mario 08/11 ~03:25) «Scrivimi» e «Sono qui sotto» che fa SUONARE il telefono di Monica: fatti dalla #22 (v0.9.9; squillo forte con l'app aperta, notifica che squilla ogni 5 s per 1 minuto). Con l'app chiusa il suono lo decide Android. NON provato dal vivo. 👁 Lo vedi: di giorno, da cliente con un ordine pronto → «Sono qui sotto» → il telefono di Monica squilla · prova: tua foto o tuo ok | Claude | 🟢 manca la tua prova |

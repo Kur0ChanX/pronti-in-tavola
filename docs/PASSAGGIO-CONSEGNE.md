@@ -46,7 +46,7 @@ Aperta dalla #21 con `create_session` (catena 3). Sveglie: nessuna da rifare.
 08/11 ~04:05, parola per parola: «non addestra con i dati cosa significa? poi perché non vedo il mio nome nel messaggio a monica precompilato su WhatsApp?forse perché visualizzo come cliente da modalità Dev? da app chiusa ogni 5 secondi direi squilla e vibrazione lunghissima / poi dimmi cosa ti manca da fare? / mi apre una pagina svagliata adesso da me dev mario e non posso entrare su dev sembra nella classica cliente risolvila subito e non deve succedere piú» → apertura corretta v0.9.12, squillo ogni 5 s fatto; risposte nel messaggio finale della #22.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C53; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C56; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
