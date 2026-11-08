@@ -857,3 +857,16 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 @keyframes gf-giu { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(3px); } }
 @keyframes gf-su { 0%, 100% { transform: translateY(4px); opacity: .5; } 50% { transform: translateY(-4px); opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .gf-pulsa, .gf-freccia, .gf-scorri { animation: none; } }
+
+/* Invito «Installa l'app» per i clienti (foglio 'installa', Mario 08/11) */
+.inv-app { text-align: left; }
+.inv-logo { display: flex; justify-content: center; margin: 4px 0 10px; }
+.inv-logo img { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 4px 14px rgba(138,36,50,.25); }
+.inv-app h1 { text-align: center; }
+.inv-app > p.tenue:first-of-type { text-align: center; }
+.inv-scelta { display: grid; gap: 10px; }
+.inv-tel { display: grid; gap: 2px; text-align: left; border: 2px solid var(--riga, #e6dfd5); background: #fff; border-radius: 14px; padding: 14px 16px; font: inherit; color: inherit; min-height: 64px; position: relative; }
+.inv-tel b { font-size: 1.2em; }
+.inv-tel span { color: #6b625a; font-size: .92em; }
+.inv-tel.mio { border-color: var(--vino); box-shadow: 0 0 0 3px rgba(138,36,50,.12); }
+.inv-tel em { position: absolute; top: 10px; right: 12px; font-style: normal; font-size: .8em; font-weight: 700; color: #fff; background: var(--vino); border-radius: 999px; padding: 3px 9px; }
