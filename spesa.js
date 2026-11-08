@@ -25,7 +25,7 @@ const ING_SPESA = {
   uvetta: ['g', 100, R_DI], arancia: ['pz', 0, R_FV], zucchero: ['g', 1000, R_DI], cacao: ['g', 75, R_DI], caffe: ['g', 250, R_DI],
   olio: ['ml', 1000, R_DI], oliosemi: ['ml', 1000, R_DI], limone: ['pz', 0, R_FV]
 };
-/* dosi (bozza di Claude, da controllare): per 1 porzione (teglie), per 1 kg, per 1 pezzo o per 1 torta intera;
+/* dosi (bozza di Claude, da controllare): per 1 porzione (teglie: Monica le vede e scrive per la teglia da 6), per 1 kg, per 1 pezzo o per 1 torta intera;
    «piatto:gusto» = quello che serve in più per quel gusto */
 const DOSI_INIZIALI = {
   'polpette-melanzane': { melanzane: 1000, pangrattato: 150, uova: 2, pecorino: 80, aglio: 5, prezzemolo: 10, oliosemi: 250 },
@@ -233,12 +233,18 @@ function foglioSpesaIng() {
 
 /* nella scheda del piatto di Monica */
 function sezioneDosi(p) {
-  const base = BASI[baseDi(p)] || '1 porzione';
-  const riga = (id, d, scope) => { const u = infoIng(id).u;
-    return `<div class="formato-riga"><b>${esc(ING(id).n)}</b><input type="number" inputmode="decimal" min="0" step="any" data-campo="d.q" data-s="${scope}" data-ing="${id}" value="${d[id] ?? ''}" placeholder="?" aria-label="${esc(ING(id).n)} in ${UNITA[u]}"><span class="tenue">${u}</span></div>`; };
+  /* teglie (Mario 08/11): Monica scrive le dosi per la teglia piccola (da 6), quella grande la calcola l'app;
+     dentro restano per 1 porzione, così lista e costi non cambiano e i dati già salvati vanno bene */
+  const tt = p.formati.filter(f => f.tipo === 'teglia').map(f => f.porzioni || (f.id === 't8' ? 8 : 6)).sort((a, b) => a - b);
+  const k = tt[0] || 1, altre = tt.slice(1);
+  const base = tt.length ? `una teglia da ${k}` : BASI[baseDi(p)] || '1 porzione';
+  const giro = n => +n.toFixed(2);
+  const riga = (id, d, scope) => { const u = infoIng(id).u, v = d[id];
+    const sotto = v != null && v !== '' && altre.length ? `<small class="tenue" style="display:block;font-weight:400">${altre.map(n => `teglia da ${n}: ${NUM.format(giro(v * n))} ${u}`).join(' · ')}</small>` : '';
+    return `<div class="formato-riga"><b>${esc(ING(id).n)}${sotto}</b><input type="number" inputmode="decimal" min="0" step="any" data-campo="d.q" data-k="${k}" data-s="${scope}" data-ing="${id}" value="${v == null || v === '' ? '' : giro(v * k)}" placeholder="?" aria-label="${esc(ING(id).n)} in ${UNITA[u]} per ${base}"><span class="tenue">${u}</span></div>`; };
   const d = SPESA.dosi[p.id] || {};
   const gusti = p.varianti.filter(v => (v.ing || []).length);
-  return `<section class="scheda"><h2>Dosi per la lista della spesa</h2><p class="tenue" style="margin:0">Quanto ti serve per <b>${base}</b>. Solo tu le vedi.</p>
+  return `<section class="scheda"><h2>Dosi per la lista della spesa</h2><p class="tenue" style="margin:0">Quanto ti serve per <b>${base}</b>.${altre.length ? ` Le altre teglie le calcolo io.` : ''} Solo tu le vedi.</p>
     ${p.ing.map(id => riga(id, d, 'base')).join('') || '<span class="tenue">Prima aggiungi gli ingredienti.</span>'}
     ${gusti.map(v => `<span class="etichetta" style="font-weight:800">In più per il gusto ${esc(v.nome)}</span>${v.ing.map(id => riga(id, SPESA.dosi[p.id + ':' + v.id] || {}, v.id)).join('')}`).join('')}
     ${costoPiatto(p)}
@@ -251,7 +257,7 @@ function salvaCampoSpesa(el) {
   if (c === 'd.q') {
     const pid = UI.vista.split(':')[1], k = el.dataset.s === 'base' ? pid : pid + ':' + el.dataset.s;
     const d = SPESA.dosi[k] = SPESA.dosi[k] || {};
-    if (el.value === '') delete d[id]; else d[id] = num(el.value);
+    if (el.value === '') delete d[id]; else d[id] = num(el.value) / (Number(el.dataset.k) || 1);   // in memoria per 1 porzione
     salvaSpesa(); salvatoOk(); return;
   }
   if (c === 'sp.vn' || c === 'sp.vq') { salvaVoce(el); return; }
