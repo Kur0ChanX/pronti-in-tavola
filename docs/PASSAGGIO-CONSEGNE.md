@@ -44,7 +44,7 @@ Aperta dalla #27 (catena 3). Versioni online v0.9.28 → v0.9.32 (sito si pubbli
 08/11 ~11:36, parola per parola: «ok per pronti in tavola» (ok scritto ai file di `.claude/` per il controllo dei comandi raggruppati, C64). Prima (~11:25): foto dello scarico di Paola fallito («Failed to fetch»), corretto in v0.9.32. Prima: «metti che scarica le voci automaticamente… il programma sceglie la miglior voce… gliela scarica automaticamente nel telefono… anche con i dati» (fatto v0.9.31) e «Voice Studio… guarda se c'è l'italiano» (scartato: app a sé).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C69; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C70; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
