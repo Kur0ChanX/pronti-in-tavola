@@ -13,6 +13,7 @@
    - POST /api/aiuto-cliente → aiutante dei CLIENTI approvati (C50): menù, prezzi, allergeni, i SUOI ordini, «metti nel carrello».
                           Acceso di base, spento se Mario mette impostazioni/app.aiClienti = false; chi gestisce può provarlo sempre. Tetto: 10 a cliente, 60 in tutto al giorno.
    - POST /api/visto-qui → chi gestisce ha visto «sono qui»: la notifica smette di risuonare (C51)
+   - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
@@ -105,6 +106,32 @@ async function ponteAI(env, messaggi) {
     } catch (e) { /* prova il prossimo */ }
   }
   return null;
+}
+/* prova delle AI (Mario 08/11 «posso provare se risponde Groq?»): una domanda piccolissima a ogni modello, uno alla volta.
+   Solo chi gestisce; costa pochissimo (poche decine di neuroni, 2 richieste Groq). */
+async function provaAI(env) {
+  const msg = [{ role: 'user', content: 'Rispondi solo con la parola: pronto' }];
+  const giro = async (nome, fn) => {
+    const t0 = Date.now();
+    try { const x = testoDi(await fn()).replace(/<think>[\s\S]*?<\/think>/g, '').trim(); return { nome, ok: !!x, ms: Date.now() - t0, testo: x.slice(0, 40) }; }
+    catch (e) { return { nome, ok: false, ms: Date.now() - t0, errore: String(e && e.message || e).slice(0, 120) }; }
+  };
+  const esiti = [];
+  for (const m of [MODELLO_AI, ...RISERVE]) {
+    const nome = 'Cloudflare · ' + m.split('/').pop();
+    esiti.push(env.AI ? await giro(nome, () => env.AI.run(m, { messages: msg, max_completion_tokens: 30, temperature: 0 })) : { nome, ok: false, errore: 'AI non collegata' });
+  }
+  for (const m of PONTE) {
+    const nome = 'Groq · ' + m.split('/').pop();
+    if (!env.GROQ_API_KEY) { esiti.push({ nome, ok: false, errore: 'chiave GROQ_API_KEY assente nel sito' }); continue; }
+    esiti.push(await giro(nome, async () => {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { authorization: 'Bearer ' + env.GROQ_API_KEY, 'content-type': 'application/json' },
+        body: JSON.stringify({ model: m, messages: msg, temperature: 0, max_tokens: 30 }) });
+      if (!r.ok) throw new Error('Groq risponde ' + r.status + (r.status === 401 ? ' (chiave sbagliata)' : r.status === 429 ? ' (limite raggiunto)' : r.status === 404 ? ' (modello non trovato)' : ''));
+      return r.json();
+    }));
+  }
+  return { esiti };
 }
 async function chiediAI(env, testo, dati, storia, foto, cliente) {
   const passate = (Array.isArray(storia) ? storia : []).slice(-6).map(m => ({ role: m && m.chi === 'io' ? 'user' : 'assistant', content: String((m && m.t) || '').slice(0, 400) })).filter(m => m.content);
@@ -351,6 +378,7 @@ export default {
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
+      if (url.pathname === '/api/prova-ai') return json(await provaAI(env));
       if (url.pathname === '/api/visto-qui') return json(await av.vistoQui());
       if (url.pathname === '/api/iscrivi') {
         const b = await req.json().catch(() => null);
