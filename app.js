@@ -712,7 +712,7 @@ async function benvEntra(ricollega) {
     try {
       try { await Dati.registra(tutto, P.tramite || '', !!ricollega); }
       catch (e) { if (!(ricordato && e.code === 'permission-denied')) throw e; await Dati.registra(tutto, P.tramite || '', true); }
-      avvisaGestori('richiesta'); ricordaNome(tutto);
+      avvisaGestori('richiesta'); P.ricordatoIl = Date.now(); salvaP(); ricordaNome(tutto);   // (C97) niente secondo avviso subito
     }
     catch (e) {
       UI.benvInvio = false;
@@ -762,7 +762,17 @@ function carosello() {
 const suSamsung = /SamsungBrowser/i.test(navigator.userAgent) && !/Android.*wv/.test(navigator.userAgent);
 /* Mario 07/11: il cliente non ancora accettato lo legge chiaro, sempre (anche dopo «Più tardi»), nel menù, dopo l'invio e nei suoi ordini */
 const inAttesa = () => { const u = Dati.attivo ? Dati.io.utente : null; return !!(u && ['nuovo', 'ricollega'].includes(u.stato)); };
-const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta.</b><br>Monica ti conosce e ti dice di sì dall'app: di solito in giornata. Il tuo primo ordine lo vede lei e te lo conferma.</div></div>` : '';
+const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta.</b><br>Monica ti conosce e ti dice di sì dall'app: di solito in giornata. Il tuo primo ordine lo vede lei e te lo conferma.${righeAttesa()}</div></div>` : '';
+/* (C97, Mario 08/11 «gli dice che Monica deve attivarlo ma non c'è nessuno da attivare, come se si fosse persa»):
+   chi aspetta vede il suo nome e un codice da dire a Monica, e «Ricorda a Monica» rimanda l'avviso «persona nuova».
+   Una volta ogni 6 ore lo rimanda da solo all'apertura: se il primo si è perso, Monica lo riceve di nuovo. */
+const codiceTel = uid => String(uid || '').slice(0, 4).toUpperCase();
+function righeAttesa() {
+  const u = Dati.io.utente || {};
+  if (!UI.ricordoAuto && Date.now() - (P.ricordatoIl || 0) > 6 * 3600e3) { UI.ricordoAuto = true; P.ricordatoIl = Date.now(); salvaP(); avvisaGestori('richiesta'); }
+  return `<br><span class="piccolo">Per Monica sei <b>${esc(u.nome || '')}</b> · codice <b>${codiceTel(Dati.io.uid)}</b></span>
+    <br><button type="button" class="btn chiaro piccolo" style="margin-top:8px" data-a="ricorda-monica">${ico('invito')}Ricorda a Monica</button>`;
+}
 function primiPassi() {
   if (UI.modifica) return '';
   if (UI.passiVia) return avvisoAttesa();
@@ -1458,12 +1468,14 @@ function vClienti() {
   const ordineDi = r => { const o = r.primo && ordine(r.primo); return o && o.stato === 'daApprovare' ? o : null; };
   const riga = r => { const o = ordineDi(r);
     return `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">${r.cliente ? 'Dice che ha cambiato telefono' : r.tramite ? 'Amica di ' + esc(r.tramite) : 'Ha trovato il link'}
+      · codice ${[r.id, ...(r.gemelli || [])].map(codiceTel).join(', ')}
       · ${o ? `ha ordinato: ${euro(totale(prezziGiusti(o.righe)))}, ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}` : 'non ha ancora ordinato'}</span></div>${bottoniRichiesta(r)}</div>`; };
   const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
   const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
     <button type="button" class="btn verde piccolo" data-a="rifiutato-si" data-id="${r.id}"${UI.decido === r.id ? ' disabled' : ''}>${ico('spunta')}Accetta</button></div>`;
   return `${testataMonica('Clienti', 'home')}<main class="corpo">
     ${telefoni.length ? `<section class="scheda"><h2>Telefono nuovo</h2><p class="tenue" style="margin:0">Hanno lo stesso nome di un tuo cliente. Se è proprio lei, ricollega: ritrova i suoi ordini.</p>${telefoni.map(riga).join('')}</section>` : ''}
+    ${!nuovi.length && !telefoni.length ? `<section class="scheda"><h2>Nessuno in attesa</h2><p class="tenue" style="margin:0">Qualcuno ti dice che aspetta il tuo sì? Chiedigli di toccare «Ricorda a Monica» nell'app: se c'è, compare qui col suo codice. Se non compare, deve riaprire il link e scrivere di nuovo il nome.</p></section>` : ''}
     ${nuovi.length ? `<section class="scheda"><h2>Nuovi</h2><p class="tenue" style="margin:0">Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.</p>${nuovi.map(riga).join('')}</section>` : ''}
     <section class="scheda"><h2>Fai conoscere la tua cucina</h2><p class="tenue" style="margin:0">Manda il link a chi vuoi: vede il menù e al primo ordine scrive il suo nome. Poi decidi tu.</p>
       ${bottoneBiglietto('a', 'Manda l\'invito su WhatsApp', 'pieno')}
@@ -1945,6 +1957,10 @@ const A = {
   'menu-immagine'() { mandaMenu(); },
   'notifica-prova'() { provaNotifica(); },
   'avvisi-attiva'() { attivaAvvisi(); },
+  'ricorda-monica'() {   // (C97) al massimo uno ogni 5 minuti
+    if (Date.now() - (P.ricordatoIl || 0) < 5 * 60e3) { mostraToast('Monica è già stata avvisata da poco: aspetta qualche minuto.'); return; }
+    P.ricordatoIl = Date.now(); salvaP(); avvisaGestori('richiesta'); mostraToast('Fatto: ho mandato di nuovo l\'avviso a Monica.');
+  },
   'avvisi-cliente'() { attivaAvvisiCliente(); },
   'sel-fritto'(el) { UI.sel.fritto = el.dataset.v === 'si'; UI.sel.forno = el.dataset.v === 'forno'; render(); },
   'passi-app'() { UI.passiApp = !UI.passiApp; render(); },

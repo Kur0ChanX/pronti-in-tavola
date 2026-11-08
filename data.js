@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.67';
+const VERSIONE_APP = '0.9.68';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.68', data: '08/11/2026',
+    nuovo: ['Chi aspetta il sì di Monica vede il suo nome, un codice e «Ricorda a Monica», che le rimanda l\'avviso. Ogni 6 ore lo rimanda da solo',
+      'Clienti: accanto a ogni persona nuova il suo codice; se non c\'è nessuno, «Nessuno in attesa» spiega cosa fare'] },
   { v: '0.9.67', data: '08/11/2026',
     nuovo: ['Impostazioni → Notifiche: chi gestisce vede gli ultimi avvisi mandati (ora, cosa, a quanti telefoni) e se questo telefono è iscritto davvero'],
     corretto: ['L\'avviso «Persona nuova da accettare» parte sempre, anche se arriva subito dopo un altro'] },

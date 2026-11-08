@@ -974,6 +974,22 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r[0].indexOf('primo ordine') > r[0].indexOf('da accettare')) throw new Error('gli avvisi non sono dal più nuovo');
     if (!/non riesco a leggerli/.test(r[1])) throw new Error('senza rete manca il messaggio');
   });
+  await passo('cliente in attesa: codice e «Ricorda a Monica»; Monica vede il codice o «Nessuno in attesa» (C97, Mario 08/11 «come se si fosse persa»)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const prima = [P.ricordatoIl, UI.ricordoAuto]; P.ricordatoIl = Date.now(); UI.ricordoAuto = true;
+      const h = righeAttesa();
+      const sp = Dati.io.uid; const cod = codiceTel('abcd1234');
+      [P.ricordatoIl, UI.ricordoAuto] = prima; return [h, cod];
+    });
+    if (!/Ricorda a Monica/.test(r[0]) || !/codice <b>/.test(r[0])) throw new Error('manca il codice o il tasto: ' + r[0].slice(0, 200));
+    if (r[1] !== 'ABCD') throw new Error('codice sbagliato: ' + r[1]);
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.vista = 'clienti'; UI.foglio = null; render(); });
+    const t = await page.locator('main').innerText();
+    const n = await page.evaluate(() => S.richieste.length);
+    if (!n && !/Nessuno in attesa/.test(t)) throw new Error('senza richieste manca «Nessuno in attesa»');
+    if (n && !/codice /.test(t)) throw new Error('nelle richieste manca il codice');
+    await page.evaluate(() => { P.ruolo = 'cliente'; UI.vista = 'menu'; render(); });
+  });
   await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
