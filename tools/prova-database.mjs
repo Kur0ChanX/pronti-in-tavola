@@ -65,6 +65,10 @@ prova('ricettario: zona sarda dalle pagine sarde, campi pieni', sc.filter(x => x
 oggetto.sql.exec("UPDATE ricette SET json = json_set(json, '$.totale', 25, '$.difficolta', 'Facile') WHERE id = ?", sc[0].id);
 const sc2 = await ponte.scelte(), x69 = sc2.find(y => y.id === sc[0].id);
 prova('C69: ricettario col tempo, la difficoltà e gli ingredienti dall\'archivio', x69 && x69.totale === 25 && x69.difficolta === 'Facile' && x69.cerca.length > 0 && sc2.every(y => 'totale' in y && 'cerca' in y));
+const vv = await ponte.vecchie(50);
+prova('C72: le ricette salvate col lettore vecchio sono da rileggere', vv.length === 0 || vv.every(u => /^https:/.test(u)));
+oggetto.sql.exec("UPDATE ricette SET json = json_remove(json, '$.v')"); const v2 = await ponte.vecchie(3); await ponte.tieni(v2[0]);
+prova('C72: rilettura 5 alla volta, una pagina sparita non si riprova', v2.length === 3 && !(await ponte.vecchie(50)).includes(v2[0]));
 prova('coda vuota alla fine', s.coda === 0);
 const lette = richieste.filter(u => /giallozafferano\.it\/(ricerca-ricette|ricette-cat)\//.test(u));
 prova('sarde miste alle altre: una pagina sarda e una di un\'altra sezione', /sardegna/.test(lette[0]) && /Primi/.test(lette[1]) && /sardegna/.test(lette[2]));
