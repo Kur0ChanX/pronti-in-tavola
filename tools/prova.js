@@ -952,6 +952,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.locator('.foglio').count()) throw new Error('«Più tardi» non chiude, o il foglio torna nella stessa apertura');
     await page.evaluate(() => { UI.invitoProva = false; });
   });
+  await passo('cliente non ancora approvato: «Attiva le notifiche» non va in giro continuo (C96, foto di Mario 08/11)', async () => {   // autonoma
+    await page.context().grantPermissions(['notifications']);
+    const r = await page.evaluate(async () => { const c = P.cliente; P.cliente = null; P.vuoleAvvisi = false; P.avvisiCliente = false;
+      await attivaAvvisiCliente(); const out = [P.vuoleAvvisi, notifPossibili(), UI.notEsito && UI.notEsito.t];
+      P.cliente = c; P.vuoleAvvisi = false; UI.notEsito = null; return out; });
+    if (!r[0]) throw new Error('il sì alle notifiche non viene ricordato: ' + r[2]);
+    if (r[1]) throw new Error('dopo il sì il foglio delle notifiche si riproporrebbe');
+    if (!/appena Monica ti conferma/.test(r[2] || '')) throw new Error('messaggio sbagliato: ' + r[2]);
+  });
   await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
