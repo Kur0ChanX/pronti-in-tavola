@@ -1545,7 +1545,7 @@ function vai(v) {
   clearTimeout(tToast); $('#toast').innerHTML = ''; fnAnnulla = null;
   if (v === 'nuovo') UI.nuovo = { passo: 1, nome: '', cat: '', modo: '', prezzi: {} };
   if (v === 'ordini' && P.ruolo === 'monica') { UI.tab = daGuardare().length ? 'nuovi' : 'oggi'; UI.ordAperto = null; }
-  if (/^cucina:/.test(UI.vista) && !/^cucina:/.test(v)) { if (typeof tieniAcceso === 'function') tieniAcceso(false); if (window.speechSynthesis) speechSynthesis.cancel(); }
+  if (/^cucina:/.test(UI.vista) && !/^cucina:/.test(v)) { if (typeof tieniAcceso === 'function') tieniAcceso(false); if (typeof fermaAscolto === 'function') fermaAscolto(); if (window.speechSynthesis) speechSynthesis.cancel(); }
   UI.vista = v; UI.foglio = null; UI.salvato = false; render();
 }
 function aggiungiRiga(lista, r) {

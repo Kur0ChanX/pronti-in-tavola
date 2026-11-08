@@ -15,7 +15,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   page.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) errori.push('console: ' + m.text()); });
   const foto = async n => page.screenshot({ path: `${OUT}/${n}.png` });
   const clic = async (sel, opz) => { await page.locator(sel).first().click(opz); await page.waitForTimeout(250); };
-  const passo = async (nome, fn) => { try { await fn(); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n')[0]); } };
+  const passo = async (nome, fn) => { try { await fn(); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(-8).join(' | ')); } };
 
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
@@ -561,6 +561,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // senza rete: la preferita si riapre dalla copia sul telefono
     await page.evaluate(() => { RIC.chiedi = async () => { throw new Error('senza rete'); }; vai('ricetta:gz:Seadas-sebadas'); });
     await page.locator('.ric-ing').waitFor({ timeout: 3000 });
+    // mani libere: il comando detto «avanti» porta al passo dopo
+    await page.evaluate(() => { vai('cucina:gz:Seadas-sebadas'); UI.cucina.passo = 0; UI.cucina.voce = false; comandoCucina('avanti'); });
+    if (await page.evaluate(() => UI.cucina.passo) !== 1) throw new Error('il comando «avanti» non va al passo dopo');
+    await page.evaluate(() => { comandoCucina('stop'); vai('ricettario'); });
+    // ispirate ai piatti di Monica
+    await page.evaluate(() => { try { localStorage.removeItem('pit-ric-ispira'); } catch (e) { /* niente */ }
+      RIC.chiedi = async c => ({ ricette: [{ url: 'https://ricette.giallozafferano.it/Prova-' + c.cerca.replace(/\W+/g, '-') + '.html', nome: 'Simile a ' + c.cerca, foto: '' }] });
+      UI.ric = { q: '', zona: 'tutte', cat: '' }; render(); });
+    await page.locator('.ric-scorri .ric-carta').first().waitFor({ timeout: 3000 });
+    await foto('33-ispirate');
     // ricetta mia
     await page.evaluate(() => vai('ricmia:nuova')); await page.locator('.ric-modulo').waitFor({ timeout: 3000 });
     await page.fill('[data-ric="nome"]', 'Malloreddus di nonna'); await page.fill('[data-ric="ingredienti"]', 'Semola 300 g\nAcqua 150 ml'); await page.fill('[data-ric="passi"]', 'Impasta 10 minuti.');

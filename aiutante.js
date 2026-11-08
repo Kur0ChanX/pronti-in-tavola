@@ -235,14 +235,15 @@ function voceAI() {
   return vv.sort((a, b) => punti(b) - punti(a))[0] || null;
 }
 if (window.speechSynthesis) speechSynthesis.onvoiceschanged = () => { AI.voce = voceAI(); };
-function parlaAI(t) {
-  if (!window.speechSynthesis) return;
+function parlaAI(t, fine) {
+  if (!window.speechSynthesis) { if (fine) fine(); return; }
   try {
     speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(t).replace(/[«»]/g, '')), v = AI.voce || voceAI();
     u.lang = 'it-IT'; if (v) u.voice = v; u.rate = 1.0; u.pitch = 1.1;
+    if (fine) { u.onend = () => fine(); u.onerror = () => fine(); }
     speechSynthesis.speak(u);
-  } catch (e) { /* senza voce: resta scritto */ }
+  } catch (e) { if (fine) fine(); /* senza voce: resta scritto */ }
 }
 /* microfono: dettatura in italiano, a fine frase parte da sola */
 function ascoltaAI(manda = inviaAI, box = AI) {
