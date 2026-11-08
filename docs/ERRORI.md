@@ -16,6 +16,7 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 - **PT E10** (07/11/2026) Ho dato la colpa al browser del telefono (2 volte) senza prova: anche dal PC il giro è uguale (Mario: «mi stai prendendo in giro»). Una causa si dice solo quando un esperimento la conferma; altrimenti «ipotesi».
 - **PT E11** (07/11/2026) Ho proposto e fatto le etichette per la stampantina termica in bianco e nero: Mario «in bianco e nero no». Le etichette restano a colori; prima di proporre un modo di stampa, chiedere se il colore serve.
 - **PT E24** (08/11/2026) Ripubblicavo l'artefatto dell'anteprima a ogni avvio e push, ma Mario non lo usa più («perché fai partire sempre l'artefatto?»): prova solo sul sito vero. Prima di un'abitudine scritta nelle consegne, chiedersi se a Mario serve ancora.
+- **PT E25** (08/11/2026) Ho scritto io le ricette del ricettario: Mario «non inventarle, prendile ufficiali… sembra super amatoriale, Monica non si fiderà mai». Contenuti di cui ci si deve fidare (ricette, dosi, salute, leggi): prima chiedere la fonte ufficiale, mai scriverli io; e mostrare a Mario l'aspetto prima di costruire tutto.
 
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.

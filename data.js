@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.14';
+const VERSIONE_APP = '0.9.15';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.15', data: '08/11/2026',
+    migliorato: ['Ricettario nascosto per ora: le ricette devono essere ufficiali (Mario 08/11), si sceglie la strada'] },
   { v: '0.9.14', data: '08/11/2026',
     nuovo: ['Ricettario per Monica e Mario: ricette sarde e italiane passo passo, porzioni che si ricalcolano, cucina guidata con voce e timer, ingredienti nella lista della spesa (prime 5 ricette)'] },
   { v: '0.9.13', data: '08/11/2026',

@@ -523,7 +523,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { P.sviluppatore = false; UI.devTutte = false; render(); });
   });
   await passo('ricettario (C55): elenco, cerca, porzioni, spesa, cucina guidata con timer', async () => {
-    await page.evaluate(() => { P.ruolo = 'monica'; vai('home'); });
+    await page.evaluate(() => { P.ruolo = 'monica'; S.impostazioni.ricettario = true; vai('home'); });   // nascosto finché Mario non sceglie la strada (08/11)
     await page.locator('.ric-home').click({ timeout: 3000 }); await page.locator('.ric-carta').first().waitFor({ timeout: 3000 });
     const n = await page.locator('.ric-carta').count(); if (n !== await page.evaluate(() => RICETTE.length)) throw new Error('ricette in elenco: ' + n);
     await foto('30-ricettario');
