@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.50';
+const VERSIONE_APP = '0.9.51';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.51', data: '08/11/2026',
+    migliorato: ['Voce Paola sul telefono: ora lavora a parte, così l\'app non si blocca mentre prepara la frase (prima la pagina restava ferma qualche secondo, ora quasi niente)'] },
   { v: '0.9.50', data: '08/11/2026',
     nuovo: ['«🗄 Il mio database»: controllo di TUTTE le ricette caricate (passi, foto, ingredienti), da solo ogni giorno o subito col tasto «🔍 Controlla tutte»; quelle da sistemare le rilegge da sola da GialloZafferano'],
     corretto: ['Ricette di GialloZafferano: nell\'ultimo passo non entrano più le «Domande e risposte» né la pubblicità; le lettere accentate come «È» e le virgolette «“ ”» si leggono giuste'] },
