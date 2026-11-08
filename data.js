@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.31';
+const VERSIONE_APP = '0.9.32';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.32', data: '08/11/2026', ora: '11:45',
+    corretto: ['Voce Paola: sul sito vero lo scarico falliva («Failed to fetch»): il sito dei modelli rifiutava le richieste dal nostro indirizzo; ora si scarica'] },
   { v: '0.9.31', data: '08/11/2026', ora: '11:40',
     nuovo: ['Voce automatica: la voce di base è Paola (Piper), vera e italiana; l\'app la scarica da sola sul telefono di chi gestisce la prima volta che apre il Ricettario (94 MB, con qualunque rete), senza toccare nulla; poi legge anche senza rete'],
     corretto: ['Kokoro tolto dalle voci: in italiano non legge (il suo programma sa solo l\'inglese); torna quando funziona'] },

@@ -14,7 +14,7 @@ Sopra il kit (uguale in tutti i progetti, versione in `docs/kit-progetto/VERSION
 ## Regime leggero (Mario 08/11 «1»: questo progetto, non RVC)
 Vince sul kit nei dettagli; le regole 🔒 (consegne, rami, salvataggio) e i divieti restano.
 - Avvio: `docs/ERRORI.md`, «## 0. Aspetta Mario», «Prossimi passi» delle consegne; il resto di `docs/DA-FARE.md` solo con `grep` sulla voce che serve; `list_triggers` con `limit` 5.
-- Comandi: leggere, cambiare e controllare in UN comando raggruppato, uscita corta. Mai cinque comandi dove ne basta uno.
+- Comandi (Mario 08/11 «solo pro, senza contro»): raggruppo solo i casi sicuri (letture e ricerche; cambio + controllo sintassi; fetch, merge, push), uscita corta. A sé: il passo che dipende dal risultato, prove poi commit (E20), comandi rischiosi sui dati veri.
 - Prove: mentre lavoro solo il pezzo cambiato (`SOLO=<parola del passo> node tools/prova.js`); giro completo UNA volta prima del push di codice. Passo che dipende da quelli prima → lo rendo autonomo (stato con `page.evaluate` in testa al passo).
 - Foto a Mario solo se cambia l'aspetto; voce 👁 solo per ciò che Mario deve provare lui; novità in una riga per funzione.
 
