@@ -165,7 +165,7 @@
       const wasm = W.URL.createObjectURL(await bloccoDaCache(urlRuntime(RUNTIME.ortWasm), 'application/wasm'));
       const env = W.ort.env.wasm;
       env.numThreads = 1;     // un solo filo: niente bisogno di pagina "isolata", più stabile sul telefono
-      env.proxy = false;
+      env.proxy = true;    // C83 (Mario 08/11 «sì come consiglio»): la voce lavora in un Web Worker, la pagina non si blocca (prova: blocco 1,4 s → 0,1 s)
       // onnxruntime 1.18 cerca il .wasm per nome: lo diamo dalla cache. I due non-SIMD (telefoni vecchissimi) restano da rete.
       env.wasmPaths = {
         'ort-wasm-simd.wasm': wasm,

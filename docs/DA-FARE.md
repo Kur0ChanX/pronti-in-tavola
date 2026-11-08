@@ -1,7 +1,6 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 08/11 · 📒 Aiuto 3 · «🗄 Il mio database»: il «⚡ Carico 100 ricette: N fatte» è salito dopo le 16:09?
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
 | N | Cosa | Chi | Urgenza |
