@@ -260,7 +260,7 @@
     return new Blob([vista.buffer], { type: 'audio/wav' });
   }
 
-  async function parla(testo, voce) {
+  async function parla(testo, voce, vel) {
     const v = trovaVoce(voce);
     const t = pulisci(testo);
     if (!t) throw errore('Niente da leggere.');
@@ -275,7 +275,7 @@
       const feeds = {
         input: new T('int64', BigInt64Array.from(ids, (n) => BigInt(n)), [1, ids.length]),
         input_lengths: new T('int64', BigInt64Array.from([BigInt(ids.length)]), [1]),
-        scales: new T('float32', Float32Array.from([inf.noise_scale ?? 0.667, inf.length_scale ?? 1, inf.noise_w ?? 0.8]), [3])
+        scales: new T('float32', Float32Array.from([inf.noise_scale ?? 0.667, (inf.length_scale ?? 1) / (vel >= 0.5 && vel <= 2 ? vel : 1), inf.noise_w ?? 0.8]), [3])
       };
       if (s.cfg.speaker_id_map && Object.keys(s.cfg.speaker_id_map).length) feeds.sid = new T('int64', BigInt64Array.from([0n]), [1]);
       const out = await s.sessione.run(feeds);

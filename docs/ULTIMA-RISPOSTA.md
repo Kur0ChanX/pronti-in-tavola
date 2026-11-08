@@ -1,5 +1,3 @@
-# Ultima risposta di Claude (08/11/2026 04:56 ora italiana)
+# Ultima risposta di Claude (08/11/2026 12:22 ora italiana)
 
-Nessun video da mandare: il ricettario a video non esiste ancora, quindi nell'app non c'è niente che si muova da mostrarti.
-
-Se rispondi sì alla domanda 1, prima di fare tutte le ricette ti mando 2-3 foto (o un video corto) delle prime schede da approvare.
+Le modifiche al codice restano non salvate apposta: se le mando su GitHub adesso, il sito vero si aggiorna da solo prima che le prove finiscano. Le prove sono a 9 su circa 50. A prove verdi faccio subito commit e push. Intanto la scorta automatica tiene una copia del lavoro.
