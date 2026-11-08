@@ -580,6 +580,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await foto('42-database');
     await clic('[data-a="ric-catalogo"][data-v="db"]'); await page.locator('#ric-risultati h2', { hasText: 'Archivio automatico' }).waitFor({ timeout: 3000 });
     await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
+    // 🗄 Il mio database in vista nel Ricettario (Mario 08/11 «sembra nascosta»): numeri e motore senza cambiare pagina
+    if (!(await page.locator('.ric-db-box .ric-db-n', { hasText: 'trovate dal motore' }).innerText()).includes('44')) throw new Error('nel Ricettario manca il numero delle ricette del motore');
+    if (!(await page.locator('.ric-db-box', { hasText: 'Motore' }).count())) throw new Error('nel Ricettario manca lo stato del motore');
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
     await clic('[data-a="ric-cerca-gz"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 });
