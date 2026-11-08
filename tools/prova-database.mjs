@@ -62,6 +62,9 @@ prova('la ricetta incompleta non entra né nell\'archivio né nel ricettario, ed
 prova('ogni ricetta salvata dal motore entra da sola nel ricettario', s.nelRicettario === 29 && s.scelte === 29);
 const sc = await ponte.scelte();
 prova('ricettario: zona sarda dalle pagine sarde, campi pieni', sc.filter(x => x.zona === 'sarda').length === 29 && sc.every(x => /\.html$/.test(x.url) && x.nome && /\.jpg$/.test(x.foto) && x.aggiunta > 0));
+oggetto.sql.exec("UPDATE ricette SET json = json_set(json, '$.totale', 25, '$.difficolta', 'Facile') WHERE id = ?", sc[0].id);
+const sc2 = await ponte.scelte(), x69 = sc2.find(y => y.id === sc[0].id);
+prova('C69: ricettario col tempo, la difficoltà e gli ingredienti dall\'archivio', x69 && x69.totale === 25 && x69.difficolta === 'Facile' && x69.cerca.length > 0 && sc2.every(y => 'totale' in y && 'cerca' in y));
 prova('coda vuota alla fine', s.coda === 0);
 const lette = richieste.filter(u => /giallozafferano\.it\/(ricerca-ricette|ricette-cat)\//.test(u));
 prova('sarde miste alle altre: una pagina sarda e una di un\'altra sezione', /sardegna/.test(lette[0]) && /Primi/.test(lette[1]) && /sardegna/.test(lette[2]));

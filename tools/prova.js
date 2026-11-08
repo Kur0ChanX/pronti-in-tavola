@@ -778,6 +778,34 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.evaluate(() => nelRicettario('gz:Nuova-prova') || RIC.server.length)) throw new Error('«Togli» non la toglie');
     await page.evaluate(() => { RIC.chiedi = RIC._c2; try { localStorage.removeItem('pit-ric-scelte'); } catch (e) { /* niente */ } RIC.scelte = []; vai('home'); });
   });
+  await passo('ricettario (C69): filtri tempo e facili, ricerca per ingredienti, ordina, numero, «Azzera», filtri ricordati', async () => {
+    await page.evaluate(() => {
+      const ora = Date.now(), ss = [
+        { id: 'gz:Pasta-veloce-prova', nome: 'Pasta veloce prova', zona: 'italiana', categoria: '', foto: '', aggiunta: ora, totale: 20, difficolta: 'Facile', cerca: 'pasta zucchine uova' },
+        { id: 'gz:Arrosto-lungo-prova', nome: 'Arrosto lungo prova', zona: 'italiana', categoria: '', foto: '', aggiunta: ora - 1000, totale: 120, difficolta: 'Media', cerca: 'maiale patate' },
+        { id: 'gz:Zuppa-media-prova', nome: 'Zuppa media prova', zona: 'italiana', categoria: '', foto: '', aggiunta: ora - 2000, totale: 50, difficolta: 'Facile', cerca: 'ceci zucchine' }];
+      RIC.chiedi = async c => c.db === 'mie' ? { scelte: ss } : c.db ? { db: { ricette: 3, coda: 0, voci: 0, mbVoci: 0, oggi: 0, pausa: false, scelte: 3 } } : { ricette: [], prossima: '' };
+      salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; UI.vista = 'ricettario'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    const elenco = () => page.locator('main .ric-elenco').last().innerText();
+    if (await page.locator('[data-a="ric-tempo"]').count()) throw new Error('«Più filtri» aperto da solo: spinge giù l\'elenco');
+    await clic('[data-a="ric-piu"]'); await clic('[data-a="ric-tempo"][data-v="30"]');
+    let t = await elenco(); if (!/Pasta veloce prova/.test(t) || /Arrosto lungo prova|Zuppa media prova/.test(t)) throw new Error('«Fino a 30 min» sbagliato');
+    if ((await page.evaluate(() => JSON.parse(localStorage.getItem('pit-ric-filtri')).tempo)) !== 30) throw new Error('filtro non ricordato');
+    await clic('[data-a="ric-tempo"][data-v="60"]'); await clic('[data-a="ric-facile"]');
+    t = await elenco(); if (!/Pasta veloce prova/.test(t) || !/Zuppa media prova/.test(t) || /Arrosto lungo prova/.test(t)) throw new Error('«1 ora» + «Facili» sbagliato');
+    await clic('[data-a="ric-ordine"][data-v="veloci"]');
+    const nomi = await page.locator('main .ric-elenco').last().innerText(); if (nomi.indexOf('Pasta veloce prova') > nomi.indexOf('Zuppa media prova')) throw new Error('«Più veloci» non ordina');
+    if (!/^2 ricette/.test(await page.locator('.ric-conta').innerText())) throw new Error('numero dei risultati sbagliato: ' + await page.locator('.ric-conta').innerText());
+    await foto('19-ricettario-filtri');
+    await clic('.ric-conta [data-a="ric-pulisci"]');
+    const dopo = await page.evaluate(() => [UI.ric.tempo, UI.ric.facile, JSON.parse(localStorage.getItem('pit-ric-filtri')).tempo]);
+    if (dopo[0] || dopo[1] || dopo[2]) throw new Error('«Azzera» non azzera: ' + JSON.stringify(dopo));
+    await page.evaluate(() => { UI.ric.q = 'zucchine ceci'; render(); });
+    t = await elenco(); if (!/Zuppa media prova/.test(t) || /Pasta veloce prova/.test(t)) throw new Error('ricerca per 2 ingredienti sbagliata');
+    await page.evaluate(() => { UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); });
+  });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
     if (/pronti-in-tavola\.firebaseapp\.com|AIza[\w-]{30,}/.test(html)) throw new Error('la configurazione vera di Firebase è dentro l\'anteprima');
