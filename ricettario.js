@@ -514,7 +514,7 @@ function vCucina(id) {
   const nuova = !(UI.cucina && UI.cucina.id === id);
   const c = nuova ? (UI.cucina = { id, passo: 0, voce: true }) : UI.cucina;
   tieniAcceso(true); voceAutomatica();
-  if (nuova || c.leggi) { c.leggi = false; setTimeout(() => { if (UI.cucina === c && /^cucina:/.test(UI.vista)) leggiPasso(); }, 0); }   // la voce parte da sola al primo passo (Mario 08/11): il tocco su ▶️ ha già dato il permesso audio
+  if (nuova || c.leggi) { c.leggi = false; setTimeout(() => { if (UI.cucina === c && /^cucina:/.test(UI.vista)) leggiPasso(); }, 300); }   // prima si disegna il passo, poi parte la voce   // la voce parte da sola al primo passo (Mario 08/11): il tocco su ▶️ ha già dato il permesso audio
   const i = Math.min(c.passo, r.passi.length - 1), p = r.passi[i], ultimo = i === r.passi.length - 1, min = minutiPasso(p.t);
   const mio = timerDi(id, i), altri = RIC.timers.filter(x => x !== mio), nota = notaRic(id);
   let h = testataMonica('Cucina guidata', 'ricetta:' + id) + '<main class="corpo ric-cucina">';

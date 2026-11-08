@@ -712,6 +712,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // mani libere: il comando detto «avanti» porta al passo dopo
     await page.evaluate(() => { vai('cucina:gz:Seadas-sebadas'); UI.cucina.passo = 0; UI.cucina.voce = false; comandoCucina('avanti'); });
     if (await page.evaluate(() => UI.cucina.passo) !== 1) throw new Error('il comando «avanti» non va al passo dopo');
+    if (await page.evaluate(() => document.querySelector('main.corpo').classList.contains('entra'))) throw new Error('cucina guidata con l\'animazione d\'entrata: col telefono occupato dalla voce la pagina resta vuota');
     await page.evaluate(() => { comandoCucina('stop'); vai('ricettario'); });
     // ispirate ai piatti di Monica
     await page.evaluate(() => { try { localStorage.removeItem('pit-ric-ispira'); } catch (e) { /* niente */ }

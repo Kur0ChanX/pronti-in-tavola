@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.43';
+const VERSIONE_APP = '0.9.44';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.44', data: '08/11/2026', ora: '15:30',
+    corretto: ['Cucina guidata: la pagina del passo non resta più vuota mentre parla la voce'] },
   { v: '0.9.43', data: '08/11/2026', ora: '15:10',
     nuovo: ['L\'app si aggiorna da sola: quando c\'è una versione nuova te lo dice, si riavvia e riparte dalla stessa schermata'],
     migliorato: ['Dosi dei piatti a teglia: le scrivi per la teglia da 6 e la teglia da 8 la calcola l\'app (quelli al chilo restano al chilo)'] },
