@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.51';
+const VERSIONE_APP = '0.9.52';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.52', data: '08/11/2026',
+    migliorato: ['Voce Paola sul telefono: ora lavora a parte, così l\'app non si blocca mentre prepara la frase (prima la pagina restava ferma qualche secondo, ora quasi niente)'] },
   { v: '0.9.51', data: '08/11/2026',
     migliorato: ['Aggiornamenti: l\'app non si riavvia più da sola. Compare un avviso in basso: finisci quello che stai facendo e tocca «Riavvia»; salva e torna nella stessa pagina'],
     nuovo: ['Foto dei piatti: prima di salvarla si apre «Sistema la foto». Puoi ritagliarla (come nel menù, quadrata o intera), spostarla col dito, ingrandirla, ruotarla, cambiare luce e colori; «✨ Migliora» le dà il ritocco caldo'] },
