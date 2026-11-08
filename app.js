@@ -264,8 +264,15 @@ function barraDev() {
 })();
 const firma = () => `<footer class="firma" data-a="firma-tocco">Powered by${YN}${Dati.attivo && !Dati.io.gestore && P.ruolo !== 'monica' && !P.invitoGestore ? '<br><button type="button" class="riservata" data-a="entra-monica">Area riservata</button>' : ''}</footer>`;
 const filo = () => `<div class="filo" aria-hidden="true">${ico('spiga')}</div>`;
+/* versione sempre in vista per Mario (08/11 «il numero della versione deve essere sempre visibile, non per forza in modalità dev,
+   e l'orario in piccolo affianco»): riga piccola in cima, tocco → «Aggiornamenti dell'app». Non quando c'è già la barra sviluppatore. */
+function versioneMini() {
+  if (!puoSviluppare() || UI.devCliente || (sviluppatore() && UI.barraDev)) return '';
+  const ora = oraNovita(NOVITA[0]);
+  return `<button type="button" class="versione-mini" data-a="dev-novita" aria-label="Versione ${VERSIONE_APP}: tocca per vedere gli aggiornamenti">v${VERSIONE_APP}${ora ? ` <small>${esc(ora)}</small>` : ''}</button>`;
+}
 function striscia() {
-  if (Dati.attivo) return barraDev();
+  if (Dati.attivo) return barraDev() || versioneMini();
   const n = daGuardare().length;
   return `<div class="prova" role="group" aria-label="Versione di prova">Prova · guarda come
     <button type="button" data-a="ruolo" data-v="cliente" aria-pressed="${P.ruolo === 'cliente'}">Cliente</button>
@@ -1343,8 +1350,9 @@ function vClienti() {
 }
 
 /* Cronologia degli aggiornamenti con data e ora italiana (Mario 08/11 «anche l'orario»): l'ora sta nella voce (`ora`) o in ORE_NOVITA */
-const oraNovita = n => n.ora || ORE_NOVITA[n.v] || '';
-const quandoNovita = n => esc(n.data) + (oraNovita(n) ? ` · ore ${esc(oraNovita(n))}` : '');
+const pubblicata = v => (typeof PUBBLICATE !== 'undefined' && PUBBLICATE[v] ? PUBBLICATE[v] : '').split(' ');
+const oraNovita = n => pubblicata(n.v)[1] || n.ora || ORE_NOVITA[n.v] || '';
+const quandoNovita = n => esc(pubblicata(n.v)[0] || n.data) + (oraNovita(n) ? ` · ore ${esc(oraNovita(n))}` : '');
 function novitaHtml(lista) {
   return lista.map(n => `<div class="dev-nov"><b>${esc(n.v)}</b> <span class="quando">${quandoNovita(n)}</span>${[['nuovo', '✨ Nuovo'], ['migliorato', '⬆️ Migliorato'], ['corretto', '🔧 Corretto']].filter(([k]) => (n[k] || []).length).map(([k, t]) => `<div class="dev-tipo">${t}</div><ul>${n[k].map(c => `<li>${esc(c)}</li>`).join('')}</ul>`).join('')}</div>`).join('');
 }

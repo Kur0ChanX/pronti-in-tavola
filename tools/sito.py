@@ -9,8 +9,12 @@ Uso: python3 -I tools/sito.py   (esce con errore e non crea niente di mezzo se q
 """
 import pathlib
 import re
+import datetime
+import json
 import shutil
+import subprocess
 import sys
+from zoneinfo import ZoneInfo
 
 RADICE = pathlib.Path(__file__).resolve().parent.parent
 USCITA = RADICE / 'sito'
@@ -22,6 +26,32 @@ MEDIA = re.compile(r'media/[A-Za-z0-9._-]+\.(?:png|jpg|jpeg|webp|svg|ico)')
 def errore(testo):
     print('ERRORE sito: ' + testo, file=sys.stderr)
     sys.exit(1)
+
+
+ROMA = ZoneInfo('Europe/Rome')
+
+
+def ore_vere(data_js):
+    """Ora italiana vera di ogni versione (Mario 08/11 «risolvilo dalla base»): mai scritta a mano.
+    Versione online = adesso (la pubblicazione); le altre = il primo commit che ha messo `VERSIONE_APP = 'x'`.
+    Serve la storia intera del git (sito.yml: fetch-depth 0); senza git restano `data`/`ora` delle voci."""
+    versioni = re.findall(r"\{ v: '([\d.]+)'", data_js)
+    attuale = re.search(r"const VERSIONE_APP = '([\d.]+)'", data_js)
+    fmt = lambda d: d.astimezone(ROMA).strftime('%d/%m/%Y %H:%M')
+    ore = {}
+    if attuale:
+        ore[attuale.group(1)] = fmt(datetime.datetime.now(datetime.timezone.utc))
+    for v in versioni[:80]:
+        if v in ore:
+            continue
+        try:
+            out = subprocess.run(['git', 'log', '--reverse', '--format=%ct', '-S', f"VERSIONE_APP = '{v}'", '--', 'data.js'],
+                                 cwd=RADICE, capture_output=True, text=True, timeout=60).stdout.split()
+        except (OSError, subprocess.SubprocessError):
+            break
+        if out:
+            ore[v] = fmt(datetime.datetime.fromtimestamp(int(out[0]), datetime.timezone.utc))
+    return ore
 
 
 def svuota_uscita():
@@ -66,10 +96,18 @@ def main():
         if voce != './' and voce not in FILE_APP and voce not in media:
             errore(f'sw.js mette nel guscio {voce}, che il sito non avrebbe')
 
+    # ore vere delle versioni dentro data.js del sito (il file del repository resta com'è)
+    vuota = 'const PUBBLICATE = {};'
+    if vuota not in testi['data.js']:
+        errore('in data.js manca «const PUBBLICATE = {};»')
+    ore = ore_vere(testi['data.js'])
+    testi['data.js'] = testi['data.js'].replace(vuota, 'const PUBBLICATE = ' + json.dumps(ore, ensure_ascii=False) + ';', 1)
+    print(f'ore vere: {len(ore)} versioni')
+
     svuota_uscita()
     (USCITA / 'media').mkdir(parents=True)
     for nome in FILE_APP:
-        shutil.copyfile(RADICE / nome, USCITA / nome)
+        (USCITA / nome).write_text(testi[nome], encoding='utf-8') if nome == 'data.js' else shutil.copyfile(RADICE / nome, USCITA / nome)
     for m in media:
         shutil.copyfile(RADICE / m, USCITA / m)
 
