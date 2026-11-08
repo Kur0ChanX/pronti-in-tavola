@@ -238,5 +238,12 @@ rr = await W.default.fetch(new Request('https://x/api/originali', { method: 'POS
 prova('originale: senza accesso da gestore niente', rr.status === 403);
 prova('originale: pulizia lascia le foto giovani', (await ponte.pulisciOriginali(60)) === 0 && (await ponte.elencoOriginali()).length === 1);
 prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.pulisciOriginali(-1)) === 1 && (await ponte.elencoOriginali()).length === 0 && (await ponte.originale(j.foto[0].id)) === null);
+// C81: controllo di tutte le ricette del database (una rovinata apposta torna da rileggere)
+{ const una = oggetto.sql.exec('SELECT id FROM ricette LIMIT 1').toArray()[0];
+  const c1 = await ponte.controlla();
+  oggetto.sql.exec("UPDATE ricette SET json = json_set(json, '$.passi', json('[]'), '$.v', 4) WHERE id = ?", una.id);
+  const c2 = await ponte.controlla(), rilette = await ponte.vecchie(50), st = await ponte.statoDb();
+  prova('C81: controlla tutte le ricette, una rovinata contata e rimessa da rileggere', c2.totale === c1.totale && c2.nMale >= 1 && c2.ok + c2.nMale === c2.totale && c2.male.some(m => m.id === una.id && m.prob.includes('0 passi')) && rilette.length > 0 && st.controllo && st.controllo.quando === c2.quando);
+}
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);

@@ -333,8 +333,18 @@ function riquadroDb() {
   return `<section class="scheda ric-db-box"><h2>🗄 Il mio database</h2>
     <div class="ric-db-griglia">${n(elenco.length + mie.length, '📖 nel ricettario', `le vede anche Monica · ${base} di partenza, ${trovate} trovate, ${mie.length} scritte da te`)}${n(nuove7, '🆕 nuove', `negli ultimi 7 giorni${nuoveOggi ? `, ${nuoveOggi} oggi` : ''}`)}${n(d ? d.coda : null, '⏳ in arrivo', 'il motore le sta leggendo')}${n(scar.length, '📥 sul telefono', `leggibili senza rete · ${nVoci} con la voce`)}</div>
     <p class="piccolo" style="margin:6px 0 0">${nonArrivate ? `⚠️ ${nonArrivate} ${nonArrivate === 1 ? 'ricetta scritta da te non è' : 'ricette scritte da te non sono'} ancora sul server: partono appena c'è rete.` : '✅ Tutto salvato sul server dell\'app: Mario e Monica vedono le stesse ricette.'}</p>
-    ${turbo}${motore}
-    <div class="fila" style="margin-top:8px"><button type="button" class="btn pieno" data-a="ric-db-turbo" ${t && t.attivo ? 'disabled' : ''}>${t && t.attivo ? '⚡ Sto caricando…' : '⚡ Carica 100 ricette adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button><button type="button" class="btn chiaro" data-a="vai" data-v="ricdb">Tutto il dettaglio</button></div></section>`;
+    ${turbo}${controlloRic(d)}${motore}
+    <div class="fila" style="margin-top:8px"><button type="button" class="btn pieno" data-a="ric-db-turbo" ${t && t.attivo ? 'disabled' : ''}>${t && t.attivo ? '⚡ Sto caricando…' : '⚡ Carica 100 ricette adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-controlla" ${RIC.dbControllo ? 'disabled' : ''}>${RIC.dbControllo ? 'Controllo…' : '🔍 Controlla tutte'}</button><button type="button" class="btn chiaro" data-a="vai" data-v="ricdb">Tutto il dettaglio</button></div></section>`;
+}
+/* C81 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): esito del controllo di TUTTE le ricette del database
+   (il server lo rifà da solo ogni giorno; «🔍 Controlla tutte» lo fa subito). Quelle da sistemare le rilegge da solo da GialloZafferano. */
+function controlloRic(d) {
+  const c = d && d.controllo;
+  if (!c) return d ? '<p class="piccolo tenue" style="margin:6px 0 0">🔍 Controllo delle ricette: non ancora fatto, tocca «🔍 Controlla tutte».</p>' : '';
+  const q = new Date(c.quando), quando = q.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) + ' alle ' + q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const tutto = !c.nMale && !c.mancanti;
+  const lista = c.nMale ? `<ul class="ricdb-lista">${c.male.slice(0, 8).map(m => `<li>${esc(m.nome)} <span class="piccolo tenue">· ${esc(m.prob.join(' · '))}</span></li>`).join('')}${c.nMale > 8 ? `<li class="tenue">… e altre ${c.nMale - 8}</li>` : ''}</ul>` : '';
+  return `<p style="margin:6px 0 0"><b>${tutto ? '✅' : '🔧'} Controllate ${c.totale} ricette il ${quando}: ${c.ok} a posto</b>${c.nMale ? `, <b>${c.nMale} da sistemare</b> (le rileggo da sola da GialloZafferano, 5 ogni 10 minuti)` : ''}${c.mancanti ? `; ${c.mancanti} del ricettario ancora senza la ricetta intera: rimesse in arrivo` : ''}.</p>${lista}`;
 }
 function vRicDb() {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
@@ -459,7 +469,7 @@ function vRicettario() {
 function vRicetta(id) {
   if (RIC.stato !== 'pronto') return attesaRic('Ricetta', 'ricettario');
   const r = ricetta(id), v = voceElenco(id);
-  if (r && !r.mia && !(r.v >= 3) && /^gz:/.test(id) && navigator.onLine && !(RIC.riletta = RIC.riletta || {})[id]) { RIC.riletta[id] = true; apriGz(id); }   // una volta sola: se il server ridà la copia vecchia, niente giri infiniti   // C72: copia vecchia senza i numerini → si rilegge da sola, intanto si vede questa
+  if (r && !r.mia && !(r.v >= 4) && /^gz:/.test(id) && navigator.onLine && !(RIC.riletta = RIC.riletta || {})[id]) { RIC.riletta[id] = true; apriGz(id); }   // una volta sola: se il server ridà la copia vecchia, niente giri infiniti   // C72: copia vecchia senza i numerini → si rilegge da sola, intanto si vede questa
   if (!r) {
     if (/^mia:/.test(id) || !/^gz:[\w%-]+$/.test(id)) { UI.vista = 'ricettario'; return vRicettario(); }
     if (RIC.errore[id]) return testataMonica('Ricetta', 'ricettario') + `<main class="corpo"><section class="scheda"><p style="margin:0"><b>Non riesco ad aprire «${esc(v ? v.nome : 'la ricetta')}».</b></p>
@@ -823,6 +833,12 @@ Object.assign(A, {
     RIC.chiedi({ db: 'cerca' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); RIC.dbUltime = null; mostraToast(j.nuove ? `🔄 Trovate ${j.nuove} ricette nuove.` : '🔄 Giro fatto: niente di nuovo in questa pagina, riprova.'); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
       .finally(() => { RIC.dbCerco = false; RIC.dbOra = 0; render(); });
+  },
+  'ric-db-controlla'() {
+    if (RIC.dbControllo) return; RIC.dbControllo = true; render();
+    RIC.chiedi({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; mostraToast(c.nMale || c.mancanti ? `🔍 ${c.ok} ricette a posto, ${c.nMale + c.mancanti} da sistemare: ci penso io.` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
+      .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
+      .finally(() => { RIC.dbControllo = false; render(); });
   },
   'ricdb-tutte'(el) { UI.ricDbTutte = el.dataset.v; render(); },
   'ricdb-voci'() { const da = Object.values(RIC.scaricate).filter(r => !RIC.vociFatte[r.id]); da.forEach(codaVoci); mostraToast(`🔊 Preparo la voce di ${da.length} ricette: ci vuole qualche minuto, intanto puoi fare altro.`); },
