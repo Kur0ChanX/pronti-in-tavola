@@ -940,6 +940,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('cliente: guida corta «metti l\'app sul telefono» con schede iPhone | Android (Mario 08/11, Sabrina)', async () => {   // autonoma
     const r = await page.evaluate(() => { UI.guidaOS = 'ios'; const a = guidaInstalla(); UI.guidaOS = 'android'; const b = guidaInstalla(); UI.guidaOS = null; return [a, b, primiPassi()]; });
     if (!/Aggiungi alla schermata Home/.test(r[0]) || !/aria-pressed="true">iPhone/.test(r[0])) throw new Error('scheda iPhone sbagliata');
+    if (!/Apri come app web/.test(r[0])) throw new Error('manca il passo «Apri come app web» (iOS 26, C94)');
     if (!/⋮/.test(r[1]) || !/aria-pressed="true">Android/.test(r[1])) throw new Error('scheda Android sbagliata');
     if (r[2] && /data-a="passi-app"/.test(r[2])) throw new Error('c\'è ancora il tasto che apre solo i passi');
   });
