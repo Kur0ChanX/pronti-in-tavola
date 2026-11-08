@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.62';
+const VERSIONE_APP = '0.9.63';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.63', data: '08/11/2026',
+    migliorato: ['Guida iPhone: «Lascia acceso Apri come app web e tocca Aggiungi» (iOS 26), così l\'icona apre l\'app e non Safari'] },
   { v: '0.9.62', data: '08/11/2026',
     nuovo: ['Clienti: in cima al menù «Lo stesso dell\'ultima volta?» con «Ordina di nuovo» in un tocco'],
     migliorato: ['Clienti: «Metti l\'app sul telefono» arriva dopo il primo ordine (prima solo il menù, niente distrazioni)', 'Android: la finestra per installare l\'app è quella grande, con le foto dell\'app'] },

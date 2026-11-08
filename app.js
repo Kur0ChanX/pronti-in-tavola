@@ -339,7 +339,7 @@ function guidaInstalla() {
   const pp = os === 'ios' ? [
     `Tocca <b>Condividi</b> ${CONDIVIDI} vicino all'indirizzo (su Safari tocca prima <b>⋯</b>).`,
     '<b>Scorri in giù</b> l\'elenco e tocca <b>Aggiungi alla schermata Home</b>.<br><small class="tenue">Non c\'è? In fondo tocca <b>Modifica azioni</b> e aggiungilo.</small>',
-    'Tocca <b>Aggiungi</b>.'] : [
+    'Lascia acceso <b>Apri come app web</b> e tocca <b>Aggiungi</b>.'] : [
     'Tocca <b>⋮</b> in alto a destra (Samsung: <b>≡</b> in basso).',
     'Scegli <b>Installa app</b> o <b>Aggiungi a schermata Home</b>.',
     'Tocca <b>Installa</b>.'];
