@@ -186,10 +186,10 @@ function statoIniziale() {
 const VERSIONE_APP = '0.9.29';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
-  { v: '0.9.29', data: '08/11/2026',
+  { v: '0.9.29', data: '08/11/2026', ora: '10:42',
     nuovo: ['Voci sul telefono (Piper: Paola e Riccardo · Kokoro: Sara e Nicola): in Cucina guidata → «Voce che legge» scegli una voce «sul telefono», tocca «⬇️ Scarica la voce» una volta sola (50-100 MB, meglio col Wi-Fi) e da lì legge anche senza rete, anche in aereo'],
     migliorato: ['Se la voce di Microsoft non risponde, legge la voce scaricata sul telefono (prima: sempre quella del telefono)'] },
-  { v: '0.9.28', data: '08/11/2026',
+  { v: '0.9.28', data: '08/11/2026', ora: '10:17',
     nuovo: ['Ricettario in ordine: una sola ricerca, i filtri in una riga, l\'elenco subito; «🔎 Scopri» con le ricette nuove, il catalogo e i temi; «➕ Aggiungi al mio ricettario» (uguale su tutti i telefoni)',
       'Pagina «🗄 Database ricette»: quante ricette hai, quante nuove, quali hanno la voce sul telefono, il motore con «🔄 Cerca adesso» e la barra di avanzamento'],
     corretto: ['«▶️ Ascolta la ricetta passo passo»: la voce parte da sola al primo passo (prima bisognava toccare «Ripeti»)'] },
