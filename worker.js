@@ -90,23 +90,43 @@ function jsonDa(t) {   // il primo oggetto JSON nel testo (toglie eventuali <thi
   return null;
 }
 const testoDi = r => { const x = typeof r === 'string' ? r : (r && (r.response ?? (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content))) || ''; return typeof x === 'string' ? x : JSON.stringify(x); };
+/* ponte (Mario 08/11 «quando si blocca per i limiti crea un altro ponte automatico… con nuovi limiti»): Groq, piano gratuito
+   (1.000 richieste e 200.000 token al giorno, senza carta, non addestra sui dati; docs lette l'08/11/2026). Stesso modello Qwen 3.8.
+   La chiave è il segreto GROQ_API_KEY del Worker (lo mette il giro sito.yml dai segreti di GitHub): senza, il ponte non c'è. */
+const PONTE = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b'];
+async function ponteAI(env, messaggi) {
+  if (!env.GROQ_API_KEY) return null;
+  for (const m of PONTE) {
+    try {
+      const r = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { authorization: 'Bearer ' + env.GROQ_API_KEY, 'content-type': 'application/json' },
+        body: JSON.stringify({ model: m, messages: messaggi, temperature: 0.2, max_tokens: 1500 }) });
+      if (r.ok) return { r: await r.json(), modello: 'groq:' + m };
+    } catch (e) { /* prova il prossimo */ }
+  }
+  return null;
+}
 async function chiediAI(env, testo, dati, storia, foto, cliente) {
   const passate = (Array.isArray(storia) ? storia : []).slice(-6).map(m => ({ role: m && m.chi === 'io' ? 'user' : 'assistant', content: String((m && m.t) || '').slice(0, 400) })).filter(m => m.content);
   const domanda = `DATI: ${dati}\n\n${cliente ? 'DOMANDA DEL CLIENTE' : 'FRASE DI MONICA'}: ${testo}${foto ? '\n(Monica ha mandato anche una FOTO)' : ''}`;
   const ultimo = foto ? { role: 'user', content: [{ type: 'text', text: domanda }, { type: 'image_url', image_url: { url: foto } }] } : { role: 'user', content: domanda };
   const messaggi = [{ role: 'system', content: cliente ? ISTRUZIONI_CLIENTE : ISTRUZIONI_AI }, ...passate, ultimo];
   let r, modello = MODELLO_AI;
+  const soloTesto = [messaggi[0], ...passate, { role: 'user', content: domanda }];
+  const finiti = e => /4006|neuron|allocation/i.test(String(e && e.message));
+  const ponte = async () => { const p = await ponteAI(env, soloTesto); if (p) { r = p.r; modello = p.modello; } return !!p; };
   try { r = await env.AI.run(MODELLO_AI, { messages: messaggi, max_completion_tokens: 2000, temperature: 0.2, reasoning_effort: 'low' }); }
   catch (e) {
-    if (/4006|neuron|allocation/i.test(String(e && e.message))) return { testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] };
-    if (foto) return { testo: 'Non riesco a guardare la foto adesso: scrivimi cosa c\'è, per favore.', azioni: [], errore: String(e && e.message || e).slice(0, 200) };
-    /* ponte automatico (Mario 08/11): se il modello principale non risponde, provo gli altri gratuiti in fila */
-    const soloTesto = [messaggi[0], ...passate, { role: 'user', content: domanda }];
-    for (const m of RISERVE) {
-      try { r = await env.AI.run(m, { messages: soloTesto, max_completion_tokens: 1500, temperature: 0.2 }); modello = m; break; }
-      catch (e2) { if (/4006|neuron|allocation/i.test(String(e2 && e2.message))) return { testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] }; }
+    if (finiti(e)) {   // finiti i neuroni gratuiti di Cloudflare: passa a Groq (solo testo)
+      if (!(await ponte())) return { testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] };
+    } else if (foto) return { testo: 'Non riesco a guardare la foto adesso: scrivimi cosa c\'è, per favore.', azioni: [], errore: String(e && e.message || e).slice(0, 200) };
+    else {
+      /* se il modello principale non risponde, provo gli altri gratuiti di Cloudflare, poi Groq */
+      for (const m of RISERVE) {
+        try { r = await env.AI.run(m, { messages: soloTesto, max_completion_tokens: 1500, temperature: 0.2 }); modello = m; break; }
+        catch (e2) { if (finiti(e2)) break; }
+      }
+      if (!r && !(await ponte())) return { testo: 'Adesso l\'aiutante non risponde: riprova tra qualche minuto.', azioni: [] };
     }
-    if (!r) return { testo: 'Adesso l\'aiutante non risponde: riprova tra qualche minuto.', azioni: [] };
   }
   const j = jsonDa(testoDi(r));
   if (!j) return { testo: 'Non ho capito bene: me lo ridici?', azioni: [], grezzo: testoDi(r).slice(0, 300), modello };

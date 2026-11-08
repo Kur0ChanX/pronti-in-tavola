@@ -29,7 +29,7 @@ const Vapore = (() => {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || !app) {
       if (app) app.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220, easing: 'ease-out' }); if (fatto) fatto(); return;
     }
-    const D = 2600, dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+    const D = 3200, dpr = Math.min(2, devicePixelRatio || 1), W = innerWidth, H = innerHeight;
     const velo = document.createElement('div'); velo.className = 'vapore'; velo.setAttribute('aria-hidden', 'true');
     const cv = document.createElement('canvas'); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     velo.appendChild(cv); document.body.appendChild(velo);
@@ -47,13 +47,15 @@ const Vapore = (() => {
     const t0 = performance.now(); let fine = false, entrata = false, rq = 0;
     function ferma() {
       if (fine) return; fine = true; cancelAnimationFrame(rq);
-      velo.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 160 }).onfinish = () => velo.remove();
+      velo.animate([{ opacity: getComputedStyle(velo).opacity }, { opacity: 0 }], { duration: 450, easing: 'ease-out' }).onfinish = () => velo.remove();   // anche col tocco si dirada, mai di colpo
       if (!entrata) app.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160 });
       app.style.opacity = ''; attivo = null; if (fatto) fatto();
     }
     function giro() {
-      const t = (performance.now() - t0) / D; if (t >= 1) return ferma();
+      const t = (performance.now() - t0) / D; if (t >= 1) { velo.remove(); fine = true; app.style.opacity = ''; attivo = null; if (fatto) fatto(); return; }
       g.clearRect(0, 0, W, H);
+      // coda (Mario 08/11 «falla finire che si dirada»): nell'ultimo terzo tutto il vapore svanisce piano, a t = 1 è già invisibile
+      const coda = 1 - liscio((t - .62) / .38);
       // penombra: la schermata c'è, ma in ombra calda, e si schiarisce mentre il vapore sale
       const ombra = .5 * (1 - liscio((t - .3) / .55));
       if (ombra > .005) { g.globalAlpha = ombra; g.fillStyle = '#2B160E'; g.fillRect(0, 0, W, H); }
@@ -70,7 +72,7 @@ const Vapore = (() => {
           x = p.x + Math.sin(u * 4 + p.fase) * p.ondeggia; y = p.y - p.sale * (u * (.55 + u * .45)); r = p.r * (.7 + u * 1.5);
           a = p.a * liscio(u / .18) * (1 - liscio((u - .45) / .55));
         }
-        if (a <= .01) continue;
+        a *= coda; if (a <= .005) continue;
         g.globalAlpha = a; g.save(); g.translate(x, y); g.rotate(p.rot + (p.vr || 0) * t * 2); g.drawImage(p.f, -r, -r, r * 2, r * 2); g.restore();
       }
       g.globalAlpha = 1;
