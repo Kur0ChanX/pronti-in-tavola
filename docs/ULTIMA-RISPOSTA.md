@@ -1,17 +1,9 @@
-# Ultima risposta di Claude (08/11/2026 03:13 ora italiana)
+# Ultima risposta di Claude (08/11/2026 04:33 ora italiana)
 
-Ho capito: niente foto del menù per ora e il lucchetto va bene. Volevi l'aiutante che risponde alle domande di Monica e cambia anche le impostazioni, ma solo dopo che lei ha visto e confermato. E per i clienti un tasto per scrivere a Monica su WhatsApp, col messaggio già iniziato.
+Ho capito: le voci da vedere vanno bene così, perché hai visto che per ora funziona tutto. Per il ricettario: 60 ricette, foto libere di Wikipedia con disegni per i passi, e le ricette di Monica più avanti.
 
 ───
 ✅ FATTO
-- **Online la versione 0.9.6.** Le 44 prove sul telefono (Pixel 7) sono tutte passate; il sito vero ha la 0.9.6; anteprima aggiornata.
-- **Aiutante e impostazioni.** Può cambiare i giorni di preavviso, le teglie al giorno, l'ora fino a cui valgono i pronti, il menù di Natale, i modi di pagare e la nota …
-
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: un file Excel con gli ordini e gli incassi del mese, da scaricare dall'app, per avere una copia dei conti.
-1. Salvataggio mensile degli ordini:
-   1 · Ora
-   2 · Più avanti (consiglio)
-   3 · No
+- **Da fare più leggero:** ho chiuso 34 voci con il tuo «funziona tutto». Ne restano 16 aperte. Le chiuse sono in `docs/DA-FARE-FATTE.md`.
+- **Specifica del ricettario** scritta in `docs/SPEC-RICETTARIO.md`: cosa fa, l'elenco delle 60 ricette e i 3 lotti di lavoro.
+- **Prime 5 ricette scritte**, da zero e con parole semplici: zuppa gallurese, chjusoni al sugo, culurgiones, …
