@@ -14,7 +14,7 @@ Aiuto 5 = `session_01WTjqUvX75Bht1iG65adkCZ` (catena 3 di 8), chiusa alla soglia
 
 ## Prossimi passi (C94, 🔴)
 1. Avvio: titolo «📗 🍝 Aiuto 6 · iPhone facile».
-2. Rispondere a Mario (la sua domanda non ha ancora avuto risposta piena): su iPhone nessun sito può installarsi da solo (fonti sopra); cosa si può fare: a) guida a figure grandi, una per passo, con freccia che lampeggia verso dove sta Condividi (in basso su iOS 26 Safari, dietro «⋯»); b) passo 3 «lascia acceso Apri come app web, poi Aggiungi»; c) se il link si apre dentro WhatsApp o un'altra app: «tocca Apri in Safari» (ipotesi da verificare con ricerca: come apre i link WhatsApp su iPhone nel 2026); d) app vera nell'App Store (99 €/anno Apple + revisione): sconsigliata. Chiedere a Mario quali (b subito, è una correzione ovvia: testi in `app.js guidaInstalla()` riga ~339).
+2. Rispondere a Mario (la sua domanda non ha ancora avuto risposta piena): su iPhone nessun sito può installarsi da solo (fonti sopra); cosa si può fare: a) guida a figure grandi, una per passo, con freccia che lampeggia verso dove sta Condividi (in basso su iOS 26 Safari, dietro «⋯»); b) passo 3 «lascia acceso Apri come app web, poi Aggiungi»; c) se il link si apre dentro WhatsApp o un'altra app: «tocca Apri in Safari» (ipotesi da verificare con ricerca: come apre i link WhatsApp su iPhone nel 2026); d) app vera nell'App Store (99 €/anno Apple + revisione): sconsigliata. Chiedere a Mario quali. Il punto b l'ha già fatto Aiuto 5 (v0.9.63, dopo l'handoff: Mario «facciamo prima in questa app», poi «pubblica»).
 3. Giro completo, push, controllo versione sul sito, novità in una riga.
 
 ## Note
@@ -26,4 +26,4 @@ Aiuto 5 = `session_01WTjqUvX75Bht1iG65adkCZ` (catena 3 di 8), chiusa alla soglia
 Controllo Da fare: 1 voce aggiunta (C94). Messaggi di Mario della sessione: «1 consiglio» (C93, fatto), «per iphone non si può fare nulla…» (C94).
 
 ## Ultimo messaggio di Mario (parola per parola)
-«per iphone non si può fare nulla hai teovato qualcosa con la ricerca di prima? impossibile che mon ci sia nulla»
+«pubblica» (prima: «facciamo prima in questa app»; «per iphone non si può fare nulla hai teovato qualcosa con la ricerca di prima? impossibile che mon ci sia nulla»)
