@@ -436,9 +436,16 @@ export class Avvisi extends DurableObject {
   }
   async chiavePubblica() { return (await this.chiavi()).pub; }
   /* per capire i guasti (Mario 07/11: notifica non arrivata): quanti telefoni e gli ultimi 10 invii, senza indirizzi */
-  async stato() {
+  /* (C97) e = indirizzo del telefono che chiede: «questo» dice se il server lo conosce (senza mostrare gli indirizzi degli altri) */
+  async stato(e) {
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
-    return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [] };
+    return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), questo: e ? tutti.some(x => x.endpoint === e) : null,
+      conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [] };
+  }
+  async scriviDiario(voce) {
+    const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
+    diario.push(Object.assign({ quando: new Date().toISOString() }, voce));
+    await this.ctx.storage.put('diario', diario);
   }
 
   async iscrivi(uid, sub) {
@@ -477,9 +484,7 @@ export class Avvisi extends DurableObject {
       } catch (e) { esiti.push('errore ' + String(e && e.message || e).slice(0, 120)); }
     }
     if (morti.length) await this.ctx.storage.put(chiave, tutti.filter(x => !morti.includes(x.endpoint)));
-    const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
-    diario.push({ quando: new Date().toISOString(), per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti });
-    await this.ctx.storage.put('diario', diario);
+    await this.scriviDiario({ per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti });
     return { mandati: ok, telefoni: dest.length };
   }
 
@@ -563,10 +568,13 @@ export class Avvisi extends DurableObject {
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
   async avvisa(tipo) {
     const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('conto')) || {};
-    if (c.giorno === oggi && c.n >= TETTO_GIORNO) return { fermo: 'tetto' };
-    if (c.ultimo && Date.now() - c.ultimo < PAUSA_MS && tipo !== 'primo') return { fermo: 'pausa' };   // il primo ordine di una persona nuova passa sempre
+    const t = TIPI_GESTORE.includes(tipo) ? tipo : 'ordine';
+    /* (C97) anche gli avvisi fermati finiscono nel diario: Mario vede in Impostazioni → Notifiche perché non è suonato */
+    if (c.giorno === oggi && c.n >= TETTO_GIORNO) { await this.scriviDiario({ per: t, telefoni: 0, esiti: [], fermo: 'tetto' }); return { fermo: 'tetto' }; }
+    // il primo ordine e la richiesta di una persona nuova passano sempre (C97: prima la richiesta si perdeva se cadeva nei 15 secondi)
+    if (c.ultimo && Date.now() - c.ultimo < PAUSA_MS && t !== 'primo' && t !== 'richiesta') { await this.scriviDiario({ per: t, telefoni: 0, esiti: [], fermo: 'pausa' }); return { fermo: 'pausa' }; }
     await this.ctx.storage.put('conto', { giorno: oggi, n: (c.giorno === oggi ? c.n : 0) + 1, ultimo: Date.now() });
-    return this.manda(null, TIPI_GESTORE.includes(tipo) ? tipo : 'ordine');
+    return this.manda(null, t);
   }
 }
 
@@ -775,7 +783,7 @@ export default {
     const av = env.AVVISI.get(env.AVVISI.idFromName('cucina'));
     try {
       if (url.pathname === '/api/chiave' && req.method === 'GET') return json({ chiave: await av.chiavePubblica() });
-      if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato());
+      if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato(url.searchParams.get('e') || ''));
       if (url.pathname === '/api/ultimo' && req.method === 'GET') return json(await av.ultimo(url.searchParams.get('e') || ''));
       if (req.method !== 'POST') return json({ errore: 'metodo' }, 405);
       if (url.pathname === '/api/avvisa') { const b = await req.json().catch(() => null); return json(await av.avvisa(b && b.tipo)); }
