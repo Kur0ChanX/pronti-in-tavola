@@ -1,7 +1,6 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 08/11 · 📕 Aiuto 1 · Regola «un comando raggruppato invece di tanti piccoli» per tutti i progetti (con 3 eccezioni): 1 sì, qui subito + testo per la sessione di RVC + avviso dopo 4 comandi piccoli (consiglio) · 2 solo il testo · 3 lascia stare. Risposta → principale (consegne in `docs/CONSEGNE-PARALLELA-aiuto.md`)
 - 08/11 · 🟡 Principale 28 · Lasciapassare Microsoft: 1 lasciar perdere, solo Piper/Kokoro (consiglio) · 2 lo scrive Mario da un suo computer (la guardia blocca me).
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
