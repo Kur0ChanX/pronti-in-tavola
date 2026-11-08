@@ -1,25 +1,26 @@
-# Consegne della chat parallela «Aiuto 1» (chiusa 08/11 ~11:25, alla soglia)
+# Consegne della chat parallela «Aiuto» (bug) · Aiuto 2 → Aiuto 3
 
-Aperta a mano da Mario 08/11 10:15 (`session_01WTjqUwARtSys2ePd2SL8qw`). Niente sessione nuova: il resto passa alla principale.
+**Già deciso da Mario (non richiedere):** dosi dei piatti a teglia per la teglia da 6, la da 8 la calcola l'app, al kg restano al kg; l'app si aggiorna da sola e riprende dalla stessa schermata; il gesto indietro non chiude l'app; niente artefatto, Mario prova sul sito vero.
+**Da non rifare:** controllo di 253 ricette GZ (C80, fatto); taglio delle foto «a strisce» (C79); numerini delle foto dal nome del file (0.9.47).
+**Cosa preme a Mario adesso:** che le cose che usa funzionino (bug che manda con le foto). Questa catena = sessione dei bug.
 
-## Fatto
-- Numerino della versione → foglio «Aggiornamenti dell'app» con data e ora (C63, online dalla 0.9.29; ogni voce di NOVITA porta `ora:`).
-- Indagine lentezza: hook innocui (0,02-0,2 s); cause = contesto grande, tanti comandi piccoli, giro completo a ogni ritocco, rete chiusa (ora aperta da Mario: accesso completo), Fable più lento di Opus. Altro account: stesso kit e modello, ~11 min a versione contro ~22, lavori più semplici e niente siti bloccati.
-- «Regime leggero» nel `CLAUDE.md` (Mario «1»). C39 era già fatta il 07/11 (voce di Da fare corretta).
-- Errori PT E27, E28.
+Aiuto 2 = `session_01WTjqUxGGtuXRFWUE5Y5Jkz`, aperta a mano da Mario 08/11 ~14:25 («sessione per correggere bug o problemi»), chiusa alla soglia 08/11 ~16:45.
 
-## Da fare (alla principale)
-1. **Prove autonome** (regime leggero): `SOLO=<passo>` oggi NON fa risparmiare tempo: ogni passo da solo ha impiegato 90 s (il limite del mio ciclo), e i passi Monica dipendono da quelli prima (es. 11 e 12). Prima capire cosa gira fuori da `passo()` in `tools/prova.js` (attese, foto, preparazioni fra un passo e l'altro), poi dare a ogni passo il suo stato con `page.evaluate`. Esiti dei primi passi da soli:
-    1 90s OK   benvenuto: nome e cognome alla prima apertura, poi «Ciao»
-    2 90s NO   menù visibile → locator.waitFor: Timeout 30000ms exceeded. | Call log: | [2m  - waiting for locator('.voc
-    3 90s NO   pronti subito visibili → attesi 2 pronti
-    4 90s NO   allergia frutta a guscio → locator.click: Timeout 30000ms exceeded. | Call log: | [2m  - waiting for locat
-    5 90s NO   lasagne particolari: gusto noci, 2 teglie da 8, nota → locator.click: Timeout 30000ms exceeded. | Call log:
-    6 90s NO   polpette al kg: 1,5 kg → locator.click: Timeout 30000ms exceeded. | Call log: | [2m  - waiting for locator
-    7 90s NO   pronto subito: panade → locator.click: Timeout 30000ms exceeded. | Call log: | [2m  - waiting for locator(
-    8 90s NO   carrello: giorno, bonifico, invio → locator.click: Timeout 30000ms exceeded. | Call log: | [2m  - waiting 
-    9 90s NO   due ordini creati (pronti + da preparare) → locator.click: Timeout 30000ms exceeded. | Call log: | [2m  - 
-    10 90s OK   Monica: notifica e guida
-    11 90s NO   Monica: accetta e propone → locator.click: Timeout 30000ms exceeded. | Call log: | [2m  - waiting for loc
-    12 90s NO   Monica: etichette per le vaschette → locator.click: Timeout 30000ms exceeded. | Call log: | [2m  - waitin
-2. **Regola «un comando raggruppato»** per tutti i progetti: Mario 08/11 ~11:30 «Puoi fare in modo di ottimizzarla avendo solo dei pro senza dei contro?» = sì, versione senza contro: si raggruppano SOLO i casi sicuri (letture, cambio + controllo sintassi, fetch/merge/push); le eccezioni restano comandi a sé; il controllo automatico AVVISA e non blocca mai. Poi Mario ~11:35: «No, se ha dei contro non caricarla su RVC, è un'applicazione troppo delicata e importante». Quindi SOLO in Pronti in Tavola, NIENTE testo per il kit né per RVC. Da fare (solo qui): testo pronto per la sessione di RVC (il kit vive lì; mai `add_repo`) con le eccezioni: passo che dipende dal risultato, prove poi commit (RVC E20), comandi rischiosi sui dati veri; più un controllo che avvisa dopo 4 comandi piccoli di fila.
+## Fatto (tutto online, prove complete verdi; controlla: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep VERSIONE_APP`)
+- v0.9.43 C74 dosi a teglia (`spesa.js` sezioneDosi: in memoria restano per porzione, `data-k`); C75 aggiornamento da solo (`app.js` controllaAggiornamento / riavviaQuandoPuoi / riprendiDopoAggiornamento, `sessionStorage` 'pit-ripresa').
+- v0.9.44 C76 cucina guidata vuota: la voce locale (ONNX sul filo principale) bloccava l'animazione `.entra` → niente `entra` sulle viste `cucina:` (`app.js` render), voce dopo 300 ms.
+- v0.9.46 C78 gesto indietro (`app.js` popstate + pagina di guardia); C79 foto a strisce (`ricettario.js` fotoPasso, `style.css` .ric-striscia).
+- v0.9.47 C80 numerini delle foto dal nome GZ (`_strip_1-3`, `_27`); script `tools/controlla-ricette.mjs`.
+- Errori PT E31 (dosi a teglia), E32 (promemoria voci vecchio).
+
+## Prossimi passi
+1. Avvio: titolo «📗 🍝 Aiuto 3 · corregge i bug»; leggere i messaggi di Mario arrivati dopo e le voci C74-C80 di Da fare (aspettano la sua prova).
+2. Idea (chiedere a Mario prima, è lavoro grande): voce locale in un Web Worker (`ort.env.wasm.proxy`), così l'app non si blocca mai mentre parla.
+3. «Carico 100 ricette: 0 fatte» nella foto di Mario 16:09 (Il mio database) con «Motore al lavoro»: controllare se il turbo è fermo (zona della principale: chiederle con `send_message` prima di toccare).
+
+## Note
+- La principale usa gli stessi numeri di versione e di C: prima di ogni versione `git fetch` e guardare `VERSIONE_APP` su origin; in caso di conflitto i miei prendono il numero dopo.
+- `SOLO=` funziona solo per i passi autonomi (stato in `page.evaluate` in testa): dosi, strisce, gesto, aggiornamento lo sono.
+
+## Ultimo messaggio di Mario (parola per parola)
+«hai guardato tutte le ricette se sono ok?»

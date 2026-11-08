@@ -851,6 +851,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('#prova-strisce').screenshot({ path: OUT + '/strisce.png' });   // controllo a occhio: rosso, verde, blu
     const tx = await page.evaluate(() => [...document.querySelectorAll('#prova-strisce img')].map(i => i.style.transform));
     if (tx.join('|') !== 'translateX(0%)|translateX(-33.3333%)|translateX(-66.6667%)') throw new Error('tagli: ' + tx.join('|'));
+    // i numeri dal nome della foto (GZ): striscia «strip_4-6» anche se la frase salta un numero; foto singole «_27» anche senza numerino nella frase
+    const daNome = await page.evaluate(() => {
+      const d = document.getElementById('prova-strisce'), svg = d.querySelector('img').getAttribute('src').split('#')[0];
+      d.innerHTML = fotoPasso({ t: 'Uno [[4]], tre [[6]].', foto: [svg + '#x_strip_4-6.jpg'] }) + fotoPasso({ t: 'Dischi [[25]] e teglia [[26]].', foto: ['a_25.jpg', 'a_26.jpg', 'a_27.jpg'].map(n => svg + '#' + n) });
+      return [...d.querySelectorAll('.num-step')].map(x => x.textContent).join();
+    });
+    if (daNome !== '4,5,6,25,26,27') throw new Error('numeri dal nome della foto: ' + daNome);
     await page.evaluate(() => document.getElementById('prova-strisce').remove());
   });
   await passo('gesto indietro del telefono: torna indietro nell\'app, non la chiude', async () => {   // autonoma

@@ -4,9 +4,9 @@
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
 | Principale | cerchi | 🟢 🟡 🔴 ⚫ | 30 | `session_01WTjqUx82oy6ErYMX4nn4Wx` | |
-| Aiuto | libri | 📗 📒 📕 📓 | 1 | `session_01WTjqUwARtSys2ePd2SL8qw` (parallela, aperta a mano da Mario 08/11 10:15) | 08/11 11:25 |
+| Aiuto | libri | 📗 📒 📕 📓 | 3 | Aiuto 3 (bug), dopo `session_01WTjqUxGGtuXRFWUE5Y5Jkz` (Aiuto 2, chiusa 08/11 16:45) | |
 
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 📗 Aiuto 2 (bug, `01WTjqUxGGtu`) | C74 dosi a teglia da 6, C75 aggiornamento da solo, C76 cucina guidata vuota, C78 gesto indietro, C79 foto a strisce | spesa.js, app.js (fondo, render), ricettario.js (vCucina, fotoPasso), style.css (ric-striscia), data.js NOVITA, tools/prova.js | 08/11 14:30 |
+| 📗 Aiuto 3 (bug) | C74 dosi a teglia da 6, C75 aggiornamento da solo, C76 cucina guidata vuota, C78 gesto indietro, C79 foto a strisce | spesa.js, app.js (fondo, render), ricettario.js (vCucina, fotoPasso), style.css (ric-striscia), data.js NOVITA, tools/prova.js | 08/11 14:30 |
