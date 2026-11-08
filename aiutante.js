@@ -208,7 +208,7 @@ async function inviaAI(testo, voce) {
   AI.msgs.push({ chi: 'lei', t: pi.testo, piano: pi.azioni.length ? pi.azioni : null });
   AI.msgs = AI.msgs.slice(-30);
   if (UI.vista === 'aiutante') { render(); fondoAI(); }
-  if (voce) parlaAI(pi.testo + (pi.azioni.some(x => !controllaAI(x.a).no) ? ' Controlla e tocca Fai.' : ''));
+  if (voce) parlaAI(pi.testo + (pi.azioni.some(x => !controllaAI(x.a).no) ? ' Controlla e tocca Conferma.' : ''));
 }
 /* fa insieme le azioni scelte: un solo salvataggio e un solo Annulla */
 function faiPiano(m) {
@@ -225,9 +225,24 @@ function faiPiano(m) {
   mostraToast(scelte.length === 1 ? 'Fatto' : `Fatte ${scelte.length} cose`, () => { S = JSON.parse(primaS); SPESA = JSON.parse(primaSp); m.esito = 'annullato'; salva(); if (spesa) salvaSpesa(); render(); });
 }
 function fondoAI() { if (UI.vista === 'aiutante') window.scrollTo(0, document.body.scrollHeight); }
+/* voce femminile e naturale (Mario 08/11 «bella voce non robotica, sempre femminile»): tra le voci italiane del telefono
+   prima quelle «naturali» o di rete (più umane), poi i nomi femminili noti; mai una voce maschile se ce n'è una femminile */
+const FEMMINILI = /elsa|alice|federica|paola|isabella|bianca|carla|chiara|giulia|francesca|elena|sofia|google italiano|female|donna|femmin/i;
+const MASCHILI = /luca|cosimo|diego|giorgio|roberto|marco|male|uomo|maschi/i;
+function voceAI() {
+  const vv = (speechSynthesis.getVoices() || []).filter(v => /^it/i.test(v.lang));
+  const punti = v => (FEMMINILI.test(v.name) ? 4 : 0) - (MASCHILI.test(v.name) && !/female/i.test(v.name) ? 6 : 0) + (/natural|neural|enhanced|premium|online/i.test(v.name) ? 3 : 0) + (v.localService === false ? 2 : 0);
+  return vv.sort((a, b) => punti(b) - punti(a))[0] || null;
+}
+if (window.speechSynthesis) speechSynthesis.onvoiceschanged = () => { AI.voce = voceAI(); };
 function parlaAI(t) {
   if (!window.speechSynthesis) return;
-  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = 'it-IT'; speechSynthesis.speak(u); } catch (e) { /* senza voce: resta scritto */ }
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(String(t).replace(/[«»]/g, '')), v = AI.voce || voceAI();
+    u.lang = 'it-IT'; if (v) u.voice = v; u.rate = 1.0; u.pitch = 1.1;
+    speechSynthesis.speak(u);
+  } catch (e) { /* senza voce: resta scritto */ }
 }
 /* microfono: dettatura in italiano, a fine frase parte da sola */
 function ascoltaAI() {
@@ -284,7 +299,7 @@ function fumettoAI(m, i) {
     const fermo = !!m.esito, quante = m.piano.filter(x => x.on && controllaAI(x.a).fai).length;
     h += `<div class="ai-piano">${m.piano.map((x, j) => rigaPiano(x, i, j, fermo)).join('')}</div>`;
     if (m.esito) h += `<small class="ai-esito">${m.esito === 'fatto' ? '✓ Fatto' : m.esito === 'no' ? 'Lasciato stare' : m.esito === 'annullato' ? 'Annullato' : esc(m.esito)}</small>`;
-    else if (quante) h += `<div class="fila ai-faccio"><b>Faccio?</b><button type="button" class="btn piccolo" data-a="ai-si" data-i="${i}">${ico('spunta')}${quante === 1 ? 'Sì, fallo' : `Fai tutte e ${quante}`}</button><button type="button" class="btn chiaro piccolo" data-a="ai-no" data-i="${i}">No</button></div>`;
+    else if (quante) h += `<div class="fila ai-faccio"><b>Controlla e conferma</b><button type="button" class="btn piccolo" data-a="ai-si" data-i="${i}">${ico('spunta')}${quante === 1 ? 'Conferma' : `Conferma tutte e ${quante}`}</button><button type="button" class="btn chiaro piccolo" data-a="ai-no" data-i="${i}">Lascia stare</button></div>`;
   }
   return h + '</div>';
 }

@@ -449,7 +449,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.ai-fum.lei').last().locator('[data-aif$="|prezzo"]').fill('15'); await page.waitForTimeout(900);
     await page.locator('.ai-fum.lei').last().locator('[data-aion$="|1"]').uncheck(); await page.waitForTimeout(300);
     await foto('35-aiutante-piano');
-    if (!(await page.locator('[data-a="ai-si"]', { hasText: 'Fai tutte e 3' }).count())) throw new Error('il pulsante non conta 3 azioni');
+    if (!(await page.locator('[data-a="ai-si"]', { hasText: 'Conferma tutte e 3' }).count())) throw new Error('il pulsante non conta 3 azioni');
     await clic('[data-a="ai-si"]');
     const dopo = await page.evaluate(([pp]) => ({ prezzo: piatto(pp.a).formati.find(f => f.id === pp.f).prezzo, disp: piatto(pp.b).disponibile, pausa: S.impostazioni.pausa.attiva,
       nuovo: (S.piatti.find(x => x.nome === 'Seadas') || {}).controllato }), [pp]);
