@@ -41,6 +41,7 @@ Rispondi SOLO con un oggetto JSON, senza altro testo, con UNA di queste azioni:
 {"azione":"rispondi","testo":"..."} = rispondere a una domanda usando SOLO i DATI (ordini, cosa cucinare, incassi, piatti)
 {"azione":"capito_male","testo":"..."} = non hai capito: chiedi in breve di ripetere
 Regole: un ordine si riconosce dal numero o dal nome del cliente; se ci sono più ordini possibili o manca un dato, usa "capito_male" e chiedi quale.
+Gli ordini con "prova":true sono di prova: non contarli negli incassi né tra le cose da cucinare.
 Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 2 frasi.`;
 function jsonDa(t) {   // il primo oggetto JSON nel testo (toglie eventuali <think>…</think> e ```)
   t = String(t || '').replace(/<think>[\s\S]*?<\/think>/g, '').replace(/```(json)?/g, '');
