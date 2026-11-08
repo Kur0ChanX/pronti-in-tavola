@@ -26,36 +26,60 @@ const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\
 const daB64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
 const json = (dati, stato = 200) => new Response(JSON.stringify(dati), { status: stato, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 
-/* aiutante di Monica (Mario 08/11 «la miglior IA gratuita… iniziami l'assistente per Monica»): Workers AI, piano gratuito */
-const MODELLO_AI = '@cf/zai-org/glm-4.7-flash';
-const TETTO_AI = 150;   // richieste al giorno, ben sotto i 10.000 «neuroni» gratuiti
+/* aiutante di Monica (Mario 08/11 «la miglior IA gratuita… potenzialo al massimo»): Workers AI, piano gratuito.
+   Modello: Qwen 3.8 27B (vede anche le foto; consigliato da Cloudflare il 05/11/2026), se non risponde GLM 4.7 Flash (solo testo). */
+const MODELLO_AI = '@cf/qwen/qwen3.8-27b';
+const MODELLO_RISERVA = '@cf/zai-org/glm-4.7-flash';
+const TETTO_AI = 150;   // richieste al giorno; il limite vero sono i 10.000 «neuroni» gratuiti (finiti → messaggio, nessun costo)
 const ISTRUZIONI_AI = `Sei l'aiutante di cucina di Monica, che cucina da asporto a Olbia e usa l'app «Pronti in Tavola».
-Monica ti scrive o ti detta UNA frase in italiano (a volte con errori di dettatura). Ricevi anche i DATI attuali dell'app in JSON.
-Rispondi SOLO con un oggetto JSON, senza altro testo, con UNA di queste azioni:
-{"azione":"pronto","n":<numero ordine>} = l'ordine è pronto (avvisa il cliente)
-{"azione":"ritirato","n":<numero ordine>} = il cliente l'ha ritirato
-{"azione":"soldi","n":<numero ordine>} = ha ricevuto i soldi di quell'ordine
-{"azione":"disponibile","id":"<id piatto>","si":true|false} = rimettere o togliere un piatto dal menù
-{"azione":"prezzo","id":"<id piatto>","formato":"<id formato>","prezzo":<euro>} = cambiare un prezzo
-{"azione":"spesa","voci":["2 kg farina","ricotta"]} = aggiungere cose alla lista della spesa
-{"azione":"rispondi","testo":"..."} = rispondere a una domanda usando SOLO i DATI (ordini, cosa cucinare, incassi, piatti)
-{"azione":"capito_male","testo":"..."} = non hai capito: chiedi in breve di ripetere
-Regole: un ordine si riconosce dal numero o dal nome del cliente; se ci sono più ordini possibili o manca un dato, usa "capito_male" e chiedi quale.
+Monica ti scrive o ti detta una frase in italiano (a volte con errori di dettatura), a volte con una FOTO. Ricevi i DATI attuali dell'app in JSON e le ultime frasi della conversazione.
+Rispondi SOLO con un oggetto JSON, senza altro testo: {"testo":"<risposta breve>","azioni":[ ...da 0 a 8 azioni... ]}
+Azioni possibili (usa solo queste):
+{"azione":"pronto","n":<n. ordine>}  l'ordine è pronto (avvisa il cliente)
+{"azione":"ritirato","n":<n>}  il cliente l'ha ritirato
+{"azione":"soldi","n":<n>}  ha ricevuto i soldi
+{"azione":"accetta","n":<n>}  accetta un ordine «da accettare»
+{"azione":"rifiuta","n":<n>}  rifiuta un ordine
+{"azione":"proponi","n":<n>,"giorno":"AAAA-MM-GG"}  propone al cliente un altro giorno di ritiro
+{"azione":"disponibile","id":"<id piatto>","si":true|false}  rimette o toglie un piatto dal menù
+{"azione":"prezzo","id":"<id piatto>","formato":"<id formato>","prezzo":<euro>}  cambia un prezzo
+{"azione":"pronti","id":"<id piatto>","qta":<numero>}  cose già pronte oggi (porzioni, pezzi o kg secondo il formato)
+{"azione":"descrizione","id":"<id piatto>","testo":"<frase che fa venire fame, max 120 lettere>"}  cambia la descrizione di un piatto
+{"azione":"nuovo_piatto","nome":"...","cat":"stuzzichini|primi|dolci","modo":"teglie|kg|pz|intera","prezzi":{"t6":..,"t8":..} oppure {"kg":..} {"pz":..} {"intera":..},"descrizione":"..."}  piatto nuovo
+{"azione":"pausa","fino":"AAAA-MM-GG"}  mette in pausa gli ordini fino a quel giorno compreso
+{"azione":"riapri"}  toglie la pausa
+{"azione":"spesa","voci":["2 kg farina","ricotta"]}  aggiunge alla lista della spesa
+{"azione":"whatsapp","n":<n>,"testo":"..."}  prepara un messaggio WhatsApp al cliente di quell'ordine (Monica lo manda lei)
+{"azione":"apri","vista":"ordini|piatti|clienti|impostazioni|spesa"}  porta Monica a una pagina
+{"azione":"idea","testo":"..."}  Monica vuole una funzione che l'app non ha: riassumila per Mario, che la programma
+Regole: un ordine si riconosce dal numero o dal nome del cliente; se è ambiguo o manca un dato non mettere azioni e chiedi nel testo.
+Con più richieste insieme metti più azioni. Per le domande (cosa cucinare, chi ritira, chi deve pagare, incassi) rispondi nel testo usando SOLO i DATI, senza azioni.
+Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna → prezzi o piatti nuovi; foto di un piatto → descrizione o nuovo_piatto.
 Gli ordini con "prova":true sono di prova: non contarli negli incassi né tra le cose da cucinare.
-Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 2 frasi.`;
+Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 3 frasi.`;
 function jsonDa(t) {   // il primo oggetto JSON nel testo (toglie eventuali <think>…</think> e ```)
   t = String(t || '').replace(/<think>[\s\S]*?<\/think>/g, '').replace(/```(json)?/g, '');
   const a = t.indexOf('{'); if (a < 0) return null;
   for (let b = t.lastIndexOf('}'); b > a; b = t.lastIndexOf('}', b - 1)) { try { return JSON.parse(t.slice(a, b + 1)); } catch (e) { /* prova più corto */ } }
   return null;
 }
-async function chiediAI(env, testo, dati) {
-  const r = await env.AI.run(MODELLO_AI, {
-    messages: [{ role: 'system', content: ISTRUZIONI_AI }, { role: 'user', content: `DATI: ${dati}\n\nFRASE DI MONICA: ${testo}` }],
-    max_completion_tokens: 1200, temperature: 0.2
-  });
-  const testoAI = typeof r === 'string' ? r : (r && (r.response ?? (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content))) || '';
-  return jsonDa(typeof testoAI === 'string' ? testoAI : JSON.stringify(testoAI)) || { azione: 'capito_male', testo: 'Non ho capito bene: me lo ridici?', grezzo: JSON.stringify(r).slice(0, 300) };
+const testoDi = r => { const x = typeof r === 'string' ? r : (r && (r.response ?? (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content))) || ''; return typeof x === 'string' ? x : JSON.stringify(x); };
+async function chiediAI(env, testo, dati, storia, foto) {
+  const passate = (Array.isArray(storia) ? storia : []).slice(-6).map(m => ({ role: m && m.chi === 'io' ? 'user' : 'assistant', content: String((m && m.t) || '').slice(0, 400) })).filter(m => m.content);
+  const domanda = `DATI: ${dati}\n\nFRASE DI MONICA: ${testo}${foto ? '\n(Monica ha mandato anche una FOTO)' : ''}`;
+  const ultimo = foto ? { role: 'user', content: [{ type: 'text', text: domanda }, { type: 'image_url', image_url: { url: foto } }] } : { role: 'user', content: domanda };
+  const messaggi = [{ role: 'system', content: ISTRUZIONI_AI }, ...passate, ultimo];
+  let r, modello = MODELLO_AI;
+  try { r = await env.AI.run(MODELLO_AI, { messages: messaggi, max_completion_tokens: 2000, temperature: 0.2, reasoning_effort: 'low' }); }
+  catch (e) {
+    if (/4006|neuron|allocation/i.test(String(e && e.message))) return { testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] };
+    if (foto) return { testo: 'Non riesco a guardare la foto adesso: scrivimi cosa c\'è, per favore.', azioni: [], errore: String(e && e.message || e).slice(0, 200) };
+    modello = MODELLO_RISERVA;
+    r = await env.AI.run(MODELLO_RISERVA, { messages: [messaggi[0], ...passate, { role: 'user', content: domanda }], max_completion_tokens: 1500, temperature: 0.2 });
+  }
+  const j = jsonDa(testoDi(r));
+  if (!j) return { testo: 'Non ho capito bene: me lo ridici?', azioni: [], grezzo: testoDi(r).slice(0, 300), modello };
+  return Object.assign(j, { modello });
 }
 
 /* chi gestisce? Firestore legge gestori/<uid> col token di Google della persona: se risponde 200, è un gestore */
@@ -235,11 +259,12 @@ export default {
       if (url.pathname === '/api/aiutante') {
         const b = await req.json().catch(() => null);
         const testo = String((b && b.testo) || '').trim().slice(0, 400), dati = JSON.stringify((b && b.dati) || {});
-        if (!testo) return json({ errore: 'frase vuota' }, 400);
-        if (dati.length > 60000) return json({ errore: 'dati troppo grandi' }, 413);
+        const foto = typeof (b && b.foto) === 'string' && /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(b.foto) ? b.foto : null;
+        if (!testo && !foto) return json({ errore: 'frase vuota' }, 400);
+        if (dati.length > 60000 || (foto && foto.length > 900000)) return json({ errore: 'dati troppo grandi' }, 413);
         if (!env.AI) return json({ errore: 'AI non collegata' }, 503);
-        if (!(await av.contaAI())) return json({ fermo: 'tetto', azione: 'rispondi', testo: 'Per oggi ho finito le risposte gratuite: riprova domani.' });
-        return json(await chiediAI(env, testo, dati));
+        if (!(await av.contaAI())) return json({ fermo: 'tetto', testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] });
+        return json(await chiediAI(env, testo || 'Guarda la foto.', dati, b.storia, foto));
       }
       if (url.pathname === '/api/agenda') return (await av.agenda(await req.json().catch(() => null))) ? json({ ok: true }) : json({ errore: 'agenda non valida' }, 400);
       return json({ errore: 'non trovato' }, 404);

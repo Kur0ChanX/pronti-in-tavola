@@ -674,3 +674,22 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ai-scrivi input { flex: 1; min-width: 0; min-height: 52px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--riga); background: #FFF; font: inherit; font-size: 1rem; color: var(--inchiostro); }
 .ai-scrivi input:focus { outline: none; border-color: var(--vino); }
 @media (prefers-reduced-motion: reduce) { .ai-mic.acceso, .ai-pensa span { animation: none; } }
+/* aiutante avanzato: piano «prima → dopo» modificabile, foto */
+.ai-piano { display: grid; gap: 8px; margin-top: 10px; }
+.ai-azione { display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap; padding: 10px 12px; border-radius: 12px; background: #FFF; border: 1px solid var(--riga); }
+.ai-azione.spenta { opacity: .55; }
+.ai-azione.no { background: #FBEFE6; color: #5A3410; }
+.ai-azione.no > svg { width: 18px; height: 18px; flex: none; margin-top: 2px; color: var(--allarme); }
+.ai-spunta input { width: 22px; height: 22px; margin: 2px 0 0; accent-color: var(--vino); }
+.ai-cosa { flex: 1; min-width: 0; display: grid; gap: 2px; }
+.ai-prima { color: var(--tenue); text-decoration: line-through; }
+.ai-dopo { color: var(--basilico); font-weight: 800; }
+.ai-campi { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 6px; }
+.ai-campo { display: grid; gap: 2px; flex: 1; min-width: 120px; }
+.ai-campo small { color: var(--tenue); font-weight: 700; }
+.ai-campo input { min-height: 44px; padding: 0 12px; border-radius: 10px; border: 1.5px solid var(--riga); font: inherit; background: #FFF; color: var(--inchiostro); }
+.ai-fum img { display: block; max-width: 180px; border-radius: 12px; margin-bottom: 6px; }
+.ai-mic.chiaro { background: var(--foglio); color: var(--vino); }
+.ai-foto-pronta { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; background: var(--foglio); border: 1px dashed var(--grano); }
+.ai-foto-pronta img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+.ai-foto-pronta span { flex: 1; font-weight: 700; color: var(--tenue); }
