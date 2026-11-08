@@ -29,7 +29,7 @@ const json = (dati, stato = 200) => new Response(JSON.stringify(dati), { status:
 /* aiutante di Monica (Mario 08/11 «la miglior IA gratuita… potenzialo al massimo»): Workers AI, piano gratuito.
    Modello: Qwen 3.8 27B (vede anche le foto; consigliato da Cloudflare il 05/11/2026), se non risponde GLM 4.7 Flash (solo testo). */
 const MODELLO_AI = '@cf/qwen/qwen3.8-27b';
-const MODELLO_RISERVA = '@cf/zai-org/glm-4.7-flash';
+const RISERVE = ['@cf/google/gemma-4-26b-a4b-it', '@cf/zai-org/glm-4.7-flash'];   // consigliati da Cloudflare (05/11/2026), stesso account
 const TETTO_AI = 150;   // richieste al giorno; il limite vero sono i 10.000 «neuroni» gratuiti (finiti → messaggio, nessun costo)
 const ISTRUZIONI_AI = `Sei l'aiutante di cucina di Monica, che cucina da asporto a Olbia e usa l'app «Pronti in Tavola».
 Monica ti scrive o ti detta una frase in italiano (a volte con errori di dettatura), a volte con una FOTO. Ricevi i DATI attuali dell'app in JSON e le ultime frasi della conversazione.
@@ -77,8 +77,13 @@ async function chiediAI(env, testo, dati, storia, foto) {
   catch (e) {
     if (/4006|neuron|allocation/i.test(String(e && e.message))) return { testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] };
     if (foto) return { testo: 'Non riesco a guardare la foto adesso: scrivimi cosa c\'è, per favore.', azioni: [], errore: String(e && e.message || e).slice(0, 200) };
-    modello = MODELLO_RISERVA;
-    r = await env.AI.run(MODELLO_RISERVA, { messages: [messaggi[0], ...passate, { role: 'user', content: domanda }], max_completion_tokens: 1500, temperature: 0.2 });
+    /* ponte automatico (Mario 08/11): se il modello principale non risponde, provo gli altri gratuiti in fila */
+    const soloTesto = [messaggi[0], ...passate, { role: 'user', content: domanda }];
+    for (const m of RISERVE) {
+      try { r = await env.AI.run(m, { messages: soloTesto, max_completion_tokens: 1500, temperature: 0.2 }); modello = m; break; }
+      catch (e2) { if (/4006|neuron|allocation/i.test(String(e2 && e2.message))) return { testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] }; }
+    }
+    if (!r) return { testo: 'Adesso l\'aiutante non risponde: riprova tra qualche minuto.', azioni: [] };
   }
   const j = jsonDa(testoDi(r));
   if (!j) return { testo: 'Non ho capito bene: me lo ridici?', azioni: [], grezzo: testoDi(r).slice(0, 300), modello };
