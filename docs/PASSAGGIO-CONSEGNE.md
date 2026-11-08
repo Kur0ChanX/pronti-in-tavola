@@ -35,7 +35,7 @@ Aperta dalla #19 con `create_session` (catena 2). Nessuna sveglia attiva.
 
 ## Prossimi passi
 1. Avvio: titolo verde; ricorda a Mario le righe di «Aspetta Mario» e le foto da mandare (lucchetto, «Sono qui»).
-2. C48 aiutante: FATTO dalla #21 (v0.9.4, `aiutante.js`, AI collegata, giro `sito.yml` verde). Resta: la prova di Mario con l'AI vera; se una risposta non si legge, in console c'è `aiutante: risposta non letta` (campo `grezzo`) → ritoccare `ISTRUZIONI_AI` in `worker.js`.
+2. C48 aiutante: FATTO dalla #21 (v0.9.5 potenziato: `controllaAI` per azione, `pianoDa`, `faiPiano` con un solo Annulla, foto `fotoAI`, server Qwen 3.8 `@cf/qwen/qwen3.8-27b` con riserva GLM 4.7 Flash; attenzione: Cloudflare spegne 24 modelli il 20/11/2026, controllare che GLM 4.7 Flash non sia tra quelli; `aiutante.js`, AI collegata, giro `sito.yml` verde). Resta: la prova di Mario con l'AI vera; se una risposta non si legge, in console c'è `aiutante: risposta non letta` (campo `grezzo`) → ritoccare `ISTRUZIONI_AI` in `worker.js`.
 3. Aspetta le foto di Mario: lucchetto, «Sono qui», archivio prove, Impostazioni a voci, vapore, swipe barra, forno, Area riservata.
 
 ## Domande aperte
