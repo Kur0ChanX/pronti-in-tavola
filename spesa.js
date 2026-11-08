@@ -460,9 +460,11 @@ function costoPiatto(p) {
   if (!Object.keys(SPESA.dosi[p.id] || {}).length) return '';
   const quante = f => f.tipo === 'teglia' ? (f.porzioni || (f.id === 't8' ? 8 : 6)) : 1;   // come basiRiga
   let h = `<span class="etichetta" style="font-weight:800">Quanto ti costa</span>`;
-  if (!tot) return h + `<span class="tenue piccolo">Scrivi i prezzi degli ingredienti nella lista della spesa (tocca la matita di un ingrediente): qui vedi quanto ti costa e quanto ti resta.</span>`;
+  /* prezzi scritti QUI, senza cercare la matita nella spesa (Mario 08/11 ~15:20 «la matita dov'è?»): un tasto per ogni ingrediente senza prezzo apre lo stesso foglio della spesa */
+  const tasti = ids => `<div class="fila" style="flex-wrap:wrap;gap:6px;margin-top:6px">${ids.map(i => `<button type="button" class="chip" data-a="sp-ing" data-ing="${esc(i)}">${ico('matita')}${esc(ING(i).n)}</button>`).join('')}</div>`;
+  if (!tot) return h + `<span class="tenue piccolo">Tocca un ingrediente e scrivi quanto lo paghi: qui vedi quanto ti costa e quanto ti resta.</span>${tasti(senza)}`;
   h += p.formati.map(f => { const c = tot * quante(f), resta = (f.prezzo || 0) - c;
     return `<div class="fila" style="justify-content:space-between"><span>${esc(f.nome)}: ti costa <b>${euro(c)}</b></span><span class="${resta < 0 ? 'allarme' : 'tenue'}">vendi a ${euro(f.prezzo)} · ti restano <b>${euro(resta)}</b></span></div>`; }).join('');
-  if (senza.length) h += `<span class="tenue piccolo">Senza prezzo (non conta): ${esc(senza.map(i => ING(i).n.toLowerCase()).join(', '))}.</span>`;
+  if (senza.length) h += `<span class="tenue piccolo">Senza prezzo (non contano ancora), tocca per scriverlo:</span>${tasti(senza)}`;
   return h;
 }

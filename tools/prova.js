@@ -331,6 +331,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await q.inputValue() !== '510') throw new Error('dose mascarpone per la teglia da 6 (85 × 6): ' + await q.inputValue());
     if (!(await page.locator('.formato-riga', { hasText: 'teglia da 8: 680 g' }).count())) throw new Error('manca la teglia da 8 calcolata');
     // costo: mascarpone 2,50 € per 250 g → 85 g = 0,85 € a porzione → teglia da 6 = 5,10 € (gli altri senza prezzo)
+    // senza prezzi: un tasto per ingrediente apre il foglio del prezzo QUI (Mario 08/11 «la matita dov'è?»)
+    await page.evaluate(() => { window._prezzoM = SPESA.ing.mascarpone; SPESA.ing.mascarpone = Object.assign({}, SPESA.ing.mascarpone, { prezzo: 0 }); render(); });
+    await clic('[data-a="sp-ing"][data-ing="mascarpone"]');
+    if (!(await page.locator('.foglio [data-campo="sp.prezzo"][data-ing="mascarpone"]').count())) throw new Error('il tasto dell\'ingrediente non apre il prezzo');
+    await clic('.foglio [data-a="chiudi"]');
+    await page.evaluate(() => { SPESA.ing.mascarpone = window._prezzoM; render(); });
     await page.evaluate(() => { SPESA.ing.mascarpone = Object.assign({}, SPESA.ing.mascarpone, { prezzo: 2.5 }); render(); });
     if (!(await page.locator('.fila', { hasText: 'ti costa 5,10' }).count())) throw new Error('costo del tiramisù: ' + await page.locator('.scheda', { hasText: 'Quanto ti costa' }).innerText());
     await q.fill('600'); await q.dispatchEvent('change'); await foto('21-dosi');

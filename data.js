@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.48';
+const VERSIONE_APP = '0.9.49';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.49', data: '08/11/2026',
+    migliorato: ['Quanto ti costa un piatto: i prezzi si scrivono lì, toccando l\'ingrediente (prima diceva di cercare una matita nella lista della spesa)'] },
   { v: '0.9.48', data: '08/11/2026',
     nuovo: ['Per Mario: il numero della versione è sempre in vista in alto a destra, con l\'ora in piccolo; un tocco apre gli aggiornamenti'],
     corretto: ['Aggiornamenti dell\'app: l\'ora di ogni versione è quella vera, presa da sola quando l\'app va online (prima era scritta a mano e poteva sbagliare)'] },
