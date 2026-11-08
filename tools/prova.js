@@ -900,6 +900,43 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (daNome !== '4,5,6,25,26,27') throw new Error('numeri dal nome della foto: ' + daNome);
     await page.evaluate(() => document.getElementById('prova-strisce').remove());
   });
+  await passo('ricettario (C84): Indietro e gesto tornano allo stesso punto dell\'elenco; tasto fisso «🗄 Database» ↔ «⬆ Ricette»', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'monica'; S.impostazioni.ricettario = true; UI.foglio = null; RIC.voceAutoFatto = true;
+      RIC.chiedi = async c => c.cerca ? { ricette: [] } : c.db ? { db: null } : { ricetta: null }; vai('home'); vai('ricettario'); });
+    await page.locator('.ric-elenco .ric-carta').nth(20).waitFor({ timeout: 8000 });
+    // 1) scendo nell'elenco, apro una ricetta, Indietro → stesso punto
+    await page.evaluate(() => window.scrollTo(0, 2500)); await page.waitForTimeout(300);
+    const y0 = await page.evaluate(() => window.scrollY); if (y0 < 2000) throw new Error('elenco troppo corto: ' + y0);
+    const carta = await page.evaluate(() => { const c = [...document.querySelectorAll('.ric-elenco .ric-carta')].find(b => { const r = b.getBoundingClientRect(); return r.top > 80 && r.bottom < innerHeight - 100; }); return c && c.dataset.v; });
+    if (!carta) throw new Error('nessuna ricetta visibile a metà elenco');
+    await clic(`.ric-carta[data-v="${carta}"]`); await page.waitForTimeout(400);
+    if (await page.evaluate(() => UI.vista) !== carta) throw new Error('non si apre la ricetta: ' + await page.evaluate(() => UI.vista));
+    await page.evaluate(() => window.scrollTo(0, 600));   // dentro la ricetta scorro (come Mario quando modifica)
+    await clic('#app .testata .indietro'); await page.waitForTimeout(1100);
+    let y1 = await page.evaluate(() => [UI.vista, window.scrollY]);
+    if (y1[0] !== 'ricettario' || Math.abs(y1[1] - y0) > 40) throw new Error(`con «Indietro» torna a ${y1[1]} invece di ${y0} (${y1[0]})`);
+    // 2) stessa cosa col gesto del telefono
+    await clic(`.ric-carta[data-v="${carta}"]`); await page.waitForTimeout(400);
+    await page.goBack(); await page.waitForTimeout(1100);
+    y1 = await page.evaluate(() => [UI.vista, window.scrollY]);
+    if (y1[0] !== 'ricettario' || Math.abs(y1[1] - y0) > 40) throw new Error(`col gesto torna a ${y1[1]} invece di ${y0} (${y1[0]})`);
+    // 3) dalla Home si entra in cima (si torna indietro solo con Indietro)
+    await page.evaluate(() => { vai('home'); vai('ricettario'); }); await page.waitForTimeout(300);
+    if (await page.evaluate(() => window.scrollY) > 40) throw new Error('entrando dalla Home non parte dall\'alto');
+    // 4) tasto fisso: porta al database, poi «⬆ Ricette» riporta su
+    const b = page.locator('.ric-salta'); if (await b.textContent() !== '🗄 Database') throw new Error('tasto: ' + await b.textContent());
+    if (!(await b.isVisible())) throw new Error('il tasto «🗄 Database» non si vede');
+    await foto('84-tasto-database');
+    await b.click(); await page.waitForTimeout(1500);
+    const top = await page.evaluate(() => document.querySelector('.ric-db-box').getBoundingClientRect().top);
+    if (top < -5 || top > 120) throw new Error('il tasto non porta al riquadro del database: ' + Math.round(top));
+    if (await b.textContent() !== '⬆ Ricette') throw new Error('al database il tasto dice: ' + await b.textContent());
+    await foto('84-tasto-ricette');
+    await b.click(); await page.waitForTimeout(1500);
+    if (await page.evaluate(() => window.scrollY) > 5) throw new Error('«⬆ Ricette» non riporta in cima');
+    if (await b.textContent() !== '🗄 Database') throw new Error('in cima il tasto dice: ' + await b.textContent());
+    await page.evaluate(() => vai('home'));
+  });
   await passo('gesto indietro del telefono: torna indietro nell\'app, non la chiude', async () => {   // autonoma
     const url = page.url();
     await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; vai('home'); vai('piatti'); vai('piatto:tiramisu'); });
