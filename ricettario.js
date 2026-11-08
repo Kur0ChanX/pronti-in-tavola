@@ -441,7 +441,8 @@ function vCucina(id) {
       <button type="button" class="btn chiaro" data-a="ric-ripeti">🔊 Ripeti</button>
       ${ultimo ? `<button type="button" class="btn pieno" data-a="ric-fine">Finito!</button>` : `<button type="button" class="btn pieno" data-a="ric-passo" data-v="1">Avanti</button>`}</div>
     <label class="interr"><span>Leggi i passi ad alta voce<small>La voce legge ogni passo quando lo apri.</small></span><input type="checkbox" data-a="ric-voce" ${c.voce ? 'checked' : ''}></label>
-    ${typeof vociIt === 'function' ? `<label>Voce che legge<select id="ric-voce-scelta">${(typeof VOCI_VERE !== 'undefined' ? VOCI_VERE : []).map(([k, n]) => `<option value="${k}" ${sceltaVoce() === k ? 'selected' : ''}>${n}</option>`).join('')}${vociIt().map(v => `<option value="${esc(v.name)}" ${sceltaVoce() === v.name ? 'selected' : ''}>${esc(v.name.replace(/^(Microsoft|Google)\s*/i, '').replace(/\s*\(.*\)$/, ''))}${v.localService === false ? ' · del telefono, online' : ' · del telefono'}</option>`).join('')}</select></label>` : ''}
+    ${typeof vociIt === 'function' ? `<label>Voce che legge<select id="ric-voce-scelta">${(typeof VOCI_VERE !== 'undefined' ? VOCI_VERE : []).concat(typeof vociLocali === 'function' ? vociLocali() : []).map(([k, n]) => `<option value="${k}" ${sceltaVoce() === k ? 'selected' : ''}>${n}</option>`).join('')}${vociIt().map(v => `<option value="${esc(v.name)}" ${sceltaVoce() === v.name ? 'selected' : ''}>${esc(v.name.replace(/^(Microsoft|Google)\s*/i, '').replace(/\s*\(.*\)$/, ''))}${v.localService === false ? ' · del telefono, online' : ' · del telefono'}</option>`).join('')}</select></label>` : ''}
+    ${vociLocaleRiga()}
     ${RiconosciRic ? `<label class="interr"><span>🎙 Mani libere${RIC.rec ? ' · <b>ti ascolto</b>' : ''}<small>Dopo ogni passo la voce si ferma e aspetta. Di': «avanti», «indietro», «ripeti», «timer», «quanto manca», «ingredienti», «finito», «stop».</small></span><input type="checkbox" data-a="ric-mani" ${c.mani ? 'checked' : ''}></label>` : ''}`;
   return h + '</main>';
 }
@@ -463,6 +464,15 @@ async function preparaVociRic(r) {
   let n = 0;
   for (const t of testiVoceRic(r)) { if (!(await scaricaVoce(t))) break; n++; }   // al primo errore mi fermo (Microsoft giù): riprovo la prossima volta
   return n;
+}
+/* voce sul telefono scelta: dice se è scaricata; se no, «⬇️ Scarica la voce (N MB)» con la barra (Mario 08/11) */
+function vociLocaleRiga() {
+  const k = sceltaVoce(), M = typeof motoreLocale === 'function' && motoreLocale(k); if (!M) return '';
+  const st = statoVoceLocale(k, () => { if (/^cucina:/.test(UI.vista)) render(); }), sc = RIC.scaricoVoce;
+  if (sc && sc.k === k) return `<p class="tenue ric-voce-stato">⬇️ Scarico la voce… <b>${Math.round(sc.p * 100)}%</b><progress max="100" value="${Math.round(sc.p * 100)}" style="width:100%"></progress><small>Resta sul telefono: dopo parla anche senza rete.</small></p>`;
+  if (st === true) return '<p class="tenue ric-voce-stato">✅ Voce sul telefono: parla anche senza rete.</p>';
+  if (st === false) return `<p class="ric-voce-stato"><button type="button" class="btn chiaro pieno" data-a="ric-voce-scarica">⬇️ Scarica la voce (${M.mb(k)} MB, una volta sola)</button><small class="tenue">Meglio col Wi-Fi. Finché non è scaricata legge la voce del telefono.</small></p>`;
+  return '<p class="tenue ric-voce-stato">Controllo se la voce è sul telefono…</p>';
 }
 function leggiPasso() {
   const c = UI.cucina, r = c && ricetta(c.id);
@@ -758,6 +768,15 @@ Object.assign(A, {
     render(); window.scrollTo(0, 0); leggiPasso();
   },
   'ric-play'(el) { const id = el.dataset.v; const c = UI.cucina && UI.cucina.id === id ? UI.cucina : (UI.cucina = { id, passo: 0, voce: true }); c.voce = true; c.leggi = true; vai('cucina:' + id); },   // ▶️: entra in cucina e legge subito (anche tornando)
+  'ric-voce-scarica'() {
+    const k = sceltaVoce(), M = typeof motoreLocale === 'function' && motoreLocale(k); if (!M || (RIC.scaricoVoce && RIC.scaricoVoce.k === k)) return;
+    RIC.scaricoVoce = { k, p: 0 };
+    const mostra = () => { const b = document.querySelector('.ric-voce-stato b'), pr = document.querySelector('.ric-voce-stato progress'); if (b && pr) { b.textContent = Math.round(RIC.scaricoVoce.p * 100) + '%'; pr.value = Math.round(RIC.scaricoVoce.p * 100); } else if (/^cucina:/.test(UI.vista)) render(); };
+    render();
+    M.scarica(k, p => { if (RIC.scaricoVoce) { RIC.scaricoVoce.p = p; mostra(); } })
+      .then(() => { AI.localiPronte[k] = true; RIC.scaricoVoce = null; mostraToast('✅ Voce scaricata: da ora parla anche senza rete.'); if (/^cucina:/.test(UI.vista)) { render(); leggiPasso(); } })
+      .catch(e => { RIC.scaricoVoce = null; AI.localiPronte[k] = false; mostraToast('Non riesco a scaricare la voce (' + (e && e.message ? e.message : 'rete') + '). Riprova col Wi-Fi.'); if (/^cucina:/.test(UI.vista)) render(); });
+  },
   'ric-ripeti'() { if (UI.cucina) { const v = UI.cucina.voce; UI.cucina.voce = true; leggiPasso(); UI.cucina.voce = v; } },
   'ric-mani'(el) { const c = UI.cucina; if (!c) return; c.mani = el.checked; if (c.mani) { c.voce = true; leggiPasso(); } else fermaAscolto(); render(); },
   'ric-voce'(el) { if (UI.cucina) { UI.cucina.voce = el.checked; if (!el.checked && typeof fermaVoce === 'function') fermaVoce(); if (!el.checked && window.speechSynthesis) speechSynthesis.cancel(); } },

@@ -594,6 +594,21 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('[data-a="ric-timer"]').click({ timeout: 3000 }); await page.waitForTimeout(1200);
     if (!/Mancano/.test(await page.locator('[data-a="ric-timer"]').innerText())) throw new Error('il timer non parte');
     await foto('32-cucina-guidata');
+    // voci sul telefono (C61, Piper/Kokoro): voce scelta non scaricata → tasto «Scarica (N MB)» → barra → ✅ e legge; Microsoft giù → ripiega sulla voce scaricata
+    await page.evaluate(() => {
+      window._piperVero = VociLocali.piper; VociLocali.piper = { voci: [['piper:paola', 'Paola · sul telefono (Piper)']], mb: () => 93, pronta: async () => !!window._paolaOk, scarica: (k, av) => new Promise(ok => { av(0.5); setTimeout(() => { window._paolaOk = true; av(1); ok(); }, 150); }), parla: async () => { window._paolaDetto = (window._paolaDetto || 0) + 1; return new Blob([new Uint8Array(44)], { type: 'audio/wav' }); }, libera() {} };
+      AI.localiPronte = {}; localStorage.setItem('pit-voce', 'piper:paola'); render();
+    });
+    await page.waitForTimeout(200);
+    if (!(await page.locator('#ric-voce-scelta option[value="piper:paola"]').count())) throw new Error('Paola (Piper) non è fra le voci');
+    if (!/93 MB/.test(await page.locator('[data-a="ric-voce-scarica"]').innerText({ timeout: 2000 }))) throw new Error('manca «Scarica la voce (93 MB)»');
+    await clic('[data-a="ric-voce-scarica"]'); await page.waitForTimeout(400);
+    if (!(await page.locator('.ric-voce-stato', { hasText: 'Voce sul telefono' }).count())) throw new Error('dopo lo scarico non dice ✅ Voce sul telefono');
+    if (!(await page.evaluate(() => window._paolaDetto >= 1))) throw new Error('la voce scaricata non legge il passo');
+    await page.evaluate(() => { localStorage.setItem('pit-voce', 'edge:isabella'); AI.voceNo = false; AI.voceAvvisata = true; Dati.token = async () => 'x'; window._fetchVero = fetch; fetch = async () => ({ ok: false, status: 403, headers: new Headers() }); AI.cacheVoce = new Map(); window._paolaDetto = 0; parlaAI('Prova di ripiego.'); });
+    await page.waitForTimeout(400);
+    if (!(await page.evaluate(() => window._paolaDetto >= 1))) throw new Error('Microsoft giù: non ripiega sulla voce scaricata');
+    await page.evaluate(() => { fetch = window._fetchVero; VociLocali.piper = window._piperVero; AI.voceNo = false; AI.localiPronte = {}; localStorage.removeItem('pit-voce'); });
     // due timer insieme: quello del passo e uno veloce; il primo si ferma da solo, l'altro resta
     await clic('[data-a="ric-altro"]'); await clic('[data-a="ric-timer-libero"][data-v="5"]');
     await page.evaluate(() => vai('home')); await page.waitForTimeout(1200);

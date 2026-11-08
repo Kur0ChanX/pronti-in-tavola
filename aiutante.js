@@ -251,6 +251,40 @@ function frasiVoce(t) {
    Scelta in «Voce che legge» (pit-voce = «edge:isabella», «edge:elsa»…); se il server non risponde si usa la voce del telefono. */
 const VOCI_VERE = [['edge:isabella', 'Isabella · voce vera'], ['edge:elsa', 'Elsa · voce vera'], ['edge:giuseppe', 'Giuseppe · voce vera'], ['edge:diego', 'Diego · voce vera']];
 const sceltaVoce = () => { try { return localStorage.getItem('pit-voce') || 'edge:isabella'; } catch (e) { return 'edge:isabella'; } };
+/* VOCI SUL TELEFONO (Mario 08/11 «Kokoro e Piper… integrali»): voce-piper.js e voce-kokoro.js espongono window.VociLocali.<motore>
+   = { voci: [[chiave, nome]], mb(chiave), pronta(chiave), scarica(chiave, avanzamento), parla(testo, chiave) → Blob wav, libera() }.
+   Scelta «piper:paola», «kokoro:sara»… in pit-voce; si scaricano una volta (50-100 MB) e parlano anche senza rete. */
+const motoreLocale = k => { const m = /^(piper|kokoro):/.exec(k || ''); return m && window.VociLocali && window.VociLocali[m[1]] ? window.VociLocali[m[1]] : null; };
+const vociLocali = () => { const V = window.VociLocali || {}; return Object.keys(V).flatMap(m => V[m].voci || []); };
+AI.localiPronte = AI.localiPronte || {};   // chiave → true/false, riempito piano piano da statoVoceLocale
+function statoVoceLocale(k, poi) {
+  const M = motoreLocale(k); if (!M) return false;
+  if (k in AI.localiPronte) return AI.localiPronte[k];
+  AI.localiPronte[k] = undefined;
+  M.pronta(k).then(ok => { AI.localiPronte[k] = !!ok; if (poi) poi(); }).catch(() => { AI.localiPronte[k] = false; if (poi) poi(); });
+  return undefined;
+}
+const voceLocalePronta = () => Object.keys(AI.localiPronte).find(k => AI.localiPronte[k] === true) || '';
+async function parlaLocale(t, scelta, fine, giro) {
+  const M = motoreLocale(scelta), testo = frasiVoce(t).join(' ');
+  if (!testo) { if (fine) fine(); return; }
+  try {
+    if (!(await M.pronta(scelta))) throw new Error('non scaricata');
+    AI.localiPronte[scelta] = true;
+    const b = await M.parla(testo, scelta);
+    if (AI.giroVoce !== giro) return;
+    const u = URL.createObjectURL(b), a = AI.audio = new Audio(u);
+    a.onended = () => { URL.revokeObjectURL(u); if (AI.giroVoce === giro) { AI.audio = null; if (fine) fine(); } };
+    a.onerror = () => { URL.revokeObjectURL(u); if (AI.giroVoce === giro) parlaTelefono(t, fine); };
+    await a.play();
+  } catch (e) {
+    if (AI.giroVoce !== giro) return;
+    if (!AI.localeAvvisata && typeof mostraToast === 'function') { AI.localeAvvisata = true; mostraToast(/non scaricata/.test(e.message) ? 'La voce scelta non è ancora sul telefono: scaricala da «Voce che legge». Per ora legge la voce del telefono.' : 'La voce sul telefono non riesce a leggere: per ora legge la voce del telefono.'); }
+    parlaTelefono(t, fine);
+  }
+}
+/* ripiego quando Microsoft non risponde: prima una voce scaricata sul telefono, poi quella del telefono */
+function ripiegoVoce(t, fine, giro) { const k = voceLocalePronta(); if (k) parlaLocale(t, k, fine, giro); else parlaTelefono(t, fine); }
 function fermaVoce() {
   AI.giroVoce = (AI.giroVoce || 0) + 1;
   if (AI.audio) { try { AI.audio.pause(); } catch (e) { /* già ferma */ } AI.audio = null; }
@@ -275,7 +309,8 @@ async function blobVoce(f, v) {
 }
 /* scarica in anticipo la lettura di un testo con la voce scelta (niente se è scelta la voce del telefono) */
 async function scaricaVoce(t) {
-  const scelta = sceltaVoce(); if (!/^edge:/.test(scelta) || AI.voceNo) return false;
+  const scelta = sceltaVoce(); if (motoreLocale(scelta)) return true;   // la voce è già sul telefono: niente da scaricare
+  if (!/^edge:/.test(scelta) || AI.voceNo) return false;
   const testo = frasiVoce(t).join(' '); if (!testo) return true;
   try { await blobVoce(testo, scelta.slice(5)); return true; } catch (e) { return false; }
 }
@@ -289,6 +324,7 @@ async function audioVero(f, v) {
 }
 function parlaAI(t, fine) {
   const scelta = sceltaVoce();
+  if (motoreLocale(scelta)) { fermaVoce(); parlaLocale(t, scelta, fine, AI.giroVoce); return; }
   if (/^edge:/.test(scelta) && !AI.voceNo && typeof Dati !== 'undefined' && Dati.token) {
     fermaVoce();
     const giro = AI.giroVoce, ff = frasiVoce(t), testo = ff.join(' ');
@@ -299,7 +335,7 @@ function parlaAI(t, fine) {
       a.onended = () => { if (AI.giroVoce === giro) { AI.audio = null; if (fine) fine(); } };
       a.onerror = () => { if (AI.giroVoce === giro) parlaTelefono(t, fine); };
       return a.play();
-    }).catch(() => { if (AI.giroVoce !== giro) return; if (!AI.voceAvvisata && typeof mostraToast === 'function') { AI.voceAvvisata = true; mostraToast('La voce di Microsoft non risponde: per ora legge la voce del telefono (sempre la stessa).'); } AI.voceNoFino = Date.now() + 120000; AI.voceNo = true; setTimeout(() => { AI.voceNo = false; }, 120000); parlaTelefono(t, fine); });
+    }).catch(() => { if (AI.giroVoce !== giro) return; if (!AI.voceAvvisata && typeof mostraToast === 'function') { AI.voceAvvisata = true; mostraToast(voceLocalePronta() ? 'La voce di Microsoft non risponde: legge la voce scaricata sul telefono.' : 'La voce di Microsoft non risponde: per ora legge la voce del telefono (sempre la stessa).'); } AI.voceNoFino = Date.now() + 120000; AI.voceNo = true; setTimeout(() => { AI.voceNo = false; }, 120000); ripiegoVoce(t, fine, giro); });
     return;
   }
   parlaTelefono(t, fine);
