@@ -413,7 +413,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const scrivi = async t => { await page.fill('#ai-testo', t); await page.press('#ai-testo', 'Enter'); await page.waitForTimeout(400); };
     const o = await page.evaluate(() => { const o = S.ordini.find(x => x.stato === 'accettato' && !x.archiviato); return { id: o.id, n: o.n }; });
     await finta({ azione: 'pronto', n: o.n }); await scrivi('l\'ordine è pronto');
-    if (!(await page.locator('.ai-fum.lei', { hasText: `Segno pronto l'ordine n. ${o.n}` }).count())) throw new Error('niente proposta «Segno pronto»');
+    if (!(await page.locator('.ai-fum.lei', { hasText: `Ordine n. ${o.n} di` }).filter({ hasText: 'pronto' }).count())) throw new Error('niente proposta «pronto»');
     if (await page.evaluate(id => S.ordini.find(x => x.id === id).stato, o.id) !== 'accettato') throw new Error('ha cambiato prima del «Sì»');
     await foto('33-aiutante');
     await clic('[data-a="ai-si"]');
@@ -438,6 +438,25 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.evaluate(() => SPESA.mia.some(v => /semola/i.test(v.n))))) throw new Error('la farina non è nella spesa');
     await page.evaluate(() => { SPESA.mia = SPESA.mia.filter(v => !/semola/i.test(v.n)); salvaSpesa(); });
     await foto('34-aiutante-fine');
+    /* piano di più azioni: anteprima prima → dopo, Monica corregge un prezzo e ne toglie una, poi un solo Annulla */
+    const pp = await page.evaluate(() => { const v = visibili().filter(x => x.disponibile); const f = v[0].formati[0]; return { a: v[0].id, f: f.id, prima: f.prezzo, b: v[1].id }; });
+    const fino = await page.evaluate(() => iso(new Date(Date.now() + 3 * 864e5)));
+    await finta({ testo: 'Ecco cosa farei:', azioni: [{ azione: 'prezzo', id: pp.a, formato: pp.f, prezzo: 99 }, { azione: 'disponibile', id: pp.b, si: false },
+      { azione: 'pausa', fino }, { azione: 'nuovo_piatto', nome: 'Seadas', cat: 'dolci', modo: 'pz', prezzi: { pz: 3.5 } }, { azione: 'inventata' }] });
+    await scrivi('fai tutto');
+    if (await page.locator('.ai-fum.lei').last().locator('.ai-azione').count() !== 4) throw new Error('il piano non mostra 4 righe');
+    if (!(await page.locator('.ai-fum.lei').last().locator('.ai-prima').first().count())) throw new Error('manca il «prima»');
+    await page.locator('.ai-fum.lei').last().locator('[data-aif$="|prezzo"]').fill('15'); await page.waitForTimeout(900);
+    await page.locator('.ai-fum.lei').last().locator('[data-aion$="|1"]').uncheck(); await page.waitForTimeout(300);
+    await foto('35-aiutante-piano');
+    if (!(await page.locator('[data-a="ai-si"]', { hasText: 'Fai tutte e 3' }).count())) throw new Error('il pulsante non conta 3 azioni');
+    await clic('[data-a="ai-si"]');
+    const dopo = await page.evaluate(([pp]) => ({ prezzo: piatto(pp.a).formati.find(f => f.id === pp.f).prezzo, disp: piatto(pp.b).disponibile, pausa: S.impostazioni.pausa.attiva,
+      nuovo: (S.piatti.find(x => x.nome === 'Seadas') || {}).controllato }), [pp]);
+    if (dopo.prezzo !== 15 || !dopo.disp || !dopo.pausa || dopo.nuovo !== false) throw new Error('piano fatto male: ' + JSON.stringify(dopo));
+    await clic('#toast [data-a="annulla"]');
+    const annullato = await page.evaluate(([pp]) => ({ prezzo: piatto(pp.a).formati.find(f => f.id === pp.f).prezzo, pausa: S.impostazioni.pausa.attiva, nuovo: S.piatti.some(x => x.nome === 'Seadas') }), [pp]);
+    if (annullato.prezzo !== pp.prima || annullato.pausa || annullato.nuovo) throw new Error('Annulla non rimette tutto: ' + JSON.stringify(annullato));
     await page.evaluate(() => { UI.vista = 'home'; render(); });
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {

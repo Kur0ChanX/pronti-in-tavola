@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.4';
+const VERSIONE_APP = '0.9.5';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.5', data: '08/11/2026',
+    migliorato: ['Aiutante potenziato: più cose in una frase, ognuna mostrata «prima → dopo» con valori da correggere e spunta per toglierla, un solo «Fai» e un solo Annulla; vede le FOTO (lista scritta a mano, menù, piatto); accetta, rifiuta, propone un altro giorno, segna i pronti, crea piatti nuovi «Da controllare», scrive descrizioni, mette in pausa, prepara messaggi WhatsApp, porta alla pagina giusta e raccoglie le idee per Mario; ricorda le ultime frasi; AI più nuova (Qwen 3.8, consigliata da Cloudflare)'] },
   { v: '0.9.4', data: '08/11/2026',
     nuovo: ['Aiutante di Monica (intelligenza artificiale gratuita): nella Home «Chiedi all\'aiutante…» o il microfono; capisce frasi come «l\'ordine di Laura è pronto», «togli il tiramisù dal menù», «aggiungi la farina alla spesa», risponde a «cosa devo cucinare oggi?» e prima di fare chiede sempre «Faccio?»'] },
   { v: '0.9.3', data: '07/11/2026',
