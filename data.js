@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.21';
+const VERSIONE_APP = '0.9.22';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.22', data: '08/11/2026',
+    nuovo: ['Ricettario: «➕ Metti nel menù» crea il piatto dalla ricetta (nome già scritto, tu scegli come lo vendi e il prezzo); nella scheda del piatto «📖 Apri la ricetta»'] },
   { v: '0.9.21', data: '08/11/2026',
     nuovo: ['Ricettario: cerca a voce (tocca 🎙 e di\' «seadas» o «zucchine e uova»)', 'Ricettario: «🕘 Viste di recente», le ultime ricette aperte, anche senza rete'] },
   { v: '0.9.20', data: '08/11/2026',

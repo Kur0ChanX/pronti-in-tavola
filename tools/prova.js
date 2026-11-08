@@ -587,6 +587,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="vai"][data-v^="cucina:"]'); await page.locator('.ric-passo').waitFor({ timeout: 3000 });
     if (!(await page.locator('.avviso', { hasText: 'Metà zucchero' }).count())) throw new Error('la nota non si vede nella cucina guidata');
     await clic('.indietro'); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
+    // metti nel menù: dalla ricetta al piatto nuovo, collegato alla ricetta
+    await page.evaluate(() => vai('ricetta:gz:Seadas-sebadas')); await clic('[data-a="ric-menu"]');
+    if ((await page.inputValue('#nuovo-nome')) !== 'Seadas') throw new Error('«Metti nel menù» non scrive il nome del piatto');
+    await clic('[data-a="nuovo-avanti"]'); await clic('[data-a="nuovo-cat"][data-v="dolci"]'); await page.waitForTimeout(150);
+    if (await page.locator('[data-a="nuovo-modo"]').count()) { await clic('[data-a="nuovo-modo"][data-v="pz"]'); await page.waitForTimeout(150); }
+    await page.fill('[data-nuovo-prezzo]', '3'); await clic('[data-a="nuovo-crea"]'); await page.waitForTimeout(200);
+    if (!(await page.evaluate(() => S.piatti.some(p => p.ricetta === 'gz:Seadas-sebadas')))) throw new Error('il piatto non è collegato alla ricetta');
+    if (!(await page.locator('[data-v="ricetta:gz:Seadas-sebadas"]').count())) throw new Error('nella scheda del piatto manca «Apri la ricetta»');
+    await page.evaluate(() => { S.piatti = S.piatti.filter(p => p.ricetta !== 'gz:Seadas-sebadas'); salva(); });
     // viste di recente: la ricetta appena aperta c'è
     await page.evaluate(() => { UI.ric = { q: '', zona: 'recenti', cat: '' }; vai('ricettario'); });
     if (!(await page.locator('.ric-elenco .ric-carta', { hasText: 'Seadas' }).count())) throw new Error('«Viste di recente» non mostra la ricetta aperta');

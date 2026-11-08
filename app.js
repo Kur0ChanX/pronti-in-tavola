@@ -1253,6 +1253,7 @@ function vPiatto(id) {
   const parti = [];   // [chiave, titolo, riassunto, html della sezione]
   const breve = (t, n = 38) => t.length > n ? t.slice(0, n - 1) + '…' : t;
   let h = testataMonica(p.nome, 'piatti') + '<main class="corpo">';
+  if (p.ricetta && typeof vRicetta === 'function') h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricetta:${esc(p.ricetta)}">📖 Apri la ricetta di questo piatto</button>`;
   /* Mario 07/11: scheda del piatto «a prova di stupido» per Monica: un elenco di voci col valore di adesso; se ne apre una alla volta */
   h += `<section class="scheda"><label class="interr"><span>Nel menù<small>Spento: i clienti non lo vedono</small></span><input type="checkbox" data-campo="disp" data-id="${p.id}" ${p.disponibile ? 'checked' : ''}></label></section>`;
   parti.push(['foto', 'Foto', p.foto ? 'C\'è la foto' : 'Manca: tocca per aggiungerla', `<section class="scheda" style="padding:0;overflow:hidden">${foto(p, 'grande')}<div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:8px">
@@ -2014,7 +2015,7 @@ const A = {
     const prezzi = Object.fromEntries(campi.map(c => [c.dataset.nuovoPrezzo, Number(c.value)]));
     const formati = n.modo === 'teglie' ? T(prezzi.t6, prezzi.t8) : n.modo === 'kg' ? KG(prezzi.kg) : n.modo === 'pz' ? PZ(prezzi.pz) : [{ id: 'intera', tipo: 'intera', nome: 'Intera', prezzo: prezzi.intera }];
     const id = norm(n.nome).replace(/[^a-z0-9]+/g, '-') + '-' + Date.now().toString(36).slice(-3);
-    S.piatti.push({ id, cat: n.cat, nome: n.nome, sotto: '', aiuto: '', formati, varianti: [], ing: [], note: [], scalda: '', foto: null, disponibile: true, stagione: '', novita: true, novitaDal: oggi(), controllato: true, cuori: 0, pronto: null, ordine: S.piatti.length, cestino: null });
+    S.piatti.push({ id, cat: n.cat, nome: n.nome, sotto: '', aiuto: '', formati, varianti: [], ing: [], note: [], scalda: '', foto: null, disponibile: true, stagione: '', novita: true, novitaDal: oggi(), ricetta: n.ricetta || '', controllato: true, cuori: 0, pronto: null, ordine: S.piatti.length, cestino: null });
     salva(); UI.nuovo = null; vai('piatto:' + id); mostraToast('Piatto creato. Ora aggiungi foto e ingredienti.');
   },
   'togli-foto'() { const p = piatto(UI.vista.split(':')[1]); cambia('Foto tolta', () => { p.foto = null; }); },

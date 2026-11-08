@@ -203,7 +203,8 @@ function vRicetta(id) {
   if (r.intro) h += `<details class="ric-intro"><summary>${esc(r.intro.split('\n')[0].slice(0, 140))}${r.intro.length > 140 ? '…' : ''} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
   h += `<div class="fila"><button type="button" class="btn pieno" data-a="vai" data-v="cucina:${esc(id)}">${ico('piatti')}Cucina guidata</button>
       <button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
-      ${r.mia ? `<button type="button" class="btn chiaro" data-a="vai" data-v="ricmia:${esc(id)}">${ico('matita')}Cambia</button>` : ''}</div>
+      ${r.mia ? `<button type="button" class="btn chiaro" data-a="vai" data-v="ricmia:${esc(id)}">${ico('matita')}Cambia</button>` : ''}
+      ${typeof S !== 'undefined' && S.piatti && !S.piatti.some(x => x.ricetta === id) ? `<button type="button" class="btn chiaro" data-a="ric-menu" data-v="${esc(id)}">➕ Metti nel menù</button>` : ''}</div>
     <section class="scheda"><h2>Ingredienti</h2>
       <div class="fila ric-porz"><span>Per <b>${porz}</b> ${porz === 1 ? 'persona' : 'persone'}</span>
         <button type="button" class="btn chiaro piccolo" data-a="ric-porz" data-v="-1" aria-label="Una persona in meno" ${porz <= 1 ? 'disabled' : ''}>−</button>
@@ -429,6 +430,12 @@ Object.assign(A, {
     if (AI.rec) { AI.rec.stop(); return; }
     ascoltaAI(detto => { const q = String(detto || '').replace(/[.!?]+$/, '').trim(); UI.ric.q = q; if (q.length >= 2) A['ric-cerca-gz'](q); else render(); }, {});
     mostraToast('Ti ascolto: di\' il piatto o gli ingredienti.'); render();
+  },
+  'ric-menu'(el) {   // dalla ricetta un piatto nuovo: nome e portata già scritti, Monica sceglie come lo vende e il prezzo
+    const r = ricetta(el.dataset.v); if (!r) return;
+    vai('nuovo');
+    Object.assign(UI.nuovo, { nome: r.nome.replace(/\s*\(.*\)$/, '').slice(0, 60), cat: { antipasti: 'stuzzichini', primi: 'primi', dolci: 'dolci' }[r.categoria] || '', ricetta: r.id });
+    render(); mostraToast('Controlla il nome e tocca Avanti.');
   },
   'ric-catalogo'(el) {
     const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
