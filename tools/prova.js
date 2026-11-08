@@ -838,6 +838,37 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!fs.existsSync(img)) throw new Error('manca il file ' + path.relative(radice, img));
     if (fs.statSync(img).size >= 300 * 1024) throw new Error('immagine oltre 300 KB');
   });
+  await passo('foto a strisce delle ricette vecchie: tagliate una per numerino', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const svg = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80"><rect width="100" height="80" fill="red"/><rect x="100" width="100" height="80" fill="lime"/><rect x="200" width="100" height="80" fill="blue"/></svg>');
+      const d = document.createElement('div'); d.id = 'prova-strisce'; d.style.width = '330px';
+      d.innerHTML = fotoPasso({ t: 'Uno [[1]], due [[2]], tre [[3]].', foto: [svg] });
+      document.body.appendChild(d);
+      return [...d.querySelectorAll('.ric-striscia')].map(f => f.querySelector('.num-step').textContent);
+    });
+    if (r.join() !== '1,2,3') throw new Error('riquadri: ' + r.join());
+    await page.waitForTimeout(300);
+    await page.locator('#prova-strisce').screenshot({ path: OUT + '/strisce.png' });   // controllo a occhio: rosso, verde, blu
+    const tx = await page.evaluate(() => [...document.querySelectorAll('#prova-strisce img')].map(i => i.style.transform));
+    if (tx.join('|') !== 'translateX(0%)|translateX(-33.3333%)|translateX(-66.6667%)') throw new Error('tagli: ' + tx.join('|'));
+    await page.evaluate(() => document.getElementById('prova-strisce').remove());
+  });
+  await passo('gesto indietro del telefono: torna indietro nell\'app, non la chiude', async () => {   // autonoma
+    const url = page.url();
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; vai('home'); vai('piatti'); vai('piatto:tiramisu'); });
+    await page.goBack(); await page.waitForTimeout(300);
+    if (page.url() !== url) throw new Error('il gesto ha lasciato l\'app');
+    const v1 = await page.evaluate(() => UI.vista);
+    if (v1 === 'piatto:tiramisu') throw new Error('il gesto non torna indietro');
+    await page.evaluate(() => { UI.foglio = { tipo: 'novita' }; render(); });
+    await page.goBack(); await page.waitForTimeout(300);
+    if (await page.evaluate(() => !!UI.foglio || UI.vista) !== v1) throw new Error('il gesto non chiude prima il foglio');
+    await page.evaluate(() => vai('spesa')); await page.goBack(); await page.waitForTimeout(300);
+    if (await page.evaluate(() => UI.vista) !== 'home') throw new Error('dalla spesa il gesto non torna alla Home: ' + await page.evaluate(() => UI.vista));
+    await page.goBack(); await page.waitForTimeout(300);
+    if (!(await page.locator('.toast', { hasText: 'Per uscire' }).count())) throw new Error('nella Home manca l\'avviso «Per uscire…»');
+    if (page.url() !== url) throw new Error('il primo gesto nella Home ha chiuso l\'app');
+  });
   await passo('aggiornamento: avvisa, riavvia e riprende dalla stessa schermata', async () => {   // autonoma, ultima (ricarica la pagina)
     await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'piatto:tiramisu'; render(); document.activeElement && document.activeElement.blur(); nuovaVersione = '9.9.9'; riavviaQuandoPuoi(); });
     if (!(await page.locator('.toast', { hasText: "C'è l'aggiornamento 9.9.9" }).count())) throw new Error('manca l\'avviso');

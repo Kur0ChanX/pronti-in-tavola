@@ -251,6 +251,12 @@ function fotoPasso(p, grandi) {
   if (!p.foto || !p.foto.length) return '';
   const nn = [...String(p.t).matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);   // una foto per numerino, o una foto «a strisce» con tutti (es. 1-3)
   const num = k => !nn.length ? '' : p.foto.length === nn.length ? nn[k] : p.foto.length === 1 && nn.length > 1 ? nn[0] + '-' + nn[nn.length - 1] : '';
+  /* foto «a strisce» delle ricette vecchie di GZ (una sola immagine con 2-3 foto affiancate): la taglio in riquadri
+     uno per numerino, come le ricette nuove (Mario 08/11: prima si vedeva solo la foto di mezzo) */
+  if (p.foto.length === 1 && nn.length > 1 && nn.length <= 4) {
+    const f = p.foto[0], n = nn.length;
+    return `<div class="ric-fotopassi${grandi ? ' grandi' : ''} strisce">${nn.map((x, k) => `<figure class="ric-fotonum ric-striscia"><img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}" style="width:${n * 100}%;transform:translateX(-${(k * 100 / n).toFixed(4)}%)"><span class="num-step">${x}</span></figure>`).join('')}</div>`;
+  }
   return `<div class="ric-fotopassi${grandi ? ' grandi' : ''}">${p.foto.map((f, k) => `<figure class="ric-fotonum"><img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">${num(k) ? `<span class="num-step">${num(k)}</span>` : ''}</figure>`).join('')}</div>`;
 }
 /* minuti scritti nel passo («cuocete per 20 minuti», «1 ora») → timer nella cucina guidata */
