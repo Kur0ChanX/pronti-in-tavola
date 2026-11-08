@@ -671,7 +671,7 @@ function primiPassi() {
 function vMenu() {
   const imp = S.impostazioni, cats = CATEGORIE.filter(([k]) => visibili().some(p => p.cat === k && p.disponibile));
   /* foto del menù ai clienti: in attesa (Mario 07/11 «non sono molto convinto, aspettiamo»): per ora Monica le manda e basta */
-  let h = testataCliente() + '<main class="corpo">' + primiPassi() + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
+  let h = testataCliente() + '<main class="corpo">' + primiPassi() + barraAIC() + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
   if (UI.modifica) {
     const o = S.ordini.find(x => x.id === UI.modifica.ordine);
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
@@ -1362,7 +1362,20 @@ function schedaMario() {
   return `<section class="scheda mario-scheda"><h2>Solo per te, Mario</h2>
     <p class="tenue piccolo" style="margin:0">La vedi solo tu. Monica non vede questa scheda.</p>
     ${n ? `<button type="button" class="btn chiaro" data-a="tutti-prova-apri">Segna come PROVA gli ordini fatti finora (${n})</button>`
-      : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}</section>`;
+      : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}
+    <label class="interr"><span>Aiutante AI per i clienti<small>${aiClientiOn() ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${aiClientiOn() ? 'checked' : ''}></label>
+    ${contoAI()}</section>`;
+}
+/* domande all'AI di oggi (C50: Mario vuole capire i limiti). Il conto lo tiene il server; qui si chiede una volta ogni 2 minuti */
+function contoAI() {
+  const c = UI.contoAI;
+  if (sulSito() && (!c || Date.now() - c.quando > 120000) && !UI.contoAIin) {
+    UI.contoAIin = true;
+    Dati.token().then(tok => tok && fetch('/api/conto-ai', { method: 'POST', headers: { authorization: 'Bearer ' + tok } })).then(r => r && r.ok ? r.json() : null)
+      .then(j => { if (j) { UI.contoAI = Object.assign(j, { quando: Date.now() }); if (UI.vista === 'impostazioni') render(); } }).catch(() => {}).finally(() => { UI.contoAIin = false; });
+  }
+  const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (tetto ${c.tetti.clienti}, ${c.tetti.aCliente} a testa).` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
+  return `<p class="tenue piccolo" style="margin:0">${riga}<br>Limite gratuito vero: 10.000 «neuroni» al giorno per tutto l'account (si azzera all'una di notte, ora italiana). Una domanda ne usa circa 150-300: stima 30-60 risposte al giorno in tutto. Finiti: «riprova domani», nessun costo.</p>`;
 }
 function foglioTuttiProva() {
   const oo = S.ordini.filter(o => !diProva(o)).sort((x, y) => x.n - y.n), n = oo.length;
@@ -1457,6 +1470,7 @@ function vistaCliente() {
     case 'carrello': return vCarrello();
     case 'inviato': return vInviato();
     case 'ordini': return vOrdiniCliente();
+    case 'aiuto': return aiClientiVisibile() ? vAiutoCliente() : vMenu();
     case 'modifica': return UI.modifica ? vModifica() : vOrdiniCliente();
     default: return vMenu();
   }

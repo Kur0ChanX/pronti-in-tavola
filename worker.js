@@ -10,6 +10,9 @@
    - POST /api/qui      → il cliente approvato dice «sono qui sotto» per il ritiro: a chi gestisce suona «<nome> è qui» (Mario 07/11)
    - POST /api/aiutante → chi gestisce scrive o detta una frase: l'AI gratuita di Cloudflare (Workers AI) propone UNA azione in JSON;
                           l'app la mostra e la fa solo dopo «Sì, fallo» (Mario 08/11). Tetto: 150 richieste al giorno.
+   - POST /api/aiuto-cliente → aiutante dei CLIENTI approvati (C50): menù, prezzi, allergeni, i SUOI ordini, «metti nel carrello».
+                          Acceso di base, spento se Mario mette impostazioni/app.aiClienti = false; chi gestisce può provarlo sempre. Tetto: 10 a cliente, 60 in tutto al giorno.
+   - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -60,6 +63,25 @@ Con più richieste insieme metti più azioni. Per le domande (cosa cucinare, chi
 Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna → prezzi o piatti nuovi; foto di un piatto → descrizione o nuovo_piatto.
 Gli ordini con "prova":true sono di prova: non contarli negli incassi né tra le cose da cucinare.
 Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 3 frasi.`;
+/* aiutante dei clienti (C50, Mario 08/11 «per i clienti fallo al meglio ma tienilo disattivato»): solo menù e i suoi ordini, mai dati di altri */
+const TETTO_AIC = 60, TETTO_AIC_CLIENTE = 10;   // domande al giorno: in tutto e per ogni cliente (restano neuroni per Monica)
+const ISTRUZIONI_CLIENTE = `Sei l'aiutante gentile dell'app «Pronti in Tavola» di Monica, che cucina da asporto a Olbia: i clienti ordinano dall'app e ritirano a casa sua.
+Parli con UN cliente. Ricevi i DATI in JSON: il menù di oggi (piatti, prezzi, formati, gusti, ingredienti e allergeni scritti da Monica), le regole degli ordini, gli ordini di QUESTO cliente, il suo carrello e le sue allergie.
+Rispondi SOLO con un oggetto JSON, senza altro testo: {"testo":"<risposta breve>","azioni":[ ...da 0 a 4 azioni... ]}
+Azioni possibili (usa solo queste):
+{"azione":"carrello","id":"<id piatto>","formato":"<id formato>","qta":<numero>,"gusto":"<id gusto, se il piatto ne ha>"}  propone di mettere un piatto nel carrello (il cliente conferma, poi l'ordine lo manda lui)
+{"azione":"piatto","id":"<id piatto>"}  apre la scheda del piatto (foto, ingredienti, gusti)
+{"azione":"apri","vista":"menu|ordini|carrello"}  porta il cliente al menù, ai suoi ordini o al carrello
+{"azione":"scrivi_monica","testo":"<domanda per Monica>"}  prepara un messaggio WhatsApp per Monica (lo manda il cliente)
+COME FUNZIONA L'APP: dal Menù si tocca un piatto, si sceglie formato, gusto e quantità, «Aggiungi»; nel carrello si sceglie il giorno «Ti serve entro…» e come pagare, poi «Invia». Monica conferma o propone un altro giorno. «Pronti subito» = piatti già pronti da ritirare oggi. In «I miei ordini» si vede lo stato; quando è pronto arriva l'avviso; al ritiro c'è «Sono qui sotto».
+REGOLE IMPORTANTI:
+- Allergie e ingredienti: usa SOLO quelli nei DATI. Se un piatto non ha ingredienti scritti o il cliente ha un dubbio di salute, di' che li controlla Monica e proponi scrivi_monica. Non dire mai che un piatto è sicuro per un allergico: di' cosa c'è scritto e consiglia di chiedere conferma a Monica.
+- Non inventare mai piatti, prezzi, giorni, sconti o orari. Non promettere giorni di ritiro: li conferma Monica.
+- Non hai dati di altri clienti e non ne parli. Non dai l'indirizzo né il numero di Monica.
+- Non mandi ordini: al massimo proponi «carrello», poi il cliente controlla e tocca Invia.
+- Se manca un dato (quale formato, quanti) chiedilo nel testo senza azioni.
+- Domande fuori tema (non sul cibo o sull'app): rispondi con gentilezza che aiuti solo con il menù e gli ordini.
+Il testo è breve, caldo, in italiano semplice, al massimo 3 frasi; dai del tu.`;
 function jsonDa(t) {   // il primo oggetto JSON nel testo (toglie eventuali <think>…</think> e ```)
   t = String(t || '').replace(/<think>[\s\S]*?<\/think>/g, '').replace(/```(json)?/g, '');
   const a = t.indexOf('{'); if (a < 0) return null;
@@ -67,11 +89,11 @@ function jsonDa(t) {   // il primo oggetto JSON nel testo (toglie eventuali <thi
   return null;
 }
 const testoDi = r => { const x = typeof r === 'string' ? r : (r && (r.response ?? (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content))) || ''; return typeof x === 'string' ? x : JSON.stringify(x); };
-async function chiediAI(env, testo, dati, storia, foto) {
+async function chiediAI(env, testo, dati, storia, foto, cliente) {
   const passate = (Array.isArray(storia) ? storia : []).slice(-6).map(m => ({ role: m && m.chi === 'io' ? 'user' : 'assistant', content: String((m && m.t) || '').slice(0, 400) })).filter(m => m.content);
-  const domanda = `DATI: ${dati}\n\nFRASE DI MONICA: ${testo}${foto ? '\n(Monica ha mandato anche una FOTO)' : ''}`;
+  const domanda = `DATI: ${dati}\n\n${cliente ? 'DOMANDA DEL CLIENTE' : 'FRASE DI MONICA'}: ${testo}${foto ? '\n(Monica ha mandato anche una FOTO)' : ''}`;
   const ultimo = foto ? { role: 'user', content: [{ type: 'text', text: domanda }, { type: 'image_url', image_url: { url: foto } }] } : { role: 'user', content: domanda };
-  const messaggi = [{ role: 'system', content: ISTRUZIONI_AI }, ...passate, ultimo];
+  const messaggi = [{ role: 'system', content: cliente ? ISTRUZIONI_CLIENTE : ISTRUZIONI_AI }, ...passate, ultimo];
   let r, modello = MODELLO_AI;
   try { r = await env.AI.run(MODELLO_AI, { messages: messaggi, max_completion_tokens: 2000, temperature: 0.2, reasoning_effort: 'low' }); }
   catch (e) {
@@ -99,6 +121,15 @@ async function gestoreDa(req) {
   if (!uid || !/^[\w-]{1,128}$/.test(uid)) return null;
   const r = await fetch(`https://firestore.googleapis.com/v1/projects/${PROGETTO}/databases/(default)/documents/gestori/${uid}`, { headers: { authorization: 'Bearer ' + tok } });
   return r.ok ? uid : null;
+}
+
+/* l'aiutante dei clienti è acceso? (impostazioni/app.aiClienti, letto col token del cliente) */
+async function aiClientiAcceso(req) {
+  const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  const r = await fetch(`https://firestore.googleapis.com/v1/projects/${PROGETTO}/databases/(default)/documents/impostazioni/app`, { headers: { authorization: 'Bearer ' + tok } });
+  if (!r.ok) return false;
+  const f = ((await r.json()) || {}).fields || {};
+  return !(f.aiClienti && f.aiClienti.booleanValue === false);   // acceso di base (Mario 08/11): spento solo se Mario lo spegne
 }
 
 /* cliente approvato? Firestore legge utenti/<uid> col suo token (anche anonimo): ridà il suo numero di cliente */
@@ -220,6 +251,22 @@ export class Avvisi extends DurableObject {
     return true;
   }
 
+  /* aiutante dei clienti: tetto in tutto e per cliente (chi gestisce che prova conta in tutto, non a testa) */
+  async contaAIC(cliente) {
+    const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('aic')) || {};
+    const c = c0.giorno === oggi ? c0 : { giorno: oggi, n: 0, chi: {} };
+    if (c.n >= TETTO_AIC) return 'tetto';
+    if (cliente && (c.chi[cliente] || 0) >= TETTO_AIC_CLIENTE) return 'tuo';
+    c.n++; if (cliente) c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+    await this.ctx.storage.put('aic', c);
+    return '';
+  }
+  async contoAI() {
+    const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {};
+    return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0,
+      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE } };
+  }
+
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
   async avvisa(tipo) {
     const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('conto')) || {};
@@ -252,8 +299,22 @@ export default {
         if (!c) return json({ errore: 'prima Monica deve approvarti' }, 403);
         return json(await av.qui(c, await req.json().catch(() => null)));
       }
+      if (url.pathname === '/api/aiuto-cliente') {
+        const c = await clienteDa(req), g = c ? null : await gestoreDa(req);   // chi gestisce lo prova anche spento («guarda come»)
+        if (!c && !g) return json({ errore: 'prima Monica deve approvarti' }, 403);
+        if (c && !(await aiClientiAcceso(req))) return json({ errore: 'spento' }, 403);
+        const b = await req.json().catch(() => null);
+        const testo = String((b && b.testo) || '').trim().slice(0, 300), dati = JSON.stringify((b && b.dati) || {});
+        if (!testo) return json({ errore: 'frase vuota' }, 400);
+        if (dati.length > 40000) return json({ errore: 'dati troppo grandi' }, 413);
+        if (!env.AI) return json({ errore: 'AI non collegata' }, 503);
+        const fermo = await av.contaAIC(c);
+        if (fermo) return json({ fermo, testo: fermo === 'tuo' ? 'Per oggi abbiamo parlato tanto! Riprova domani, o scrivi a Monica.' : 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
+        return json(await chiediAI(env, testo, dati, b.storia, null, true));
+      }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
+      if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/iscrivi') {
         const b = await req.json().catch(() => null);
         return (await av.iscrivi(uid, b && b.sub)) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);

@@ -2,7 +2,7 @@
    Monica scrive, detta o manda una FOTO → il server (/api/aiutante, Workers AI gratuito) propone un PIANO di 0-8 azioni →
    l'app controlla ogni azione sui dati veri e la mostra «prima → dopo», Monica può toglierne o correggerne i valori →
    «Fai» le fa tutte insieme (un solo Annulla per 10 secondi). L'AI non tocca mai i dati: le azioni sono quelle dei pulsanti dell'app.
-   Solo per chi gestisce, mai per i clienti. */
+   In fondo l'aiutante dei CLIENTI (C50): spento di base, lo accende Mario («Solo per te, Mario»); solo menù e i SUOI ordini. */
 const AI = { msgs: [], attesa: false, rec: null, bozza: '', foto: null };
 const DOMANDE_AI = ['Cosa devo cucinare oggi?', 'Come si mette la pausa?', 'Chi viene a ritirare oggi?', 'Chi deve ancora pagare?', 'Quanto ho incassato questo mese?', 'Com\'è andata la settimana?'];
 const ESEMPI_AI = ['«L\'ordine di Laura è pronto e ha pagato»', '«Togli il tiramisù e alza le lasagne a 14 euro»', '«Sono in ferie fino a domenica»', 'una foto della lista della spesa scritta a mano'];
@@ -12,7 +12,7 @@ const STATO_AI = { nuovo: 'da accettare', proposta: 'aspetta che il cliente risp
 const VISTE_AI = { ordini: 'Ordini', piatti: 'I miei piatti', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
 PATH.microfono = '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/>';
 PATH.scintille = '<path d="M11 3l1.8 4.7 4.7 1.8-4.7 1.8L11 16l-1.8-4.7L4.5 9.5l4.7-1.8z"/><path d="M18.5 14l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>';
-NOMI_VISTE.aiutante = 'Aiutante';
+NOMI_VISTE.aiutante = 'Aiutante'; NOMI_VISTE.aiuto = 'Aiutante';
 
 /* i dati che l'AI legge: piatti, ordini aperti o recenti (con quelli ancora da pagare), incassi, pausa */
 function datiAI() {
@@ -245,19 +245,19 @@ function parlaAI(t) {
   } catch (e) { /* senza voce: resta scritto */ }
 }
 /* microfono: dettatura in italiano, a fine frase parte da sola */
-function ascoltaAI() {
+function ascoltaAI(manda = inviaAI, box = AI) {
   if (!Riconosci) { mostraToast('Questo telefono non sa dettare: scrivi la frase.'); return; }
   if (AI.rec) { AI.rec.stop(); return; }
   let detto = '';
   const rec = new Riconosci();
   rec.lang = 'it-IT'; rec.interimResults = true; rec.maxAlternatives = 1;
-  rec.onresult = e => { detto = [...e.results].map(x => x[0].transcript).join(''); AI.bozza = detto; const el = $('#ai-testo'); if (el) el.value = detto; };
+  rec.onresult = e => { detto = [...e.results].map(x => x[0].transcript).join(''); box.bozza = detto; const el = $('#ai-testo') || $('#ac-testo'); if (el) el.value = detto; };
   rec.onerror = e => {
     if (e.error === 'not-allowed' || e.error === 'service-not-allowed') mostraToast('Per dettare serve il microfono: tocca «Consenti» quando il telefono lo chiede.');
     else if (e.error === 'no-speech') mostraToast('Non ho sentito nulla: riprova.');
     else if (e.error === 'network') mostraToast('Per dettare serve internet.');
   };
-  rec.onend = () => { AI.rec = null; if (detto.trim()) inviaAI(detto, true); else render(); };
+  rec.onend = () => { AI.rec = null; if (detto.trim()) manda(detto, true); else render(); };
   AI.rec = rec;
   try { rec.start(); render(); } catch (e) { AI.rec = null; render(); }
 }
@@ -347,3 +347,168 @@ document.addEventListener('change', e => {
   if (el.dataset && el.dataset.aion) { const [i, j] = el.dataset.aion.split('|'), m = AI.msgs[Number(i)]; if (m && m.piano && !m.esito) { m.piano[Number(j)].on = el.checked; render(); } }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'ai-testo') { e.preventDefault(); inviaAI(e.target.value); } });
+
+/* ================= AIUTANTE DEI CLIENTI (C50, Mario 08/11 «per i clienti fallo al meglio ma tienilo disattivato») =================
+   Il cliente approvato chiede (scritto o a voce): allergie, ingredienti, prezzi, cosa ordinare, a che punto è il suo ordine.
+   L'AI propone al massimo «metti nel carrello», «apri il piatto», «scrivi a Monica»: l'ordine lo manda sempre il cliente.
+   Acceso per tutti dall'08/11 (Mario «attiva per i clienti»); S.impostazioni.aiClienti = false lo spegne; Mario lo prova anche spento con «guarda come». */
+const AIC = { msgs: [], attesa: false, bozza: '' };
+const DOMANDE_AIC = ['Cosa c\'è di pronto oggi?', 'Cosa mi consigli?', 'Cosa posso mangiare con le mie allergie?', 'A che punto è il mio ordine?', 'Come si ordina?'];
+const VISTE_AIC = { menu: 'Menù', ordini: 'I miei ordini', carrello: 'Il carrello' };
+const aiClientiOn = () => S.impostazioni.aiClienti !== false;   // acceso di base (Mario 08/11 «attiva per i clienti»): si spegne solo con l'interruttore
+const aiClientiVisibile = () => P.ruolo !== 'monica' && !UI.modifica && (aiClientiOn() || !!UI.devCliente) && (!Dati.attivo || !!P.cliente || !!UI.devCliente);
+function datiAIC() {
+  const imp = S.impostazioni, nomiAll = ids => allergeniDi(ids).map(a => NOME_ALL[a]);
+  const piatti = visibili().filter(p => p.disponibile).map(p => {
+    const ing = p.ing || [];
+    return Object.assign({ id: p.id, nome: p.nome, parte: (CATEGORIE.find(([k]) => k === p.cat) || ['', ''])[1], descrizione: p.sotto || '',
+      formati: p.formati.map(f => ({ id: f.id, nome: f.nome, prezzo: f.prezzo, tipo: f.tipo })),
+      ingredienti: ing.length ? ing.map(i => ING(i).n) : 'non ancora scritti: chiedere a Monica', allergeni: ing.length ? nomiAll(ing) : 'da chiedere a Monica' },
+      ing.length ? { vegetariano: !ing.some(i => ING(i).m) } : {},
+      p.varianti.length ? { gusti: p.varianti.map(v => ({ id: v.id, nome: v.nome, allergeniInPiu: nomiAll(v.ing || []).filter(a => !nomiAll(ing).includes(a)) })) } : {},
+      p.fritto > 0 ? { fritto_da_Monica_euro_in_piu: p.fritto } : {}, p.forno > 0 ? { al_forno_da_Monica_euro_in_piu: p.forno } : {},
+      p.pronto && p.pronto.giorno === oggi() && p.pronto.qta > 0 && !pausaOra() ? { prontiOggi: p.pronto.qta } : {});
+  });
+  const miei = S.ordini.filter(o => o.cliente === P.cliente && o.stato !== 'prova' && !o.archiviato).sort((a, b) => b.n - a.n).slice(0, 8)
+    .map(o => ({ n: o.n, stato: STATO_AI[o.stato] || o.stato, ritiro: o.entro + ' ' + giornoLungo(o.entro), cosa: o.righe.map(r => `${r.nome} (${descRiga(r)})`).join(', '), totale: totale(o.righe), pagato: !!(o.paga && o.paga.ricevuto) }));
+  return { oggi: oggi() + ' ' + giornoLungo(oggi()), monica: pausaOra() ? `in pausa fino a ${giornoLungo(imp.pausa.fino)} (si può ordinare per i giorni dopo)` : 'aperta',
+    giorniDiPreavviso: imp.anticipo, prontiDaRitirareEntroLe: imp.prontiFino, pagamenti: Object.keys(METODO).filter(m => imp.paga[m]).map(m => METODO[m]),
+    notaRitiro: (imp.ritiro || {}).nota || '', mieAllergie: P.allergie.map(a => NOME_ALL[a]), piatti, mieiOrdini: miei,
+    carrello: P.carrello.map(r => `${r.nome} (${descRiga(r)})`) };
+}
+/* ogni azione controllata sul menù di ADESSO (un piatto può essere finito nel frattempo) */
+function controllaAIC(a) {
+  const p = a.id ? piatto(a.id) : null, ok = p && !p.cestino && p.disponibile;
+  switch (a.azione) {
+    case 'carrello': {
+      if (!ok) return { no: 'Questo piatto adesso non è nel menù.' };
+      const f = p.formati.find(x => x.id === a.formato) || p.formati[0], { min, passo: st } = passoDi(f);
+      const v = p.varianti.find(x => x.id === a.gusto) || p.varianti[0];
+      let q = numeroAI(a.qta); if (!(q > 0)) q = min;
+      q = Math.max(min, Math.min(f.tipo === 'kg' ? 20 : 30, Math.round(q / st) * st));
+      const r = { piatto: p.id, nome: p.nome, formato: f.id, formatoNome: f.nome, tipo: f.tipo, variante: v ? v.id : '', varianteNome: v ? v.nome : '', qta: arrot(q),
+        prezzo: prezzoDi(p, f.id, v ? v.id : ''), note: [], testo: '', pronto: false, fritto: false, frittoPrezzo: 0, forno: false, fornoPrezzo: 0 };
+      const n = quanti(P.carrello);
+      return { titolo: `Metto nel carrello: ${p.nome}`, nota0: n ? `Nel carrello hai già ${n} ${n === 1 ? 'cosa' : 'cose'}: restano.` : '',
+        dopo: `${descRiga(r)} · ${euro(prezzoRiga(r))}`, nota: p.varianti.length > 1 && !p.varianti.some(x => x.id === a.gusto) ? 'Gusto da controllare nel carrello' : '',
+        campi: [['qta', 'number', f.tipo === 'kg' ? 'Quanti kg' : 'Quanti']], fai() { aggiungiRiga(P.carrello, r); salvaP(); } };
+    }
+    case 'piatto': return ok ? { titolo: p.nome, dopo: p.sotto || '', etichetta: 'Guarda il piatto', vai: 'piatto:' + p.id } : { no: 'Questo piatto adesso non è nel menù.' };
+    case 'apri': return VISTE_AIC[a.vista] ? { titolo: VISTE_AIC[a.vista], etichetta: 'Apri', vai: a.vista } : { no: '' };
+    case 'scrivi_monica': {
+      if (!S.impostazioni.whatsapp) return { no: '' };
+      const t = String(a.testo || '').trim().slice(0, 300);
+      return { titolo: 'Scrivi a Monica', dopo: t, etichetta: 'Apri WhatsApp', link: waMonica().replace(/(text=[^&]*)$/, m => m + encodeURIComponent(t)) };
+    }
+    default: return { no: '' };
+  }
+}
+/* domanda al server (separata: le prove la sostituiscono con una risposta finta) */
+async function chiediAiutoCliente(testo, dati, storia) {
+  if (!sulSito()) throw new Error('Qui nell\'anteprima l\'aiutante non risponde: provalo nell\'app vera, sul telefono.');
+  if (!navigator.onLine) throw new Error('Sei senza internet: riprova quando torna la rete.');
+  const tok = await Dati.tokenCliente(); if (!tok) throw new Error('Riapri l\'app e riprova.');
+  const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), 45000);
+  try {
+    const res = await fetch('/api/aiuto-cliente', { method: 'POST', signal: ctl.signal, headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ testo, dati, storia }) });
+    const j = await res.json().catch(() => ({}));
+    if (res.status === 403) throw new Error(j.errore === 'spento' ? 'L\'aiutante per ora è spento.' : 'L\'aiutante è per chi Monica ha già accettato.');
+    if (!res.ok) throw new Error('Adesso l\'aiutante non risponde: riprova tra poco, o scrivi a Monica.');
+    if (j.grezzo || j.errore) console.warn('aiuto-cliente:', j.grezzo || j.errore);
+    return j;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Ci sto mettendo troppo: riprova tra poco.');
+    if (e instanceof TypeError) throw new Error('Non riesco a collegarmi: riprova tra poco.');
+    throw e;
+  } finally { clearTimeout(t); }
+}
+async function inviaAC(testo, voce) {
+  testo = String(testo || '').trim().slice(0, 300);
+  if (!testo || AIC.attesa) return;
+  const storia = AIC.msgs.slice(-6).map(m => ({ chi: m.chi, t: m.t }));
+  AIC.msgs.forEach(m => { if (m.piano && !m.esito) m.esito = 'no'; });
+  AIC.bozza = ''; AIC.msgs.push({ chi: 'io', t: testo }); AIC.attesa = true;
+  render(); fondoAC();
+  let r;
+  try { r = await window.chiediAiutoCliente(testo, datiAIC(), storia); } catch (e) { r = { testo: e.message, azioni: [] }; }
+  const pi = pianoDa(r);
+  pi.azioni = pi.azioni.slice(0, 4);
+  AIC.attesa = false;
+  AIC.msgs.push({ chi: 'lei', t: pi.testo, piano: pi.azioni.length ? pi.azioni : null });
+  AIC.msgs = AIC.msgs.slice(-30);
+  if (UI.vista === 'aiuto') { render(); fondoAC(); }
+  if (voce) parlaAI(pi.testo + (pi.azioni.some(x => controllaAIC(x.a).fai) ? ' Controlla e tocca Conferma.' : ''));
+}
+window.chiediAiutoCliente = chiediAiutoCliente;
+function fondoAC() { if (UI.vista === 'aiuto') window.scrollTo(0, document.body.scrollHeight); }
+function barraAIC() {
+  if (!aiClientiVisibile()) return '';
+  return `<div class="ai-barra ai-cliente"><button type="button" class="ai-apri" data-a="vai" data-v="aiuto">${ico('scintille')}<span>Hai una domanda? Allergie, prezzi, cosa prendere…</span></button>
+    ${Riconosci ? `<button type="button" class="ai-mic" data-a="ac-detta" aria-label="Chiedi a voce">${ico('microfono')}</button>` : ''}</div>`;
+}
+function rigaAC(x, i, j, fermo) {
+  const c = controllaAIC(x.a), id = `${i}|${j}`;
+  if (c.no !== undefined) return c.no ? `<div class="ai-azione no">${ico('x')}<span>${esc(c.no)}</span></div>` : '';
+  if (c.link || c.vai) return `<div class="ai-azione"><div class="ai-cosa"><b>${esc(c.titolo)}</b>${c.dopo ? `<span class="ai-dopo">${esc(c.dopo)}</span>` : ''}</div>
+    ${c.link ? `<a class="btn chiaro piccolo" href="${c.link}" target="_blank" rel="noopener">${ico('chat')}${esc(c.etichetta)}</a>` : `<button type="button" class="btn chiaro piccolo" data-a="ac-vai" data-v="${esc(c.vai)}">${esc(c.etichetta)}</button>`}</div>`;
+  const campi = c.campi.map(([k, tipo, et]) => `<label class="ai-campo"><small>${esc(et)}</small><input type="${tipo}" inputmode="decimal" step="0.5" min="0" data-acf="${id}|${k}" value="${esc(String(x.a[k] == null ? '' : x.a[k]))}" ${fermo ? 'disabled' : ''}></label>`).join('');
+  return `<div class="ai-azione ${x.on ? '' : 'spenta'}"><label class="ai-spunta"><input type="checkbox" data-acon="${id}" ${x.on ? 'checked' : ''} ${fermo ? 'disabled' : ''} aria-label="${esc(c.titolo)}"></label>
+    <div class="ai-cosa"><b>${esc(c.titolo)}</b><span class="ai-dopo">${esc(c.dopo)}</span>${[c.nota, c.nota0].filter(Boolean).map(t => `<small class="tenue">${esc(t)}</small>`).join('')}
+    ${!fermo ? `<div class="ai-campi">${campi}</div>` : ''}</div></div>`;
+}
+function fumettoAC(m, i) {
+  if (m.chi === 'io') return `<div class="ai-fum io">${esc(m.t)}</div>`;
+  let h = `<div class="ai-fum lei">${esc(m.t)}`;
+  if (m.piano) {
+    const fermo = !!m.esito, quante = m.piano.filter(x => x.on && controllaAIC(x.a).fai).length;
+    h += `<div class="ai-piano">${m.piano.map((x, j) => rigaAC(x, i, j, fermo)).join('')}</div>`;
+    if (m.esito) h += `<small class="ai-esito">${m.esito === 'fatto' ? '✓ Nel carrello' : m.esito === 'no' ? 'Lasciato stare' : esc(m.esito)}</small>`;
+    else if (quante) h += `<div class="fila ai-faccio"><b>Controlla e conferma</b><button type="button" class="btn piccolo" data-a="ac-si" data-i="${i}">${ico('spunta')}${quante === 1 ? 'Conferma' : `Conferma tutte e ${quante}`}</button><button type="button" class="btn chiaro piccolo" data-a="ac-no" data-i="${i}">Lascia stare</button></div>`;
+  }
+  return h + '</div>';
+}
+function vAiutoCliente() {
+  let h = testataSemplice('Aiutante', 'menu', 'Menù') + '<main class="corpo aiutante">';
+  if (!aiClientiOn()) h += `<div class="avviso">${ico('occhio')}<div><b>Lo vedi solo tu, Mario:</b> per i clienti è spento. Si accende in Impostazioni → Solo per te, Mario.</div></div>`;
+  if (!AIC.msgs.length) h += `<section class="scheda ai-intro">${ico('scintille')}<div><b>Ciao! Ti aiuto a scegliere.</b>
+    <p style="margin:4px 0 0">Chiedimi di allergie, ingredienti, prezzi o del tuo ordine. Scrivi o tocca il microfono.</p>
+    <p class="tenue piccolo" style="margin:6px 0 0">Per esempio: «Cosa c'è senza glutine?» · «Due teglie di lasagne per sabato» · «Il mio ordine è pronto?»</p></div></section>`;
+  h += `<div class="ai-chat" aria-live="polite">${AIC.msgs.map(fumettoAC).join('')}${AIC.attesa ? '<div class="ai-fum lei ai-pensa" aria-label="Sto pensando"><span></span><span></span><span></span></div>' : ''}</div>`;
+  if (!AIC.attesa) h += `<div class="scelte ai-domande">${DOMANDE_AIC.map(d => `<button type="button" class="chip" data-a="ac-chiedi" data-t="${esc(d)}">${esc(d)}</button>`).join('')}</div>`;
+  h += `<div class="ai-scrivi"><input id="ac-testo" type="text" enterkeyhint="send" autocomplete="off" maxlength="300" placeholder="${AI.rec ? 'Ti ascolto…' : 'Scrivi qui…'}" value="${esc(AIC.bozza)}" aria-label="La tua domanda">
+    ${Riconosci ? `<button type="button" class="ai-mic ${AI.rec ? 'acceso' : ''}" data-a="ac-detta" aria-label="${AI.rec ? 'Smetti di ascoltare' : 'Chiedi a voce'}">${ico('microfono')}</button>` : ''}
+    <button type="button" class="btn" data-a="ac-invia" ${AIC.attesa ? 'disabled' : ''}>Invia</button></div>
+    <p class="tenue piccolo" style="margin:0">L'aiutante usa un'intelligenza artificiale: può sbagliare. Per allergie e intolleranze chiedi sempre conferma a Monica.</p>`;
+  return h + tastoMonica() + '</main>';
+}
+const pianoAC = el => AIC.msgs[Number(el.dataset.i)];
+Object.assign(A, {
+  'ac-invia'() { const el = $('#ac-testo'); inviaAC(el ? el.value : AIC.bozza); },
+  'ac-chiedi'(el) { inviaAC(el.dataset.t); },
+  'ac-detta'() { if (UI.vista !== 'aiuto') vai('aiuto'); ascoltaAI(inviaAC, AIC); },
+  'ac-vai'(el) { const [v, id] = el.dataset.v.split(':'); if (v === 'piatto') { vai('menu'); apriPiatto(id, false); } else vai(v); },
+  'ac-si'(el) {
+    const m = pianoAC(el); if (!m || !m.piano || m.esito) return;
+    const scelte = m.piano.filter(x => x.on).map(x => controllaAIC(x.a)).filter(c => c.fai);
+    if (!scelte.length) { m.esito = 'Niente da mettere nel carrello: il menù è cambiato.'; render(); return; }
+    const prima = JSON.stringify(P.carrello);
+    scelte.forEach(c => c.fai()); m.esito = 'fatto'; render();
+    mostraToast(scelte.length === 1 ? 'Messo nel carrello' : `${scelte.length} piatti nel carrello`, () => { P.carrello = JSON.parse(prima); salvaP(); m.esito = 'Tolto dal carrello'; render(); });
+  },
+  'ac-no'(el) { const m = pianoAC(el); if (m && !m.esito) { m.esito = 'no'; render(); } }
+});
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.id === 'ac-testo') AIC.bozza = el.value;
+  if (el.dataset && el.dataset.acf) {
+    const [i, j, k] = el.dataset.acf.split('|'), m = AIC.msgs[Number(i)], x = m && m.piano && m.piano[Number(j)];
+    if (!x || m.esito) return;
+    x.a[k] = el.value;
+    clearTimeout(AIC.tRid); AIC.tRid = setTimeout(() => { const f = document.activeElement && document.activeElement.dataset.acf; render(); if (f) { const n = document.querySelector(`[data-acf="${f}"]`); if (n) n.focus(); } }, 700);
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.acon) { const [i, j] = el.dataset.acon.split('|'), m = AIC.msgs[Number(i)]; if (m && m.piano && !m.esito) { m.piano[Number(j)].on = el.checked; render(); } }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'ac-testo') { e.preventDefault(); inviaAC(e.target.value); } });
