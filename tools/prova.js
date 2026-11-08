@@ -943,6 +943,27 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!/⋮/.test(r[1]) || !/aria-pressed="true">Android/.test(r[1])) throw new Error('scheda Android sbagliata');
     if (r[2] && /data-a="passi-app"/.test(r[2])) throw new Error('c\'è ancora il tasto che apre solo i passi');
   });
+  await passo('cliente (C93): guida a installare dopo il primo ordine, «Ordina di nuovo» in cima al menù', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      P.ruolo = 'cliente'; P.benvenuto = true; P.installata = false; P.ordinato = false; P.carrello = []; UI.passiVia = false; UI.modifica = null; UI.foglio = null;
+      const prima = primiPassi(); vai('inviato'); const dopoInvio = $('main').innerHTML; vai('menu'); const dopo = primiPassi();
+      return [/guida-inst|data-a="installa"/.test(prima), /carta-home/.test(dopoInvio), /guida-inst|data-a="installa"/.test(dopo), P.ordinato];
+    });
+    if (r[0]) throw new Error('la guida a installare compare prima del primo ordine');
+    if (!r[1]) throw new Error('dopo «Ordine inviato!» manca «Metti l\'app sul telefono»');
+    if (!r[2] || !r[3]) throw new Error('dopo il primo ordine la guida non compare nei primi passi');
+    const c = await page.evaluate(() => {
+      if (!P.cliente) P.cliente = (S.clienti[0] || {}).id;
+      const p = S.piatti.find(x => x.disponibile && !x.cestino), f = p.formati[0];
+      S.ordini.push({ id: 'o-c93', n: 999, cliente: P.cliente, stato: 'ritirato', entro: '2000-01-01', paga: {}, righe: [{ piatto: p.id, formato: f.id, qta: 2, prezzo: f.prezzo }] });
+      P.carrello = []; vai('menu'); return [!!document.querySelector('.rifai [data-a="riordina"]'), p.id];
+    });
+    if (!c[0]) throw new Error('in cima al menù manca «Ordina di nuovo»');
+    await clic('.rifai [data-a="riordina"]');
+    const ok = await page.evaluate(id => UI.vista === 'carrello' && P.carrello.some(r => r.piatto === id && r.qta === 2), c[1]);
+    await page.evaluate(() => { S.ordini = S.ordini.filter(o => o.id !== 'o-c93'); P.carrello = []; P.ordinato = false; });
+    if (!ok) throw new Error('«Ordina di nuovo» non mette i piatti nel carrello');
+  });
   await passo('gesto indietro del telefono: torna indietro nell\'app, non la chiude', async () => {   // autonoma
     const url = page.url();
     await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; vai('home'); vai('piatti'); vai('piatto:tiramisu'); });
