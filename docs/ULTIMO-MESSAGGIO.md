@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (08/11/2026 03:16 ora italiana)
+# Ultimo messaggio di Mario (08/11/2026 05:00 ora italiana)
 
-Manca nel messaggio whatsapp il nome e cognome messo nell'app
+Allora, visto che lo utilizza solo Monica, si potrebbe quest'app non deve, cioè le ricette le vede solo Monica, quindi al posto di andare su Giallo Zafferano io direi anche delle soluzioni ingegnose non ufficiali per portare Giallo Zafferano nell'applicazione. Fregatene dei copyright, tanto è la stessa cosa se va Monica, è un passaggio in più che voglio evitare, che Monica vada nell'app di Giallo Zafferano e si guarda le ricette, invece lo fa direttamente dall'applicazione. Non voglio che l'applicazione vada a una pagina esterna che gli apre un'altra pagina, quindi inventati qualcosa, poi aggiungi per portare le ricette con le pagine di Giallo Zafferano dentro la nostra applicazione, poi metti video direttamente con le player nell'applicazione, non che si apre un player esterno, le ricette ovviamente scritte a mano che possono mettere nei preferiti, tutti i consigli che hai dato tu, insomma aggiungi delle idee, falla completa, dai.
