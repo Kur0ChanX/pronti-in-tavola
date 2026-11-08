@@ -16,6 +16,7 @@
    - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano letta dal vivo (gz.mjs), { cerca } la ricerca (C55)
+   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' } e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -206,14 +207,22 @@ async function voceEdge(testo, voce, cfg) {
   const out = new Uint8Array(tot); let k = 0; for (const p of pezzi) { out.set(p, k); k += p.length; }
   return out;
 }
-async function voce(b, cfg) {
+/* voce salvata PER SEMPRE nel database (C60, Mario 08/11 «salva le voci definitivamente… senza doppioni»):
+   stessa voce + stesso testo = una sola copia (chiave voce:sha256). Prima la cache, poi il database, solo se manca Microsoft. */
+async function voce(b, cfg, ctx) {
   const testo = String((b && b.t) || '').replace(/\s+/g, ' ').trim().slice(0, 1500), v = VOCI_EDGE[b && b.v] ? b.v : 'isabella';
   if (!testo) return new Response('niente da leggere', { status: 400 });
-  const cache = caches.default, chiave = new Request('https://cache.pronti/voce/' + v + '/' + await hexSha(testo));
-  const c = await cache.match(chiave); if (c) return c;
-  const mp3 = await voceEdge(testo, v, cfg);
-  await cache.put(chiave, new Response(mp3, { headers: { 'content-type': 'audio/mpeg', 'cache-control': 'max-age=2592000' } }));
-  return new Response(mp3, { headers: { 'content-type': 'audio/mpeg', 'cache-control': 'private, max-age=2592000' } });
+  const sha = await hexSha(testo), k = v + ':' + sha, db = ricDb(cfg);
+  const cache = caches.default, chiave = new Request('https://cache.pronti/voce/' + v + '/' + sha);
+  const c = await cache.match(chiave).catch(() => null); if (c) return c;
+  const testa = { 'content-type': 'audio/mpeg', 'cache-control': 'private, max-age=2592000' };
+  let mp3 = db ? await db.voce(k).catch(() => null) : null;
+  if (mp3) return new Response(mp3, { headers: testa });
+  mp3 = await voceEdge(testo, v, cfg);
+  const dopo = Promise.all([db ? db.salvaVoce(k, mp3).catch(() => null) : null,
+    cache.put(chiave, new Response(mp3, { headers: { 'content-type': 'audio/mpeg', 'cache-control': 'max-age=2592000' } })).catch(() => null)]);
+  if (ctx) ctx.waitUntil(dopo); else await dopo;
+  return new Response(mp3, { headers: testa });
 }
 
 /* GialloZafferano dal vivo (C55): pagina letta al momento, tenuta 1 giorno nella cache di Cloudflare (meno richieste al loro sito) */
@@ -227,7 +236,28 @@ async function paginaGz(u) {
   await cache.put(chiave, new Response(t, { headers: { 'cache-control': 'max-age=86400' } }));
   return t;
 }
-async function ricettaGz(b) {
+/* il TUO database delle ricette (C60): oggetto «Ricettario» con SQLite, sullo stesso account dell'app, gratis.
+   Cresce da solo (motoreRicette ogni 10 minuti) e con ogni ricetta che Monica o Mario aprono o scorrono. */
+const ricDb = cfg => cfg && cfg.RICETTARIO ? cfg.RICETTARIO.get(cfg.RICETTARIO.idFromName('ricette')) : null;
+async function leggiGz(u) {
+  const r = gzRicetta(await paginaGz(u), u);
+  if (!r) return null;
+  if (r.videoChiave) { try { Object.assign(r, gzVideo(await paginaGz('https://ptp.stbm.it/v/' + r.videoChiave))); } catch (e) { /* senza video: resta la ricetta */ } }
+  return r;
+}
+async function ricettaGz(b, cfg, ctx) {
+  const db = ricDb(cfg), poi = p => { if (p && ctx) ctx.waitUntil(p.catch(() => null)); };
+  if (b && b.db) {   // { db: 'stato' } numeri · { db: 'pausa'|'riprendi' } ferma o riprende la crescita
+    if (!db) return { errore: 'database non collegato' };
+    if (b.db === 'pausa' || b.db === 'riprendi') await db.metti1('pausa', b.db === 'pausa' ? '1' : '');
+    return { db: await db.statoDb() };
+  }
+  if (b && b.cat === 'db') {   // sfoglia o cerca nel database, 30 per volta («Carica altre» = pagina 'db:<da>')
+    if (!db) return { errore: 'database non collegato' };
+    const da = typeof b.pagina === 'string' && /^db:\d{1,6}$/.test(b.pagina) ? +b.pagina.slice(3) : 0;
+    const q = typeof b.q === 'string' ? b.q : '', ricette = await db.elenco(q, da, 31);
+    return { ricette: ricette.slice(0, 30), prossima: ricette.length > 30 ? 'db:' + (da + 30) : '' };
+  }
   if (b && (typeof b.cerca === 'string' || typeof b.cat === 'string')) {
     let u = '';
     if (typeof b.pagina === 'string' && /^https:\/\/(?:www|ricette)\.giallozafferano\.it\/[\w\/%+.,-]*$/.test(b.pagina)) u = b.pagina;   // «Carica altre»
@@ -240,16 +270,48 @@ async function ricettaGz(b) {
     }
     const html = await paginaGz(u).catch(() => ''), ricette = gzCerca(html);
     // pagina della sezione vuota o cambiata: si cerca la stessa cosa a parole (così il catalogo non resta mai vuoto)
-    if (!ricette.length && b.cat && !b.pagina && typeof b.cerca === 'string' && b.cerca.trim().length >= 2) return ricettaGz({ cerca: b.cerca });
-    if (!html && !ricette.length) throw new Error('GialloZafferano non risponde');
+    if (!ricette.length && b.cat && !b.pagina && typeof b.cerca === 'string' && b.cerca.trim().length >= 2) return ricettaGz({ cerca: b.cerca }, cfg, ctx);
+    if (!html && !ricette.length) {   // GialloZafferano non risponde: si cerca nel tuo database
+      const mie = db && !b.cat && !b.pagina ? await db.elenco(b.cerca, 0).catch(() => []) : [];
+      if (mie.length) return { ricette: mie, prossima: '', dalDb: true };
+      throw new Error('GialloZafferano non risponde');
+    }
+    if (db && ricette.length) poi(db.inCoda(ricette.map(x => x.url)));   // quello che si scorre entra in coda per il database
     return { ricette, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
   }
   const u = urlGz(b && b.u);
   if (!u) return { errore: 'indirizzo non valido' };
-  const r = gzRicetta(await paginaGz(u), u);
-  if (!r) return { errore: 'ricetta non trovata nella pagina' };
-  if (r.videoChiave) { try { Object.assign(r, gzVideo(await paginaGz('https://ptp.stbm.it/v/' + r.videoChiave))); } catch (e) { /* senza video: resta la ricetta */ } }
-  return { ricetta: r };
+  let r = null, err = null;
+  try { r = await leggiGz(u); } catch (e) { err = e; }
+  if (r) { if (db) poi(db.salva(r)); return { ricetta: r }; }   // ogni ricetta aperta: salvata per sempre
+  const salvata = db ? await db.una('gz:' + u.replace('https://ricette.giallozafferano.it/', '').replace(/\.html$/, '')).catch(() => null) : null;
+  if (salvata) return { ricetta: salvata, dalDb: true };   // GialloZafferano giù o cambiato: la copia del database
+  if (err) throw err;
+  return { errore: 'ricetta non trovata nella pagina' };
+}
+
+/* MOTORE (cron ogni 10 minuti): se la coda è corta legge UNA pagina di una sezione (a rotazione, pagina dopo pagina)
+   e mette in coda le ricette che il database non ha; poi ne scarica RICETTE_GIRO. Poche per volta: rispetta GialloZafferano
+   e il piano gratuito (50 richieste e ~10 ms di calcolo per giro). ~280 ricette al giorno. */
+const FONTI_DB = ['sardegna', 'primi', 'secondi', 'dolci', 'antipasti', 'contorni', 'lievitati', 'unici', 'sughi', 'bevande'];
+const RICETTE_GIRO = 2, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
+async function motoreRicette(cfg) {
+  const db = ricDb(cfg); if (!db) return;
+  const s = await db.statoDb(); if (s.pausa) return;
+  if (s.coda < CODA_MIN) {
+    const i = (Number(s.fonte) || 0) % FONTI_DB.length, u = s.pagina || `https://www.giallozafferano.it/${CAT_GZ[FONTI_DB[i]]}/`;
+    let html = '';
+    try { html = await paginaGz(u); } catch (e) { await db.giro({ errore: String(e.message || e) }); }
+    const lista = gzCerca(html), nuove = lista.length ? await db.inCoda(lista.map(x => x.url)) : 0;
+    const dopo = lista.length ? gzProssima(html, u, lista.length) : '';
+    if (html) await db.posizione(dopo ? i : (i + 1) % FONTI_DB.length, dopo, nuove);
+  }
+  let fatte = 0;
+  for (const u of await db.prendi(RICETTE_GIRO)) {
+    const ok = urlGz(u); if (!ok) { await db.togliCoda(u); continue; }
+    try { const r = await leggiGz(ok); if (r) { await db.salva(r); fatte++; } else await db.togliCoda(u); } catch (e) { /* riprova al prossimo giro (max 3) */ }
+  }
+  await db.giro({ fatte });
 }
 
 /* chi gestisce? Firestore legge gestori/<uid> col token di Google della persona: se risponde 200, è un gestore */
@@ -431,8 +493,76 @@ export class Avvisi extends DurableObject {
   }
 }
 
+/* Ricettario: il database delle ricette e delle voci (SQLite dentro l'oggetto, gratis fino a 5 GB). Niente doppioni: id e chiavi uniche. */
+const minuscolo = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+export class Ricettario extends DurableObject {
+  constructor(ctx, cfg) {
+    super(ctx, cfg);
+    this.sql = ctx.storage.sql;
+    ['CREATE TABLE IF NOT EXISTS ricette (id TEXT PRIMARY KEY, url TEXT, nome TEXT, categoria TEXT, foto TEXT, descr TEXT, cerca TEXT, json TEXT, creata INTEGER, aggiornata INTEGER)',
+      'CREATE INDEX IF NOT EXISTS ricette_creata ON ricette (creata)',
+      'CREATE INDEX IF NOT EXISTS ricette_url ON ricette (url)',
+      'CREATE TABLE IF NOT EXISTS coda (url TEXT PRIMARY KEY, aggiunta INTEGER, tentativi INTEGER DEFAULT 0)',
+      'CREATE TABLE IF NOT EXISTS voci (k TEXT PRIMARY KEY, mp3 BLOB, byte INTEGER, creata INTEGER)',
+      'CREATE TABLE IF NOT EXISTS stato (k TEXT PRIMARY KEY, v TEXT)'].forEach(q => this.sql.exec(q));
+  }
+  leggi1(k) { const r = this.sql.exec('SELECT v FROM stato WHERE k = ?', k).toArray()[0]; return r ? r.v : ''; }
+  metti1(k, v) { this.sql.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', k, String(v ?? '')); }
+  salva(r) {
+    if (!r || !/^gz:[\w%-]+$/.test(r.id || '') || !r.nome) return false;
+    const ora = Date.now(), cerca = minuscolo([r.nome, r.categoria, (r.ingredienti || []).map(i => i.nome).join(' ')].join(' '));
+    this.sql.exec(`INSERT INTO ricette (id, url, nome, categoria, foto, descr, cerca, json, creata, aggiornata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET nome = excluded.nome, categoria = excluded.categoria, foto = excluded.foto, descr = excluded.descr, cerca = excluded.cerca, json = excluded.json, aggiornata = excluded.aggiornata`,
+      r.id, r.url || '', r.nome, r.categoria || '', r.foto || '', String(r.intro || '').slice(0, 200), cerca, JSON.stringify(r), ora, ora);
+    this.sql.exec('DELETE FROM coda WHERE url = ?', r.url || '');
+    return true;
+  }
+  una(id) { const x = this.sql.exec('SELECT json FROM ricette WHERE id = ?', String(id)).toArray()[0]; return x ? JSON.parse(x.json) : null; }
+  /* elenco per l'app (stessa forma della ricerca di GialloZafferano): le più nuove prima; tutte le parole presenti */
+  elenco(q, da, n = 30) {
+    const parole = minuscolo(q).replace(/[^\p{L}\p{N} ]/gu, ' ').split(' ').filter(p => p.length >= 2).slice(0, 5);
+    const dove = parole.length ? 'WHERE ' + parole.map(() => 'cerca LIKE ?').join(' AND ') : '';
+    return this.sql.exec(`SELECT url, nome, foto, categoria, descr FROM ricette ${dove} ORDER BY creata DESC LIMIT ? OFFSET ?`, ...parole.map(p => '%' + p + '%'), Math.min(31, Number(n) || 30), Math.max(0, Number(da) || 0))
+      .toArray().map(x => ({ url: x.url, nome: x.nome, foto: x.foto, categoria: x.categoria, desc: x.descr }));
+  }
+  /* in coda solo gli indirizzi che il database non ha (né in coda né salvati): quante nuove */
+  inCoda(urls) {
+    let n = 0; const ora = Date.now();
+    for (const u of [...new Set(urls || [])].slice(0, 40)) {
+      if (typeof u !== 'string' || !/^https:\/\/ricette\.giallozafferano\.it\/[\w%-]+\.html$/.test(u)) continue;
+      if (this.sql.exec('SELECT 1 FROM ricette WHERE url = ?', u).toArray().length) continue;
+      if (this.sql.exec('SELECT 1 FROM coda WHERE url = ?', u).toArray().length) continue;
+      this.sql.exec('INSERT INTO coda (url, aggiunta) VALUES (?, ?)', u, ora); n++;
+    }
+    return n;
+  }
+  prendi(n) {
+    this.sql.exec('DELETE FROM coda WHERE tentativi >= 3');
+    const tt = this.sql.exec('SELECT url FROM coda ORDER BY tentativi, aggiunta LIMIT ?', n).toArray().map(x => x.url);
+    tt.forEach(u => this.sql.exec('UPDATE coda SET tentativi = tentativi + 1 WHERE url = ?', u));
+    return tt;
+  }
+  togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
+  posizione(fonte, pagina, nuove) { this.metti1('fonte', fonte); this.metti1('pagina', pagina || ''); this.metti1('ultimaPagina', JSON.stringify({ quando: Date.now(), nuove })); }
+  giro(x) { this.metti1('ultimoGiro', JSON.stringify(Object.assign({ quando: Date.now() }, x))); }
+  voce(k) { const x = this.sql.exec('SELECT mp3 FROM voci WHERE k = ?', String(k)).toArray()[0]; return x ? x.mp3 : null; }
+  salvaVoce(k, mp3) {
+    const b = mp3 instanceof ArrayBuffer ? mp3 : mp3.buffer.slice(mp3.byteOffset, mp3.byteOffset + mp3.byteLength);
+    if (!b.byteLength || b.byteLength > 1800000) return false;   // una riga del database regge al massimo 2 MB
+    this.sql.exec('INSERT OR IGNORE INTO voci (k, mp3, byte, creata) VALUES (?, ?, ?, ?)', String(k), b, b.byteLength, Date.now());
+    return true;
+  }
+  statoDb() {
+    const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, v = uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci');
+    const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
+    return { ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
+      oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
+      fonte: Number(this.leggi1('fonte')) || 0, pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'), mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };
+  }
+}
+
 export default {
-  async fetch(req, env) {
+  async fetch(req, env, ctx) {
     const url = new URL(req.url);
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
     const av = env.AVVISI.get(env.AVVISI.idFromName('cucina'));
@@ -468,8 +598,8 @@ export default {
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
-      if (url.pathname === '/api/voce') { const b = await req.json().catch(() => null); return await voce(b, env).catch(e => json({ errore: String(e.message || e) }, 502)); }
-      if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b).catch(e => ({ errore: String(e.message || e) })); return json(r, r.errore ? 502 : 200); }
+      if (url.pathname === '/api/voce') { const b = await req.json().catch(() => null); return await voce(b, env, ctx).catch(e => json({ errore: String(e.message || e) }, 502)); }
+      if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b, env, ctx).catch(e => ({ errore: String(e.message || e) })); return json(r, r.errore ? 502 : 200); }
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/prova-ai') return json(await provaAI(env));
       if (url.pathname === '/api/visto-qui') return json(await av.vistoQui());
@@ -499,8 +629,9 @@ export default {
       return json({ errore: String(e && e.message || e) }, 500);
     }
   },
-  /* ogni sera: promemoria per domani */
+  /* ogni 10 minuti: il motore del database delle ricette · ogni sera: promemoria per domani */
   async scheduled(ev, env, ctx) {
+    if (ev.cron === CRON_DB) { ctx.waitUntil(motoreRicette(env).catch(() => null)); return; }
     ctx.waitUntil(env.AVVISI.get(env.AVVISI.idFromName('cucina')).promemoria());
   }
 };

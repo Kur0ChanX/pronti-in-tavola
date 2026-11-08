@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.26';
+const VERSIONE_APP = '0.9.27';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.27', data: '08/11/2026',
+    nuovo: ['Ricettario: «🗄 Il tuo database» sul server dell\'app: cresce da solo ogni 10 minuti con le ricette di GialloZafferano, salva per sempre ogni ricetta aperta e ogni lettura della voce (senza doppioni). «Sfoglia», «Ferma» e «Riprendi»'],
+    migliorato: ['Se GialloZafferano non risponde, ricette e ricerche arrivano dal tuo database', 'Cucina guidata: la voce legge il passo e poi il consiglio («di\' avanti»), così le letture si riusano'] },
   { v: '0.9.26', data: '08/11/2026',
     nuovo: ['Ricettario: «💾 Copia di sicurezza»: salva in un file ricette tue, note e preferite e riprendile su un altro telefono (si uniscono, niente si cancella)'] },
   { v: '0.9.25', data: '08/11/2026',

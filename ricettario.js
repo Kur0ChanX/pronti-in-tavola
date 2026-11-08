@@ -205,6 +205,25 @@ const cartaRic = (r, pref) => `<button type="button" class="ric-carta" data-a="v
     ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
     <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.mia ? 'Ricetta tua' : { gallura: 'Gallura', sarda: 'Sardegna', italiana: 'Italia' }[r.zona] || 'GialloZafferano'}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small></span></button>`;
 
+/* 🗄 il TUO database sul server (C60): quante ricette e voci salvate per sempre, sfoglia, ferma o riprendi la crescita */
+function sezioneDbRic() {
+  const d = RIC.db;
+  if (!d || Date.now() - (RIC.dbOra || 0) > 60000) {
+    if (!RIC.dbChiede) {
+      RIC.dbChiede = true;
+      RIC.dbOra = Date.now();   // una domanda al minuto al massimo, anche se il server non risponde (niente giri infiniti)
+      RIC.chiedi({ db: 'stato' }).then(j => { RIC.db = j && j.db ? j.db : RIC.db || { errore: true }; })
+        .catch(() => { RIC.db = RIC.db || { errore: true }; })
+        .finally(() => { RIC.dbChiede = false; if (UI.vista === 'ricettario') render(); });
+    }
+    if (!d) return '';
+  }
+  if (d.errore) return '';
+  const crescita = d.pausa ? '⏸ Crescita ferma: tocca «Riprendi».' : `Cresce da solo: +${d.oggi} nelle ultime 24 ore${d.coda ? `, ${d.coda} in arrivo` : ''}.`;
+  return `<section class="scheda" id="ric-db"><h2>🗄 Il tuo database: ${d.ricette} ricette</h2>
+    <p class="piccolo tenue" style="margin:0">${crescita} Salvate per sempre sul server dell'app, con ${d.voci} letture della voce${d.mbVoci ? ` (${d.mbVoci} MB)` : ''}.</p>
+    <div class="fila">${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-pausa">${d.pausa ? '▶️ Riprendi la crescita' : '⏸ Ferma la crescita'}</button></div></section>`;
+}
 function vRicettario() {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
@@ -251,6 +270,7 @@ function vRicettario() {
   if (!q && !c.stato) h += `<section class="scheda"><h2>🧺 Cosa cucino con quello che ho?</h2><p class="piccolo tenue" style="margin:0">Scrivi 2 o 3 cose che hai in casa: cerco le ricette che le usano.</p>
     <form class="ric-cerca" data-ric-casa="1"><input id="ric-casa" type="search" value="${esc(UI.ricCasa || '')}" placeholder="Es. zucchine, uova, pecorino" autocomplete="off" enterkeyhint="search">
       <button type="submit" class="btn pieno" aria-label="Cerca con questi ingredienti">${ico('cerca')}</button></form></section>`;
+  if (!q && !c.stato) h += sezioneDbRic();
   if (!q && !c.stato) h += `<section class="scheda"><h2>📚 Tutto il catalogo</h2><p class="piccolo tenue" style="margin:0">Tutte le ricette di GialloZafferano, per portata: scorri e tocca «Carica altre».</p>
     <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div>
     <details class="ric-intro"><summary><b>Per ingrediente</b> <small class="tenue">(${CATALOGO_ING.length})</small></summary><div class="scelte">${CATALOGO_ING.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="ricette-con-${k}">${t}</button>`).join('')}</div></details></section>`;
@@ -363,7 +383,9 @@ function leggiPasso() {
   const p = r.passi[c.passo], min = minutiPasso(p.t), ultimo = c.passo === r.passi.length - 1;
   const coda = c.mani ? (min ? ' Di\' «timer» per il conto alla rovescia.' : '') + (ultimo ? ' Era l\'ultimo passo: di\' «finito».' : ' Quando hai fatto, di\' «avanti».') : (min ? ' Se vuoi, tocca Timer.' : '');
   fermaAscolto();
-  parlaAI(`Passo ${c.passo + 1}. ${p.t}${coda}`, () => { if (UI.cucina === c && c.mani) ascoltaCucina(); });
+  // due letture: il passo e la coda («di' avanti»…): la coda è uguale in tutte le ricette, il server la salva una volta sola (C60)
+  const poi = () => { if (UI.cucina === c && c.mani) ascoltaCucina(); };
+  parlaAI(`Passo ${c.passo + 1}. ${p.t}`, () => { if (UI.cucina !== c) return; if (coda.trim()) parlaAI(coda.trim(), poi); else poi(); });
 }
 /* MANI LIBERE: dopo ogni passo la voce si ferma e aspetta un comando detto (Chrome su Android). Comandi in COMANDI_RIC */
 const RiconosciRic = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -560,8 +582,15 @@ Object.assign(A, {
     mostraToast(`💾 Copia salvata nei Download: ${copia.mie.length} ricette tue, ${Object.keys(copia.note).length} note, ${copia.preferite.length} preferite.`);
   },
   'ric-catalogo'(el) {
-    const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
+    const k = el.dataset.v, nome = k === 'db' ? 'Il tuo database' : (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
     A['ric-cerca-gz'](nome, k);
+  },
+  'ric-db-pausa'() {
+    const d = RIC.db; if (!d || d.errore) return;
+    RIC.chiedi({ db: d.pausa ? 'riprendi' : 'pausa' })
+      .then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(j.db.pausa ? '⏸ Il database non cresce più finché non tocchi «Riprendi».' : '▶️ Il database ricomincia a crescere da solo.'); })
+      .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
+      .finally(() => { if (UI.vista === 'ricettario') render(); });
   },
   'ric-altre'() {
     const c = RIC.cerca; if (!c.prossima || c.altre === 'carico') return;

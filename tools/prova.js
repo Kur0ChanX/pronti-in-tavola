@@ -552,6 +552,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.locator('[data-a="ric-altre"]').count()) throw new Error('«Carica altre» resta anche a catalogo finito');
     await clic('[data-a="ric-chiudi-cerca"]'); await clic('.ric-intro summary');
     await clic('[data-a="ric-catalogo"][data-v="ricette-con-le-Melanzane"]'); await page.locator('#ric-risultati h2', { hasText: 'Melanzane' }).waitFor({ timeout: 3000 });
+    await clic('[data-a="ric-chiudi-cerca"]');
+    // 🗄 il tuo database (C60): numeri dal server, «Sfoglia» apre il catalogo del database
+    await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, oggi: 12, pausa: false }; RIC.dbOra = Date.now(); render(); });
+    await page.locator('#ric-db h2', { hasText: '42 ricette' }).waitFor({ timeout: 3000 });
+    await clic('[data-a="ric-catalogo"][data-v="db"]'); await page.locator('#ric-risultati h2', { hasText: 'Il tuo database' }).waitFor({ timeout: 3000 });
     await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
