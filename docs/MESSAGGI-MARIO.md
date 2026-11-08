@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 20:45 · 01QTFEqSy2LM
-Il carrello che ti avevo detto della spesa, che guarda le quantità dei prodotti che usa, le carica quanti ingredienti ci vogliono, le quantità, e quando va a fare la spesa gli segna la spesa che deve fare in base alle quantità degli ordini che ha. Quello te l'avevo detto, te ne sei dimenticato ovviamente.
-
 ## 2026-11-05 21:13 · 01QTFEqSy2LM
 Praticamente ha una lista della spesa. Ovviamente fai una lista della spesa, visto che ci siamo, completa, prendi spunto alle app gold standard della spesa e mettila dentro, e poi dentro una sezione con scritto tipo, cosa ne so, spesa per i miei ordini, gli esce quello che deve comprare.
 
@@ -136,3 +133,6 @@ invece per il collegamento bei vlienti per whatsapp per contattare monica quello
 
 ## 2026-11-08 03:16 · 01QTFEqQ92G5
 Manca nel messaggio whatsapp il nome e cognome messo nell'app
+
+## 2026-11-08 05:00 · 01QTFEqRojDE
+Allora, visto che lo utilizza solo Monica, si potrebbe quest'app non deve, cioè le ricette le vede solo Monica, quindi al posto di andare su Giallo Zafferano io direi anche delle soluzioni ingegnose non ufficiali per portare Giallo Zafferano nell'applicazione. Fregatene dei copyright, tanto è la stessa cosa se va Monica, è un passaggio in più che voglio evitare, che Monica vada nell'app di Giallo Zafferano e si guarda le ricette, invece lo fa direttamente dall'applicazione. Non voglio che l'applicazione vada a una pagina esterna che gli apre un'altra pagina, quindi inventati qualcosa, poi aggiungi per portare le ricette con le pagine di Giallo Zafferano dentro la nostra applicazione, poi metti video direttamente con le player nell'applicazione, non che si apre un player esterno, le ricette ovviamente scritte a mano che possono mettere nei preferiti, tutti i consigli che hai dato tu, insomma aggiungi delle idee, falla completa, dai.
