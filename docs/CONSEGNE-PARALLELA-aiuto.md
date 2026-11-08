@@ -1,6 +1,6 @@
 # Consegne della chat parallela «Aiuto» (bug) · Aiuto 6 → Aiuto 7
 
-**Già deciso da Mario (non richiedere):** guida iPhone a figure (Mario «1»); popup «Installa l'app» all'ingresso dei clienti, scelta iPhone | Android, poi notifiche (Mario 08/11 «fallo subito»); «vai avanti da solo, accetta i tuoi consigli e pubblica»; niente artefatto, Mario prova sul sito vero.
+**Già deciso da Mario (non richiedere):** «vai avanti da solo» (08/11 ~19:30, dopo l'handoff): procedi coi tuoi consigli e pubblica, senza aspettarlo; guida iPhone a figure (Mario «1»); popup «Installa l'app» all'ingresso dei clienti, scelta iPhone | Android, poi notifiche (Mario 08/11 «fallo subito»); «vai avanti da solo, accetta i tuoi consigli e pubblica»; niente artefatto, Mario prova sul sito vero.
 **Da non rifare:** ricerca su dove sta Condividi in Safari (fatta 08/11, fonti in testa a `guida-iphone.js`: iOS 27 menu pagina a sinistra dell'indirizzo, iOS 26 ⋯ a destra, iOS ≤18 o barra Basso/Alto Condividi in basso); l'app legge la versione da `Version/NN` dello user agent (risposto a Mario: il cliente vede una guida sola).
 **Cosa preme a Mario adesso:** i clienti con iPhone devono installare l'app e ricevere le notifiche senza aiuto; e a Mario/Monica non è arrivata la notifica della richiesta del cliente nuovo (C97).
 
@@ -26,3 +26,6 @@ Controllo Da fare: 3 voci aggiunte (C95, C96, C97). Messaggi di Mario della sess
 
 ## Ultimo messaggio di Mario (parola per parola)
 «Ma nell'ultimo, quando ho mandato il link, non mi è arrivata nessuna notifica nell'app di accettarlo. Non lo so, forse perché ci stai lavorando tu, non lo so, comunque non mi è arrivato niente. Accetta per il primo ordine.»
+
+## Messaggio di Mario dopo l'handoff (parola per parola)
+«vai avanti da solo»
