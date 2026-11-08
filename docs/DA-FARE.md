@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 08/11 · 🟡 Principale 32 · Controllo dei numeri doppi (C89) anche negli altri progetti (kit)? 1 sì (consiglio) · 2 solo qui. · Impostazioni lotto 2 (C88)? 1 sì, dai nomi delle parti del menù (consiglio) · 2 aspetta le prove.
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
 | N | Cosa | Chi | Urgenza |
