@@ -249,7 +249,7 @@ function barraDev() {
   return `<div class="prova dev" role="group" aria-label="Modalità sviluppatore">Sviluppatore · guarda come
     <button type="button" data-a="dev-come" data-v="cliente" aria-pressed="${!!UI.devCliente}">Cliente</button>
     <button type="button" data-a="dev-come" data-v="" aria-pressed="${!UI.devCliente}">Gestore</button>
-    <span class="dev-v">v${VERSIONE_APP}</span></div>`;
+    <button type="button" class="dev-v" data-a="dev-novita" aria-label="Versione ${VERSIONE_APP}: tocca per vedere tutti gli aggiornamenti">v${VERSIONE_APP}</button></div>`;
 }
 /* barra sviluppatore: scorri il dito da sinistra a destra in cima allo schermo (Mario 07/11).
    È un gesto di lato: il «tira giù per ricaricare» è in verticale, quindi non si toccano. */
@@ -1342,11 +1342,24 @@ function vClienti() {
       ${UI.rifiutati ? `<p class="tenue" style="margin:0">Hai detto di no a queste persone: non vedono l'indirizzo e non possono ordinare. Se hai sbagliato, tocca «Accetta»: da quel momento sono tue clienti.</p>${rifiutati.map(rigaRifiutato).join('')}` : ''}</section>` : ''}</main>`;
 }
 
+/* Cronologia degli aggiornamenti con data e ora italiana (Mario 08/11 «anche l'orario»): l'ora sta nella voce (`ora`) o in ORE_NOVITA */
+const oraNovita = n => n.ora || ORE_NOVITA[n.v] || '';
+const quandoNovita = n => esc(n.data) + (oraNovita(n) ? ` · ore ${esc(oraNovita(n))}` : '');
+function novitaHtml(lista) {
+  return lista.map(n => `<div class="dev-nov"><b>${esc(n.v)}</b> <span class="quando">${quandoNovita(n)}</span>${[['nuovo', '✨ Nuovo'], ['migliorato', '⬆️ Migliorato'], ['corretto', '🔧 Corretto']].filter(([k]) => (n[k] || []).length).map(([k, t]) => `<div class="dev-tipo">${t}</div><ul>${n[k].map(c => `<li>${esc(c)}</li>`).join('')}</ul>`).join('')}</div>`).join('');
+}
+/* Tocco sul numerino della versione nella barra sviluppatore: tutti gli aggiornamenti, dal più nuovo (Mario 08/11) */
+function foglioNovita() {
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>Aggiornamenti dell'app</h1>
+    <p class="tenue" style="margin:0">Versione in uso <b>${VERSIONE_APP}</b> · ${quandoNovita(NOVITA[0])}. ${NOVITA.length} versioni, dalla più nuova; data e ora italiana di quando sono andate online.</p>
+    ${novitaHtml(NOVITA)}</div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="chiudi">Chiudi</button></div>`;
+}
 function sezioneDev() {
   if (!sviluppatore()) return '';
   const ultime = NOVITA.slice(0, UI.devTutte ? NOVITA.length : 3);
   return `<section class="scheda dev-scheda"><h2>Sviluppatore</h2>
-    <p style="margin:0"><b>Versione ${VERSIONE_APP}</b> · ${esc(NOVITA[0].data)}</p>
+    <p style="margin:0"><b>Versione ${VERSIONE_APP}</b> · ${quandoNovita(NOVITA[0])}</p>
     <p class="tenue piccolo" style="margin:0">La vedi solo tu, su questo telefono. Monica non vede niente di questa parte.</p>
     <button type="button" class="btn chiaro" data-a="dev-come" data-v="cliente">Guarda l'app come un cliente</button>
     ${Dati.attivo ? '<p class="tenue piccolo" style="margin:0">Barra «guarda come» in alto: scorri il dito da sinistra a destra in cima allo schermo (apre e chiude).</p>' : ''}
@@ -1354,7 +1367,7 @@ function sezioneDev() {
     <div class="scelte">${Object.entries(Vapore.STILI).map(([k, n]) => `<button type="button" class="chip" data-a="dev-vapore" data-v="${k}" aria-pressed="${(P.vapore || 'A') === k}">${k} · ${n}</button>`).join('')}</div>
     <p class="tenue piccolo" style="margin:0">Tocca per vederlo e sceglierlo su questo telefono.</p>
     <h3 style="margin:8px 0 0">Cronologia degli aggiornamenti</h3>
-    ${ultime.map(n => `<div class="dev-nov"><b>${esc(n.v)} · ${esc(n.data)}</b>${[['nuovo', '✨ Nuovo'], ['migliorato', '⬆️ Migliorato'], ['corretto', '🔧 Corretto']].filter(([k]) => (n[k] || []).length).map(([k, t]) => `<div class="dev-tipo">${t}</div><ul>${n[k].map(c => `<li>${esc(c)}</li>`).join('')}</ul>`).join('')}</div>`).join('')}
+    ${novitaHtml(ultime)}
     ${NOVITA.length > 3 && !UI.devTutte ? '<button type="button" class="link" data-a="dev-tutte">Tutta la cronologia, dalla 0.1</button>' : ''}
     <button type="button" class="link piccolo" data-a="dev-esci">Esci dalla modalità sviluppatore</button></section>`;
 }
@@ -1524,7 +1537,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1900,6 +1913,7 @@ const A = {
     vai(UI.devCliente ? 'menu' : 'home');
   },
   'tutti-prova-apri'() { UI.foglio = { tipo: 'tutti-prova' }; render(); },
+  'dev-novita'() { UI.foglio = { tipo: 'novita' }; render(); },
   'tutti-prova-si'() {
     if (!puoSviluppare()) return;
     const oo = S.ordini.filter(o => !diProva(o)); UI.foglio = null;
