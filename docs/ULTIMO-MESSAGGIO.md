@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (08/11/2026 ~02:40 ora italiana)
+# Ultimo messaggio di Mario (08/11/2026 03:16 ora italiana)
 
-ma utilizza limiti di altri progetti?
+Manca nel messaggio whatsapp il nome e cognome messo nell'app

@@ -2,28 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 15:20 · 01QTFEqSmQas
-lista ho detto di no cosa?
-
-## 2026-11-05 19:45 · 01QTFEqSmQas
-in che senso lista ho detto di no? sei sicuro?
-
-## 2026-11-05 19:46 · 01QTFEqSmQas
-1ok
-
-## 2026-11-05 20:25 · 01QTFEqSmQas
-non usa altri limiti se lo metto cloudflare in mario.miscera@gmail.com?
-
-## 2026-11-05 20:33 · 01QTFEqSy2LM
-pronti-in-tavola.pages.dev questo
-
-## 2026-11-05 20:36 · 01QTFEqSy2LM
-metti tutti gli aggiornamenti sull artefatto test che devo mostrare l'app
-
-## 2026-11-05 20:39 · 01QTFEqSy2LM
-si capisce tutto
-metti il carrello che ti ho detto e le funzioni nuove nell app di test devo farla vedere
-
 ## 2026-11-05 20:45 · 01QTFEqSy2LM
 Il carrello che ti avevo detto della spesa, che guarda le quantità dei prodotti che usa, le carica quanti ingredienti ci vogliono, le quantità, e quando va a fare la spesa gli segna la spesa che deve fare in base alle quantità degli ordini che ha. Quello te l'avevo detto, te ne sei dimenticato ovviamente.
 
@@ -141,3 +119,20 @@ iniziaml assistente per monica non clienti
 
 ## 2026-11-08 02:40 · 01QTFEqQ5ALf
 ma utilizza limiti di altri progetti?
+
+## 2026-11-08 02:49 · 01QTFEqQ92G5
+aggiungi in modo molto avanzato l'aiutante per monica per cambiare aggiungere funzioni ecc impostazioni ecc ecc con prima la visione e modifica potenzialo al massimo inventati quello che vuoi soluzioni geniali e innovative ultime uscite
+
+## 2026-11-08 03:05 · 01QTFEqQ92G5
+per ora il menu in foto non c'è bisogno perché c'è l'app e il lucchetto tranquillo funziona potenzia l'ia come ti ho detto
+risponde alle sue domande e l'aiuta  nelle impostazioni app o le fa' in automatico ma prima visiona e conferma monica se ha fatto giusto l'ia poi inventati altre idee per ia
+metti un tasto per i clienti scrivi a monica su WhatsApp il tasto in un posto strategico anche 2 se vuoi inizia il messaggio una cosa del genere falla professionale come le app
+Ciao Monica sono ti contatto dall'app pronti in tavola, volevo chiederti.....e poi vuoto scrive il cliente o inventati qualcosa di migliore
+
+## 2026-11-08 03:13 · 01QTFEqQ92G5
+per i clienti fallo al meglio ma tienilo disattivato nelle mie impostazioni per tutti i clienti devo capite questa cosa dei limiti poi c'è si blocca per i limiti crea un altro ponte automatico che lavora allo stesso modo con nuovi limiti poi
+IA deve dire tocca conferma non fai con una bella voce non robotica se puoi semore femminile
+invece per il collegamento bei vlienti per whatsapp per contattare monica quello lascialo
+
+## 2026-11-08 03:16 · 01QTFEqQ92G5
+Manca nel messaggio whatsapp il nome e cognome messo nell'app
