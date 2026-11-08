@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.40';
+const VERSIONE_APP = '0.9.41';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.41', data: '08/11/2026', ora: '14:35',
+    corretto: ['Passi delle ricette: il punto finale non va più a capo da solo dopo il numerino'] },
   { v: '0.9.40', data: '08/11/2026', ora: '14:25',
     corretto: ['Ricette uguali a GialloZafferano: tornano i numerini 1, 2, 3 che legano ogni frase alla sua foto (prima si perdevano) e niente più spazi strani prima dei punti', 'Le ricette già salvate sul telefono si rileggono da sole la prima volta che le apri con la rete'] },
   { v: '0.9.39', data: '08/11/2026', ora: '13:45',

@@ -246,7 +246,7 @@ const daMia = m => ({ id: m.id, mia: true, nome: m.nome, intro: m.note || '', fo
    e i numerini [[1]] [[2]] che legano ogni frase alla sua foto (prima si perdevano). Alla voce e al timer i numerini non servono. */
 const pulisciPasso = t => String(t || '').replace(/[ \t]+([.,;:!?)])/g, '$1').replace(/\([ \t]+/g, '(').replace(/\s{2,}/g, ' ').trim();
 const testoVoce = t => pulisciPasso(String(t || '').replace(/\s*\[\[\d+\]\]/g, ''));
-const passoHtml = t => esc(pulisciPasso(t)).replace(/\s*\[\[(\d+)\]\]/g, ' <span class="num-step">$1</span>');
+const passoHtml = t => esc(pulisciPasso(t)).replace(/\s*\[\[(\d+)\]\]([.,;:!?]*)/g, ' <span class="nw"><span class="num-step">$1</span>$2</span>');   // il punto resta attaccato al numerino (foto di Mario 14:15)
 function fotoPasso(p, grandi) {
   if (!p.foto || !p.foto.length) return '';
   const nn = [...String(p.t).matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);   // una foto per numerino, o una foto «a strisce» con tutti (es. 1-3)
