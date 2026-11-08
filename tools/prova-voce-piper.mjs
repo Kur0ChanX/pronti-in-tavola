@@ -122,7 +122,7 @@ prova('lingua espeak dal modello (it)', ultimiArgomenti[0] === '-l' && ultimiArg
 const f0 = fedi[0];
 prova('tensori int64 con BigInt', f0.input.tipo === 'int64' && f0.input.dati instanceof BigInt64Array && f0.input_lengths.dati[0] === 3n && f0.scales.dati.length === 3);
 prova('una riga di audio per pezzo', fedi.length === JSON.parse(ultimiArgomenti[3]).length);
-prova('ort configurato: un filo, wasm dalla cache', globalThis.ort.env.wasm.numThreads === 1 && globalThis.ort.env.wasm.proxy === false && String(globalThis.ort.env.wasm.wasmPaths['ort-wasm-simd.wasm']).startsWith('blob:'));
+prova('ort configurato: un filo in un Web Worker (C83), wasm dalla cache', globalThis.ort.env.wasm.numThreads === 1 && globalThis.ort.env.wasm.proxy === true && String(globalThis.ort.env.wasm.wasmPaths['ort-wasm-simd.wasm']).startsWith('blob:'));
 await P.parla('Ciao!', 'piper:riccardo');
 prova('sessione riusata (creata una volta)', globalThis.__sessioniCreate === 1);
 prova('testo vuoto rifiutato', await P.parla('   🍝  ', 'piper:riccardo').then(() => false, (e) => /Niente/.test(e.message)));
