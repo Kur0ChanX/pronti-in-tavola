@@ -65,6 +65,7 @@ const PATH = {
   invito: '<path d="M21 3L3 10.5l7 2.5 2.5 7z"/><path d="M10 13l11-10"/>',
   fiamma: '<path d="M12 21c-4 0-6.5-2.6-6.5-6.2 0-3.6 3-5.6 3.5-9.3 2.3 1.4 3.5 3.6 3.5 5.5 1-.6 1.7-1.7 2-3 2 1.8 4 4.2 4 6.8 0 3.6-2.5 6.2-6.5 6.2z"/>',
   stella: '<path d="M12 3l2.6 5.6 6 .6-4.5 4 1.3 6L12 16.3 6.6 19.2l1.3-6-4.5-4 6-.6z"/>',
+  cerca: '<circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/>',
   matita: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
   euro: '<path d="M17 6.5A6.5 6.5 0 1 0 17 17.5M4 10h9M4 14h9"/>',
   occhio: '<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
@@ -939,7 +940,7 @@ function barraCliente() {
 }
 
 /* ================= MONICA ================= */
-const NOMI_VISTE = { home: 'Home', ricettario: 'Ricettario', ricetta: 'Ricetta', cucina: 'Cucina guidata', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
+const NOMI_VISTE = { home: 'Home', ricettario: 'Ricettario', ricetta: 'Ricetta', cucina: 'Cucina guidata', ricmia: 'La tua ricetta', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
 function testataMonica(titolo, indietro) {
   const vista = UI.vista.split(':')[0];
   const aiuto = wa(S.impostazioni.mario, `Ciao Mario, sono bloccata in Pronti in Tavola, nella schermata «${NOMI_VISTE[vista] || vista}». Mi aiuti?`);
@@ -975,7 +976,7 @@ function vHome() {
       <button type="button" class="btn ${pronti.length ? 'chiaro' : ''} pieno" data-a="apri-pronti">${ico('fiamma')}${pronti.length ? 'Cambia i pronti' : 'Segna cosa hai pronto'}</button></section>
     <section class="scheda"><h2>Da preparare</h2>${agenda()}
       <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>
-    ${typeof vRicettario === 'function' && S.impostazioni.ricettario ? `<button type="button" class="riquadro ric-home" data-a="vai" data-v="ricettario">${ico('piatti')}<div><b>Ricettario</b><br><small>Ricette sarde e italiane, passo passo</small></div></button>` : ''}`;
+    ${typeof vRicettario === 'function' && S.impostazioni.ricettario !== false ? `<button type="button" class="riquadro ric-home" data-a="vai" data-v="ricettario">${ico('piatti')}<div><b>Ricettario</b><br><small>GialloZafferano con video, più le tue ricette</small></div></button>` : ''}`;
   h += incassi();
   /* inviti anche dalla Home (Mario 07/11: «mettili nella mia app gli inviti ora»); «Invita Monica» solo a chi non è lei */
   const nonLei = Dati.attivo && Dati.io.nomeGestore && Dati.io.nomeGestore !== cuoca();
@@ -1364,6 +1365,7 @@ function schedaMario() {
     <p class="tenue piccolo" style="margin:0">La vedi solo tu. Monica non vede questa scheda.</p>
     ${n ? `<button type="button" class="btn chiaro" data-a="tutti-prova-apri">Segna come PROVA gli ordini fatti finora (${n})</button>`
       : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}
+    <label class="interr"><span>Ricettario nella Home<small>${S.impostazioni.ricettario !== false ? 'Acceso: tu e Monica vedete «Ricettario» nella Home. I clienti mai.' : 'Spento: il riquadro non c\'è nella Home.'}</small></span><input type="checkbox" data-campo="i.ricettario" ${S.impostazioni.ricettario !== false ? 'checked' : ''}></label>
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
     ${contoAI()}
     ${provaAIhtml()}</section>`;
@@ -1485,7 +1487,7 @@ function vistaCliente() {
   }
 }
 function vistaMonica() {
-  const [v, id] = UI.vista.split(':');
+  const [v, ...resto] = UI.vista.split(':'), id = resto.join(':');   // «ricetta:gz:Seadas» → id «gz:Seadas»
   switch (v) {
     case 'ordini': return vOrdiniMonica();
     case 'piatti': return vPiatti();
@@ -1498,6 +1500,7 @@ function vistaMonica() {
     case 'ricettario': return typeof vRicettario === 'function' ? vRicettario() : vHome();   // ricettario.js arriva dopo app.js (PT E23)
     case 'ricetta': return typeof vRicetta === 'function' ? vRicetta(id) : vHome();
     case 'cucina': return typeof vCucina === 'function' ? vCucina(id) : vHome();
+    case 'ricmia': return typeof vRicMia === 'function' ? vRicMia(id) : vHome();
     default: return vHome();
   }
 }

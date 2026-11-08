@@ -183,9 +183,15 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.15';
+const VERSIONE_APP = '0.9.16';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.16', data: '08/11/2026',
+    nuovo: ['Ricettario con GialloZafferano DENTRO l\'app: cerchi una ricetta, la apri qui con video nel lettore dell\'app, ingredienti e foto dei passaggi, senza uscire',
+      'Ricette tue: scrivi nome, ingredienti e passi (anche con foto), le trovi in «Le mie»',
+      'Preferite: con la stella restano sul telefono e si aprono anche senza rete'],
+    migliorato: ['Incolli un link di GialloZafferano nella ricerca e la ricetta si apre nell\'app', 'Interruttore «Ricettario nella Home» in «Solo per te, Mario»'],
+    corretto: ['Le ricette con «:» nel nome della pagina ora si aprono'] },
   { v: '0.9.15', data: '08/11/2026',
     migliorato: ['Ricettario nascosto per ora: le ricette devono essere ufficiali (Mario 08/11), si sceglie la strada'] },
   { v: '0.9.14', data: '08/11/2026',
