@@ -1,30 +1,29 @@
-# Consegne della chat parallela «Aiuto» (bug) · Aiuto 4 → Aiuto 5
+# Consegne della chat parallela «Aiuto» (bug) · Aiuto 5 → Aiuto 6
 
-**Già deciso da Mario (non richiedere):** al posto del tasto «Installa l'app» una guida corta a due schede iPhone | Android (fatto v0.9.59); il link non si rimanda mai, l'app si aggiorna da sola con l'avviso «Riavvia»; dosi a teglia per la teglia da 6; Indietro torna allo stesso punto; niente artefatto, Mario prova sul sito vero.
-**Da non rifare:** ricerca su installazione iPhone (fatta 08/11, manuale Apple iOS 26: Condividi → scorri in giù → «Aggiungi alla schermata Home» → «Aggiungi»; nessun sito può installarsi da solo su iPhone; scritta in `docs/GUIDE-GIUSTE.md`); confronto delle 780 ricette con GZ (C83).
-**Cosa preme a Mario adesso:** i clienti (non pratici col telefono) devono entrare e ordinare senza intoppi, subito: «non posso far aspettare i clienti».
+**Già deciso da Mario (non richiedere):** guida corta iPhone | Android al posto del tasto (v0.9.59); la guida arriva DOPO il primo ordine, «Ordina di nuovo» in cima al menù, foto nel manifest (Mario «1 consiglio», fatto v0.9.62); l'app si aggiorna da sola con «Riavvia»; niente artefatto, Mario prova sul sito vero.
+**Da non rifare:** ricerca installazione iPhone (fatta due volte, 08/11, openpwa.net 10/2026 + manuale Apple iOS 26: nessuna API, nessuna finestra; solo Condividi → Aggiungi alla schermata Home → «Apri come app web» acceso → Aggiungi; da iOS 26 ogni sito aggiunto si apre come app); studio guide web.dev (installare dopo un'azione importante, manifest con foto).
+**Cosa preme a Mario adesso:** i clienti con iPhone devono riuscire a mettere l'app senza aiuto: «impossibile che non ci sia nulla».
 
-Aiuto 4 = `session_01WTjqUvGDca64C84DGDYxik` (catena 2 di 8 dalla Aiuto 3), chiusa alla soglia 08/11 ~18:15.
+Aiuto 5 = `session_01WTjqUvX75Bht1iG65adkCZ` (catena 3 di 8), chiusa alla soglia 08/11 ~18:40.
 
-## Fatto (tutto online; controlla: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep VERSIONE_APP` → 0.9.59 o più)
-- v0.9.54 C84: prova «ricettario (C84)» in `tools/prova.js`; corretto: dalla Home il Ricettario parte dall'alto (`app.js`, regola `penultimaVista` non vale se arrivi da home/menu). Foto `archivio/foto/2026-11-08-c84-*`.
-- v0.9.57: iPhone con Chrome/Google/Firefox/Edge → passi giusti; «Non serve per ordinare: il menù è qui sotto» nei primi passi.
-- v0.9.59: `app.js` `guidaInstalla()` (schede `.gi-tab`, azione `guida-os`, `UI.guidaOS`) usata in `primiPassi()` al posto del tasto e in `cartaHome()`; il tasto resta solo con `beforeinstallprompt` (Android che installa a un tocco). CSS in fondo a `style.css`. Prova «cliente: guida corta…». Giro completo 55 OK. Foto `archivio/foto/2026-11-08-guida-installa-*`.
-- Numeri usati: C93 (nuova voce), versioni 0.9.54, 0.9.57, 0.9.59 (la principale ha 0.9.55, 0.9.56, 0.9.58).
+## Fatto (tutto online; controlla: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep VERSIONE_APP` → 0.9.62 o più)
+- v0.9.61 C93: `dati.js` richieste raggruppate per `chiave` (`gemelli`), `decidi` per 'ricollega' senza cliente legge dentro la transazione gli altri `utenti` con la stessa chiave (mai due clienti); `app.js decidiRichiesta` decide anche i gemelli, Annulla li annulla tutti. Cookie `pit_nome` (1 anno, SameSite=Lax): `nomeRicordato()`, `ricordaNome()` (scritto alla registrazione e a ogni `render` di un cliente con nome), benvenuto «Bentornati! Sei …? Sì, sono io» (`benv-ricordato`: prova come nuovo, se `permission-denied` come ricollega) e «No, sono un'altra persona» (`benv-non-io`). Prove in `tools/prova-firebase.js` (b2, b3): 9 OK; il bug era vero (col codice vecchio 2 richieste).
+- v0.9.62: `primiPassi()` mostra «Metti l'app» solo con `P.ordinato` (messo in `vInviato`), `vInviato` ha `cartaHome(...)`; `ultimoDaRifare()` («Lo stesso dell'ultima volta?», classe `.rifai`, CSS in fondo a `style.css`); `manifest.webmanifest` con `screenshots` (`media/schermata-1.webp` logo, `-2.webp` menù, 824x1784). Prova «cliente (C93)…» in `tools/prova.js`. Giro completo 56 OK. Foto `archivio/foto/2026-11-08-c93-*`.
+- `npm install` fatto nel contenitore (firebase-tools): `npm run prova-firebase` funziona; 2 NO VECCHI (c'erano prima: «foto pesante» e lucchetto «page.click Timeout»), segnati in C93.
+- Numeri usati: C94 (nuovo), versioni 0.9.61, 0.9.62.
 
-## Prossimi passi (C93, 🔴)
-1. Avvio: titolo «📗 🍝 Aiuto 5 · clienti facili».
-2. **Caso doppione** (da provare, ipotesi letta nel codice): cliente si registra nel browser (utenti/{uid} stato 'nuovo', `nomi/{chiave}` creato), Monica non approva ancora, poi installa su iPhone → l'app ha memoria separata (Firebase anonimo in IndexedDB non passa; **i cookie sì, copiati una volta all'«Aggiungi», iOS 17.2+**, fonte WebKit/openpwa.net) → nuovo uid, benvenuto, stesso nome → `permission-denied` → «Sì, sono io» → `registra(…, ricollega)` stato 'ricollega'. In `dati.js decidi()` un 'ricollega' senza cliente in `clienti` crea un cliente nuovo → Monica vede due richieste «Sabrina» e approvandole entrambe fa due clienti? Provarlo con l'emulatore (`tools/prova-firebase.js`, `tools/prova-regole.js`) o leggendo bene; poi unire: nella lista di Monica una sola richiesta per chiave (la più nuova), e `decidi` per 'ricollega' senza cliente che riusa quello appena creato per la stessa chiave.
-3. **Riconoscimento da solo dopo l'installazione** (senza cambiare le regole di Firestore, che Mario incolla a mano nella console): alla registrazione scrivere un cookie (1 anno, `SameSite=Lax`) col nome completo; nell'app installata, se non c'è utente e c'è il cookie → benvenuto già compilato e «Sei Sabrina Rossi? Sì, sono io» con un tocco. Valutare se serve che Monica approvi ancora (oggi sì per 'ricollega').
-4. Studio rapido (skill `ricerca-aggiornata`) delle guide per web app con utenti non pratici (installazione dopo il primo ordine, niente login, testi grandi, un'azione per schermata) e proporre a Mario le 2-3 cose più utili.
-5. Giro completo, push, controllo versione sul sito, novità in una riga.
+## Prossimi passi (C94, 🔴)
+1. Avvio: titolo «📗 🍝 Aiuto 6 · iPhone facile».
+2. Rispondere a Mario (la sua domanda non ha ancora avuto risposta piena): su iPhone nessun sito può installarsi da solo (fonti sopra); cosa si può fare: a) guida a figure grandi, una per passo, con freccia che lampeggia verso dove sta Condividi (in basso su iOS 26 Safari, dietro «⋯»); b) passo 3 «lascia acceso Apri come app web, poi Aggiungi»; c) se il link si apre dentro WhatsApp o un'altra app: «tocca Apri in Safari» (ipotesi da verificare con ricerca: come apre i link WhatsApp su iPhone nel 2026); d) app vera nell'App Store (99 €/anno Apple + revisione): sconsigliata. Chiedere a Mario quali (b subito, è una correzione ovvia: testi in `app.js guidaInstalla()` riga ~339).
+3. Giro completo, push, controllo versione sul sito, novità in una riga.
 
 ## Note
-- Prima di ogni versione `git fetch` e guardare `VERSIONE_APP` su origin (oggi 3 volte la principale aveva già il numero: ho preso il successivo).
+- Prima di ogni versione `git fetch` e guardare `VERSIONE_APP` su origin.
 - Merge con la principale: conflitti solo in `data.js` (novità) e in fondo a `style.css`: tenere entrambe.
-- `SOLO=` per i passi autonomi; il benvenuto va compilato prima (`#benv-nome`, `#benv-cognome`) se la prova parte da zero.
+- Prove autonome: `P.benvenuto = true` in testa al passo; ordini finti con righe complete (`note: []`, `testo`, `paga: {}`).
+- Avvio pesante: questa sessione a 235k dopo pochi turni (foto e uscite lunghe): foto piccole, `grep -n`.
 
-Controllo Da fare: 1 voce aggiunta (C93).
+Controllo Da fare: 1 voce aggiunta (C94). Messaggi di Mario della sessione: «1 consiglio» (C93, fatto), «per iphone non si può fare nulla…» (C94).
 
 ## Ultimo messaggio di Mario (parola per parola)
-«si prova tutto Prova tutto quello che puoi, per i clienti deve essere veramente plug and play, perché non sanno fare nulla col telefonino. Quindi guarda le guide che fanno su questo tipo di app, in questo tipo di web app, che cosa si studiano gli sviluppatori per renderli a prova di stupido, molto semplice e chiaro. E applica questa nuova questo nuovo plug and play, per piacere, perché non posso far aspettare i clienti, ecco.»
+«per iphone non si può fare nulla hai teovato qualcosa con la ricerca di prima? impossibile che mon ci sia nulla»
