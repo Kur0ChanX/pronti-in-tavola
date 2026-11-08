@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.59';
+const VERSIONE_APP = '0.9.60';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.60', data: '08/11/2026',
+    nuovo: ['Impostazioni → «Parti del menù»: Monica rinomina, sposta e aggiunge le parti (es. «Secondi»); una parte con dei piatti non si toglie', 'A voce all\'aiutante: «aggiungi la parte secondi» (anche senza rete), poi conferma', 'Impostazioni: saluto in cima al menù, frase della pausa, altri modi di pagare (es. Satispay), messaggio d\'invito per gli amici, titolo e sottotitolo del biglietto'],
+    migliorato: ['Piatti dal ricettario nella parte «Secondi» se c\'è'] },
   { v: '0.9.59', data: '08/11/2026',
     migliorato: ['Clienti: al posto del tasto «Installa l\'app» una guida corta in 3 passi, con le schede iPhone e Android (si apre già sulla giusta, ma si può cambiare; su iPhone dice di scorrere in giù per «Aggiungi alla schermata Home», come nel manuale Apple). Su Android, dove il telefono lo permette, resta il tasto che installa con un tocco'] },
   { v: '0.9.58', data: '08/11/2026',
