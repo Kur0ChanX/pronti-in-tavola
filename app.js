@@ -336,10 +336,16 @@ const telefono = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigato
 const CONDIVIDI = '<svg class="ico-in" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M8 7l4-4 4 4M6 11H5v10h14V11h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function guidaInstalla() {
   const os = UI.guidaOS || (telefono() === 'ios' ? 'ios' : 'android');
-  const pp = os === 'ios' ? [
-    `Tocca <b>Condividi</b> ${CONDIVIDI} vicino all'indirizzo (su Safari tocca prima <b>⋯</b>).`,
-    '<b>Scorri in giù</b> l\'elenco e tocca <b>Aggiungi alla schermata Home</b>.<br><small class="tenue">Non c\'è? In fondo tocca <b>Modifica azioni</b> e aggiungilo.</small>',
-    'Tocca <b>Aggiungi</b>.'] : [
+  /* iPhone (C94, Apple iOS 26 «Turn a website into an app», openpwa.net 10/2026): nessun sito si installa da solo.
+     Chrome su iPhone (CriOS) ha Condividi in alto; Instagram/Facebook aprono il link dentro di sé: lì «Aggiungi» non c'è. */
+  const ua = navigator.userAgent, chrome = /CriOS/.test(ua), dentro = /Instagram|FBAN|FBAV|Line\//.test(ua);
+  const pp = os === 'ios' ? (dentro ? [
+    'Tocca <b>⋯</b> in alto e scegli <b>Apri in Safari</b> (o <b>Apri nel browser</b>).',
+    'Poi segui i passi che vedrai lì.'] : [
+    chrome ? `Tocca <b>Condividi</b> ${CONDIVIDI} in alto a destra, vicino all'indirizzo.`
+      : `Tocca <b>⋯</b> in basso a destra, poi <b>Condividi</b> ${CONDIVIDI}.<br><small class="tenue">Vedi già ${CONDIVIDI}? Tocca quello.</small>`,
+    '<b>Scorri in giù</b> l\'elenco e tocca <b>Aggiungi alla schermata Home</b>.<br><small class="tenue">Non c\'è? In fondo tocca <b>Modifica azioni</b> e aggiungilo. Se non c\'è neanche lì, apri il link con <b>Safari</b>.</small>',
+    'Lascia <b>acceso</b> «Apri come app web» e tocca <b>Aggiungi</b>.']) : [
     'Tocca <b>⋮</b> in alto a destra (Samsung: <b>≡</b> in basso).',
     'Scegli <b>Installa app</b> o <b>Aggiungi a schermata Home</b>.',
     'Tocca <b>Installa</b>.'];
