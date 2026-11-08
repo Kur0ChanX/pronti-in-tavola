@@ -34,8 +34,7 @@ Aperta dalla #22 con `create_session` (catena 4 di 8). Sveglie: nessuna da rifar
 ## Prossimi passi
 1. Avvio: titolo verde; ricorda le righe di «Aspetta Mario». La decisiva è il ricettario (🛑).
 2. **Ricettario C55**: se Mario dice sì alla strada «ricettario ufficiale a video» (`docs/SPEC-RICETTARIO.md`, sezione «Ricerca 08/11»): rifai `ricette.js` come elenco curato di videoricette ufficiali di GialloZafferano su YouTube (id del video, titolo, link alla pagina ufficiale gialloZafferano.it, zona, portata; niente testi di Claude), scheda con lettore YouTube incorporato (`youtube-nocookie.com/embed/<id>`) e miniatura `i.ytimg.com/vi/<id>/hqdefault.jpg`, tasto «Ricetta completa con le foto dei passaggi» → pagina ufficiale. Tieni preferiti, filtri, «è la ricetta del mio piatto», dosi di Monica per la spesa. Togli la cucina guidata coi testi di Claude. Prima Gallura e Sardegna (zuppa gallurese, culurgionis, seadas, malloreddus, fregola con arselle, pardulas, panada, ravioli di ricotta sardi…), poi le grandi classiche italiane. Mostra a Mario 2-3 foto PRIMA di fare tutte le schede (PT E25). Id dei video: dal web, controllati uno per uno. Riaccendi con `S.impostazioni.ricettario` o togli il controllo.
-3. Se Mario sceglie altro (app di GialloZafferano o ricette di Monica): segui la sua scelta; se «niente ricettario», togli riquadro, `ricettario.js`, `ricette.js` e il passo delle prove.
-4. Suoneria: numeri `SQUILLO_MS`/`SQUILLI` in `worker.js`, `vibrate` in `sw.js`.
+3. Altra scelta di Mario: seguila; «niente ricettario» → togli riquadro, `ricettario.js`, `ricette.js`, passo delle prove.
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
