@@ -38,3 +38,9 @@ Scelte di Mario (08/11 ~04:35): **60 ricette** all'inizio, poi a gruppi · **fot
 - Senza rete: file e foto nella cache; la voce e il microfono possono mancare → i tasti restano.
 - Peso: 60 foto × ~60 KB ≈ 3,6 MB, scaricate solo da chi gestisce e solo quando apre la ricetta.
 - Allergeni: indicati con prudenza, «controlla sempre le etichette».
+
+## Ricerca 08/11/2026 ~05:00 (Mario: «ricette vere, ufficiali, con foto delle preparazioni, gold standard»)
+- **GialloZafferano** (Mondadori Digital): nessuna API; testi e foto protetti → niente copia né lettura automatica. Ma ha un **canale YouTube ufficiale** (@GialloZafferanoTV, ~2,8 milioni di iscritti, ~6.000 videoricette, anche sarde: «Culurgionis d'Ogliastra» con un pastificio di Tortolì). Incorporare i video YouTube è permesso dalle regole di YouTube (lettore ufficiale, salvo blocco del proprietario); le miniature dei video si possono mostrare col video.
+- **API di ricette**: Spoonacular ed Edamam solo in inglese, regole strette (cache 1 ora, niente copie); Pepesto: ricette con licenza permanente, anche italiane, ma a pagamento (prova 10 ricette 15 €) e **immagini fatte dall'AI** (non foto vere).
+- **Strada consigliata «Ricettario ufficiale a video»**: scheda = videoricetta ufficiale incorporata + miniatura vera + tasto «Ricetta completa con le foto dei passaggi» che apre la pagina ufficiale di GialloZafferano; da noi preferiti, «è la ricetta del mio piatto», dosi di Monica per la spesa, note di Monica. Gratis. Rischio: un video tolto → la scheda lo dice e resta il link.
+- Il codice di `ricettario.js` (elenco, filtri, preferiti, spesa) si riusa; la cucina guidata coi nostri testi no (sarebbero di nuovo testi di Claude).

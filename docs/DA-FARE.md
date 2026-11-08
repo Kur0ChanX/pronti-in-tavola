@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 08/11 · 🛑 · 🟡 Principale 23 · Ricettario (C55): quale strada per le ricette ufficiali (collegato a GialloZafferano, app di GialloZafferano, ricette di Monica)?
+- 08/11 · 🛑 · 🟡 Principale 23 · Ricettario (C55): «Ricettario ufficiale a video» (videoricette di GialloZafferano su YouTube + pagina ufficiale) sì o no? (messaggio delle ~05:00)
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
