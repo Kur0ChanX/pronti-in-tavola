@@ -779,6 +779,10 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-fotopassi img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 10px; display: block; }
 .ric-fotopassi.grandi { grid-template-columns: 1fr; }
 .ric-fotopassi.grandi img { aspect-ratio: auto; max-height: 260px; }
+/* foto a strisce tagliate: ogni riquadro mostra solo la sua parte dell'immagine larga */
+.ric-fotopassi.strisce:not(.grandi) { grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); }
+.ric-striscia { overflow: hidden; border-radius: 10px; }
+.ric-fotopassi .ric-striscia img, .ric-fotopassi.grandi .ric-striscia img { aspect-ratio: auto; max-height: none; max-width: none; height: auto; object-fit: fill; border-radius: 0; }
 .ric-modulo { display: grid; gap: 12px; }
 .ric-modulo label { display: grid; gap: 4px; font-weight: 600; }
 .ric-modulo textarea, .ric-modulo select { font: inherit; }

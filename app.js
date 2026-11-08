@@ -2654,6 +2654,27 @@ if (Dati.attivo) avviaDati();
 /* l'app si apre anche senza rete (sw.js); non nell'anteprima (riquadro) né da file */
 if ('serviceWorker' in navigator && /^https?:$/.test(location.protocol) && window.top === window) navigator.serviceWorker.register('sw.js').catch(() => {});
 
+/* ---------- gesto «indietro» del telefono (Mario 08/11: lo swipe dal bordo non deve chiudere l'app ma tornare indietro) ----------
+   Una pagina «di guardia» nella cronologia: il gesto la consuma, l'app fa il suo Indietro e la rimette.
+   Ordine: chiude il foglio aperto → tocca il tasto «Indietro» della schermata → nella prima schermata avvisa
+   e solo un secondo gesto entro 3 secondi chiude l'app. */
+let tUscita = null;
+const mettiGuardia = () => { try { history.pushState({ pit: 1 }, '', location.href); } catch (e) { /* niente */ } };
+if (window.top === window) {
+  mettiGuardia();
+  window.addEventListener('popstate', () => {
+    if ($('.apertura')) { mettiGuardia(); return; }
+    if (UI.foglio) { mettiGuardia(); UI.foglio = null; render(); return; }
+    const ind = $('#app .testata .indietro');
+    if (ind) { mettiGuardia(); ind.click(); return; }
+    const prima = P.ruolo === 'monica' ? 'home' : 'menu';   // schermate della barra in basso senza «Indietro»: si torna alla prima
+    if (UI.vista !== prima && !statoLucchetto() && P.ruolo) { mettiGuardia(); vai(prima); return; }
+    if (tUscita) return;   // secondo gesto: niente guardia, il prossimo «indietro» del telefono chiude l'app
+    mostraToast('Per uscire dall\'app fai ancora il gesto indietro');
+    tUscita = setTimeout(() => { tUscita = null; mettiGuardia(); }, 3000);
+  });
+}
+
 /* ---------- aggiornamento da solo (Mario 08/11 «segnalalo, riavvia e continua da dove era rimasta») ----------
    Ogni 5 minuti e a ogni ritorno nell'app legge la versione sul sito; se è nuova: avviso, riavvio e stessa schermata.
    Mai mentre si scrive o con un foglio aperto: aspetta che la persona finisca. */
