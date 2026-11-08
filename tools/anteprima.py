@@ -15,7 +15,7 @@ def dato(percorso):
 
 html = (QUI / 'index.html').read_text(encoding='utf-8')
 html = html.replace('<link rel="stylesheet" href="style.css">', '<style>\n' + (QUI / 'style.css').read_text(encoding='utf-8') + '\n</style>')
-for nome in ('data.js', 'dati.js', 'lucchetto.js', 'vapore.js', 'app.js', 'spesa.js'):
+for nome in ('data.js', 'dati.js', 'lucchetto.js', 'vapore.js', 'app.js', 'spesa.js', 'aiutante.js'):
     codice = (QUI / nome).read_text(encoding='utf-8')
     if nome == 'dati.js':  # l'anteprima di prova non si collega ai dati veri di Monica
         codice, n = re.subn(r'const FIREBASE_CONFIG = \{.*?\};', 'const FIREBASE_CONFIG = null;', codice, flags=re.S)

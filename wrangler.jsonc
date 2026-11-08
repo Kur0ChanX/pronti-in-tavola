@@ -5,6 +5,8 @@
   // i file dell'app; il Worker risponde prima solo per /api/* (notifiche degli ordini, C3)
   "assets": { "directory": "./sito", "binding": "ASSETS", "run_worker_first": ["/api/*"] },
   "durable_objects": { "bindings": [{ "name": "AVVISI", "class_name": "Avvisi" }] },
+  // aiutante di Monica (C48): Workers AI gratuito sullo stesso account dell'app
+  "ai": { "binding": "AI" },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Avvisi"] }],
   // promemoria della sera (worker.js scheduled): 18:00 UTC = 19:00 d'inverno, 20:00 d'estate in Italia
   "triggers": { "crons": ["0 18 * * *"] },

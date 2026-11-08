@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.3';
+const VERSIONE_APP = '0.9.4';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.4', data: '08/11/2026',
+    nuovo: ['Aiutante di Monica (intelligenza artificiale gratuita): nella Home «Chiedi all\'aiutante…» o il microfono; capisce frasi come «l\'ordine di Laura è pronto», «togli il tiramisù dal menù», «aggiungi la farina alla spesa», risponde a «cosa devo cucinare oggi?» e prima di fare chiede sempre «Faccio?»'] },
   { v: '0.9.3', data: '07/11/2026',
     nuovo: ['«Sono qui sotto»: il cliente arrivato per il ritiro avvisa Monica con un tocco; a lei suona «Laura è qui per il ritiro» e il tocco apre l\'ordine'] },
   { v: '0.9.2', data: '07/11/2026',
