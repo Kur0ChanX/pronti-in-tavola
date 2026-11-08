@@ -20,7 +20,7 @@ export const testo = h => String(h || '')
   .replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
   .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16)))
   .replace(/&(\w+);/g, (m, n) => ENT[n] || m)
-  .replace(/[ \t\r]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  .replace(/[ \t\r]+/g, ' ').replace(/ +([.,;:!?)])/g, '$1').replace(/\( +/g, '(').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();   // «cipolla .» → «cipolla.» (C72: GZ toglie i rimandi alle foto e lascia lo spazio)
 const assoluto = s => !s ? '' : /^https?:/.test(s) ? s : 'https://www.giallozafferano.it' + (s[0] === '/' ? '' : '/') + s;
 
 /* «PT1H20M» → 80 minuti */
@@ -67,7 +67,7 @@ export function gzRicetta(html, url) {
     const blocco = m[1];
     const foto = [...blocco.matchAll(/<img[^>]+src="([^"]+)"/g)].map(f => assoluto(f[1])).filter(f => /\/images\/ricette\//.test(f));
     const p = blocco.slice(blocco.lastIndexOf('<p>'));
-    const t = testo(p.replace(/<span class="num-step">\s*\d+\s*<\/span>/g, ''));
+    const t = testo(p.replace(/<span class="num-step">\s*(\d+)\s*<\/span>/g, ' [[$1]]'));   // C72 (Mario «uguali paro paro»): il numerino che lega la frase alla sua foto resta
     if (t) passi.push({ t, foto });
   }
   if (!passi.length) [].concat(ld.recipeInstructions || []).forEach(s => {
@@ -77,6 +77,7 @@ export function gzRicetta(html, url) {
   const video = /ptps?\.stbm\.it\/v\/(\w+)/.exec(html);
   const porzioni = parseInt(String([].concat(ld.recipeYield || '')[0]).replace(/\D+/g, ' ').trim(), 10) || 4;
   return {
+    v: 2,   // 2 = passi coi numerini delle foto (C72): le copie vecchie sui telefoni si rileggono
     id: 'gz:' + url.replace(SITO_GZ, '').replace(/\.html$/, ''),
     url, nome: testo(ld.name), intro: (sezione(html, 'PRESENTAZIONE') || testo(ld.description)).split(/\n(?=Ecco|Scopri|Leggi|Prova anche|Se ti piac)/)[0].trim(),
     foto: assoluto(primaFoto(ld.image)), categoria: testo([].concat(ld.recipeCategory || '')[0]),

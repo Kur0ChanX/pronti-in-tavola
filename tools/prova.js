@@ -805,6 +805,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { UI.ric.q = 'zucchine ceci'; render(); });
     t = await elenco(); if (!/Zuppa media prova/.test(t) || /Pasta veloce prova/.test(t)) throw new Error('ricerca per 2 ingredienti sbagliata');
     await page.evaluate(() => { UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); });
+    // C72 passi come su GialloZafferano: numerini sulla frase, niente numerini nella voce e nel timer
+    const ch = await page.evaluate(() => [passoHtml('Tritate la cipolla [[1]]. Cuocete per 20 minuti [[2]].'), testoVoce('Tritate la cipolla [[1]]. Cuocete per 20 minuti [[2]].'), minutiPasso('Rosolate [[3]]. Cuocete 15 minuti [[4]].')]);
+    if (!/cipolla <span class="num-step">1<\/span>\./.test(ch[0]) || ch[1] !== 'Tritate la cipolla. Cuocete per 20 minuti.' || ch[2] !== 15) throw new Error('passi come GZ sbagliati: ' + JSON.stringify(ch));
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
