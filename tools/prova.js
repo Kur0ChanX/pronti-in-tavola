@@ -637,6 +637,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.ric-db-box', { hasText: 'Carico 100 ricette: 0 fatte' }).count())) throw new Error('«⚡ Carica 100» non mostra il carico in corso');
     await page.evaluate(() => { RIC.chiedi = RIC._c4; RIC.db.turbo = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; render(); });
     if (!(await page.locator('.ric-db-box', { hasText: 'Motore' }).count())) throw new Error('nel Ricettario manca lo stato del motore');
+    // C83: «🔍 Controlla tutte» → esito di tutte le ricette in vista, con quelle da sistemare
+    await page.evaluate(() => { RIC._c5 = RIC.chiedi; RIC.chiedi = async c => c.db === 'controlla' ? { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 }, db: Object.assign({}, RIC.db, { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 } }) } : RIC._c5(c); });
+    await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
+    if (!(await page.locator('.ric-db-box', { hasText: 'Controllate 120 ricette' }).count()) || !(await page.locator('.ric-db-box', { hasText: 'Pane cafone' }).count())) throw new Error('«🔍 Controlla tutte» non mostra l\'esito');
+    await page.locator('.ric-db-box').scrollIntoViewIfNeeded(); await foto('81-controllo');
+    await page.evaluate(() => { RIC.chiedi = RIC._c5; });
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
     await clic('[data-a="ric-cerca-gz"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 });
@@ -910,11 +916,18 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.toast', { hasText: 'Per uscire' }).count())) throw new Error('nella Home manca l\'avviso «Per uscire…»');
     if (page.url() !== url) throw new Error('il primo gesto nella Home ha chiuso l\'app');
   });
-  await passo('aggiornamento: avvisa, riavvia e riprende dalla stessa schermata', async () => {   // autonoma, ultima (ricarica la pagina)
-    await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'piatto:tiramisu'; render(); document.activeElement && document.activeElement.blur(); nuovaVersione = '9.9.9'; riavviaQuandoPuoi(); });
-    if (!(await page.locator('.toast', { hasText: "C'è l'aggiornamento 9.9.9" }).count())) throw new Error('manca l\'avviso');
-    await page.waitForEvent('load', { timeout: 15000 });
+  await passo('aggiornamento: avvisa, NON riavvia da solo, «Riavvia» riprende dalla stessa schermata col foglio aperto', async () => {   // autonoma, ultima (ricarica la pagina)
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.vista = 'piatto:tiramisu'; UI.foglio = { tipo: 'novita' }; render(); window._stessaPagina = true; nuovaVersione = '9.9.9'; riavviaQuandoPuoi(); });
+    if (!(await page.locator('#agg-avviso', { hasText: "C'è l'aggiornamento 9.9.9" }).count())) throw new Error('manca l\'avviso');
+    await page.waitForTimeout(4000);   // prima ripartiva da sola dopo 2,5 s (Mario 08/11 «non aggiornare in automatico»)
+    if (!(await page.evaluate(() => window._stessaPagina === true))) throw new Error('l\'app si è riavviata da sola');
+    await foto('99-avviso-aggiornamento');
+    await clic('[data-a="agg-dopo"]');
+    if (await page.locator('#agg-avviso').count()) throw new Error('«Dopo» non toglie l\'avviso');
+    await page.evaluate(() => riavviaQuandoPuoi());
+    await Promise.all([page.waitForEvent('load', { timeout: 15000 }), clic('[data-a="agg-riavvia"]')]);
     await page.waitForFunction(() => typeof UI !== 'undefined' && UI.vista === 'piatto:tiramisu', null, { timeout: 15000 });
+    if (!(await page.evaluate(() => UI.foglio && UI.foglio.tipo === 'novita'))) throw new Error('dopo il riavvio il foglio aperto non torna');
     if (!(await page.locator('.toast', { hasText: 'App aggiornata' }).count())) throw new Error('manca «App aggiornata»');
     if (await page.locator('.apertura').count()) throw new Error('dopo l\'aggiornamento riparte l\'apertura animata');
   });

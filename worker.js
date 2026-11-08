@@ -22,7 +22,7 @@
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
-import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ } from './gz.mjs';
+import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta } from './gz.mjs';
 /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
 const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi', secondi: 'ricette-cat/Secondi-piatti', contorni: 'ricette-cat/Contorni', dolci: 'ricette-cat/Dolci-e-Desserts',
   lievitati: 'ricette-cat/Lievitati', unici: 'ricette-cat/Piatti-Unici', sughi: 'ricette-cat/Salse-e-Sughi', bevande: 'ricette-cat/Bevande', sardegna: 'ricerca-ricette/sardegna' };   // la sezione regionale di GZ non esiste più (404, 08/11): si usa la loro ricerca, pagina dopo pagina
@@ -285,6 +285,7 @@ async function ricettaGz(b, cfg, ctx) {
       if (!(n >= 1 && n <= 200)) return { errore: 'n da 1 a 200' };
       return { turbo: await db.turboAvvia(n) };
     }
+    if (b.db === 'controlla') return { controllo: await db.controlla(), db: await db.statoDb() };   // C83 «🔍 Controlla tutte adesso»
     if (b.db === 'mieScritte') return { mie: await db.mieScritte() };   // ricette scritte a mano, uguali su tutti i telefoni
     if (b.db === 'salvaMia') {
       if (!(await db.salvaMia(b.r))) return { errore: 'ricetta non valida' };
@@ -601,8 +602,8 @@ export class Ricettario extends DurableObject {
     this.sql.exec('DELETE FROM coda WHERE url = ?', r.url || '');
     return true;
   }
-  vecchie(n) { return this.sql.exec("SELECT url FROM ricette WHERE IFNULL(json_extract(json, '$.v'), 0) < 3 AND url != '' ORDER BY aggiornata LIMIT ?", Math.min(20, Number(n) || 5)).toArray().map(x => x.url); }
-  tieni(url) { this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 3) WHERE url = ?", String(url)); }
+  vecchie(n) { return this.sql.exec("SELECT url FROM ricette WHERE IFNULL(json_extract(json, '$.v'), 0) < 4 AND url != '' ORDER BY aggiornata LIMIT ?", Math.min(20, Number(n) || 5)).toArray().map(x => x.url); }
+  tieni(url) { this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 4) WHERE url = ?", String(url)); }
   una(id) { const x = this.sql.exec('SELECT json FROM ricette WHERE id = ?', String(id)).toArray()[0]; return x ? JSON.parse(x.json) : null; }
   /* elenco per l'app (stessa forma della ricerca di GialloZafferano): le più nuove prima; tutte le parole presenti */
   elenco(q, da, n = 30) {
@@ -670,6 +671,24 @@ export class Ricettario extends DurableObject {
     if (t.fatte >= t.obiettivo || t.sveglie >= TURBO_SVEGLIE || t.vuote >= TURBO_VUOTE) { t.attivo = false; t.finito = Date.now(); }
     this.metti1('turbo', JSON.stringify(t));
     if (t.attivo) await this.ctx.storage.setAlarm(Date.now() + TURBO_PAUSA);
+  }
+  /* C83 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): controlla TUTTE le ricette del database
+     (stesse regole di tools/controlla-ricette.mjs). Quelle con problemi tornano da rileggere col lettore di oggi (v 0 → il motore
+     ne rilegge 5 ogni 10 minuti); nel ricettario senza la ricetta intera = «mancanti», rimesse in coda. Esito salvato per il riquadro. */
+  controlla() {
+    const righe = this.sql.exec('SELECT id, url, nome, json FROM ricette').toArray();
+    const male = [];
+    for (const x of righe) {
+      let r = null; try { r = JSON.parse(x.json); } catch (e) {}
+      const prob = esaminaRicetta(r);
+      if (prob.length) { male.push({ id: x.id, nome: x.nome, prob: prob.slice(0, 3) }); if (x.url) this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 0) WHERE id = ?", x.id); }
+    }
+    const mancanti = this.sql.exec('SELECT s.id, s.nome, s.url FROM scelte s LEFT JOIN ricette r ON r.id = s.id WHERE r.id IS NULL').toArray();
+    for (const m of mancanti) if (m.url && urlGz(m.url)) this.sql.exec('INSERT INTO coda (url, aggiunta, tentativi) VALUES (?, ?, 0) ON CONFLICT(url) DO NOTHING', m.url, Date.now());
+    const esito = { quando: Date.now(), totale: righe.length, ok: righe.length - male.length, male: male.slice(0, 30), nMale: male.length,
+      mancanti: mancanti.length, nomiMancanti: mancanti.slice(0, 10).map(m => m.nome) };
+    this.metti1('controllo', JSON.stringify(esito));
+    return esito;
   }
   /* ricette scritte a mano */
   mieScritte() { return this.sql.exec('SELECT id, json, aggiornata FROM mie WHERE tolta = 0 ORDER BY aggiornata DESC').toArray().map(x => ({ id: x.id, r: JSON.parse(x.json), aggiornata: x.aggiornata })); }
@@ -741,7 +760,7 @@ export class Ricettario extends DurableObject {
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, v = uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci');
     const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
     return { scelte: uno('SELECT COUNT(*) AS n FROM scelte').n, nelRicettario: uno('SELECT COUNT(*) AS n FROM scelte').n, scartate: uno('SELECT COUNT(*) AS n FROM scartate').n,
-      turbo: this.turboStato(), mieServer: uno('SELECT COUNT(*) AS n FROM mie WHERE tolta = 0').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
+      turbo: this.turboStato(), controllo: j('controllo'), mieServer: uno('SELECT COUNT(*) AS n FROM mie WHERE tolta = 0').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
       oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
       fonte: Number(this.leggi1('fonte')) || 0, fonti: FONTI_DB.length, paginaSarda: this.leggi1('paginaSarda') || '', sezione: FONTI_DB[Math.max(1, Number(this.leggi1('fonte')) || 0)], pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'),
       giri: Number(this.leggi1('giri')) || 0, pagine: Number(this.leggi1('pagine')) || 0, passate: Number(this.leggi1('passate')) || 0, mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };
@@ -819,7 +838,12 @@ export default {
   },
   /* ogni 10 minuti: il motore del database delle ricette · ogni sera: promemoria per domani */
   async scheduled(ev, env, ctx) {
-    if (ev.cron === CRON_DB) { ctx.waitUntil(motoreRicette(env).catch(() => null)); return; }
+    if (ev.cron === CRON_DB) {
+      ctx.waitUntil(motoreRicette(env).catch(() => null));
+      const db = ricDb(env);   // C83: una volta al giorno il controllo di tutte le ricette, da solo
+      if (db) ctx.waitUntil(Promise.resolve(db.statoDb()).then(s => !s.controllo || Date.now() - s.controllo.quando > 86400000 ? db.controlla() : null).catch(() => null));
+      return;
+    }
     ctx.waitUntil(env.AVVISI.get(env.AVVISI.idFromName('cucina')).promemoria());
     const fd = fotoDb(env); if (fd) ctx.waitUntil(Promise.resolve(fd.pulisciOriginali(ORIG_GIORNI)).catch(() => null));   // ogni sera: via le foto originali oltre 60 giorni
   }

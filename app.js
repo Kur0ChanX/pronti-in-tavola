@@ -2771,18 +2771,34 @@ async function controllaAggiornamento() {
     if (m && m[1] !== VERSIONE_APP) { nuovaVersione = m[1]; riavviaQuandoPuoi(); }
   } catch (e) { /* senza rete: riprova più tardi */ }
 }
+/* AGGIORNAMENTO SU RICHIESTA (Mario 08/11 ~15:45 «non aggiornare in automatico… magari qualcuno sta facendo qualcosa e lo sbatti fuori.
+   Metti un avviso: fai finire quello che sta facendo, poi tocca Riavvia; si riavvia e torna nella pagina dove era, salvando quello che stava facendo»).
+   Avviso fisso in basso, fuori da #app (render non lo cancella); il riavvio parte SOLO dal tocco su «Riavvia». */
 function riavviaQuandoPuoi() {
   clearTimeout(tRiavvio);
-  if (document.visibilityState !== 'visible' || staScrivendo() || UI.foglio || $('.apertura') || (Dati.attivo && Dati.inAttesa && Dati.inAttesa())) { tRiavvio = setTimeout(riavviaQuandoPuoi, 5000); return; }
-  mostraToast(`C'è l'aggiornamento ${nuovaVersione}: riavvio l'app…`);
-  tRiavvio = setTimeout(() => {
-    if (staScrivendo() || UI.foglio) { riavviaQuandoPuoi(); return; }   // ha toccato qualcosa nel frattempo
-    const r = { v: nuovaVersione, quando: Date.now(), y: window.scrollY, aperto: L.aperto,
-      ui: { vista: UI.vista, tab: UI.tab, ordAperto: UI.ordAperto, ordFiltro: UI.ordFiltro, spesaTab: UI.spesaTab } };
-    try { sessionStorage.setItem(CHIAVE_RIPRESA, JSON.stringify(r)); } catch (e) { /* riparte dall'inizio */ }
-    location.reload();
-  }, 2500);
+  if ($('.apertura')) { tRiavvio = setTimeout(riavviaQuandoPuoi, 5000); return; }
+  let d = $('#agg-avviso');
+  if (!d) { d = document.createElement('div'); d.id = 'agg-avviso'; d.setAttribute('role', 'status'); document.body.appendChild(d); }
+  d.innerHTML = `<span>🔄 C'è l'aggiornamento <b>${esc(nuovaVersione)}</b>. Finisci quello che stai facendo, poi tocca «Riavvia».</span>
+    <button type="button" class="btn pieno" data-a="agg-riavvia">Riavvia</button><button type="button" class="link" data-a="agg-dopo" aria-label="Più tardi">Dopo</button>`;
 }
+/* salva quello che si sta scrivendo, aspetta i dati in viaggio (al massimo 5 s), ricorda schermata e punto, poi riavvia */
+async function riavviaOra() {
+  if (UI.foglio && UI.foglio.tipo === 'ritaglio') { mostraToast('Prima finisci la foto: tocca «Usa questa foto» o la X.'); return; }
+  const a = document.activeElement; if (a && a.blur) a.blur();   // il campo che si stava scrivendo si salva (evento change)
+  mostraToast('Salvo e riavvio…');
+  for (let i = 0; i < 25 && Dati.attivo && Dati.inAttesa && Dati.inAttesa(); i++) await new Promise(ok => setTimeout(ok, 200));
+  await new Promise(ok => setTimeout(ok, 300));
+  let foglio = null; try { foglio = UI.foglio ? JSON.parse(JSON.stringify(UI.foglio)) : null; } catch (e) { /* foglio non ricordabile */ }
+  const r = { v: nuovaVersione, quando: Date.now(), y: window.scrollY, aperto: L.aperto,
+    ui: { vista: UI.vista, tab: UI.tab, ordAperto: UI.ordAperto, ordFiltro: UI.ordFiltro, spesaTab: UI.spesaTab, foglio } };
+  try { sessionStorage.setItem(CHIAVE_RIPRESA, JSON.stringify(r)); } catch (e) { /* riparte dall'inizio */ }
+  location.reload();
+}
+Object.assign(A, {
+  'agg-riavvia'() { riavviaOra(); },
+  'agg-dopo'() { const d = $('#agg-avviso'); if (d) d.remove(); tRiavvio = setTimeout(riavviaQuandoPuoi, 10 * 60000); },   // torna fra 10 minuti
+});
 /* dopo il riavvio: stessa schermata, stesso punto; il lucchetto resta aperto se lo era (riavvio di pochi secondi) */
 function riprendiDopoAggiornamento() {
   let r = null;

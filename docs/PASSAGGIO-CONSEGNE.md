@@ -49,7 +49,7 @@ Online v0.9.36 → v0.9.42 (ognuna: prove verdi, giro «Pubblica sito» success,
 Risposta data alla #30 (alternative): 1 voce Google del telefono (consiglio: nativa, gratis, senza rete) · 2 Microsoft Isabella di nuovo · 3 voce a pagamento Aura-2 Cinzia · 4 resta Piper.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C84; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C86; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
