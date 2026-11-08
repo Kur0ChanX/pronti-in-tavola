@@ -1382,7 +1382,8 @@ function schedaMario() {
     <label class="interr"><span>Ricettario nella Home<small>${S.impostazioni.ricettario !== false ? 'Acceso: tu e Monica vedete «Ricettario» nella Home. I clienti mai.' : 'Spento: il riquadro non c\'è nella Home.'}</small></span><input type="checkbox" data-campo="i.ricettario" ${S.impostazioni.ricettario !== false ? 'checked' : ''}></label>
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
     ${contoAI()}
-    ${provaAIhtml()}</section>`;
+    ${provaAIhtml()}
+    ${originaliHtml()}</section>`;
 }
 /* domande all'AI di oggi (C50: Mario vuole capire i limiti). Il conto lo tiene il server; qui si chiede una volta ogni 2 minuti */
 function contoAI() {
@@ -1921,6 +1922,19 @@ const A = {
   },
   'dev-vapore'(el) { P.vapore = el.dataset.v; salvaP(); render(); Vapore.parti(P.vapore); },
   'dev-tutte'() { UI.devTutte = true; render(); },
+  async 'orig-scarica'(el) {
+    const f = ((UI.originali && UI.originali.foto) || []).find(x => String(x.id) === el.dataset.v); if (!f) return;
+    mostraToast('Scarico la foto…');
+    try {
+      const tok = await Dati.token();
+      const r = await fetch('/api/originali', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ azione: 'scarica', id: f.id }) });
+      if (!r.ok) throw new Error(r.status);
+      const u = URL.createObjectURL(await r.blob()), a = document.createElement('a'), est = (/\/(\w+)/.exec(f.tipo || '') || [, 'jpg'])[1].replace('jpeg', 'jpg');
+      a.href = u; a.download = `${f.nome.replace(/[^\w\sàèéìòù-]/gi, '').trim() || 'foto'} ${new Date(f.quando).toISOString().slice(0, 10)}.${est}`; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(u), 60000);
+      f.scaricata = Date.now(); render(); mostraToast('Foto scaricata: la trovi nei Download.');
+    } catch (e) { mostraToast('Non riesco a scaricarla: riprova tra poco.'); }
+  },
   'prova-ai'() {
     if (!sulSito()) { UI.provaAI = { errore: 'La prova delle AI funziona solo nell\'app vera, non nell\'anteprima.' }; render(); return; }
     UI.provaAI = { inCorso: true }; render();
@@ -2162,18 +2176,20 @@ function salvaCampo(el) {
 
 /* foto: ridotta e migliorata (più luce, colori caldi) */
 const TETTO_FOTO = 390000;   // caratteri della foto (circa 290 KB)
-function caricaFoto(input, fatto) {
+function caricaFoto(input, fatto, nome) {
   const file = input.files && input.files[0], id = input.dataset.id;
   if (!file) return;
   input.value = '';
+  const mario = puoSviluppare();   // Mario carica foto già ritoccate da lui: niente filtro caldo e niente copia originale
+  if (!mario && sulSito()) mandaOriginale(file, nome || (piatto(id) || {}).nome || 'foto');
   const url = URL.createObjectURL(file), img = new Image();
   img.onload = () => {
     const s = Math.min(1, 900 / Math.max(img.width, img.height));
     const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
     const x = c.getContext('2d');
-    x.filter = 'brightness(1.06) saturate(1.12) contrast(1.04)';
+    if (!mario) x.filter = 'brightness(1.06) saturate(1.12) contrast(1.04)';
     x.drawImage(img, 0, 0, c.width, c.height);
-    x.filter = 'none'; x.globalCompositeOperation = 'soft-light'; x.fillStyle = 'rgba(255,170,90,.16)'; x.fillRect(0, 0, c.width, c.height);
+    if (!mario) { x.filter = 'none'; x.globalCompositeOperation = 'soft-light'; x.fillStyle = 'rgba(255,170,90,.16)'; x.fillRect(0, 0, c.width, c.height); }
     // tetto 300 KB (il server ne accetta fino a 400.000 caratteri): prima qualità più bassa, poi foto più piccola
     let q = 0.8, dati = c.toDataURL('image/jpeg', q);
     while (dati.length > TETTO_FOTO && q > 0.55) { q -= 0.1; dati = c.toDataURL('image/jpeg', q); }
@@ -2184,10 +2200,51 @@ function caricaFoto(input, fatto) {
     }
     URL.revokeObjectURL(url);
     if (dati.length > TETTO_FOTO) { mostraToast('Questa foto è troppo pesante. Prova con un\'altra.'); return; }
-    if (fatto) fatto(dati); else cambia('Foto aggiunta e migliorata', () => { piatto(id).foto = dati; });
+    if (fatto) fatto(dati); else cambia(mario ? 'Foto aggiunta' : 'Foto aggiunta e migliorata', () => { piatto(id).foto = dati; });
   };
   img.onerror = () => { URL.revokeObjectURL(url); mostraToast('Questa foto non si apre. Prova con un\'altra.'); };
   img.src = url;
+}
+
+/* FOTO ORIGINALI (Mario 08/11 «riesci a farmela scaricare originale di ottima qualità»): la foto di Monica così com'è
+   va in coda sul telefono e poi al server (/api/originali); Mario la scarica da «Solo per te, Mario». */
+function dbOriginali() {
+  return new Promise((ok, no) => { const r = indexedDB.open('pit-originali', 1); r.onupgradeneeded = () => r.result.createObjectStore('coda', { autoIncrement: true }); r.onsuccess = () => ok(r.result); r.onerror = () => no(r.error); });
+}
+async function mandaOriginale(file, nome) {
+  try { const d = await dbOriginali(); await new Promise((ok, no) => { const t = d.transaction('coda', 'readwrite'); t.objectStore('coda').add({ file, nome, quando: Date.now() }); t.oncomplete = ok; t.onerror = () => no(t.error); }); } catch (e) { return; }
+  inviaOriginali();
+}
+async function inviaOriginali() {
+  if (UI.origIn || !sulSito() || navigator.onLine === false) return;
+  UI.origIn = true;
+  try {
+    const d = await dbOriginali();
+    const voci = await new Promise(ok => { const out = [], c = d.transaction('coda').objectStore('coda').openCursor(); c.onsuccess = () => { const k = c.result; if (k) { out.push([k.key, k.value]); k.continue(); } else ok(out); }; c.onerror = () => ok(out); });
+    for (const [k, v] of voci) {
+      const tok = await Dati.token(); if (!tok) break;
+      const r = await fetch('/api/originali', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': (v.file && v.file.type) || 'image/jpeg', 'x-nome': encodeURIComponent(v.nome || 'foto') }, body: v.file });
+      if (!r.ok && r.status !== 413) break;   // server giù o rete persa: riprova più tardi; 413 = troppo grande, si toglie
+      await new Promise(ok => { const t = d.transaction('coda', 'readwrite'); t.objectStore('coda').delete(k); t.oncomplete = ok; t.onerror = ok; });
+    }
+  } catch (e) { /* riprova al prossimo giro */ } finally { UI.origIn = false; }
+}
+addEventListener('online', () => inviaOriginali());
+setTimeout(() => inviaOriginali(), 8000);
+/* elenco per Mario: chiesto al server una volta ogni 2 minuti, quando apre la scheda */
+function originaliHtml() {
+  const o = UI.originali;
+  if (sulSito() && (!o || Date.now() - o.quando > 120000) && !UI.originaliIn) {
+    UI.originaliIn = true;
+    Dati.token().then(tok => tok && fetch('/api/originali', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: '{}' })).then(r => r && r.ok ? r.json() : null)
+      .then(j => { if (j) { UI.originali = Object.assign(j, { quando: Date.now() }); if (UI.vista === 'impostazioni') render(); } }).catch(() => {}).finally(() => { UI.originaliIn = false; });
+  }
+  const ff = (o && o.foto) || [], mb = b => (b / 1048576).toFixed(1).replace('.', ',');
+  const righe = ff.map(f => `<li style="margin:4px 0">${f.scaricata ? '✅' : '🆕'} <b>${esc(f.nome)}</b> <span class="tenue piccolo">· ${new Date(f.quando).toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' })} · ${mb(f.byte)} MB</span>
+    <button type="button" class="link" data-a="orig-scarica" data-v="${f.id}">⬇️ Scarica</button></li>`).join('');
+  return `<h3 style="margin:10px 0 0">📷 Foto originali di Monica</h3>
+    <p class="tenue piccolo" style="margin:0">Le foto che Monica carica, a piena qualità. Scaricala, ritoccala e ricaricala tu dal piatto: le tue foto non vengono più ritoccate dall'app. Restano qui ${(o && o.giorni) || 60} giorni.</p>
+    ${!sulSito() ? '<p class="tenue piccolo">Solo nell\'app vera.</p>' : !o ? '<p class="tenue piccolo">Carico l\'elenco…</p>' : ff.length ? `<ul style="margin:4px 0;padding-left:4px;list-style:none">${righe}</ul>` : '<p class="tenue piccolo">Ancora nessuna foto.</p>'}`;
 }
 
 /* suggerimenti mentre scrive un ingrediente */
@@ -2458,7 +2515,7 @@ document.addEventListener('change', e => {
       S.menuFoto = (S.menuFoto || []).slice(0, 3); S.menuFoto[i] = dati;
       const vv = S.impostazioni.menuFotoV || [];
       S.impostazioni.menuFotoV = S.menuFoto.map((f, j) => f ? versioneFotoApp(f) : vv[j] || null);
-    }));
+    }), 'Foto del menù ' + (i + 1));
     return;
   }
   if (el.dataset.campo && !['sel.testo', 'nota'].includes(el.dataset.campo)) salvaCampo(el);

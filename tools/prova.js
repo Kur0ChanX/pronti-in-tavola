@@ -184,6 +184,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.mario-scheda [data-a="tutti-prova-apri"]'); await clic('[data-a="tutti-prova-si"]');
     if (await page.evaluate(() => S.ordini.some(o => !diProva(o)))) throw new Error('restano ordini non di prova');
     await page.evaluate(() => { S.ordini.forEach(o => { o.prova = false; }); salva(); render(); });   // le prove dopo usano gli ordini veri
+    // foto originali di Monica (Mario 08/11): il riquadro c'è; la coda sul telefono tiene la foto finché non parte
+    if (!(await page.locator('.mario-scheda', { hasText: 'Foto originali di Monica' }).count())) throw new Error('manca «📷 Foto originali di Monica» nella scheda di Mario');
+    const coda = await page.evaluate(async () => { await mandaOriginale(new File([new Uint8Array(5000)], 'x.jpg', { type: 'image/jpeg' }), 'Prova'); const d = await dbOriginali(); const n = await new Promise(ok => { const r = d.transaction('coda').objectStore('coda').count(); r.onsuccess = () => ok(r.result); }); await new Promise(ok => { const t = d.transaction('coda', 'readwrite'); t.objectStore('coda').clear(); t.oncomplete = ok; }); return n; });
+    if (coda !== 1) throw new Error('la foto originale non resta in coda sul telefono: ' + coda);
     await clic('.dev-scheda [data-a="dev-come"]'); await page.locator('.voce').first().waitFor({ timeout: 3000 });
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
   });

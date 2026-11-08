@@ -239,6 +239,26 @@ async function paginaGz(u) {
 /* il TUO database delle ricette (C60): oggetto «Ricettario» con SQLite, sullo stesso account dell'app, gratis.
    Cresce da solo (motoreRicette ogni 10 minuti) e con ogni ricetta che Monica o Mario aprono o scorrono. */
 const ricDb = cfg => cfg && cfg.RICETTARIO ? cfg.RICETTARIO.get(cfg.RICETTARIO.idFromName('ricette')) : null;
+/* foto originali in un archivio a parte (stessa classe, altro nome: 1 GB tutto suo); tetto 25 MB a foto, 60 giorni */
+const fotoDb = cfg => cfg && cfg.RICETTARIO ? cfg.RICETTARIO.get(cfg.RICETTARIO.idFromName('originali')) : null;
+const ORIG_MAX = 25 * 1024 * 1024, ORIG_PEZZO = 1900 * 1024, ORIG_GIORNI = 60;
+async function originali(req, cfg) {
+  const db = fotoDb(cfg); if (!db) return json({ errore: 'archivio non collegato' }, 503);
+  if (/^image\//.test(req.headers.get('content-type') || '')) {   // carica: il corpo è la foto così com'è
+    const b = await req.arrayBuffer();
+    if (!b.byteLength || b.byteLength > ORIG_MAX) return json({ errore: 'foto vuota o oltre 25 MB' }, 413);
+    const pezzi = []; for (let i = 0; i < b.byteLength; i += ORIG_PEZZO) pezzi.push(b.slice(i, i + ORIG_PEZZO));
+    let nome = ''; try { nome = decodeURIComponent(req.headers.get('x-nome') || ''); } catch (e) { /* nome strano: senza nome */ }
+    return json({ ok: true, id: await db.salvaOriginale(nome || 'foto', req.headers.get('content-type'), pezzi) });
+  }
+  const c = await req.json().catch(() => null) || {};
+  if (c.azione === 'scarica') {
+    const f = await db.originale(c.id); if (!f) return json({ errore: 'foto non trovata' }, 404);
+    return new Response(new Blob(f.pezzi.map(p => new Uint8Array(p)), { type: f.tipo || 'image/jpeg' }), { headers: { 'content-type': f.tipo || 'image/jpeg', 'cache-control': 'no-store' } });
+  }
+  if (c.azione === 'togli') { await db.togliOriginale(c.id); return json({ ok: true }); }
+  return json({ foto: await db.elencoOriginali(), giorni: ORIG_GIORNI });
+}
 async function leggiGz(u) {
   const r = gzRicetta(await paginaGz(u), u);
   if (!r) return null;
@@ -526,6 +546,8 @@ export class Ricettario extends DurableObject {
       'CREATE TABLE IF NOT EXISTS coda (url TEXT PRIMARY KEY, aggiunta INTEGER, tentativi INTEGER DEFAULT 0)',
       'CREATE TABLE IF NOT EXISTS voci (k TEXT PRIMARY KEY, mp3 BLOB, byte INTEGER, creata INTEGER)',
       'CREATE TABLE IF NOT EXISTS stato (k TEXT PRIMARY KEY, v TEXT)',
+      'CREATE TABLE IF NOT EXISTS originali (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, tipo TEXT, byte INTEGER, quando INTEGER, scaricata INTEGER DEFAULT 0)',
+      'CREATE TABLE IF NOT EXISTS originali_pezzi (id INTEGER, n INTEGER, dati BLOB, PRIMARY KEY (id, n))',
       // il TUO ricettario (C61): le ricette che Mario o Monica hanno scelto con «➕ Aggiungi», uguali su tutti i telefoni
       'CREATE TABLE IF NOT EXISTS scelte (id TEXT PRIMARY KEY, url TEXT, nome TEXT, zona TEXT, categoria TEXT, foto TEXT, aggiunta INTEGER)'].forEach(q => this.sql.exec(q));
     for (const c of ['voto REAL DEFAULT 0', 'video INTEGER DEFAULT 0']) { try { this.sql.exec('ALTER TABLE ricette ADD COLUMN ' + c); } catch (e) { /* c'è già */ } }
@@ -567,6 +589,25 @@ export class Ricettario extends DurableObject {
     return tt;
   }
   togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
+  /* FOTO ORIGINALI (Mario 08/11: le foto di Monica a piena qualità, da scaricare e ritoccare): pezzi da 1,9 MB (tetto 2 MB a riga) */
+  salvaOriginale(nome, tipo, pezzi) {
+    const byte = pezzi.reduce((t, p) => t + p.byteLength, 0);
+    this.sql.exec('INSERT INTO originali (nome, tipo, byte, quando) VALUES (?, ?, ?, ?)', String(nome).slice(0, 80), String(tipo).slice(0, 40), byte, Date.now());
+    const id = this.sql.exec('SELECT last_insert_rowid() AS id').toArray()[0].id;
+    pezzi.forEach((p, n) => this.sql.exec('INSERT INTO originali_pezzi (id, n, dati) VALUES (?, ?, ?)', id, n, p));
+    return id;
+  }
+  elencoOriginali() { return this.sql.exec('SELECT id, nome, tipo, byte, quando, scaricata FROM originali ORDER BY id DESC LIMIT 60').toArray(); }
+  originale(id) {
+    const m = this.sql.exec('SELECT nome, tipo FROM originali WHERE id = ?', Number(id)).toArray()[0]; if (!m) return null;
+    this.sql.exec('UPDATE originali SET scaricata = ? WHERE id = ?', Date.now(), Number(id));
+    return Object.assign(m, { pezzi: this.sql.exec('SELECT dati FROM originali_pezzi WHERE id = ? ORDER BY n', Number(id)).toArray().map(r => r.dati) });
+  }
+  togliOriginale(id) { this.sql.exec('DELETE FROM originali_pezzi WHERE id = ?', Number(id)); this.sql.exec('DELETE FROM originali WHERE id = ?', Number(id)); }
+  pulisciOriginali(giorni) {   // più vecchie di N giorni: via da sole (spazio gratuito: 1 GB per archivio)
+    const ids = this.sql.exec('SELECT id FROM originali WHERE quando < ?', Date.now() - giorni * 86400000).toArray().map(r => r.id);
+    ids.forEach(id => this.togliOriginale(id)); return ids.length;
+  }
   posizione(fonte, pagina, nuove, finito) {
     this.metti1('fonte', fonte); this.metti1('pagina', pagina || ''); this.metti1('ultimaPagina', JSON.stringify({ quando: Date.now(), nuove }));
     this.metti1('pagine', (Number(this.leggi1('pagine')) || 0) + 1);
@@ -673,6 +714,7 @@ export default {
         return json(await chiediAI(env, testo || 'Guarda la foto.', dati, b.storia, foto));
       }
       if (url.pathname === '/api/agenda') return (await av.agenda(await req.json().catch(() => null))) ? json({ ok: true }) : json({ errore: 'agenda non valida' }, 400);
+      if (url.pathname === '/api/originali') return await originali(req, env);
       return json({ errore: 'non trovato' }, 404);
     } catch (e) {
       return json({ errore: String(e && e.message || e) }, 500);
@@ -682,5 +724,6 @@ export default {
   async scheduled(ev, env, ctx) {
     if (ev.cron === CRON_DB) { ctx.waitUntil(motoreRicette(env).catch(() => null)); return; }
     ctx.waitUntil(env.AVVISI.get(env.AVVISI.idFromName('cucina')).promemoria());
+    const fd = fotoDb(env); if (fd) ctx.waitUntil(Promise.resolve(fd.pulisciOriginali(ORIG_GIORNI)).catch(() => null));   // ogni sera: via le foto originali oltre 60 giorni
   }
 };

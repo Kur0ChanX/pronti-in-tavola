@@ -155,5 +155,22 @@ await ponte.metti1('pausa', '1'); await ponte.metti1('fonte', 0); await ponte.me
 j = await (await chiedi({ db: 'cerca' })).json();
 prova('«Cerca adesso» fa un giro anche in pausa e dice quante nuove', j.db && j.nuove >= 0 && j.db.giri > 26 && j.db.pagine > 3 && j.db.sezione && j.db.fonti === 10);
 await ponte.metti1('pausa', '');
+/* 8. foto originali di Monica (Mario 08/11): caricata così com'è, in pezzi; Mario la scarica identica; tetto 25 MB; via dopo 60 giorni */
+const auto = { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' };
+const orig = async (corpo, tipo, extra = {}) => { const r = await W.default.fetch(new Request('https://x/api/originali', { method: 'POST', headers: Object.assign({ 'content-type': tipo }, auto, extra), body: corpo }), cfg, contesto); await finisci(); return r; };
+const foto4 = new Uint8Array(4 * 1024 * 1024 + 123); for (let i = 0; i < foto4.length; i++) foto4[i] = (i * 31) % 251;
+j = await (await orig(foto4, 'image/jpeg', { 'x-nome': encodeURIComponent('Culurgiones al sugo') })).json();
+prova('originale: caricata (4 MB, 3 pezzi)', j.ok && j.id > 0 && (await ponte.elencoOriginali()).length === 1);
+j = await (await orig('{}', 'application/json')).json();
+prova('originale: nell\'elenco con nome, peso e «nuova»', j.foto && j.foto[0].nome === 'Culurgiones al sugo' && j.foto[0].byte === foto4.length && !j.foto[0].scaricata && j.giorni === 60);
+let rr = await orig(JSON.stringify({ azione: 'scarica', id: j.foto[0].id }), 'application/json');
+const giu = new Uint8Array(await rr.arrayBuffer());
+prova('originale: scaricata identica, byte per byte', rr.headers.get('content-type') === 'image/jpeg' && giu.length === foto4.length && giu.every((x, i) => x === foto4[i]));
+prova('originale: dopo lo scarico è segnata «scaricata»', !!(await ponte.elencoOriginali())[0].scaricata);
+prova('originale: oltre 25 MB rifiutata', (await orig(new Uint8Array(25 * 1024 * 1024 + 1), 'image/jpeg')).status === 413);
+rr = await W.default.fetch(new Request('https://x/api/originali', { method: 'POST', headers: { 'content-type': 'image/jpeg' }, body: foto4 }), cfg, contesto);
+prova('originale: senza accesso da gestore niente', rr.status === 403);
+prova('originale: pulizia lascia le foto giovani', (await ponte.pulisciOriginali(60)) === 0 && (await ponte.elencoOriginali()).length === 1);
+prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.pulisciOriginali(-1)) === 1 && (await ponte.elencoOriginali()).length === 0 && (await ponte.originale(j.foto[0].id)) === null);
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);

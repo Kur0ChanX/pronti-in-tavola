@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.34';
+const VERSIONE_APP = '0.9.35';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.35', data: '08/11/2026', ora: '12:03',
+    nuovo: ['Foto originali: quando Monica carica la foto di un piatto o del menù, l\'app ne tiene anche una copia a piena qualità (parte appena c\'è rete); Mario la scarica da «Solo per te, Mario» → «📷 Foto originali di Monica», la ritocca e la ricarica. Restano 60 giorni'],
+    migliorato: ['Le foto caricate da Mario non vengono più ritoccate dall\'app (sono già sistemate da lui)'] },
   { v: '0.9.34', data: '08/11/2026', ora: '11:47',
     corretto: ['Motore delle ricette fermo su «Ricette sarde»: GialloZafferano ha tolto quella pagina; ora usa la loro ricerca «sardegna» e, se una pagina non c\'è più, passa da solo alla sezione dopo', 'Motore: sarde in priorità ma miste alle altre (una pagina sarda e una di un\'altra sezione); in «🗄 Il mio database» vedi a che pagina sono le sarde e a che sezione le altre'] },
   { v: '0.9.33', data: '08/11/2026', ora: '11:39',
