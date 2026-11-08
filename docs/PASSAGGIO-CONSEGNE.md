@@ -49,7 +49,7 @@ Online fino a v0.9.51 (ogni versione: giro completo verde, push con HEAD = origi
 08/11 ~16:00, parola per parola: «Con Monica volevo scrivere con Monica.» (correzione del dettato: nel messaggio prima «comunica» = «con Monica»; il ritaglio delle foto è per Monica, già capito così). Prima: «Poi quando esce un aggiornamento, non aggiornare in automatico, perché magari qualcuno sta facendo qualcosa nell'applicazione e lo sbatti fuori. Chiedi, metti un alert, nel senso fai finire quello che sta facendo, poi clicca riavvia, riavvia per applicare aggiornamento, si riavvia e ritorna nella pagina dove era, salvando quello che stava facendo.»; «Ho un problema, comunica, siccome quando scarica le foto da internet le vuole ritagliare… un editor tipo di ritaglio… Molto plug and play.»
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C90; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C92; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
