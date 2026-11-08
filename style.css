@@ -693,3 +693,13 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ai-foto-pronta { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; background: var(--foglio); border: 1px dashed var(--grano); }
 .ai-foto-pronta img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
 .ai-foto-pronta span { flex: 1; font-weight: 700; color: var(--tenue); }
+/* «Scrivi a Monica» per i clienti approvati (Mario 08/11): pulsante tondo in basso a destra, sopra la barra */
+.wa-monica { position: fixed; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 30; display: flex; align-items: center; gap: 8px;
+  padding: 0 18px 0 14px; min-height: 52px; border-radius: 999px; background: #1F8F4E; color: #FFF; font-weight: 800; text-decoration: none;
+  box-shadow: 0 8px 22px -8px rgba(20, 80, 40, .6); animation: wa-entra .5s .8s both cubic-bezier(.3, 1.4, .5, 1); }
+.wa-monica svg { width: 24px; height: 24px; }
+@keyframes wa-entra { from { opacity: 0; transform: translateY(20px) scale(.9); } }
+.wa-ordine { display: inline-flex; align-items: center; gap: 6px; color: #1F8F4E; font-weight: 800; }
+.wa-ordine svg { width: 20px; height: 20px; }
+@media (prefers-reduced-motion: reduce) { .wa-monica { animation: none; } }
+.corpo:has(> .wa-monica) { padding-bottom: 150px; }

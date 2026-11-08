@@ -457,7 +457,26 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('#toast [data-a="annulla"]');
     const annullato = await page.evaluate(([pp]) => ({ prezzo: piatto(pp.a).formati.find(f => f.id === pp.f).prezzo, pausa: S.impostazioni.pausa.attiva, nuovo: S.piatti.some(x => x.nome === 'Seadas') }), [pp]);
     if (annullato.prezzo !== pp.prima || annullato.pausa || annullato.nuovo) throw new Error('Annulla non rimette tutto: ' + JSON.stringify(annullato));
+    const prima = await page.evaluate(() => S.impostazioni.anticipo);
+    await finta({ testo: 'Fatto il piano:', azioni: [{ azione: 'impostazione', chiave: 'anticipo', valore: prima + 2 }, { azione: 'impostazione', chiave: 'segreta', valore: 1 }] });
+    await scrivi('voglio 2 giorni in più di preavviso');
+    if (!(await page.locator('.ai-fum.lei').last().locator('.ai-azione', { hasText: 'Giorni di preavviso' }).count())) throw new Error('manca la riga dell\'impostazione');
+    await clic('[data-a="ai-si"]');
+    if (await page.evaluate(() => S.impostazioni.anticipo) !== prima + 2) throw new Error('impostazione non cambiata');
+    await page.evaluate(p => { S.impostazioni.anticipo = p; }, prima);
     await page.evaluate(() => { UI.vista = 'home'; render(); });
+  });
+  await passo('cliente: «Scrivi a Monica» su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
+    await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
+    await page.waitForTimeout(1500);
+    const h = decodeURIComponent(await page.locator('.wa-monica').getAttribute('href'));
+    if (!h.includes('Ti scrivo dall\'app Pronti in Tavola') || !h.includes('Volevo chiederti:')) throw new Error('messaggio: ' + h);
+    await foto('36-scrivi-monica');
+    await page.evaluate(() => { UI.vista = 'ordini'; UI.ordAperto = (S.ordini.find(o => o.cliente === P.cliente && !['rifiutato', 'annullato'].includes(o.stato)) || {}).id; render(); });
+    await page.waitForTimeout(300);
+    if (!decodeURIComponent(await page.locator('.wa-ordine').first().getAttribute('href')).includes('per l\'ordine n.')) throw new Error('manca il numero dell\'ordine nel messaggio');
+    await page.evaluate(() => { S.impostazioni.whatsapp = ''; UI.vista = 'menu'; render(); });
+    if (await page.locator('.wa-monica').count()) throw new Error('tasto visibile senza numero (cliente non approvato)');
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');

@@ -4,7 +4,7 @@
    «Fai» le fa tutte insieme (un solo Annulla per 10 secondi). L'AI non tocca mai i dati: le azioni sono quelle dei pulsanti dell'app.
    Solo per chi gestisce, mai per i clienti. */
 const AI = { msgs: [], attesa: false, rec: null, bozza: '', foto: null };
-const DOMANDE_AI = ['Cosa devo cucinare oggi?', 'Chi viene a ritirare oggi?', 'Chi deve ancora pagare?', 'Quanto ho incassato questo mese?', 'Com\'è andata la settimana?'];
+const DOMANDE_AI = ['Cosa devo cucinare oggi?', 'Come si mette la pausa?', 'Chi viene a ritirare oggi?', 'Chi deve ancora pagare?', 'Quanto ho incassato questo mese?', 'Com\'è andata la settimana?'];
 const ESEMPI_AI = ['«L\'ordine di Laura è pronto e ha pagato»', '«Togli il tiramisù e alza le lasagne a 14 euro»', '«Sono in ferie fino a domenica»', 'una foto della lista della spesa scritta a mano'];
 const Riconosci = window.SpeechRecognition || window.webkitSpeechRecognition;
 const STATO_AI = { nuovo: 'da accettare', proposta: 'aspetta che il cliente risponda sul giorno', daApprovare: 'cliente nuovo da approvare', accettato: 'da preparare',
@@ -109,6 +109,36 @@ function controllaAI(a) {
     case 'riapri':
       if (!S.impostazioni.pausa.attiva) return { no: 'Sei già aperta.' };
       return { titolo: 'Fine della pausa', prima: 'In pausa', dopo: 'Aperta', fai: () => { S.impostazioni.pausa.attiva = false; } };
+    case 'impostazione': {
+      const IMP = {   // chiave → [etichetta, tipo, leggi(), scrivi(v), valido(v), testo(v)]
+        anticipo: ['Giorni di preavviso', 'number', i => i.anticipo, (i, v) => { i.anticipo = v; }, v => Number.isInteger(v) && v >= 0 && v <= 14, v => v === 0 ? 'Anche in giornata' : `${v} ${v === 1 ? 'giorno' : 'giorni'} prima`],
+        limite: ['Teglie al giorno', 'number', i => i.limite.attivo ? i.limite.teglie : 0, (i, v) => { i.limite.attivo = v > 0; if (v > 0) i.limite.teglie = v; }, v => Number.isInteger(v) && v >= 0 && v <= 99, v => v ? `Al massimo ${v}` : 'Senza limite'],
+        prontiFino: ['Pronti fino alle', 'time', i => i.prontiFino, (i, v) => { i.prontiFino = v; }, v => /^([01]\d|2[0-3]):[0-5]\d$/.test(v), v => v],
+        natale: ['Menù di Natale', 'bool', i => !!i.natale.attivo, (i, v) => { i.natale.attivo = v; }, v => typeof v === 'boolean', v => v ? 'Acceso' : 'Spento'],
+        natale_entro: ['Natale: ordini entro', 'date', i => i.natale.entro, (i, v) => { i.natale.entro = v; }, v => giornoOk(v), v => giornoLungo(v)],
+        contanti: ['Pagamento in contanti', 'bool', i => !!i.paga.contanti, (i, v) => { i.paga.contanti = v; }, v => typeof v === 'boolean', v => v ? 'Sì' : 'No'],
+        bonifico: ['Pagamento con bonifico', 'bool', i => !!i.paga.bonifico, (i, v) => { i.paga.bonifico = v; }, v => typeof v === 'boolean', v => v ? 'Sì' : 'No'],
+        postepay: ['Pagamento con Postepay', 'bool', i => !!i.paga.postepay, (i, v) => { i.paga.postepay = v; }, v => typeof v === 'boolean', v => v ? 'Sì' : 'No'],
+        nota_ritiro: ['Nota per il ritiro', 'text', i => i.ritiro.nota || '', (i, v) => { i.ritiro.nota = v; }, v => typeof v === 'string' && v.length <= 140, v => v || '(vuota)']
+      };
+      const d = IMP[a.chiave], i = S.impostazioni;
+      if (!d) return { no: 'Questa impostazione si cambia da Impostazioni: ti ci porto?' };
+      let v = a.valore;
+      if (d[1] === 'number') v = Math.round(Number(String(v).replace(',', '.')));
+      if (d[1] === 'bool') v = v === true || v === 'true' || v === 'sì' || v === 'si';
+      if (d[1] === 'text') v = String(v || '').replace(/[<>]/g, '').trim().slice(0, 140);
+      const campi = d[1] === 'bool' ? [] : [['valore', d[1], d[0]]];
+      if (!d[4](v)) return { no: `${d[0]}: il valore non mi torna, correggilo qui.`, campi };
+      if (a.chiave === 'contanti' && !v && !i.paga.bonifico && !i.paga.postepay) return { no: 'Serve almeno un modo di pagare: prima accendi bonifico o Postepay.' };
+      if (a.chiave === 'nota_ritiro' && !i.ritiro) return { no: 'Il ritiro si imposta da Impostazioni.' };
+      if (d[2](i) === v) return { no: `${d[0]}: è già così (${d[5](v)}).` };
+      return { titolo: `Impostazioni · ${d[0]}`, prima: d[5](d[2](i)), dopo: d[5](v), campi, fai: () => d[3](i, v) };
+    }
+    case 'messaggio': {
+      const t = String(a.testo || '').trim().slice(0, 700);
+      if (!t) return { no: 'Che messaggio preparo?' };
+      return { link: wa('', t), etichetta: 'Scegli a chi mandarlo', titolo: 'Messaggio per le amiche', dopo: t };
+    }
     case 'spesa': {
       const voci = (Array.isArray(a.voci) ? a.voci : String(a.voci || '').split(',')).map(v => String(v || '').replace(/[<>]/g, '').trim().slice(0, 60)).filter(Boolean).slice(0, 15);
       if (!voci.length) return { no: 'Cosa aggiungo alla lista della spesa?' };
