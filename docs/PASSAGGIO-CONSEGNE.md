@@ -35,7 +35,7 @@ Aperta dalla #21 con `create_session` (catena 3). Sveglie: nessuna da rifare.
 
 ## Prossimi passi
 1. Avvio: titolo verde; ricorda le righe di «Aspetta Mario». Rispondi a Mario se non l'ho fatto: «non addestra coi dati» = Groq non usa le domande delle clienti per insegnare alla sua AI (restano private, non finiscono in un'altra AI); nome mancante su WhatsApp = ipotesi: prima della v0.9.9 il tasto «Scrivi a Monica» nella scheda del ritiro non metteva il nome (ora `waMonica`), più il bug dell'apertura; da ricontrollare con lui in «guarda come» e da cliente vero.
-2. Cosa manca a Claude (Mario: «dimmi cosa ti manca da fare»): niente di grosso; da controllare prima del 20/11 che Qwen 3.8, Gemma 4 e GLM 4.7 Flash non siano tra i modelli spenti di Cloudflare; C20 (regola dei link nel kit). Il resto delle voci 👁 aspetta le prove di Mario.
+2. Cosa manca a Claude (Mario: «dimmi cosa ti manca da fare»): niente di grosso; modelli AI controllati dalla #23 (08/11): Qwen 3.8, Gemma 4 e GLM 4.7 Flash NON sono tra i 24 spenti il 20/11 (Qwen e Gemma sono i sostituti consigliati da Cloudflare); C20 (regola dei link nel kit). Il resto delle voci 👁 aspetta le prove di Mario.
 3. Quando Mario scrive «fatto» per Groq: rilancia `sito.yml` (`gh api -X POST repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/dispatches -f ref=claude/pronti-ramo-definitivo`), poi verifica che il giro sia verde.
 4. Suoneria: se Mario la trova troppa o poca, i numeri sono `SQUILLO_MS`/`SQUILLI` in `worker.js` e `vibrate` in `sw.js`; il volume con l'app chiusa lo decide Android (guida di giorno: notifica del sito «urgente»).
 
