@@ -2251,9 +2251,9 @@ function foglioRitaglio() {
     <div class="rit-cornice"><canvas id="rit-tela" aria-label="Anteprima della foto: trascina col dito per spostarla"></canvas></div>
     <p class="tenue piccolo" style="margin:-8px 0 0">Trascina la foto col dito per scegliere il pezzo da tenere.</p>
     <div class="scelte" role="group" aria-label="Forma">${fs}</div>
-    <label>Ingrandisci<input type="range" min="1" max="4" step="0.05" value="${R.zoom}" data-rit="zoom" ${R.forma === 'intera' ? 'disabled' : ''}></label>
-    <label>Luce<input type="range" min="0.6" max="1.6" step="0.02" value="${R.luce}" data-rit="luce"></label>
-    <label>Colori<input type="range" min="0" max="2" step="0.02" value="${R.colori}" data-rit="colori"></label>
+    <label class="rit-cursore">Ingrandisci<input type="range" min="1" max="4" step="0.05" value="${R.zoom}" data-rit="zoom" ${R.forma === 'intera' ? 'disabled' : ''}></label>
+    <label class="rit-cursore">Luce<input type="range" min="0.6" max="1.6" step="0.02" value="${R.luce}" data-rit="luce"></label>
+    <label class="rit-cursore">Colori<input type="range" min="0" max="2" step="0.02" value="${R.colori}" data-rit="colori"></label>
     <div class="fila" style="flex-wrap:wrap;gap:8px"><button type="button" class="btn chiaro" data-a="rit-ruota">↻ Ruota</button>
       <button type="button" class="chip" data-a="rit-migliora" aria-pressed="${R.migliora}">✨ Migliora</button>
       <button type="button" class="link" data-a="rit-reset">Rimetti com'era</button></div></div>
