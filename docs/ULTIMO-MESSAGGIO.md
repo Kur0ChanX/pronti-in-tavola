@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (08/11/2026 03:16 ora italiana)
+# Ultimo messaggio di Mario (08/11/2026 03:21 ora italiana)
 
-Manca nel messaggio whatsapp il nome e cognome messo nell'app
+nel numero versioni  della mia pagina metti la cronologia aggiornamenti con le funzioni fino alla 0.1 ad oggi
