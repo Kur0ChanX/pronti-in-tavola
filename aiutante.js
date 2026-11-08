@@ -235,9 +235,14 @@ function voceAI() {
   const vv = vociIt();
   let scelta = ''; try { scelta = localStorage.getItem('pit-voce') || ''; } catch (e) { /* niente */ }
   const mia = scelta && !/^edge:/.test(scelta) && vv.find(v => v.name === scelta); if (mia) return mia;
+  if (scelta === VOCE_GOOGLE) { const g = voceGoogle(); if (g) return g; }   // «Voce Google del telefono» (Mario 08/11 «proviamo google come seconda voce»)
   const punti = v => (FEMMINILI.test(v.name) ? 4 : 0) - (MASCHILI.test(v.name) && !/female/i.test(v.name) ? 6 : 0) + (/natural|neural|enhanced|premium|online/i.test(v.name) ? 3 : 0) + (v.localService === false ? 2 : 0);
   return vv.sort((a, b) => punti(b) - punti(a))[0] || null;
 }
+/* VOCE GOOGLE (Mario 08/11 ~15:30 «proviamo google come seconda voce»): seconda scelta dopo Paola; usa la voce italiana di Google del telefono
+   (su Android le voci di Google si chiamano anche «it-it-x-…»). Se il telefono non l'ha, legge la migliore italiana che c'è. */
+const VOCE_GOOGLE = 'tel:google';
+const voceGoogle = () => vociIt().filter(v => /google|it-it-x-/i.test(v.name + ' ' + (v.voiceURI || ''))).sort((a, b) => (FEMMINILI.test(b.name) ? 1 : 0) - (FEMMINILI.test(a.name) ? 1 : 0))[0] || null;
 if (window.speechSynthesis) speechSynthesis.onvoiceschanged = () => { AI.voce = voceAI(); };
 /* frasi corte una dopo l'altra: su Android le frasi lunghe si troncano e la voce suona più piatta.
    Tono e velocità naturali (il tono alzato la rendeva «robotica»). */
