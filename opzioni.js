@@ -4,6 +4,7 @@
    Caricato dopo data.js e prima di app.js: app.js può chiamare opz() direttamente. */
 const GRUPPI_OPZ = [['clienti', 'Menù e ordini dei clienti'], ['messaggi', 'Messaggi WhatsApp ai clienti'], ['cucina', 'Per te in cucina']];
 const GIORNI_SETT = [[1, 'Lunedì'], [2, 'Martedì'], [3, 'Mercoledì'], [4, 'Giovedì'], [5, 'Venerdì'], [6, 'Sabato'], [0, 'Domenica']];
+const PARTI_BASE = CATEGORIE.map(c => c.slice());   // le parti del menù di base (data.js): Monica le rinomina, le sposta, ne aggiunge (C92)
 const PAROLE_MSG = [['nome', 'il nome del cliente'], ['n', 'il numero dell\'ordine'], ['giorno', 'il giorno del ritiro'], ['totale', 'il totale'],
   ['indirizzo', 'il tuo indirizzo'], ['mappa', 'il link per arrivare'], ['nota', 'come trovarti'], ['orari', 'gli orari di ritiro'], ['link', 'il link dell\'app']];
 const OPZIONI = [
@@ -25,12 +26,29 @@ const OPZIONI = [
     aiuto: 'Quanti giorni resta l\'etichetta «Novità» su un piatto.', parole: /quanto dura (la |l.etichetta )?novit|giorni (della )?novit/ },
   { k: 'aiClienti', g: 'clienti', nome: 'Aiutante per i clienti', tipo: 'si', def: true,
     aiuto: 'Acceso: i clienti possono chiedere all\'aiutante (allergie, cosa ordinare, a che punto è l\'ordine).', parole: /aiutante (per i|dei) client/ },
+  { k: 'parti', g: 'clienti', nome: 'Parti del menù', tipo: 'parti', def: () => PARTI_BASE.map(c => c.slice()),
+    aiuto: 'I nomi e l\'ordine delle parti del menù (Stuzzichini, Primi, Dolci…). Puoi aggiungerne una, es. «Secondi». Una parte con dei piatti dentro non si toglie: prima sposta i piatti.',
+    perAI: 'valore = elenco dei nomi delle parti in ordine, separati da virgola (es. "Stuzzichini, Primi, Secondi, Dolci")',
+    parole: /parti del menu|(parte|categori\w*|sezion\w*) (del menu|nuov|in piu)|(aggiung|mett|crea|togli|rinomin|spost)\w* (la |una |le )?(parte|parti|categori\w*|sezion\w*)/ },
+  { k: 'saluto', g: 'clienti', nome: 'Saluto in cima al menù', tipo: 'testo', max: 50, def: () => `Benvenuti da ${cuoca()}!`, vuotoDiBase: true,
+    aiuto: 'La frase in alto, sotto «Pronti in Tavola», per chi non ha ancora scritto il suo nome (chi l\'ha scritto legge «Ciao Laura!»). Vuota = quella di base.', parole: /saluto|benvenut/ },
+  { k: 'pausaTesto', g: 'clienti', nome: 'Frase della pausa', tipo: 'testo', max: 140, def: 'Puoi già ordinare per i giorni dopo.', vuotoDiBase: true,
+    aiuto: 'Quando sei in pausa i clienti leggono «… è in pausa fino a…» e sotto questa frase. Vuota = quella di base.', parole: /(frase|testo|scritta|messaggio) (della |di )?pausa/ },
+  { k: 'altroPagare', g: 'clienti', nome: 'Altri modi di pagare', tipo: 'testo', max: 120, def: '', es: 'es. Satispay al 333 1234567',
+    aiuto: 'Un modo di pagare in più, scritto da te: i clienti lo leggono nel carrello, sotto «Come paghi». Vuoto = non si vede.', parole: /satispay|paypal|altr[oi] mod[oi] (di|per) pagar|pagare con (la )?carta/ },
   { k: 'msgAccettato', g: 'messaggi', nome: 'Messaggio «ordine confermato»', tipo: 'messaggio', max: 600, def: 'Ciao {nome}! Ho confermato il tuo ordine n. {n} per {giorno}.',
     aiuto: 'Lo mandi su WhatsApp quando accetti un ordine.', parole: /messaggio (di |della |del )?conferm/ },
   { k: 'msgPronto', g: 'messaggi', nome: 'Messaggio «ordine pronto»', tipo: 'messaggio', max: 600, def: 'Ciao {nome}! Il tuo ordine n. {n} è pronto.\nTotale: {totale}\nRitira qui: {indirizzo}\n{mappa}\n{nota}',
     aiuto: 'Lo mandi su WhatsApp quando l\'ordine è pronto.', parole: /messaggio (di |del )?pront/ },
   { k: 'msgProposta', g: 'messaggi', nome: 'Messaggio «ti propongo un altro giorno»', tipo: 'messaggio', max: 600, def: 'Ciao {nome}! Per il tuo ordine n. {n} ti propongo {giorno}. Rispondi dall\'app con un tocco: {link}',
     aiuto: 'Lo mandi su WhatsApp quando proponi un altro giorno.', parole: /messaggio (per |di |del )?(propost|altro giorno)/ },
+  { k: 'invitoAmici', g: 'messaggi', nome: 'Messaggio d\'invito per gli amici', tipo: 'messaggio', max: 600, pm: ['link'], senzaFirma: true,
+    def: () => `Ciao! Sono ${cuoca()} 🍝 Ho aperto Pronti in Tavola, la mia cucina casalinga: guardi il menù coi prezzi, ordini con pochi tocchi e passi da me a ritirare.\n\nTocca qui:\n{link}`,
+    aiuto: 'Il messaggio che parte con «Invita gli amici». Se togli {link} il link lo metto io in fondo.', parole: /messaggio (d.|per l.|dell.)?invit|invit\w* (per )?(gli |i )?amic/ },
+  { k: 'bigliettoTitolo', g: 'messaggi', nome: 'Biglietto d\'invito: titolo', tipo: 'testo', max: 40, def: 'Assaggia la mia cucina!', vuotoDiBase: true,
+    aiuto: 'La scritta grande del biglietto che mandi agli amici. Vuota = quella di base.', parole: /biglietto|cartolina|immagine (dell.|d.)?invit/ },
+  { k: 'bigliettoSotto', g: 'messaggi', nome: 'Biglietto d\'invito: sottotitolo', tipo: 'testo', max: 60, def: 'Piatti fatti a mano da me, pronti da ritirare', vuotoDiBase: true,
+    aiuto: 'La riga sotto il titolo del biglietto. Vuota = quella di base.', parole: /sottotitolo (del )?biglietto|biglietto/ },
   { k: 'firma', g: 'messaggi', nome: 'Firma dei messaggi', tipo: 'testo', max: 60, def: () => `${cuoca()} · Pronti in Tavola`, vuotoDiBase: true,
     aiuto: 'Va in fondo a ogni messaggio ai clienti. Vuota = quella di base.', parole: /\bfirma\b/ },
   { k: 'annullaSecondi', g: 'cucina', nome: 'Tempo per «Annulla»', tipo: 'numero', min: 5, max: 30, def: 10, unita: 'secondi',
@@ -49,6 +67,7 @@ function valoreOpz(o, v) {
     }
     case 'si': return v === true || v === 'true' || v === 'sì' || v === 'si' ? true : v === false || v === 'false' || v === 'no' ? false : undefined;
     case 'ora': { const t = String(v || '').trim(); return t === '' || /^([01]\d|2[0-3]):[0-5]\d$/.test(t) ? t : undefined; }
+    case 'parti': return valoreParti(v);
     case 'giorni': { const a = (Array.isArray(v) ? v : String(v || '').split(',')).map(Number); return a.every(x => Number.isInteger(x) && x >= 0 && x <= 6) && a.length < 7 ? [...new Set(a)].sort() : undefined; }
     default: return String(v == null ? '' : v).replace(/[<>]/g, '').slice(0, o.max || 200);
   }
@@ -70,9 +89,34 @@ function testoOpz(o, v) {
     case 'si': return v ? 'Acceso' : 'Spento';
     case 'ora': return v || 'Nessuna';
     case 'giorni': return v.length ? GIORNI_SETT.filter(([n]) => v.includes(n)).map(([, t]) => t).join(', ') : 'Nessuno: sempre aperta';
+    case 'parti': return v.map(c => c[1]).join(', ');
     case 'messaggio': return cambiataOpz(o.k) ? 'Scritto da te' : 'Quello di base';
     default: return v ? `«${v.length > 50 ? v.slice(0, 50) + '…' : v}»` : 'Vuoto';
   }
+}
+/* parti del menù: un elenco di nomi (o di [chiave, nome]) → [[chiave, nome], …]; i nomi già usati tengono la loro chiave */
+function valoreParti(v) {
+  const ora = opz('parti'), usate = new Set();
+  const lista = (Array.isArray(v) ? v : String(v == null ? '' : v).split(/[,\n]/)).map(x => Array.isArray(x) ? x : [null, x]);
+  const out = [];
+  for (const [k0, n0] of lista) {
+    const nome = String(n0 == null ? '' : n0).replace(/[<>"]/g, '').replace(/\s+/g, ' ').trim().slice(0, 30);
+    if (!nome) continue;
+    const sn = semplOpz(nome);
+    if (out.some(c => semplOpz(c[1]) === sn)) return undefined;   // due parti con lo stesso nome
+    let k = k0 && /^[a-z0-9]{1,30}$/.test(k0) ? k0 : ((ora.find(c => semplOpz(c[1]) === sn) || PARTI_BASE.find(c => semplOpz(c[1]) === sn) || [])[0]);
+    if (!k || usate.has(k)) { const b = sn.replace(/[^a-z0-9]+/g, '').slice(0, 24) || 'parte'; k = b; for (let i = 2; usate.has(k) || (!ora.some(c => c[0] === k) && out.some(c => c[0] === k)); i++) k = b + i; }
+    usate.add(k); out.push([k, nome.charAt(0).toUpperCase() + nome.slice(1)]);
+  }
+  return out.length >= 1 && out.length <= 12 ? out : undefined;
+}
+/* le parti tolte che hanno ancora dei piatti (anche spenti): non si possono togliere */
+const partiPiene = v => opz('parti').filter(([k]) => !v.some(c => c[0] === k) && S.piatti.some(p => !p.cestino && p.cat === k));
+/* CATEGORIE (data.js) segue le parti di Monica; una parte con piatti che non c'è più torna in fondo, così nessun piatto sparisce */
+function applicaParti() {
+  const v = opz('parti').map(c => c.slice());
+  (S.piatti || []).forEach(p => { if (!p.cestino && p.cat && !v.some(c => c[0] === p.cat)) v.push((PARTI_BASE.find(c => c[0] === p.cat) || [p.cat, p.cat.charAt(0).toUpperCase() + p.cat.slice(1)]).slice()); });
+  CATEGORIE.splice(0, CATEGORIE.length, ...v);
 }
 /* le parole tra graffe dei messaggi → i valori veri */
 const riempi = (t, val) => String(t).replace(/\{(\w+)\}/g, (m, k) => (k in val ? String(val[k] == null ? '' : val[k]) : m));
@@ -86,11 +130,21 @@ function sezOpz(o) {
   if (o.tipo === 'si') dentro += `<label class="interr"><span>${esc(o.nome)}</span><input type="checkbox" ${campo} ${v ? 'checked' : ''}></label>`;
   if (o.tipo === 'ora') dentro += `<div class="fila"><input type="time" ${campo} value="${esc(v)}" style="max-width:140px" aria-label="${esc(o.nome)}">${v ? `<button type="button" class="link" data-a="o-base" data-k="${o.k}">Togli l'ora</button>` : ''}</div>`;
   if (o.tipo === 'giorni') dentro += `<div class="scelte">${GIORNI_SETT.map(([n, t]) => `<button type="button" class="chip" data-a="o-giorno" data-k="${o.k}" data-v="${n}" aria-pressed="${v.includes(n)}">${t}</button>`).join('')}</div>`;
+  if (o.tipo === 'parti') {
+    dentro += v.map(([k, n], i) => { const quanti = S.piatti.filter(p => !p.cestino && p.cat === k).length;
+      return `<div class="fila parte-riga"><input type="text" data-campo="op.${k}" maxlength="30" value="${esc(n)}" aria-label="Nome della parte ${i + 1}" style="flex:1;min-width:0">
+        <button type="button" class="btn chiaro piccolo" data-a="o-parte-su" data-v="${k}" ${i ? '' : 'disabled'} aria-label="Sposta su ${esc(n)}">↑</button>
+        <button type="button" class="btn chiaro piccolo" data-a="o-parte-giu" data-v="${k}" ${i < v.length - 1 ? '' : 'disabled'} aria-label="Sposta giù ${esc(n)}">↓</button>
+        <button type="button" class="btn chiaro piccolo" data-a="o-parte-togli" data-v="${k}" aria-label="Togli ${esc(n)}${quanti ? `: ha ${quanti} piatti` : ''}">✕</button></div>`; }).join('')
+      + `<div class="fila"><input type="text" id="nuova-parte" maxlength="30" placeholder="es. Secondi" aria-label="Nome della parte nuova" style="flex:1;min-width:0">
+        <button type="button" class="btn piccolo" data-a="o-parte-agg">Aggiungi</button></div>`
+      + (cambiataOpz(o.k) ? `<button type="button" class="link" data-a="o-base" data-k="${o.k}">Rimetti le parti di base</button>` : '');
+  }
   if (o.tipo === 'messaggio') {
     const esempio = riempi(v, { nome: 'Laura', n: 12, giorno: 'sabato 14 novembre', totale: '24,00 €', indirizzo: 'Via Roma 1, Olbia', mappa: 'https://maps.google.com/…', nota: 'Suona il citofono', orari: opz('orari') || 'dalle 17 alle 20', link: 'https://…' });
     dentro += `<textarea ${campo} rows="5" maxlength="${o.max}" aria-label="${esc(o.nome)}">${esc(v)}</textarea>
-      <small class="tenue">Parole che riempio io: ${PAROLE_MSG.map(([k, t]) => `<b>{${k}}</b> ${t}`).join(' · ')}</small>
-      <span class="etichetta" style="font-weight:800">Esempio</span><div class="ai-fum lei" style="white-space:pre-line;max-width:100%">${esc(esempio)}\n${esc(opz('firma'))}</div>
+      <small class="tenue">Parole che riempio io: ${PAROLE_MSG.filter(([k]) => !o.pm || o.pm.includes(k)).map(([k, t]) => `<b>{${k}}</b> ${t}`).join(' · ')}</small>
+      <span class="etichetta" style="font-weight:800">Esempio</span><div class="ai-fum lei" style="white-space:pre-line;max-width:100%">${esc(esempio)}${o.senzaFirma ? '' : '\n' + esc(opz('firma'))}</div>
       ${cambiataOpz(o.k) ? `<button type="button" class="link" data-a="o-base" data-k="${o.k}">Rimetti il messaggio di base</button>` : ''}`;
   }
   if (o.tipo === 'testo' && S.impostazioni[o.k]) dentro += `<button type="button" class="link" data-a="o-base" data-k="${o.k}">${o.vuotoDiBase ? 'Rimetti quella di base' : 'Svuota'}</button>`;
@@ -129,11 +183,43 @@ function salvaOpz(k, el) {
   if (o.tipo === 'si') { cambia(v ? 'Acceso' : 'Spento', () => { S.impostazioni[k] = v; }); return; }
   S.impostazioni[k] = v; salva(); salvatoOk();
 }
+function spostaParte(k, d) {
+  const v = opz('parti'), i = v.findIndex(c => c[0] === k), j = i + d;
+  if (i < 0 || j < 0 || j >= v.length) return;
+  [v[i], v[j]] = [v[j], v[i]];
+  cambia('Spostata', () => { S.impostazioni.parti = v; });
+}
+/* nome di una parte cambiato nel campo */
+function salvaParte(k, el) {
+  const v = opz('parti'), i = v.findIndex(c => c[0] === k);
+  if (i < 0) return;
+  const nv = v.map(c => c.slice()); nv[i][1] = el.value;
+  const ok = valoreParti(nv);
+  if (!ok || ok.length !== v.length) { mostraToast(el.value.trim() ? 'Questo nome c\'è già.' : 'Il nome non può restare vuoto.'); render(); return; }
+  S.impostazioni.parti = ok; salva(); salvatoOk();
+}
 const AZIONI_OPZ = {   // app.js le aggiunge ad A (A nasce dopo questo file)
   'o-giorno'(el) {
     const k = el.dataset.k, n = Number(el.dataset.v), v = opz(k).slice(), i = v.indexOf(n);
     if (i >= 0) v.splice(i, 1); else if (v.length < 6) v.push(n); else { mostraToast('Almeno un giorno deve restare aperto.'); return; }
     cambia(i >= 0 ? 'Riaperto' : 'Chiuso', () => { S.impostazioni[k] = v.sort(); });
+  },
+  'o-parte-su'(el) { spostaParte(el.dataset.v, -1); },
+  'o-parte-giu'(el) { spostaParte(el.dataset.v, 1); },
+  'o-parte-togli'(el) {
+    const k = el.dataset.v, v = opz('parti'), c = v.find(x => x[0] === k);
+    if (!c) return;
+    const n = S.piatti.filter(p => !p.cestino && p.cat === k).length;
+    if (n) { mostraToast(`«${c[1]}» ha ${n} ${n === 1 ? 'piatto' : 'piatti'}: prima spostali in un'altra parte (apri il piatto → Nome e parte del menù).`); return; }
+    if (v.length < 2) { mostraToast('Serve almeno una parte nel menù.'); return; }
+    cambia(`Tolta «${c[1]}»`, () => { S.impostazioni.parti = v.filter(x => x[0] !== k); });
+  },
+  'o-parte-agg'() {
+    const inp = $('#nuova-parte'), nome = inp ? inp.value.trim() : '', v = opz('parti');
+    if (!nome) { mostraToast('Scrivi il nome della parte nuova, es. Secondi.'); if (inp) inp.focus(); return; }
+    const nv = valoreParti([...v, [null, nome]]);
+    if (!nv || nv.length === v.length) { mostraToast(v.length >= 12 ? 'Al massimo 12 parti.' : `«${nome}» c'è già.`); return; }
+    cambia(`Aggiunta «${nv[nv.length - 1][1]}»`, () => { S.impostazioni.parti = nv; });
   },
   'o-base'(el) { const k = el.dataset.k; cambia('Rimesso come prima', () => { delete S.impostazioni[k]; }); }
 };
