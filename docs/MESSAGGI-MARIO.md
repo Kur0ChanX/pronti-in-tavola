@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 21:13 · 01QTFEqSy2LM
-Praticamente ha una lista della spesa. Ovviamente fai una lista della spesa, visto che ci siamo, completa, prendi spunto alle app gold standard della spesa e mettila dentro, e poi dentro una sezione con scritto tipo, cosa ne so, spesa per i miei ordini, gli esce quello che deve comprare.
-
-## 2026-11-05 ~21:20 · 01QTFEqSy2LM (girato dalla #9)
-ma dopo che mette il nome ordine anche al primo ordine, senza di quello non può effettuare l'ordine se non mette il nome e cognome, e poi il nome ordine si allaccia all'account, diciamo, all'applicazione del cliente, perché non lo so, perché è bellino che mette tipo nome e cognome, entra nome e cognome con una bella presentazione all'inizio, tipo il tuo nome e tuo cognome, entra e gli dici anche ciao, il suo nome.
-
 ## 2026-11-05 21:33 · 01QTFEqRJChf
 Guarda anche la risposta che ho dato nella sessione precedente, la 9, vai avanti da solo e pubblica momentaneamente nell'artefatto di prova, poi piano piano facciamo l'app effettiva, però pubblica lì, e autonomamente, da solo, vai tranquillo, mi fido di te. Da solo che mi devo assentare qualche ora.
 
@@ -136,3 +130,6 @@ Manca nel messaggio whatsapp il nome e cognome messo nell'app
 
 ## 2026-11-08 05:00 · 01QTFEqRojDE
 Allora, visto che lo utilizza solo Monica, si potrebbe quest'app non deve, cioè le ricette le vede solo Monica, quindi al posto di andare su Giallo Zafferano io direi anche delle soluzioni ingegnose non ufficiali per portare Giallo Zafferano nell'applicazione. Fregatene dei copyright, tanto è la stessa cosa se va Monica, è un passaggio in più che voglio evitare, che Monica vada nell'app di Giallo Zafferano e si guarda le ricette, invece lo fa direttamente dall'applicazione. Non voglio che l'applicazione vada a una pagina esterna che gli apre un'altra pagina, quindi inventati qualcosa, poi aggiungi per portare le ricette con le pagine di Giallo Zafferano dentro la nostra applicazione, poi metti video direttamente con le player nell'applicazione, non che si apre un player esterno, le ricette ovviamente scritte a mano che possono mettere nei preferiti, tutti i consigli che hai dato tu, insomma aggiungi delle idee, falla completa, dai.
+
+## 2026-11-08 13:25 · 01WTjqUx82oy
+salvataggio excell per ora no
