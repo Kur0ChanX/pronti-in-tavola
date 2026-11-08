@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 08/11 · 🟡 Principale 31 · Controllo automatico dei numeri di versione doppi fra chat parallele: 1 lo aggiungo (consiglio) · 2 lascia così.
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
 | N | Cosa | Chi | Urgenza |

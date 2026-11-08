@@ -1,13 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #31 (dopo la #30 `session_01WTjqUx82oy6ErYMX4nn4Wx`, chiusa alla soglia 08/11 14:34; la apre la #30 con `create_session` (catena 5 di 8)).
+Sessione attuale: #32 (dopo la #31 `session_01WTjqUxaoNFTMAXv2DieDxY`, chiusa alla soglia 08/11 15:56; la apre la #31 con `create_session` (catena 6 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (08/11 ~15:10):** 1) **voce**: Supertonic e Kokoro scartate («sembrano straniere»); aspetta la scelta fra 4 strade (riga 🛑 in «Aspetta Mario»); 2) ricette **uguali a GialloZafferano paro paro** (fatto v0.9.40-0.9.42, aspetta la sua foto della Pastiera); 3) filtri del Ricettario (v0.9.39, aspetta foto).
+- **Cosa preme a Mario adesso (08/11 ~16:00):** 1) provare nell'app «Sistema la foto» (C84) e l'avviso «Riavvia» (C85); 2) versione + ora vera sempre in vista (C82) e prezzi dalla scheda del piatto (C81); 3) voce: resta Paola, la voce Google c'è ma Mario non la usa («lascia così per il momento»).
 
-## Stato (08/11 14:34 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?.
+## Stato (08/11 15:56 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Giri in corso: Pubblica sito. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261108-01WTjqUxaoNF/claude/pronti-ramo-definitivo.
 - App: `python3 -I tools/anteprima.py && node tools/prova.js` → 47 OK, 0 NO (08/11 ~09:00). `SOLO=ricettario` NON funziona da solo (serve il giro completo, ~3 minuti). Dal contenitore il sito vero, GialloZafferano e Microsoft sono bloccati (curl 000): esito dei giri con `mcp__github__actions_list` (sito.yml, perPage 1).
 - Motore e regole: `npm install`, `npm run prova-firebase` → «88 OK, 0 NO» (07/11 ~17:45); regole non toccate.
 - Sito: `python3 -I tools/sito.py` → «OK sito».
@@ -19,15 +19,15 @@ Sessione attuale: #31 (dopo la #30 `session_01WTjqUx82oy6ErYMX4nn4Wx`, chiusa al
 ## Riferimenti
 - Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C3, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#30)
-Online v0.9.36 → v0.9.42 (ognuna: prove verdi, giro «Pubblica sito» success, curl del sito = versione):
-- v0.9.37 C70.1 velocità della voce: cursore in «Solo per te, Mario» (`velVoceHtml` app.js, `S.impostazioni.velVoce` 0,7-1,3, di base 0,9), `velVoce()` aiutante.js, Piper `length_scale / vel` (voce-piper.js), telefono `u.rate`.
-- v0.9.38 C71 prova delle AI: 400 token + `reasoning_effort: 'low'` (con 30 i modelli che pensano rispondevano vuoto: ipotesi, Mario deve riprovare), motivo se vuota. C54 chiusa (foto di Mario).
-- v0.9.39 C69 filtri: `scelte()` del worker con totale/difficolta/cerca da `ricette.json`; ricettario.js `ORDINI_RIC`, `filtriVuoti`, `minutiRic`, `salvaFiltri` (localStorage `pit-ric-filtri`), «⚙️ Più filtri e ordina» chiuso di base.
-- v0.9.40-0.9.42 C72/C73: gz.mjs tiene i numerini `[[n]]` frase↔foto, legge TUTTI i paragrafi (`<p class>`, più `<p>`, `<li>`), si ferma a `<h1-3>`; `v: 3`; ricettario.js `passoHtml`, `testoVoce`, `fotoPasso` (badge «1-3» sulle foto a strisce), copia vecchia sul telefono riletta una volta (`RIC.riletta`); worker `vecchie(5)`/`tieni(url)` nel cron: archivio riletto 5 ogni 10 minuti. Tutte le 69 di `ricette.js` controllate dal vivo: 58 perfette, 11 con numerini≠foto come sull'originale, mirto senza foto al passo 1 (originale). Prova nuova `node tools/prova-gz.mjs` (6 OK).
-- C70.2 ricerca voci: `docs/lavori-in-corso/ricerca-voci-2026-11.md` + WAV in `docs/lavori-in-corso/voci-prova/`; Mario: NO a tutte. VoiceStudio confermato scartato (OmniVoice, AGPL, niente web).
-- Prove finali: app 50 OK, server 70 OK, lettore 6 OK. Da questo contenitore GialloZafferano ORA risponde (curl 200).
-- Excel mensile degli ordini: Mario «per ora no» (in gia-deciso).
+## Sessione appena chiusa (#31)
+Online fino a v0.9.51 (ogni versione: giro completo verde, push con HEAD = origin). Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"`.
+- v0.9.45 (C77 chiusa): «Voce Google del telefono» seconda in «Voce che legge» (`VOCE_GOOGLE='tel:google'`, `voceGoogle()` aiutante.js; riga di stato in `vociLocaleRiga` ricettario.js). Mario: non la usa, resta.
+- v0.9.48 (C82): ora VERA delle versioni. `const PUBBLICATE = {}` in data.js, riempita da `tools/sito.py` `ore_vere()` (online = ora della pubblicazione, altre = primo commit con `VERSIONE_APP = 'x'`; sito.yml `fetch-depth: 0`) e da `tools/anteprima.py`. `oraNovita/quandoNovita` app.js usano PUBBLICATE. `versioneMini()` app.js: «v0.9.xx hh:mm» in alto per Mario (puoSviluppare) anche senza barra dev. Il campo `ora:` scritto a mano non serve più (PT E33).
+- v0.9.49 (C81): «Quanto ti costa» (`costoPiatto` spesa.js) ha un tasto per ogni ingrediente senza prezzo → foglio `spesa-ing`.
+- v0.9.51 (C84): «Sistema la foto» in `caricaFoto` app.js (`UI.rit`, `ritRuotata`, `ritRiquadro`, `ritDisegna`, `foglioRitaglio`, `ritFinisci`, azioni `rit-*`, trascinamento con pointer events); forma di base 4:3 per i piatti, «intera» per le foto del menù; CSS `.rit-cornice`, `.rit-cursore`.
+- v0.9.51 (C85): aggiornamento SOLO col tocco: `riavviaQuandoPuoi` mostra `#agg-avviso` (Riavvia / Dopo = 10 min); `riavviaOra` fa blur, aspetta `Dati.inAttesa` (max 5 s), ricorda vista, scroll e foglio (JSON) in `pit-ripresa`.
+- Tre chat sullo stesso ramo (Aiuto 2 chiusa, Aiuto 3) hanno preso più volte gli stessi numeri (versioni 0.9.43/46/47/50, C74/C79/C80/C83): unito e rinumerato ogni volta. Proposta a Mario: controllo automatico (domanda in «Aspetta Mario»).
+- Prove: giro completo 53 OK sull'ultimo codice.
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Voci (#30): Supertonic 3 (F1, M1) e Kokoro italiano (Sara, Nicola): Mario «tono, pause e accenti sembrano stranieri». Chatterbox/OmniVoice: >1 GB, GPU. Kitten: solo inglese.
@@ -36,17 +36,16 @@ Online v0.9.36 → v0.9.42 (ognuna: prove verdi, giro «Pubblica sito» success,
 - Sessioni 1-22: `docs/lavori-in-corso/strade-scartate-sessioni-1-7.md` e `strade-scartate-sessioni-8-13.md`. Ricette scritte da Claude: NO (PT E25).
 
 ## Prossimi passi
-1. Avvio: titolo verde; a Mario una riga per riga di «Aspetta Mario» (la 🛑 della voce per prima, con le 4 scelte).
-2. Voce, quando Mario risponde: 1 = voce Google del telefono (già nell'app come «voce del telefono»: guidare Mario a scaricare le voci italiane Google su Android e sceglierla; valutare di metterla come voce di base); 2 = Microsoft Isabella/Elsa/Diego (tolte in v0.9.33: rimettere `VOCI_VERE` e `/api/voce`, rischio: servizio non ufficiale); 3 = Deepgram Aura-2 Cinzia/Cesare (italiano nativo, a pagamento, chiave con `request_credential`, audio generato una volta e salvato in `voci` del Durable Object); 4 = resta Piper.
-3. Controllare (dopo qualche ora) che il cron abbia riletto l'archivio: «🗄 Il mio database» o un `/api/ricettario {db:'mie'}` con ricette `v:3`.
-4. Aspettare le foto di Mario: filtri (C69), Pastiera (C73), prova AI (C71), velocità (C70).
+1. Avvio: titolo verde; a Mario una riga per riga di «Aspetta Mario» (anche la domanda sul controllo dei numeri doppi).
+2. Se Mario dice 1 al controllo dei numeri: hook/guardia che prima del push confronta `VERSIONE_APP` e i C nuovi con `origin` e ferma i doppioni (skill `nuova-regola`, è una regola del kit: chiedere se vale per tutti i progetti).
+3. Aspettare le prove di Mario: C84 foto, C85 avviso, C82 versione in vista, C81 prezzi; più le vecchie (filtri C69, Pastiera C73, AI C71, velocità C70).
+4. Idea non chiesta (dire a Mario, non fare): pizzico con due dita per ingrandire in «Sistema la foto».
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
-08/11 ~15:10, parola per parola: «non mi piacciono come tono e pause e accenti sembrano stranieri ai altre alternative?» (sulle 4 voci di prova). Prima: «riscrivimi la domanda 4 voci l'ho persa»; «hai guardato tutte le ricette e hai kesso la regola delle migliorie nelle prossime caricate?»; «Controlla tutte le ricette e falle come giallo zafferano uguali paro paro»; «Pensi che i passi di tutte le ricette caricate siano completi e chiare? o ci sono buchi riguardale tutte migliorale e le nuove le carichi dora in poi migliorate»; «salvataggio excell per ora no».
-Risposta data alla #30 (alternative): 1 voce Google del telefono (consiglio: nativa, gratis, senza rete) · 2 Microsoft Isabella di nuovo · 3 voce a pagamento Aura-2 Cinzia · 4 resta Piper.
+08/11 ~16:00, parola per parola: «Con Monica volevo scrivere con Monica.» (correzione del dettato: nel messaggio prima «comunica» = «con Monica»; il ritaglio delle foto è per Monica, già capito così). Prima: «Poi quando esce un aggiornamento, non aggiornare in automatico, perché magari qualcuno sta facendo qualcosa nell'applicazione e lo sbatti fuori. Chiedi, metti un alert, nel senso fai finire quello che sta facendo, poi clicca riavvia, riavvia per applicare aggiornamento, si riavvia e ritorna nella pagina dove era, salvando quello che stava facendo.»; «Ho un problema, comunica, siccome quando scarica le foto da internet le vuole ritagliare… un editor tipo di ritaglio… Molto plug and play.»
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C86; prossimo M libero: M1.
@@ -55,5 +54,4 @@ Prossimo E libero: E1; prossimo C libero: C86; prossimo M libero: M1.
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
 
 
-
-Controllo Da fare: 3 voci aggiunte (C71, C72 poi chiusa, C73); riga 🛑 della voce aggiornata.
+Controllo Da fare: 0 voci aggiunte (le richieste di Mario della #31 sono già righe: C77 chiusa, C81, C82, C84, C85; riga in «Aspetta Mario» per il controllo dei numeri doppi).
