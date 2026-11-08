@@ -69,7 +69,7 @@
     for (const url of urls) {
       let presi = 0;
       try {
-        const r = await W.fetch(url);
+        const r = await W.fetch(url, { referrerPolicy: 'no-referrer' });   // Hugging Face risponde 404 senza CORS se la provenienza è *.workers.dev (provato 08/11)
         if (!r.ok) throw errore('Risposta ' + r.status + ' da ' + url);
         const pezzi = [];
         if (r.body && r.body.getReader) {
