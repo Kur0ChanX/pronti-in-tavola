@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (08/11/2026 13:25 ora italiana)
+# Ultimo messaggio di Mario (08/11/2026 14:31 ora italiana)
 
-salvataggio excell per ora no
+riscrivimi la domanda 4 voci l'ho persa
