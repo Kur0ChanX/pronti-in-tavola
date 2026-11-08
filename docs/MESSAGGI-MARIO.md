@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 21:33 · 01QTFEqRJChf
-Guarda anche la risposta che ho dato nella sessione precedente, la 9, vai avanti da solo e pubblica momentaneamente nell'artefatto di prova, poi piano piano facciamo l'app effettiva, però pubblica lì, e autonomamente, da solo, vai tranquillo, mi fido di te. Da solo che mi devo assentare qualche ora.
-
 ## 2026-11-06 01:30 · 01QTFEqRJChf
 spesa solo sul telefono di monica e animazione ynoy è perfetta
 
@@ -133,3 +130,6 @@ Allora, visto che lo utilizza solo Monica, si potrebbe quest'app non deve, cioè
 
 ## 2026-11-08 13:25 · 01WTjqUx82oy
 salvataggio excell per ora no
+
+## 2026-11-08 13:43 · 01WTjqUx82oy
+Pensi che i passi di tutte le ricette caricate siano completi e chiare? o ci sono buchi riguardale tutte migliorale e le nuove le carichi dora in poi migliorate
