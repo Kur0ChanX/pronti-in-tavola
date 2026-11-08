@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.66';
+const VERSIONE_APP = '0.9.67';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.67', data: '08/11/2026',
+    nuovo: ['Impostazioni → Notifiche: chi gestisce vede gli ultimi avvisi mandati (ora, cosa, a quanti telefoni) e se questo telefono è iscritto davvero'],
+    corretto: ['L\'avviso «Persona nuova da accettare» parte sempre, anche se arriva subito dopo un altro'] },
   { v: '0.9.66', data: '08/11/2026',
     corretto: ['Clienti non ancora confermati da Monica: «Attiva le notifiche» non va più in giro continuo. Il sì resta ricordato e le notifiche partono da sole appena Monica conferma'] },
   { v: '0.9.65', data: '08/11/2026',
