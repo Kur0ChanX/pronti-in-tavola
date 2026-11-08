@@ -175,7 +175,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     for (let i = 0; i < 7; i++) await page.locator('footer.firma').click({ position: { x: 20, y: 10 } });
     await page.waitForTimeout(300);
     await page.locator('.dev-scheda').waitFor({ timeout: 3000 });
-    const t = await page.locator('.dev-scheda').innerText(); if (!/Versione \d/.test(t) || !/Novità/.test(t)) throw new Error('mancano versione o novità');
+    const t = await page.locator('.dev-scheda').innerText(); if (!/Versione \d/.test(t) || !/Cronologia/.test(t)) throw new Error('mancano versione o novità');
     await page.locator('.dev-scheda').scrollIntoViewIfNeeded(); await foto('14c-sviluppatore');
     await clic('.mario-scheda [data-a="tutti-prova-apri"]'); await page.locator('.foglio .lista-prova li').first().waitFor({ timeout: 3000 });
     await foto('14d-tutti-prova');
@@ -513,6 +513,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('#squillo-ok');
     if (await page.locator('.squillo').count()) throw new Error('«Ho visto» non ferma la suoneria');
     if (await page.evaluate(() => UI.vista) !== 'ordini') throw new Error('«Ho visto» non apre gli ordini');
+  });
+  await passo('sviluppatore: cronologia completa delle versioni dalla 0.1 (C52)', async () => {
+    await page.evaluate(() => { P.ruolo = 'monica'; P.sviluppatore = true; UI.devTutte = false; UI.vista = 'impostazioni'; UI.foglio = null; render(); });
+    await clic('[data-a="dev-tutte"]');
+    if (!(await page.locator('.dev-nov', { hasText: '0.1 → 0.6' }).count())) throw new Error('nella cronologia manca la 0.1');
+    if (await page.locator('.dev-nov').count() < 15) throw new Error('cronologia incompleta');
+    await page.locator('.dev-nov', { hasText: '0.7 · tappa 1' }).scrollIntoViewIfNeeded(); await foto('37-cronologia');
+    await page.evaluate(() => { P.sviluppatore = false; UI.devTutte = false; render(); });
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');

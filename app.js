@@ -1350,9 +1350,9 @@ function sezioneDev() {
     <h3 style="margin:8px 0 0">Vapore dopo lo sblocco</h3>
     <div class="scelte">${Object.entries(Vapore.STILI).map(([k, n]) => `<button type="button" class="chip" data-a="dev-vapore" data-v="${k}" aria-pressed="${(P.vapore || 'A') === k}">${k} · ${n}</button>`).join('')}</div>
     <p class="tenue piccolo" style="margin:0">Tocca per vederlo e sceglierlo su questo telefono.</p>
-    <h3 style="margin:8px 0 0">Novità</h3>
+    <h3 style="margin:8px 0 0">Cronologia degli aggiornamenti</h3>
     ${ultime.map(n => `<div class="dev-nov"><b>${esc(n.v)} · ${esc(n.data)}</b>${[['nuovo', '✨ Nuovo'], ['migliorato', '⬆️ Migliorato'], ['corretto', '🔧 Corretto']].filter(([k]) => (n[k] || []).length).map(([k, t]) => `<div class="dev-tipo">${t}</div><ul>${n[k].map(c => `<li>${esc(c)}</li>`).join('')}</ul>`).join('')}</div>`).join('')}
-    ${NOVITA.length > 3 && !UI.devTutte ? '<button type="button" class="link" data-a="dev-tutte">Tutte le novità</button>' : ''}
+    ${NOVITA.length > 3 && !UI.devTutte ? '<button type="button" class="link" data-a="dev-tutte">Tutta la cronologia, dalla 0.1</button>' : ''}
     <button type="button" class="link piccolo" data-a="dev-esci">Esci dalla modalità sviluppatore</button></section>`;
 }
 /* Solo per Mario (07/11): ordini fatti per provare → PROVA, in vista nelle Impostazioni, con conferma a foglio */

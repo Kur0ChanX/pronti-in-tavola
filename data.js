@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.10';
+const VERSIONE_APP = '0.9.11';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.11', data: '08/11/2026',
+    nuovo: ['Sviluppatore: cronologia completa degli aggiornamenti dalla 0.1 a oggi, con le funzioni'] },
   { v: '0.9.10', data: '08/11/2026',
     nuovo: ['Aiutante: quando finiscono le risposte gratuite di Cloudflare passa da solo a Groq (gratuito, 1.000 risposte al giorno), appena c\'è la chiave'],
     migliorato: ['Vapore dopo lo sblocco: alla fine si dirada piano, niente stacco'] },
@@ -228,7 +230,25 @@ const NOVITA = [
     nuovo: ['Fritto da Monica: sovrapprezzo unico per piatto', 'Proposta di un altro giorno anche per cliente nuovo; avviso «è pronto» al cliente'],
     migliorato: ['Notifiche che aprono il punto giusto; persone nuove subito a Monica', 'Lucchetto dopo 8 minuti'],
     corretto: ['Solo tema chiaro (niente pagina scura); niente lampeggio nelle scelte'] },
-  { v: '0.7', data: '05-07/11/2026',
-    nuovo: ['Pagina Ordini a 4 schede, promemoria della sera, «I miei ordini» del cliente',
-      'Inviti in foto su WhatsApp, sito online, dati su Firebase', 'Lista della spesa, incassi, costo per piatto, etichette'] }
+  /* cronologia ricostruita l'08/11 dalla storia di GitHub e dalle consegne (Mario 08/11 «la cronologia… fino alla 0.1»):
+     la 0.7 è stata un lavoro lungo, diviso qui in tappe per giorno; dalla 0.1 alla 0.6 l'app è nata nella chat di Claude */
+  { v: '0.7 · tappa 3', data: '07/11/2026',
+    nuovo: ['Notifiche vere degli ordini sul telefono di chi gestisce (con prova e stato «iscritto»)', 'Pagina Ordini a 4 schede (Nuovi · Oggi · Prossimi · Storico) con cerca, filtri e scadenze chiare',
+      'Promemoria della sera «domani hai N ordini»', 'Avviso «il tuo ordine è pronto» al cliente', 'Tre biglietti d\'invito in foto per WhatsApp e scheda Inviti nella Home', 'Sito online su Cloudflare, pubblicato da solo'],
+    migliorato: ['App ben impaginata anche su tablet Android e iPad', 'Monica propone un altro giorno anche al cliente nuovo', 'Etichette per prodotto, senza nome del cliente'],
+    corretto: ['iPhone: medaglione dell\'apertura senza riquadro bianco', 'Testi onesti: niente «ti arriva la notifica» finché non esisteva', 'Menù vuoto: «Monica sta preparando il menù»'] },
+  { v: '0.7 · tappa 2', data: '06/11/2026',
+    migliorato: ['Etichette per le vaschette: logo, «Buon appetito», trama sarda, bordo a greca con rosette, firma a mano', 'Apertura: «Powered by» e logo YNOY più piccoli e più in basso'] },
+  { v: '0.7 · tappa 1', data: '05/11/2026',
+    nuovo: ['Dati veri condivisi con Firebase, anche senza rete (modifiche in coda)', 'Lucchetto della parte di Monica: impronta o PIN', 'Benvenuto del cliente nuovo: nome e cognome, poi «Ciao <nome>»',
+      'Lista della spesa: dalle dosi e dagli ordini, «La mia lista», «Ho fatto la spesa»', 'Incassi del mese, costo per piatto, immagine del menù per WhatsApp, etichette da stampare',
+      'App sul telefono anche senza internet; anteprima del link su WhatsApp col logo'],
+    migliorato: ['App più semplice: 2 voci in basso, ritiro dentro «I miei ordini»', 'Sfondo con trama sarda «a pibiones» e bordura a rombi', '«Manda questo piatto a un\'amica»'],
+    corretto: ['Monica scrive solo ciò che ha cambiato lei (niente doppioni con due telefoni)'] },
+  { v: '0.1 → 0.6', data: '04-05/11/2026',
+    nuovo: ['Nata nella chat di Claude: apertura animata, menù vero di 23 piatti (Stuzzichini, Primi, Dolci), «Pronti subito»',
+      'Scheda del piatto: gusti, formati (teglia, kg, pezzo, intera), ingredienti, allergeni, note veloci; «Le mie allergie» e testo grande',
+      'Carrello con due ritiri e «Mi serve entro…»; I miei ordini con tappe, proposta di giorno, «Cambia l\'ordine», «Ordina di nuovo»',
+      'Monica: Home a 4 riquadri, ordini (accetta, proponi, rifiuta), I miei piatti con foto e prezzi, nuovo piatto in 4 passi, clienti, impostazioni (pausa, anticipo, limite, Natale, pagamenti)',
+      'Ogni modifica si salva da sola con «Annulla» per 10 secondi'] }
 ];
