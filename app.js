@@ -939,7 +939,7 @@ function barraCliente() {
 }
 
 /* ================= MONICA ================= */
-const NOMI_VISTE = { home: 'Home', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
+const NOMI_VISTE = { home: 'Home', ricettario: 'Ricettario', ricetta: 'Ricetta', cucina: 'Cucina guidata', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
 function testataMonica(titolo, indietro) {
   const vista = UI.vista.split(':')[0];
   const aiuto = wa(S.impostazioni.mario, `Ciao Mario, sono bloccata in Pronti in Tavola, nella schermata «${NOMI_VISTE[vista] || vista}». Mi aiuti?`);
@@ -974,7 +974,8 @@ function vHome() {
       ${pronti.length ? `<ul style="margin:0;padding-left:18px">${pronti.map(p => { const f = p.formati.find(x => x.id === p.pronto.formato) || p.formati[0]; return `<li><b>${esc(p.nome)}</b>: ${qtaTesto(f.tipo, p.pronto.qta, f.nome)}</li>`; }).join('')}</ul>` : '<p class="tenue" style="margin:0">Hai qualcosa già pronto? Segnalo: i clienti lo vedono in cima al menù.</p>'}
       <button type="button" class="btn ${pronti.length ? 'chiaro' : ''} pieno" data-a="apri-pronti">${ico('fiamma')}${pronti.length ? 'Cambia i pronti' : 'Segna cosa hai pronto'}</button></section>
     <section class="scheda"><h2>Da preparare</h2>${agenda()}
-      <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>`;
+      <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>
+    ${typeof vRicettario === 'function' ? `<button type="button" class="riquadro ric-home" data-a="vai" data-v="ricettario">${ico('piatti')}<div><b>Ricettario</b><br><small>Ricette sarde e italiane, passo passo</small></div></button>` : ''}`;
   h += incassi();
   /* inviti anche dalla Home (Mario 07/11: «mettili nella mia app gli inviti ora»); «Invita Monica» solo a chi non è lei */
   const nonLei = Dati.attivo && Dati.io.nomeGestore && Dati.io.nomeGestore !== cuoca();
@@ -1494,6 +1495,9 @@ function vistaMonica() {
     case 'impostazioni': return vImpostazioni();
     case 'spesa': return vSpesa();
     case 'aiutante': return typeof vAiutante === 'function' ? vAiutante() : vHome();
+    case 'ricettario': return typeof vRicettario === 'function' ? vRicettario() : vHome();   // ricettario.js arriva dopo app.js (PT E23)
+    case 'ricetta': return typeof vRicetta === 'function' ? vRicetta(id) : vHome();
+    case 'cucina': return typeof vCucina === 'function' ? vCucina(id) : vHome();
     default: return vHome();
   }
 }
@@ -1538,6 +1542,7 @@ function vai(v) {
   clearTimeout(tToast); $('#toast').innerHTML = ''; fnAnnulla = null;
   if (v === 'nuovo') UI.nuovo = { passo: 1, nome: '', cat: '', modo: '', prezzi: {} };
   if (v === 'ordini' && P.ruolo === 'monica') { UI.tab = daGuardare().length ? 'nuovi' : 'oggi'; UI.ordAperto = null; }
+  if (/^cucina:/.test(UI.vista) && !/^cucina:/.test(v)) { if (typeof tieniAcceso === 'function') tieniAcceso(false); if (window.speechSynthesis) speechSynthesis.cancel(); }
   UI.vista = v; UI.foglio = null; UI.salvato = false; render();
 }
 function aggiungiRiga(lista, r) {
