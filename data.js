@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.41';
+const VERSIONE_APP = '0.9.42';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.42', data: '08/11/2026', ora: '15:00',
+    corretto: ['Ricette: controllate tutte le 69 dell\'elenco. Pastiera, Melanzane ripiene e Spaghetti con la bottarga perdevano frasi o un passo intero: ora sono complete come su GialloZafferano', 'Le ricette già salvate nell\'archivio si rileggono da sole, 5 ogni 10 minuti; quelle sul telefono alla prima apertura con la rete'] },
   { v: '0.9.41', data: '08/11/2026', ora: '14:35',
     corretto: ['Passi delle ricette: il punto finale non va più a capo da solo dopo il numerino'] },
   { v: '0.9.40', data: '08/11/2026', ora: '14:25',

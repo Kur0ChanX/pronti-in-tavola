@@ -381,6 +381,12 @@ async function passoMotore(db, quante, aMano) {
 async function motoreRicette(cfg, aMano) {
   const db = ricDb(cfg); if (!db) return;
   await passoMotore(db, RICETTE_GIRO, aMano);
+  /* C72: le ricette salvate prima del lettore nuovo (senza numerini o con frasi perse) si rileggono da GialloZafferano, 5 ogni giro.
+     Pagina sparita o incompleta: si tiene la copia vecchia e non si riprova (niente giri infiniti). */
+  for (const u of await db.vecchie(5).catch(() => [])) {
+    const r = await leggiGz(u).catch(() => null);
+    if (r && ricettaCompleta(r)) await db.salva(r); else await db.tieni(u);
+  }
 }
 
 /* chi gestisce? Firestore legge gestori/<uid> col token di Google della persona: se risponde 200, è un gestore */
@@ -595,6 +601,8 @@ export class Ricettario extends DurableObject {
     this.sql.exec('DELETE FROM coda WHERE url = ?', r.url || '');
     return true;
   }
+  vecchie(n) { return this.sql.exec("SELECT url FROM ricette WHERE IFNULL(json_extract(json, '$.v'), 0) < 3 AND url != '' ORDER BY aggiornata LIMIT ?", Math.min(20, Number(n) || 5)).toArray().map(x => x.url); }
+  tieni(url) { this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 3) WHERE url = ?", String(url)); }
   una(id) { const x = this.sql.exec('SELECT json FROM ricette WHERE id = ?', String(id)).toArray()[0]; return x ? JSON.parse(x.json) : null; }
   /* elenco per l'app (stessa forma della ricerca di GialloZafferano): le più nuove prima; tutte le parole presenti */
   elenco(q, da, n = 30) {
