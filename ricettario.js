@@ -18,6 +18,8 @@ const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: 
 const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
+/* motore: le sarde vanno una pagina sì e una no (Mario 08/11 «in priorità sarde ma cercale miste») */
+const sardeTxt = d => d.paginaSarda === 'fine' ? 'sarde ✅ finite' : `sarde: pagina ${(/\/page(\d+)\//.exec(d.paginaSarda || '') || [, 1])[1]}`;
 /* catalogo completo per portata (sezioni di GialloZafferano lette dal server, pagina dopo pagina) */
 const CATALOGO_RIC = [['sardegna', 'Ricette sarde'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['lievitati', 'Pane, pizze e lievitati'], ['unici', 'Piatti unici'], ['sughi', 'Salse e sughi'], ['bevande', 'Bevande']];
 /* catalogo per ingrediente: pagine «ricette-con-…» di GialloZafferano; se una non esiste, il server cerca la parola */
@@ -256,12 +258,12 @@ function riquadroDb() {
   const n = (v, t, s) => `<div class="ric-db-n"><b>${v == null ? '…' : v}</b><span>${t}</span>${s ? `<small class="tenue">${s}</small>` : ''}</div>`;
   let motore = '';
   if (d) {
-    const ug = d.ultimoGiro && d.ultimoGiro.quando ? d.ultimoGiro.quando : 0, faMin = ug ? Math.round((Date.now() - ug) / 60000) : -1, perc = Math.min(100, Math.round(((d.fonte || 0) / (d.fonti || 10)) * 100));
+    const ug = d.ultimoGiro && d.ultimoGiro.quando ? d.ultimoGiro.quando : 0, faMin = ug ? Math.round((Date.now() - ug) / 60000) : -1, perc = Math.min(100, Math.round(((Math.max(1, d.fonte || 0) - 1) / ((d.fonti || 10) - 1)) * 100));
     const nomeSez = (CATALOGO_RIC.find(x => x[0] === d.sezione) || [, d.sezione || ''])[1];
     const stato = RIC.dbCerco ? '🔄 Sto cercando…' : d.pausa ? '⏸ Motore fermo' : faMin < 0 ? '🕐 Il motore parte entro 10 minuti' : faMin > 25 ? `⚠️ Motore fermo da ${faMin} minuti` : `🟢 Motore al lavoro (ultimo giro ${faMin} min fa)`;
     motore = `<p style="margin:6px 0 0"><b>${stato}</b> · oggi <b>+${d.oggi}</b> nuove${d.coda ? `, ${d.coda} in arrivo` : ''}</p>
       <div class="ricdb-barra" role="progressbar" aria-valuenow="${perc}"><i style="width:${perc}%"></i></div>
-      <p class="piccolo tenue" style="margin:2px 0 0">Sezione ${(d.fonte || 0) + 1} di ${d.fonti || 10} (${esc(nomeSez)}) · ${perc}% · ${d.giri} giri</p>
+      <p class="piccolo tenue" style="margin:2px 0 0">${sardeTxt(d)} · altre: sezione ${Math.max(1, d.fonte || 0)} di ${(d.fonti || 10) - 1} (${esc(nomeSez)}) · ${d.giri} giri</p>
       ${RIC.dbUltime && RIC.dbUltime.length ? `<p class="piccolo" style="margin:6px 0 2px"><b>Ultime trovate dal motore:</b></p><ul class="ricdb-lista">${RIC.dbUltime.slice(0, 5).map(r => rigaDb(r, nelRicettario(r.id) ? '✅ nel ricettario' : '')).join('')}</ul>` : ''}`;
   } else if (RIC.db) motore = '<p class="piccolo" style="margin:6px 0 0">Il server non risponde: i numeri del motore arrivano con la rete.</p>';
   return `<section class="scheda ric-db-box"><h2>🗄 Il mio database</h2>
@@ -296,11 +298,11 @@ function vRicDb() {
     /* chiaro (Mario 08/11 «non si capisce se funziona»): stato, ultimo giro, avanzamento sulle 10 sezioni, «Cerca adesso» */
     const ug = d.ultimoGiro && d.ultimoGiro.quando ? d.ultimoGiro.quando : 0, faMin = ug ? Math.round((Date.now() - ug) / 60000) : -1;
     const stato = RIC.dbCerco ? '🔄 Sto cercando…' : d.pausa ? '⏸ Fermo (tocca «Riprendi» o «Cerca adesso»)' : faMin < 0 ? '🕐 Non è ancora partito: il primo giro arriva entro 10 minuti' : faMin > 25 ? `⚠️ Ultimo giro ${faMin} minuti fa: dovrebbe girare ogni 10` : `🟢 Lavora sul server, anche con l'app chiusa · ultimo giro ${faMin < 1 ? 'adesso' : faMin + ' min fa'}`;
-    const nomeSez = (CATALOGO_RIC.find(x => x[0] === d.sezione) || [, d.sezione || ''])[1], perc = Math.min(100, Math.round(((d.fonte || 0) / (d.fonti || 10)) * 100));
+    const nomeSez = (CATALOGO_RIC.find(x => x[0] === d.sezione) || [, d.sezione || ''])[1], perc = Math.min(100, Math.round(((Math.max(1, d.fonte || 0) - 1) / ((d.fonti || 10) - 1)) * 100));
     h += `<p style="margin:0"><b>${stato}</b></p>
       <p class="piccolo tenue" style="margin:4px 0 0">Ogni 10 minuti legge una pagina di GialloZafferano, mette in archivio le ricette che mancano e le propone in «🔎 Fammi vedere le ricette nuove». Oggi +${d.oggi}${d.coda ? `, ${d.coda} in arrivo` : ''} · ${d.giri} giri, ${d.pagine} pagine lette${d.passate ? `, ${d.passate} giri completi` : ''}.</p>
       <div class="ricdb-barra" role="progressbar" aria-valuenow="${perc}" aria-valuemin="0" aria-valuemax="100"><i style="width:${perc}%"></i></div>
-      <p class="piccolo tenue" style="margin:4px 0 0">Giro ${(d.passate || 0) + 1}: sezione ${(d.fonte || 0) + 1} di ${d.fonti || 10} (${esc(nomeSez)}) · ${perc}%${d.ultimoGiro && d.ultimoGiro.errore ? ` · ⚠️ ultimo errore: ${esc(d.ultimoGiro.errore)}` : ''}</p>
+      <p class="piccolo tenue" style="margin:4px 0 0">Giro ${(d.passate || 0) + 1}: ${sardeTxt(d)} · altre: sezione ${Math.max(1, d.fonte || 0)} di ${(d.fonti || 10) - 1} (${esc(nomeSez)}) · ${perc}%${d.ultimoGiro && d.ultimoGiro.errore ? ` · ⚠️ ultimo errore: ${esc(d.ultimoGiro.errore)}` : ''}</p>
       ${RIC.dbUltime && RIC.dbUltime.length ? `<h3 style="margin:8px 0 4px">Ultime trovate</h3><ul class="ricdb-lista">${RIC.dbUltime.map(r => rigaDb(r, '')).join('')}</ul>` : ''}
       <div class="fila"><button type="button" class="btn pieno" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button>${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia l\'archivio</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-pausa">${d.pausa ? '▶️ Riprendi' : '⏸ Ferma'}</button></div>
       <p class="piccolo tenue" style="margin:4px 0 0">Archivio sul server dell'app: ${d.mb} MB di ricette e ${d.voci} letture della voce${d.mbVoci ? ` (${d.mbVoci} MB)` : ''}, salvate per sempre.</p>`;

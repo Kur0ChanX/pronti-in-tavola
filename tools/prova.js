@@ -572,7 +572,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // 🗄 pagina Database ricette (C60): numeri del telefono e del server, «Sfoglia» apre l'archivio nel Ricettario
     await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, mb: 3, oggi: 12, pausa: false, fonte: 3, fonti: 10, sezione: 'dolci', giri: 20, pagine: 9, passate: 0, ultimoGiro: { quando: Date.now() - 120000 } }; RIC.dbOra = Date.now(); vai('ricdb'); });
     await page.locator('#ricdb-archivio h2', { hasText: '42 trovate' }).waitFor({ timeout: 3000 });
-    if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count()) || !(await page.locator('#ricdb-archivio', { hasText: 'sezione 4 di 10 (Dolci) · 30%' }).count())) throw new Error('il motore non dice stato e avanzamento');
+    if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count()) || !(await page.locator('#ricdb-archivio', { hasText: 'sarde: pagina 1 · altre: sezione 3 di 9 (Dolci) · 22%' }).count())) throw new Error('il motore non dice stato e avanzamento');
     await page.evaluate(() => { RIC._c3 = RIC.chiedi; RIC.chiedi = async c => c.db === 'cerca' ? { db: Object.assign({}, RIC.db, { ricette: 44 }), nuove: 2 } : RIC._c3(c); });
     await clic('[data-a="ric-db-cerca"]'); await page.waitForTimeout(300);
     if (!(await page.locator('#ricdb-archivio h2', { hasText: '44 trovate' }).count())) throw new Error('«Cerca adesso» non aggiorna i numeri');

@@ -32,7 +32,7 @@ const finisci = async () => { await Promise.all(contesto.attese); contesto.attes
 /* GialloZafferano finto: 3 pagine della sezione Sardegna (35 ricette, 5 doppie) e le ricette */
 const nomi = Array.from({ length: 35 }, (_, i) => 'Ricetta-sarda-' + (i % 30));
 const carta = n => `<article class="gz-card"><a href="https://ricette.giallozafferano.it/${n}.html" title="${n}"></a><h2 class="gz-title"><a>${n.replace(/-/g, ' ')}</a></h2></article>`;
-const pagina = i => nomi.slice(i * 15, i * 15 + 15).map(carta).join('') + (i < 2 ? `<link rel="next" href="https://www.giallozafferano.it/ricette-regionali/page${i + 2}/Sardegna/">` : '');
+const pagina = i => nomi.slice(i * 15, i * 15 + 15).map(carta).join('') + (i < 2 ? `<link rel="next" href="https://www.giallozafferano.it/ricerca-ricette/page${i + 2}/sardegna/">` : '');
 const ricettaHtml = n => `<script type="application/ld+json">${JSON.stringify({ '@type': 'Recipe', name: n.replace(/-/g, ' '), recipeCategory: 'Primi piatti', recipeIngredient: ['Pecorino sardo 100 g', 'Sale q.b.'], recipeInstructions: [{ text: 'Mescola tutto.' }], image: 'https://www.giallozafferano.it/images/ricette/' + n + '.jpg' })}</script>`;
 let richieste = [], gzGiu = false, msVoci = 0;
 globalThis.caches = { default: { match: async () => null, put: async () => null } };
@@ -40,8 +40,8 @@ globalThis.fetch = async (u) => {
   u = String(u); richieste.push(u);
   if (gzGiu) return new Response('giù', { status: 503 });
   let m;
-  if (u === 'https://www.giallozafferano.it/ricette-regionali/Sardegna/') return new Response(pagina(0));
-  if ((m = /ricette-regionali\/page(\d)\/Sardegna/.exec(u))) return new Response(pagina(+m[1] - 1));
+  if (u === 'https://www.giallozafferano.it/ricerca-ricette/sardegna/') return new Response(pagina(0));
+  if ((m = /ricerca-ricette\/page(\d)\/sardegna/.exec(u))) return new Response(pagina(+m[1] - 1));
   if ((m = /^https:\/\/ricette\.giallozafferano\.it\/([\w-]+)\.html$/.exec(u))) return new Response(ricettaHtml(m[1]));
   if (u.includes('ricerca-ricette')) return new Response(carta('Culurgiones') + carta('Ricetta-sarda-1'));
   return new Response('', { status: 404 });
@@ -53,13 +53,19 @@ await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisc
 let s = await ponte.statoDb();
 prova('giro 1: 2 ricette nel database', s.ricette === 2);
 prova('giro 1: 13 in coda (15 - 2)', s.coda === 13);
-prova('giro 1: pagina dopo ricordata', /page2\/Sardegna/.test(s.pagina));
+prova('giro 1: prima le sarde, pagina dopo ricordata', /page2\/sardegna/.test(s.paginaSarda));
 prova('giro 1: al massimo 3 richieste a GialloZafferano', richieste.length <= 3);
 for (let i = 0; i < 25; i++) { await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci(); }
 s = await ponte.statoDb();
 prova('30 ricette diverse, senza doppioni (35 sulle pagine)', s.ricette === 30);
 prova('coda vuota alla fine', s.coda === 0);
-prova('finita la Sardegna passa alla sezione dopo', s.fonte === 1);
+const lette = richieste.filter(u => /giallozafferano\.it\/(ricerca-ricette|ricette-cat)\//.test(u));
+prova('sarde miste alle altre: una pagina sarda e una di un\'altra sezione', /sardegna/.test(lette[0]) && /Primi/.test(lette[1]) && /sardegna/.test(lette[2]));
+prova('finite le sarde: «fine», poi solo le altre', s.paginaSarda === 'fine' && /ricette-cat/.test(lette[lette.length - 1]));
+prova('pagina che non esiste (404, qui i Primi finti): il motore va avanti, non resta fermo (C65)', richieste.some(u => /ricette-cat\/Secondi-piatti\//.test(u)) && s.fonte >= 2);
+for (let i = 0; i < 12; i++) { await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci(); }
+s = await ponte.statoDb();
+prova('giro completo delle altre sezioni: le sarde ripartono', s.passate >= 1 && richieste.filter(u => u.endsWith('/ricerca-ricette/sardegna/')).length >= 2);
 prova('il promemoria della sera non fa girare il motore', await (async () => { const n = richieste.length; let fatto = false;
   const c2 = { RICETTARIO: cfg.RICETTARIO, AVVISI: { idFromName: () => 'c', get: () => ({ promemoria: async () => { fatto = true; } }) } };
   await W.default.scheduled({ cron: '0 18 * * *' }, c2, contesto); await finisci(); return fatto && richieste.length === n; })());

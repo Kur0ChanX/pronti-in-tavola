@@ -25,7 +25,7 @@ import { DurableObject } from 'cloudflare:workers';
 import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ } from './gz.mjs';
 /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
 const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi', secondi: 'ricette-cat/Secondi-piatti', contorni: 'ricette-cat/Contorni', dolci: 'ricette-cat/Dolci-e-Desserts',
-  lievitati: 'ricette-cat/Lievitati', unici: 'ricette-cat/Piatti-Unici', sughi: 'ricette-cat/Salse-e-Sughi', bevande: 'ricette-cat/Bevande', sardegna: 'ricette-regionali/Sardegna' };
+  lievitati: 'ricette-cat/Lievitati', unici: 'ricette-cat/Piatti-Unici', sughi: 'ricette-cat/Salse-e-Sughi', bevande: 'ricette-cat/Bevande', sardegna: 'ricerca-ricette/sardegna' };   // la sezione regionale di GZ non esiste più (404, 08/11): si usa la loro ricerca, pagina dopo pagina
 
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
@@ -314,12 +314,18 @@ async function motoreRicette(cfg, aMano) {
   const db = ricDb(cfg); if (!db) return;
   const s = await db.statoDb(); if (s.pausa && !aMano) return;
   if (s.coda < CODA_MIN) {
-    const i = (Number(s.fonte) || 0) % FONTI_DB.length, u = s.pagina || `https://www.giallozafferano.it/${CAT_GZ[FONTI_DB[i]]}/`;
+    // sarde in priorità ma miste (Mario 08/11 «in priorità sarde ma cercale miste»): una pagina sì e una no è delle sarde,
+    // le altre girano fra le sezioni; finite le sarde, solo le altre fino al giro completo, poi le sarde ripartono
+    const sarda = s.paginaSarda !== 'fine' && (Number(s.pagine) || 0) % 2 === 0;
+    const i = Math.max(1, (Number(s.fonte) || 0) % FONTI_DB.length);
+    const u = sarda ? s.paginaSarda || `https://www.giallozafferano.it/${CAT_GZ.sardegna}/` : s.pagina || `https://www.giallozafferano.it/${CAT_GZ[FONTI_DB[i]]}/`;
     let html = '';
     try { html = await paginaGz(u); } catch (e) { await db.giro({ errore: String(e.message || e) }); }
     const lista = gzCerca(html), nuove = lista.length ? await db.inCoda(lista.map(x => x.url)) : 0;
     const dopo = lista.length ? gzProssima(html, u, lista.length) : '';
-    if (html) await db.posizione(dopo ? i : (i + 1) % FONTI_DB.length, dopo, nuove);
+    // pagina rotta o vuota (es. 404): si passa alla sezione dopo, così il motore non resta mai fermo sulla stessa (C65)
+    if (sarda) await db.posizioneSarda(dopo, nuove);
+    else await db.posizione(dopo ? i : (i + 1) % FONTI_DB.length || 1, dopo, nuove, !dopo && i === FONTI_DB.length - 1);
   }
   let fatte = 0;
   for (const u of await db.prendi(RICETTE_GIRO)) {
@@ -561,10 +567,14 @@ export class Ricettario extends DurableObject {
     return tt;
   }
   togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
-  posizione(fonte, pagina, nuove) {
+  posizione(fonte, pagina, nuove, finito) {
     this.metti1('fonte', fonte); this.metti1('pagina', pagina || ''); this.metti1('ultimaPagina', JSON.stringify({ quando: Date.now(), nuove }));
     this.metti1('pagine', (Number(this.leggi1('pagine')) || 0) + 1);
-    if (!pagina && fonte === 0) this.metti1('passate', (Number(this.leggi1('passate')) || 0) + 1);   // finite tutte le sezioni: un giro completo di GialloZafferano
+    if (finito) { this.metti1('passate', (Number(this.leggi1('passate')) || 0) + 1); this.metti1('paginaSarda', ''); }   // finite tutte le sezioni: un giro completo, le sarde ripartono
+  }
+  posizioneSarda(pagina, nuove) {   // pagina dopo delle sarde; 'fine' = finite fino al prossimo giro completo
+    this.metti1('paginaSarda', pagina || 'fine'); this.metti1('ultimaPagina', JSON.stringify({ quando: Date.now(), nuove }));
+    this.metti1('pagine', (Number(this.leggi1('pagine')) || 0) + 1);
   }
   giro(x) { this.metti1('ultimoGiro', JSON.stringify(Object.assign({ quando: Date.now() }, x))); this.metti1('giri', (Number(this.leggi1('giri')) || 0) + 1); }
   voce(k) { const x = this.sql.exec('SELECT mp3 FROM voci WHERE k = ?', String(k)).toArray()[0]; return x ? x.mp3 : null; }
@@ -595,7 +605,7 @@ export class Ricettario extends DurableObject {
     const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
     return { scelte: uno('SELECT COUNT(*) AS n FROM scelte').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
       oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
-      fonte: Number(this.leggi1('fonte')) || 0, fonti: FONTI_DB.length, sezione: FONTI_DB[Number(this.leggi1('fonte')) || 0], pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'),
+      fonte: Number(this.leggi1('fonte')) || 0, fonti: FONTI_DB.length, paginaSarda: this.leggi1('paginaSarda') || '', sezione: FONTI_DB[Number(this.leggi1('fonte')) || 0], pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'),
       giri: Number(this.leggi1('giri')) || 0, pagine: Number(this.leggi1('pagine')) || 0, passate: Number(this.leggi1('passate')) || 0, mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };
   }
 }
