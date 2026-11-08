@@ -250,12 +250,15 @@ function frasiVoce(t) {
 /* VOCE VERA (Mario 08/11 «consiglio 1»): voci neurali di Microsoft lette dal server (/api/voce), solo per chi gestisce.
    Scelta in «Voce che legge» (pit-voce = «edge:isabella», «edge:elsa»…); se il server non risponde si usa la voce del telefono. */
 const VOCI_VERE = [['edge:isabella', 'Isabella · voce vera'], ['edge:elsa', 'Elsa · voce vera'], ['edge:giuseppe', 'Giuseppe · voce vera'], ['edge:diego', 'Diego · voce vera']];
-const sceltaVoce = () => { try { return localStorage.getItem('pit-voce') || 'edge:isabella'; } catch (e) { return 'edge:isabella'; } };
+/* VOCE AUTOMATICA (Mario 08/11 «deve funzionare tutto automaticamente… la migliore… scaricala anche coi dati»): la voce di base è Paola (Piper),
+   l'app la scarica da sola sul telefono di chi gestisce (ricettario.js voceAutomatica); Kokoro resta spento finché non legge l'italiano (il suo fonemizzatore sa solo l'inglese, provato 08/11). */
+const sceltaVoce = () => { try { return localStorage.getItem('pit-voce') || VOCE_AUTO; } catch (e) { return VOCE_AUTO; } };
 /* VOCI SUL TELEFONO (Mario 08/11 «Kokoro e Piper… integrali»): voce-piper.js e voce-kokoro.js espongono window.VociLocali.<motore>
    = { voci: [[chiave, nome]], mb(chiave), pronta(chiave), scarica(chiave, avanzamento), parla(testo, chiave) → Blob wav, libera() }.
    Scelta «piper:paola», «kokoro:sara»… in pit-voce; si scaricano una volta (50-100 MB) e parlano anche senza rete. */
-const motoreLocale = k => { const m = /^(piper|kokoro):/.exec(k || ''); return m && window.VociLocali && window.VociLocali[m[1]] ? window.VociLocali[m[1]] : null; };
-const vociLocali = () => { const V = window.VociLocali || {}; return Object.keys(V).flatMap(m => V[m].voci || []); };
+const VOCE_AUTO = 'piper:paola', MOTORI_VOCE = ['piper'];
+const motoreLocale = k => { const m = /^(piper|kokoro):/.exec(k || ''); return m && MOTORI_VOCE.includes(m[1]) && window.VociLocali && window.VociLocali[m[1]] ? window.VociLocali[m[1]] : null; };
+const vociLocali = () => { const V = window.VociLocali || {}; return MOTORI_VOCE.filter(m => V[m]).flatMap(m => V[m].voci || []); };
 AI.localiPronte = AI.localiPronte || {};   // chiave → true/false, riempito piano piano da statoVoceLocale
 function statoVoceLocale(k, poi) {
   const M = motoreLocale(k); if (!M) return false;
@@ -279,7 +282,7 @@ async function parlaLocale(t, scelta, fine, giro) {
     await a.play();
   } catch (e) {
     if (AI.giroVoce !== giro) return;
-    if (!AI.localeAvvisata && typeof mostraToast === 'function') { AI.localeAvvisata = true; mostraToast(/non scaricata/.test(e.message) ? 'La voce scelta non è ancora sul telefono: scaricala da «Voce che legge». Per ora legge la voce del telefono.' : 'La voce sul telefono non riesce a leggere: per ora legge la voce del telefono.'); }
+    if (!AI.localeAvvisata && typeof mostraToast === 'function') { AI.localeAvvisata = true; mostraToast(/non scaricata/.test(e.message) ? 'La voce vera si sta ancora scaricando sul telefono: intanto legge la voce del telefono.' : 'La voce sul telefono non riesce a leggere: per ora legge la voce del telefono.'); }
     parlaTelefono(t, fine);
   }
 }

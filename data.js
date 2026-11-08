@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.30';
+const VERSIONE_APP = '0.9.31';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.31', data: '08/11/2026', ora: '11:40',
+    nuovo: ['Voce automatica: la voce di base è Paola (Piper), vera e italiana; l\'app la scarica da sola sul telefono di chi gestisce la prima volta che apre il Ricettario (94 MB, con qualunque rete), senza toccare nulla; poi legge anche senza rete'],
+    corretto: ['Kokoro tolto dalle voci: in italiano non legge (il suo programma sa solo l\'inglese); torna quando funziona'] },
   { v: '0.9.30', data: '08/11/2026', ora: '11:10',
     nuovo: ['Ricettario: «🗄 Il mio database» in vista, senza cambiare pagina: quante ricette ha trovato il motore, quante nel tuo ricettario (e quante aggiunte oggi), quante sul telefono, quante con la voce; stato del motore con avanzamento e le ultime trovate; «🔄 Cerca adesso»'],
     migliorato: ['Voce che legge: se Microsoft non risponde lo dice chiaro (per questo le voci sembravano uguali) e consiglia una voce sul telefono; scegliendo una voce non ancora scaricata chiede di scaricarla invece di parlare con quella del telefono'] },
