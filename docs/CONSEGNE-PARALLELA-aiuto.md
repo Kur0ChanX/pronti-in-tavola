@@ -14,7 +14,7 @@ Aiuto 3 = `session_01WTjqUxSnvSoGaBqC7GtF6r` (catena 1 di 8 dalla Aiuto 2), chiu
 
 ## Prossimi passi
 1. Avvio: titolo «📗 🍝 Aiuto 4 · corregge i bug»; leggere i messaggi di Mario arrivati dopo.
-2. C84: aggiungere in `tools/prova.js` due prove (lista ricette scorsa → apri ricetta → Indietro: stesso punto; tasto «🗄 Database» porta al riquadro e poi su), giro completo, foto del tasto a Mario (cambia l'aspetto).
+2. ✅ (Aiuto 4) C84: prova «ricettario (C84)» in `tools/prova.js` (Indietro, gesto, entrata dalla Home, tasto); trovato e corretto in v0.9.54: dalla Home il Ricettario tornava a metà elenco (`app.js` regola `penultimaVista` non vale se arrivi da home/menu). Giro completo 54 OK. Foto in `archivio/foto/2026-11-08-c84-*`.
 3. Kokoro (`voce-kokoro.js`, transformers.js) non è in un Web Worker: solo se Mario la usa.
 
 ## Note
