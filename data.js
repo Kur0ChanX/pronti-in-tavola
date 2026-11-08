@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.12';
+const VERSIONE_APP = '0.9.13';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.13', data: '08/11/2026',
+    nuovo: ['Solo per Mario: tasto «Prova le AI adesso» che controlla una per una Cloudflare e Groq e dice chi risponde'] },
   { v: '0.9.12', data: '08/11/2026',
     migliorato: ['«Sono qui sotto» con l\'app chiusa: squilla ogni 5 secondi per 1 minuto, con vibrazione lunga, finché la apri'],
     corretto: ['L\'app si bloccava all\'apertura e Mario restava nella parte cliente: ora si apre giusta (e una prova lo controlla sempre)'] },
