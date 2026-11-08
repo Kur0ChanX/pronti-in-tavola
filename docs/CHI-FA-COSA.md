@@ -9,4 +9,4 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 📗 Aiuto 2 (bug, `01WTjqUxGGtu`) | C73 dosi a teglia da 6, C74 aggiornamento da solo | spesa.js, app.js (fondo), data.js NOVITA, tools/prova.js | 08/11 14:30 |
+| 📗 Aiuto 2 (bug, `01WTjqUxGGtu`) | C74 dosi a teglia da 6, C75 aggiornamento da solo | spesa.js, app.js (fondo), data.js NOVITA, tools/prova.js | 08/11 14:30 |
