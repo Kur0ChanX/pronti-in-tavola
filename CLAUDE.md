@@ -8,7 +8,7 @@ Sopra il kit (uguale in tutti i progetti, versione in `docs/kit-progetto/VERSION
 - Il resto quando serve: skill del kit (`consegne` 🔒, `chat-parallela`, `cambio-account` 🔒, `pr`, `nuova-regola`, `ricerca-aggiornata`); regole per zona in `.claude/rules/` (con `paths:`): se lavoro in una zona solo con Bash, prima le leggo.
 
 ## App con prove
-- Anteprima: https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH (`python3 -I tools/anteprima.py` → `dist/anteprima.html`).
+- Anteprima: `python3 -I tools/anteprima.py` → `dist/anteprima.html`, SOLO per le prove. **Niente più artefatto** (Mario 08/11: «non lo uso più»): vince su «anteprima a ogni push» del kit; Mario prova sul sito vero.
 - Prove: `node tools/prova.js` (telefono `Pixel 7`) dopo l'anteprima. Regole dell'app in `.claude/rules/progetto.md`.
 
 ## Compact instructions
