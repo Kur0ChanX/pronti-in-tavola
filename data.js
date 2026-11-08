@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.6';
+const VERSIONE_APP = '0.9.7';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.7', data: '08/11/2026',
+    migliorato: ['Aiutante: voce femminile più naturale, dice «controlla e tocca Conferma»; pulsanti «Conferma» e «Lascia stare»; se un\'AI non risponde passa da sola a un\'altra gratuita'],
+    corretto: ['«Scrivi a Monica»: nel messaggio c\'è sempre nome e cognome'] },
   { v: '0.9.6', data: '08/11/2026',
     nuovo: ['Clienti: «Scrivi a Monica» su WhatsApp (tasto verde in basso, e in ogni ordine col suo numero), col messaggio già iniziato «Ciao Monica! Ti scrivo dall\'app Pronti in Tavola… Volevo chiederti:»'],
     migliorato: ['Aiutante: cambia le impostazioni (preavviso, teglie al giorno, pronti fino a, Natale, pagamenti, nota del ritiro) sempre con «prima → dopo» e conferma; risponde a «come si fa…» con la guida dell\'app; prepara messaggi per tutte le amiche'] },

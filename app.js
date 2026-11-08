@@ -300,7 +300,8 @@ function rigaOrdine(r, extra = '') {
 /* «Scrivi a Monica» (Mario 08/11): messaggio già iniziato, professionale, il cliente scrive solo la domanda.
    Il numero di Monica ce l'hanno solo i clienti approvati (impostazioni/approvati): senza numero niente tasto. */
 function waMonica(o) {
-  const chi = nomeCliente(), firma = chi && chi !== 'Cliente' ? ` Sono ${chi}.` : '';
+  /* nome e cognome scritti all'entrata; se manca (es. Mario che guarda come cliente) quello di chi gestisce, poi quello di prova */
+  const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '', firma = chi ? ` Sono ${chi}.` : '';
   const testa = o ? `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola per l'ordine n. ${o.n} (ritiro ${giornoLungo(o.entro)}).${firma}` : `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${firma}`;
   return wa(S.impostazioni.whatsapp, `${testa}\n\nVolevo chiederti: `);
 }
