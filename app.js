@@ -337,8 +337,8 @@ const CONDIVIDI = '<svg class="ico-in" viewBox="0 0 24 24" aria-hidden="true"><p
 function guidaInstalla() {
   const os = UI.guidaOS || (telefono() === 'ios' ? 'ios' : 'android');
   const pp = os === 'ios' ? [
-    `Tocca <b>Condividi</b> ${CONDIVIDI} vicino all'indirizzo (su Safari è dentro <b>⋯</b>).`,
-    'Scegli <b>Aggiungi alla schermata Home</b>.',
+    `Tocca <b>Condividi</b> ${CONDIVIDI} vicino all'indirizzo (su Safari tocca prima <b>⋯</b>).`,
+    '<b>Scorri in giù</b> l\'elenco e tocca <b>Aggiungi alla schermata Home</b>.<br><small class="tenue">Non c\'è? In fondo tocca <b>Modifica azioni</b> e aggiungilo.</small>',
     'Tocca <b>Aggiungi</b>.'] : [
     'Tocca <b>⋮</b> in alto a destra (Samsung: <b>≡</b> in basso).',
     'Scegli <b>Installa app</b> o <b>Aggiungi a schermata Home</b>.',
