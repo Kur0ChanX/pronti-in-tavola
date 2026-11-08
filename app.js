@@ -1569,6 +1569,7 @@ function render() {
   if (UI.tocco) { const [a, v] = UI.tocco.split('|'); document.querySelectorAll(`[data-a="${a}"][aria-pressed="true"]`).forEach(b => { if ((b.dataset.v || '') === v) b.classList.add('scatta'); }); UI.tocco = null; }
   if (UI.vista !== ultimaVista && $('main.corpo') && !/^cucina:/.test(UI.vista)) $('main.corpo').classList.add('entra');   // cucina guidata: niente entrata, la voce sul telefono blocca le animazioni e la pagina restava vuota (Mario 08/11)
   $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
+  if (typeof bannerAI === 'function') bannerAI();   // «Portami lì» dell'aiutante (aiutante.js)
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
   if (UI.vista === ultimaVista) window.scrollTo(0, y);
   else {

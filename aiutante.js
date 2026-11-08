@@ -5,7 +5,7 @@
    In fondo l'aiutante dei CLIENTI (C50): spento di base, lo accende Mario («Solo per te, Mario»); solo menù e i SUOI ordini. */
 const AI = { msgs: [], attesa: false, rec: null, bozza: '', foto: null };
 const DOMANDE_AI = ['Cosa devo cucinare oggi?', 'Come si mette la pausa?', 'Chi viene a ritirare oggi?', 'Chi deve ancora pagare?', 'Quanto ho incassato questo mese?', 'Com\'è andata la settimana?'];
-const ESEMPI_AI = ['«L\'ordine di Laura è pronto e ha pagato»', '«Togli il tiramisù e alza le lasagne a 14 euro»', '«Sono in ferie fino a domenica»', 'una foto della lista della spesa scritta a mano'];
+const ESEMPI_AI = ['«Come cambio la foto della parmigiana?»', '«L\'ordine di Laura è pronto e ha pagato»', '«Togli il tiramisù e alza le lasagne a 14 euro»', '«Sono in ferie fino a domenica»', 'una foto della lista della spesa scritta a mano'];
 const Riconosci = window.SpeechRecognition || window.webkitSpeechRecognition;
 const STATO_AI = { nuovo: 'da accettare', proposta: 'aspetta che il cliente risponda sul giorno', daApprovare: 'cliente nuovo da approvare', accettato: 'da preparare',
   pronto: 'pronto, da ritirare', ritirato: 'ritirato', rifiutato: 'rifiutato', annullato: 'annullato', prova: 'di prova' };
@@ -149,13 +149,26 @@ function controllaAI(a) {
       if (!t) return { no: 'Cosa scrivo al cliente?' };
       return { link: wa(tel || '', t), etichetta: `Scrivi a ${nomeBreve(chi)} su WhatsApp`, titolo: `Messaggio per ${chi}`, dopo: t };
     }
+    case 'vai': {
+      const v = DOVE_AI[a.voce];
+      if (!v) return { no: 'Non so dove portarti: dimmelo con altre parole.' };
+      if (VOCI_PIATTO.includes(a.voce)) {
+        const pp = a.id ? piatto(a.id) : null;
+        if (!pp || pp.cestino) return { no: 'Non trovo quel piatto: dimmi il nome che c\'è nel menù.' };
+        return { vai: 'piatto:' + pp.id, sez: v.sez, etichetta: 'Portami lì', titolo: `${pp.nome} → ${v.nome}`, dopo: v.come };
+      }
+      if (a.voce === 'imp-gestori' || a.voce === 'imp-lucchetto') { if (!Dati.attivo) return { no: 'Questa voce c\'è solo nell\'app vera, con i dati veri.' }; }
+      const pv = a.perVoce && DOVE_AI[a.perVoce];
+      return { vai: v.vista, sez: v.sez || null, etichetta: 'Portami lì', titolo: v.nome, dopo: pv ? `Tocca il piatto, poi «${pv.nome}». ${pv.come}` : v.come };
+    }
     case 'apri':
       if (!VISTE_AI[a.vista]) return { no: 'Non so quale pagina aprire.' };
       return { vai: a.vista, etichetta: `Vai a ${VISTE_AI[a.vista]}`, titolo: VISTE_AI[a.vista] };
     case 'idea': {
       const t = String(a.testo || '').trim().slice(0, 500);
       if (!t) return { no: 'Qual è l\'idea?' };
-      return { link: wa(S.impostazioni.mario, `Ciao Mario, un'idea per Pronti in Tavola: ${t}`), etichetta: 'Mandala a Mario', titolo: 'Idea per Mario (la programma lui)', dopo: t };
+      const ult = AI.ultimaVista && NOMI_VISTE[AI.ultimaVista.split(':')[0]], dove = ult && ult !== 'Home' ? ` (ero in «${ult}»)` : '';
+      return { link: wa(S.impostazioni.mario, `Ciao Mario, sono Monica. Vorrei cambiare o aggiungere una cosa in Pronti in Tavola${dove}:\n${t}\n\nVersione dell'app: ${VERSIONE_APP}`), etichetta: 'Manda a Mario su WhatsApp', titolo: 'Questa non si cambia ancora dall\'app: la chiedo a Mario', dopo: t };
     }
     default: return { no: '' };
   }
@@ -202,12 +215,23 @@ async function inviaAI(testo, voce) {
   AI.bozza = ''; AI.foto = null; AI.msgs.push({ chi: 'io', t: testo || 'Guarda la foto', foto }); AI.attesa = true;
   render(); fondoAI();
   let r;
-  try { r = await chiediAiutante(testo, datiAI(), storia, foto); } catch (e) { r = { testo: e.message, azioni: [] }; }
+  const qui = !foto && capisciDove(testo);
+  if (qui) r = rispostaDove(qui);
+  else {
+    try { r = await chiediAiutante(testo, datiAI(), storia, foto); }
+    catch (e) { r = /funzion|vorrei che|si potrebbe|sarebbe bello|mi servirebbe|manca |aggiung/.test(semplice(testo)) ? { testo: 'Questa la chiedo a Mario: controlla il messaggio e mandalo.', azioni: [{ azione: 'idea', testo }] } : { testo: e.message, azioni: [] }; }
+  }
   const pi = pianoDa(r);
   AI.attesa = false;
   AI.msgs.push({ chi: 'lei', t: pi.testo, piano: pi.azioni.length ? pi.azioni : null });
   AI.msgs = AI.msgs.slice(-30);
   if (UI.vista === 'aiutante') { render(); fondoAI(); }
+  const soloVai = pi.azioni.length === 1 && controllaAI(pi.azioni[0].a);
+  if (soloVai && soloVai.vai) {   // Mario 08/11 «portala direttamente»: un attimo per leggere, poi ci va da sola
+    if (voce) parlaAI(pi.testo);
+    setTimeout(() => { if (UI.vista === 'aiutante' && !AI.attesa) portaLi(soloVai); }, 1400);
+    return;
+  }
   if (voce) parlaAI(pi.testo + (pi.azioni.some(x => !controllaAI(x.a).no) ? ' Controlla e tocca Conferma.' : ''));
 }
 /* fa insieme le azioni scelte: un solo salvataggio e un solo Annulla */
@@ -406,7 +430,7 @@ function rigaPiano(x, i, j, fermo) {
   const c = controllaAI(x.a), id = `${i}|${j}`;
   if (c.no !== undefined && !c.campi) return c.no ? `<div class="ai-azione no">${ico('x')}<span>${esc(c.no)}</span></div>` : '';
   if (c.link || c.vai) return `<div class="ai-azione"><div class="ai-cosa"><b>${esc(c.titolo)}</b>${c.dopo ? `<span class="ai-dopo">${esc(c.dopo)}</span>` : ''}</div>
-    ${c.link ? `<a class="btn chiaro piccolo" href="${c.link}" target="_blank" rel="noopener">${ico('chat')}${esc(c.etichetta)}</a>` : `<button type="button" class="btn chiaro piccolo" data-a="ai-vai" data-v="${c.vai}">${esc(c.etichetta)}</button>`}</div>`;
+    ${c.link ? `<a class="btn chiaro piccolo" href="${c.link}" target="_blank" rel="noopener">${ico('chat')}${esc(c.etichetta)}</a>` : `<button type="button" class="btn piccolo" data-a="ai-vai" data-i="${i}" data-j="${j}">${ico('cerca')}${esc(c.etichetta)}</button>`}</div>`;
   const campi = (c.campi || []).map(([k, tipo, et]) => { const v = k.split('.').reduce((o, p) => o && o[p], x.a); return `<label class="ai-campo"><small>${esc(et)}</small>
     <input type="${tipo}" ${tipo === 'number' ? 'inputmode="decimal" step="0.5" min="0"' : ''} data-aif="${id}|${k}" value="${esc(v == null ? '' : String(v))}" ${fermo ? 'disabled' : ''}></label>`; }).join('');
   if (c.no !== undefined) return `<div class="ai-azione no"><div class="ai-cosa"><span>${esc(c.no)}</span></div><div class="ai-campi">${campi}</div></div>`;
@@ -441,6 +465,99 @@ function vAiutante() {
   return h + '</main>';
 }
 
+/* ---------- «Portami lì» (Mario 08/11, C87): l'aiutante porta Monica nel punto esatto dell'app ----------
+   Ogni voce: dove sta (vista e sezione da aprire), il suo nome e cosa fare una volta lì (frasi corte).
+   Le parole servono a capire le domande anche SENZA l'AI (senza rete, nell'anteprima, o se l'AI è giù). */
+const DOVE_AI = {
+  foto: { sez: 'foto', nome: 'Foto', come: 'Tocca «Cambia la foto» (o «Aggiungi una foto»), scegli la foto, sistemala e tocca «Usa questa foto».', parole: /\bfot|immagin|\bscatt/ },
+  prezzi: { sez: 'prezzi', nome: 'Prezzi e formati', come: 'Scrivi il prezzo nuovo nella casella: si salva da solo.', parole: /prezz|cost[ao] (al|il|la)|quanto (lo |la )?vend|euro/, azione: true },
+  pronto: { sez: 'pronto', nome: 'Pronto subito oggi', come: 'Scrivi quanti ne hai già pronti oggi: i clienti li vedono subito.', parole: /gi[aà] pront|pronti (oggi|subito)|ho pront/, azione: true },
+  nome: { sez: 'nome', nome: 'Nome e parte del menù', come: 'Cambia il nome o la riga sotto il nome: si salva da solo.', parole: /\bnome\b|rinomin|riga sotto|descrizion/ },
+  gusti: { sez: 'gusti', nome: 'Gusti', come: 'Aggiungi o togli un gusto, con il suo prezzo se cambia.', parole: /\bgust[oi]\b|varian/ },
+  ingredienti: { sez: 'ingredienti', nome: 'Ingredienti e allergeni', come: 'Tocca gli ingredienti giusti: gli allergeni si segnano da soli, controllali tu.', parole: /ingredient|allerg|glutin|lattos|\buov[ao]\b/ },
+  dosi: { sez: 'dosi', nome: 'Dosi e costo', come: 'Scrivi quanto ti serve di ogni ingrediente: la lista della spesa fa i conti da sola.', parole: /\bdos[ei]\b|quantit|grammi|quanto (mi )?(costa|serve) (fare|farl|preparar)/ },
+  richieste: { sez: 'richieste', nome: 'Richieste veloci', come: 'Aggiungi le richieste che i clienti possono toccare (es. «senza cipolla»).', parole: /richiest|senza cipoll|note (dei|del) client/ },
+  fritto: { sez: 'fritto', nome: 'Cotto da te', come: 'Accendi «Fritto da te» o «Al forno da te» e scrivi quanto costa in più.', parole: /fritt|friggi|al forno da/ },
+  casa: { sez: 'casa', nome: 'Come si prepara a casa', come: 'Scrivi come scaldarlo o cuocerlo a casa: il cliente lo legge.', parole: /a casa|scald|riscald|cuocer/ },
+  novita: { sez: 'novita', nome: 'Etichetta «Novità»', come: 'Accendi l\'interruttore: l\'etichetta resta 2 settimane.', parole: /novit/ },
+  'imp-pausa': { vista: 'impostazioni', sez: 'imp-pausa', nome: 'Pausa', come: 'Accendi la pausa e scegli fino a quando: i clienti non possono ordinare.', parole: /pausa|ferie|vacanz|chiud|non (prendo|voglio) ordin/, azione: true },
+  'imp-pronti': { vista: 'impostazioni', sez: 'imp-pronti', nome: 'Pronti subito', come: 'Scegli fino a che ora valgono i piatti pronti di oggi.', parole: /fino a che ora|ora (del|di) ritiro|orari/ },
+  'imp-ritiro': { vista: 'impostazioni', sez: 'imp-ritiro', nome: 'Dove ritirano', come: 'Scrivi l\'indirizzo e come trovarti (citofono, piano).', parole: /indirizz|dove (ritir|vengon)|citofon|via\b/ },
+  'imp-numeri': { vista: 'impostazioni', sez: 'imp-numeri', nome: 'Numeri', come: 'Scrivi il tuo numero di WhatsApp con il +39.', parole: /numer[oi] (di )?(telefon|whatsapp|cellular)|mio numero|cambiat[oa] numero/ },
+  'imp-paga': { vista: 'impostazioni', sez: 'imp-paga', nome: 'Pagamenti', come: 'Accendi come vuoi essere pagata: contanti, bonifico (con l\'IBAN) o Postepay.', parole: /pagament|bonific|\biban\b|postepay|contanti|pagar/, azione: true },
+  'imp-vista': { vista: 'impostazioni', sez: 'imp-vista', nome: 'Testo grande e guida', come: 'Accendi «Testo grande» se leggi male, o tocca «Rivedi la guida».', parole: /testo grande|scritt[ae] (piccol|grand)|non (ci )?vedo|ingrandi|rivedi la guida/ },
+  'imp-gestori': { vista: 'impostazioni', sez: 'imp-gestori', nome: 'Chi gestisce la cucina', come: 'Qui vedi chi entra come te e puoi aggiungere una persona.', parole: /chi gestisc|aiutar(mi)? in cucina|mio marito|socia|altra persona (che )?gestisc/ },
+  'imp-notifiche': { vista: 'impostazioni', sez: 'imp-notifiche', nome: 'Notifiche', come: 'Tocca «Attiva» e poi «Consenti» quando il telefono lo chiede.', parole: /notific|avvis[io] (degli|sul)|suon/ },
+  'imp-lucchetto': { vista: 'impostazioni', sez: 'imp-lucchetto', nome: 'Lucchetto', come: 'Scegli impronta o PIN per aprire la tua parte dell\'app.', parole: /lucchett|\bpin\b|impront|password|blocc(a|o) (l'app|il telefono)/ },
+  'imp-anticipo': { vista: 'impostazioni', sez: 'imp-anticipo', nome: 'Giorni di anticipo', come: 'Con + e − scegli quanti giorni prima devono ordinare.', parole: /anticip|preavvis|giorni prima/, azione: true },
+  'imp-limite': { vista: 'impostazioni', sez: 'imp-limite', nome: 'Limite della settimana', come: 'Accendi il limite e scegli quante teglie al massimo.', parole: /limit|troppi ordini|massimo di teglie|teglie al massimo/, azione: true },
+  'imp-natale': { vista: 'impostazioni', sez: 'imp-natale', nome: 'Menù di Natale', come: 'Accendilo, scegli la data ultima e i piatti di Natale.', parole: /natal|feste|capodann|pasqu/, azione: true },
+  ordini: { vista: 'ordini', nome: 'Ordini', come: 'In alto le schede Nuovi, Oggi, Prossimi e Storico; tocca un ordine per accettarlo o segnarlo pronto.', parole: /\bordin[ie]\b|chi (ha )?ordinat|da accettar/ },
+  piatti: { vista: 'piatti', nome: 'I miei piatti', come: 'Tocca un piatto per cambiarlo; l\'interruttore lo toglie o lo rimette nel menù.', parole: /i miei piatti|\bmen[uù]\b|tutti i piatti/ },
+  nuovo: { vista: 'nuovo', nome: 'Nuovo piatto', come: 'Rispondi alle 4 domande: nome, parte del menù, come lo vendi, prezzi.', parole: /(nuovo|aggiung\w*|mett\w*|cre\w*) (un )?piatt|piatto nuovo/ },
+  clienti: { vista: 'clienti', nome: 'Clienti', come: 'Qui inviti le amiche su WhatsApp e approvi le persone nuove.', parole: /client|invit|amich|approv|nuove persone/ },
+  spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
+  ricettario: { vista: 'ricettario', nome: 'Ricettario', come: 'Cerca una ricetta per nome o ingrediente, poi tocca «Cucina guidata».', parole: /ricett|ricettari|cucina guidata/ },
+  aggiornamenti: { vista: 'aggiornamenti', nome: 'Novità dell\'app', come: 'Qui vedi cosa è cambiato nell\'app, versione per versione.', parole: /aggiornament|novit[aà] dell'app|cosa (è|e) cambiat/ }
+};
+const VOCI_PIATTO = ['foto', 'prezzi', 'pronto', 'nome', 'gusti', 'ingredienti', 'dosi', 'richieste', 'fritto', 'casa', 'novita'];
+const semplice = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const PAROLE_VUOTE = /^(di|del|della|delle|dei|con|alla|alle|al|allo|e|in|la|le|il|lo|gli|tipo|medie|da)$/;
+/* i piatti nominati nella frase: conta le parole del nome (anche «melanzane» → Melanzane alla parmigiana); a pari punti tutti (Monica sceglie) */
+function piattiDetti(t) {
+  const parole = semplice(t).split(/[^a-z]+/).filter(w => w.length >= 4);
+  const uguale = (x, w) => x === w || (x.length >= 5 && w.length >= 5 && x.slice(0, 5) === w.slice(0, 5));
+  const voti = visibili().map(p => {
+    const sue = semplice(p.nome).split(/[^a-z]+/).filter(w => w.length >= 4 && !PAROLE_VUOTE.test(w));
+    return { p, n: sue.filter(w => parole.some(x => uguale(x, w))).length / Math.max(1, sue.length) };
+  }).filter(v => v.n > 0);
+  const top = Math.max(0, ...voti.map(v => v.n));
+  return voti.filter(v => v.n === top).map(v => v.p).slice(0, 4);
+}
+/* capisce da sola «dove vuoi andare»; null = lo decide l'AI (azioni con numeri o date, domande sui dati) */
+function capisciDove(testo) {
+  const t = semplice(testo);
+  if (!t || t.length > 200) return null;
+  const domanda = /\bcome\b|\bdove\b|non (so|trovo|riesco|capisco)|si fa|posso|aiut|portami|fammi vedere|apri|vai /.test(t);
+  const voglio = domanda || /vogli|vorrei|devo|cambi|modific|sistem|aggiung|mett|togli|scriv|attiv|accend|spegn|impost/.test(t);
+  if (!voglio) return null;
+  const chiavi = Object.keys(DOVE_AI).filter(k => DOVE_AI[k].parole.test(t));
+  if (!chiavi.length) return null;
+  const k = chiavi.find(x => VOCI_PIATTO.includes(x)) || chiavi[0], v = DOVE_AI[k];
+  if (v.azione && !domanda && /\d/.test(t)) return null;   // «alza le lasagne a 14 euro», «pausa fino al 20»: lo fa l'AI
+  if (VOCI_PIATTO.includes(k)) {
+    const pp = piattiDetti(testo);
+    if (!pp.length && k === 'nome' && !domanda) return null;
+    return pp.length ? pp.map(p => ({ azione: 'vai', voce: k, id: p.id })) : [{ azione: 'vai', voce: 'piatti', perVoce: k }];
+  }
+  return [{ azione: 'vai', voce: k }];
+}
+function rispostaDove(aa) {
+  const c = controllaAI(aa[0]);
+  if (c.no) return { testo: c.no, azioni: [] };
+  if (aa.length > 1) return { testo: `Quale piatto? Ne ho trovati ${aa.length}: tocca quello giusto.`, azioni: aa };
+  return { testo: `Ti porto in ${c.titolo}. ${c.dopo}`, azioni: aa };
+}
+/* va nel punto: apre la sezione, la porta in vista e la fa lampeggiare; in cima una riga con cosa fare e «Torna all'aiutante» */
+function portaLi(c) {
+  vai(c.vai);
+  UI.sez = c.sez || null; UI.aiQui = { vista: c.vai, testo: c.dopo, titolo: c.titolo };
+  render();
+  setTimeout(() => {
+    const d = c.sez && document.querySelector(`details.sez[data-sez="${c.sez}"]`);
+    if (d) { d.open = true; ($('.ai-qui') || d).scrollIntoView({ block: 'start', behavior: 'smooth' }); d.classList.remove('ai-lampo'); void d.offsetWidth; d.classList.add('ai-lampo'); }
+  }, 80);
+}
+function bannerAI() {   // chiamata da render() (app.js) con typeof: resta finché Monica è in quella pagina
+  if (UI.vista !== 'aiutante') AI.ultimaVista = UI.vista;
+  if (!UI.aiQui) return;
+  if (UI.vista !== UI.aiQui.vista || P.ruolo !== 'monica') { if (UI.vista !== 'aiutante') UI.aiQui = null; return; }
+  const m = $('main.corpo'); if (!m || m.querySelector('.ai-qui')) return;
+  const d = UI.sez && m.querySelector(`details.sez[data-sez="${UI.sez}"]`);   // subito sopra la voce aperta, così si vede insieme
+  (d || m).insertAdjacentHTML(d ? 'beforebegin' : 'afterbegin', `<div class="ai-qui">${ico('scintille')}<div><b>${esc(UI.aiQui.titolo)}</b><span>${esc(UI.aiQui.testo)}</span>
+    <div class="fila"><button type="button" class="link" data-a="ai-torna">Torna all'aiutante</button><button type="button" class="link tenue" data-a="ai-qui-via">Ho capito</button></div></div></div>`);
+}
+
 /* ---------- azioni ---------- */
 const pianoDi = el => AI.msgs[Number(el.dataset.i)];
 Object.assign(A, {
@@ -448,7 +565,9 @@ Object.assign(A, {
   'ai-chiedi'(el) { inviaAI(el.dataset.t); },
   'ai-detta'() { if (UI.vista !== 'aiutante') vai('aiutante'); ascoltaAI(); },
   'ai-foto-via'() { AI.foto = null; render(); },
-  'ai-vai'(el) { vai(el.dataset.v); },
+  'ai-vai'(el) { const m = pianoDi(el), x = m && m.piano && m.piano[Number(el.dataset.j)], c = x && controllaAI(x.a); if (c && c.vai) portaLi(c); },
+  'ai-torna'() { UI.aiQui = null; vai('aiutante'); fondoAI(); },
+  'ai-qui-via'() { UI.aiQui = null; const b = $('.ai-qui'); if (b) b.remove(); },
   'ai-si'(el) { const m = pianoDi(el); if (m && m.piano && !m.esito) faiPiano(m); },   // si ricontrolla tutto: nel frattempo può aver cambiato qualcosa anche l'altra persona
   'ai-no'(el) { const m = pianoDi(el); if (m && !m.esito) { m.esito = 'no'; render(); } }
 });

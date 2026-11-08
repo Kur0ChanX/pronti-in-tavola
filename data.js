@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.55';
+const VERSIONE_APP = '0.9.56';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.56', data: '08/11/2026',
+    nuovo: ['Aiutante di Monica: «come cambio la foto della parmigiana?» → ti porta dritta lì, apre la voce giusta e ti dice cosa toccare (funziona anche senza internet)', 'Se una cosa non si può ancora cambiare dall\'app, l\'aiutante prepara il messaggio WhatsApp per Mario con tutti i dettagli'] },
   { v: '0.9.55', data: '08/11/2026',
     nuovo: ['Panade: le dosi si scrivono per un impasto da 12 pezzi (il numero si cambia nella scheda del piatto), la lista della spesa fa i conti da sola'] },
   { v: '0.9.54', data: '08/11/2026',
