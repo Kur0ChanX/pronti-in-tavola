@@ -336,7 +336,7 @@ function riquadroDb() {
     ${turbo}${controlloRic(d)}${motore}
     <div class="fila" style="margin-top:8px"><button type="button" class="btn pieno" data-a="ric-db-turbo" ${t && t.attivo ? 'disabled' : ''}>${t && t.attivo ? '⚡ Sto caricando…' : '⚡ Carica 100 ricette adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-controlla" ${RIC.dbControllo ? 'disabled' : ''}>${RIC.dbControllo ? 'Controllo…' : '🔍 Controlla tutte'}</button><button type="button" class="btn chiaro" data-a="vai" data-v="ricdb">Tutto il dettaglio</button></div></section>`;
 }
-/* C81 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): esito del controllo di TUTTE le ricette del database
+/* C83 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): esito del controllo di TUTTE le ricette del database
    (il server lo rifà da solo ogni giorno; «🔍 Controlla tutte» lo fa subito). Quelle da sistemare le rilegge da solo da GialloZafferano. */
 function controlloRic(d) {
   const c = d && d.controllo;

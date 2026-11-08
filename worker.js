@@ -285,7 +285,7 @@ async function ricettaGz(b, cfg, ctx) {
       if (!(n >= 1 && n <= 200)) return { errore: 'n da 1 a 200' };
       return { turbo: await db.turboAvvia(n) };
     }
-    if (b.db === 'controlla') return { controllo: await db.controlla(), db: await db.statoDb() };   // C81 «🔍 Controlla tutte adesso»
+    if (b.db === 'controlla') return { controllo: await db.controlla(), db: await db.statoDb() };   // C83 «🔍 Controlla tutte adesso»
     if (b.db === 'mieScritte') return { mie: await db.mieScritte() };   // ricette scritte a mano, uguali su tutti i telefoni
     if (b.db === 'salvaMia') {
       if (!(await db.salvaMia(b.r))) return { errore: 'ricetta non valida' };
@@ -672,7 +672,7 @@ export class Ricettario extends DurableObject {
     this.metti1('turbo', JSON.stringify(t));
     if (t.attivo) await this.ctx.storage.setAlarm(Date.now() + TURBO_PAUSA);
   }
-  /* C81 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): controlla TUTTE le ricette del database
+  /* C83 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): controlla TUTTE le ricette del database
      (stesse regole di tools/controlla-ricette.mjs). Quelle con problemi tornano da rileggere col lettore di oggi (v 0 → il motore
      ne rilegge 5 ogni 10 minuti); nel ricettario senza la ricetta intera = «mancanti», rimesse in coda. Esito salvato per il riquadro. */
   controlla() {
@@ -840,7 +840,7 @@ export default {
   async scheduled(ev, env, ctx) {
     if (ev.cron === CRON_DB) {
       ctx.waitUntil(motoreRicette(env).catch(() => null));
-      const db = ricDb(env);   // C81: una volta al giorno il controllo di tutte le ricette, da solo
+      const db = ricDb(env);   // C83: una volta al giorno il controllo di tutte le ricette, da solo
       if (db) ctx.waitUntil(Promise.resolve(db.statoDb()).then(s => !s.controllo || Date.now() - s.controllo.quando > 86400000 ? db.controlla() : null).catch(() => null));
       return;
     }

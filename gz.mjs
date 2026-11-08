@@ -17,7 +17,7 @@ export function urlGz(u) {
 
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', egrave: 'è', eacute: 'é', agrave: 'à', ograve: 'ò', ugrave: 'ù', igrave: 'ì', deg: '°', rsquo: '’', lsquo: '‘', hellip: '…',
   Egrave: 'È', Eacute: 'É', Agrave: 'À', Ograve: 'Ò', Ugrave: 'Ù', Igrave: 'Ì', ldquo: '“', rdquo: '”', laquo: '«', raquo: '»', ndash: '–', mdash: '—', euro: '€',
-  iacute: 'í', oacute: 'ó', aacute: 'á', uacute: 'ú', ccedil: 'ç', ntilde: 'ñ', ouml: 'ö', uuml: 'ü', auml: 'ä', times: '×', frac12: '½', frac14: '¼', frac34: '¾', middot: '·', bull: '•', sbquo: '‚', bdquo: '„' };   // C81: «&Egrave;», «&ldquo;» restavano scritti così
+  iacute: 'í', oacute: 'ó', aacute: 'á', uacute: 'ú', ccedil: 'ç', ntilde: 'ñ', ouml: 'ö', uuml: 'ü', auml: 'ä', times: '×', frac12: '½', frac14: '¼', frac34: '¾', middot: '·', bull: '•', sbquo: '‚', bdquo: '„' };   // C83: «&Egrave;», «&ldquo;» restavano scritti così
 export const testo = h => String(h || '')
   .replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
   .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16)))
@@ -67,7 +67,7 @@ export function gzRicetta(html, url) {
   const passi = [];
   /* ogni passo: dal suo <div> al passo dopo; TUTTI i paragrafi (<p> anche con classe, es. «MsoNormal», ed elenchi), non solo l'ultimo
      (C72: Pastiera, Melanzane ripiene e Spaghetti con la bottarga perdevano frasi o passi interi) */
-  const blocchi = html.split('<div class="gz-content-recipe-step">').slice(1).map(b => b.split(/<div class="gz-content-recipe-step"|<\/section>|<h[1-3]\b|<article\b|<div class="gz-(?:content-recipe-(?!step)|rating|comments|related|adv|faq|title-section)/)[0]);   // C81: dopo l'ultimo passo niente «Domande e risposte» né pubblicità (Mini calzoni: «Deliziosa… Scopri di più»)
+  const blocchi = html.split('<div class="gz-content-recipe-step">').slice(1).map(b => b.split(/<div class="gz-content-recipe-step"|<\/section>|<h[1-3]\b|<article\b|<div class="gz-(?:content-recipe-(?!step)|rating|comments|related|adv|faq|title-section)/)[0]);   // C83: dopo l'ultimo passo niente «Domande e risposte» né pubblicità (Mini calzoni: «Deliziosa… Scopri di più»)
   for (const blocco of blocchi) {
     const foto = [...blocco.matchAll(/<img[^>]+src="([^"]+)"/g)].map(f => assoluto(f[1])).filter(f => /\/images\/ricette\//.test(f));
     const par = [...blocco.matchAll(/<(p|li)\b[^>]*>([\s\S]*?)<\/\1>/g)].map(m => testo(m[2].replace(/<span class="num-step">\s*(\d+)\s*<\/span>/g, ' [[$1]]'))).filter(Boolean);   // il numerino frase↔foto resta (Mario «uguali paro paro»)
@@ -81,7 +81,7 @@ export function gzRicetta(html, url) {
   const video = /ptps?\.stbm\.it\/v\/(\w+)/.exec(html);
   const porzioni = parseInt(String([].concat(ld.recipeYield || '')[0]).replace(/\D+/g, ' ').trim(), 10) || 4;
   return {
-    v: 4,   // 4 = C81 (niente domande né pubblicità nell'ultimo passo, lettere accentate); 3 = passi coi numerini delle foto e tutti i paragrafi (C72): le copie vecchie sui telefoni si rileggono
+    v: 4,   // 4 = C83 (niente domande né pubblicità nell'ultimo passo, lettere accentate); 3 = passi coi numerini delle foto e tutti i paragrafi (C72): le copie vecchie sui telefoni si rileggono
     id: 'gz:' + url.replace(SITO_GZ, '').replace(/\.html$/, ''),
     url, nome: testo(ld.name), intro: (sezione(html, 'PRESENTAZIONE') || testo(ld.description)).split(/\n(?=Ecco|Scopri|Leggi|Prova anche|Se ti piac)/)[0].trim(),
     foto: assoluto(primaFoto(ld.image)), categoria: testo([].concat(ld.recipeCategory || '')[0]),
@@ -132,7 +132,7 @@ export function gzProssima(html, u, n) {
   const g = GZ_ING.exec(u); return g ? ok(`${g[1]}page${(Number(g[2]) || 1) + 1}/`) : '';
 }
 
-/* C81 (Mario 08/11 «hai guardato tutte le ricette caricate da GialloZafferano?»): problemi VERI di una ricetta letta, stesse regole
+/* C83 (Mario 08/11 «hai guardato tutte le ricette caricate da GialloZafferano?»): problemi VERI di una ricetta letta, stesse regole
    per tools/controlla-ricette.mjs e per il controllo del database sul server. [] = a posto. Non sono problemi (GZ le scrive così):
    un passo che finisce con «,» o «e» e continua nel passo dopo, numerini saltati, una foto in più senza numerino. */
 export function esaminaRicetta(r) {

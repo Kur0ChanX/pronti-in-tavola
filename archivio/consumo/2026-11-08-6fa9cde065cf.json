@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "6fa9cde065cf",
 "giorno": "2026-11-08",
-"turni": 4,
-"peso": 575916,
-"uscita": 10836,
-"contesto_max": 154587,
+"turni": 6,
+"peso": 1731344,
+"uscita": 33066,
+"contesto_max": 205078,
 "anomalie": [
 "un turno ha aggiunto 111k token al contesto"
 ]

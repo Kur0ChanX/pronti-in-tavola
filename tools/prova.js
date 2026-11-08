@@ -331,6 +331,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await q.inputValue() !== '510') throw new Error('dose mascarpone per la teglia da 6 (85 × 6): ' + await q.inputValue());
     if (!(await page.locator('.formato-riga', { hasText: 'teglia da 8: 680 g' }).count())) throw new Error('manca la teglia da 8 calcolata');
     // costo: mascarpone 2,50 € per 250 g → 85 g = 0,85 € a porzione → teglia da 6 = 5,10 € (gli altri senza prezzo)
+    // senza prezzi: un tasto per ingrediente apre il foglio del prezzo QUI (Mario 08/11 «la matita dov'è?»)
+    await page.evaluate(() => { window._prezzoM = SPESA.ing.mascarpone; SPESA.ing.mascarpone = Object.assign({}, SPESA.ing.mascarpone, { prezzo: 0 }); render(); });
+    await clic('[data-a="sp-ing"][data-ing="mascarpone"]');
+    if (!(await page.locator('.foglio [data-campo="sp.prezzo"][data-ing="mascarpone"]').count())) throw new Error('il tasto dell\'ingrediente non apre il prezzo');
+    await clic('.foglio [data-a="chiudi"]');
+    await page.evaluate(() => { SPESA.ing.mascarpone = window._prezzoM; render(); });
     await page.evaluate(() => { SPESA.ing.mascarpone = Object.assign({}, SPESA.ing.mascarpone, { prezzo: 2.5 }); render(); });
     if (!(await page.locator('.fila', { hasText: 'ti costa 5,10' }).count())) throw new Error('costo del tiramisù: ' + await page.locator('.scheda', { hasText: 'Quanto ti costa' }).innerText());
     await q.fill('600'); await q.dispatchEvent('change'); await foto('21-dosi');
@@ -612,7 +618,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.ric-db-box', { hasText: 'Carico 100 ricette: 0 fatte' }).count())) throw new Error('«⚡ Carica 100» non mostra il carico in corso');
     await page.evaluate(() => { RIC.chiedi = RIC._c4; RIC.db.turbo = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; render(); });
     if (!(await page.locator('.ric-db-box', { hasText: 'Motore' }).count())) throw new Error('nel Ricettario manca lo stato del motore');
-    // C81: «🔍 Controlla tutte» → esito di tutte le ricette in vista, con quelle da sistemare
+    // C83: «🔍 Controlla tutte» → esito di tutte le ricette in vista, con quelle da sistemare
     await page.evaluate(() => { RIC._c5 = RIC.chiedi; RIC.chiedi = async c => c.db === 'controlla' ? { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 }, db: Object.assign({}, RIC.db, { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 } }) } : RIC._c5(c); });
     await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
     if (!(await page.locator('.ric-db-box', { hasText: 'Controllate 120 ricette' }).count()) || !(await page.locator('.ric-db-box', { hasText: 'Pane cafone' }).count())) throw new Error('«🔍 Controlla tutte» non mostra l\'esito');
