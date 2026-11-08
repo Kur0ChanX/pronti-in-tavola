@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.64';
+const VERSIONE_APP = '0.9.65';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.65', data: '08/11/2026',
+    nuovo: ['Clienti: appena entrano sale «Installa l\'app sul telefono»: scelgono iPhone o Android, seguono la guida e poi attivano le notifiche. «Più tardi» lo chiude fino alla prossima apertura'] },
   { v: '0.9.64', data: '08/11/2026',
     nuovo: ['Guida iPhone a figure: un disegno per passo con la freccia sul tasto giusto, per iOS 27, 26, 18 e Chrome'] },
   { v: '0.9.63', data: '08/11/2026',

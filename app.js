@@ -347,6 +347,44 @@ function guidaInstalla() {
   return `<div class="guida-inst"><div class="gi-tabs" role="group" aria-label="Il tuo telefono">${tab('ios', 'iPhone')}${tab('android', 'Android')}</div>
     ${os === 'ios' && window.GuidaIPhone ? GuidaIPhone.guidaIPhone() : `<ol class="gi-passi">${pp.map(t => `<li>${t}</li>`).join('')}</ol>`}</div>`;   // iPhone: guida a figure (C94, guida-iphone.js)
 }
+/* Invito «Installa l'app» (Mario 08/11 «fallo subito in priorità»): il cliente entra e naviga; dopo 2,5 secondi sale un foglio
+   bello ma non bloccante («Più tardi» lo chiude, torna alla prossima apertura). 1) «Che telefono hai?» iPhone | Android (il suo è segnato);
+   2) iPhone: guida a figure (guida-iphone.js) · Android: tasto «Installa» vero se il browser lo offre, sennò i passi;
+   3) le notifiche: su Android anche dal browser, su iPhone solo dall'app sulla schermata Home (Apple), quindi lì il foglio si riapre dall'icona e chiede solo quelle. */
+const notifPossibili = () => 'Notification' in window && 'serviceWorker' in navigator && Notification.permission !== 'denied' && !P.avvisiCliente && !(Dati.attivo && Dati.io.gestore);
+function serveInvito() {
+  if (P.ruolo !== 'cliente' || UI.invitoFatto || UI.foglio || serveBenvenuto() || statoLucchetto()) return false;
+  if (!(sulSito() || UI.invitoProva)) return false;   // nelle prove si accende a mano (UI.invitoProva): sennò coprirebbe le altre prove
+  return !suHome() || notifPossibili();
+}
+function controllaInvito() {
+  if (!serveInvito()) return;
+  UI.invitoFatto = true;   // una volta per apertura
+  setTimeout(() => { if (!UI.foglio && P.ruolo === 'cliente') { UI.foglio = { tipo: 'installa', os: null }; render(); } }, UI.invitoProva ? 50 : 2500);
+}
+function foglioInstalla() {
+  const f = UI.foglio, mio = telefono() === 'ios' ? 'ios' : 'android';
+  const testa = (t, s) => `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div>
+    <div class="dentro inv-app"><div class="inv-logo"><img src="media/icon-192.png" alt=""></div><h1>${t}</h1><p class="tenue" style="margin:0 0 12px">${s}</p>`;
+  const notifBtn = `<button type="button" class="btn pieno grande" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : 'Attiva le notifiche'}</button>
+    ${UI.notEsito ? `<p class="${UI.notEsito.ok ? 'ok' : 'tenue'} piccolo" style="margin:6px 0 0">${esc(UI.notEsito.t)}</p>` : ''}`;
+  const piede = `<div class="piede"><button type="button" class="btn chiaro" data-a="chiudi">${UI.notEsito && UI.notEsito.ok ? 'Chiudi' : 'Più tardi'}</button></div>`;
+  if (suHome()) return testa('Ultimo passo: le notifiche', 'Monica ti avvisa quando il tuo ordine è pronto o se ti propone un altro giorno. Tocca il tasto e poi <b>Consenti</b>.')
+    + notifBtn + '</div>' + piede;
+  if (!f.os) {
+    const scelta = (v, t, s) => `<button type="button" class="inv-tel${v === mio ? ' mio' : ''}" data-a="inv-os" data-v="${v}"><b>${t}</b><span>${s}</span>${v === mio ? '<em>Il tuo telefono</em>' : ''}</button>`;
+    return testa('Installa l\'app sul telefono', 'Gratis, in un minuto. La ritrovi tra le app, come WhatsApp, e Monica ti avvisa quando il tuo ordine è pronto.')
+      + `<p style="margin:0 0 8px"><b>Che telefono hai?</b></p><div class="inv-scelta">${scelta('ios', 'iPhone', 'Apple')}${scelta('android', 'Android', 'Samsung, Xiaomi, Motorola…')}</div></div>` + piede;
+  }
+  const altro = `<button type="button" class="link piccolo" data-a="inv-os" data-v="">← Ho un altro telefono</button>`;
+  if (f.os === 'ios') return testa('Installa su iPhone', 'Segui i disegni: la freccia rossa ti indica dove toccare.')
+    + (window.GuidaIPhone ? GuidaIPhone.guidaIPhone() : guidaInstalla())
+    + `<p class="tenue piccolo" style="margin:10px 0 0">Poi apri <b>Pronti in Tavola</b> dall'icona: ti chiederà di attivare le notifiche.</p>${altro}</div>` + piede;
+  const passiA = ['Tocca <b>⋮</b> in alto a destra (Samsung: <b>≡</b> in basso).', 'Scegli <b>Installa app</b> o <b>Aggiungi a schermata Home</b>.', 'Tocca <b>Installa</b>.'];
+  return testa('Installa su Android', installa ? 'Un tocco qui sotto, poi <b>Installa</b>.' : 'Tre tocchi:')
+    + (installa ? `<button type="button" class="btn pieno grande" data-a="installa">${ico('scarica')}Installa l'app</button>` : `<ol class="gi-passi">${passiA.map(t => `<li>${t}</li>`).join('')}</ol>`)
+    + (notifPossibili() ? `<p style="margin:14px 0 6px"><b>E le notifiche:</b> così sai quando il tuo ordine è pronto.</p>${notifBtn}` : '') + altro + '</div>' + piede;
+}
 function cartaHome(dopo) {
   if (suHome()) return '';
   const passi = pp => pp.map((t, i) => `<div class="passo-invito"><span class="num">${i + 1}</span><div>${t}</div></div>`).join('');
@@ -1602,7 +1640,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1631,6 +1669,7 @@ function render() {
   if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|ai-testo)/.test(attivo)) document.getElementById(attivo).focus();
   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
   if (chiuso === 'chiuso') setTimeout(provaApri, 0);
+  if (!benv && !chiuso) controllaInvito();   // invito «Installa l'app» per i clienti (Mario 08/11)
 }
 
 /* ================= AZIONI ================= */
@@ -1864,6 +1903,7 @@ const A = {
   'sel-fritto'(el) { UI.sel.fritto = el.dataset.v === 'si'; UI.sel.forno = el.dataset.v === 'forno'; render(); },
   'passi-app'() { UI.passiApp = !UI.passiApp; render(); },
   'guida-os'(el) { UI.guidaOS = el.dataset.v; render(); },
+  'inv-os'(el) { UI.foglio = { tipo: 'installa', os: el.dataset.v || null }; render(); },
   'passi-via'() { UI.passiVia = true; render(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
   async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore(UI.invTipo) }); chiudiFoglio(); } catch (e) { /* annullato */ } },
