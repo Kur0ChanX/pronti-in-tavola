@@ -811,3 +811,5 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 #agg-avviso span { flex: 1 1 200px; font-size: .95rem; }
 #agg-avviso .btn { flex: none; min-height: 44px; }
 #agg-avviso .link { color: #fff; opacity: .8; }
+.rit-cursore { display: grid; grid-template-columns: 92px 1fr; align-items: center; gap: 10px; font-weight: 700; }
+.rit-cursore input[type=range] { width: 100%; accent-color: var(--cotto, #7A2E1F); min-height: 32px; background: none; }
