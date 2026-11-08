@@ -20,6 +20,7 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 
 - **PT E26** (08/11/2026) La voce della cucina guidata era «robotica, fa pietà» (Mario): tono alzato a 1.1 e frasi lunghe in un pezzo solo. Una voce che parla a persone vere: tono 1.0, frasi corte, sigle lette per intero, e provarla ascoltandola prima di consegnarla.
 - **PT E27** (08/11/2026) Mario: «anche tu non scherzi come lentezza… si rispecchia in tutte le sessioni». Vero: per un pulsante ho fatto ~45 comandi e 6 giri completi delle prove (3,5 min l'uno) in 40 minuti, con 228k token di contesto. La lentezza è del modo di lavorare del kit, non di una sessione: pochi comandi raggruppati, prova del solo pezzo cambiato mentre si lavora, giro completo una volta sola prima del push.
+- **PT E28** (08/11/2026) Ho scritto «il permesso l'hai rifiutato»: dal telefono la richiesta di cambiare l'ambiente non si può approvare, c'è solo «Nega» (foto di Mario). Richieste che si approvano solo dal computer: dirlo PRIMA e dare anche la strada dalle impostazioni.
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
 - **RVC E7** Prima di chiedere a Mario (o di scrivere un prompt a un aiutante), `grep` in documenti e archivio.
