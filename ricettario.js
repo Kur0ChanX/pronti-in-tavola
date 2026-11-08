@@ -77,7 +77,7 @@ function vRicetta(id) {
   const r = ricetta(id);
   if (!r) { UI.vista = 'ricettario'; return vRicettario(); }
   const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
-  let h = testataMonica(r.nome, 'ricettario') + '<main class="corpo">';
+  let h = testataMonica('Ricetta', 'ricettario') + '<main class="corpo">';
   if (r.foto) h += `<figure class="ric-foto"><img src="${esc(r.foto.file)}" alt="${esc(r.nome)}"><figcaption>Foto: <a href="${esc(r.foto.link)}" target="_blank" rel="noopener">${esc(r.foto.autore)}</a> · ${esc(r.foto.licenza)}</figcaption></figure>`;
   h += `<div><h1>${esc(r.nome)}</h1><p class="tenue" style="margin:4px 0 0">${esc(r.regione)} · Preparazione ${durataRic(r.prep)} · Cottura ${durataRic(r.cottura)} · Difficoltà ${['', 'facile', 'media', 'impegnativa'][r.difficolta]}</p></div>
     <p style="margin:0">${esc(r.intro)}</p>
