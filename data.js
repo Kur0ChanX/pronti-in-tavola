@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.35';
+const VERSIONE_APP = '0.9.36';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.36', data: '08/11/2026', ora: '12:16',
+    nuovo: ['Ricettario: le ricette che il motore trova entrano da sole (🆕 per 7 giorni), solo quelle complete (almeno 3 ingredienti, 2 passi e la foto); «⚡ Carica 100 ricette adesso», sarde per prime ma miste, lo fa il server anche a telefono chiuso', 'Le ricette scritte a mano vanno sul server: le vede anche Monica (senza rete partono appena torna)'],
+    migliorato: ['«🗄 Il mio database» più chiaro: nel ricettario, nuove, in arrivo, sul telefono e se è tutto salvato'] },
   { v: '0.9.35', data: '08/11/2026', ora: '12:03',
     nuovo: ['Foto originali: quando Monica carica la foto di un piatto o del menù, l\'app ne tiene anche una copia a piena qualità (parte appena c\'è rete); Mario la scarica da «Solo per te, Mario» → «📷 Foto originali di Monica», la ritocca e la ricarica. Restano 60 giorni'],
     migliorato: ['Le foto caricate da Mario non vengono più ritoccate dall\'app (sono già sistemate da lui)'] },

@@ -16,7 +16,7 @@
    - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano letta dal vivo (gz.mjs), { cerca } la ricerca (C55)
-   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
+   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) | 'turbo' (n) | 'mieScritte' | 'salvaMia' (r) | 'togliMia' (id) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -279,6 +279,18 @@ async function ricettaGz(b, cfg, ctx) {
       return { scelte: await db.scelte() };
     }
     if (b.db === 'togli') { await db.togli(b.id); return { scelte: await db.scelte() }; }
+    if (b.db === 'turbo') {   // «carica N»: il Durable Object lavora da solo a sveglie, n da 1 a 200 (senza n: solo lo stato)
+      if (b.n === undefined) return { turbo: await db.turboStato() };
+      const n = Math.floor(Number(b.n));
+      if (!(n >= 1 && n <= 200)) return { errore: 'n da 1 a 200' };
+      return { turbo: await db.turboAvvia(n) };
+    }
+    if (b.db === 'mieScritte') return { mie: await db.mieScritte() };   // ricette scritte a mano, uguali su tutti i telefoni
+    if (b.db === 'salvaMia') {
+      if (!(await db.salvaMia(b.r))) return { errore: 'ricetta non valida' };
+      return { ok: true, id: b.r.id };
+    }
+    if (b.db === 'togliMia') { await db.togliMia(b.id); return { ok: true }; }
     return { db: await db.statoDb() };
   }
   if (b && b.cat === 'db') {   // sfoglia o cerca nel database, 30 per volta («Carica altre» = pagina 'db:<da>')
@@ -329,10 +341,14 @@ async function ricettaGz(b, cfg, ctx) {
    e mette in coda le ricette che il database non ha; poi ne scarica RICETTE_GIRO. Poche per volta: rispetta GialloZafferano
    e il piano gratuito (50 richieste e ~10 ms di calcolo per giro). ~280 ricette al giorno. */
 const FONTI_DB = ['sardegna', 'primi', 'secondi', 'dolci', 'antipasti', 'contorni', 'lievitati', 'unici', 'sughi', 'bevande'];
-const RICETTE_GIRO = 2, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
-async function motoreRicette(cfg, aMano) {
-  const db = ricDb(cfg); if (!db) return;
-  const s = await db.statoDb(); if (s.pausa && !aMano) return;
+const RICETTE_GIRO = 2, TURBO_GIRO = 5, TURBO_PAUSA = 30000, TURBO_SVEGLIE = 400, TURBO_VUOTE = 20, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
+/* ricetta completa = nome, almeno 3 ingredienti, almeno 2 passi e una foto (Mario 08/11 «con cura») */
+const ricettaCompleta = r => !!(r && r.nome && Array.isArray(r.ingredienti) && r.ingredienti.length >= 3 && Array.isArray(r.passi) && r.passi.length >= 2 && r.foto);
+/* UN passo del motore. «db» è l'oggetto Ricettario stesso (turbo, dentro il Durable Object) oppure il suo stub (cron): con await vanno bene tutti e due.
+   Ritorna { fatte, scartate, nuoveCoda }: ricette complete salvate, incomplete scartate, indirizzi messi in coda. */
+async function passoMotore(db, quante, aMano) {
+  const s = await db.statoDb(); if (s.pausa && !aMano) return null;
+  let nuoveCoda = 0;
   if (s.coda < CODA_MIN) {
     // sarde in priorità ma miste (Mario 08/11 «in priorità sarde ma cercale miste»): una pagina sì e una no è delle sarde,
     // le altre girano fra le sezioni; finite le sarde, solo le altre fino al giro completo, poi le sarde ripartono
@@ -341,18 +357,30 @@ async function motoreRicette(cfg, aMano) {
     const u = sarda ? s.paginaSarda || `https://www.giallozafferano.it/${CAT_GZ.sardegna}/` : s.pagina || `https://www.giallozafferano.it/${CAT_GZ[FONTI_DB[i]]}/`;
     let html = '';
     try { html = await paginaGz(u); } catch (e) { await db.giro({ errore: String(e.message || e) }); }
-    const lista = gzCerca(html), nuove = lista.length ? await db.inCoda(lista.map(x => x.url)) : 0;
+    const lista = gzCerca(html), nuove = lista.length ? await db.inCoda(lista.map(x => x.url), sarda) : 0;
+    nuoveCoda = nuove;
     const dopo = lista.length ? gzProssima(html, u, lista.length) : '';
     // pagina rotta o vuota (es. 404): si passa alla sezione dopo, così il motore non resta mai fermo sulla stessa (C65)
     if (sarda) await db.posizioneSarda(dopo, nuove);
     else await db.posizione(dopo ? i : (i + 1) % FONTI_DB.length || 1, dopo, nuove, !dopo && i === FONTI_DB.length - 1);
   }
-  let fatte = 0;
-  for (const u of await db.prendi(RICETTE_GIRO)) {
+  let fatte = 0, scartate = 0;
+  for (const u of await db.prendi(quante)) {
     const ok = urlGz(u); if (!ok) { await db.togliCoda(u); continue; }
-    try { const r = await leggiGz(ok); if (r) { await db.salva(r); fatte++; } else await db.togliCoda(u); } catch (e) { /* riprova al prossimo giro (max 3) */ }
+    try {
+      const r = await leggiGz(ok);
+      if (!r) await db.togliCoda(u);
+      else if (!ricettaCompleta(r)) { await db.scarta(u); scartate++; }   // incompleta: via dalla coda, contata, mai più riprovata
+      else if (await db.salvaMotore(r)) fatte++;   // archivio + ricettario
+      else await db.togliCoda(u);
+    } catch (e) { /* riprova al prossimo giro (max 3) */ }
   }
-  await db.giro({ fatte });
+  await db.giro({ fatte, scartate });
+  return { fatte, scartate, nuoveCoda };
+}
+async function motoreRicette(cfg, aMano) {
+  const db = ricDb(cfg); if (!db) return;
+  await passoMotore(db, RICETTE_GIRO, aMano);
 }
 
 /* chi gestisce? Firestore legge gestori/<uid> col token di Google della persona: se risponde 200, è un gestore */
@@ -549,7 +577,11 @@ export class Ricettario extends DurableObject {
       'CREATE TABLE IF NOT EXISTS originali (id INTEGER PRIMARY KEY AUTOINCREMENT, nome TEXT, tipo TEXT, byte INTEGER, quando INTEGER, scaricata INTEGER DEFAULT 0)',
       'CREATE TABLE IF NOT EXISTS originali_pezzi (id INTEGER, n INTEGER, dati BLOB, PRIMARY KEY (id, n))',
       // il TUO ricettario (C61): le ricette che Mario o Monica hanno scelto con «➕ Aggiungi», uguali su tutti i telefoni
-      'CREATE TABLE IF NOT EXISTS scelte (id TEXT PRIMARY KEY, url TEXT, nome TEXT, zona TEXT, categoria TEXT, foto TEXT, aggiunta INTEGER)'].forEach(q => this.sql.exec(q));
+      'CREATE TABLE IF NOT EXISTS scelte (id TEXT PRIMARY KEY, url TEXT, nome TEXT, zona TEXT, categoria TEXT, foto TEXT, aggiunta INTEGER)',
+      'CREATE TABLE IF NOT EXISTS scartate (url TEXT PRIMARY KEY, quando INTEGER)',   // ricette incomplete: non si riprovano
+      // ricette scritte a mano (id «mia…»), uguali su tutti i telefoni; tolta=1 = cancellata
+      'CREATE TABLE IF NOT EXISTS mie (id TEXT PRIMARY KEY, json TEXT, aggiornata INTEGER, tolta INTEGER DEFAULT 0)'].forEach(q => this.sql.exec(q));
+    try { this.sql.exec('ALTER TABLE coda ADD COLUMN sarda INTEGER DEFAULT 0'); } catch (e) { /* c'è già */ }
     for (const c of ['voto REAL DEFAULT 0', 'video INTEGER DEFAULT 0']) { try { this.sql.exec('ALTER TABLE ricette ADD COLUMN ' + c); } catch (e) { /* c'è già */ } }
   }
   leggi1(k) { const r = this.sql.exec('SELECT v FROM stato WHERE k = ?', k).toArray()[0]; return r ? r.v : ''; }
@@ -572,13 +604,14 @@ export class Ricettario extends DurableObject {
       .toArray().map(x => ({ url: x.url, nome: x.nome, foto: x.foto, categoria: x.categoria, desc: x.descr }));
   }
   /* in coda solo gli indirizzi che il database non ha (né in coda né salvati): quante nuove */
-  inCoda(urls) {
+  inCoda(urls, sarda) {
     let n = 0; const ora = Date.now();
     for (const u of [...new Set(urls || [])].slice(0, 40)) {
       if (typeof u !== 'string' || !/^https:\/\/ricette\.giallozafferano\.it\/[\w%-]+\.html$/.test(u)) continue;
       if (this.sql.exec('SELECT 1 FROM ricette WHERE url = ?', u).toArray().length) continue;
       if (this.sql.exec('SELECT 1 FROM coda WHERE url = ?', u).toArray().length) continue;
-      this.sql.exec('INSERT INTO coda (url, aggiunta) VALUES (?, ?)', u, ora); n++;
+      if (this.sql.exec('SELECT 1 FROM scartate WHERE url = ?', u).toArray().length) continue;
+      this.sql.exec('INSERT INTO coda (url, aggiunta, sarda) VALUES (?, ?, ?)', u, ora, sarda ? 1 : 0); n++;
     }
     return n;
   }
@@ -589,6 +622,56 @@ export class Ricettario extends DurableObject {
     return tt;
   }
   togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
+  scarta(u) { this.sql.exec('INSERT OR IGNORE INTO scartate (url, quando) VALUES (?, ?)', String(u), Date.now()); this.togliCoda(u); }
+  /* ricetta del motore: archivio + ricettario insieme (zona «sarda» se l'indirizzo veniva dalle pagine sarde). Solo se completa. */
+  salvaMotore(r) {
+    if (!ricettaCompleta(r)) return false;
+    const c = this.sql.exec('SELECT sarda FROM coda WHERE url = ?', r.url || '').toArray()[0];
+    if (!this.salva(r)) return false;
+    this.aggiungi({ id: r.id, nome: r.nome, zona: c && c.sarda ? 'sarda' : 'italiana', categoria: r.categoria, foto: r.foto });
+    return true;
+  }
+  /* una volta sola: le ricette complete già nell'archivio entrano anche nel ricettario (a pezzi da 200, per la memoria) */
+  riempiScelte() {
+    if (this.leggi1('scelteRiempite')) return;
+    this.metti1('scelteRiempite', '1');
+    for (let da = 0; ; da += 200) {
+      const righe = this.sql.exec('SELECT json FROM ricette ORDER BY creata LIMIT 200 OFFSET ?', da).toArray();
+      for (const x of righe) {
+        let r = null; try { r = JSON.parse(x.json); } catch (e) { continue; }
+        if (ricettaCompleta(r)) this.aggiungi({ id: r.id, nome: r.nome, zona: 'italiana', categoria: r.categoria, foto: r.foto });
+      }
+      if (righe.length < 200) break;
+    }
+  }
+  /* TURBO «carica N»: sveglie del Durable Object ogni ~30 s; ferma a N ricette complete nuove, a 400 sveglie o a 20 sveglie vuote di fila */
+  turboStato() { try { return JSON.parse(this.leggi1('turbo') || 'null'); } catch (e) { return null; } }
+  async turboAvvia(n) {
+    const t = { obiettivo: Math.min(200, Math.max(1, Math.floor(Number(n)) || 1)), fatte: 0, scartate: 0, attivo: true, da: Date.now(), finito: 0, sveglie: 0, vuote: 0 };
+    this.metti1('turbo', JSON.stringify(t));
+    await this.ctx.storage.setAlarm(Date.now() + 1000);
+    return t;
+  }
+  async alarm() {
+    const t = this.turboStato(); if (!t || !t.attivo) return;
+    let p = null;
+    try { p = await passoMotore(this, Math.min(TURBO_GIRO, t.obiettivo - t.fatte), true); } catch (e) { /* sveglia sprecata: conta come vuota */ }
+    t.sveglie++;
+    if (p) { t.fatte += p.fatte; t.scartate += p.scartate; }
+    t.vuote = p && (p.fatte || p.scartate) ? 0 : t.vuote + 1;
+    if (t.fatte >= t.obiettivo || t.sveglie >= TURBO_SVEGLIE || t.vuote >= TURBO_VUOTE) { t.attivo = false; t.finito = Date.now(); }
+    this.metti1('turbo', JSON.stringify(t));
+    if (t.attivo) await this.ctx.storage.setAlarm(Date.now() + TURBO_PAUSA);
+  }
+  /* ricette scritte a mano */
+  mieScritte() { return this.sql.exec('SELECT id, json, aggiornata FROM mie WHERE tolta = 0 ORDER BY aggiornata DESC').toArray().map(x => ({ id: x.id, r: JSON.parse(x.json), aggiornata: x.aggiornata })); }
+  salvaMia(r) {
+    if (!r || typeof r !== 'object' || typeof r.id !== 'string' || !/^mia[\w-]{0,80}$/.test(r.id)) return false;
+    const j = JSON.stringify(r); if (j.length > 1500000) return false;   // con la foto (~100-400 KB): sotto i 2 MB a riga
+    this.sql.exec('INSERT INTO mie (id, json, aggiornata, tolta) VALUES (?, ?, ?, 0) ON CONFLICT(id) DO UPDATE SET json = excluded.json, aggiornata = excluded.aggiornata, tolta = 0', r.id, j, Date.now());
+    return true;
+  }
+  togliMia(id) { this.sql.exec('UPDATE mie SET tolta = 1, aggiornata = ? WHERE id = ?', Date.now(), String(id)); }
   /* FOTO ORIGINALI (Mario 08/11: le foto di Monica a piena qualità, da scaricare e ritoccare): pezzi da 1,9 MB (tetto 2 MB a riga) */
   salvaOriginale(nome, tipo, pezzi) {
     const byte = pezzi.reduce((t, p) => t + p.byteLength, 0);
@@ -642,9 +725,11 @@ export class Ricettario extends DurableObject {
     return tt.slice(Math.max(0, Number(da) || 0), (Number(da) || 0) + 31).map(x => ({ url: x.url, nome: x.nome, foto: x.foto, categoria: x.categoria, desc: x.descr, voto: x.voto, video: !!x.video }));
   }
   statoDb() {
+    this.riempiScelte();
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, v = uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci');
     const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
-    return { scelte: uno('SELECT COUNT(*) AS n FROM scelte').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
+    return { scelte: uno('SELECT COUNT(*) AS n FROM scelte').n, nelRicettario: uno('SELECT COUNT(*) AS n FROM scelte').n, scartate: uno('SELECT COUNT(*) AS n FROM scartate').n,
+      turbo: this.turboStato(), mieServer: uno('SELECT COUNT(*) AS n FROM mie WHERE tolta = 0').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
       oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
       fonte: Number(this.leggi1('fonte')) || 0, fonti: FONTI_DB.length, paginaSarda: this.leggi1('paginaSarda') || '', sezione: FONTI_DB[Math.max(1, Number(this.leggi1('fonte')) || 0)], pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'),
       giri: Number(this.leggi1('giri')) || 0, pagine: Number(this.leggi1('pagine')) || 0, passate: Number(this.leggi1('passate')) || 0, mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };

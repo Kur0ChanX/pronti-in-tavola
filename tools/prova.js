@@ -586,7 +586,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-catalogo"][data-v="db"]'); await page.locator('#ric-risultati h2', { hasText: 'Archivio automatico' }).waitFor({ timeout: 3000 });
     await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
     // 🗄 Il mio database in vista nel Ricettario (Mario 08/11 «sembra nascosta»): numeri e motore senza cambiare pagina
-    if (!(await page.locator('.ric-db-box .ric-db-n', { hasText: 'trovate dal motore' }).innerText()).includes('44')) throw new Error('nel Ricettario manca il numero delle ricette del motore');
+    const box = await page.locator('.ric-db-box').innerText();
+    if (!/nel ricettario/.test(box) || !/le vede anche Monica/.test(box) || !/in arrivo/.test(box) || !/Tutto salvato sul server/.test(box)) throw new Error('il riquadro del database non dice chiaro totale, arrivo e salvataggio: ' + box.slice(0, 300));
+    // ⚡ Carica 100 (Mario 08/11): parte sul server e la barra lo mostra
+    await page.evaluate(() => { RIC._c4 = RIC.chiedi; RIC.chiedi = async c => c.db === 'turbo' ? { turbo: { obiettivo: c.n, fatte: 0, scartate: 0, attivo: true } } : c.db === 'stato' ? { db: RIC.db } : RIC._c4(c); });
+    await clic('[data-a="ric-db-turbo"]'); await page.waitForTimeout(400);
+    if (!(await page.locator('.ric-db-box', { hasText: 'Carico 100 ricette: 0 fatte' }).count())) throw new Error('«⚡ Carica 100» non mostra il carico in corso');
+    await page.evaluate(() => { RIC.chiedi = RIC._c4; RIC.db.turbo = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; render(); });
     if (!(await page.locator('.ric-db-box', { hasText: 'Motore' }).count())) throw new Error('nel Ricettario manca lo stato del motore');
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
@@ -709,6 +715,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.fill('[data-ric="nome"]', 'Malloreddus di nonna'); await page.fill('[data-ric="ingredienti"]', 'Semola 300 g\nAcqua 150 ml'); await page.fill('[data-ric="passi"]', 'Impasta 10 minuti.');
     await clic('[data-a="ric-mia-salva"]'); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
     if (!(await page.evaluate(() => mieRic().length === 1))) throw new Error('la ricetta mia non si salva');
+    // C68: la ricetta scritta va anche sul server (così la vede Monica); senza rete parte al giro dopo
+    const sync = await page.evaluate(async () => {
+      const prima = RIC.chiedi, chiesti = [];
+      RIC.chiedi = async c => { chiesti.push(c.db); return c.db === 'salvaMia' ? { ok: true } : c.db === 'mieScritte' ? { mie: [] } : prima(c); };
+      const m = mieRic()[0]; m.suServer = false; scriviRic('pit-ric-mie', [m]); sincronizzaMie(); await new Promise(ok => setTimeout(ok, 300));
+      RIC.chiedi = prima; return { chiesti, su: mieRic()[0].suServer };
+    });
+    if (!sync.chiesti.includes('salvaMia') || sync.su !== true) throw new Error('la ricetta scritta non va sul server: ' + JSON.stringify(sync));
     await page.evaluate(() => vai('home'));
   });
   await passo('sito vero: i file separati (come online) si aprono senza errori, nessuna funzione chiamata prima di caricarla (PT E23)', async () => {

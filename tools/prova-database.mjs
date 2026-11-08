@@ -33,7 +33,7 @@ const finisci = async () => { await Promise.all(contesto.attese); contesto.attes
 const nomi = Array.from({ length: 35 }, (_, i) => 'Ricetta-sarda-' + (i % 30));
 const carta = n => `<article class="gz-card"><a href="https://ricette.giallozafferano.it/${n}.html" title="${n}"></a><h2 class="gz-title"><a>${n.replace(/-/g, ' ')}</a></h2></article>`;
 const pagina = i => nomi.slice(i * 15, i * 15 + 15).map(carta).join('') + (i < 2 ? `<link rel="next" href="https://www.giallozafferano.it/ricerca-ricette/page${i + 2}/sardegna/">` : '');
-const ricettaHtml = n => `<script type="application/ld+json">${JSON.stringify({ '@type': 'Recipe', name: n.replace(/-/g, ' '), recipeCategory: 'Primi piatti', recipeIngredient: ['Pecorino sardo 100 g', 'Sale q.b.'], recipeInstructions: [{ text: 'Mescola tutto.' }], image: 'https://www.giallozafferano.it/images/ricette/' + n + '.jpg' })}</script>`;
+const ricettaHtml = n => `<script type="application/ld+json">${JSON.stringify({ '@type': 'Recipe', name: n.replace(/-/g, ' '), recipeCategory: 'Primi piatti', recipeIngredient: n === 'Ricetta-sarda-7' ? ['Pecorino sardo 100 g'] : ['Pecorino sardo 100 g', 'Farina 200 g', 'Sale q.b.'], recipeInstructions: [{ text: 'Mescola tutto.' }, { text: 'Cuoci a fuoco dolce.' }], image: 'https://www.giallozafferano.it/images/ricette/' + n + '.jpg' })}</script>`;
 let richieste = [], gzGiu = false, msVoci = 0;
 globalThis.caches = { default: { match: async () => null, put: async () => null } };
 globalThis.fetch = async (u) => {
@@ -57,7 +57,11 @@ prova('giro 1: prima le sarde, pagina dopo ricordata', /page2\/sardegna/.test(s.
 prova('giro 1: al massimo 3 richieste a GialloZafferano', richieste.length <= 3);
 for (let i = 0; i < 25; i++) { await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci(); }
 s = await ponte.statoDb();
-prova('30 ricette diverse, senza doppioni (35 sulle pagine)', s.ricette === 30);
+prova('29 ricette complete, senza doppioni (35 sulle pagine, 1 incompleta)', s.ricette === 29);
+prova('la ricetta incompleta non entra né nell\'archivio né nel ricettario, ed è contata', !(await ponte.una('gz:Ricetta-sarda-7')) && s.scartate === 1 && s.coda === 0);
+prova('ogni ricetta salvata dal motore entra da sola nel ricettario', s.nelRicettario === 29 && s.scelte === 29);
+const sc = await ponte.scelte();
+prova('ricettario: zona sarda dalle pagine sarde, campi pieni', sc.filter(x => x.zona === 'sarda').length === 29 && sc.every(x => /\.html$/.test(x.url) && x.nome && /\.jpg$/.test(x.foto) && x.aggiunta > 0));
 prova('coda vuota alla fine', s.coda === 0);
 const lette = richieste.filter(u => /giallozafferano\.it\/(ricerca-ricette|ricette-cat)\//.test(u));
 prova('sarde miste alle altre: una pagina sarda e una di un\'altra sezione', /sardegna/.test(lette[0]) && /Primi/.test(lette[1]) && /sardegna/.test(lette[2]));
@@ -85,14 +89,14 @@ const chiedi = async (corpo, token = true) => {
 const fetchGz = globalThis.fetch;
 globalThis.fetch = async (u, o) => /firestore\.googleapis\.com/.test(String(u)) ? new Response('{}', { status: 200 }) : fetchGz(u, o);
 let j = await (await chiedi({ cat: 'db', cerca: 'Il tuo database' })).json();
-prova('sfoglia: 30 ricette, nessuna pagina dopo', j.ricette && j.ricette.length === 30 && j.prossima === '');
+prova('sfoglia: 30 ricette, nessuna pagina dopo', j.ricette && j.ricette.length === 29 && j.prossima === '');
 prova('sfoglia: la scheda ha nome, link e foto', j.ricette && j.ricette[0].nome && /\.html$/.test(j.ricette[0].url) && /\.jpg$/.test(j.ricette[0].foto));
 j = await (await chiedi({ cat: 'db', q: 'sarda 12' })).json();
 prova('cerca nel database: «sarda 12» = 1 ricetta', j.ricette && j.ricette.length === 1 && /12/.test(j.ricette[0].nome));
 j = await (await chiedi({ cat: 'db', q: 'pecorino' })).json();
-prova('cerca anche negli ingredienti', j.ricette && j.ricette.length === 30);
+prova('cerca anche negli ingredienti', j.ricette && j.ricette.length === 29);
 j = await (await chiedi({ db: 'stato' })).json();
-prova('stato per l\'app: numeri del database', j.db && j.db.ricette === 30 && j.db.coda === 0 && j.db.pausa === false);
+prova('stato per l\'app: numeri del database', j.db && j.db.ricette === 29 && j.db.coda === 0 && j.db.pausa === false);
 j = await (await chiedi({ db: 'pausa' })).json();
 prova('pausa dall\'app', j.db && j.db.pausa === true);
 j = await (await chiedi({ db: 'riprendi' })).json();
@@ -127,11 +131,12 @@ prova('voci senza doppioni (2 diverse salvate)', s.voci === 2);
 const rn = await W.default.fetch(new Request('https://x/api/voce', { method: 'POST', headers: { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' }, body: JSON.stringify({ t: 'Testo nuovo', v: 'isabella' }) }), cfg, contesto);
 prova('voce nuova: chiede a Microsoft (qui rifiuta → errore, l\'app usa la voce del telefono)', msVoci === 1 && rn.status === 502);
 
-/* 6. il TUO ricettario (C61): il motore propone, tu aggiungi con l'ok; niente doppioni; togli */
+/* 6. il TUO ricettario (C61): il motore propone, tu aggiungi con l'ok; niente doppioni; togli. Si parte da un ricettario vuoto (il motore l'aveva riempito da solo) */
+oggetto.sql.exec('DELETE FROM scelte');
 j = await (await chiedi({ cat: 'nuove', fuori: ['gz:Ricetta-sarda-0'] })).json();
-prova('proposte: dall\'archivio, senza quelle che hai già', j.ricette && j.ricette.length === 30 && !j.ricette.some(x => /Ricetta-sarda-0\.html$/.test(x.url)) && j.prossima === '');   // 31 nell'archivio, 1 già tua
+prova('proposte: dall\'archivio, senza quelle che hai già', j.ricette && j.ricette.length === 29 && !j.ricette.some(x => /Ricetta-sarda-0\.html$/.test(x.url)) && j.prossima === '');   // 30 nell'archivio (29 + Culurgiones), 1 già tua
 j = await (await chiedi({ cat: 'nuove', pagina: 'nuove:10', fuori: ['gz:Ricetta-sarda-0'] })).json();
-prova('proposte: «Carica altre» porta le altre', j.ricette && j.ricette.length === 20 && j.prossima === '');
+prova('proposte: «Carica altre» porta le altre', j.ricette && j.ricette.length === 19 && j.prossima === '');
 const nuova = { id: 'gz:Ricetta-sarda-5', nome: 'Ricetta sarda 5', zona: 'sarda', categoria: 'primi', foto: 'https://www.giallozafferano.it/images/x.jpg' };
 j = await (await chiedi({ db: 'aggiungi', r: nuova })).json();
 prova('➕ aggiungi: nel tuo ricettario', j.scelte && j.scelte.length === 1 && j.scelte[0].id === 'gz:Ricetta-sarda-5' && j.scelte[0].zona === 'sarda');
@@ -155,6 +160,60 @@ await ponte.metti1('pausa', '1'); await ponte.metti1('fonte', 0); await ponte.me
 j = await (await chiedi({ db: 'cerca' })).json();
 prova('«Cerca adesso» fa un giro anche in pausa e dice quante nuove', j.db && j.nuove >= 0 && j.db.giri > 26 && j.db.pagine > 3 && j.db.sezione && j.db.fonti === 10);
 await ponte.metti1('pausa', '');
+/* 9. archivio → ricettario, una volta sola: le complete già nell'archivio che mancano entrano; le incomplete no */
+oggetto.sql.exec('DELETE FROM scelte');
+oggetto.salva({ id: 'gz:Vecchia-completa', url: 'https://ricette.giallozafferano.it/Vecchia-completa.html', nome: 'Vecchia completa', categoria: 'Dolci', foto: 'https://www.giallozafferano.it/images/v.jpg', ingredienti: [{ nome: 'a' }, { nome: 'b' }, { nome: 'c' }], passi: [{ t: '1' }, { t: '2' }] });
+oggetto.salva({ id: 'gz:Vecchia-povera', url: 'https://ricette.giallozafferano.it/Vecchia-povera.html', nome: 'Vecchia povera', foto: 'https://www.giallozafferano.it/images/p.jpg', ingredienti: [{ nome: 'a' }], passi: [{ t: '1' }] });
+oggetto.metti1('scelteRiempite', '');
+s = await ponte.statoDb();
+prova('riempimento unico: entrano le complete dell\'archivio (29 + Culurgiones + Pane nuovo + Vecchia), non l\'incompleta', s.nelRicettario === 32 && !(await ponte.scelte()).some(x => x.id === 'gz:Vecchia-povera'));
+await ponte.togli('gz:Vecchia-completa');
+s = await ponte.statoDb();
+prova('il riempimento non si ripete: quella tolta resta tolta', s.nelRicettario === 31);
+
+/* 10. ricette scritte a mano sul server */
+const mia = { id: 'mia123', nome: 'Torta di Monica', ingredienti: [{ nome: 'uova' }], foto: 'data:image/jpeg;base64,' + 'A'.repeat(400000) };
+j = await (await chiedi({ db: 'salvaMia', r: mia })).json();
+prova('mia: salvata (anche con foto da 400 KB)', j.ok === true);
+j = await (await chiedi({ db: 'mieScritte' })).json();
+prova('mia: elenco con id, ricetta e data', j.mie && j.mie.length === 1 && j.mie[0].id === 'mia123' && j.mie[0].r.nome === 'Torta di Monica' && j.mie[0].aggiornata > 0);
+await chiedi({ db: 'salvaMia', r: Object.assign({}, mia, { nome: 'Torta di Monica 2' }) });
+j = await (await chiedi({ db: 'mieScritte' })).json();
+prova('mia: salvare di nuovo aggiorna, nessun doppione', j.mie.length === 1 && j.mie[0].r.nome === 'Torta di Monica 2');
+prova('mia: id che non inizia con «mia» rifiutato', (await (await chiedi({ db: 'salvaMia', r: { id: 'gz:x', nome: 'x' } })).json()).errore === 'ricetta non valida');
+prova('mia: oltre 1.500.000 caratteri rifiutata', (await (await chiedi({ db: 'salvaMia', r: { id: 'miagrande', foto: 'A'.repeat(1500001) } })).json()).errore === 'ricetta non valida');
+j = await (await chiedi({ db: 'stato' })).json();
+prova('stato: mieServer = 1', j.db && j.db.mieServer === 1);
+await chiedi({ db: 'togliMia', id: 'mia123' });
+j = await (await chiedi({ db: 'mieScritte' })).json();
+prova('mia: tolta non si vede più', j.mie.length === 0 && (await ponte.statoDb()).mieServer === 0);
+
+/* 11. turbo «carica N»: allarme finto, qui chiamo io alarm() in un ciclo */
+const allarmi = []; oggetto.ctx.storage.setAlarm = async t => { allarmi.push(t); };
+oggetto.sql.exec('DELETE FROM ricette'); oggetto.sql.exec('DELETE FROM coda'); oggetto.sql.exec('DELETE FROM scelte'); oggetto.sql.exec('DELETE FROM scartate');
+for (const k of ['fonte', 'pagina', 'paginaSarda', 'pagine']) oggetto.metti1(k, '');
+richieste = [];
+/* la sezione Primi finta ha 12 ricette «miste» (le altre sezioni restano vuote) */
+const fetchPrima = globalThis.fetch;
+globalThis.fetch = async (u, o) => String(u) === 'https://www.giallozafferano.it/ricette-cat/Primi/' && !gzGiu ? new Response(Array.from({ length: 12 }, (_, i) => carta('Primo-misto-' + i)).join('')) : fetchPrima(u, o);
+prova('turbo: n fuori misura rifiutato', (await (await chiedi({ db: 'turbo', n: 0 })).json()).errore && (await (await chiedi({ db: 'turbo', n: 201 })).json()).errore);
+prova('turbo: senza accesso di chi gestisce niente', (await chiedi({ db: 'turbo', n: 5 }, false)).status === 403);
+j = await (await chiedi({ db: 'turbo', n: 20 })).json();
+prova('turbo: avviato, risponde {turbo} attivo con obiettivo 20 e allarme impostato', j.turbo && j.turbo.attivo === true && j.turbo.obiettivo === 20 && j.turbo.fatte === 0 && allarmi.length === 1);
+let giri = 0; while ((await ponte.statoDb()).turbo.attivo && giri < 50) { await oggetto.alarm(); giri++; }
+s = await ponte.statoDb();
+prova('turbo: arriva a 20 e si ferma da solo', s.turbo.fatte === 20 && s.turbo.attivo === false && s.turbo.finito > 0 && s.nelRicettario === 20 && s.ricette === 20);
+prova('turbo: una sveglia scarica al massimo 5 ricette (20 = almeno 4 sveglie) e non si risveglia da fermo', giri >= 4 && giri <= 10 && allarmi.length === giri);
+const prima = richieste.length; await oggetto.alarm();
+prova('turbo: fermo, una sveglia in più non fa niente', richieste.length === prima);
+const zone = (await ponte.scelte()).reduce((a, x) => (a[x.zona] = (a[x.zona] || 0) + 1, a), {});
+prova('turbo: le sarde vengono prima ma ci sono anche le altre', zone.sarda >= 10 && zone.italiana >= 1);
+/* senza novità: 20 sveglie vuote di fila → si ferma */
+gzGiu = true; j = await (await chiedi({ db: 'turbo', n: 50 })).json(); giri = 0;
+while ((await ponte.statoDb()).turbo.attivo && giri < 100) { await oggetto.alarm(); giri++; }
+s = await ponte.statoDb();
+prova('turbo: GialloZafferano non dà niente → si ferma dopo 20 sveglie vuote', giri === 20 && s.turbo.attivo === false && s.turbo.fatte === 0);
+gzGiu = false;
 /* 8. foto originali di Monica (Mario 08/11): caricata così com'è, in pezzi; Mario la scarica identica; tetto 25 MB; via dopo 60 giorni */
 const auto = { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' };
 const orig = async (corpo, tipo, extra = {}) => { const r = await W.default.fetch(new Request('https://x/api/originali', { method: 'POST', headers: Object.assign({ 'content-type': tipo }, auto, extra), body: corpo }), cfg, contesto); await finisci(); return r; };
