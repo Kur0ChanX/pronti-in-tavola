@@ -39,11 +39,12 @@ Aperta dalla #27 (catena 3). Versioni online v0.9.28 → v0.9.32 (sito si pubbli
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
+08/11 ~11:40 (dopo l'handoff, con 2 foto: icona di VoiceStudio e `archivio/foto/2026-11-08-mio-database-motore-fermo.jpg`), parola per parola: «Microsoft togliamolo le voci di Piper non mi piacciono molto che ne pensi di questo per sintetizzatore vocale / poi non mk trova altre nuove ricette da giallo zafferano non posso chiederle semore a token da claude». Da fare: 1) togliere le voci Microsoft (VOCI_VERE); 2) cercare una voce migliore di Piper che giri nel browser del telefono (VoiceStudio = app a sé, già scartato per l'app; ma si può valutare se il suo motore OmniVoice o altri hanno un modello ONNX/WebGPU leggero con italiano, oppure generare le voci sul server); 3) MOTORE BLOCCATO: la foto dice 26 trovate, 24 giri, «Sezione 1 di 10 (Ricette sarde) · 0%» e «Giro fatto: niente di nuovo in questa pagina»: il motore non avanza di pagina/sezione quando una pagina non porta niente di nuovo (worker.js, oggetto Ricettario, cron */10). Con la rete aperta si può provare dal vivo GialloZafferano dal contenitore. Prima:
 08/11 ~11:40 (dopo l'handoff), parola per parola: «voci Microsoft lasciamo perdere». Riga tolta da «Aspetta Mario»; voci Microsoft da togliere dalla scelta (VOCI_VERE in aiutante.js) o lasciare come ripiego: decidi tu (consiglio: toglierle, così Monica non sceglie voci che non funzionano). Prima:
 08/11 ~11:36, parola per parola: «ok per pronti in tavola» (ok scritto ai file di `.claude/` per il controllo dei comandi raggruppati, C64). Prima (~11:25): foto dello scarico di Paola fallito («Failed to fetch»), corretto in v0.9.32. Prima: «metti che scarica le voci automaticamente… il programma sceglie la miglior voce… gliela scarica automaticamente nel telefono… anche con i dati» (fatto v0.9.31) e «Voice Studio… guarda se c'è l'italiano» (scartato: app a sé).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C65; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C67; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
