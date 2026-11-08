@@ -9,4 +9,4 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 📗 Aiuto 1 | Numerino della versione → foglio Aggiornamenti: FATTO e pushato (cbdc470, 49 OK). Ora aspetta Mario: divisione dei lavori (proposta: C39 Impostazioni di Monica a voci + prove fuori dal ricettario) e regime leggero del progetto | `app.js` (sezione impostazioni), `style.css` — solo dopo l'ok di Mario | 08/11 10:17 |
+| 📗 Aiuto 1 | Impostazioni di Monica a voci, una aperta alla volta (C39); pulizia dei passi di prova fuori dal ricettario (Mario 08/11 «1»: divisione dei lavori) | `app.js` (vImpostazioni e sue azioni), `style.css`, `tools/prova.js` (passi Monica/impostazioni) | 08/11 11:05 |
