@@ -242,9 +242,20 @@ function ingRic(riga) {
 }
 const daMia = m => ({ id: m.id, mia: true, nome: m.nome, intro: m.note || '', foto: m.foto || '', porzioni: m.porzioni || 4, totale: m.minuti || 0,
   categoria: m.categoria || '', ingredienti: (m.ingredienti || []).map(ingRic).filter(i => i.nome), passi: (m.passi || []).map(t => ({ t, foto: [] })), conserva: '', consiglio: '' });
+/* PASSI COME SU GIALLOZAFFERANO (C72, Mario 08/11 «falle come GialloZafferano, uguali paro paro»): stesse parole, stesse foto,
+   e i numerini [[1]] [[2]] che legano ogni frase alla sua foto (prima si perdevano). Alla voce e al timer i numerini non servono. */
+const pulisciPasso = t => String(t || '').replace(/[ \t]+([.,;:!?)])/g, '$1').replace(/\([ \t]+/g, '(').replace(/\s{2,}/g, ' ').trim();
+const testoVoce = t => pulisciPasso(String(t || '').replace(/\s*\[\[\d+\]\]/g, ''));
+const passoHtml = t => esc(pulisciPasso(t)).replace(/\s*\[\[(\d+)\]\]/g, ' <span class="num-step">$1</span>');
+function fotoPasso(p, grandi) {
+  if (!p.foto || !p.foto.length) return '';
+  const nn = [...String(p.t).matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);   // una foto per numerino, o una foto «a strisce» con tutti (es. 1-3)
+  const num = k => !nn.length ? '' : p.foto.length === nn.length ? nn[k] : p.foto.length === 1 && nn.length > 1 ? nn[0] + '-' + nn[nn.length - 1] : '';
+  return `<div class="ric-fotopassi${grandi ? ' grandi' : ''}">${p.foto.map((f, k) => `<figure class="ric-fotonum"><img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">${num(k) ? `<span class="num-step">${num(k)}</span>` : ''}</figure>`).join('')}</div>`;
+}
 /* minuti scritti nel passo («cuocete per 20 minuti», «1 ora») → timer nella cucina guidata */
 function minutiPasso(t) {
-  const m = /(\d+)(?:\s*[-–]\s*(\d+))?\s*(minut|or[ae]\b)/i.exec(t || '');
+  const m = /(\d+)(?:\s*[-–]\s*(\d+))?\s*(minut|or[ae]\b)/i.exec(testoVoce(t));
   if (!m) return 0;
   const n = Number(m[2] || m[1]) * (/^or/i.test(m[3]) ? 60 : 1);
   return n > 0 && n <= 600 ? n : 0;
@@ -437,6 +448,7 @@ function vRicettario() {
 function vRicetta(id) {
   if (RIC.stato !== 'pronto') return attesaRic('Ricetta', 'ricettario');
   const r = ricetta(id), v = voceElenco(id);
+  if (r && !r.mia && r.v !== 2 && /^gz:/.test(id) && navigator.onLine && !(RIC.riletta = RIC.riletta || {})[id]) { RIC.riletta[id] = true; apriGz(id); }   // una volta sola: se il server ridà la copia vecchia, niente giri infiniti   // C72: copia vecchia senza i numerini → si rilegge da sola, intanto si vede questa
   if (!r) {
     if (/^mia:/.test(id) || !/^gz:[\w%-]+$/.test(id)) { UI.vista = 'ricettario'; return vRicettario(); }
     if (RIC.errore[id]) return testataMonica('Ricetta', 'ricettario') + `<main class="corpo"><section class="scheda"><p style="margin:0"><b>Non riesco ad aprire «${esc(v ? v.nome : 'la ricetta')}».</b></p>
@@ -470,7 +482,7 @@ function vRicetta(id) {
       <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${esc(id)}">${ico('carrello')}Metti nella lista della spesa</button></section>
     <section class="scheda"><h2>📝 Le tue note</h2><textarea id="ric-nota" data-ricnota="${esc(id)}" rows="2" maxlength="1000" placeholder="Es. metà zucchero; a Laura piace con più pecorino">${esc(notaRic(id))}</textarea>
       <p class="piccolo tenue" style="margin:0">Si salvano da sole su questo telefono e le rivedi nella cucina guidata.</p></section>
-    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map(p => `<li><div>${p.foto && p.foto.length ? `<div class="ric-fotopassi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}<span>${esc(p.t)}</span></div></li>`).join('')}</ol></section>`;
+    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map(p => `<li><div>${fotoPasso(p)}<span>${passoHtml(p.t)}</span></div></li>`).join('')}</ol></section>`;
   if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di GialloZafferano${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
@@ -509,7 +521,7 @@ function vCucina(id) {
   h += `<p class="tenue" style="margin:0">${esc(r.nome)} · passo <b>${i + 1}</b> di ${r.passi.length}</p>
     <div class="punti ric-punti">${r.passi.map((_, j) => `<i class="${j === i ? 'on' : j < i ? 'fatto' : ''}"></i>`).join('')}</div>
     ${nota ? `<p class="avviso piccolo" style="margin:0">📝 ${esc(nota)}</p>` : ''}
-    <section class="scheda ric-passo">${p.foto && p.foto.length ? `<div class="ric-fotopassi grandi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}<p>${esc(p.t)}</p>
+    <section class="scheda ric-passo">${fotoPasso(p, true)}<p class="ric-passo-testo">${passoHtml(p.t)}</p>
       ${min ? `<button type="button" class="btn ${mio ? 'chiaro' : 'pieno'}" data-a="ric-timer" data-v="${min}">⏱ ${mio ? `Mancano ${mmssRic(restaTimer(mio))} · ferma` : `Timer ${durataRic(min)}`}</button>` : ''}</section>
     ${altri.map(x => `<p class="avviso piccolo fila" style="margin:0"><span>⏱ ${esc((x.libero ? durataRic(x.min) + ' · ' : '') + (x.id === id ? 'Passo ' + (x.passo + 1) : x.nome + ', passo ' + (x.passo + 1)))}: mancano <b>${mmssRic(restaTimer(x))}</b></span><button type="button" class="btn chiaro piccolo" data-a="ric-timer-via" data-v="${x.n}">Ferma</button></p>`).join('')}
     <button type="button" class="btn chiaro piccolo" data-a="ric-altro" aria-expanded="${!!UI.ricAltro}">⏱ Altro timer${UI.ricAltro ? ' ▴' : ' ▾'}</button>
@@ -528,7 +540,7 @@ function vCucina(id) {
 function testiVoceRic(r) {
   const code = [' Di\' «timer» per il conto alla rovescia.', ' Era l\'ultimo passo: di\' «finito».', ' Quando hai fatto, di\' «avanti».', ' Se vuoi, tocca Timer.',
     ' Di\' «timer» per il conto alla rovescia. Era l\'ultimo passo: di\' «finito».', ' Di\' «timer» per il conto alla rovescia. Quando hai fatto, di\' «avanti».'].map(x => x.trim());
-  return (r.passi || []).map((p, i) => `Passo ${i + 1}. ${p.t}`).concat(code);
+  return (r.passi || []).map((p, i) => `Passo ${i + 1}. ${testoVoce(p.t)}`).concat(code);
 }
 /* fila delle voci da scaricare: una ricetta alla volta, così non si intasa niente */
 RIC.filaVoci = []; RIC.vociFatte = leggiRic('pit-ric-voci', {}) || {};
@@ -574,7 +586,7 @@ function leggiPasso() {
   fermaAscolto();
   // due letture: il passo e la coda («di' avanti»…): la coda è uguale in tutte le ricette, il server la salva una volta sola (C60)
   const poi = () => { if (UI.cucina === c && c.mani) ascoltaCucina(); };
-  parlaAI(`Passo ${c.passo + 1}. ${p.t}`, () => { if (UI.cucina !== c) return; if (coda.trim()) parlaAI(coda.trim(), poi); else poi(); });
+  parlaAI(`Passo ${c.passo + 1}. ${testoVoce(p.t)}`, () => { if (UI.cucina !== c) return; if (coda.trim()) parlaAI(coda.trim(), poi); else poi(); });
 }
 /* MANI LIBERE: dopo ogni passo la voce si ferma e aspetta un comando detto (Chrome su Android). Comandi in COMANDI_RIC */
 const RiconosciRic = window.SpeechRecognition || window.webkitSpeechRecognition;
