@@ -1,39 +1,66 @@
-/* Ricettario di Monica (C55, docs/SPEC-RICETTARIO.md): solo per chi gestisce.
-   Le ricette (ricette.js) si scaricano solo quando Monica o Mario aprono il ricettario: i clienti non le scaricano mai.
-   Viste: 'ricettario' (elenco), 'ricetta:<id>' (scheda), 'cucina:<id>' (cucina guidata, un passo per schermata). */
-const RIC = { stato: typeof RICETTE !== 'undefined' ? 'pronto' : 'no', wake: null, timer: null, fine: 0, tick: null };
-const ZONE_RIC = [['tutte', 'Tutte'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane']];
-const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane']];
-/* disegni dei passi: figure semplici, stesso tratto delle icone dell'app */
-const DISEGNI_RIC = {
-  pentola: '<path d="M4 10h16v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z"/><path d="M2 10h20M9 6c0-1 1-1 1-2M14 6c0-1 1-1 1-2"/>',
-  padella: '<circle cx="10" cy="13" r="6"/><path d="M16 13h6"/>',
-  forno: '<rect x="3" y="4" width="18" height="16" rx="2"/><rect x="6" y="9" width="12" height="8" rx="1"/><path d="M7 6.5h1M11 6.5h1"/>',
-  teglia: '<rect x="3" y="9" width="18" height="8" rx="2"/><path d="M6 12h12"/>',
-  mestolo: '<circle cx="8" cy="15" r="4"/><path d="M11 12l8-9"/>',
-  coltello: '<path d="M3 21l10-10 3 3-10 10z"/><path d="M13 11l7-7a2 2 0 0 1 0 3l-4 7"/>',
-  impastare: '<path d="M4 14c0-4 4-7 8-7s8 3 8 7-4 5-8 5-8-1-8-5z"/><path d="M9 12c1 1 5 1 6 0"/>',
-  ciotola: '<path d="M3 11h18a9 9 0 0 1-18 0z"/><path d="M8 7c0-2 2-2 2-4M14 7c0-2 2-2 2-4"/>',
-  mattarello: '<rect x="5" y="9" width="14" height="6" rx="3"/><path d="M2 12h3M19 12h3"/>',
-  friggere: '<circle cx="10" cy="13" r="6"/><path d="M16 13h6M7 12h0M10 15h0M12 11h0"/>'
-};
-const disegnoRic = n => DISEGNI_RIC[n] ? `<svg class="ric-disegno" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${DISEGNI_RIC[n]}</svg>` : '';
+/* Ricettario di Monica (C55, docs/SPEC-RICETTARIO.md): solo per chi gestisce, mai per i clienti.
+   Mario 08/11: «porta GialloZafferano dentro l'app», niente pagine esterne. Le ricette di GialloZafferano si leggono DAL VIVO
+   dal server dell'app (/api/gz → gz.mjs) e si mostrano qui: video nel lettore dell'app, ingredienti, passaggi con le loro foto.
+   Nel codice c'è solo l'elenco scelto (ricette.js: nome, link, foto di copertina). Le ricette aperte restano sul telefono
+   (preferite sempre, le altre le ultime 15) così si rileggono anche senza rete. Monica può scrivere anche le SUE ricette.
+   Viste: 'ricettario' (elenco e ricerca), 'ricetta:<id>' (scheda), 'cucina:<id>' (un passo per schermata), 'ricmia:<id|nuova>' (scrivi la tua). */
+const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: null, timer: null, fine: 0, tick: null,
+  apre: {}, errore: {}, cerca: { q: '', stato: '', risultati: [] }, hls: null,
+  /* domanda al server (le prove la sostituiscono con risposte finte) */
+  chiedi: async corpo => {
+    const tok = typeof Dati !== 'undefined' && Dati.token ? await Dati.token() : '';
+    if (!tok) throw new Error('Serve l\'accesso di Monica o di Mario (sul sito vero).');
+    const r = await fetch('/api/gz', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify(corpo) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || j.errore) throw new Error(j.errore || 'Il server risponde ' + r.status);
+    return j;
+  } };
+const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
+const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
+const URL_GZ = 'https://ricette.giallozafferano.it/';
 
 function caricaRicette() {
   if (RIC.stato === 'pronto' || RIC.stato === 'carico') return;
   RIC.stato = 'carico';
   const s = document.createElement('script');
   s.src = 'ricette.js';
-  s.onload = () => { RIC.stato = typeof RICETTE !== 'undefined' ? 'pronto' : 'errore'; render(); };
+  s.onload = () => { RIC.stato = typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'errore'; render(); };
   s.onerror = () => { RIC.stato = 'errore'; s.remove(); render(); };
   document.head.appendChild(s);
 }
-const preferiteRic = () => { try { return JSON.parse(localStorage.getItem('pit-ric-pref')) || []; } catch (e) { return []; } };
-const ricetta = id => (typeof RICETTE !== 'undefined' ? RICETTE : []).find(r => r.id === id);
-const minutiRic = r => (r.prep || 0) + (r.cottura || 0);
-const durataRic = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}`;
+/* ---------- memoria sul telefono ---------- */
+const leggiRic = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
+function scriviRic(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
+const preferiteRic = () => leggiRic('pit-ric-pref', []);
+const mieRic = () => leggiRic('pit-ric-mie', []);
+const cacheRic = () => leggiRic('pit-ric-cache', {});
+/* tiene le preferite sempre e le ultime 15 aperte; se il telefono è pieno toglie le più vecchie */
+function salvaCache(r) {
+  const c = cacheRic(), pref = preferiteRic();
+  c[r.id] = Object.assign({}, r, { visto: Date.now() });
+  let ids = Object.keys(c).filter(k => !pref.includes(k)).sort((a, b) => c[b].visto - c[a].visto);
+  ids.slice(15).forEach(k => delete c[k]);
+  ids = ids.slice(0, 15);
+  while (!scriviRic('pit-ric-cache', c) && ids.length) delete c[ids.pop()];
+}
+const voceElenco = id => (typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : []).find(r => r.id === id) || RIC.cerca.risultati.find(r => r.id === id);
+/* la ricetta completa: mia, già sul telefono, o da chiedere al server */
+function ricetta(id) {
+  if (/^mia:/.test(id)) { const m = mieRic().find(x => x.id === id); return m ? daMia(m) : null; }
+  return cacheRic()[id] || null;
+}
+function apriGz(id) {
+  if (RIC.apre[id]) return;
+  RIC.apre[id] = true; delete RIC.errore[id];
+  RIC.chiedi({ u: URL_GZ + id.slice(3) + '.html' })
+    .then(j => { salvaCache(j.ricetta); })
+    .catch(e => { RIC.errore[id] = e.message || String(e); })
+    .finally(() => { delete RIC.apre[id]; if (UI.vista.split(':').slice(1).join(':') === id) render(); });
+}
+
+const durataRic = m => !m ? '' : m < 60 ? `${m} min` : `${Math.floor(m / 60)} h${m % 60 ? ' ' + (m % 60) + ' min' : ''}`;
 const senzaAccenti = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-/* quantità per le porzioni scelte: arrotondate in modo da leggersi bene */
+/* quantità per le porzioni scelte, arrotondate in modo da leggersi bene */
 function qRic(q, base, porz) {
   if (q == null) return '';
   const x = q * porz / base;
@@ -42,75 +69,137 @@ function qRic(q, base, porz) {
   const m = Math.round(x * 2) / 2;
   return m === 0 ? '½' : String(m).replace('.5', '½').replace(/^0½$/, '½');
 }
-const rigaIng = (i, base, porz) => i.q == null ? `${esc(i.nome)}${i.nota ? ` <small>(${esc(i.nota)})</small>` : ''}` : `<b>${qRic(i.q, base, porz)}${i.u ? ' ' + esc(i.u) : ''}</b> ${esc(i.nome)}${i.nota ? ` <small>(${esc(i.nota)})</small>` : ''}`;
-
-function attesaRic(titolo) {
-  caricaRicette();
-  return testataMonica(titolo, 'home') + `<main class="corpo"><section class="scheda">${RIC.stato === 'errore'
-    ? '<p style="margin:0"><b>Non riesco ad aprire il ricettario.</b> Controlla la rete e riprova.</p><button type="button" class="btn pieno" data-a="ric-riprova">Riprova</button>'
-    : '<p class="tenue" style="margin:0">Apro il ricettario…</p>'}</section></main>`;
+const rigaIng = (i, base, porz) => i.q == null ? `${esc(i.nome)} <small>q.b.</small>${i.nota ? ` <small>(${esc(i.nota)})</small>` : ''}`
+  : `<b>${qRic(i.q, base, porz)}${i.u ? ' ' + esc(i.u) : ''}</b> ${esc(i.nome)}${i.nota ? ` <small>(${esc(i.nota)})</small>` : ''}`;
+/* «Farina 300 g» → { nome, q, u } (stessa idea di gz.mjs, per le ricette di Monica) */
+function ingRic(riga) {
+  const t = String(riga || '').trim();
+  let m = /^(.*?)\s+(\d+(?:[.,]\d+)?)\s*(g|gr|kg|ml|cl|dl|l|cucchiai(?:ni|no|o)?|bicchier[ei]|tazz[ae]|spicchi?|foglie|pizzic[oh]i?|bustin[ae]|fette|fetta)?\.?$/i.exec(t);
+  if (m && m[1]) return { nome: m[1], q: parseFloat(m[2].replace(',', '.')), u: (m[3] || '').toLowerCase(), nota: '' };
+  m = /^(\d+(?:[.,]\d+)?)\s*(g|gr|kg|ml|cl|dl|l)?\s+(?:di\s+)?(.+)$/i.exec(t);
+  if (m) return { nome: m[3], q: parseFloat(m[1].replace(',', '.')), u: (m[2] || '').toLowerCase(), nota: '' };
+  return { nome: t.replace(/\s+q\.?\s?b\.?$/i, ''), q: null, u: '', nota: '' };
 }
+const daMia = m => ({ id: m.id, mia: true, nome: m.nome, intro: m.note || '', foto: m.foto || '', porzioni: m.porzioni || 4, totale: m.minuti || 0,
+  categoria: m.categoria || '', ingredienti: (m.ingredienti || []).map(ingRic).filter(i => i.nome), passi: (m.passi || []).map(t => ({ t, foto: [] })), conserva: '', consiglio: '' });
+/* minuti scritti nel passo («cuocete per 20 minuti», «1 ora») → timer nella cucina guidata */
+function minutiPasso(t) {
+  const m = /(\d+)(?:\s*[-–]\s*(\d+))?\s*(minut|or[ae]\b)/i.exec(t || '');
+  if (!m) return 0;
+  const n = Number(m[2] || m[1]) * (/^or/i.test(m[3]) ? 60 : 1);
+  return n > 0 && n <= 600 ? n : 0;
+}
+
+function attesaRic(titolo, indietro, testo) {
+  caricaRicette();
+  return testataMonica(titolo, indietro || 'home') + `<main class="corpo"><section class="scheda">${RIC.stato === 'errore'
+    ? '<p style="margin:0"><b>Non riesco ad aprire il ricettario.</b> Controlla la rete e riprova.</p><button type="button" class="btn pieno" data-a="ric-riprova">Riprova</button>'
+    : `<p class="tenue" style="margin:0">${testo || 'Apro il ricettario…'}</p>`}</section></main>`;
+}
+const cartaRic = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
+    ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
+    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.mia ? 'Ricetta tua' : { gallura: 'Gallura', sarda: 'Sardegna', italiana: 'Italia' }[r.zona] || 'GialloZafferano'}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small></span></button>`;
 
 function vRicettario() {
   if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
-  const f = UI.ric || (UI.ric = { q: '', zona: 'tutte', cat: '', rapide: false });
-  const pref = preferiteRic(), q = senzaAccenti(f.q).trim();
-  let rr = RICETTE.filter(r => (f.zona === 'tutte' || (f.zona === 'sarda' ? r.zona !== 'italiana' : r.zona === f.zona))
-    && (!f.cat || r.categoria === f.cat) && (!f.rapide || minutiRic(r) <= 30)
-    && (!q || senzaAccenti(r.nome + ' ' + r.regione + ' ' + r.ingredienti.map(i => i.nome).join(' ')).includes(q)));
-  rr = rr.sort((a, b) => (pref.includes(b.id) - pref.includes(a.id)) || a.nome.localeCompare(b.nome, 'it'));
+  const f = UI.ric || (UI.ric = { q: '', zona: 'tutte', cat: '' });
+  const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
+  const mie = mieRic().map(daMia);
+  const tutte = mie.concat(RICETTE_GZ, Object.values(cache).filter(r => !RICETTE_GZ.some(x => x.id === r.id)));
+  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
+      : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
+    && (!f.cat || r.categoria === f.cat)
+    && (!q || senzaAccenti(r.nome + ' ' + (r.ingredienti || []).map(i => i.nome).join(' ')).includes(q)));
+  rr = rr.sort((a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || a.nome.localeCompare(b.nome, 'it'));
+  const c = RIC.cerca;
   let h = testataMonica('Ricettario', 'home') + '<main class="corpo">';
-  h += `<div><h1>Ricettario</h1><p class="tenue" style="margin:4px 0 0">${RICETTE.length} ricette spiegate passo passo. Le vedete solo tu e Mario.</p></div>
-    <input id="ric-cerca" type="search" data-ricerca="1" value="${esc(f.q)}" placeholder="Cerca: nome o ingrediente (es. patate)" autocomplete="off">
-    <div class="scelte" role="group" aria-label="Da dove">${ZONE_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-zona" data-v="${k}" aria-pressed="${f.zona === k}">${t}</button>`).join('')}</div>
-    <div class="scelte" role="group" aria-label="Portata">${CAT_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-cat" data-v="${k}" aria-pressed="${f.cat === k}">${t}</button>`).join('')}
-      <button type="button" class="scelta" data-a="ric-rapide" aria-pressed="${f.rapide}">Entro 30 min</button></div>`;
-  h += rr.length ? `<div class="ric-elenco">${rr.map(r => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${r.id}">
-      ${r.foto ? `<img src="${esc(r.foto.file)}" alt="" loading="lazy">` : `<span class="ric-senzafoto">${disegnoRic((r.passi.find(p => p.disegno) || {}).disegno)}</span>`}
-      <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.regione)} · ${durataRic(minutiRic(r))} · ${'●'.repeat(r.difficolta)}${'○'.repeat(3 - r.difficolta)}</small></span></button>`).join('')}</div>`
-    : '<section class="scheda"><p style="margin:0">Nessuna ricetta trovata. Prova con meno parole o togli un filtro.</p><button type="button" class="btn chiaro" data-a="ric-pulisci">Mostra tutte</button></section>';
+  h += `<div><h1>Ricettario</h1><p class="tenue" style="margin:4px 0 0">Le ricette di GialloZafferano con video e foto dei passaggi, più le tue. Le vedete solo tu e Mario.</p></div>
+    <form class="ric-cerca" data-ric-cerca="1"><input id="ric-cerca" type="search" data-ricerca="1" value="${esc(f.q)}" placeholder="Cerca: piatto o ingrediente (es. melanzane)" autocomplete="off" enterkeyhint="search">
+      <button type="submit" class="btn pieno" aria-label="Cerca su GialloZafferano">${ico('cerca')}</button></form>
+    <div class="scelte" role="group" aria-label="Quali">${ZONE_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-zona" data-v="${k}" aria-pressed="${f.zona === k}">${t}</button>`).join('')}</div>
+    <div class="scelte" role="group" aria-label="Portata">${CAT_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-cat" data-v="${k}" aria-pressed="${f.cat === k}">${t}</button>`).join('')}</div>`;
+  if (f.q.trim().length >= 2) h += `<button type="button" class="btn chiaro pieno" data-a="ric-cerca-gz">${ico('cerca')}Cerca «${esc(f.q.trim())}» fra tutte le ricette di GialloZafferano</button>`;
+  if (c.stato) {
+    h += `<section class="scheda"><h2>Da GialloZafferano: «${esc(c.q)}»</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
+      : c.stato === 'errore' ? `<p style="margin:0">${esc(c.errore)}</p><button type="button" class="btn chiaro" data-a="ric-cerca-gz">Riprova</button>`
+      : c.risultati.length ? `<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>` : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
+      <button type="button" class="btn chiaro piccolo" data-a="ric-chiudi-cerca">Chiudi la ricerca</button></section>`;
+  }
+  h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
+  h += rr.length ? `<div class="ric-elenco">${rr.map(r => cartaRic(r, pref)).join('')}</div>`
+    : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
+      <button type="button" class="btn chiaro" data-a="ric-pulisci">Mostra tutte</button></section>`;
   return h + '</main>';
 }
 
 function vRicetta(id) {
-  if (RIC.stato !== 'pronto') return attesaRic('Ricetta');
-  const r = ricetta(id);
-  if (!r) { UI.vista = 'ricettario'; return vRicettario(); }
+  if (RIC.stato !== 'pronto') return attesaRic('Ricetta', 'ricettario');
+  const r = ricetta(id), v = voceElenco(id);
+  if (!r) {
+    if (/^mia:/.test(id) || !/^gz:[\w%-]+$/.test(id)) { UI.vista = 'ricettario'; return vRicettario(); }
+    if (RIC.errore[id]) return testataMonica('Ricetta', 'ricettario') + `<main class="corpo"><section class="scheda"><p style="margin:0"><b>Non riesco ad aprire «${esc(v ? v.nome : 'la ricetta')}».</b></p>
+      <p class="piccolo" style="margin:0">${esc(RIC.errore[id])}</p><button type="button" class="btn pieno" data-a="ric-riapri" data-v="${esc(id)}">Riprova</button></section></main>`;
+    apriGz(id);
+    return testataMonica('Ricetta', 'ricettario') + `<main class="corpo">${v && v.foto ? `<figure class="ric-foto"><img src="${esc(v.foto)}" alt="" referrerpolicy="no-referrer"></figure>` : ''}
+      <section class="scheda"><p class="tenue" style="margin:0">Apro «${esc(v ? v.nome : 'la ricetta')}» da GialloZafferano…</p></section></main>`;
+  }
   const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
   let h = testataMonica('Ricetta', 'ricettario') + '<main class="corpo">';
-  if (r.foto) h += `<figure class="ric-foto"><img src="${esc(r.foto.file)}" alt="${esc(r.nome)}"><figcaption>Foto: <a href="${esc(r.foto.link)}" target="_blank" rel="noopener">${esc(r.foto.autore)}</a> · ${esc(r.foto.licenza)}</figcaption></figure>`;
-  h += `<div><h1>${esc(r.nome)}</h1><p class="tenue" style="margin:4px 0 0">${esc(r.regione)} · Preparazione ${durataRic(r.prep)} · Cottura ${durataRic(r.cottura)} · Difficoltà ${['', 'facile', 'media', 'impegnativa'][r.difficolta]}</p></div>
-    <p style="margin:0">${esc(r.intro)}</p>
-    <div class="fila"><button type="button" class="btn pieno" data-a="vai" data-v="cucina:${id}">${disegnoRic('pentola')}Cucina guidata</button>
-      <button type="button" class="btn chiaro" data-a="ric-pref" data-v="${id}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button></div>
-    <section class="scheda"><header class="fila"><h2 style="flex:1">Ingredienti</h2></header>
+  if (r.hls || r.mp4) h += `<div class="ric-video"><video id="ric-video" controls playsinline preload="none" poster="${esc(r.copertina || r.foto)}" data-hls="${esc(r.hls || '')}" data-mp4="${esc(r.mp4 || '')}"></video></div>`;
+  else if (r.foto) h += `<figure class="ric-foto"><img src="${esc(r.foto)}" alt="${esc(r.nome)}" referrerpolicy="no-referrer"></figure>`;
+  const info = [r.prep && 'Preparazione ' + durataRic(r.prep), r.cottura && 'Cottura ' + durataRic(r.cottura), !r.prep && r.totale && 'Tempo ' + durataRic(r.totale),
+    r.difficolta && 'Difficoltà ' + r.difficolta.toLowerCase(), r.costo && 'Costo ' + r.costo.toLowerCase()].filter(Boolean).join(' · ');
+  h += `<div><h1>${esc(r.nome)}</h1>${info ? `<p class="tenue" style="margin:4px 0 0">${esc(info)}</p>` : ''}</div>`;
+  if (r.intro) h += `<details class="ric-intro"><summary>${esc(r.intro.split('\n')[0].slice(0, 140))}${r.intro.length > 140 ? '…' : ''} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
+  h += `<div class="fila"><button type="button" class="btn pieno" data-a="vai" data-v="cucina:${esc(id)}">${ico('piatti')}Cucina guidata</button>
+      <button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
+      ${r.mia ? `<button type="button" class="btn chiaro" data-a="vai" data-v="ricmia:${esc(id)}">${ico('matita')}Cambia</button>` : ''}</div>
+    <section class="scheda"><h2>Ingredienti</h2>
       <div class="fila ric-porz"><span>Per <b>${porz}</b> ${porz === 1 ? 'persona' : 'persone'}</span>
         <button type="button" class="btn chiaro piccolo" data-a="ric-porz" data-v="-1" aria-label="Una persona in meno" ${porz <= 1 ? 'disabled' : ''}>−</button>
         <button type="button" class="btn chiaro piccolo" data-a="ric-porz" data-v="1" aria-label="Una persona in più" ${porz >= 60 ? 'disabled' : ''}>+</button></div>
+      <p class="piccolo tenue" style="margin:0">Spunta quello che hai già: nella spesa va solo il resto.</p>
       <ul class="ric-ing">${r.ingredienti.map((i, k) => `<li><label><input type="checkbox" data-a="ric-spunta" data-v="${k}" ${spunte[k] ? 'checked' : ''}><span>${rigaIng(i, r.porzioni, porz)}</span></label></li>`).join('')}</ul>
-      <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${id}">${ico('carrello')}Metti nella lista della spesa</button></section>
-    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map(p => `<li>${disegnoRic(p.disegno)}<span>${esc(p.t)}</span></li>`).join('')}</ol></section>`;
-  if (r.consigli && r.consigli.length) h += `<section class="scheda"><h2>Consigli</h2><ul style="margin:0;padding-left:18px">${r.consigli.map(c => `<li>${esc(c)}</li>`).join('')}</ul></section>`;
-  h += `<section class="scheda"><h2>Conservare e allergeni</h2><p style="margin:0">${esc(r.conserva || '')}</p>
-    <p class="piccolo" style="margin:0"><b>Allergeni:</b> ${esc((r.allergeni || []).join(', ') || 'nessuno indicato')}. Controlla sempre le etichette dei prodotti che usi.</p></section>`;
+      <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${esc(id)}">${ico('carrello')}Metti nella lista della spesa</button></section>
+    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map(p => `<li><div>${p.foto && p.foto.length ? `<div class="ric-fotopassi">${p.foto.map(f => `<img src="${esc(f)}" alt="" loading="lazy" referrerpolicy="no-referrer">`).join('')}</div>` : ''}<span>${esc(p.t)}</span></div></li>`).join('')}</ol></section>`;
+  if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
+  if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
+  h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di GialloZafferano${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
   return h + '</main>';
 }
+/* il video si gioca DENTRO l'app: Android/iPhone col lettore del telefono; dove serve, hls.js (si scarica solo allora) */
+function preparaVideo() {
+  const v = document.getElementById('ric-video');
+  if (RIC.hls && (!v || RIC.hls.media !== v)) { try { RIC.hls.destroy(); } catch (e) { /* già chiuso */ } RIC.hls = null; }
+  if (!v || v.dataset.pronto) return;
+  v.dataset.pronto = '1';
+  const hls = v.dataset.hls, mp4 = v.dataset.mp4;
+  v.addEventListener('error', () => { if (mp4 && v.src !== mp4) v.src = mp4; }, { once: true });
+  if (!hls || v.canPlayType('application/vnd.apple.mpegurl')) { v.src = hls || mp4; return; }
+  const usa = () => { if (window.Hls && Hls.isSupported()) { RIC.hls = new Hls(); RIC.hls.loadSource(hls); RIC.hls.attachMedia(v); } else v.src = mp4 || hls; };
+  if (window.Hls) return usa();
+  const s = document.createElement('script');
+  s.src = 'https://cdn.jsdelivr.net/npm/hls.js@1.5.20/dist/hls.min.js';
+  s.onload = usa; s.onerror = () => { v.src = mp4 || hls; };
+  document.head.appendChild(s);
+}
+new MutationObserver(() => { if (/^ricetta:/.test(UI.vista) || RIC.hls) preparaVideo(); }).observe(document.documentElement, { childList: true, subtree: true });
 
-/* cucina guidata: schermo acceso, voce, timer. Un passo alla volta, tasti grandi */
+/* cucina guidata: schermo acceso, voce, timer se il passo dice i minuti. Un passo alla volta, tasti grandi */
 function vCucina(id) {
-  if (RIC.stato !== 'pronto') return attesaRic('Cucina guidata');
+  if (RIC.stato !== 'pronto') return attesaRic('Cucina guidata', 'ricettario');
   const r = ricetta(id);
-  if (!r) { UI.vista = 'ricettario'; return vRicettario(); }
+  if (!r || !r.passi.length) { UI.vista = 'ricetta:' + id; return vRicetta(id); }
   const c = UI.cucina && UI.cucina.id === id ? UI.cucina : (UI.cucina = { id, passo: 0, voce: true });
   tieniAcceso(true);
-  const i = c.passo, p = r.passi[i], ultimo = i === r.passi.length - 1;
-  const resta = RIC.timer ? Math.max(0, Math.ceil((RIC.fine - Date.now()) / 1000)) : 0;
+  const i = Math.min(c.passo, r.passi.length - 1), p = r.passi[i], ultimo = i === r.passi.length - 1, min = minutiPasso(p.t);
+  const resta = RIC.timer ? Math.max(0, Math.ceil((RIC.fine - Date.now()) / 1000)) : 0, mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
   let h = testataMonica('Cucina guidata', 'ricetta:' + id) + '<main class="corpo ric-cucina">';
   h += `<p class="tenue" style="margin:0">${esc(r.nome)} · passo <b>${i + 1}</b> di ${r.passi.length}</p>
     <div class="punti ric-punti">${r.passi.map((_, j) => `<i class="${j === i ? 'on' : j < i ? 'fatto' : ''}"></i>`).join('')}</div>
-    <section class="scheda ric-passo">${disegnoRic(p.disegno)}<p>${esc(p.t)}</p>
-      ${p.min ? `<button type="button" class="btn ${RIC.timer && RIC.timer.passo === i ? 'chiaro' : 'pieno'}" data-a="ric-timer" data-v="${p.min}">⏱ ${RIC.timer && RIC.timer.passo === i ? `Mancano ${Math.floor(resta / 60)}:${String(resta % 60).padStart(2, '0')} · Ferma` : `Timer ${p.min} minuti`}</button>` : ''}</section>
-    ${RIC.timer && RIC.timer.passo !== i ? `<p class="avviso piccolo" style="margin:0">⏱ Timer del passo ${RIC.timer.passo + 1}: mancano ${Math.floor(resta / 60)}:${String(resta % 60).padStart(2, '0')}</p>` : ''}
+    <section class="scheda ric-passo">${p.foto && p.foto.length ? `<div class="ric-fotopassi grandi">${p.foto.map(f => `<img src="${esc(f)}" alt="" referrerpolicy="no-referrer">`).join('')}</div>` : ''}<p>${esc(p.t)}</p>
+      ${min ? `<button type="button" class="btn ${RIC.timer && RIC.timer.passo === i ? 'chiaro' : 'pieno'}" data-a="ric-timer" data-v="${min}">⏱ ${RIC.timer && RIC.timer.passo === i ? `Mancano ${mmss(resta)} · ferma` : `Timer ${durataRic(min)}`}</button>` : ''}</section>
+    ${RIC.timer && RIC.timer.passo !== i ? `<p class="avviso piccolo" style="margin:0">⏱ Timer del passo ${RIC.timer.passo + 1}: mancano ${mmss(resta)}</p>` : ''}
     <div class="ric-tasti">
       <button type="button" class="btn chiaro" data-a="ric-passo" data-v="-1" ${i === 0 ? 'disabled' : ''}>${ico('indietro')}Indietro</button>
       <button type="button" class="btn chiaro" data-a="ric-ripeti">🔊 Ripeti</button>
@@ -121,9 +210,70 @@ function vCucina(id) {
 function leggiPasso() {
   const c = UI.cucina, r = c && ricetta(c.id);
   if (!r || !c.voce || typeof parlaAI !== 'function') return;
-  const p = r.passi[c.passo];
-  parlaAI(`Passo ${c.passo + 1}. ${p.t}${p.min ? ` Se vuoi, tocca Timer ${p.min} minuti.` : ''}`);
+  const p = r.passi[c.passo], min = minutiPasso(p.t);
+  parlaAI(`Passo ${c.passo + 1}. ${p.t}${min ? ` Se vuoi, tocca Timer.` : ''}`);
 }
+
+/* scrivi o cambia una ricetta tua: nome, persone, ingredienti e passi (uno per riga), foto */
+function vRicMia(id) {
+  const nuova = id === 'nuova', m = nuova ? null : mieRic().find(x => x.id === id);
+  if (!nuova && !m) { UI.vista = 'ricettario'; return vRicettario(); }
+  const b = UI.ricBozza && UI.ricBozza.id === id ? UI.ricBozza : (UI.ricBozza = Object.assign({ id, nome: '', porzioni: 4, minuti: '', categoria: '', ingredienti: [], passi: [], note: '', foto: '' }, m || {}));
+  let h = testataMonica(nuova ? 'Ricetta nuova' : 'Cambia ricetta', nuova ? 'ricettario' : 'ricetta:' + id) + '<main class="corpo">';
+  h += `<section class="scheda ric-modulo">
+    <label>Nome del piatto<input type="text" data-ric="nome" value="${esc(b.nome)}" maxlength="80" placeholder="es. Malloreddus di mia nonna"></label>
+    <div class="fila"><label style="flex:1">Per quante persone<input type="number" data-ric="porzioni" value="${esc(b.porzioni)}" min="1" max="60" inputmode="numeric"></label>
+      <label style="flex:1">Minuti in tutto<input type="number" data-ric="minuti" value="${esc(b.minuti)}" min="0" max="1440" inputmode="numeric"></label></div>
+    <label>Portata<select data-ric="categoria">${CAT_RIC.map(([k, t]) => `<option value="${k}" ${b.categoria === k ? 'selected' : ''}>${k ? t : 'Scegli…'}</option>`).join('')}</select></label>
+    <label>Ingredienti, uno per riga<textarea data-ric="ingredienti" rows="6" placeholder="Farina 300 g&#10;Uova 2&#10;Sale q.b.">${esc(b.ingredienti.join('\n'))}</textarea></label>
+    <label>Come si fa: un passo per riga<textarea data-ric="passi" rows="8" placeholder="Impasta farina e acqua per 10 minuti.&#10;Lascia riposare 30 minuti.">${esc(b.passi.join('\n'))}</textarea></label>
+    <label>Note (facoltative)<textarea data-ric="note" rows="2" placeholder="Segreti, varianti, a chi piace…">${esc(b.note)}</textarea></label>
+    <div class="fila">${b.foto ? `<img class="ric-mia-foto" src="${b.foto}" alt="">` : ''}<label class="btn chiaro">${ico('foto')}${b.foto ? 'Cambia foto' : 'Aggiungi una foto'}<input id="ric-foto-file" type="file" accept="image/*" hidden></label>
+      ${b.foto ? '<button type="button" class="btn chiaro piccolo" data-a="ric-mia-via-foto">Togli foto</button>' : ''}</div>
+    <p class="piccolo tenue" style="margin:0">Se scrivi i minuti in un passo (es. «cuoci 20 minuti») la cucina guidata ti dà il timer.</p>
+    <button type="button" class="btn pieno" data-a="ric-mia-salva">Salva la ricetta</button>
+    ${nuova ? '' : '<button type="button" class="btn chiaro" data-a="ric-mia-elimina">Elimina la ricetta</button>'}</section>
+    <p class="piccolo tenue" style="margin:0">Le tue ricette restano su questo telefono.</p>`;
+  return h + '</main>';
+}
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.ricerca) { UI.ric.q = el.value; ridisegnaElenco(); }
+  if (el.dataset && el.dataset.ric && UI.ricBozza) {
+    const k = el.dataset.ric, b = UI.ricBozza;
+    b[k] = k === 'ingredienti' || k === 'passi' ? el.value.split('\n') : k === 'porzioni' ? Number(el.value) || '' : k === 'minuti' ? Number(el.value) || '' : el.value;
+  }
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset && el.dataset.ric === 'categoria' && UI.ricBozza) UI.ricBozza.categoria = el.value;
+  if (el.id !== 'ric-foto-file' || !el.files[0] || !UI.ricBozza) return;
+  const f = el.files[0], img = new Image(), url = URL.createObjectURL(f);
+  img.onload = () => {
+    const k = Math.min(1, 800 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+    c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(url);
+    UI.ricBozza.foto = c.toDataURL('image/jpeg', .75); render();
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); mostraToast('Questa foto non si apre: prova con un\'altra.'); };
+  img.src = url;
+});
+/* scrivendo nella ricerca ridisegno solo l'elenco: la tastiera resta aperta */
+function ridisegnaElenco() {
+  const el = document.getElementById('ric-cerca'), pos = el ? el.selectionStart : 0;
+  render();
+  const n = document.getElementById('ric-cerca');
+  if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { /* type=search su alcuni telefoni */ } }
+}
+document.addEventListener('submit', e => {
+  if (!e.target.dataset || !e.target.dataset.ricCerca) return;
+  e.preventDefault();
+  const q = (UI.ric.q || '').trim();
+  const link = /ricette\.giallozafferano\.it\/([\w%-]+)\.html/.exec(q);   // incollato un link di GialloZafferano: si apre qui dentro
+  if (link) { UI.ric.q = ''; vai('ricetta:gz:' + link[1]); return; }
+  if (q.length >= 2) A['ric-cerca-gz']();
+});
+
 /* schermo sempre acceso mentre si cucina (Wake Lock: Chrome su Android sì, alcuni telefoni no → nessun errore) */
 async function tieniAcceso(si) {
   try {
@@ -146,24 +296,34 @@ function suonaTimer(testo) {
 
 Object.assign(A, {
   'ric-riprova'() { RIC.stato = 'no'; render(); },
+  'ric-riapri'(el) { delete RIC.errore[el.dataset.v]; render(); },
   'ric-zona'(el) { UI.ric.zona = el.dataset.v; render(); },
   'ric-cat'(el) { UI.ric.cat = el.dataset.v; render(); },
-  'ric-rapide'() { UI.ric.rapide = !UI.ric.rapide; render(); },
-  'ric-pulisci'() { UI.ric = { q: '', zona: 'tutte', cat: '', rapide: false }; render(); },
+  'ric-pulisci'() { UI.ric = { q: '', zona: 'tutte', cat: '' }; render(); },
+  'ric-chiudi-cerca'() { RIC.cerca = { q: '', stato: '', risultati: [] }; render(); },
+  'ric-cerca-gz'() {
+    const q = (UI.ric.q || '').trim(); if (q.length < 2) return;
+    RIC.cerca = { q, stato: 'carico', risultati: [] }; render();
+    RIC.chiedi({ cerca: q })
+      .then(j => { if (RIC.cerca.q !== q) return; RIC.cerca.stato = 'ok'; RIC.cerca.risultati = (j.ricette || []).map(x => ({ id: 'gz:' + x.url.replace(URL_GZ, '').replace(/\.html$/, ''), nome: x.nome, foto: x.foto, categoria: '' })); })
+      .catch(e => { RIC.cerca.stato = 'errore'; RIC.cerca.errore = navigator.onLine === false ? 'Senza rete non posso cercare: riprova quando torna.' : 'Ricerca non riuscita: ' + (e.message || e); })
+      .finally(() => { if (UI.vista === 'ricettario') render(); });
+  },
   'ric-pref'(el) {
     const id = el.dataset.v, p = preferiteRic(), i = p.indexOf(id);
     if (i < 0) p.push(id); else p.splice(i, 1);
-    try { localStorage.setItem('pit-ric-pref', JSON.stringify(p)); } catch (e) { /* telefono senza spazio: resta per ora */ }
+    scriviRic('pit-ric-pref', p);
+    mostraToast(i < 0 ? 'Fra le preferite: la trovi anche senza rete.' : 'Tolta dalle preferite.');
     render();
   },
   'ric-porz'(el) {
-    const id = UI.vista.split(':')[1], r = ricetta(id); if (!r) return;
+    const id = UI.vista.split(':').slice(1).join(':'), r = ricetta(id); if (!r) return;
     UI.ricPorz = UI.ricPorz || {};
     UI.ricPorz[id] = Math.min(60, Math.max(1, ((UI.ricPorz[id] || r.porzioni) + Number(el.dataset.v))));
     render();
   },
   'ric-spunta'(el) {
-    const id = UI.vista.split(':')[1];
+    const id = UI.vista.split(':').slice(1).join(':');
     UI.ricSpunte = UI.ricSpunte || {}; UI.ricSpunte[id] = UI.ricSpunte[id] || {};
     UI.ricSpunte[id][el.dataset.v] = el.checked;
   },
@@ -177,7 +337,7 @@ Object.assign(A, {
       const q = i.q == null ? '' : qRic(i.q, r.porzioni, porz).replace('½', '.5') + (i.u ? ' ' + i.u : '');
       if (aggiungiVoce(q && /^(g|kg|ml|l)$/.test(i.u) ? `${i.nome} ${q}` : i.nome)) n++;
     });
-    mostraToast(n ? `${n} ingredienti nella lista della spesa (quelli spuntati no: li hai già).` : 'Niente da aggiungere: hai spuntato tutto.',
+    mostraToast(n ? `${n} ingredienti nella lista della spesa (quelli spuntati no: li hai già).` : 'Niente da aggiungere: hai spuntato tutto, o c\'erano già.',
       n ? () => { SPESA.mia = JSON.parse(prima); salvaSpesa(); render(); } : null);
   },
   'ric-passo'(el) {
@@ -193,10 +353,34 @@ Object.assign(A, {
     fermaTimer();
     const min = Number(el.dataset.v), passo = c.passo;
     RIC.fine = Date.now() + min * 60000;
-    RIC.timer = { passo, t: setTimeout(() => { fermaTimer(); suonaTimer(`Il timer di ${min} minuti è finito: ${r.nome}, passo ${passo + 1}.`); if (/^cucina:/.test(UI.vista)) render(); }, min * 60000) };
+    RIC.timer = { passo, t: setTimeout(() => { fermaTimer(); suonaTimer(`Il timer di ${durataRic(min)} è finito: ${r.nome}, passo ${passo + 1}.`); if (/^cucina:/.test(UI.vista)) render(); }, min * 60000) };
     RIC.tick = setInterval(() => { if (/^cucina:/.test(UI.vista) && !document.querySelector('.foglio')) render(); }, 1000);
     render();
   },
-  'ric-fine'() { fermaTimer(); tieniAcceso(false); const id = UI.cucina && UI.cucina.id; UI.cucina = null; mostraToast('Buon appetito! 🍝'); vai('ricetta:' + id); }
+  'ric-fine'() { fermaTimer(); tieniAcceso(false); const id = UI.cucina && UI.cucina.id; UI.cucina = null; mostraToast('Buon appetito! 🍝'); vai('ricetta:' + id); },
+  'ric-mia-via-foto'() { if (UI.ricBozza) { UI.ricBozza.foto = ''; render(); } },
+  'ric-mia-salva'() {
+    const b = UI.ricBozza; if (!b) return;
+    const pulito = a => (a || []).map(x => String(x).trim()).filter(Boolean);
+    const m = { id: b.id === 'nuova' ? 'mia:' + Date.now().toString(36) : b.id, nome: String(b.nome || '').trim().slice(0, 80), porzioni: Math.min(60, Math.max(1, Number(b.porzioni) || 4)),
+      minuti: Math.min(1440, Math.max(0, Number(b.minuti) || 0)), categoria: b.categoria || '', ingredienti: pulito(b.ingredienti).slice(0, 60), passi: pulito(b.passi).slice(0, 60),
+      note: String(b.note || '').trim().slice(0, 2000), foto: b.foto || '' };
+    if (!m.nome) { mostraToast('Scrivi il nome del piatto.'); return; }
+    if (!m.ingredienti.length && !m.passi.length) { mostraToast('Scrivi almeno gli ingredienti o i passi.'); return; }
+    const tutte = mieRic(), prima = JSON.stringify(tutte), i = tutte.findIndex(x => x.id === m.id);
+    if (i < 0) tutte.unshift(m); else tutte[i] = m;
+    if (!scriviRic('pit-ric-mie', tutte)) { mostraToast('Il telefono è pieno: togli la foto e riprova.'); return; }
+    UI.ricBozza = null;
+    mostraToast('Ricetta salvata.', () => { scriviRic('pit-ric-mie', JSON.parse(prima)); vai('ricettario'); });
+    vai('ricetta:' + m.id);
+  },
+  'ric-mia-elimina'() {
+    const b = UI.ricBozza; if (!b || !confirm(`Elimino la ricetta «${b.nome}»?`)) return;
+    const tutte = mieRic(), prima = JSON.stringify(tutte);
+    scriviRic('pit-ric-mie', tutte.filter(x => x.id !== b.id));
+    scriviRic('pit-ric-pref', preferiteRic().filter(x => x !== b.id));
+    UI.ricBozza = null;
+    mostraToast('Ricetta eliminata.', () => { scriviRic('pit-ric-mie', JSON.parse(prima)); render(); });
+    vai('ricettario');
+  }
 });
-document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.ricerca) { UI.ric.q = e.target.value; render(); } });

@@ -1,155 +1,76 @@
-/* Ricettario di Monica (C55, docs/SPEC-RICETTARIO.md): solo per chi gestisce, mai per i clienti.
-   Ricette scritte da Claude da zero, parole semplici (niente testi copiati da altri siti).
-   Dosi per le porzioni indicate; q = quantità (null = «q.b.», quanto basta), u = unità.
-   passi: t = testo; min = minuti per il timer della cucina guidata; disegno = figura del passo. */
-const RICETTE = [
-  {
-    id: 'zuppa-gallurese', nome: 'Zuppa gallurese (suppa cuata)', zona: 'gallura', regione: 'Gallura',
-    categoria: 'primi', difficolta: 2, prep: 30, cottura: 60, porzioni: 6,
-    intro: 'Il piatto delle feste in Gallura: strati di pane, formaggio e brodo, cotti al forno finché sopra fa la crosticina. Non è una zuppa da cucchiaio: si taglia a quadrotti.',
-    ingredienti: [
-      { q: 600, u: 'g', nome: 'pane raffermo', nota: 'meglio di semola, a fette di 1 cm' },
-      { q: 2, u: 'l', nome: 'brodo di carne', nota: 'di pecora o misto manzo e pollo, ben saporito' },
-      { q: 400, u: 'g', nome: 'formaggio vaccino fresco', nota: 'tipo fresa o casizolu, a fettine' },
-      { q: 150, u: 'g', nome: 'pecorino sardo stagionato', nota: 'grattugiato' },
-      { q: 1, u: 'mazzetto', nome: 'prezzemolo', nota: 'tritato' },
-      { q: 1, u: 'cucchiaino', nome: 'cannella in polvere', nota: 'facoltativa, si usa in molti paesi' },
-      { q: 1, u: 'pizzico', nome: 'noce moscata' },
-      { q: 30, u: 'g', nome: 'burro', nota: 'per la teglia' }
-    ],
-    passi: [
-      { t: 'Accendi il forno a 180 gradi. Imburra bene una teglia alta.', disegno: 'forno' },
-      { t: 'Scalda il brodo: deve essere caldo ma non bollente.', disegno: 'pentola' },
-      { t: 'Fai un primo strato di fette di pane sul fondo della teglia.', disegno: 'teglia' },
-      { t: 'Copri il pane con fettine di formaggio fresco, una manciata di pecorino, un po\' di prezzemolo e, se ti piace, un velo di cannella.', disegno: 'teglia' },
-      { t: 'Ripeti gli strati (pane, formaggio, pecorino, prezzemolo) fino a 2 cm dal bordo. L\'ultimo strato è di formaggio.', disegno: 'teglia' },
-      { t: 'Versa il brodo piano piano, un mestolo alla volta, finché il pane è inzuppato e il brodo arriva quasi in cima. Aspetta 5 minuti che il pane beva.', min: 5, disegno: 'mestolo' },
-      { t: 'Inforna per circa 50 minuti, finché sopra è dorato e croccante. Se si asciuga troppo, aggiungi un mestolo di brodo ai bordi.', min: 50, disegno: 'forno' },
-      { t: 'Lasciala riposare 10 minuti fuori dal forno, poi tagliala a quadrotti.', min: 10, disegno: 'coltello' }
-    ],
-    consigli: ['Il pane deve essere secco di almeno due giorni, sennò diventa una pappa.', 'Il segreto è il brodo: assaggialo, deve essere saporito già da solo.'],
-    conserva: 'In frigo 2 giorni, coperta. Si scalda in forno con un goccio di brodo.',
-    allergeni: ['glutine', 'latte', 'sedano (nel brodo)'],
-    foto: null
-  },
-  {
-    id: 'chjusoni', nome: 'Chjusoni al sugo di salsiccia', zona: 'gallura', regione: 'Gallura',
-    categoria: 'primi', difficolta: 2, prep: 60, cottura: 60, porzioni: 6,
-    intro: 'Gnocchetti di semola fatti a mano, tipici della Gallura (a volte si chiamano ciciones). Col sugo di salsiccia sono il pranzo della domenica.',
-    ingredienti: [
-      { q: 500, u: 'g', nome: 'semola di grano duro rimacinata' },
-      { q: 250, u: 'ml', nome: 'acqua tiepida', nota: 'più o meno, quanta ne prende' },
-      { q: 1, u: 'pizzico', nome: 'sale' },
-      { q: 1, u: 'bustina', nome: 'zafferano', nota: 'facoltativo, sciolto nell\'acqua' },
-      { q: 400, u: 'g', nome: 'salsiccia fresca' },
-      { q: 700, u: 'g', nome: 'passata di pomodoro' },
-      { q: 1, u: '', nome: 'cipolla piccola' },
-      { q: 3, u: 'cucchiai', nome: 'olio extravergine d\'oliva' },
-      { q: 80, u: 'g', nome: 'pecorino sardo grattugiato' },
-      { q: null, u: '', nome: 'sale e basilico', nota: 'quanto basta' }
-    ],
-    passi: [
-      { t: 'Metti la semola in una ciotola con il sale. Aggiungi l\'acqua tiepida (con lo zafferano, se lo usi) poco alla volta, impastando.', disegno: 'impastare' },
-      { t: 'Impasta almeno 10 minuti, finché la pasta è liscia e soda. Coprila e lasciala riposare 30 minuti.', min: 30, disegno: 'impastare' },
-      { t: 'Intanto il sugo: trita la cipolla e falla appassire nell\'olio a fuoco basso.', min: 5, disegno: 'padella' },
-      { t: 'Togli la pelle alla salsiccia, sbriciolala nella pentola e falla rosolare finché non è più rosa.', min: 8, disegno: 'padella' },
-      { t: 'Aggiungi la passata, un pizzico di sale e qualche foglia di basilico. Cuoci a fuoco basso con il coperchio socchiuso.', min: 45, disegno: 'pentola' },
-      { t: 'Taglia un pezzo di pasta e fai un cordoncino grosso come un dito. Tagliane pezzetti di 1 cm.', disegno: 'coltello' },
-      { t: 'Schiaccia ogni pezzetto col pollice sul tagliere (o sul cestino di vimini) trascinandolo: si arrotola e fa le righe. Mettili su un vassoio infarinato.', disegno: 'impastare' },
-      { t: 'Cuoci i chjusoni in tanta acqua salata che bolle: quando vengono a galla, contane ancora 3-4 minuti e assaggia.', min: 4, disegno: 'pentola' },
-      { t: 'Scolali, condiscili col sugo e tanto pecorino.', disegno: 'mestolo' }
-    ],
-    consigli: ['Si possono fare il giorno prima e lasciare asciugare su un telo infarinato.', 'Si congelano crudi, sparsi sul vassoio; poi si buttano ancora congelati nell\'acqua.'],
-    conserva: 'Crudi: 1 giorno all\'aria o 2 mesi in freezer. Cotti e conditi: 2 giorni in frigo.',
-    allergeni: ['glutine', 'latte'],
-    foto: null
-  },
-  {
-    id: 'culurgiones', nome: 'Culurgiones di patate e menta', zona: 'sarda', regione: 'Ogliastra',
-    categoria: 'primi', difficolta: 3, prep: 90, cottura: 10, porzioni: 6,
-    intro: 'Ravioli dell\'Ogliastra ripieni di patate, pecorino e menta, chiusi «a spiga». Ci vuole pazienza, ma sono il piatto che fa dire «wow».',
-    ingredienti: [
-      { q: 500, u: 'g', nome: 'semola di grano duro rimacinata', nota: 'per la pasta' },
-      { q: 250, u: 'ml', nome: 'acqua tiepida' },
-      { q: 1, u: 'cucchiaio', nome: 'olio extravergine d\'oliva', nota: 'per la pasta' },
-      { q: 1, u: 'kg', nome: 'patate a pasta gialla' },
-      { q: 200, u: 'g', nome: 'pecorino sardo', nota: 'metà fresco e metà stagionato, grattugiato' },
-      { q: 1, u: 'mazzetto', nome: 'menta fresca' },
-      { q: 2, u: 'spicchi', nome: 'aglio' },
-      { q: 4, u: 'cucchiai', nome: 'olio extravergine d\'oliva', nota: 'per il ripieno' },
-      { q: 700, u: 'g', nome: 'passata di pomodoro', nota: 'per il sugo semplice' },
-      { q: null, u: '', nome: 'sale', nota: 'quanto basta' }
-    ],
-    passi: [
-      { t: 'Lessa le patate con la buccia in acqua salata finché la forchetta entra facile.', min: 35, disegno: 'pentola' },
-      { t: 'Intanto impasta semola, acqua, olio e un pizzico di sale per 10 minuti. Copri la pasta e lasciala riposare.', min: 30, disegno: 'impastare' },
-      { t: 'Scalda l\'olio con l\'aglio schiacciato per 2 minuti, poi togli l\'aglio: questo olio profumato va nel ripieno.', min: 2, disegno: 'padella' },
-      { t: 'Sbuccia le patate ancora calde e schiacciale. Aggiungi pecorino, olio all\'aglio e la menta tritata fine. Assaggia: deve essere saporito. Fai raffreddare.', disegno: 'ciotola' },
-      { t: 'Fai palline di ripieno grandi come una noce.', disegno: 'ciotola' },
-      { t: 'Stendi la pasta sottile (circa 2 mm) e ritaglia dischi di 8-9 cm con un bicchiere.', disegno: 'mattarello' },
-      { t: 'Metti una pallina al centro del disco e tienilo nella mano. Piega i bordi in alto e chiudi pizzicando prima un lato e poi l\'altro, a zig zag, dal basso verso la punta: viene la spiga. Chiudi bene la punta.', disegno: 'impastare' },
-      { t: 'Prepara un sugo semplice: passata, un filo d\'olio e sale, 20 minuti a fuoco basso.', min: 20, disegno: 'pentola' },
-      { t: 'Cuoci i culurgiones in acqua salata a bollore leggero (se bolle forte si aprono): 6-7 minuti da quando salgono a galla.', min: 7, disegno: 'pentola' },
-      { t: 'Scolali con la schiumarola, condisci con il sugo e pecorino.', disegno: 'mestolo' }
-    ],
-    consigli: ['La spiga all\'inizio viene storta: va bene lo stesso, l\'importante è che sia chiusa bene.', 'Si congelano crudi su un vassoio infarinato, poi in sacchetto.'],
-    conserva: 'Crudi: 2 mesi in freezer (si cuociono congelati, 2 minuti in più). Cotti: 1 giorno in frigo.',
-    allergeni: ['glutine', 'latte'],
-    foto: null
-  },
-  {
-    id: 'seadas', nome: 'Seadas (sebadas) con miele', zona: 'sarda', regione: 'Sardegna',
-    categoria: 'dolci', difficolta: 2, prep: 60, cottura: 15, porzioni: 8,
-    intro: 'Grandi ravioli di pasta col formaggio fresco e la scorza di limone, fritti e coperti di miele caldo. Dolce e salato insieme.',
-    ingredienti: [
-      { q: 500, u: 'g', nome: 'semola di grano duro rimacinata' },
-      { q: 50, u: 'g', nome: 'strutto', nota: 'o burro morbido' },
-      { q: 220, u: 'ml', nome: 'acqua tiepida' },
-      { q: 1, u: 'pizzico', nome: 'sale' },
-      { q: 600, u: 'g', nome: 'formaggio vaccino fresco acidulo', nota: 'tipo casizolu o fresa, un po\' asciutto' },
-      { q: 2, u: '', nome: 'limoni non trattati', nota: 'solo la scorza grattugiata' },
-      { q: 150, u: 'g', nome: 'miele', nota: 'meglio di corbezzolo o millefiori sardo' },
-      { q: 1, u: 'l', nome: 'olio di semi di arachide', nota: 'per friggere' }
-    ],
-    passi: [
-      { t: 'Grattugia il formaggio con la grattugia a fori grossi (o taglialo a pezzetti) e mescolalo con la scorza di limone.', disegno: 'ciotola' },
-      { t: 'Scalda il formaggio in un pentolino a fuoco basso mescolando, finché diventa una pasta filante. Stendila su carta forno alta 1 cm e falla raffreddare.', min: 5, disegno: 'padella' },
-      { t: 'Impasta semola, strutto, sale e acqua per 10 minuti. Copri e lascia riposare.', min: 30, disegno: 'impastare' },
-      { t: 'Ritaglia dal formaggio freddo dischi di 7-8 cm.', disegno: 'coltello' },
-      { t: 'Stendi la pasta sottile (2 mm). Metti un disco di formaggio, copri con altra pasta e premi bene tutto intorno per far uscire l\'aria.', disegno: 'mattarello' },
-      { t: 'Ritaglia con un bicchiere grande o una rotella, lasciando 1 cm di bordo. Chiudi bene i bordi con la forchetta.', disegno: 'coltello' },
-      { t: 'Scalda l\'olio in padella alta (è pronto quando un pezzetto di pasta frigge subito). Friggi una o due seadas alla volta, 2 minuti per lato, finché sono dorate.', min: 4, disegno: 'friggere' },
-      { t: 'Scolale su carta assorbente. Scalda il miele 1 minuto e versalo sopra. Si mangiano calde.', disegno: 'mestolo' }
-    ],
-    consigli: ['Se il formaggio è troppo umido le seadas si aprono in frittura: lascialo scolare qualche ora.', 'Crude si congelano benissimo, divise da carta forno.'],
-    conserva: 'Crude: 2 mesi in freezer, si friggono congelate a fuoco un po\' più basso. Fritte: vanno mangiate subito.',
-    allergeni: ['glutine', 'latte'],
-    foto: null
-  },
-  {
-    id: 'malloreddus', nome: 'Malloreddus alla campidanese', zona: 'sarda', regione: 'Campidano',
-    categoria: 'primi', difficolta: 1, prep: 15, cottura: 45, porzioni: 4,
-    intro: 'Gnocchetti sardi con sugo di salsiccia, zafferano e pecorino. Facile e sempre amato: con i malloreddus già pronti si fa in meno di un\'ora.',
-    ingredienti: [
-      { q: 400, u: 'g', nome: 'malloreddus', nota: 'gnocchetti sardi secchi' },
-      { q: 300, u: 'g', nome: 'salsiccia fresca', nota: 'meglio sarda, al finocchietto' },
-      { q: 500, u: 'g', nome: 'passata di pomodoro' },
-      { q: 1, u: '', nome: 'cipolla piccola' },
-      { q: 1, u: 'bustina', nome: 'zafferano' },
-      { q: 3, u: 'cucchiai', nome: 'olio extravergine d\'oliva' },
-      { q: 80, u: 'g', nome: 'pecorino sardo grattugiato' },
-      { q: null, u: '', nome: 'sale e basilico', nota: 'quanto basta' }
-    ],
-    passi: [
-      { t: 'Trita la cipolla e falla appassire nell\'olio a fuoco basso.', min: 5, disegno: 'padella' },
-      { t: 'Aggiungi la salsiccia sbriciolata senza pelle e falla rosolare bene.', min: 8, disegno: 'padella' },
-      { t: 'Versa la passata, lo zafferano sciolto in un cucchiaio d\'acqua calda, sale e basilico. Cuoci a fuoco basso.', min: 30, disegno: 'pentola' },
-      { t: 'Cuoci i malloreddus in tanta acqua salata per il tempo scritto sulla confezione. Assaggia prima di scolare.', min: 12, disegno: 'pentola' },
-      { t: 'Scolali, mescolali nel sugo per un minuto e servi con tanto pecorino.', disegno: 'mestolo' }
-    ],
-    consigli: ['Il sugo è più buono il giorno dopo: si può preparare prima.'],
-    conserva: 'Sugo: 3 giorni in frigo o 3 mesi in freezer. Pasta condita: 2 giorni in frigo.',
-    allergeni: ['glutine', 'latte'],
-    foto: null
-  }
-];
+/* Ricettario (C55): elenco scelto di ricette di GialloZafferano, SOLO nome, indirizzo e foto di copertina.
+   Testi, foto dei passaggi e video NON sono qui: l'app li legge dal vivo (/api/gz in worker.js, gz.mjs) quando Monica apre la ricetta.
+   Si scarica solo per chi gestisce (ricettario.js). Ogni riga: [pagina, nome, zona, portata, foto] →
+   https://ricette.giallozafferano.it/<pagina>.html e https://www.giallozafferano.it/images/<foto>.
+   Altre ricette: Monica le cerca dall'app su tutto GialloZafferano, senza toccare questo file. */
+const RICETTE_GZ = [
+  ["Zuppa-gallurese", "Zuppa gallurese", "gallura", "primi", "201-20129/Zuppa-gallurese_360x300.jpg"],
+  ["Ravioli-di-ricotta-sardi", "Ravioli di ricotta sardi", "gallura", "primi", "221-22136/Ravioli-di-ricotta-sardi_360x300.jpg"],
+  ["Spezzatino-di-agnello-con-carciofi", "Spezzatino di agnello con carciofi", "sarda", "secondi", "360-36004/Spezzatino-di-agnello-con-carciofi_360x300.jpg"],
+  ["Sformatini-di-pane-guttiau-al-vino-rosso-e-mele", "Sformatini di pane guttiau al vino rosso e mele", "sarda", "antipasti", "201-20111/Sformatini-di-pane-guttiau-al-vino-rosso-e-mele_360x300.jpg"],
+  ["Seadas-sebadas", "Seadas (sebadas)", "gallura", "dolci", "165-16503/Seadas-sebadas_360x300.jpg"],
+  ["Fregola-con-arselle", "Fregola con arselle", "sarda", "primi", "214-21415/Fregola-con-arselle_360x300.jpg"],
+  ["Culurgionis-d-Ogliastra", "Culurgionis ogliastrini", "sarda", "primi", "241-24102/Culurgionis-d-Ogliastra_360x300.jpg"],
+  ["Malloreddus-alla-campidanese", "Malloreddus alla campidanese", "sarda", "primi", "22-2223/Malloreddus-alla-campidanese_360x300.jpg"],
+  ["Panada", "Panada", "sarda", "secondi", "26-2651/Panada_360x300.jpg"],
+  ["Pardulas", "Pardulas", "sarda", "dolci", "184-18487/Pardulas_360x300.jpg"],
+  ["Spaghetti-con-la-bottarga", "Spaghetti con la bottarga", "sarda", "primi", "169-16901/Spaghetti-con-la-bottarga_360x300.jpg"],
+  ["Lorighittas-con-melanzane-e-funghi", "Lorighittas con melanzane e funghi", "sarda", "primi", "25-2535/Lorighittas-con-melanzane-e-funghi_360x300.jpg"],
+  ["Gnocchetti-sardi-alla-contadina", "Gnocchetti sardi alla contadina", "sarda", "primi", "7-702/Gnocchetti-sardi-alla-contadina_360x300.jpg"],
+  ["Lasagne-di-pane-carasau", "Lasagne di pane carasau", "sarda", "primi", "21-2179/Lasagne-di-pane-carasau_360x300.jpg"],
+  ["Is-coccois-prenas", "Is coccois prenas", "sarda", "antipasti", "240-24054/Is-coccois-prenas_360x300.jpg"],
+  ["Zeppole-sarde", "Zeppole sarde", "sarda", "dolci", "164-16442/Zeppole-sarde_360x300.jpg"],
+  ["Pane-di-semola", "Pane di semola", "sarda", "pane", "233-23307/Pane-di-semola_360x300.jpg"],
+  ["Calamari-ripieni", "Calamari ripieni", "italiana", "secondi", "178-17865/Calamari-ripieni_360x300.jpg"],
+  ["Zuppa-di-cozze-alla-napoletana", "Zuppa di cozze alla napoletana", "italiana", "primi", "4-457/Zuppa-di-cozze-alla-napoletana_360x300.jpg"],
+  ["Lasagne-alla-Bolognese", "Lasagne alla bolognese", "italiana", "primi", "229-22941/Lasagne-alla-Bolognese_360x300.jpg"],
+  ["Spaghetti-alla-Carbonara", "Spaghetti alla Carbonara", "italiana", "primi", "244-24489/Spaghetti-alla-Carbonara_360x300.jpg"],
+  ["Ragu-alla-bolognese", "Ragù alla bolognese", "italiana", "altro", "229-22935/Ragu-alla-bolognese_360x300.jpg"],
+  ["Parmigiana-di-melanzane", "Parmigiana di melanzane", "italiana", "secondi", "234-23446/Parmigiana-di-melanzane_360x300.jpg"],
+  ["Risotto-alla-milanese", "Risotto alla milanese", "italiana", "primi", "241-24148/Risotto-alla-milanese_360x300.jpg"],
+  ["Tiramisu", "Tiramisù", "italiana", "dolci", "237-23742/Tiramisu_360x300.jpg"],
+  ["Pizza-Margherita", "Pizza Margherita", "italiana", "pane", "238-23809/Pizza-Margherita_360x300.jpg"],
+  ["Gnocchi-di-patate", "Gnocchi di patate", "italiana", "primi", "229-22944/Gnocchi-di-patate_360x300.jpg"],
+  ["Pesto-alla-Genovese", "Pesto alla Genovese", "italiana", "altro", "234-23498/Pesto-alla-Genovese_360x300.jpg"],
+  ["Cotoletta-alla-milanese-della-nonna", "Cotoletta alla milanese della nonna", "italiana", "secondi", "265-26509/Cotoletta-alla-milanese-della-nonna_360x300.jpg"],
+  ["Ossibuchi-alla-milanese", "Ossobuco alla milanese", "italiana", "secondi", "182-18239/Ossibuchi-alla-milanese_360x300.jpg"],
+  ["Vitello-tonnato", "Vitello tonnato", "italiana", "antipasti", "176-17697/Vitello-tonnato_360x300.jpg"],
+  ["Pollo-alla-cacciatora", "Pollo alla cacciatora", "italiana", "secondi", "181-18189/Pollo-alla-cacciatora_360x300.jpg"],
+  ["Polpette-al-sugo", "Polpette al sugo", "italiana", "secondi", "241-24154/Polpette-al-sugo_360x300.jpg"],
+  ["Peperonata", "Peperonata", "italiana", "contorni", "197-19753/Peperonata_360x300.jpg"],
+  ["Caponata", "Caponata", "italiana", "contorni", "196-19625/Caponata_360x300.jpg"],
+  ["Arancini-di-riso", "Arancini di riso", "italiana", "antipasti", "2-247/Arancini-di-riso_360x300.jpg"],
+  ["Panna-cotta", "Panna cotta", "italiana", "dolci", "236-23600/Panna-cotta_360x300.jpg"],
+  ["Crostata-di-marmellata", "Crostata di marmellata", "italiana", "dolci", "303-30384/Crostata-di-marmellata_360x300.jpg"],
+  ["Ciambellone", "Ciambellone", "italiana", "dolci", "196-19643/Ciambellone_360x300.jpg"],
+  ["Focaccia-fugassa-alla-genovese", "Focaccia (fügassa) alla genovese", "italiana", "pane", "224-22468/Focaccia-fugassa-alla-genovese_360x300.jpg"],
+  ["Pasta-e-fagioli", "Pasta e fagioli", "italiana", "primi", "239-23941/Pasta-e-fagioli_360x300.jpg"],
+  ["Minestrone-di-verdure", "Minestrone di verdure", "italiana", "primi", "239-23945/Minestrone-di-verdure_360x300.jpg"],
+  ["Cannelloni", "Cannelloni", "italiana", "primi", "239-23939/Cannelloni_360x300.jpg"],
+  ["Spaghetti-Cacio-e-Pepe", "Spaghetti Cacio e Pepe", "italiana", "primi", "219-21989/Spaghetti-Cacio-e-Pepe_360x300.jpg"],
+  ["Spaghetti-alle-vongole", "Spaghetti alle vongole", "italiana", "primi", "242-24236/Spaghetti-alle-vongole_360x300.jpg"],
+  ["Insalata-di-riso-classica", "Insalata di riso", "italiana", "primi", "179-17969/Insalata-di-riso-classica_360x300.jpg"],
+  ["Zucchine-ripiene", "Zucchine ripiene al forno", "italiana", "secondi", "234-23479/Zucchine-ripiene_360x300.jpg"],
+  ["Torta-rustica-di-mele", "Torta di mele", "italiana", "dolci", "218-21879/Torta-rustica-di-mele_360x300.jpg"],
+  ["Pastiera-napoletana", "Pastiera napoletana", "italiana", "dolci", "232-23207/Pastiera-napoletana_360x300.jpg"],
+  ["Cannoli-siciliani", "Cannoli siciliani", "italiana", "dolci", "206-20605/Cannoli-siciliani_360x300.jpg"],
+  ["Pasta-al-forno", "Pasta al forno", "italiana", "primi", "240-24064/Pasta-al-forno_360x300.jpg"],
+  ["Lasagne-vegetariane", "Lasagne vegetariane", "italiana", "primi", "11-1180/Lasagne-vegetariane_360x300.jpg"],
+  ["Frittata-di-zucchine", "Frittata di zucchine", "italiana", "secondi", "158-15894/Frittata-di-zucchine_360x300.jpg"],
+  ["Arrosto-in-padella", "Arrosto di vitello in padella", "italiana", "secondi", "258-25876/Arrosto-in-padella_360x300.jpg"],
+  ["Scaloppine-al-limone", "Scaloppine al limone", "italiana", "secondi", "244-24445/Scaloppine-al-limone_360x300.jpg"],
+  ["Spaghetti-alla-Norma", "Pasta alla Norma", "italiana", "primi", "235-23564/Spaghetti-alla-Norma_360x300.jpg"],
+  ["Orecchiette-con-le-cime-di-rapa", "Orecchiette con le cime di rapa", "italiana", "primi", "170-17094/Orecchiette-con-le-cime-di-rapa_360x300.jpg"],
+  ["Torta-paradiso", "Torta paradiso", "italiana", "dolci", "178-17873/Torta-paradiso_360x300.jpg"],
+  ["Pollo-al-forno-con-patate-e-cipolle", "Pollo al forno con patate e cipolle", "italiana", "secondi", "258-25824/Pollo-al-forno-con-patate-e-cipolle_360x300.jpg"],
+  ["Patate-al-forno", "Patate al forno", "italiana", "contorni", "242-24202/Patate-al-forno_360x300.jpg"],
+  ["Melanzane-ripiene", "Melanzane ripiene", "italiana", "secondi", "235-23593/Melanzane-ripiene_360x300.jpg"],
+  ["Astice-alla-Catalana", "Astice alla Catalana", "sarda", "secondi", "6-648/Astice-alla-Catalana_360x300.jpg"],
+  ["Papassini-sardi", "Papassini sardi", "sarda", "dolci", "218-21871/Papassini-sardi_360x300.jpg"],
+  ["Linguine-con-bottarga-e-arselle", "Linguine con bottarga e arselle", "sarda", "primi", "21-2115/Linguine-con-bottarga-e-arselle_360x300.jpg"],
+  ["Fregola-con-vongole-e-bottarga", "Fregola con vongole e bottarga", "sarda", "primi", "277-27737/Fregola-con-vongole-e-bottarga_360x300.jpg"],
+  ["Malloreddus-al-Pecorino", "Malloreddus al Pecorino", "sarda", "primi", "0-8/Malloreddus-al-Pecorino_360x300.jpg"],
+  ["Liquore-di-mirto", "Liquore di mirto", "sarda", "altro", "ricette/placeholder/hd360x300.jpg"],
+  ["Schiacciate-con-pecorino-sardo-e-miele", "Schiacciate con pecorino sardo e miele", "sarda", "antipasti", "17-1777/Schiacciate-con-pecorino-sardo-e-miele_360x300.jpg"],
+  ["Agnello-al-forno-con-patate", "Agnello al forno con patate", "italiana", "secondi", "175-17588/Agnello-al-forno-con-patate_360x300.jpg"]
+].map(([pagina, nome, zona, categoria, foto]) => ({ id: 'gz:' + pagina, pagina, nome, zona, categoria, foto: 'https://www.giallozafferano.it/images/' + foto }));

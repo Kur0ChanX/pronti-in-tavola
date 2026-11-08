@@ -15,11 +15,13 @@
    - POST /api/visto-qui → chi gestisce ha visto «sono qui»: la notifica smette di risuonare (C51)
    - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
+   - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano letta dal vivo (gz.mjs), { cerca } la ricerca (C55)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
+import { gzRicetta, gzCerca, gzVideo, urlGz, UA_GZ } from './gz.mjs';
 
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
@@ -159,6 +161,31 @@ async function chiediAI(env, testo, dati, storia, foto, cliente) {
   const j = jsonDa(testoDi(r));
   if (!j) return { testo: 'Non ho capito bene: me lo ridici?', azioni: [], grezzo: testoDi(r).slice(0, 300), modello };
   return Object.assign(j, { modello });
+}
+
+/* GialloZafferano dal vivo (C55): pagina letta al momento, tenuta 1 giorno nella cache di Cloudflare (meno richieste al loro sito) */
+async function paginaGz(u) {
+  const cache = caches.default, chiave = new Request('https://cache.pronti/gz?' + encodeURIComponent(u));
+  const c = await cache.match(chiave);
+  if (c) return c.text();
+  const r = await fetch(u, { headers: { 'user-agent': UA_GZ, 'accept-language': 'it-IT,it' } });
+  if (!r.ok) throw new Error('GialloZafferano risponde ' + r.status);
+  const t = await r.text();
+  await cache.put(chiave, new Response(t, { headers: { 'cache-control': 'max-age=86400' } }));
+  return t;
+}
+async function ricettaGz(b) {
+  if (b && typeof b.cerca === 'string') {
+    const q = b.cerca.trim().toLowerCase().replace(/[^\p{L}\p{N} '-]/gu, '').slice(0, 60);
+    if (q.length < 2) return { ricette: [] };
+    return { ricette: gzCerca(await paginaGz(`https://www.giallozafferano.it/ricerca-ricette/${encodeURIComponent(q).replace(/%20/g, "+")}/`)) };
+  }
+  const u = urlGz(b && b.u);
+  if (!u) return { errore: 'indirizzo non valido' };
+  const r = gzRicetta(await paginaGz(u), u);
+  if (!r) return { errore: 'ricetta non trovata nella pagina' };
+  if (r.videoChiave) { try { Object.assign(r, gzVideo(await paginaGz('https://ptp.stbm.it/v/' + r.videoChiave))); } catch (e) { /* senza video: resta la ricetta */ } }
+  return { ricetta: r };
 }
 
 /* chi gestisce? Firestore legge gestori/<uid> col token di Google della persona: se risponde 200, è un gestore */
@@ -377,6 +404,7 @@ export default {
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
+      if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b).catch(e => ({ errore: String(e.message || e) })); return json(r, r.errore ? 502 : 200); }
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/prova-ai') return json(await provaAI(env));
       if (url.pathname === '/api/visto-qui') return json(await av.vistoQui());
