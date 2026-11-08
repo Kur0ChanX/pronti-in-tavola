@@ -8,6 +8,8 @@
    - POST /api/cliente  → il cliente approvato iscrive il suo telefono per «il tuo ordine è pronto» (token anonimo, controllo utenti/<uid>)
    - POST /api/pronto   → chi gestisce avvisa un cliente: { cliente, tipo: 'pronto' | 'proposta' }
    - POST /api/qui      → il cliente approvato dice «sono qui sotto» per il ritiro: a chi gestisce suona «<nome> è qui» (Mario 07/11)
+   - POST /api/aiutante → chi gestisce scrive o detta una frase: l'AI gratuita di Cloudflare (Workers AI) propone UNA azione in JSON;
+                          l'app la mostra e la fa solo dopo «Sì, fallo» (Mario 08/11). Tetto: 150 richieste al giorno.
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -23,6 +25,37 @@ const PAUSA_MS = 15 * 1000;     // e non più di uno ogni 15 secondi
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const daB64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
 const json = (dati, stato = 200) => new Response(JSON.stringify(dati), { status: stato, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
+
+/* aiutante di Monica (Mario 08/11 «la miglior IA gratuita… iniziami l'assistente per Monica»): Workers AI, piano gratuito */
+const MODELLO_AI = '@cf/zai-org/glm-4.7-flash';
+const TETTO_AI = 150;   // richieste al giorno, ben sotto i 10.000 «neuroni» gratuiti
+const ISTRUZIONI_AI = `Sei l'aiutante di cucina di Monica, che cucina da asporto a Olbia e usa l'app «Pronti in Tavola».
+Monica ti scrive o ti detta UNA frase in italiano (a volte con errori di dettatura). Ricevi anche i DATI attuali dell'app in JSON.
+Rispondi SOLO con un oggetto JSON, senza altro testo, con UNA di queste azioni:
+{"azione":"pronto","n":<numero ordine>} = l'ordine è pronto (avvisa il cliente)
+{"azione":"ritirato","n":<numero ordine>} = il cliente l'ha ritirato
+{"azione":"soldi","n":<numero ordine>} = ha ricevuto i soldi di quell'ordine
+{"azione":"disponibile","id":"<id piatto>","si":true|false} = rimettere o togliere un piatto dal menù
+{"azione":"prezzo","id":"<id piatto>","formato":"<id formato>","prezzo":<euro>} = cambiare un prezzo
+{"azione":"spesa","voci":["2 kg farina","ricotta"]} = aggiungere cose alla lista della spesa
+{"azione":"rispondi","testo":"..."} = rispondere a una domanda usando SOLO i DATI (ordini, cosa cucinare, incassi, piatti)
+{"azione":"capito_male","testo":"..."} = non hai capito: chiedi in breve di ripetere
+Regole: un ordine si riconosce dal numero o dal nome del cliente; se ci sono più ordini possibili o manca un dato, usa "capito_male" e chiedi quale.
+Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 2 frasi.`;
+function jsonDa(t) {   // il primo oggetto JSON nel testo (toglie eventuali <think>…</think> e ```)
+  t = String(t || '').replace(/<think>[\s\S]*?<\/think>/g, '').replace(/```(json)?/g, '');
+  const a = t.indexOf('{'); if (a < 0) return null;
+  for (let b = t.lastIndexOf('}'); b > a; b = t.lastIndexOf('}', b - 1)) { try { return JSON.parse(t.slice(a, b + 1)); } catch (e) { /* prova più corto */ } }
+  return null;
+}
+async function chiediAI(env, testo, dati) {
+  const r = await env.AI.run(MODELLO_AI, {
+    messages: [{ role: 'system', content: ISTRUZIONI_AI }, { role: 'user', content: `DATI: ${dati}\n\nFRASE DI MONICA: ${testo}` }],
+    max_completion_tokens: 1200, temperature: 0.2
+  });
+  const testoAI = typeof r === 'string' ? r : (r && (r.response ?? (r.choices && r.choices[0] && r.choices[0].message && r.choices[0].message.content))) || '';
+  return jsonDa(typeof testoAI === 'string' ? testoAI : JSON.stringify(testoAI)) || { azione: 'capito_male', testo: 'Non ho capito bene: me lo ridici?', grezzo: JSON.stringify(r).slice(0, 300) };
+}
 
 /* chi gestisce? Firestore legge gestori/<uid> col token di Google della persona: se risponde 200, è un gestore */
 async function gestoreDa(req) {
@@ -146,6 +179,14 @@ export class Avvisi extends DurableObject {
     return this.manda(null, 'qui', null, { nome, n, prova: !!(b && b.prova) });
   }
 
+  /* aiutante: quante richieste oggi (tetto per restare nel gratuito) */
+  async contaAI() {
+    const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('ai')) || {};
+    if (c.giorno === oggi && c.n >= TETTO_AI) return false;
+    await this.ctx.storage.put('ai', { giorno: oggi, n: (c.giorno === oggi ? c.n : 0) + 1 });
+    return true;
+  }
+
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
   async avvisa(tipo) {
     const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('conto')) || {};
@@ -189,6 +230,15 @@ export default {
         const b = await req.json().catch(() => null), c = b && b.cliente;
         if (typeof c !== 'string' || !/^[\w-]{1,80}$/.test(c)) return json({ errore: 'cliente non valido' }, 400);
         return json(await av.manda(null, b.tipo === 'proposta' ? 'proposta' : 'pronto', c));
+      }
+      if (url.pathname === '/api/aiutante') {
+        const b = await req.json().catch(() => null);
+        const testo = String((b && b.testo) || '').trim().slice(0, 400), dati = JSON.stringify((b && b.dati) || {});
+        if (!testo) return json({ errore: 'frase vuota' }, 400);
+        if (dati.length > 60000) return json({ errore: 'dati troppo grandi' }, 413);
+        if (!env.AI) return json({ errore: 'AI non collegata' }, 503);
+        if (!(await av.contaAI())) return json({ fermo: 'tetto', azione: 'rispondi', testo: 'Per oggi ho finito le risposte gratuite: riprova domani.' });
+        return json(await chiediAI(env, testo, dati));
       }
       if (url.pathname === '/api/agenda') return (await av.agenda(await req.json().catch(() => null))) ? json({ ok: true }) : json({ errore: 'agenda non valida' }, 400);
       return json({ errore: 'non trovato' }, 404);
