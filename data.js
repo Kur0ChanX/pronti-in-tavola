@@ -188,6 +188,10 @@ const VERSIONE_APP = '0.9.57';
 const NOVITA = [
   { v: '0.9.57', data: '08/11/2026',
     corretto: ['Clienti con iPhone e un browser diverso da Safari (Chrome, Google…): i passi giusti per mettere l\'app sul telefono', 'Primi passi: scritto chiaro che per ordinare non serve installare l\'app'] },
+  { v: '0.9.56', data: '08/11/2026',
+    nuovo: ['Aiutante di Monica: «come cambio la foto della parmigiana?» → ti porta dritta lì, apre la voce giusta e ti dice cosa toccare (funziona anche senza internet)', 'Se una cosa non si può ancora cambiare dall\'app, l\'aiutante prepara il messaggio WhatsApp per Mario con tutti i dettagli'] },
+  { v: '0.9.55', data: '08/11/2026',
+    nuovo: ['Panade: le dosi si scrivono per un impasto da 12 pezzi (il numero si cambia nella scheda del piatto), la lista della spesa fa i conti da sola'] },
   { v: '0.9.54', data: '08/11/2026',
     corretto: ['Ricettario: entrando dalla Home parti sempre dall\'alto, con le ricette; il punto di prima torna solo con «Indietro» da una ricetta'] },
   { v: '0.9.53', data: '08/11/2026',

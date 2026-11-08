@@ -59,6 +59,9 @@ const GIORNI_SPESA = [[0, 'Oggi'], [1, 'Fino a domani'], [2, '3 giorni'], [6, 'U
 const fineSpesa = () => SPESA.giorni < 0 ? '9999-12-31' : piuGiorni(oggi(), SPESA.giorni);
 const finoA = fino => fino === '9999-12-31' ? 'tutti gli ordini' : `fino a ${giornoLungo(fino)}`;
 const BASI = { teglia: '1 porzione', kg: '1 kg', pz: '1 pezzo', intera: '1 torta intera' };
+/* piatti a pezzi (Mario 08/11, panade): Monica scrive le dosi per un impasto da N pezzi, l'app divide; N si cambia dalla scheda */
+const LOTTI_INIZIALI = { 'panade-carne': 12, 'panade-carciofi': 12 };
+const lottoDi = p => Math.min(200, Math.max(1, Math.round(Number((SPESA.lotti || {})[p.id] || LOTTI_INIZIALI[p.id] || 1)) || 1));
 const CHIAVE_SPESA = 'pit-spesa-v1';
 
 function spesaVuota() {
@@ -236,15 +239,17 @@ function sezioneDosi(p) {
   /* teglie (Mario 08/11): Monica scrive le dosi per la teglia piccola (da 6), quella grande la calcola l'app;
      dentro restano per 1 porzione, così lista e costi non cambiano e i dati già salvati vanno bene */
   const tt = p.formati.filter(f => f.tipo === 'teglia').map(f => f.porzioni || (f.id === 't8' ? 8 : 6)).sort((a, b) => a - b);
-  const k = tt[0] || 1, altre = tt.slice(1);
-  const base = tt.length ? `una teglia da ${k}` : BASI[baseDi(p)] || '1 porzione';
+  const aPezzi = !tt.length && baseDi(p) === 'pz';
+  const k = tt[0] || (aPezzi ? lottoDi(p) : 1), altre = tt.slice(1);
+  const base = tt.length ? `una teglia da ${k}` : aPezzi ? `${k} ${k === 1 ? 'pezzo' : 'pezzi'}` : BASI[baseDi(p)] || '1 porzione';
   const giro = n => +n.toFixed(2);
   const riga = (id, d, scope) => { const u = infoIng(id).u, v = d[id];
     const sotto = v != null && v !== '' && altre.length ? `<small class="tenue" style="display:block;font-weight:400">${altre.map(n => `teglia da ${n}: ${NUM.format(giro(v * n))} ${u}`).join(' · ')}</small>` : '';
     return `<div class="formato-riga"><b>${esc(ING(id).n)}${sotto}</b><input type="number" inputmode="decimal" min="0" step="any" data-campo="d.q" data-k="${k}" data-s="${scope}" data-ing="${id}" value="${v == null || v === '' ? '' : giro(v * k)}" placeholder="?" aria-label="${esc(ING(id).n)} in ${UNITA[u]} per ${base}"><span class="tenue">${u}</span></div>`; };
   const d = SPESA.dosi[p.id] || {};
   const gusti = p.varianti.filter(v => (v.ing || []).length);
-  return `<section class="scheda"><h2>Dosi per la lista della spesa</h2><p class="tenue" style="margin:0">Quanto ti serve per <b>${base}</b>.${altre.length ? ` Le altre teglie le calcolo io.` : ''} Solo tu le vedi.</p>
+  const lotto = aPezzi ? `<div class="formato-riga"><b>Le dosi sono per quanti pezzi?<small class="tenue" style="display:block;font-weight:400">Scrivi quanti ne fai con un impasto: il resto lo calcolo io.</small></b><input type="number" inputmode="numeric" min="1" max="200" step="1" data-campo="d.lotto" value="${k}" aria-label="Pezzi per un impasto"><span class="tenue">pz</span></div>` : '';
+  return `<section class="scheda"><h2>Dosi per la lista della spesa</h2><p class="tenue" style="margin:0">Quanto ti serve per <b>${base}</b>.${altre.length ? ` Le altre teglie le calcolo io.` : ''} Solo tu le vedi.</p>${lotto}
     ${p.ing.map(id => riga(id, d, 'base')).join('') || '<span class="tenue">Prima aggiungi gli ingredienti.</span>'}
     ${gusti.map(v => `<span class="etichetta" style="font-weight:800">In più per il gusto ${esc(v.nome)}</span>${v.ing.map(id => riga(id, SPESA.dosi[p.id + ':' + v.id] || {}, v.id)).join('')}`).join('')}
     ${costoPiatto(p)}
@@ -254,6 +259,11 @@ function sezioneDosi(p) {
 function salvaCampoSpesa(el) {
   const c = el.dataset.campo, id = el.dataset.ing;
   const num = v => Math.max(0, Number(String(v).replace(',', '.')) || 0);
+  if (c === 'd.lotto') {
+    const pid = UI.vista.split(':')[1];
+    SPESA.lotti = Object.assign({}, SPESA.lotti, { [pid]: Math.min(200, Math.max(1, Math.round(num(el.value)) || 1)) });
+    salvaSpesa(); render(); return;
+  }
   if (c === 'd.q') {
     const pid = UI.vista.split(':')[1], k = el.dataset.s === 'base' ? pid : pid + ':' + el.dataset.s;
     const d = SPESA.dosi[k] = SPESA.dosi[k] || {};

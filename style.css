@@ -818,3 +818,13 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-salta { position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; border: 0; border-radius: 999px;
   padding: 12px 18px; font: inherit; font-weight: 700; background: var(--vino); color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
 body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
+
+/* «Portami lì» dell'aiutante (C87): riga in cima alla pagina e lampo sulla voce aperta */
+.ai-qui { scroll-margin-top: 84px; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; background: var(--foglio); border: 2px solid var(--vino); }
+.ai-qui > svg { flex: none; width: 22px; height: 22px; color: var(--vino); margin-top: 2px; }
+.ai-qui b { display: block; }
+.ai-qui span { display: block; margin-top: 2px; }
+.ai-qui .fila { gap: 16px; margin-top: 6px; }
+.ai-lampo { animation: aiLampo 1.6s ease 2; }
+@keyframes aiLampo { 50% { box-shadow: 0 0 0 4px var(--vino); } }
+@media (prefers-reduced-motion: reduce) { .ai-lampo { animation: none; box-shadow: 0 0 0 3px var(--vino); } }
