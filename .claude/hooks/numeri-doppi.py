@@ -1,25 +1,19 @@
 #!/usr/bin/env python3
 """Numeri doppi fra chat parallele (C89, Mario 08/11 «consiglio» = 1).
 
-PreToolUse (Bash): prima di un `git push` controlla quello che sta per partire (HEAD):
+PreToolUse (Bash): prima di un `git push` controlla i file come sono adesso (vale anche per «commit && push» nello stesso comando):
 - data.js: due novità con lo stesso numero di versione, o VERSIONE_APP senza la sua novità;
-- docs/DA-FARE.md: due righe con lo stesso numero C;
-- origin più avanti di HEAD (un'altra chat ha salvato): prima fetch e merge, così i doppioni si vedono.
+- docs/DA-FARE.md: due righe con lo stesso numero C.
+Origin più avanti: ci pensa git (il push viene rifiutato); dopo il merge questo controllo vede i doppioni.
 Trovato → il push si ferma (decisione «deny» col motivo). Qualunque errore: silenzio, uscita 0.
 Prova: python3 -I tools/test-numeri-doppi.py
 """
 import json
 import os
 import re
-import subprocess
 import sys
 
-PUSH = re.compile(r'\bgit\s+push\b')
-
-
-def git(*a, cartella='.'):
-    r = subprocess.run(['git', *a], cwd=cartella, capture_output=True, text=True, timeout=20)
-    return r.stdout if r.returncode == 0 else None
+PUSH = re.compile(r'(^|[;&|(]\s*)git\s+push\b')   # solo il comando vero, non la parola dentro un testo
 
 
 def doppi(lista):
@@ -31,9 +25,14 @@ def doppi(lista):
     return dop
 
 
+def leggi(cartella, nome):
+    p = os.path.join(cartella, nome)
+    return open(p, encoding='utf-8').read() if os.path.exists(p) else ''
+
+
 def problemi(cartella):
     out = []
-    data = git('show', 'HEAD:data.js', cartella=cartella) or ''
+    data = leggi(cartella, 'data.js')
     m = re.search(r"const NOVITA = \[(.*?)\n\];", data, re.S)
     versioni = re.findall(r"\{ v: '([\d.]+)'", m.group(1)) if m else []
     d = doppi(versioni)
@@ -42,16 +41,9 @@ def problemi(cartella):
     va = re.search(r"const VERSIONE_APP = '([\d.]+)'", data)
     if va and versioni and va.group(1) not in versioni:
         out.append(f'VERSIONE_APP {va.group(1)} non ha la sua novità in NOVITA')
-    fare = git('show', 'HEAD:docs/DA-FARE.md', cartella=cartella) or ''
-    d = doppi(re.findall(r'^\| (C\d+) \|', fare, re.M))
+    d = doppi(re.findall(r'^\| (C\d+) \|', leggi(cartella, 'docs/DA-FARE.md'), re.M))
     if d:
         out.append('in docs/DA-FARE.md ci sono due voci con lo stesso numero: ' + ', '.join(d) + ' (dai a una il prossimo C libero e scrivi «era Cxx doppio»)')
-    ramo = (git('rev-parse', '--abbrev-ref', 'HEAD', cartella=cartella) or '').strip()
-    if ramo and ramo != 'HEAD':
-        git('fetch', '-q', 'origin', ramo, cartella=cartella)
-        avanti = git('rev-list', '--count', f'HEAD..origin/{ramo}', cartella=cartella)
-        if avanti and avanti.strip() not in ('', '0'):
-            out.append(f'su origin ci sono {avanti.strip()} commit di un\'altra chat: prima git merge origin/{ramo}, poi ricontrolla i numeri')
     return out
 
 
