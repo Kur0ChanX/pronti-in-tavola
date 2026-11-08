@@ -621,6 +621,25 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       UI.ric = { q: '', zona: 'tutte', cat: '' }; render(); });
     await page.locator('.ric-scorri .ric-carta').first().waitFor({ timeout: 3000 });
     await foto('33-ispirate');
+    // voce vera: chiede /api/voce con la voce scelta; se il server non risponde legge la voce del telefono
+    const voce = await page.evaluate(async () => {
+      const prima = { f: window.fetch, tok: typeof Dati !== 'undefined' ? Dati.token : undefined, play: HTMLMediaElement.prototype.play };
+      const chiesto = []; let telefono = 0;
+      if (typeof Dati === 'undefined') window.Dati = {};
+      Dati.token = async () => 'finto';
+      HTMLMediaElement.prototype.play = function () { setTimeout(() => this.onended && this.onended(), 10); return Promise.resolve(); };
+      const sp = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { telefono++; };
+      localStorage.setItem('pit-voce', 'edge:elsa'); AI.voceNo = false;
+      window.fetch = async (u, o) => { if (u === '/api/voce') { chiesto.push(JSON.parse(o.body)); return new Response(new Blob(['x'], { type: 'audio/mpeg' }), { headers: { 'content-type': 'audio/mpeg' } }); } return prima.f(u, o); };
+      const finita = await new Promise(ok => { parlaAI('Passo uno. Impasta 10 min.', () => ok(true)); setTimeout(() => ok(false), 2000); });
+      window.fetch = async (u, o) => u === '/api/voce' ? new Response('{}', { status: 502 }) : prima.f(u, o);
+      AI.cacheVoce = new Map(); parlaAI('Altro testo.'); await new Promise(ok => setTimeout(ok, 300));
+      window.fetch = prima.f; Dati.token = prima.tok; HTMLMediaElement.prototype.play = prima.play; speechSynthesis.speak = sp; localStorage.removeItem('pit-voce'); AI.voceNo = false;
+      return { chiesto, finita, telefono };
+    });
+    if (!voce.chiesto.length || voce.chiesto[0].v !== 'elsa' || !/10 minuti/.test(voce.chiesto[0].t)) throw new Error('la voce vera non chiede /api/voce con Elsa: ' + JSON.stringify(voce.chiesto));
+    if (!voce.finita) throw new Error('a voce vera finita non riparte la cucina (fine non chiamata)');
+    if (!voce.telefono) throw new Error('col server giù non legge la voce del telefono');
     // ricetta mia
     await page.evaluate(() => vai('ricmia:nuova')); await page.locator('.ric-modulo').waitFor({ timeout: 3000 });
     await page.fill('[data-ric="nome"]', 'Malloreddus di nonna'); await page.fill('[data-ric="ingredienti"]', 'Semola 300 g\nAcqua 150 ml'); await page.fill('[data-ric="passi"]', 'Impasta 10 minuti.');

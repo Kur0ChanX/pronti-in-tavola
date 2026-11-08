@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.23';
+const VERSIONE_APP = '0.9.24';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.24', data: '08/11/2026',
+    nuovo: ['Voce vera: la cucina guidata e l\'aiutante leggono con voci umane (Isabella, Elsa, Giuseppe, Diego); si sceglie in «Voce che legge». Senza rete o se il servizio non risponde, legge la voce del telefono'] },
   { v: '0.9.23', data: '08/11/2026',
     nuovo: ['Ricettario: «🎲 Cosa cucino oggi?» ti propone una ricetta (più spesso preferite e sarde), «Un\'altra» per cambiarla',
       'Timer della cucina sempre in vista: esci dalla ricetta e in alto resta la barretta col tempo che manca; un tocco ti riporta al passo'] },

@@ -269,7 +269,7 @@ function vCucina(id) {
       <button type="button" class="btn chiaro" data-a="ric-ripeti">🔊 Ripeti</button>
       ${ultimo ? `<button type="button" class="btn pieno" data-a="ric-fine">Finito!</button>` : `<button type="button" class="btn pieno" data-a="ric-passo" data-v="1">Avanti</button>`}</div>
     <label class="interr"><span>Leggi i passi ad alta voce<small>La voce legge ogni passo quando lo apri.</small></span><input type="checkbox" data-a="ric-voce" ${c.voce ? 'checked' : ''}></label>
-    ${typeof vociIt === 'function' && vociIt().length > 1 ? `<label>Voce che legge<select id="ric-voce-scelta">${vociIt().map(v => `<option value="${esc(v.name)}" ${AI.voce && AI.voce.name === v.name ? 'selected' : ''}>${esc(v.name.replace(/^(Microsoft|Google)\s*/i, '').replace(/\s*\(.*\)$/, ''))}${v.localService === false ? ' · online, più naturale' : ''}</option>`).join('')}</select></label>` : ''}
+    ${typeof vociIt === 'function' ? `<label>Voce che legge<select id="ric-voce-scelta">${(typeof VOCI_VERE !== 'undefined' ? VOCI_VERE : []).map(([k, n]) => `<option value="${k}" ${sceltaVoce() === k ? 'selected' : ''}>${n}</option>`).join('')}${vociIt().map(v => `<option value="${esc(v.name)}" ${sceltaVoce() === v.name ? 'selected' : ''}>${esc(v.name.replace(/^(Microsoft|Google)\s*/i, '').replace(/\s*\(.*\)$/, ''))}${v.localService === false ? ' · del telefono, online' : ' · del telefono'}</option>`).join('')}</select></label>` : ''}
     ${RiconosciRic ? `<label class="interr"><span>🎙 Mani libere${RIC.rec ? ' · <b>ti ascolto</b>' : ''}<small>Dopo ogni passo la voce si ferma e aspetta. Di': «avanti», «indietro», «ripeti», «timer», «quanto manca», «ingredienti», «finito», «stop».</small></span><input type="checkbox" data-a="ric-mani" ${c.mani ? 'checked' : ''}></label>` : ''}`;
   return h + '</main>';
 }
@@ -520,7 +520,7 @@ Object.assign(A, {
   },
   'ric-ripeti'() { if (UI.cucina) { const v = UI.cucina.voce; UI.cucina.voce = true; leggiPasso(); UI.cucina.voce = v; } },
   'ric-mani'(el) { const c = UI.cucina; if (!c) return; c.mani = el.checked; if (c.mani) { c.voce = true; leggiPasso(); } else fermaAscolto(); render(); },
-  'ric-voce'(el) { if (UI.cucina) { UI.cucina.voce = el.checked; if (!el.checked && window.speechSynthesis) speechSynthesis.cancel(); } },
+  'ric-voce'(el) { if (UI.cucina) { UI.cucina.voce = el.checked; if (!el.checked && typeof fermaVoce === 'function') fermaVoce(); if (!el.checked && window.speechSynthesis) speechSynthesis.cancel(); } },
   'ric-timer'(el) {
     const c = UI.cucina, r = c && ricetta(c.id); if (!r) return;
     const mio = timerDi(c.id, c.passo);

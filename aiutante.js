@@ -234,7 +234,7 @@ const vociIt = () => window.speechSynthesis ? (speechSynthesis.getVoices() || []
 function voceAI() {
   const vv = vociIt();
   let scelta = ''; try { scelta = localStorage.getItem('pit-voce') || ''; } catch (e) { /* niente */ }
-  const mia = scelta && vv.find(v => v.name === scelta); if (mia) return mia;
+  const mia = scelta && !/^edge:/.test(scelta) && vv.find(v => v.name === scelta); if (mia) return mia;
   const punti = v => (FEMMINILI.test(v.name) ? 4 : 0) - (MASCHILI.test(v.name) && !/female/i.test(v.name) ? 6 : 0) + (/natural|neural|enhanced|premium|online/i.test(v.name) ? 3 : 0) + (v.localService === false ? 2 : 0);
   return vv.sort((a, b) => punti(b) - punti(a))[0] || null;
 }
@@ -247,7 +247,45 @@ function frasiVoce(t) {
   pulito.split(/(?<=[.!?;:])\s+/).forEach(f => { while (f.length > 180) { const k = f.lastIndexOf(',', 180) > 60 ? f.lastIndexOf(',', 180) + 1 : f.lastIndexOf(' ', 180); out.push(f.slice(0, k)); f = f.slice(k).trim(); } if (f) out.push(f); });
   return out;
 }
+/* VOCE VERA (Mario 08/11 «consiglio 1»): voci neurali di Microsoft lette dal server (/api/voce), solo per chi gestisce.
+   Scelta in «Voce che legge» (pit-voce = «edge:isabella», «edge:elsa»…); se il server non risponde si usa la voce del telefono. */
+const VOCI_VERE = [['edge:isabella', 'Isabella · voce vera'], ['edge:elsa', 'Elsa · voce vera'], ['edge:giuseppe', 'Giuseppe · voce vera'], ['edge:diego', 'Diego · voce vera']];
+const sceltaVoce = () => { try { return localStorage.getItem('pit-voce') || 'edge:isabella'; } catch (e) { return 'edge:isabella'; } };
+function fermaVoce() {
+  AI.giroVoce = (AI.giroVoce || 0) + 1;
+  if (AI.audio) { try { AI.audio.pause(); } catch (e) { /* già ferma */ } AI.audio = null; }
+  if (window.speechSynthesis) speechSynthesis.cancel();
+}
+async function audioVero(f, v) {
+  AI.cacheVoce = AI.cacheVoce || new Map();
+  const k = v + '|' + f; if (AI.cacheVoce.has(k)) return AI.cacheVoce.get(k);
+  const tok = typeof Dati !== 'undefined' && Dati.token ? await Dati.token() : '';
+  if (!tok) throw new Error('senza accesso');
+  const r = await fetch('/api/voce', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ t: f, v }) });
+  if (!r.ok || !/audio/.test(r.headers.get('content-type') || '')) throw new Error('voce ' + r.status);
+  const u = URL.createObjectURL(await r.blob());
+  AI.cacheVoce.set(k, u);
+  if (AI.cacheVoce.size > 40) { const [k0, u0] = AI.cacheVoce.entries().next().value; URL.revokeObjectURL(u0); AI.cacheVoce.delete(k0); }
+  return u;
+}
 function parlaAI(t, fine) {
+  const scelta = sceltaVoce();
+  if (/^edge:/.test(scelta) && !AI.voceNo && typeof Dati !== 'undefined' && Dati.token) {
+    fermaVoce();
+    const giro = AI.giroVoce, ff = frasiVoce(t), testo = ff.join(' ');
+    if (!testo) { if (fine) fine(); return; }
+    audioVero(testo, scelta.slice(5)).then(u => {
+      if (AI.giroVoce !== giro) return;
+      const a = AI.audio = new Audio(u);
+      a.onended = () => { if (AI.giroVoce === giro) { AI.audio = null; if (fine) fine(); } };
+      a.onerror = () => { if (AI.giroVoce === giro) parlaTelefono(t, fine); };
+      return a.play();
+    }).catch(() => { if (AI.giroVoce !== giro) return; AI.voceNoFino = Date.now() + 120000; AI.voceNo = true; setTimeout(() => { AI.voceNo = false; }, 120000); parlaTelefono(t, fine); });
+    return;
+  }
+  parlaTelefono(t, fine);
+}
+function parlaTelefono(t, fine) {
   if (!window.speechSynthesis) { if (fine) fine(); return; }
   try {
     speechSynthesis.cancel();

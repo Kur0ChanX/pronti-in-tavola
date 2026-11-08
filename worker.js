@@ -166,6 +166,56 @@ async function chiediAI(env, testo, dati, storia, foto, cliente) {
   return Object.assign(j, { modello });
 }
 
+/* VOCE VERA (Mario 08/11 «consiglio 1»): le voci neurali italiane di Microsoft Edge («Leggi ad alta voce»), gratis e senza chiave.
+   Accesso NON ufficiale: se Microsoft lo cambia risponde 403 e l'app torna da sola alla voce del telefono.
+   VOCE_VERSIONE (variabile del Worker) aggiorna la versione di Edge senza toccare il codice. Ogni lettura resta 30 giorni nella cache. */
+const VOCI_EDGE = { isabella: 'it-IT-IsabellaNeural', elsa: 'it-IT-ElsaNeural', giuseppe: 'it-IT-GiuseppeMultilingualNeural', diego: 'it-IT-DiegoNeural' };
+const TOK_EDGE = '6A5AA1D4EAFF4E9FB37E23D68491D6F4';
+const xmlEsc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/'/g, '&apos;').replace(/"/g, '&quot;');
+async function hexSha(s) { return [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)))].map(b => b.toString(16).padStart(2, '0')).join(''); }
+function dataEdge() {
+  const d = new Date(), g = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d.getUTCDay()], m = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][d.getUTCMonth()], z = n => String(n).padStart(2, '0');
+  return `${g} ${m} ${z(d.getUTCDate())} ${d.getUTCFullYear()} ${z(d.getUTCHours())}:${z(d.getUTCMinutes())}:${z(d.getUTCSeconds())} GMT+0000 (Coordinated Universal Time)`;
+}
+async function voceEdge(testo, voce, cfg) {
+  const nome = VOCI_EDGE[voce] || VOCI_EDGE.isabella, ver = (cfg && cfg.VOCE_VERSIONE) || '143.0.3650.75', mag = ver.split('.')[0];
+  let s = Math.floor(Date.now() / 1000) + 11644473600; s -= s % 300;
+  const gec = (await hexSha(`${s}0000000${TOK_EDGE}`)).toUpperCase(), id = crypto.randomUUID().replace(/-/g, '');
+  const r = await fetch(`https://speech.platform.bing.com/consumer/speech/synthesize/readaloud/edge/v1?TrustedClientToken=${TOK_EDGE}&Sec-MS-GEC=${gec}&Sec-MS-GEC-Version=1-${ver}&ConnectionId=${id}`, {
+    headers: { Upgrade: 'websocket', Origin: 'chrome-extension://jdiccldimpdaibmpdkjnbmckianbfold', Pragma: 'no-cache', 'Cache-Control': 'no-cache',
+      'User-Agent': `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${mag}.0.0.0 Safari/537.36 Edg/${mag}.0.0.0` } });
+  const ws = r.webSocket;
+  if (!ws) throw new Error('voce: Microsoft risponde ' + r.status);
+  ws.accept();
+  const pezzi = [];
+  const fatto = new Promise((ok, ko) => {
+    const tempo = setTimeout(() => { try { ws.close(); } catch (e) { /* già chiuso */ } ko(new Error('voce: tempo scaduto')); }, 20000);
+    ws.addEventListener('message', e => {
+      if (typeof e.data === 'string') { if (e.data.includes('Path:turn.end')) { clearTimeout(tempo); try { ws.close(); } catch (er) { /* già chiuso */ } ok(); } return; }
+      const b = new Uint8Array(e.data), n = (b[0] << 8) | b[1], testa = new TextDecoder().decode(b.slice(2, 2 + n));
+      if (testa.includes('Path:audio')) pezzi.push(b.slice(2 + n));
+    });
+    ws.addEventListener('close', () => { clearTimeout(tempo); ok(); });
+    ws.addEventListener('error', () => { clearTimeout(tempo); ko(new Error('voce: collegamento interrotto')); });
+  });
+  ws.send(`X-Timestamp:${dataEdge()}\r\nContent-Type:application/json; charset=utf-8\r\nPath:speech.config\r\n\r\n{"context":{"synthesis":{"audio":{"metadataoptions":{"sentenceBoundaryEnabled":"false","wordBoundaryEnabled":"false"},"outputFormat":"audio-24khz-48kbitrate-mono-mp3"}}}}`);
+  ws.send(`X-RequestId:${id}\r\nContent-Type:application/ssml+xml\r\nX-Timestamp:${dataEdge()}Z\r\nPath:ssml\r\n\r\n<speak version='1.0' xmlns='http://www.w3.org/2001/10/synthesis' xml:lang='it-IT'><voice name='${nome}'><prosody pitch='+0Hz' rate='-4%' volume='+0%'>${xmlEsc(testo)}</prosody></voice></speak>`);
+  await fatto;
+  const tot = pezzi.reduce((a, p) => a + p.length, 0);
+  if (!tot) throw new Error('voce: nessun audio');
+  const out = new Uint8Array(tot); let k = 0; for (const p of pezzi) { out.set(p, k); k += p.length; }
+  return out;
+}
+async function voce(b, cfg) {
+  const testo = String((b && b.t) || '').replace(/\s+/g, ' ').trim().slice(0, 1500), v = VOCI_EDGE[b && b.v] ? b.v : 'isabella';
+  if (!testo) return new Response('niente da leggere', { status: 400 });
+  const cache = caches.default, chiave = new Request('https://cache.pronti/voce/' + v + '/' + await hexSha(testo));
+  const c = await cache.match(chiave); if (c) return c;
+  const mp3 = await voceEdge(testo, v, cfg);
+  await cache.put(chiave, new Response(mp3, { headers: { 'content-type': 'audio/mpeg', 'cache-control': 'max-age=2592000' } }));
+  return new Response(mp3, { headers: { 'content-type': 'audio/mpeg', 'cache-control': 'private, max-age=2592000' } });
+}
+
 /* GialloZafferano dal vivo (C55): pagina letta al momento, tenuta 1 giorno nella cache di Cloudflare (meno richieste al loro sito) */
 async function paginaGz(u) {
   const cache = caches.default, chiave = new Request('https://cache.pronti/gz?' + encodeURIComponent(u));
@@ -418,6 +468,7 @@ export default {
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
+      if (url.pathname === '/api/voce') { const b = await req.json().catch(() => null); return await voce(b, env).catch(e => json({ errore: String(e.message || e) }, 502)); }
       if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b).catch(e => ({ errore: String(e.message || e) })); return json(r, r.errore ? 502 : 200); }
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/prova-ai') return json(await provaAI(env));

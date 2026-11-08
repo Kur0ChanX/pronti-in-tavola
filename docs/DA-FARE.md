@@ -1,14 +1,13 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 08/11 · 🛑 · 🟡 Principale 26 · Voce vera per la cucina guidata: quale servizio (Microsoft gratis non ufficiale · Google Cloud con carta, gratis fino a 1 milione di lettere al mese · Gemini gratis ma 10-50 letture al giorno)?
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C54 | (Mario 08/11 ~04:20 «nelle impostazioni sviluppatore posso provare se risponde Groq?») Tasto «Prova le AI adesso» in «Solo per te, Mario» (v0.9.13): prova Cloudflare (3 modelli) e Groq (2), dice chi risponde e in quanti secondi. 👁 Lo vedi: Impostazioni → «Solo per te, Mario» → «Prova le AI adesso» → righe ✅/❌ · prova: tua foto | Claude | 🟢 manca la foto |
-| C57 | (Mario 08/11 ~07:30 «la voce fa pietà, robotica… catalogo molto ampio») v0.9.19 fatta (catalogo per portata, voce del telefono migliorata e scelta della voce). Voce «vera» da un servizio: aspetta la scelta di Mario. Se «Carica altre» non va online (provato solo con dati finti), lo correggo con la tua foto. 👁 Lo vedi: Ricettario → «📚 Tutto il catalogo» → Primi → «Carica altre ricette»; Cucina guidata → «Voce che legge» · prova: tua foto o tuo ok | Claude + Mario | 🟢 manca la tua prova |
+| C57 | (Mario 08/11 ~07:30 «la voce fa pietà… catalogo molto ampio»; ~08:25 «consiglio 1») Catalogo completo (v0.9.19-0.9.20) e voce vera Microsoft (v0.9.24, `/api/voce`, cache 30 giorni, riserva: voce del telefono). Provati solo con dati finti: da qui GialloZafferano e Microsoft sono bloccati. 👁 Lo vedi: Cucina guidata → «Voce che legge» → Isabella · voce vera → parla come una persona; Ricettario → «Tutto il catalogo» → «Carica altre» · prova: tuo ok | Claude + Mario | 🟢 manca la tua prova |
 | C58 | (Claude 08/11, per C56) Copia di sicurezza del ricettario finché non c'è Firebase: «Salva una copia» (file con note, ricette tue, preferite) e «Riprendi da una copia». 👁 Lo vedi: Ricettario → in fondo «Salva una copia» → scarica il file · prova: tua foto | Claude | 🟢 da fare |
 | C56 | (Mario 08/11 ~07:00 «prosegui da solo aggiungendo ricette e funzioni») v0.9.18-0.9.23: cosa cucino con quello che ho, note, più timer con barretta in alto, ricerca a voce, viste di recente, «➕ Metti nel menù», «🎲 Cosa cucino oggi?». Prove 47 OK. 👁 Lo vedi: Ricettario → 🎙 accanto alla lente; una ricetta → «➕ Metti nel menù» · prova: tua foto o tuo ok | Claude + Mario | 🟢 manca la tua prova |
 | C51 | (Mario 08/11 ~03:25) «Scrivimi» e «Sono qui sotto» che fa SUONARE il telefono di Monica: fatti dalla #22 (v0.9.9; squillo forte con l'app aperta, notifica che squilla ogni 5 s per 1 minuto). Con l'app chiusa il suono lo decide Android. NON provato dal vivo. 👁 Lo vedi: di giorno, da cliente con un ordine pronto → «Sono qui sotto» → il telefono di Monica squilla · prova: tua foto o tuo ok | Claude | 🟢 manca la tua prova |
