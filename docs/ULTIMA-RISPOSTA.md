@@ -1,17 +1,27 @@
-# Ultima risposta di Claude (08/11/2026 03:13 ora italiana)
+# Ultima risposta di Claude (08/11/2026 04:26 ora italiana)
 
-Ho capito: niente foto del menù per ora e il lucchetto va bene. Volevi l'aiutante che risponde alle domande di Monica e cambia anche le impostazioni, ma solo dopo che lei ha visto e confermato. E per i clienti un tasto per scrivere a Monica su WhatsApp, col messaggio già iniziato.
+Ho capito: vuoi sapere cosa manca, vuoi provare se Groq risponde e vuoi un ricettario per Monica, stile GialloZafferano, con la cucina sarda. Per voi due, non per i clienti.
 
 ───
 ✅ FATTO
-- **Online la versione 0.9.6.** Le 44 prove sul telefono (Pixel 7) sono tutte passate; il sito vero ha la 0.9.6; anteprima aggiornata.
-- **Aiutante e impostazioni.** Può cambiare i giorni di preavviso, le teglie al giorno, l'ora fino a cui valgono i pronti, il menù di Natale, i modi di pagare e la nota …
+- **Tasto «Prova le AI adesso»** nell'app vera (v0.9.13). Prova una per una le 3 AI di Cloudflare e le 2 di Groq. Per ognuna ti dice ✅ risponde (e in quanti secondi) oppure ❌ e il motivo.
+- Le prove sul telefono finto sono tutte verdi (46 su 46). Il sito vero ha già la 0.9.13.
+- **Artefatto:** non lo pubblico più. Ho scritto la regola nel progetto e l'errore nel diario (PT E24).
+
+───
+💡 PARERE
+- **Prova …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-📌 Di cosa parliamo: un file Excel con gli ordini e gli incassi del mese, da scaricare dall'app, per avere una copia dei conti.
-1. Salvataggio mensile degli ordini:
-   1 · Ora
-   2 · Più avanti (consiglio)
-   3 · No
+📌 Di cosa parliamo: il ricettario per Monica (solo voi due lo vedete).
+
+1. 🛑 In Da fare ci sono 48 lavori aperti. La regola dice: oltre 30 prima si chiude, poi si apre. Come facciamo?
+   1 · Prima mi mandi foto o «ok» per le cose da vedere, poi il ricettario (consiglio)
+   2 · Ricettario subito, le prove dopo
+2. Quante ricette all'inizio?
+   1 · 60 scelte bene: 25 sarde (prima la Gallura), 35 italiane classiche; poi ne aggiungo a gruppi (consiglio)
+   2 · 150 subito, meno curate
+3. Foto delle ricette?
+   1 · Foto vere e libere di Wikipedia per il piatto finito, con il nome …
