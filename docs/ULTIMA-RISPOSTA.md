@@ -1,5 +1,8 @@
-# Ultima risposta di Claude (08/11/2026 04:56 ora italiana)
+# Ultima risposta di Claude (08/11/2026 12:28 ora italiana)
 
-Nessun video da mandare: il ricettario a video non esiste ancora, quindi nell'app non c'è niente che si muova da mostrarti.
+✅ FATTO
+- La v0.9.37 è sul sito vero: pubblicazione riuscita e il sito risponde «0.9.37». Prove: 49 OK, 0 NO.
+- Per provarla: riapri l'app → Impostazioni → «Solo per te, Mario» → «Velocità della voce». Sposta il cursore e tocca «▶️ Senti la velocità».
+- Monica sente la stessa velocità che scegli tu. Mandami un ok o una foto.
 
-Se rispondi sì alla domanda 1, prima di fare tutte le ricette ti mando 2-3 foto (o un video corto) delle prime schede da approvare.
+Prossimo lavoro: ricerca e filtri del Ricettario. Aspetto la tua scelta della voce: 1-5.
