@@ -249,15 +249,20 @@ const testoVoce = t => pulisciPasso(String(t || '').replace(/\s*\[\[\d+\]\]/g, '
 const passoHtml = t => esc(pulisciPasso(t)).replace(/\s*\[\[(\d+)\]\]([.,;:!?]*)/g, ' <span class="nw"><span class="num-step">$1</span>$2</span>');   // il punto resta attaccato al numerino (foto di Mario 14:15)
 function fotoPasso(p, grandi) {
   if (!p.foto || !p.foto.length) return '';
-  const nn = [...String(p.t).matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);   // una foto per numerino, o una foto «a strisce» con tutti (es. 1-3)
-  const num = k => !nn.length ? '' : p.foto.length === nn.length ? nn[k] : p.foto.length === 1 && nn.length > 1 ? nn[0] + '-' + nn[nn.length - 1] : '';
-  /* foto «a strisce» delle ricette vecchie di GZ (una sola immagine con 2-3 foto affiancate): la taglio in riquadri
-     uno per numerino, come le ricette nuove (Mario 08/11: prima si vedeva solo la foto di mezzo) */
-  if (p.foto.length === 1 && nn.length > 1 && nn.length <= 4) {
-    const f = p.foto[0], n = nn.length;
-    return `<div class="ric-fotopassi${grandi ? ' grandi' : ''} strisce">${nn.map((x, k) => `<figure class="ric-fotonum ric-striscia"><img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}" style="width:${n * 100}%;transform:translateX(-${(k * 100 / n).toFixed(4)}%)"><span class="num-step">${x}</span></figure>`).join('')}</div>`;
-  }
-  return `<div class="ric-fotopassi${grandi ? ' grandi' : ''}">${p.foto.map((f, k) => `<figure class="ric-fotonum"><img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">${num(k) ? `<span class="num-step">${num(k)}</span>` : ''}</figure>`).join('')}</div>`;
+  const nn = [...String(p.t).matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1]);   // numerini scritti nella frase
+  /* i numeri veri li dice il nome della foto su GZ: «…_strip_1-3.jpg» (striscia di 3 foto affiancate) o «…_27.jpg»;
+     se il nome non li dice, quelli della frase (controllo di 253 ricette, 08/11: la frase a volte salta un numero) */
+  const riq = [];
+  p.foto.forEach((f, k) => {
+    const st = /_strip_(\d+)-(\d+)\.\w+(?:$|[?#])/i.exec(f);
+    let a = st ? +st[1] : 0, z = st ? +st[2] : 0;
+    if (!st && p.foto.length === 1 && nn.length > 1 && nn.length <= 4 && !/_\d+\.\w+(?:$|[?#])/.test(f)) { a = +nn[0]; z = a + nn.length - 1; }   // striscia senza nome: dai numerini
+    if (a && z > a && z - a < 4) { const n = z - a + 1; for (let j = 0; j < n; j++) riq.push({ f, n, j, num: String(a + j) }); return; }
+    const uno = /_(\d+)\.\w+(?:$|[?#])/.exec(f);
+    riq.push({ f, num: uno ? uno[1] : p.foto.length === nn.length ? nn[k] : '' });
+  });
+  const strisce = riq.some(x => x.n);
+  return `<div class="ric-fotopassi${grandi ? ' grandi' : ''}${strisce ? ' strisce' : ''}">${riq.map(x => `<figure class="ric-fotonum${x.n ? ' ric-striscia' : ''}"><img src="${esc(x.f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(x.f)}"${x.n ? ` style="width:${x.n * 100}%;transform:translateX(-${(x.j * 100 / x.n).toFixed(4)}%)"` : ''}>${x.num ? `<span class="num-step">${x.num}</span>` : ''}</figure>`).join('')}</div>`;
 }
 /* minuti scritti nel passo («cuocete per 20 minuti», «1 ora») → timer nella cucina guidata */
 function minutiPasso(t) {
