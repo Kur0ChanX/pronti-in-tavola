@@ -11,6 +11,13 @@ Sopra il kit (uguale in tutti i progetti, versione in `docs/kit-progetto/VERSION
 - Anteprima: `python3 -I tools/anteprima.py` → `dist/anteprima.html`, solo per le prove. **Niente artefatto** (Mario 08/11): vince sul kit; Mario prova sul sito vero.
 - Prove: `node tools/prova.js` (telefono `Pixel 7`) dopo l'anteprima. Regole dell'app in `.claude/rules/progetto.md`.
 
+## Regime leggero (Mario 08/11 «1»: questo progetto, non RVC)
+Vince sul kit nei dettagli; le regole 🔒 (consegne, rami, salvataggio) e i divieti restano.
+- Avvio: `docs/ERRORI.md`, «## 0. Aspetta Mario», «Prossimi passi» delle consegne; il resto di `docs/DA-FARE.md` solo con `grep` sulla voce che serve; `list_triggers` con `limit` 5.
+- Comandi: leggere, cambiare e controllare in UN comando raggruppato, uscita corta. Mai cinque comandi dove ne basta uno.
+- Prove: mentre lavoro solo il pezzo cambiato (`SOLO=<parola del passo> node tools/prova.js`); giro completo UNA volta prima del push di codice. Passo che dipende da quelli prima → lo rendo autonomo (stato con `page.evaluate` in testa al passo).
+- Foto a Mario solo se cambia l'aspetto; voce 👁 solo per ciò che Mario deve provare lui; novità in una riga per funzione.
+
 ## Compact instructions
 Alla compressione conserva: ultimo messaggio di Mario parola per parola, domande aperte, file toccati, decisioni col motivo, punto esatto e prossimo passo.
 
