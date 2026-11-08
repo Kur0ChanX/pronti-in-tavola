@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.52';
+const VERSIONE_APP = '0.9.53';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.53', data: '08/11/2026',
+    migliorato: ['Indietro: torni allo stesso punto della pagina dove eri (anche dopo aver modificato una ricetta), non più in cima',
+      'Ricettario: tasto fisso «🗄 Database» in basso a destra, un tocco e sei al riquadro del database; lì diventa «⬆ Ricette» per tornare su'] },
   { v: '0.9.52', data: '08/11/2026',
     migliorato: ['Voce Paola sul telefono: ora lavora a parte, così l\'app non si blocca mentre prepara la frase (prima la pagina restava ferma qualche secondo, ora quasi niente)'] },
   { v: '0.9.51', data: '08/11/2026',

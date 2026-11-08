@@ -463,6 +463,8 @@ function vRicettario() {
     const d = RIC.db && !RIC.db.errore ? RIC.db : null;
     h += `<button type="button" class="riquadro ric-db-link" data-a="vai" data-v="ricdb">🗄<div><b>Database ricette</b><small>${elenco.length + mie.length} nel ricettario · ${nScar} sul telefono${d ? ` · ${d.ricette} nell'archivio` : ''}</small></div></button>`;
   }
+  // C84 (Mario 08/11 «le impostazioni delle ricette sono in fondo, devo scrollare tantissimo»): tasto fisso, un tocco e sei al database; lì diventa «⬆ Ricette»
+  if (h.includes('ric-db-box')) h += '<button type="button" class="ric-salta" data-a="ric-salta">🗄 Database</button>';
   return h + '</main>';
 }
 
@@ -834,6 +836,11 @@ Object.assign(A, {
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
       .finally(() => { RIC.dbCerco = false; RIC.dbOra = 0; render(); });
   },
+  'ric-salta'() {
+    const box = document.querySelector('.ric-db-box'); if (!box) return;
+    if (box.getBoundingClientRect().top < window.innerHeight * 0.6) window.scrollTo({ top: 0, behavior: 'smooth' });
+    else box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  },
   'ric-db-controlla'() {
     if (RIC.dbControllo) return; RIC.dbControllo = true; render();
     RIC.chiedi({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; mostraToast(c.nMale || c.mancanti ? `🔍 ${c.ok} ricette a posto, ${c.nMale + c.mancanti} da sistemare: ci penso io.` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
@@ -961,3 +968,10 @@ Object.assign(A, {
     vai('ricettario');
   }
 });
+
+/* C84: il tasto fisso dice dove porta: «🗄 Database» se il riquadro è sotto, «⬆ Ricette» quando ci sei */
+window.addEventListener('scroll', () => {
+  const b = document.querySelector('.ric-salta'), box = document.querySelector('.ric-db-box'); if (!b || !box) return;
+  const t = box.getBoundingClientRect().top < window.innerHeight * 0.6 ? '⬆ Ricette' : '🗄 Database';
+  if (b.textContent !== t) b.textContent = t;
+}, { passive: true });
