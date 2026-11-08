@@ -246,6 +246,29 @@ function misuraDati() {
 }
 const dataBreve = t => { const d = new Date(t || 0); return t ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}` : ''; };
 const rigaDb = (r, extra) => `<li><button type="button" class="link" data-a="vai" data-v="ricetta:${esc(r.id)}">${esc(r.nome)}</button> <small class="tenue">${extra}</small></li>`;
+/* 🗄 IL MIO DATABASE dentro il Ricettario (Mario 08/11 «sembra una funzione nascosta… senza un reparto a parte»):
+   i numeri in vista, ordinati: archivio sul server · mio ricettario · sul telefono · voci; il motore (oggi +N, avanzamento) e le ultime trovate */
+function riquadroDb() {
+  leggiScelte(); chiediStatoDb();
+  const d = RIC.db && !RIC.db.errore ? RIC.db : null, elenco = elencoRic(), mie = mieRic(), scar = Object.values(RIC.scaricate || {}), nVoci = scar.filter(r => RIC.vociFatte[r.id]).length;
+  const oggi0 = new Date(); oggi0.setHours(0, 0, 0, 0);
+  const nuoveOggi = (RIC.scelte || []).filter(x => (x.aggiunta || 0) >= oggi0.getTime()).length;
+  const n = (v, t, s) => `<div class="ric-db-n"><b>${v == null ? '…' : v}</b><span>${t}</span>${s ? `<small class="tenue">${s}</small>` : ''}</div>`;
+  let motore = '';
+  if (d) {
+    const ug = d.ultimoGiro && d.ultimoGiro.quando ? d.ultimoGiro.quando : 0, faMin = ug ? Math.round((Date.now() - ug) / 60000) : -1, perc = Math.min(100, Math.round(((d.fonte || 0) / (d.fonti || 10)) * 100));
+    const nomeSez = (CATALOGO_RIC.find(x => x[0] === d.sezione) || [, d.sezione || ''])[1];
+    const stato = RIC.dbCerco ? '🔄 Sto cercando…' : d.pausa ? '⏸ Motore fermo' : faMin < 0 ? '🕐 Il motore parte entro 10 minuti' : faMin > 25 ? `⚠️ Motore fermo da ${faMin} minuti` : `🟢 Motore al lavoro (ultimo giro ${faMin} min fa)`;
+    motore = `<p style="margin:6px 0 0"><b>${stato}</b> · oggi <b>+${d.oggi}</b> nuove${d.coda ? `, ${d.coda} in arrivo` : ''}</p>
+      <div class="ricdb-barra" role="progressbar" aria-valuenow="${perc}"><i style="width:${perc}%"></i></div>
+      <p class="piccolo tenue" style="margin:2px 0 0">Sezione ${(d.fonte || 0) + 1} di ${d.fonti || 10} (${esc(nomeSez)}) · ${perc}% · ${d.giri} giri</p>
+      ${RIC.dbUltime && RIC.dbUltime.length ? `<p class="piccolo" style="margin:6px 0 2px"><b>Ultime trovate dal motore:</b></p><ul class="ricdb-lista">${RIC.dbUltime.slice(0, 5).map(r => rigaDb(r, nelRicettario(r.id) ? '✅ nel ricettario' : '')).join('')}</ul>` : ''}`;
+  } else if (RIC.db) motore = '<p class="piccolo" style="margin:6px 0 0">Il server non risponde: i numeri del motore arrivano con la rete.</p>';
+  return `<section class="scheda ric-db-box"><h2>🗄 Il mio database</h2>
+    <div class="ric-db-griglia">${n(d ? d.ricette : null, 'trovate dal motore', 'archivio sul server')}${n(elenco.length + mie.length, 'nel mio ricettario', `${(RIC.scelte || []).length} aggiunte da me${nuoveOggi ? `, ${nuoveOggi} oggi` : ''}`)}${n(scar.length, 'sul telefono', 'leggibili senza rete')}${n(nVoci, 'con la voce pronta', d ? `${d.voci} letture sul server` : 'senza rete')}</div>
+    ${motore}
+    <div class="fila" style="margin-top:8px"><button type="button" class="btn pieno" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button><button type="button" class="btn chiaro" data-a="vai" data-v="ricdb">Tutto il dettaglio</button></div></section>`;
+}
 function vRicDb() {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (RIC.stato !== 'pronto') return attesaRic('Database ricette', 'ricettario');
@@ -336,6 +359,7 @@ function vRicettario() {
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
   if (!q && !c.stato) {
     /* SCOPRI: il motore, il catalogo, i temi, le ispirate: tutto in una scheda, aperto solo quello che tocchi */
+    h += riquadroDb();
     h += `<section class="scheda"><h2>🔎 Scopri ricette nuove</h2>
       <button type="button" class="btn pieno" data-a="ric-catalogo" data-v="nuove">🔎 Fammi vedere le ricette nuove</button>
       <p class="piccolo tenue" style="margin:0">Il motore cerca su GialloZafferano quelle che non hai ancora (prima col video e i voti alti): apri, e se ti piace «➕ Aggiungi».</p>
@@ -467,7 +491,8 @@ async function preparaVociRic(r) {
 }
 /* voce sul telefono scelta: dice se è scaricata; se no, «⬇️ Scarica la voce (N MB)» con la barra (Mario 08/11) */
 function vociLocaleRiga() {
-  const k = sceltaVoce(), M = typeof motoreLocale === 'function' && motoreLocale(k); if (!M) return '';
+  const k = sceltaVoce(), M = typeof motoreLocale === 'function' && motoreLocale(k);
+  if (!M) return /^edge:/.test(k) && typeof AI !== 'undefined' && AI.voceNo ? '<p class="avviso piccolo ric-voce-stato" style="margin:0">⚠️ Microsoft non risponde adesso: legge la voce del telefono (per questo le voci sembrano uguali). Scegli una voce «sul telefono» e scaricala: è tua per sempre.</p>' : '';
   const st = statoVoceLocale(k, () => { if (/^cucina:/.test(UI.vista)) render(); }), sc = RIC.scaricoVoce;
   if (sc && sc.k === k) return `<p class="tenue ric-voce-stato">⬇️ Scarico la voce… <b>${Math.round(sc.p * 100)}%</b><progress max="100" value="${Math.round(sc.p * 100)}" style="width:100%"></progress><small>Resta sul telefono: dopo parla anche senza rete.</small></p>`;
   if (st === true) return '<p class="tenue ric-voce-stato">✅ Voce sul telefono: parla anche senza rete.</p>';
@@ -552,7 +577,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const el = e.target;
-  if (el.id === 'ric-voce-scelta') { try { localStorage.setItem('pit-voce', el.value); } catch (er) { /* niente */ } if (typeof parlaAI === 'function') parlaAI('Ciao, sono la tua nuova voce. Ti leggo i passi così.'); }
+  if (el.id === 'ric-voce-scelta') { try { localStorage.setItem('pit-voce', el.value); } catch (er) { /* niente */ } if (typeof motoreLocale === 'function' && motoreLocale(el.value) && statoVoceLocale(el.value) !== true) { mostraToast('Prima scaricala: tocca «⬇️ Scarica la voce».'); render(); } else if (typeof parlaAI === 'function') parlaAI('Ciao, sono la tua nuova voce. Ti leggo i passi così.'); }
   if (el.id === 'ric-copia-file' && el.files[0]) { riprendiCopia(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.ric === 'categoria' && UI.ricBozza) UI.ricBozza.categoria = el.value;
   if (el.id !== 'ric-foto-file' || !el.files[0] || !UI.ricBozza) return;

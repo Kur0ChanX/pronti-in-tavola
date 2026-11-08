@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.29';
+const VERSIONE_APP = '0.9.30';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.30', data: '08/11/2026', ora: '11:10',
+    nuovo: ['Ricettario: «🗄 Il mio database» in vista, senza cambiare pagina: quante ricette ha trovato il motore, quante nel tuo ricettario (e quante aggiunte oggi), quante sul telefono, quante con la voce; stato del motore con avanzamento e le ultime trovate; «🔄 Cerca adesso»'],
+    migliorato: ['Voce che legge: se Microsoft non risponde lo dice chiaro (per questo le voci sembravano uguali) e consiglia una voce sul telefono; scegliendo una voce non ancora scaricata chiede di scaricarla invece di parlare con quella del telefono'] },
   { v: '0.9.29', data: '08/11/2026', ora: '10:42',
     nuovo: ['Voci sul telefono (Piper: Paola e Riccardo · Kokoro: Sara e Nicola): in Cucina guidata → «Voce che legge» scegli una voce «sul telefono», tocca «⬇️ Scarica la voce» una volta sola (50-100 MB, meglio col Wi-Fi) e da lì legge anche senza rete, anche in aereo'],
     migliorato: ['Se la voce di Microsoft non risponde, legge la voce scaricata sul telefono (prima: sempre quella del telefono)'] },
