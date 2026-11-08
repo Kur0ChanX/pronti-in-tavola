@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 08/11 · 🟢 Principale 22 · Crea l'account Groq e metti la chiave GROQ_API_KEY nei segreti di GitHub (guida nel messaggio delle ~04:00), poi scrivi «fatto».
+- 08/11 · 🟢 Principale 23 · Chiave Groq messa (Mario 08/11): ripubblica il sito (GitHub → Actions → «Pubblica sito» → «Run workflow») o dai l'ok a Claude per farlo.
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
