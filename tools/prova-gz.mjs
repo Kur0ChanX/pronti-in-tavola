@@ -15,6 +15,6 @@ prova('numerini frase↔foto tenuti e niente spazio prima del punto', r.passi[0]
 prova('paragrafo con classe («MsoNormal») e più paragrafi nello stesso passo', /Impastate bene \[\[3\]\]\./.test(r.passi[1].t) && /Fate riposare 30 minuti \[\[4\]\]\./.test(r.passi[1].t));
 prova('anche gli elenchi del passo', /Servite tiepida/.test(r.passi[2].t));
 prova('l\'ultimo passo non si mangia «Conservazione»', !/conserva/i.test(r.passi[2].t) && /2 giorni/.test(r.conserva));
-prova('versione 3 del lettore (le copie vecchie si rileggono)', r.v === 3);
+prova('versione 4 del lettore (le copie vecchie si rileggono)', r.v === 4);
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);
