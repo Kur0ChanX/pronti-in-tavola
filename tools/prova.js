@@ -522,6 +522,22 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.dev-nov', { hasText: '0.7 · tappa 1' }).scrollIntoViewIfNeeded(); await foto('37-cronologia');
     await page.evaluate(() => { P.sviluppatore = false; UI.devTutte = false; render(); });
   });
+  await passo('sito vero: i file separati (come online) si aprono senza errori, nessuna funzione chiamata prima di caricarla (PT E23)', async () => {
+    require('child_process').execFileSync('python3', ['-I', path.resolve(__dirname, 'sito.py')], { stdio: 'ignore' });
+    const radice = path.resolve(__dirname, '../sito'), http = require('http');
+    const tipi = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png', '.webmanifest': 'application/manifest+json', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.webp': 'image/webp' };
+    const srv = http.createServer((q, r) => { const f = path.join(radice, decodeURIComponent(q.url.split('?')[0]).replace(/\/$/, '/index.html'));
+      if (!f.startsWith(radice) || !fs.existsSync(f) || fs.statSync(f).isDirectory()) { r.writeHead(404); r.end(); return; }
+      r.writeHead(200, { 'content-type': tipi[path.extname(f)] || 'application/octet-stream' }); fs.createReadStream(f).pipe(r); });
+    await new Promise(ok => srv.listen(0, '127.0.0.1', ok));
+    const p2 = await page.context().newPage(), sbagli = [];
+    p2.on('pageerror', e => sbagli.push(e.message));
+    await p2.route(/firebase|googleapis|gstatic/, r => r.abort());   // senza rete verso Firebase: conta solo il nostro codice
+    await p2.goto(`http://127.0.0.1:${srv.address().port}/`); await p2.waitForTimeout(3000);
+    await p2.close(); srv.close();
+    const nostri = sbagli.filter(m => /is not defined|is not a function|Cannot read/.test(m));
+    if (nostri.length) throw new Error('errori nel sito vero: ' + [...new Set(nostri)].join(' · '));
+  });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
     if (/pronti-in-tavola\.firebaseapp\.com|AIza[\w-]{30,}/.test(html)) throw new Error('la configurazione vera di Firebase è dentro l\'anteprima');

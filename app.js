@@ -671,7 +671,7 @@ function primiPassi() {
 function vMenu() {
   const imp = S.impostazioni, cats = CATEGORIE.filter(([k]) => visibili().some(p => p.cat === k && p.disponibile));
   /* foto del menù ai clienti: in attesa (Mario 07/11 «non sono molto convinto, aspettiamo»): per ora Monica le manda e basta */
-  let h = testataCliente() + '<main class="corpo">' + primiPassi() + barraAIC() + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
+  let h = testataCliente() + '<main class="corpo">' + primiPassi() + (typeof barraAIC === 'function' ? barraAIC() : '') + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
   if (UI.modifica) {
     const o = S.ordini.find(x => x.id === UI.modifica.ordine);
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
@@ -963,7 +963,7 @@ function vHome() {
   h += richiesteGestore();
   if (!P.homeNo) h += cartaHome().replace('</section>', '<button type="button" class="link" data-a="home-no">Non ora</button></section>');
   h += `<div><h1>Ciao ${esc((Dati.attivo && Dati.io.nomeGestore) || 'Monica')}</h1><p class="tenue" style="margin:4px 0 0">${n ? `Hai <b>${n}</b> ${n === 1 ? 'cosa' : 'cose'} da guardare negli ordini.` : 'Nessun ordine nuovo da guardare.'}</p></div>
-    ${barraAI()}
+    ${typeof barraAI === 'function' ? barraAI() : ''}
     <div class="riquadri">
       <button type="button" class="riquadro primo" data-a="vai" data-v="ordini">${ico('ordini')}${n ? `<span class="pallino">${n}</span>` : ''}<div><b>Ordini</b><br><small>Accetta e prepara</small></div></button>
       <button type="button" class="riquadro" data-a="vai" data-v="piatti">${ico('piatti')}<div><b>I miei piatti</b><br><small>Foto, prezzi, pronti</small></div></button>
@@ -1363,7 +1363,7 @@ function schedaMario() {
     <p class="tenue piccolo" style="margin:0">La vedi solo tu. Monica non vede questa scheda.</p>
     ${n ? `<button type="button" class="btn chiaro" data-a="tutti-prova-apri">Segna come PROVA gli ordini fatti finora (${n})</button>`
       : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}
-    <label class="interr"><span>Aiutante AI per i clienti<small>${aiClientiOn() ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${aiClientiOn() ? 'checked' : ''}></label>
+    <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
     ${contoAI()}</section>`;
 }
 /* domande all'AI di oggi (C50: Mario vuole capire i limiti). Il conto lo tiene il server; qui si chiede una volta ogni 2 minuti */
@@ -1470,7 +1470,7 @@ function vistaCliente() {
     case 'carrello': return vCarrello();
     case 'inviato': return vInviato();
     case 'ordini': return vOrdiniCliente();
-    case 'aiuto': return aiClientiVisibile() ? vAiutoCliente() : vMenu();
+    case 'aiuto': return typeof vAiutoCliente === 'function' && aiClientiVisibile() ? vAiutoCliente() : vMenu();   // aiutante.js arriva dopo app.js: mai chiamarlo prima che ci sia (PT E23)
     case 'modifica': return UI.modifica ? vModifica() : vOrdiniCliente();
     default: return vMenu();
   }
@@ -1485,7 +1485,7 @@ function vistaMonica() {
     case 'clienti': return vClienti();
     case 'impostazioni': return vImpostazioni();
     case 'spesa': return vSpesa();
-    case 'aiutante': return vAiutante();
+    case 'aiutante': return typeof vAiutante === 'function' ? vAiutante() : vHome();
     default: return vHome();
   }
 }

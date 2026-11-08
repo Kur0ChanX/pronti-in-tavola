@@ -355,8 +355,8 @@ document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id
 const AIC = { msgs: [], attesa: false, bozza: '' };
 const DOMANDE_AIC = ['Cosa c\'è di pronto oggi?', 'Cosa mi consigli?', 'Cosa posso mangiare con le mie allergie?', 'A che punto è il mio ordine?', 'Come si ordina?'];
 const VISTE_AIC = { menu: 'Menù', ordini: 'I miei ordini', carrello: 'Il carrello' };
-const aiClientiOn = () => S.impostazioni.aiClienti !== false;   // acceso di base (Mario 08/11 «attiva per i clienti»): si spegne solo con l'interruttore
-const aiClientiVisibile = () => P.ruolo !== 'monica' && !UI.modifica && (aiClientiOn() || !!UI.devCliente) && (!Dati.attivo || !!P.cliente || !!UI.devCliente);
+function aiClientiOn() { return S.impostazioni.aiClienti !== false; }   // acceso di base (Mario 08/11 «attiva per i clienti»): si spegne solo con l'interruttore
+function aiClientiVisibile() { return P.ruolo !== 'monica' && !UI.modifica && (aiClientiOn() || !!UI.devCliente) && (!Dati.attivo || !!P.cliente || !!UI.devCliente); }
 function datiAIC() {
   const imp = S.impostazioni, nomiAll = ids => allergeniDi(ids).map(a => NOME_ALL[a]);
   const piatti = visibili().filter(p => p.disponibile).map(p => {
@@ -512,3 +512,6 @@ document.addEventListener('change', e => {
   if (el.dataset && el.dataset.acon) { const [i, j] = el.dataset.acon.split('|'), m = AIC.msgs[Number(i)]; if (m && m.piano && !m.esito) { m.piano[Number(j)].on = el.checked; render(); } }
 });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.id === 'ac-testo') { e.preventDefault(); inviaAC(e.target.value); } });
+
+/* app.js ha già disegnato la pagina prima che arrivasse questo file: ridisegna per mostrare le barre dell'aiutante */
+try { if (typeof S !== 'undefined' && S && P.ruolo) render(); } catch (e) { /* al prossimo render */ }

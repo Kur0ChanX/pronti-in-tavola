@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.11';
+const VERSIONE_APP = '0.9.12';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.12', data: '08/11/2026',
+    corretto: ['L\'app si bloccava all\'apertura e Mario restava nella parte cliente: ora si apre giusta (e una prova lo controlla sempre)'] },
   { v: '0.9.11', data: '08/11/2026',
     nuovo: ['Sviluppatore: cronologia completa degli aggiornamenti dalla 0.1 a oggi, con le funzioni'] },
   { v: '0.9.10', data: '08/11/2026',
