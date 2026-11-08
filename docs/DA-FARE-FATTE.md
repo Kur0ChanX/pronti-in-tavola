@@ -65,3 +65,4 @@ La storia dei lavori finiti (in `docs/DA-FARE.md` resta solo cosa manca).
 - 08/11 · C55 chiusa (Mario 08/11 ~07:00 «su seadas va tutto video foto ecc»).
 - 08/11 · C55 (parte, v0.9.16-0.9.17): `gz.mjs` + `/api/gz` leggono la ricetta dal vivo, video HLS nel lettore, ricerca su tutto GZ, link incollato, preferite senza rete, ricette proprie, foto zoom, «Esplora», «Ispirate», mani libere; corretta la ricerca infinita di «Ispirate» (4cb2df3 → f1ed90e).
 - 08/11 · C55 (parte): ricettario v0.9.14 con elenco, ricerca, filtri, scheda con porzioni, spesa, cucina guidata (voce, timer, schermo acceso), 5 ricette.
+| C64 | Controllo dei comandi raggruppati (Mario 08/11 «ok per pronti in tavola»): `.claude/hooks/comandi-piccoli.py` avvisa dopo 4 comandi Bash piccoli di fila, mai blocca; prova `tools/test-comandi-piccoli.py` 108 OK. Chiusa 08/11 (#29). | Claude | ✅ |

@@ -110,6 +110,11 @@
             "type": "command",
             "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/spreco-token.py\" fine 2>/dev/null || true",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/comandi-piccoli.py\" stop 2>/dev/null || true",
+            "timeout": 10
           }
         ]
       }
@@ -182,6 +187,11 @@
           {
             "type": "command",
             "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/spreco-token.py\" tool 2>/dev/null || true",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/comandi-piccoli.py\" tool 2>/dev/null || true",
             "timeout": 10
           }
         ]
