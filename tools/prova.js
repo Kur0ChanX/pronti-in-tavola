@@ -188,6 +188,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.mario-scheda', { hasText: 'Foto originali di Monica' }).count())) throw new Error('manca «📷 Foto originali di Monica» nella scheda di Mario');
     const coda = await page.evaluate(async () => { await mandaOriginale(new File([new Uint8Array(5000)], 'x.jpg', { type: 'image/jpeg' }), 'Prova'); const d = await dbOriginali(); const n = await new Promise(ok => { const r = d.transaction('coda').objectStore('coda').count(); r.onsuccess = () => ok(r.result); }); await new Promise(ok => { const t = d.transaction('coda', 'readwrite'); t.objectStore('coda').clear(); t.oncomplete = ok; }); return n; });
     if (coda !== 1) throw new Error('la foto originale non resta in coda sul telefono: ' + coda);
+    // velocità della voce (C70): cursore nella scheda di Mario, salvato in S.impostazioni come numero, letto da velVoce()
+    const cur = page.locator('.mario-scheda input[data-campo="i.velVoce"]'); if (!(await cur.count())) throw new Error('manca il cursore della velocità della voce');
+    await cur.evaluate(el => { el.value = '0.75'; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); });
+    const vel = await page.evaluate(() => [S.impostazioni.velVoce, velVoce(), document.querySelector('.vel-voce-txt').textContent]);
+    if (vel[0] !== 0.75 || vel[1] !== 0.75 || !/molto lenta/.test(vel[2])) throw new Error('velocità non salvata: ' + JSON.stringify(vel));
+    await page.evaluate(() => { S.impostazioni.velVoce = 9; }); if ((await page.evaluate(() => velVoce())) !== 0.9) throw new Error('velocità fuori dai tetti non riportata a 0,9');
+    await page.evaluate(() => { delete S.impostazioni.velVoce; salva(); });
     await clic('.dev-scheda [data-a="dev-come"]'); await page.locator('.voce').first().waitFor({ timeout: 3000 });
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
   });
