@@ -121,5 +121,28 @@ prova('voci senza doppioni (2 diverse salvate)', s.voci === 2);
 const rn = await W.default.fetch(new Request('https://x/api/voce', { method: 'POST', headers: { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' }, body: JSON.stringify({ t: 'Testo nuovo', v: 'isabella' }) }), cfg, contesto);
 prova('voce nuova: chiede a Microsoft (qui rifiuta → errore, l\'app usa la voce del telefono)', msVoci === 1 && rn.status === 502);
 
+/* 6. il TUO ricettario (C61): il motore propone, tu aggiungi con l'ok; niente doppioni; togli */
+j = await (await chiedi({ cat: 'nuove', fuori: ['gz:Ricetta-sarda-0'] })).json();
+prova('proposte: dall\'archivio, senza quelle che hai già', j.ricette && j.ricette.length === 30 && !j.ricette.some(x => /Ricetta-sarda-0\.html$/.test(x.url)) && j.prossima === '');   // 31 nell'archivio, 1 già tua
+j = await (await chiedi({ cat: 'nuove', pagina: 'nuove:10', fuori: ['gz:Ricetta-sarda-0'] })).json();
+prova('proposte: «Carica altre» porta le altre', j.ricette && j.ricette.length === 20 && j.prossima === '');
+const nuova = { id: 'gz:Ricetta-sarda-5', nome: 'Ricetta sarda 5', zona: 'sarda', categoria: 'primi', foto: 'https://www.giallozafferano.it/images/x.jpg' };
+j = await (await chiedi({ db: 'aggiungi', r: nuova })).json();
+prova('➕ aggiungi: nel tuo ricettario', j.scelte && j.scelte.length === 1 && j.scelte[0].id === 'gz:Ricetta-sarda-5' && j.scelte[0].zona === 'sarda');
+j = await (await chiedi({ db: 'aggiungi', r: nuova })).json();
+prova('➕ due volte la stessa: nessun doppione', j.scelte && j.scelte.length === 1);
+j = await (await chiedi({ cat: 'nuove' })).json();
+prova('quella aggiunta non è più fra le proposte', j.ricette && !j.ricette.some(x => /Ricetta-sarda-5\.html$/.test(x.url)));
+j = await (await chiedi({ db: 'aggiungi', r: { id: 'gz:../x', nome: 'x' } })).json();
+prova('ricetta non valida rifiutata', j.errore === 'ricetta non valida');
+j = await (await chiedi({ db: 'aggiungi', r: { id: 'gz:Pane-nuovo', nome: 'Pane nuovo', zona: 'luna', foto: 'https://altro.sito/x.jpg' } })).json();
+prova('aggiungi una nuova: salvata anche intera, zona e foto ripulite', j.scelte && j.scelte.length === 2 && j.scelte[0].zona === 'italiana' && j.scelte[0].foto === '' && !!(await ponte.una('gz:Pane-nuovo')));
+j = await (await chiedi({ db: 'mie' })).json();
+prova('elenco del tuo ricettario', j.scelte && j.scelte.length === 2);
+j = await (await chiedi({ db: 'togli', id: 'gz:Pane-nuovo' })).json();
+prova('togli dal ricettario', j.scelte && j.scelte.length === 1);
+j = await (await chiedi({ db: 'stato' })).json();
+prova('stato: quante nel tuo ricettario', j.db && j.db.scelte === 1);
+
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);

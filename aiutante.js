@@ -256,14 +256,33 @@ function fermaVoce() {
   if (AI.audio) { try { AI.audio.pause(); } catch (e) { /* già ferma */ } AI.audio = null; }
   if (window.speechSynthesis) speechSynthesis.cancel();
 }
-async function audioVero(f, v) {
-  AI.cacheVoce = AI.cacheVoce || new Map();
-  const k = v + '|' + f; if (AI.cacheVoce.has(k)) return AI.cacheVoce.get(k);
+/* voci scaricate sul telefono (Mario 08/11 «scaricale per ogni ricetta offline»): cache «voci-pit», una per voce + testo, per sempre */
+const CACHE_VOCI = 'voci-pit';
+async function chiaveAudio(f, v) {
+  try { const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(v + '|' + f)))].map(b => b.toString(16).padStart(2, '0')).join(''); return location.origin + '/voci-salvate/' + h; } catch (e) { return ''; }
+}
+async function blobVoce(f, v) {
+  const ck = window.caches ? await chiaveAudio(f, v) : '';
+  const salvata = ck ? await caches.open(CACHE_VOCI).then(c => c.match(ck)).catch(() => null) : null;
+  if (salvata) return salvata.blob();
   const tok = typeof Dati !== 'undefined' && Dati.token ? await Dati.token() : '';
   if (!tok) throw new Error('senza accesso');
   const r = await fetch('/api/voce', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ t: f, v }) });
   if (!r.ok || !/audio/.test(r.headers.get('content-type') || '')) throw new Error('voce ' + r.status);
-  const u = URL.createObjectURL(await r.blob());
+  const b = await r.blob();
+  if (ck) await caches.open(CACHE_VOCI).then(c => c.put(ck, new Response(b, { headers: { 'content-type': 'audio/mpeg' } }))).catch(() => null);
+  return b;
+}
+/* scarica in anticipo la lettura di un testo con la voce scelta (niente se è scelta la voce del telefono) */
+async function scaricaVoce(t) {
+  const scelta = sceltaVoce(); if (!/^edge:/.test(scelta) || AI.voceNo) return false;
+  const testo = frasiVoce(t).join(' '); if (!testo) return true;
+  try { await blobVoce(testo, scelta.slice(5)); return true; } catch (e) { return false; }
+}
+async function audioVero(f, v) {
+  AI.cacheVoce = AI.cacheVoce || new Map();
+  const k = v + '|' + f; if (AI.cacheVoce.has(k)) return AI.cacheVoce.get(k);
+  const u = URL.createObjectURL(await blobVoce(f, v));
   AI.cacheVoce.set(k, u);
   if (AI.cacheVoce.size > 40) { const [k0, u0] = AI.cacheVoce.entries().next().value; URL.revokeObjectURL(u0); AI.cacheVoce.delete(k0); }
   return u;
@@ -280,7 +299,7 @@ function parlaAI(t, fine) {
       a.onended = () => { if (AI.giroVoce === giro) { AI.audio = null; if (fine) fine(); } };
       a.onerror = () => { if (AI.giroVoce === giro) parlaTelefono(t, fine); };
       return a.play();
-    }).catch(() => { if (AI.giroVoce !== giro) return; AI.voceNoFino = Date.now() + 120000; AI.voceNo = true; setTimeout(() => { AI.voceNo = false; }, 120000); parlaTelefono(t, fine); });
+    }).catch(() => { if (AI.giroVoce !== giro) return; if (!AI.voceAvvisata && typeof mostraToast === 'function') { AI.voceAvvisata = true; mostraToast('La voce di Microsoft non risponde: per ora legge la voce del telefono (sempre la stessa).'); } AI.voceNoFino = Date.now() + 120000; AI.voceNo = true; setTimeout(() => { AI.voceNo = false; }, 120000); parlaTelefono(t, fine); });
     return;
   }
   parlaTelefono(t, fine);

@@ -536,27 +536,29 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const n = await page.locator('.ric-elenco .ric-carta').count(); if (n !== await page.evaluate(() => RICETTE_GZ.length)) throw new Error('ricette in elenco: ' + n);
     if (await page.locator('.ric-cerca svg path, .ric-cerca svg circle').count() < 1) throw new Error('manca la lente');
     await foto('30-ricettario');
-    await clic('[data-a="ric-esplora"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
+    await clic('details.ric-esplora-box > summary'); await clic('[data-a="ric-esplora"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
     // 🎲 cosa cucino oggi: c'è una proposta e «Un'altra» la cambia (quasi sempre)
     const prop = () => page.locator('.scheda', { hasText: 'Cosa cucino oggi' }).locator('.ric-carta b').innerText();
     const p1 = await prop(); let cambia = false; for (let i = 0; i < 4 && !cambia; i++) { await clic('[data-a="ric-dado"]'); cambia = (await prop()) !== p1; }
     if (!cambia) throw new Error('«Un\'altra» non cambia la proposta');
     // cosa cucino con quello che ho: gli ingredienti diventano una ricerca
-    await page.fill('#ric-casa', 'zucchine, uova'); await page.press('#ric-casa', 'Enter');
+    await page.fill('#ric-cerca', 'zucchine, uova'); await page.press('#ric-cerca', 'Enter');
     await page.locator('.scheda h2', { hasText: 'zucchine uova' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
     // catalogo per portata: 30 ricette, «Carica altre» ne aggiunge altre 30, poi basta
     await page.evaluate(() => { RIC._c = RIC.chiedi; RIC.chiedi = async c => c.cat ? ({ ricette: Array.from({ length: 30 }, (_, i) => ({ url: 'https://ricette.giallozafferano.it/P' + (c.pagina ? 'b' : 'a') + i + '.html', nome: 'Primo ' + i, foto: '' })), prossima: c.pagina ? '' : 'https://www.giallozafferano.it/ricette-cat/page2/Primi/' }) : RIC._c(c); });
-    await clic('[data-a="ric-catalogo"][data-v="primi"]'); await page.locator('[data-a="ric-altre"]').waitFor({ timeout: 3000 });
+    await clic('details.ric-catalogo-box > summary'); await clic('[data-a="ric-catalogo"][data-v="primi"]'); await page.locator('[data-a="ric-altre"]').waitFor({ timeout: 3000 });
     await clic('[data-a="ric-altre"]'); await page.waitForTimeout(300);
     if (await page.locator('#ric-risultati .ric-carta').count() !== 60) throw new Error('«Carica altre» non aggiunge le ricette');
     if (await page.locator('[data-a="ric-altre"]').count()) throw new Error('«Carica altre» resta anche a catalogo finito');
-    await clic('[data-a="ric-chiudi-cerca"]'); await clic('.ric-intro summary');
+    await clic('[data-a="ric-chiudi-cerca"]'); await clic('details.ric-catalogo-box > summary'); await clic('details.ric-ingr > summary');
     await clic('[data-a="ric-catalogo"][data-v="ricette-con-le-Melanzane"]'); await page.locator('#ric-risultati h2', { hasText: 'Melanzane' }).waitFor({ timeout: 3000 });
     await clic('[data-a="ric-chiudi-cerca"]');
-    // 🗄 il tuo database (C60): numeri dal server, «Sfoglia» apre il catalogo del database
-    await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, oggi: 12, pausa: false }; RIC.dbOra = Date.now(); render(); });
-    await page.locator('#ric-db h2', { hasText: '42 ricette' }).waitFor({ timeout: 3000 });
-    await clic('[data-a="ric-catalogo"][data-v="db"]'); await page.locator('#ric-risultati h2', { hasText: 'Il tuo database' }).waitFor({ timeout: 3000 });
+    // 🗄 pagina Database ricette (C60): numeri del telefono e del server, «Sfoglia» apre l'archivio nel Ricettario
+    await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, mb: 3, oggi: 12, pausa: false }; RIC.dbOra = Date.now(); vai('ricdb'); });
+    await page.locator('#ricdb-archivio h2', { hasText: '42 ricette' }).waitFor({ timeout: 3000 });
+    if (!(await page.locator('.scheda h2', { hasText: 'Il tuo ricettario: ' }).count())) throw new Error('manca «Il tuo ricettario: N»');
+    await foto('42-database');
+    await clic('[data-a="ric-catalogo"][data-v="db"]'); await page.locator('#ric-risultati h2', { hasText: 'Archivio automatico' }).waitFor({ timeout: 3000 });
     await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
@@ -621,20 +623,20 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       return { n, dopo, apre: !!ricetta('gz:Prova-b') };
     });
     if (scar.n !== 3 || scar.dopo !== 3 || !scar.apre) throw new Error('«Scarica» non tiene le ricette sul telefono: ' + JSON.stringify(scar));
-    await page.evaluate(() => { UI.ric = { q: '', zona: 'scaricate', cat: '' }; vai('ricettario'); });
-    if (await page.locator('.ric-elenco .ric-carta').count() !== 3) throw new Error('«Sul telefono» non mostra le 3 scaricate');
+    await page.evaluate(() => { vai('ricdb'); });
+    if (await page.locator('.ricdb-scaricate li').count() !== 3) throw new Error('la pagina Database non elenca le 3 scaricate');
+    if (!(await page.locator('.scheda h2', { hasText: 'Sul telefono: 3 ricette' }).count())) throw new Error('la pagina Database non conta le scaricate');
     await page.evaluate(async () => { await dbRic('readwrite', st => st.clear()); RIC.scaricate = {}; scriviRic('pit-ric-auto', true); UI.ric = { q: '', zona: 'tutte', cat: '' }; });
     // 💾 copia di sicurezza: si salva un file e riprenderlo rimette note e preferite
-    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 5000 }), page.evaluate(() => { UI.ric = { q: '', zona: 'tutte', cat: '' }; vai('ricettario'); A['ric-copia-salva'](); })]);
+    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 5000 }), page.evaluate(() => { UI.ric = { q: '', zona: 'tutte', cat: '' }; vai('ricdb'); A['ric-copia-salva'](); })]);
     const copia = JSON.parse(require('fs').readFileSync(await dl.path(), 'utf8'));
     if (copia.tipo !== 'pronti-ricettario' || !copia.preferite.includes('gz:Seadas-sebadas')) throw new Error('la copia non contiene le preferite');
     await page.evaluate(() => { scriviRic('pit-ric-pref', []); render(); });
     await page.setInputFiles('#ric-copia-file', { name: 'copia.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(copia)) }); await page.waitForTimeout(300);
     if (!(await page.evaluate(() => preferiteRic().includes('gz:Seadas-sebadas')))) throw new Error('riprendere la copia non rimette le preferite');
-    // viste di recente: la ricetta appena aperta c'è
-    await page.evaluate(() => { UI.ric = { q: '', zona: 'recenti', cat: '' }; vai('ricettario'); });
-    if (!(await page.locator('.ric-elenco .ric-carta', { hasText: 'Seadas' }).count())) throw new Error('«Viste di recente» non mostra la ricetta aperta');
-    await page.evaluate(() => { UI.ric = { q: '', zona: 'tutte', cat: '' }; });
+    // la ricetta appena aperta resta sul telefono (copia per il «senza rete»)
+    if (!(await page.evaluate(() => !!cacheRic()['gz:Seadas-sebadas']))) throw new Error('la ricetta aperta non resta sul telefono');
+    await page.evaluate(() => { UI.ric = { q: '', zona: 'tutte', cat: '' }; vai('ricettario'); });
     // senza rete: la preferita si riapre dalla copia sul telefono
     await page.evaluate(() => { RIC.chiedi = async () => { throw new Error('senza rete'); }; vai('ricetta:gz:Seadas-sebadas'); });
     await page.locator('.ric-ing').waitFor({ timeout: 3000 });
@@ -690,6 +692,36 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await p2.close(); srv.close();
     const nostri = sbagli.filter(m => /is not defined|is not a function|Cannot read/.test(m));
     if (nostri.length) throw new Error('errori nel sito vero: ' + [...new Set(nostri)].join(' · '));
+  });
+  await passo('ricettario (C61): ▶️ in cima, il motore propone, «➕ Aggiungi» con l\'ok, niente doppioni, «Togli»', async () => {
+    await page.evaluate(() => {
+      RIC._c2 = RIC.chiedi; RIC.server = []; RIC.domande = [];
+      RIC.chiedi = async c => {
+        RIC.domande.push(c);
+        if (c.db === 'aggiungi') { if (!RIC.server.some(x => x.id === c.r.id)) RIC.server.unshift(c.r); return { scelte: RIC.server.slice() }; }
+        if (c.db === 'togli') { RIC.server = RIC.server.filter(x => x.id !== c.id); return { scelte: RIC.server.slice() }; }
+        if (c.db === 'mie') return { scelte: RIC.server.slice() };
+        if (c.db) return { db: { ricette: 3, coda: 0, voci: 0, mbVoci: 0, oggi: 3, pausa: false, scelte: RIC.server.length } };
+        if (c.cat === 'nuove') return { ricette: [{ url: 'https://ricette.giallozafferano.it/Nuova-prova.html', nome: 'Nuova prova', foto: '', video: true }], prossima: '' };
+        return { ricetta: { id: 'gz:Nuova-prova', url: 'https://ricette.giallozafferano.it/Nuova-prova.html', nome: 'Nuova prova', categoria: 'Primi piatti', porzioni: 4, ingredienti: [{ nome: 'Farina', q: 100, u: 'g' }], passi: [{ t: 'Impasta.', foto: [] }], foto: '' } };
+      };
+      RIC.scelteOra = 0; UI.ric = { q: '', zona: 'tutte', cat: '' }; RIC.cerca = { q: '', stato: '', risultati: [] }; vai('ricettario');
+    });
+    await clic('[data-a="ric-catalogo"][data-v="nuove"]'); await page.locator('#ric-risultati h2', { hasText: 'Ricette nuove per te' }).waitFor({ timeout: 3000 });
+    if (!(await page.evaluate(() => (RIC.domande.find(c => c.cat === 'nuove').fuori || []).length === elencoRic().length))) throw new Error('il motore non sa quali ricette hai già');
+    await page.locator('#ric-risultati .ric-carta').first().click(); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
+    if (!(await page.evaluate(() => { const p = document.querySelector('main.corpo').firstElementChild; return p && p.classList.contains('ric-play') && /Ascolta la ricetta passo passo/.test(p.textContent); }))) throw new Error('il ▶️ non è la prima cosa della ricetta');
+    await foto('41-ricetta-nuova');
+    await clic('[data-a="ric-aggiungi"]'); await page.waitForTimeout(300);
+    if (!(await page.evaluate(() => nelRicettario('gz:Nuova-prova') && RIC.server.length === 1))) throw new Error('«Aggiungi» non la mette nel ricettario');
+    if (await page.locator('[data-a="ric-aggiungi"]').count()) throw new Error('«Aggiungi» resta dopo averla aggiunta');
+    await page.evaluate(() => A['ric-aggiungi']({ dataset: { v: 'gz:Nuova-prova' } })); await page.waitForTimeout(200);
+    if (await page.evaluate(() => RIC.server.length !== 1 || RIC.scelte.length !== 1)) throw new Error('doppione nel ricettario');
+    await page.evaluate(() => { UI.ric = { q: '', zona: 'tutte', cat: '' }; RIC.cerca = { q: '', stato: '', risultati: [] }; vai('ricettario'); });
+    if (!(await page.locator('.ric-elenco .ric-carta', { hasText: 'Nuova prova' }).count())) throw new Error('la ricetta aggiunta non è nell\'elenco');
+    await page.evaluate(() => vai('ricetta:gz:Nuova-prova')); await clic('[data-a="ric-togli"]');
+    if (await page.evaluate(() => nelRicettario('gz:Nuova-prova') || RIC.server.length)) throw new Error('«Togli» non la toglie');
+    await page.evaluate(() => { RIC.chiedi = RIC._c2; try { localStorage.removeItem('pit-ric-scelte'); } catch (e) { /* niente */ } RIC.scelte = []; vai('home'); });
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');

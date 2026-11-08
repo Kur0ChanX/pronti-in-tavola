@@ -940,7 +940,7 @@ function barraCliente() {
 }
 
 /* ================= MONICA ================= */
-const NOMI_VISTE = { home: 'Home', ricettario: 'Ricettario', ricetta: 'Ricetta', cucina: 'Cucina guidata', ricmia: 'La tua ricetta', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
+const NOMI_VISTE = { home: 'Home', ricettario: 'Ricettario', ricdb: 'Database ricette', ricetta: 'Ricetta', cucina: 'Cucina guidata', ricmia: 'La tua ricetta', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
 function testataMonica(titolo, indietro) {
   const vista = UI.vista.split(':')[0];
   const aiuto = wa(S.impostazioni.mario, `Ciao Mario, sono bloccata in Pronti in Tavola, nella schermata «${NOMI_VISTE[vista] || vista}». Mi aiuti?`);
@@ -1498,7 +1498,8 @@ function vistaMonica() {
     case 'impostazioni': return vImpostazioni();
     case 'spesa': return vSpesa();
     case 'aiutante': return typeof vAiutante === 'function' ? vAiutante() : vHome();
-    case 'ricettario': return typeof vRicettario === 'function' ? vRicettario() : vHome();   // ricettario.js arriva dopo app.js (PT E23)
+    case 'ricettario': return typeof vRicettario === 'function' ? vRicettario() : vHome();
+    case 'ricdb': return typeof vRicDb === 'function' ? vRicDb() : vHome();   // ricettario.js arriva dopo app.js (PT E23)
     case 'ricetta': return typeof vRicetta === 'function' ? vRicetta(id) : vHome();
     case 'cucina': return typeof vCucina === 'function' ? vCucina(id) : vHome();
     case 'ricmia': return typeof vRicMia === 'function' ? vRicMia(id) : vHome();

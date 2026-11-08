@@ -16,7 +16,7 @@
    - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano letta dal vivo (gz.mjs), { cerca } la ricerca (C55)
-   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' } e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
+   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -250,6 +250,14 @@ async function ricettaGz(b, cfg, ctx) {
   if (b && b.db) {   // { db: 'stato' } numeri · { db: 'pausa'|'riprendi' } ferma o riprende la crescita
     if (!db) return { errore: 'database non collegato' };
     if (b.db === 'pausa' || b.db === 'riprendi') await db.metti1('pausa', b.db === 'pausa' ? '1' : '');
+    if (b.db === 'mie') return { scelte: await db.scelte() };
+    if (b.db === 'aggiungi') {   // ➕ con l'ok di chi gestisce: nel ricettario per tutti i telefoni, e la ricetta intera salvata per sempre
+      if (!(await db.aggiungi(b.r))) return { errore: 'ricetta non valida' };
+      const u = urlGz('https://ricette.giallozafferano.it/' + String(b.r.id).slice(3) + '.html');
+      if (u && !(await db.una(b.r.id))) poi(leggiGz(u).then(r => r && db.salva(r)));
+      return { scelte: await db.scelte() };
+    }
+    if (b.db === 'togli') { await db.togli(b.id); return { scelte: await db.scelte() }; }
     return { db: await db.statoDb() };
   }
   if (b && b.cat === 'db') {   // sfoglia o cerca nel database, 30 per volta («Carica altre» = pagina 'db:<da>')
@@ -257,6 +265,12 @@ async function ricettaGz(b, cfg, ctx) {
     const da = typeof b.pagina === 'string' && /^db:\d{1,6}$/.test(b.pagina) ? +b.pagina.slice(3) : 0;
     const q = typeof b.q === 'string' ? b.q : '', ricette = await db.elenco(q, da, 31);
     return { ricette: ricette.slice(0, 30), prossima: ricette.length > 30 ? 'db:' + (da + 30) : '' };
+  }
+  if (b && b.cat === 'nuove') {   // 🔎 il motore propone (dall'archivio che cresce da solo), tu scegli
+    if (!db) return { errore: 'database non collegato' };
+    const da = typeof b.pagina === 'string' && /^nuove:\d{1,6}$/.test(b.pagina) ? +b.pagina.slice(6) : 0;
+    const ricette = await db.proposte(Array.isArray(b.fuori) ? b.fuori.slice(0, 500) : [], da);
+    return { ricette: ricette.slice(0, 30), prossima: ricette.length > 30 ? 'nuove:' + (da + 30) : '' };
   }
   if (b && (typeof b.cerca === 'string' || typeof b.cat === 'string')) {
     let u = '';
@@ -504,16 +518,19 @@ export class Ricettario extends DurableObject {
       'CREATE INDEX IF NOT EXISTS ricette_url ON ricette (url)',
       'CREATE TABLE IF NOT EXISTS coda (url TEXT PRIMARY KEY, aggiunta INTEGER, tentativi INTEGER DEFAULT 0)',
       'CREATE TABLE IF NOT EXISTS voci (k TEXT PRIMARY KEY, mp3 BLOB, byte INTEGER, creata INTEGER)',
-      'CREATE TABLE IF NOT EXISTS stato (k TEXT PRIMARY KEY, v TEXT)'].forEach(q => this.sql.exec(q));
+      'CREATE TABLE IF NOT EXISTS stato (k TEXT PRIMARY KEY, v TEXT)',
+      // il TUO ricettario (C61): le ricette che Mario o Monica hanno scelto con «➕ Aggiungi», uguali su tutti i telefoni
+      'CREATE TABLE IF NOT EXISTS scelte (id TEXT PRIMARY KEY, url TEXT, nome TEXT, zona TEXT, categoria TEXT, foto TEXT, aggiunta INTEGER)'].forEach(q => this.sql.exec(q));
+    for (const c of ['voto REAL DEFAULT 0', 'video INTEGER DEFAULT 0']) { try { this.sql.exec('ALTER TABLE ricette ADD COLUMN ' + c); } catch (e) { /* c'è già */ } }
   }
   leggi1(k) { const r = this.sql.exec('SELECT v FROM stato WHERE k = ?', k).toArray()[0]; return r ? r.v : ''; }
   metti1(k, v) { this.sql.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', k, String(v ?? '')); }
   salva(r) {
     if (!r || !/^gz:[\w%-]+$/.test(r.id || '') || !r.nome) return false;
     const ora = Date.now(), cerca = minuscolo([r.nome, r.categoria, (r.ingredienti || []).map(i => i.nome).join(' ')].join(' '));
-    this.sql.exec(`INSERT INTO ricette (id, url, nome, categoria, foto, descr, cerca, json, creata, aggiornata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET nome = excluded.nome, categoria = excluded.categoria, foto = excluded.foto, descr = excluded.descr, cerca = excluded.cerca, json = excluded.json, aggiornata = excluded.aggiornata`,
-      r.id, r.url || '', r.nome, r.categoria || '', r.foto || '', String(r.intro || '').slice(0, 200), cerca, JSON.stringify(r), ora, ora);
+    this.sql.exec(`INSERT INTO ricette (id, url, nome, categoria, foto, descr, cerca, json, creata, aggiornata, voto, video) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET nome = excluded.nome, categoria = excluded.categoria, foto = excluded.foto, descr = excluded.descr, cerca = excluded.cerca, json = excluded.json, aggiornata = excluded.aggiornata, voto = excluded.voto, video = excluded.video`,
+      r.id, r.url || '', r.nome, r.categoria || '', r.foto || '', String(r.intro || '').slice(0, 200), cerca, JSON.stringify(r), ora, ora, Number(r.voto) || 0, r.hls || r.mp4 ? 1 : 0);
     this.sql.exec('DELETE FROM coda WHERE url = ?', r.url || '');
     return true;
   }
@@ -552,10 +569,26 @@ export class Ricettario extends DurableObject {
     this.sql.exec('INSERT OR IGNORE INTO voci (k, mp3, byte, creata) VALUES (?, ?, ?, ?)', String(k), b, b.byteLength, Date.now());
     return true;
   }
+  /* il tuo ricettario: elenco, aggiungi (niente doppioni: stesso id = una riga), togli */
+  scelte() { return this.sql.exec('SELECT id, url, nome, zona, categoria, foto, aggiunta FROM scelte ORDER BY aggiunta DESC').toArray(); }
+  aggiungi(x) {
+    if (!x || !/^gz:[\w%-]+$/.test(x.id || '') || !x.nome) return false;
+    const pulito = (v, n) => String(v || '').slice(0, n);
+    this.sql.exec('INSERT OR IGNORE INTO scelte (id, url, nome, zona, categoria, foto, aggiunta) VALUES (?, ?, ?, ?, ?, ?, ?)', x.id, 'https://ricette.giallozafferano.it/' + x.id.slice(3) + '.html',
+      pulito(x.nome, 120), ['sarda', 'gallura', 'italiana'].includes(x.zona) ? x.zona : 'italiana', pulito(x.categoria, 40), /^https:\/\/[\w.-]+\.giallozafferano\.it\//.test(x.foto || '') ? pulito(x.foto, 300) : '', Date.now());
+    return true;
+  }
+  togli(id) { this.sql.exec('DELETE FROM scelte WHERE id = ?', String(id)); }
+  /* PROPOSTE del motore: ricette dell'archivio che il tuo ricettario non ha; prima quelle col video e i voti più alti */
+  proposte(fuori, da) {
+    const no = new Set([...(fuori || []).map(String), ...this.scelte().map(x => x.id)]);
+    const tt = this.sql.exec('SELECT id, url, nome, foto, categoria, descr, voto, video FROM ricette ORDER BY video DESC, voto DESC, creata DESC LIMIT 400').toArray().filter(x => !no.has(x.id));
+    return tt.slice(Math.max(0, Number(da) || 0), (Number(da) || 0) + 31).map(x => ({ url: x.url, nome: x.nome, foto: x.foto, categoria: x.categoria, desc: x.descr, voto: x.voto, video: !!x.video }));
+  }
   statoDb() {
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, v = uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci');
     const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
-    return { ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
+    return { scelte: uno('SELECT COUNT(*) AS n FROM scelte').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
       oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
       fonte: Number(this.leggi1('fonte')) || 0, pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'), mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };
   }

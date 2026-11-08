@@ -84,7 +84,8 @@ export function gzRicetta(html, url) {
     difficolta: dato('Difficoltà'), costo: dato('Costo'),
     ingredienti: [].concat(ld.recipeIngredient || []).map(ingrediente).filter(i => i.nome),
     passi, conserva: sezione(html, 'Conservazione'), consiglio: sezione(html, 'Consiglio'),
-    autore: testo(ld.author && (ld.author.name || ld.author)), videoChiave: video ? video[1] : ''
+    autore: testo(ld.author && (ld.author.name || ld.author)), videoChiave: video ? video[1] : '',
+    voto: Math.round((parseFloat(ld.aggregateRating && ld.aggregateRating.ratingValue) || 0) * 10) / 10, voti: parseInt(ld.aggregateRating && (ld.aggregateRating.ratingCount || ld.aggregateRating.reviewCount), 10) || 0
   };
 }
 

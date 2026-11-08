@@ -724,6 +724,10 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-testo { display: flex; flex-direction: column; gap: 4px; }
 .ric-testo small { opacity: .75; }
 .ric-foto { margin: 0; }
+.ricdb-lista { margin: 0; padding-left: 18px; display: grid; gap: 4px; }
+.ricdb-lista .link { text-align: left; }
+.ric-db-link { text-align: left; }
+.ric-play { font-size: 1.15rem; padding: 14px 18px; }   /* ▶️ in cima alla ricetta (Mario 08/11) */
 .ric-foto img { width: 100%; max-height: 280px; object-fit: cover; border-radius: 18px; display: block; }
 .ric-foto figcaption { font-size: .75rem; opacity: .7; margin-top: 4px; }
 .ric-porz { align-items: center; gap: 8px; }

@@ -15,7 +15,7 @@ const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: 
     if (!r.ok || j.errore) throw new Error(j.errore || 'Il server risponde ' + r.status);
     return j;
   } };
-const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['scaricate', '📥 Sul telefono'], ['recenti', '🕘 Viste di recente'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
+const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
 /* catalogo completo per portata (sezioni di GialloZafferano lette dal server, pagina dopo pagina) */
@@ -64,6 +64,7 @@ async function scaricaUna(id) {
   const r = Object.assign({}, j.ricetta, { scaricata: Date.now() });
   await dbRic('readwrite', st => st.put(r));
   RIC.scaricate[r.id] = r;
+  codaVoci(r);   // anche la voce dei passi, sul telefono (in fila, una ricetta alla volta)
   try { const c = await caches.open('gz-foto'); await Promise.all(fotoDi(r).map(f => c.match(f).then(m => m || fetch(f, { mode: 'no-cors', referrerPolicy: 'no-referrer' }).then(x => c.put(f, x))).catch(() => {}))); } catch (e) { /* le foto restano online */ }
   return true;
 }
@@ -90,7 +91,7 @@ function autoScarica() {
   const oggiS = new Date().toDateString(); if (leggiRic('pit-ric-auto-giorno', '') === oggiS) return;
   if (typeof Dati === 'undefined' || !Dati.token) return;
   scriviRic('pit-ric-auto-giorno', oggiS);
-  const ids = preferiteRic().concat(RICETTE_GZ.map(r => r.id), ispirate().map(r => r.id)).filter(id => !RIC.scaricate[id]).slice(0, 40);
+  const ids = preferiteRic().concat(elencoRic().map(r => r.id), ispirate().map(r => r.id)).filter(id => !RIC.scaricate[id]).slice(0, 40);
   if (ids.length) setTimeout(() => scaricaTante(ids, 'aggiornamento di oggi'), 8000);
 }
 /* 💾 riprende una copia: unisce (non cancella): ricette tue per id, note, preferite; un tocco su «Annulla» torna a prima */
@@ -130,7 +131,23 @@ function salvaCache(r) {
   ids = ids.slice(0, 15);
   while (!scriviRic('pit-ric-cache', c) && ids.length) delete c[ids.pop()];
 }
-const voceElenco = id => (typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : []).find(r => r.id === id) || RIC.cerca.risultati.find(r => r.id === id) || ispirate().find(r => r.id === id);
+/* IL TUO RICETTARIO (C61, Mario 08/11 «io devo soltanto dare l'ok di aggiungere»): quelle nel codice + quelle scelte con «➕ Aggiungi»,
+   salvate sul server (uguali sul telefono di Monica e di Mario) e copiate qui per usarle senza rete */
+RIC.scelte = (() => { try { return JSON.parse(localStorage.getItem('pit-ric-scelte') || '[]'); } catch (e) { return []; } })();
+function elencoRic() {
+  const base = typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : [], ids = new Set(base.map(r => r.id));
+  return base.concat(RIC.scelte.filter(x => !ids.has(x.id)).map(x => ({ id: x.id, pagina: x.id.slice(3), nome: x.nome, zona: x.zona || 'italiana', categoria: x.categoria || '', foto: x.foto || '', scelta: true })));
+}
+const nelRicettario = id => elencoRic().some(r => r.id === id);
+function salvaScelte(tt) { if (!Array.isArray(tt)) return; RIC.scelte = tt; scriviRic('pit-ric-scelte', tt); }
+function leggiScelte() {
+  if (RIC.scelteChiede || Date.now() - (RIC.scelteOra || 0) < 60000) return;
+  RIC.scelteChiede = true; RIC.scelteOra = Date.now();
+  RIC.chiedi({ db: 'mie' }).then(j => { if (j && Array.isArray(j.scelte)) { salvaScelte(j.scelte); if (UI.vista === 'ricettario') render(); } }).catch(() => null).finally(() => { RIC.scelteChiede = false; });
+}
+/* corpo della domanda per un catalogo: per «nuove» dico al server quali ho già (niente doppioni) */
+const corpoCat = (cat, q, pagina) => Object.assign({ cat, cerca: q }, pagina ? { pagina } : {}, cat === 'nuove' ? { fuori: elencoRic().map(r => r.id) } : {});
+const voceElenco = id => elencoRic().find(r => r.id === id) || RIC.cerca.risultati.find(r => r.id === id) || ispirate().find(r => r.id === id);
 const daCerca = x => ({ id: 'gz:' + x.url.replace(URL_GZ, '').replace(/\.html$/, ''), nome: x.nome, foto: x.foto, categoria: '' });
 /* «Ispirate ai tuoi piatti»: per ogni piatto del menù di Monica cerco su GialloZafferano (una volta al giorno, poi resta sul telefono) */
 const ispirate = () => (leggiRic('pit-ric-ispira', {}).lista || []);
@@ -142,7 +159,7 @@ function ispira() {
   RIC.ispiraVa = true;
   Promise.all(nomi.map(n => RIC.chiedi({ cerca: n.replace(/\(.*?\)/g, '').trim() }).then(j => (j.ricette || []).slice(0, 3).map(x => Object.assign(daCerca(x), { per: n }))).catch(() => [])))
     .then(gruppi => {
-      const lista = [], visti = new Set(RICETTE_GZ.map(r => r.id));
+      const lista = [], visti = new Set(elencoRic().map(r => r.id));
       for (let k = 0; k < 3; k++) gruppi.forEach(g => { const r = g[k]; if (r && !visti.has(r.id)) { visti.add(r.id); lista.push(r); } });
       scriviRic('pit-ric-ispira', { giorno: oggiRic, firma, lista: lista.slice(0, 24) });   // anche vuota: così non ricerca in giro (una volta al giorno)
     })
@@ -205,51 +222,92 @@ const cartaRic = (r, pref) => `<button type="button" class="ric-carta" data-a="v
     ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
     <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.mia ? 'Ricetta tua' : { gallura: 'Gallura', sarda: 'Sardegna', italiana: 'Italia' }[r.zona] || 'GialloZafferano'}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small></span></button>`;
 
-/* 🗄 il TUO database sul server (C60): quante ricette e voci salvate per sempre, sfoglia, ferma o riprendi la crescita */
-function sezioneDbRic() {
-  const d = RIC.db;
-  if (!d || Date.now() - (RIC.dbOra || 0) > 60000) {
-    if (!RIC.dbChiede) {
-      RIC.dbChiede = true;
-      RIC.dbOra = Date.now();   // una domanda al minuto al massimo, anche se il server non risponde (niente giri infiniti)
-      RIC.chiedi({ db: 'stato' }).then(j => { RIC.db = j && j.db ? j.db : RIC.db || { errore: true }; })
-        .catch(() => { RIC.db = RIC.db || { errore: true }; })
-        .finally(() => { RIC.dbChiede = false; if (UI.vista === 'ricettario') render(); });
-    }
-    if (!d) return '';
-  }
-  if (d.errore) return '';
-  const crescita = d.pausa ? '⏸ Crescita ferma: tocca «Riprendi».' : `Cresce da solo: +${d.oggi} nelle ultime 24 ore${d.coda ? `, ${d.coda} in arrivo` : ''}.`;
-  return `<section class="scheda" id="ric-db"><h2>🗄 Il tuo database: ${d.ricette} ricette</h2>
-    <p class="piccolo tenue" style="margin:0">${crescita} Salvate per sempre sul server dell'app, con ${d.voci} letture della voce${d.mbVoci ? ` (${d.mbVoci} MB)` : ''}.</p>
-    <div class="fila">${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-pausa">${d.pausa ? '▶️ Riprendi la crescita' : '⏸ Ferma la crescita'}</button></div></section>`;
+/* 🗄 DATABASE RICETTE (C60, C61; Mario 08/11 «quante ricette ho, quante nuove, quali, quali con la voce, dati offline»):
+   una pagina sola coi numeri veri: il tuo ricettario, le aggiunte, quelle sul telefono (con 🔊 se la voce è pronta),
+   l'archivio automatico sul server, lo spazio usato. I numeri del server arrivano da /api/gz { db: 'stato' } (al massimo uno al minuto). */
+function chiediStatoDb() {
+  if (RIC.dbChiede || Date.now() - (RIC.dbOra || 0) < 60000) return;
+  RIC.dbChiede = true; RIC.dbOra = Date.now();   // una domanda al minuto al massimo, anche se il server non risponde (niente giri infiniti)
+  Promise.all([RIC.chiedi({ db: 'stato' }), RIC.chiedi({ cat: 'db' }).catch(() => null)])
+    .then(([j, u]) => { RIC.db = j && j.db ? j.db : RIC.db || { errore: true }; if (u && u.ricette) RIC.dbUltime = u.ricette.slice(0, 8).map(daCerca); })
+    .catch(() => { RIC.db = RIC.db || { errore: true }; })
+    .finally(() => { RIC.dbChiede = false; if (UI.vista === 'ricdb' || UI.vista === 'ricettario') render(); });
+}
+/* spazio e dati senza rete sul telefono: una volta ogni 5 minuti */
+function misuraDati() {
+  if (RIC.datiChiede || Date.now() - (RIC.datiOra || 0) < 300000) return;
+  RIC.datiChiede = true; RIC.datiOra = Date.now();
+  (async () => {
+    const d = { foto: 0, voci: 0, usatoMb: 0, totMb: 0 };
+    try { if (window.caches) { d.foto = (await (await caches.open('gz-foto')).keys()).length; d.voci = (await (await caches.open(typeof CACHE_VOCI !== 'undefined' ? CACHE_VOCI : 'voci-pit')).keys()).length; } } catch (e) { /* senza cache */ }
+    try { if (navigator.storage && navigator.storage.estimate) { const e = await navigator.storage.estimate(); d.usatoMb = Math.round((e.usage || 0) / 104857.6) / 10; d.totMb = Math.round((e.quota || 0) / 1048576); } } catch (e) { /* niente */ }
+    RIC.dati = d;
+  })().finally(() => { RIC.datiChiede = false; if (UI.vista === 'ricdb') render(); });
+}
+const dataBreve = t => { const d = new Date(t || 0); return t ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}` : ''; };
+const rigaDb = (r, extra) => `<li><button type="button" class="link" data-a="vai" data-v="ricetta:${esc(r.id)}">${esc(r.nome)}</button> <small class="tenue">${extra}</small></li>`;
+function vRicDb() {
+  if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
+  if (RIC.stato !== 'pronto') return attesaRic('Database ricette', 'ricettario');
+  leggiScelte(); chiediStatoDb(); misuraDati();
+  const elenco = elencoRic(), mie = mieRic(), scar = Object.values(RIC.scaricate).sort((a, b) => (b.scaricata || 0) - (a.scaricata || 0));
+  const nVoci = scar.filter(r => RIC.vociFatte[r.id]).length, scelte = (RIC.scelte || []).slice().sort((a, b) => (b.aggiunta || 0) - (a.aggiunta || 0));
+  const sett = Date.now() - 7 * 86400000, nuoveSett = scelte.filter(x => (x.aggiunta || 0) > sett).length, d = RIC.db && !RIC.db.errore ? RIC.db : null, dati = RIC.dati;
+  const tutteScelte = UI.ricDbTutte === 'scelte', tutteScar = UI.ricDbTutte === 'scar';
+  let h = testataMonica('Database ricette', 'ricettario') + '<main class="corpo">';
+  h += `<section class="scheda"><h2>📖 Il tuo ricettario: ${elenco.length + mie.length} ricette</h2>
+    <p class="piccolo tenue" style="margin:0">${elenco.length} di GialloZafferano (${scelte.length} aggiunte da te${nuoveSett ? `, ${nuoveSett} negli ultimi 7 giorni` : ''}) e ${mie.length} scritte da te. Uguali sul telefono di Monica e di Mario.</p>
+    ${scelte.length ? `<h3 style="margin:8px 0 4px">➕ Aggiunte di recente</h3><ul class="ricdb-lista ricdb-scelte">${(tutteScelte ? scelte : scelte.slice(0, 5)).map(x => rigaDb(x, dataBreve(x.aggiunta))).join('')}</ul>
+      ${scelte.length > 5 && !tutteScelte ? `<button type="button" class="link" data-a="ricdb-tutte" data-v="scelte">Tutte le ${scelte.length}</button>` : ''}` : '<p class="piccolo" style="margin:0">Non hai ancora aggiunto ricette: nel Ricettario tocca «🔎 Fammi vedere le ricette nuove».</p>'}</section>`;
+  h += barraScarico();
+  h += `<section class="scheda"><h2>📥 Sul telefono: ${scar.length} ricette</h2>
+    <p class="piccolo tenue" style="margin:0">Testi e foto scaricati qui: le apri anche senza rete (il video no). ${nVoci} con la voce pronta 🔊.</p>
+    ${scar.length ? `<ul class="ricdb-lista ricdb-scaricate">${(tutteScar ? scar : scar.slice(0, 8)).map(r => rigaDb(r, `${dataBreve(r.scaricata)}${RIC.vociFatte[r.id] ? ' · 🔊 voce' : ''}`)).join('')}</ul>
+      ${scar.length > 8 && !tutteScar ? `<button type="button" class="link" data-a="ricdb-tutte" data-v="scar">Tutte le ${scar.length}</button>` : ''}` : ''}
+    ${RIC.scarico ? '' : `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-scarica-elenco">📥 Scarica tutto l'elenco (${elenco.length + preferiteRic().filter(id => !nelRicettario(id)).length})</button>
+      ${scar.length > nVoci ? `<button type="button" class="btn chiaro" data-a="ricdb-voci">🔊 Prepara la voce di tutte (${scar.length - nVoci})</button>` : ''}</div>`}
+    <label class="interr"><span>Aggiorna da sola ogni giorno<small>Col Wi-Fi scarica le nuove di preferite, elenco e «Ispirate».</small></span><input type="checkbox" data-a="ric-auto" ${leggiRic('pit-ric-auto', true) !== false ? 'checked' : ''}></label>
+    ${scar.length ? '<button type="button" class="btn chiaro piccolo" data-a="ric-scarica-via">Togli le ricette scaricate</button>' : ''}</section>`;
+  h += `<section class="scheda" id="ricdb-archivio"><h2>🗄 Archivio automatico: ${d ? d.ricette + ' ricette' : RIC.db ? 'non risponde' : '…'}</h2>`;
+  if (d) h += `<p class="piccolo tenue" style="margin:0">${d.pausa ? '⏸ Fermo: tocca «Riprendi».' : `Cresce da solo ogni 10 minuti: +${d.oggi} nelle ultime 24 ore${d.coda ? `, ${d.coda} in arrivo` : ''}.`} Letto da GialloZafferano e salvato per sempre sul server dell'app (${d.mb} MB), con ${d.voci} letture della voce${d.mbVoci ? ` (${d.mbVoci} MB)` : ''}. Da qui il motore pesca le ricette nuove da proporti.</p>
+    ${RIC.dbUltime && RIC.dbUltime.length ? `<h3 style="margin:8px 0 4px">Ultime arrivate</h3><ul class="ricdb-lista">${RIC.dbUltime.map(r => rigaDb(r, '')).join('')}</ul>` : ''}
+    <div class="fila">${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia tutto</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-pausa">${d.pausa ? '▶️ Riprendi la crescita' : '⏸ Ferma la crescita'}</button></div>`;
+  else if (RIC.db) h += '<p class="piccolo" style="margin:0">Il server non risponde: riprova fra un minuto (serve la rete).</p>';
+  h += '</section>';
+  h += `<section class="scheda"><h2>📊 Dati senza rete su questo telefono</h2>${dati ? `<p class="piccolo tenue" style="margin:0">${scar.length} ricette, ${dati.foto} foto e ${dati.voci} letture della voce salvate. Spazio usato dall'app: ${dati.usatoMb} MB${dati.totMb ? ` su ${dati.totMb} MB disponibili` : ''}.</p>` : '<p class="piccolo tenue" style="margin:0">Misuro…</p>'}</section>`;
+  h += `<details class="ric-intro"><summary><b>💾 Copia di sicurezza</b> <small class="tenue">(ricette tue, note, preferite)</small></summary>
+    <p class="piccolo" style="margin:0">Stanno solo su questo telefono: salva una copia (un file) e, se cambi telefono, riprendila da lì.</p>
+    <div class="fila"><button type="button" class="btn chiaro" data-a="ric-copia-salva">💾 Salva una copia</button><label class="btn chiaro">📂 Riprendi da una copia<input type="file" id="ric-copia-file" accept=".json,application/json" hidden></label></div></details>`;
+  return h + '</main>';
 }
 function vRicettario() {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
+  leggiScelte(); chiediStatoDb();
   const f = UI.ric || (UI.ric = { q: '', zona: 'tutte', cat: '' });
   const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
   const mie = mieRic().map(daMia);
   const scar = RIC.scaricate, extra = Object.assign({}, scar, cache);
-  const tutte = mie.concat(RICETTE_GZ.map(r => r.foto || !extra[r.id] ? r : Object.assign({}, r, { foto: extra[r.id].foto || '' })), Object.values(extra).filter(r => !RICETTE_GZ.some(x => x.id === r.id)));
-  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'recenti' ? !!cache[r.id] : f.zona === 'scaricate' ? !!scar[r.id] : f.zona === 'mie' ? r.mia
+  const elenco = elencoRic();
+  const tutte = mie.concat(elenco.map(r => r.foto || !extra[r.id] ? r : Object.assign({}, r, { foto: extra[r.id].foto || '' })), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
+  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
     && (!q || senzaAccenti(r.nome + ' ' + (r.ingredienti || []).map(i => i.nome).join(' ')).includes(q)));
-  rr = f.zona === 'recenti' ? rr.sort((a, b) => cache[b.id].visto - cache[a.id].visto) : rr.sort((a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || a.nome.localeCompare(b.nome, 'it'));
-  const c = RIC.cerca;
+  rr = rr.sort((a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || a.nome.localeCompare(b.nome, 'it'));
+  const c = RIC.cerca, nScar = Object.keys(scar).length;
   let h = testataMonica('Ricettario', 'home') + '<main class="corpo">';
-  h += `<div><h1>Ricettario</h1><p class="tenue" style="margin:4px 0 0">Le ricette di GialloZafferano con video e foto dei passaggi, più le tue. Le vedete solo tu e Mario.</p></div>
-    <form class="ric-cerca" data-ric-cerca="1"><input id="ric-cerca" type="search" data-ricerca="1" value="${esc(f.q)}" placeholder="Cerca: piatto o ingrediente (es. melanzane)" autocomplete="off" enterkeyhint="search">
+  h += `<div><h1>Ricettario</h1><p class="tenue" style="margin:4px 0 0">${elenco.length + mie.length} ricette tue e di GialloZafferano, con video, foto dei passaggi e voce. Le vedete solo tu e Mario.</p></div>
+    <form class="ric-cerca" data-ric-cerca="1"><input id="ric-cerca" type="search" data-ricerca="1" value="${esc(f.q)}" placeholder="Cerca un piatto o 2-3 ingredienti (es. zucchine, uova)" autocomplete="off" enterkeyhint="search">
       ${typeof Riconosci !== 'undefined' && Riconosci && typeof ascoltaAI === 'function' ? `<button type="button" class="btn chiaro" data-a="ric-dico" aria-label="Cerca a voce">${AI.rec ? '⏹' : '🎙'}</button>` : ''}
       <button type="submit" class="btn pieno" aria-label="Cerca su GialloZafferano">${ico('cerca')}</button></form>
     <div class="scelte" role="group" aria-label="Quali">${ZONE_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-zona" data-v="${k}" aria-pressed="${f.zona === k}">${t}</button>`).join('')}</div>
     <div class="scelte" role="group" aria-label="Portata">${CAT_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-cat" data-v="${k}" aria-pressed="${f.cat === k}">${t}</button>`).join('')}</div>`;
   if (f.q.trim().length >= 2) h += `<button type="button" class="btn chiaro pieno" data-a="ric-cerca-gz">${ico('cerca')}Cerca «${esc(f.q.trim())}» fra tutte le ricette di GialloZafferano</button>`;
   if (c.stato) {
-    h += `<section class="scheda" id="ric-risultati"><h2>${c.cat ? '📚 ' + esc(c.q) + ' · tutte' : `Da GialloZafferano: «${esc(c.q)}»`}${c.risultati.length ? ` <small class="tenue">(${c.risultati.length}${c.prossima ? '+' : ''})</small>` : ''}</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
+    h += `<section class="scheda" id="ric-risultati"><h2>${c.cat === 'nuove' ? '🔎 Ricette nuove per te' : c.cat ? '📚 ' + esc(c.q) + ' · tutte' : `Da GialloZafferano: «${esc(c.q)}»`}${c.risultati.length ? ` <small class="tenue">(${c.risultati.length}${c.prossima ? '+' : ''})</small>` : ''}</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
       : c.stato === 'errore' ? `<p style="margin:0">${esc(c.errore)}</p><button type="button" class="btn chiaro" data-a="ric-cerca-gz">Riprova</button>`
-      : c.risultati.length ? `${RIC.scarico ? '' : `<button type="button" class="btn chiaro pieno" data-a="ric-scarica-cerca">📥 Scarica queste ${c.risultati.length} per usarle senza rete</button>`}<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
+      : c.risultati.length ? `${RIC.scarico ? '' : `<button type="button" class="btn chiaro pieno" data-a="ric-scarica-cerca">📥 Scarica queste ${c.risultati.length} per usarle senza rete</button>`}<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : c.cat === 'nuove' ? '<p style="margin:0">Il motore sta ancora cercando: ogni 10 minuti trova ricette nuove. Riprova fra un\'ora, o cerca a parole qui sopra.</p>' : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
       <button type="button" class="btn chiaro piccolo" data-a="ric-chiudi-cerca">Chiudi la ricerca</button></section>`;
   }
   if (f.zona === 'tutte' && !q && !f.cat && !c.stato) {
@@ -260,37 +318,31 @@ function vRicettario() {
       h += `<section class="scheda"><h2>🎲 Cosa cucino oggi?</h2>${cartaRic(x, pref)}<button type="button" class="btn chiaro piccolo" data-a="ric-dado">Un'altra</button></section>`;
     }
   }
-  if (f.zona === 'tutte' && !q && !f.cat) {
-    ispira();
-    const isp = ispirate();
-    if (isp.length) h += `<section class="scheda"><h2>✨ Ispirate ai tuoi piatti</h2><p class="piccolo tenue" style="margin:0">Ricette di GialloZafferano simili a quelle del tuo menù. Si aggiornano ogni giorno.</p>
-      <div class="ric-scorri">${isp.map(r => cartaRic(Object.assign({}, r, { categoria: '' }), pref).replace('</small></span></button>', ` · come «${esc(r.per)}»</small></span></button>`)).join('')}</div></section>`;
-    else if (RIC.ispiraVa) h += '<p class="piccolo tenue" style="margin:0">✨ Cerco ricette simili ai tuoi piatti…</p>';
-  }
-  if (!q && !c.stato) h += `<section class="scheda"><h2>🧺 Cosa cucino con quello che ho?</h2><p class="piccolo tenue" style="margin:0">Scrivi 2 o 3 cose che hai in casa: cerco le ricette che le usano.</p>
-    <form class="ric-cerca" data-ric-casa="1"><input id="ric-casa" type="search" value="${esc(UI.ricCasa || '')}" placeholder="Es. zucchine, uova, pecorino" autocomplete="off" enterkeyhint="search">
-      <button type="submit" class="btn pieno" aria-label="Cerca con questi ingredienti">${ico('cerca')}</button></form></section>`;
-  if (!q && !c.stato) h += sezioneDbRic();
-  if (!q && !c.stato) h += `<section class="scheda"><h2>📚 Tutto il catalogo</h2><p class="piccolo tenue" style="margin:0">Tutte le ricette di GialloZafferano, per portata: scorri e tocca «Carica altre».</p>
-    <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div>
-    <details class="ric-intro"><summary><b>Per ingrediente</b> <small class="tenue">(${CATALOGO_ING.length})</small></summary><div class="scelte">${CATALOGO_ING.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="ricette-con-${k}">${t}</button>`).join('')}</div></details></section>`;
-  if (!q && !c.stato) h += `<section class="scheda"><h2>🔎 Esplora GialloZafferano</h2><p class="piccolo tenue" style="margin:0">Migliaia di ricette: tocca un tema e si aprono qui dentro.</p>
-    <div class="scelte">${ESPLORA_RIC.map(t => `<button type="button" class="scelta" data-a="ric-esplora" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div></section>`;
   h += barraScarico();
-  if (!RIC.scarico && !c.stato) {
-    const n = Object.keys(scar).length;
-    h += `<section class="scheda"><h2>📥 Ricette sul telefono: ${n}</h2><p class="piccolo tenue" style="margin:0">Scaricate con testi e foto: le apri anche senza rete (il video no).</p>
-      <button type="button" class="btn chiaro pieno" data-a="ric-scarica-elenco">📥 Scarica tutto l'elenco (${RICETTE_GZ.length + preferiteRic().filter(id => !RICETTE_GZ.some(r => r.id === id)).length})</button>
-      <label class="interr"><span>Aggiorna da sola ogni giorno<small>Col Wi-Fi scarica le nuove di preferite, elenco e «Ispirate».</small></span><input type="checkbox" data-a="ric-auto" ${leggiRic('pit-ric-auto', true) !== false ? 'checked' : ''}></label>
-      ${n ? '<button type="button" class="btn chiaro piccolo" data-a="ric-scarica-via">Togli le ricette scaricate</button>' : ''}</section>`;
-  }
-  h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
-  if (!c.stato && !q) h += `<details class="ric-intro"><summary><b>💾 Copia di sicurezza</b> <small class="tenue">(ricette tue, note, preferite)</small></summary>
-    <p class="piccolo" style="margin:0">Stanno solo su questo telefono: salva una copia (un file) e, se cambi telefono, riprendila da lì.</p>
-    <div class="fila"><button type="button" class="btn chiaro" data-a="ric-copia-salva">💾 Salva una copia</button><label class="btn chiaro">📂 Riprendi da una copia<input type="file" id="ric-copia-file" accept=".json,application/json" hidden></label></div></details>`;
+  /* L'ELENCO, subito (Mario 08/11 «fai ordine»): prima le ricette, poi il resto */
   h += rr.length ? `<div class="ric-elenco">${rr.map(r => cartaRic(r, pref)).join('')}</div>`
-    : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'recenti' ? 'Non hai ancora aperto ricette su questo telefono.' : f.zona === 'scaricate' ? 'Nessuna ricetta scaricata: tocca «📥 Scarica» sotto un elenco o una ricerca.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
+    : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in questo gruppo.'}</p>
       <button type="button" class="btn chiaro" data-a="ric-pulisci">Mostra tutte</button></section>`;
+  h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
+  if (!q && !c.stato) {
+    /* SCOPRI: il motore, il catalogo, i temi, le ispirate: tutto in una scheda, aperto solo quello che tocchi */
+    h += `<section class="scheda"><h2>🔎 Scopri ricette nuove</h2>
+      <button type="button" class="btn pieno" data-a="ric-catalogo" data-v="nuove">🔎 Fammi vedere le ricette nuove</button>
+      <p class="piccolo tenue" style="margin:0">Il motore cerca su GialloZafferano quelle che non hai ancora (prima col video e i voti alti): apri, e se ti piace «➕ Aggiungi».</p>
+      <details class="ric-intro ric-catalogo-box"><summary><b>📚 Catalogo per portata</b> <small class="tenue">tutte le ricette di GialloZafferano</small></summary>
+        <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div>
+        <details class="ric-intro ric-ingr"><summary><b>Per ingrediente</b> <small class="tenue">(${CATALOGO_ING.length})</small></summary><div class="scelte">${CATALOGO_ING.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="ricette-con-${k}">${t}</button>`).join('')}</div></details></details>
+      <details class="ric-intro ric-esplora-box"><summary><b>✨ Per tema</b> <small class="tenue">sardi, veloci, dolci…</small></summary><div class="scelte">${ESPLORA_RIC.map(t => `<button type="button" class="scelta" data-a="ric-esplora" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div></details></section>`;
+    if (f.zona === 'tutte' && !f.cat) {
+      ispira();
+      const isp = ispirate();
+      if (isp.length) h += `<section class="scheda"><h2>✨ Ispirate ai tuoi piatti</h2><p class="piccolo tenue" style="margin:0">Ricette di GialloZafferano simili a quelle del tuo menù. Si aggiornano ogni giorno.</p>
+        <div class="ric-scorri">${isp.map(r => cartaRic(Object.assign({}, r, { categoria: '' }), pref).replace('</small></span></button>', ` · come «${esc(r.per)}»</small></span></button>`)).join('')}</div></section>`;
+    }
+    /* 🗄 verso la pagina Database: i numeri in una riga */
+    const d = RIC.db && !RIC.db.errore ? RIC.db : null;
+    h += `<button type="button" class="riquadro ric-db-link" data-a="vai" data-v="ricdb">🗄<div><b>Database ricette</b><small>${elenco.length + mie.length} nel ricettario · ${nScar} sul telefono${d ? ` · ${d.ricette} nell'archivio` : ''}</small></div></button>`;
+  }
   return h + '</main>';
 }
 
@@ -307,14 +359,18 @@ function vRicetta(id) {
   }
   const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
   let h = testataMonica('Ricetta', 'ricettario') + '<main class="corpo">';
+  // Mario 08/11: «il play come prima cosa nella ricetta»
+  h += `<button type="button" class="btn pieno ric-play" data-a="vai" data-v="cucina:${esc(id)}">▶️ Ascolta la ricetta passo passo</button>`;
+  if (/^gz:/.test(id) && !nelRicettario(id)) h += `<section class="scheda ric-aggiungi"><p style="margin:0"><b>Non è ancora nel tuo ricettario.</b> Ti piace? Aggiungila: la vedrete tu e Monica nell'elenco, con video, foto e voce.</p>
+    <button type="button" class="btn pieno" data-a="ric-aggiungi" data-v="${esc(id)}">➕ Aggiungi al mio ricettario</button></section>`;
+  else if ((RIC.scelte || []).some(x => x.id === id)) h += `<p class="piccolo tenue" style="margin:0">✓ Nel tuo ricettario · <button type="button" class="link" data-a="ric-togli" data-v="${esc(id)}">Togli</button></p>`;
   if (r.hls || r.mp4) h += `<div class="ric-video"><video id="ric-video" controls playsinline preload="none" poster="${esc(r.copertina || r.foto)}" data-hls="${esc(r.hls || '')}" data-mp4="${esc(r.mp4 || '')}"></video></div>`;
   else if (r.foto) h += `<figure class="ric-foto"><img src="${esc(r.foto)}" alt="${esc(r.nome)}" referrerpolicy="no-referrer"></figure>`;
   const info = [r.prep && 'Preparazione ' + durataRic(r.prep), r.cottura && 'Cottura ' + durataRic(r.cottura), !r.prep && r.totale && 'Tempo ' + durataRic(r.totale),
     r.difficolta && 'Difficoltà ' + r.difficolta.toLowerCase(), r.costo && 'Costo ' + r.costo.toLowerCase()].filter(Boolean).join(' · ');
   h += `<div><h1>${esc(r.nome)}</h1>${info ? `<p class="tenue" style="margin:4px 0 0">${esc(info)}</p>` : ''}</div>`;
   if (r.intro) h += `<details class="ric-intro"><summary>${esc(r.intro.split('\n')[0].slice(0, 140))}${r.intro.length > 140 ? '…' : ''} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
-  h += `<div class="fila"><button type="button" class="btn pieno" data-a="vai" data-v="cucina:${esc(id)}">${ico('piatti')}Cucina guidata</button>
-      <button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
+  h += `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
       ${r.mia ? `<button type="button" class="btn chiaro" data-a="vai" data-v="ricmia:${esc(id)}">${ico('matita')}Cambia</button>` : ''}
       ${typeof S !== 'undefined' && S.piatti && !S.piatti.some(x => x.ricetta === id) ? `<button type="button" class="btn chiaro" data-a="ric-menu" data-v="${esc(id)}">➕ Metti nel menù</button>` : ''}</div>
     <section class="scheda"><h2>Ingredienti</h2>
@@ -377,9 +433,29 @@ function vCucina(id) {
     ${RiconosciRic ? `<label class="interr"><span>🎙 Mani libere${RIC.rec ? ' · <b>ti ascolto</b>' : ''}<small>Dopo ogni passo la voce si ferma e aspetta. Di': «avanti», «indietro», «ripeti», «timer», «quanto manca», «ingredienti», «finito», «stop».</small></span><input type="checkbox" data-a="ric-mani" ${c.mani ? 'checked' : ''}></label>` : ''}`;
   return h + '</main>';
 }
+/* testi che la cucina guidata legge: «Passo N. …» e le code («di' avanti»…), uguali a quelli di leggiPasso */
+function testiVoceRic(r) {
+  const code = [' Di\' «timer» per il conto alla rovescia.', ' Era l\'ultimo passo: di\' «finito».', ' Quando hai fatto, di\' «avanti».', ' Se vuoi, tocca Timer.',
+    ' Di\' «timer» per il conto alla rovescia. Era l\'ultimo passo: di\' «finito».', ' Di\' «timer» per il conto alla rovescia. Quando hai fatto, di\' «avanti».'].map(x => x.trim());
+  return (r.passi || []).map((p, i) => `Passo ${i + 1}. ${p.t}`).concat(code);
+}
+/* fila delle voci da scaricare: una ricetta alla volta, così non si intasa niente */
+RIC.filaVoci = []; RIC.vociFatte = leggiRic('pit-ric-voci', {}) || {};
+function codaVoci(r) {
+  if (!r || RIC.vociFatte[r.id] || RIC.filaVoci.some(x => x.id === r.id)) return;
+  RIC.filaVoci.push(r);
+  if (RIC.filaVoci.length === 1) (async () => { while (RIC.filaVoci.length) { const x = RIC.filaVoci[0]; if (await preparaVociRic(x) >= testiVoceRic(x).length) { RIC.vociFatte[x.id] = Date.now(); scriviRic('pit-ric-voci', RIC.vociFatte); if (UI.vista === 'ricdb') render(); } RIC.filaVoci.shift(); } })();
+}
+async function preparaVociRic(r) {
+  if (!r || typeof scaricaVoce !== 'function') return 0;
+  let n = 0;
+  for (const t of testiVoceRic(r)) { if (!(await scaricaVoce(t))) break; n++; }   // al primo errore mi fermo (Microsoft giù): riprovo la prossima volta
+  return n;
+}
 function leggiPasso() {
   const c = UI.cucina, r = c && ricetta(c.id);
   if (!r || !c.voce || typeof parlaAI !== 'function') return;
+  if (c.passo === 0) codaVoci(r);   // mentre leggo il primo passo, scarico le voci degli altri
   const p = r.passi[c.passo], min = minutiPasso(p.t), ultimo = c.passo === r.passi.length - 1;
   const coda = c.mani ? (min ? ' Di\' «timer» per il conto alla rovescia.' : '') + (ultimo ? ' Era l\'ultimo passo: di\' «finito».' : ' Quando hai fatto, di\' «avanti».') : (min ? ' Se vuoi, tocca Timer.' : '');
   fermaAscolto();
@@ -446,7 +522,6 @@ function vRicMia(id) {
 document.addEventListener('input', e => {
   const el = e.target;
   if (el.dataset && el.dataset.ricerca) { UI.ric.q = el.value; ridisegnaElenco(); }
-  if (el.id === 'ric-casa') UI.ricCasa = el.value;
   if (el.dataset && el.dataset.ricnota) { const n = noteRic(), v = el.value.slice(0, 1000).trim(); if (v) n[el.dataset.ricnota] = v; else delete n[el.dataset.ricnota]; scriviRic('pit-ric-note', n); }
   if (el.dataset && el.dataset.ric && UI.ricBozza) {
     const k = el.dataset.ric, b = UI.ricBozza;
@@ -477,13 +552,6 @@ function ridisegnaElenco() {
   if (n) { n.focus(); try { n.setSelectionRange(pos, pos); } catch (e) { /* type=search su alcuni telefoni */ } }
 }
 document.addEventListener('submit', e => {
-  if (e.target.dataset && e.target.dataset.ricCasa) {   // «cosa cucino con quello che ho»: le parole diventano una ricerca su GialloZafferano
-    e.preventDefault();
-    const parole = String(UI.ricCasa || '').split(/[,;\n]+| e /).map(x => x.trim()).filter(Boolean).slice(0, 4);
-    if (!parole.length) { mostraToast('Scrivi almeno un ingrediente.'); return; }
-    if (document.activeElement) document.activeElement.blur();
-    A['ric-cerca-gz'](parole.join(' ')); return;
-  }
   if (!e.target.dataset || !e.target.dataset.ricCerca) return;
   e.preventDefault();
   const q = (UI.ric.q || '').trim();
@@ -537,7 +605,7 @@ Object.assign(A, {
   'ric-zona'(el) { UI.ric.zona = el.dataset.v; render(); },
   'ric-cat'(el) { UI.ric.cat = el.dataset.v; render(); },
   'ric-pulisci'() { UI.ric = { q: '', zona: 'tutte', cat: '' }; render(); },
-  'ric-chiudi-cerca'() { RIC.cerca = { q: '', stato: '', risultati: [] }; render(); },
+  'ric-chiudi-cerca'() { RIC.cerca = { q: '', stato: '', risultati: [] }; UI.ric.q = ''; render(); },   // chiude e pulisce anche la casella
   'ric-esplora'(el) { UI.ric.q = ''; A['ric-cerca-gz'](el.dataset.v); },
   'ric-zoom'(el) {
     const tutte = [...document.querySelectorAll('[data-a="ric-zoom"]')].map(i => i.dataset.v), i0 = Math.max(0, tutte.indexOf(el.dataset.v));
@@ -564,7 +632,7 @@ Object.assign(A, {
   },
   'ric-dado'() { UI.dado = (UI.dado || 0) + 1; render(); },
   'ric-scarica-cerca'() { const c = RIC.cerca; scaricaTante(c.risultati.map(r => r.id), c.cat ? c.q : '«' + c.q + '»'); },
-  'ric-scarica-elenco'() { scaricaTante(preferiteRic().concat(RICETTE_GZ.map(r => r.id)), 'tutto l\'elenco'); },
+  'ric-scarica-elenco'() { scaricaTante(preferiteRic().concat(elencoRic().map(r => r.id)), 'tutto l\'elenco'); },
   'ric-scarica-stop'() { if (RIC.scarico) RIC.scarico.stop = true; },
   'ric-auto'(el) { scriviRic('pit-ric-auto', el.checked); mostraToast(el.checked ? 'Ogni giorno, col Wi-Fi, scarico le nuove.' : 'Aggiornamento automatico spento.'); },
   'ric-scarica-via'() {
@@ -582,9 +650,30 @@ Object.assign(A, {
     mostraToast(`💾 Copia salvata nei Download: ${copia.mie.length} ricette tue, ${Object.keys(copia.note).length} note, ${copia.preferite.length} preferite.`);
   },
   'ric-catalogo'(el) {
-    const k = el.dataset.v, nome = k === 'db' ? 'Il tuo database' : (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
+    if (UI.vista !== 'ricettario') UI.vista = 'ricettario';
+    const k = el.dataset.v, nome = k === 'db' ? 'Archivio automatico' : k === 'nuove' ? 'Ricette nuove' : (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
     A['ric-cerca-gz'](nome, k);
   },
+  'ric-aggiungi'(el) {
+    const id = el.dataset.v, r = ricetta(id), v = voceElenco(id) || {};
+    if (!r) return;
+    const zona = /sard|gallur/i.test([r.categoria, r.nome, v.zona].join(' ')) ? 'sarda' : 'italiana';
+    const cat = (CAT_RIC.find(([k, t]) => k && new RegExp(t.slice(0, 5), 'i').test(r.categoria || '')) || [''])[0];
+    const prima = RIC.scelte.slice(), nuova = { id, nome: r.nome, zona, categoria: cat, foto: r.foto || v.foto || '', aggiunta: Date.now() };
+    salvaScelte([nuova].concat(RIC.scelte.filter(x => x.id !== id))); render();   // subito sul telefono, poi sul server
+    RIC.chiedi({ db: 'aggiungi', r: nuova })
+      .then(j => { salvaScelte(j.scelte); mostraToast(`➕ «${r.nome}» è nel tuo ricettario. Preparo la voce dei passi…`); codaVoci(r); })
+      .catch(e => { salvaScelte(prima); mostraToast('Non aggiunta: ' + (e.message || e)); })
+      .finally(() => render());
+  },
+  'ric-togli'(el) {
+    const id = el.dataset.v, prima = RIC.scelte.slice();
+    salvaScelte(RIC.scelte.filter(x => x.id !== id)); render();
+    RIC.chiedi({ db: 'togli', id }).then(j => { salvaScelte(j.scelte); mostraToast('Tolta dal tuo ricettario.', () => A['ric-aggiungi']({ dataset: { v: id } })); })
+      .catch(e => { salvaScelte(prima); mostraToast('Non tolta: ' + (e.message || e)); }).finally(() => render());
+  },
+  'ricdb-tutte'(el) { UI.ricDbTutte = el.dataset.v; render(); },
+  'ricdb-voci'() { const da = Object.values(RIC.scaricate).filter(r => !RIC.vociFatte[r.id]); da.forEach(codaVoci); mostraToast(`🔊 Preparo la voce di ${da.length} ricette: ci vuole qualche minuto, intanto puoi fare altro.`); },
   'ric-db-pausa'() {
     const d = RIC.db; if (!d || d.errore) return;
     RIC.chiedi({ db: d.pausa ? 'riprendi' : 'pausa' })
@@ -595,7 +684,7 @@ Object.assign(A, {
   'ric-altre'() {
     const c = RIC.cerca; if (!c.prossima || c.altre === 'carico') return;
     c.altre = 'carico'; render();
-    RIC.chiedi(c.cat ? { cat: c.cat, cerca: c.q, pagina: c.prossima } : { cerca: c.q, pagina: c.prossima })
+    RIC.chiedi(c.cat ? corpoCat(c.cat, c.q, c.prossima) : { cerca: c.q, pagina: c.prossima })
       .then(j => {
         if (RIC.cerca !== c) return;
         const nuove = (j.ricette || []).map(daCerca).filter(x => !c.risultati.some(y => y.id === x.id));
@@ -605,11 +694,11 @@ Object.assign(A, {
       .finally(() => { if (UI.vista === 'ricettario') render(); });
   },
   'ric-cerca-gz'(tema, cat) {
-    const q = (typeof tema === 'string' ? tema : UI.ric.q || '').trim(); if (q.length < 2) return;
+    const q = (typeof tema === 'string' ? tema : UI.ric.q || '').replace(/\s*[,;]+\s*/g, ' ').replace(/\s+/g, ' ').trim(); if (q.length < 2) return;   // «zucchine, uova» = due parole
     if (typeof cat !== 'string') cat = '';
     RIC.cerca = { q, cat, stato: 'carico', risultati: [], prossima: '' }; render();
     const ris = document.getElementById('ric-risultati'); if (ris) ris.scrollIntoView({ block: 'start' });
-    RIC.chiedi(cat ? { cat, cerca: q } : { cerca: q })
+    RIC.chiedi(cat ? corpoCat(cat, q) : { cerca: q })
       .then(j => { if (RIC.cerca.q !== q) return; RIC.cerca.stato = 'ok'; RIC.cerca.risultati = (j.ricette || []).map(daCerca); RIC.cerca.prossima = j.prossima || ''; })
       .catch(e => { RIC.cerca.stato = 'errore'; RIC.cerca.errore = navigator.onLine === false ? 'Senza rete non posso cercare: riprova quando torna.' : 'Ricerca non riuscita: ' + (e.message || e); })
       .finally(() => { if (UI.vista === 'ricettario') render(); });
