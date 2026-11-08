@@ -53,7 +53,7 @@ Ultimo messaggio di Mario
 08/11 ~12:20, parola per parola (2 messaggi, con la foto dell'icona di VoiceStudio): «la voce piper è troppo veloce fai in modo di farmi modificare la velocità solo a me ma valido anche per monica la modifica , e ooi che fine ha fatto  voice studio da implementare? metti un agente a parte che ci studia sopra bene su voicestudio» e «cerchiamo una voce migloore di Piper da github che va senza token e in locale dall'app fai una ricerca approfondita». Prima: «1 perfetto / fai ricerche filtri ecc come app Gold standard ricette»; «1 consiglio / adesso vai tu cercane 100 ricette miste con priorità sarde e caricale metti un agente…»; «nel mio ricettario risultano sempre 69…»; «quando monica carica una foto riesci a farmela scaricare originale…»; «ma dico in priorità sarde ma cercale miste».
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C71; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C72; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
