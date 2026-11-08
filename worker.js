@@ -251,6 +251,7 @@ async function ricettaGz(b, cfg, ctx) {
     if (!db) return { errore: 'database non collegato' };
     if (b.db === 'pausa' || b.db === 'riprendi') await db.metti1('pausa', b.db === 'pausa' ? '1' : '');
     if (b.db === 'mie') return { scelte: await db.scelte() };
+    if (b.db === 'cerca') { const prima = (await db.statoDb()).ricette; await motoreRicette(cfg, true); const d = await db.statoDb(); return { db: d, nuove: d.ricette - prima }; }   // 🔄 «Cerca adesso»
     if (b.db === 'aggiungi') {   // ➕ con l'ok di chi gestisce: nel ricettario per tutti i telefoni, e la ricetta intera salvata per sempre
       if (!(await db.aggiungi(b.r))) return { errore: 'ricetta non valida' };
       const u = urlGz('https://ricette.giallozafferano.it/' + String(b.r.id).slice(3) + '.html');
@@ -309,9 +310,9 @@ async function ricettaGz(b, cfg, ctx) {
    e il piano gratuito (50 richieste e ~10 ms di calcolo per giro). ~280 ricette al giorno. */
 const FONTI_DB = ['sardegna', 'primi', 'secondi', 'dolci', 'antipasti', 'contorni', 'lievitati', 'unici', 'sughi', 'bevande'];
 const RICETTE_GIRO = 2, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
-async function motoreRicette(cfg) {
+async function motoreRicette(cfg, aMano) {
   const db = ricDb(cfg); if (!db) return;
-  const s = await db.statoDb(); if (s.pausa) return;
+  const s = await db.statoDb(); if (s.pausa && !aMano) return;
   if (s.coda < CODA_MIN) {
     const i = (Number(s.fonte) || 0) % FONTI_DB.length, u = s.pagina || `https://www.giallozafferano.it/${CAT_GZ[FONTI_DB[i]]}/`;
     let html = '';
@@ -560,8 +561,12 @@ export class Ricettario extends DurableObject {
     return tt;
   }
   togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
-  posizione(fonte, pagina, nuove) { this.metti1('fonte', fonte); this.metti1('pagina', pagina || ''); this.metti1('ultimaPagina', JSON.stringify({ quando: Date.now(), nuove })); }
-  giro(x) { this.metti1('ultimoGiro', JSON.stringify(Object.assign({ quando: Date.now() }, x))); }
+  posizione(fonte, pagina, nuove) {
+    this.metti1('fonte', fonte); this.metti1('pagina', pagina || ''); this.metti1('ultimaPagina', JSON.stringify({ quando: Date.now(), nuove }));
+    this.metti1('pagine', (Number(this.leggi1('pagine')) || 0) + 1);
+    if (!pagina && fonte === 0) this.metti1('passate', (Number(this.leggi1('passate')) || 0) + 1);   // finite tutte le sezioni: un giro completo di GialloZafferano
+  }
+  giro(x) { this.metti1('ultimoGiro', JSON.stringify(Object.assign({ quando: Date.now() }, x))); this.metti1('giri', (Number(this.leggi1('giri')) || 0) + 1); }
   voce(k) { const x = this.sql.exec('SELECT mp3 FROM voci WHERE k = ?', String(k)).toArray()[0]; return x ? x.mp3 : null; }
   salvaVoce(k, mp3) {
     const b = mp3 instanceof ArrayBuffer ? mp3 : mp3.buffer.slice(mp3.byteOffset, mp3.byteOffset + mp3.byteLength);
@@ -590,7 +595,8 @@ export class Ricettario extends DurableObject {
     const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
     return { scelte: uno('SELECT COUNT(*) AS n FROM scelte').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
       oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
-      fonte: Number(this.leggi1('fonte')) || 0, pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'), mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };
+      fonte: Number(this.leggi1('fonte')) || 0, fonti: FONTI_DB.length, sezione: FONTI_DB[Number(this.leggi1('fonte')) || 0], pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'),
+      giri: Number(this.leggi1('giri')) || 0, pagine: Number(this.leggi1('pagine')) || 0, passate: Number(this.leggi1('passate')) || 0, mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };
   }
 }
 

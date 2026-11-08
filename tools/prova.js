@@ -554,8 +554,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-catalogo"][data-v="ricette-con-le-Melanzane"]'); await page.locator('#ric-risultati h2', { hasText: 'Melanzane' }).waitFor({ timeout: 3000 });
     await clic('[data-a="ric-chiudi-cerca"]');
     // 🗄 pagina Database ricette (C60): numeri del telefono e del server, «Sfoglia» apre l'archivio nel Ricettario
-    await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, mb: 3, oggi: 12, pausa: false }; RIC.dbOra = Date.now(); vai('ricdb'); });
-    await page.locator('#ricdb-archivio h2', { hasText: '42 ricette' }).waitFor({ timeout: 3000 });
+    await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, mb: 3, oggi: 12, pausa: false, fonte: 3, fonti: 10, sezione: 'dolci', giri: 20, pagine: 9, passate: 0, ultimoGiro: { quando: Date.now() - 120000 } }; RIC.dbOra = Date.now(); vai('ricdb'); });
+    await page.locator('#ricdb-archivio h2', { hasText: '42 trovate' }).waitFor({ timeout: 3000 });
+    if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count()) || !(await page.locator('#ricdb-archivio', { hasText: 'sezione 4 di 10 (Dolci) · 30%' }).count())) throw new Error('il motore non dice stato e avanzamento');
+    await page.evaluate(() => { RIC._c3 = RIC.chiedi; RIC.chiedi = async c => c.db === 'cerca' ? { db: Object.assign({}, RIC.db, { ricette: 44 }), nuove: 2 } : RIC._c3(c); });
+    await clic('[data-a="ric-db-cerca"]'); await page.waitForTimeout(300);
+    if (!(await page.locator('#ricdb-archivio h2', { hasText: '44 trovate' }).count())) throw new Error('«Cerca adesso» non aggiorna i numeri');
+    await page.evaluate(() => { RIC.chiedi = RIC._c3; RIC.dbOra = Date.now(); });
     if (!(await page.locator('.scheda h2', { hasText: 'Il tuo ricettario: ' }).count())) throw new Error('manca «Il tuo ricettario: N»');
     await foto('42-database');
     await clic('[data-a="ric-catalogo"][data-v="db"]'); await page.locator('#ric-risultati h2', { hasText: 'Archivio automatico' }).waitFor({ timeout: 3000 });

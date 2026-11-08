@@ -268,10 +268,20 @@ function vRicDb() {
       ${scar.length > nVoci ? `<button type="button" class="btn chiaro" data-a="ricdb-voci">🔊 Prepara la voce di tutte (${scar.length - nVoci})</button>` : ''}</div>`}
     <label class="interr"><span>Aggiorna da sola ogni giorno<small>Col Wi-Fi scarica le nuove di preferite, elenco e «Ispirate».</small></span><input type="checkbox" data-a="ric-auto" ${leggiRic('pit-ric-auto', true) !== false ? 'checked' : ''}></label>
     ${scar.length ? '<button type="button" class="btn chiaro piccolo" data-a="ric-scarica-via">Togli le ricette scaricate</button>' : ''}</section>`;
-  h += `<section class="scheda" id="ricdb-archivio"><h2>🗄 Archivio automatico: ${d ? d.ricette + ' ricette' : RIC.db ? 'non risponde' : '…'}</h2>`;
-  if (d) h += `<p class="piccolo tenue" style="margin:0">${d.pausa ? '⏸ Fermo: tocca «Riprendi».' : `Cresce da solo ogni 10 minuti: +${d.oggi} nelle ultime 24 ore${d.coda ? `, ${d.coda} in arrivo` : ''}.`} Letto da GialloZafferano e salvato per sempre sul server dell'app (${d.mb} MB), con ${d.voci} letture della voce${d.mbVoci ? ` (${d.mbVoci} MB)` : ''}. Da qui il motore pesca le ricette nuove da proporti.</p>
-    ${RIC.dbUltime && RIC.dbUltime.length ? `<h3 style="margin:8px 0 4px">Ultime arrivate</h3><ul class="ricdb-lista">${RIC.dbUltime.map(r => rigaDb(r, '')).join('')}</ul>` : ''}
-    <div class="fila">${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia tutto</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-pausa">${d.pausa ? '▶️ Riprendi la crescita' : '⏸ Ferma la crescita'}</button></div>`;
+  h += `<section class="scheda" id="ricdb-archivio"><h2>🤖 Motore delle ricette${d ? `: ${d.ricette} trovate` : ''}</h2>`;
+  if (d) {
+    /* chiaro (Mario 08/11 «non si capisce se funziona»): stato, ultimo giro, avanzamento sulle 10 sezioni, «Cerca adesso» */
+    const ug = d.ultimoGiro && d.ultimoGiro.quando ? d.ultimoGiro.quando : 0, faMin = ug ? Math.round((Date.now() - ug) / 60000) : -1;
+    const stato = RIC.dbCerco ? '🔄 Sto cercando…' : d.pausa ? '⏸ Fermo (tocca «Riprendi» o «Cerca adesso»)' : faMin < 0 ? '🕐 Non è ancora partito: il primo giro arriva entro 10 minuti' : faMin > 25 ? `⚠️ Ultimo giro ${faMin} minuti fa: dovrebbe girare ogni 10` : `🟢 Lavora sul server, anche con l'app chiusa · ultimo giro ${faMin < 1 ? 'adesso' : faMin + ' min fa'}`;
+    const nomeSez = (CATALOGO_RIC.find(x => x[0] === d.sezione) || [, d.sezione || ''])[1], perc = Math.min(100, Math.round(((d.fonte || 0) / (d.fonti || 10)) * 100));
+    h += `<p style="margin:0"><b>${stato}</b></p>
+      <p class="piccolo tenue" style="margin:4px 0 0">Ogni 10 minuti legge una pagina di GialloZafferano, mette in archivio le ricette che mancano e le propone in «🔎 Fammi vedere le ricette nuove». Oggi +${d.oggi}${d.coda ? `, ${d.coda} in arrivo` : ''} · ${d.giri} giri, ${d.pagine} pagine lette${d.passate ? `, ${d.passate} giri completi` : ''}.</p>
+      <div class="ricdb-barra" role="progressbar" aria-valuenow="${perc}" aria-valuemin="0" aria-valuemax="100"><i style="width:${perc}%"></i></div>
+      <p class="piccolo tenue" style="margin:4px 0 0">Giro ${(d.passate || 0) + 1}: sezione ${(d.fonte || 0) + 1} di ${d.fonti || 10} (${esc(nomeSez)}) · ${perc}%${d.ultimoGiro && d.ultimoGiro.errore ? ` · ⚠️ ultimo errore: ${esc(d.ultimoGiro.errore)}` : ''}</p>
+      ${RIC.dbUltime && RIC.dbUltime.length ? `<h3 style="margin:8px 0 4px">Ultime trovate</h3><ul class="ricdb-lista">${RIC.dbUltime.map(r => rigaDb(r, '')).join('')}</ul>` : ''}
+      <div class="fila"><button type="button" class="btn pieno" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button>${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia l\'archivio</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-pausa">${d.pausa ? '▶️ Riprendi' : '⏸ Ferma'}</button></div>
+      <p class="piccolo tenue" style="margin:4px 0 0">Archivio sul server dell'app: ${d.mb} MB di ricette e ${d.voci} letture della voce${d.mbVoci ? ` (${d.mbVoci} MB)` : ''}, salvate per sempre.</p>`;
+  }
   else if (RIC.db) h += '<p class="piccolo" style="margin:0">Il server non risponde: riprova fra un minuto (serve la rete).</p>';
   h += '</section>';
   h += `<section class="scheda"><h2>📊 Dati senza rete su questo telefono</h2>${dati ? `<p class="piccolo tenue" style="margin:0">${scar.length} ricette, ${dati.foto} foto e ${dati.voci} letture della voce salvate. Spazio usato dall'app: ${dati.usatoMb} MB${dati.totMb ? ` su ${dati.totMb} MB disponibili` : ''}.</p>` : '<p class="piccolo tenue" style="margin:0">Misuro…</p>'}</section>`;
@@ -671,6 +681,12 @@ Object.assign(A, {
     salvaScelte(RIC.scelte.filter(x => x.id !== id)); render();
     RIC.chiedi({ db: 'togli', id }).then(j => { salvaScelte(j.scelte); mostraToast('Tolta dal tuo ricettario.', () => A['ric-aggiungi']({ dataset: { v: id } })); })
       .catch(e => { salvaScelte(prima); mostraToast('Non tolta: ' + (e.message || e)); }).finally(() => render());
+  },
+  'ric-db-cerca'() {
+    if (RIC.dbCerco) return; RIC.dbCerco = true; render();
+    RIC.chiedi({ db: 'cerca' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); RIC.dbUltime = null; mostraToast(j.nuove ? `🔄 Trovate ${j.nuove} ricette nuove.` : '🔄 Giro fatto: niente di nuovo in questa pagina, riprova.'); })
+      .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
+      .finally(() => { RIC.dbCerco = false; RIC.dbOra = 0; render(); });
   },
   'ricdb-tutte'(el) { UI.ricDbTutte = el.dataset.v; render(); },
   'ricdb-voci'() { const da = Object.values(RIC.scaricate).filter(r => !RIC.vociFatte[r.id]); da.forEach(codaVoci); mostraToast(`🔊 Preparo la voce di ${da.length} ricette: ci vuole qualche minuto, intanto puoi fare altro.`); },

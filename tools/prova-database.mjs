@@ -144,5 +144,10 @@ prova('togli dal ricettario', j.scelte && j.scelte.length === 1);
 j = await (await chiedi({ db: 'stato' })).json();
 prova('stato: quante nel tuo ricettario', j.db && j.db.scelte === 1);
 
+/* 7. 🔄 «Cerca adesso»: un giro subito, anche in pausa; numeri per la pagina Database */
+await ponte.metti1('pausa', '1'); await ponte.metti1('fonte', 0); await ponte.metti1('pagina', '');
+j = await (await chiedi({ db: 'cerca' })).json();
+prova('«Cerca adesso» fa un giro anche in pausa e dice quante nuove', j.db && j.nuove >= 0 && j.db.giri > 26 && j.db.pagine > 3 && j.db.sezione && j.db.fonti === 10);
+await ponte.metti1('pausa', '');
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);
