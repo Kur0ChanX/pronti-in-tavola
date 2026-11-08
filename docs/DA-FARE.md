@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 08/11 · 🛑 · 📒 Aiuto 1 · Numerino della versione (C63) pronto e provato nel giro completo, ma il giro intero non chiude (si incaglia sui passi del ricettario della principale, non sul mio codice): 1 pubblico adesso (consiglio: tocca solo la barra sviluppatore, Monica non la vede) · 2 aspetto il verde della principale e pubblico dopo
 - 08/11 · 🛑 · 🟡 Principale 27 · Voce Microsoft: ok a scrivere il file `edgegec.mjs` col nuovo lasciapassare v2 (codice pubblico, nessuna chiave; la guardia della sessione mi ha bloccato)? 1 sì (consiglio) · 2 no
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
