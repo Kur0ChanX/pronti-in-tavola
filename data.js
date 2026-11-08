@@ -183,9 +183,14 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.16';
+const VERSIONE_APP = '0.9.17';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.17', data: '08/11/2026',
+    nuovo: ['Ricettario: foto dei passaggi che si ingrandiscono (tocca, scorri col dito, allarga con due dita)',
+      'Ricettario: «Esplora GialloZafferano» con 24 temi (dolci sardi, pasta fresca, pesce, torte salate…) che si aprono nell\'app',
+      'Ricettario: «Ispirate ai tuoi piatti», ricette simili a quelle del tuo menù, aggiornate ogni giorno',
+      'Cucina guidata a mani libere: la voce legge un passo e si ferma; tu dici «avanti», «indietro», «ripeti», «timer», «quanto manca», «ingredienti», «finito»'] },
   { v: '0.9.16', data: '08/11/2026',
     nuovo: ['Ricettario con GialloZafferano DENTRO l\'app: cerchi una ricetta, la apri qui con video nel lettore dell\'app, ingredienti e foto dei passaggi, senza uscire',
       'Ricette tue: scrivi nome, ingredienti e passi (anche con foto), le trovi in «Le mie»',

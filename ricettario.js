@@ -18,6 +18,9 @@ const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: 
 const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
+/* temi della ricerca veloce (si cercano dal vivo su GialloZafferano: niente elenchi da tenere aggiornati) */
+const ESPLORA_RIC = ['ricette sarde', 'dolci sardi', 'pasta fresca', 'primi di pesce', 'secondi di carne', 'secondi di pesce', 'contorni', 'antipasti', 'torte salate', 'focacce',
+  'dolci al cucchiaio', 'biscotti', 'torte', 'zuppe', 'risotti', 'lasagne', 'polpette', 'verdure ripiene', 'ricette veloci', 'ricette vegetariane', 'senza glutine', 'avanzi', 'per buffet', 'sughi'];
 
 function caricaRicette() {
   if (RIC.stato === 'pronto' || RIC.stato === 'carico') return;
@@ -149,6 +152,8 @@ function vRicettario() {
       <div class="ric-scorri">${isp.map(r => cartaRic(Object.assign({}, r, { categoria: '' }), pref).replace('</small></span></button>', ` · come «${esc(r.per)}»</small></span></button>`)).join('')}</div></section>`;
     else if (RIC.ispiraVa) h += '<p class="piccolo tenue" style="margin:0">✨ Cerco ricette simili ai tuoi piatti…</p>';
   }
+  if (!q && !c.stato) h += `<section class="scheda"><h2>🔎 Esplora GialloZafferano</h2><p class="piccolo tenue" style="margin:0">Migliaia di ricette: tocca un tema e si aprono qui dentro.</p>
+    <div class="scelte">${ESPLORA_RIC.map(t => `<button type="button" class="scelta" data-a="ric-esplora" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div></section>`;
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
   h += rr.length ? `<div class="ric-elenco">${rr.map(r => cartaRic(r, pref)).join('')}</div>`
     : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
@@ -185,7 +190,7 @@ function vRicetta(id) {
       <p class="piccolo tenue" style="margin:0">Spunta quello che hai già: nella spesa va solo il resto.</p>
       <ul class="ric-ing">${r.ingredienti.map((i, k) => `<li><label><input type="checkbox" data-a="ric-spunta" data-v="${k}" ${spunte[k] ? 'checked' : ''}><span>${rigaIng(i, r.porzioni, porz)}</span></label></li>`).join('')}</ul>
       <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${esc(id)}">${ico('carrello')}Metti nella lista della spesa</button></section>
-    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map(p => `<li><div>${p.foto && p.foto.length ? `<div class="ric-fotopassi">${p.foto.map(f => `<img src="${esc(f)}" alt="" loading="lazy" referrerpolicy="no-referrer">`).join('')}</div>` : ''}<span>${esc(p.t)}</span></div></li>`).join('')}</ol></section>`;
+    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map(p => `<li><div>${p.foto && p.foto.length ? `<div class="ric-fotopassi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}<span>${esc(p.t)}</span></div></li>`).join('')}</ol></section>`;
   if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di GialloZafferano${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
@@ -221,7 +226,7 @@ function vCucina(id) {
   let h = testataMonica('Cucina guidata', 'ricetta:' + id) + '<main class="corpo ric-cucina">';
   h += `<p class="tenue" style="margin:0">${esc(r.nome)} · passo <b>${i + 1}</b> di ${r.passi.length}</p>
     <div class="punti ric-punti">${r.passi.map((_, j) => `<i class="${j === i ? 'on' : j < i ? 'fatto' : ''}"></i>`).join('')}</div>
-    <section class="scheda ric-passo">${p.foto && p.foto.length ? `<div class="ric-fotopassi grandi">${p.foto.map(f => `<img src="${esc(f)}" alt="" referrerpolicy="no-referrer">`).join('')}</div>` : ''}<p>${esc(p.t)}</p>
+    <section class="scheda ric-passo">${p.foto && p.foto.length ? `<div class="ric-fotopassi grandi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}<p>${esc(p.t)}</p>
       ${min ? `<button type="button" class="btn ${RIC.timer && RIC.timer.passo === i ? 'chiaro' : 'pieno'}" data-a="ric-timer" data-v="${min}">⏱ ${RIC.timer && RIC.timer.passo === i ? `Mancano ${mmss(resta)} · ferma` : `Timer ${durataRic(min)}`}</button>` : ''}</section>
     ${RIC.timer && RIC.timer.passo !== i ? `<p class="avviso piccolo" style="margin:0">⏱ Timer del passo ${RIC.timer.passo + 1}: mancano ${mmss(resta)}</p>` : ''}
     <div class="ric-tasti">
@@ -361,8 +366,21 @@ Object.assign(A, {
   'ric-cat'(el) { UI.ric.cat = el.dataset.v; render(); },
   'ric-pulisci'() { UI.ric = { q: '', zona: 'tutte', cat: '' }; render(); },
   'ric-chiudi-cerca'() { RIC.cerca = { q: '', stato: '', risultati: [] }; render(); },
-  'ric-cerca-gz'() {
-    const q = (UI.ric.q || '').trim(); if (q.length < 2) return;
+  'ric-esplora'(el) { UI.ric.q = ''; A['ric-cerca-gz'](el.dataset.v); },
+  'ric-zoom'(el) {
+    const tutte = [...document.querySelectorAll('[data-a="ric-zoom"]')].map(i => i.dataset.v), i0 = Math.max(0, tutte.indexOf(el.dataset.v));
+    const v = document.createElement('div'); v.className = 'ric-zoom'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-label', 'Foto ingrandita');
+    let i = i0;
+    const mostra = () => { v.innerHTML = `<img src="${esc(tutte[i])}" alt="" referrerpolicy="no-referrer"><span class="ric-zoom-n">${i + 1} / ${tutte.length}</span>
+      <button type="button" class="ric-zoom-x" aria-label="Chiudi">✕</button>${i > 0 ? '<button type="button" class="ric-zoom-p" aria-label="Foto prima">‹</button>' : ''}${i < tutte.length - 1 ? '<button type="button" class="ric-zoom-s" aria-label="Foto dopo">›</button>' : ''}`; };
+    let x0 = null;
+    v.addEventListener('click', e => { e.stopPropagation(); const t = e.target.className; if (t === 'ric-zoom-p') { i--; mostra(); } else if (t === 'ric-zoom-s') { i++; mostra(); } else if (t === 'ric-zoom-x' || t === 'ric-zoom') v.remove(); });
+    v.addEventListener('touchstart', e => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
+    v.addEventListener('touchend', e => { if (x0 == null || (window.visualViewport && visualViewport.scale > 1.05)) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 60) { const n = i + (dx < 0 ? 1 : -1); if (n >= 0 && n < tutte.length) { i = n; mostra(); } } });
+    mostra(); document.body.appendChild(v);
+  },
+  'ric-cerca-gz'(tema) {
+    const q = (typeof tema === 'string' ? tema : UI.ric.q || '').trim(); if (q.length < 2) return;
     RIC.cerca = { q, stato: 'carico', risultati: [] }; render();
     RIC.chiedi({ cerca: q })
       .then(j => { if (RIC.cerca.q !== q) return; RIC.cerca.stato = 'ok'; RIC.cerca.risultati = (j.ricette || []).map(daCerca); })

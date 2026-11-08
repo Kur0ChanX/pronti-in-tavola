@@ -744,6 +744,14 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-tasti { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 8px; }
 .ric-tasti .btn { min-height: 56px; }
 .ric-cerca { display: flex; gap: 8px; }
+.ric-fotopassi img { cursor: zoom-in; }
+.ric-zoom { position: fixed; inset: 0; z-index: 95; background: rgba(0, 0, 0, .94); display: grid; place-items: center; touch-action: pinch-zoom; }
+.ric-zoom img { max-width: 100%; max-height: 100%; object-fit: contain; pointer-events: none; }
+.ric-zoom button { position: absolute; border: 0; background: rgba(255, 255, 255, .18); color: #fff; font-size: 2rem; width: 56px; height: 56px; border-radius: 50%; }
+.ric-zoom-x { top: 16px; right: 16px; font-size: 1.4rem !important; }
+.ric-zoom-p { left: 10px; top: 50%; transform: translateY(-50%); }
+.ric-zoom-s { right: 10px; top: 50%; transform: translateY(-50%); }
+.ric-zoom-n { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: #fff; font-weight: 600; }
 .ric-scorri { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
 .ric-scorri .ric-carta { scroll-snap-align: start; }
 .ric-cerca input { flex: 1; min-width: 0; }
