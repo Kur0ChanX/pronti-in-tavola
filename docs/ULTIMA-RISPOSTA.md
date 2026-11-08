@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (07/11/2026 23:59 ora italiana)
+# Ultima risposta di Claude (08/11/2026 02:49 ora italiana)
 
-Non è una promessa: è la scelta 2 della domanda qui sopra.
+Salvato su GitHub anche il file dei consumi della sessione.
