@@ -648,3 +648,29 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .riservata { background: none; border: 0; padding: 10px 8px 0; font: inherit; font-size: .72rem; letter-spacing: .04em; color: var(--tenue); opacity: .75; cursor: pointer; }
 .sez .sez-dentro { box-shadow: none; background: none; padding-top: 0; }
 .lucchetto-ospiti { display: grid; gap: 6px; border-top: 1px dashed var(--riga); padding-top: 12px; }
+
+/* aiutante di Monica (C48): barra nella Home, fumetti, microfono */
+.ai-barra { display: flex; gap: 8px; align-items: center; }
+.ai-apri { flex: 1; display: flex; align-items: center; gap: 10px; min-height: 54px; padding: 0 18px; border-radius: 999px; border: 1.5px solid var(--grano);
+  background: linear-gradient(90deg, #FFF8EC, #FBEBD2); color: var(--tenue); font: inherit; font-weight: 700; text-align: left; box-shadow: var(--ombra); cursor: pointer; }
+.ai-apri svg, .ai-intro > svg { width: 24px; height: 24px; color: var(--cotto); flex: none; }
+.ai-mic { width: 54px; height: 54px; flex: none; border-radius: 50%; border: 1.5px solid var(--vino); background: var(--vino); color: #FFF7EC; display: grid; place-items: center; cursor: pointer; }
+.ai-mic svg { width: 24px; height: 24px; }
+.ai-mic.acceso { background: var(--cotto); border-color: var(--cotto); animation: ai-ascolta 1.2s ease-in-out infinite; }
+@keyframes ai-ascolta { 0%, 100% { box-shadow: 0 0 0 0 rgba(196, 83, 46, .45); } 50% { box-shadow: 0 0 0 12px rgba(196, 83, 46, 0); } }
+.ai-intro { display: flex; gap: 12px; align-items: flex-start; }
+.ai-chat { display: flex; flex-direction: column; gap: 10px; }
+.ai-fum { max-width: 86%; padding: 12px 15px; border-radius: 18px; line-height: 1.4; white-space: pre-line; }
+.ai-fum.io { align-self: flex-end; background: var(--vino); color: #FFF7EC; border-bottom-right-radius: 6px; }
+.ai-fum.lei { align-self: flex-start; background: var(--foglio); border: 1px solid var(--riga); border-bottom-left-radius: 6px; box-shadow: var(--ombra); }
+.ai-faccio { margin-top: 10px; }
+.ai-esito { display: block; margin-top: 8px; color: var(--basilico); font-weight: 800; }
+.ai-pensa { display: flex; gap: 5px; padding: 16px 18px; }
+.ai-pensa span { width: 8px; height: 8px; border-radius: 50%; background: var(--tenue); animation: ai-punto 1s ease-in-out infinite; }
+.ai-pensa span:nth-child(2) { animation-delay: .15s; } .ai-pensa span:nth-child(3) { animation-delay: .3s; }
+@keyframes ai-punto { 0%, 100% { opacity: .3; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+.ai-domande .chip { font-size: .9rem; }
+.ai-scrivi { position: sticky; bottom: 0; display: flex; gap: 8px; align-items: center; padding: 10px 0 calc(10px + env(safe-area-inset-bottom)); background: var(--carta); }
+.ai-scrivi input { flex: 1; min-width: 0; min-height: 52px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--riga); background: #FFF; font: inherit; font-size: 1rem; color: var(--inchiostro); }
+.ai-scrivi input:focus { outline: none; border-color: var(--vino); }
+@media (prefers-reduced-motion: reduce) { .ai-mic.acceso, .ai-pensa span { animation: none; } }

@@ -953,6 +953,7 @@ function vHome() {
   h += richiesteGestore();
   if (!P.homeNo) h += cartaHome().replace('</section>', '<button type="button" class="link" data-a="home-no">Non ora</button></section>');
   h += `<div><h1>Ciao ${esc((Dati.attivo && Dati.io.nomeGestore) || 'Monica')}</h1><p class="tenue" style="margin:4px 0 0">${n ? `Hai <b>${n}</b> ${n === 1 ? 'cosa' : 'cose'} da guardare negli ordini.` : 'Nessun ordine nuovo da guardare.'}</p></div>
+    ${barraAI()}
     <div class="riquadri">
       <button type="button" class="riquadro primo" data-a="vai" data-v="ordini">${ico('ordini')}${n ? `<span class="pallino">${n}</span>` : ''}<div><b>Ordini</b><br><small>Accetta e prepara</small></div></button>
       <button type="button" class="riquadro" data-a="vai" data-v="piatti">${ico('piatti')}<div><b>I miei piatti</b><br><small>Foto, prezzi, pronti</small></div></button>
@@ -1460,6 +1461,7 @@ function vistaMonica() {
     case 'clienti': return vClienti();
     case 'impostazioni': return vImpostazioni();
     case 'spesa': return vSpesa();
+    case 'aiutante': return vAiutante();
     default: return vHome();
   }
 }
@@ -1494,7 +1496,7 @@ function render() {
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
   if (UI.vista === ultimaVista) window.scrollTo(0, y); else window.scrollTo(0, 0);
   if (UI.inCima) { UI.inCima = false; window.scrollTo(0, 0); }   // dopo il tocco su una notifica: si parte dall'alto
-  if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova)/.test(attivo)) document.getElementById(attivo).focus();
+  if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|ai-testo)/.test(attivo)) document.getElementById(attivo).focus();
   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
   if (chiuso === 'chiuso') setTimeout(provaApri, 0);
 }
