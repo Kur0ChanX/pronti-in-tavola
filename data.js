@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.20';
+const VERSIONE_APP = '0.9.21';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.21', data: '08/11/2026',
+    nuovo: ['Ricettario: cerca a voce (tocca 🎙 e di\' «seadas» o «zucchine e uova»)', 'Ricettario: «🕘 Viste di recente», le ultime ricette aperte, anche senza rete'] },
   { v: '0.9.20', data: '08/11/2026',
     nuovo: ['Catalogo: «Ricette sarde» e «Per ingrediente» (27 ingredienti: melanzane, ricotta, pecorino sardo, cozze, agnello…), sempre con «Carica altre ricette»'],
     migliorato: ['Se una sezione di GialloZafferano cambia o non c\'è, l\'app cerca da sola la stessa cosa a parole: il catalogo non resta mai vuoto'] },

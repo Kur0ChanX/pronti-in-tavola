@@ -587,6 +587,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="vai"][data-v^="cucina:"]'); await page.locator('.ric-passo').waitFor({ timeout: 3000 });
     if (!(await page.locator('.avviso', { hasText: 'Metà zucchero' }).count())) throw new Error('la nota non si vede nella cucina guidata');
     await clic('.indietro'); await page.locator('.ric-ing').waitFor({ timeout: 3000 });
+    // viste di recente: la ricetta appena aperta c'è
+    await page.evaluate(() => { UI.ric = { q: '', zona: 'recenti', cat: '' }; vai('ricettario'); });
+    if (!(await page.locator('.ric-elenco .ric-carta', { hasText: 'Seadas' }).count())) throw new Error('«Viste di recente» non mostra la ricetta aperta');
+    await page.evaluate(() => { UI.ric = { q: '', zona: 'tutte', cat: '' }; });
     // senza rete: la preferita si riapre dalla copia sul telefono
     await page.evaluate(() => { RIC.chiedi = async () => { throw new Error('senza rete'); }; vai('ricetta:gz:Seadas-sebadas'); });
     await page.locator('.ric-ing').waitFor({ timeout: 3000 });

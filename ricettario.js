@@ -15,7 +15,7 @@ const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: 
     if (!r.ok || j.errore) throw new Error(j.errore || 'Il server risponde ' + r.status);
     return j;
   } };
-const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
+const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['recenti', '🕘 Viste di recente'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
 /* catalogo completo per portata (sezioni di GialloZafferano lette dal server, pagina dopo pagina) */
@@ -140,15 +140,16 @@ function vRicettario() {
   const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
   const mie = mieRic().map(daMia);
   const tutte = mie.concat(RICETTE_GZ.map(r => r.foto || !cache[r.id] ? r : Object.assign({}, r, { foto: cache[r.id].foto || '' })), Object.values(cache).filter(r => !RICETTE_GZ.some(x => x.id === r.id)));
-  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
+  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'recenti' ? !!cache[r.id] : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
     && (!q || senzaAccenti(r.nome + ' ' + (r.ingredienti || []).map(i => i.nome).join(' ')).includes(q)));
-  rr = rr.sort((a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || a.nome.localeCompare(b.nome, 'it'));
+  rr = f.zona === 'recenti' ? rr.sort((a, b) => cache[b.id].visto - cache[a.id].visto) : rr.sort((a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || a.nome.localeCompare(b.nome, 'it'));
   const c = RIC.cerca;
   let h = testataMonica('Ricettario', 'home') + '<main class="corpo">';
   h += `<div><h1>Ricettario</h1><p class="tenue" style="margin:4px 0 0">Le ricette di GialloZafferano con video e foto dei passaggi, più le tue. Le vedete solo tu e Mario.</p></div>
     <form class="ric-cerca" data-ric-cerca="1"><input id="ric-cerca" type="search" data-ricerca="1" value="${esc(f.q)}" placeholder="Cerca: piatto o ingrediente (es. melanzane)" autocomplete="off" enterkeyhint="search">
+      ${typeof Riconosci !== 'undefined' && Riconosci && typeof ascoltaAI === 'function' ? `<button type="button" class="btn chiaro" data-a="ric-dico" aria-label="Cerca a voce">${AI.rec ? '⏹' : '🎙'}</button>` : ''}
       <button type="submit" class="btn pieno" aria-label="Cerca su GialloZafferano">${ico('cerca')}</button></form>
     <div class="scelte" role="group" aria-label="Quali">${ZONE_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-zona" data-v="${k}" aria-pressed="${f.zona === k}">${t}</button>`).join('')}</div>
     <div class="scelte" role="group" aria-label="Portata">${CAT_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-cat" data-v="${k}" aria-pressed="${f.cat === k}">${t}</button>`).join('')}</div>`;
@@ -176,7 +177,7 @@ function vRicettario() {
     <div class="scelte">${ESPLORA_RIC.map(t => `<button type="button" class="scelta" data-a="ric-esplora" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div></section>`;
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
   h += rr.length ? `<div class="ric-elenco">${rr.map(r => cartaRic(r, pref)).join('')}</div>`
-    : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
+    : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'recenti' ? 'Non hai ancora aperto ricette su questo telefono.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
       <button type="button" class="btn chiaro" data-a="ric-pulisci">Mostra tutte</button></section>`;
   return h + '</main>';
 }
@@ -423,6 +424,11 @@ Object.assign(A, {
     v.addEventListener('touchstart', e => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
     v.addEventListener('touchend', e => { if (x0 == null || (window.visualViewport && visualViewport.scale > 1.05)) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 60) { const n = i + (dx < 0 ? 1 : -1); if (n >= 0 && n < tutte.length) { i = n; mostra(); } } });
     mostra(); document.body.appendChild(v);
+  },
+  'ric-dico'() {   // detti il piatto o gli ingredienti: si cerca su tutto GialloZafferano
+    if (AI.rec) { AI.rec.stop(); return; }
+    ascoltaAI(detto => { const q = String(detto || '').replace(/[.!?]+$/, '').trim(); UI.ric.q = q; if (q.length >= 2) A['ric-cerca-gz'](q); else render(); }, {});
+    mostraToast('Ti ascolto: di\' il piatto o gli ingredienti.'); render();
   },
   'ric-catalogo'(el) {
     const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
