@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.38';
+const VERSIONE_APP = '0.9.39';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.39', data: '08/11/2026', ora: '13:45',
+    nuovo: ['Ricettario: «⚙️ Più filtri e ordina» con ⏱ fino a 30 minuti o 1 ora, 👌 facili, e ordina per nuove, A-Z o più veloci', 'Quante ricette trovi e «✕ Azzera i filtri»; i filtri restano come li hai lasciati', 'Cerca con 2-3 ingredienti anche fra le ricette arrivate dal motore'] },
   { v: '0.9.38', data: '08/11/2026', ora: '12:55',
     corretto: ['«Prova le AI adesso»: Cloudflare sembrava spento, ma la prova dava troppo poco spazio alla risposta; ora se una AI non risponde dice il perché'] },
   { v: '0.9.37', data: '08/11/2026', ora: '12:40',
