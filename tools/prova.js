@@ -604,6 +604,21 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.evaluate(() => S.piatti.some(p => p.ricetta === 'gz:Seadas-sebadas')))) throw new Error('il piatto non è collegato alla ricetta');
     if (!(await page.locator('[data-v="ricetta:gz:Seadas-sebadas"]').count())) throw new Error('nella scheda del piatto manca «Apri la ricetta»');
     await page.evaluate(() => { S.piatti = S.piatti.filter(p => p.ricetta !== 'gz:Seadas-sebadas'); salva(); });
+    // 📥 scarica: tre ricette finte dal catalogo finiscono nella memoria grande e si aprono senza rete
+    const scar = await page.evaluate(async () => {
+      const c0 = RIC.chiedi; scriviRic('pit-ric-auto', false); await dbRic('readwrite', st => st.clear()); RIC.scaricate = {};
+      RIC.chiedi = async c => ({ ricetta: { id: 'gz:' + c.u.replace(URL_GZ, '').replace('.html', ''), nome: 'Scaricata ' + c.u.slice(-8), porzioni: 4, ingredienti: [{ nome: 'Farina', q: 100, u: 'g' }], passi: [{ t: 'Impasta.', foto: [] }], foto: '' } });
+      await scaricaTante(['gz:Prova-a', 'gz:Prova-b', 'gz:Prova-c'], 'prova');
+      RIC.chiedi = async () => { throw new Error('senza rete'); };
+      const n = Object.keys(RIC.scaricate).length; RIC.scaricate = {}; RIC.dbLetto = false; ricetta('gz:x');
+      await new Promise(ok => setTimeout(ok, 400));
+      const dopo = Object.keys(RIC.scaricate).length; RIC.chiedi = c0;
+      return { n, dopo, apre: !!ricetta('gz:Prova-b') };
+    });
+    if (scar.n !== 3 || scar.dopo !== 3 || !scar.apre) throw new Error('«Scarica» non tiene le ricette sul telefono: ' + JSON.stringify(scar));
+    await page.evaluate(() => { UI.ric = { q: '', zona: 'scaricate', cat: '' }; vai('ricettario'); });
+    if (await page.locator('.ric-elenco .ric-carta').count() !== 3) throw new Error('«Sul telefono» non mostra le 3 scaricate');
+    await page.evaluate(async () => { await dbRic('readwrite', st => st.clear()); RIC.scaricate = {}; scriviRic('pit-ric-auto', true); UI.ric = { q: '', zona: 'tutte', cat: '' }; });
     // viste di recente: la ricetta appena aperta c'è
     await page.evaluate(() => { UI.ric = { q: '', zona: 'recenti', cat: '' }; vai('ricettario'); });
     if (!(await page.locator('.ric-elenco .ric-carta', { hasText: 'Seadas' }).count())) throw new Error('«Viste di recente» non mostra la ricetta aperta');
@@ -627,14 +642,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       const chiesto = []; let telefono = 0;
       if (typeof Dati === 'undefined') window.Dati = {};
       Dati.token = async () => 'finto';
-      HTMLMediaElement.prototype.play = function () { setTimeout(() => this.onended && this.onended(), 10); return Promise.resolve(); };
+      prima.Audio = window.Audio;   // audio finto: un «x» non è un mp3 vero e il telefono darebbe errore
+      window.Audio = class { constructor(u) { this.src = u; } play() { setTimeout(() => this.onended && this.onended(), 10); return Promise.resolve(); } pause() {} };
       const sp = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { telefono++; };
       localStorage.setItem('pit-voce', 'edge:elsa'); AI.voceNo = false;
       window.fetch = async (u, o) => { if (u === '/api/voce') { chiesto.push(JSON.parse(o.body)); return new Response(new Blob(['x'], { type: 'audio/mpeg' }), { headers: { 'content-type': 'audio/mpeg' } }); } return prima.f(u, o); };
       const finita = await new Promise(ok => { parlaAI('Passo uno. Impasta 10 min.', () => ok(true)); setTimeout(() => ok(false), 2000); });
       window.fetch = async (u, o) => u === '/api/voce' ? new Response('{}', { status: 502 }) : prima.f(u, o);
       AI.cacheVoce = new Map(); parlaAI('Altro testo.'); await new Promise(ok => setTimeout(ok, 300));
-      window.fetch = prima.f; Dati.token = prima.tok; HTMLMediaElement.prototype.play = prima.play; speechSynthesis.speak = sp; localStorage.removeItem('pit-voce'); AI.voceNo = false;
+      window.fetch = prima.f; Dati.token = prima.tok; window.Audio = prima.Audio; speechSynthesis.speak = sp; localStorage.removeItem('pit-voce'); AI.voceNo = false;
       return { chiesto, finita, telefono };
     });
     if (!voce.chiesto.length || voce.chiesto[0].v !== 'elsa' || !/10 minuti/.test(voce.chiesto[0].t)) throw new Error('la voce vera non chiede /api/voce con Elsa: ' + JSON.stringify(voce.chiesto));

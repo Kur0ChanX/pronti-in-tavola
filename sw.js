@@ -82,6 +82,8 @@ self.addEventListener('fetch', e => {
   const r = e.request;
   if (r.method !== 'GET') return;
   if (fisso(r.url)) { e.respondWith(caches.match(r).then(m => m || fetch(r).then(x => metti(r, x)))); return; }
+  // foto delle ricette scaricate (ricettario «📥 Scarica»): dalla copia sul telefono, così si vedono senza rete
+  if (/^https:\/\/www\.giallozafferano\.it\/images\//.test(r.url)) { e.respondWith(caches.open('gz-foto').then(c => c.match(r.url)).then(m => m || fetch(r))); return; }
   if (new URL(r.url).origin !== location.origin) return;
   e.respondWith(primaRete(r));
 });

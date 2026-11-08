@@ -15,7 +15,7 @@ const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: 
     if (!r.ok || j.errore) throw new Error(j.errore || 'Il server risponde ' + r.status);
     return j;
   } };
-const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['recenti', '🕘 Viste di recente'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
+const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['scaricate', '📥 Sul telefono'], ['recenti', '🕘 Viste di recente'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
 /* catalogo completo per portata (sezioni di GialloZafferano lette dal server, pagina dopo pagina) */
@@ -37,6 +37,61 @@ function caricaRicette() {
   s.onload = () => { RIC.stato = typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'errore'; render(); };
   s.onerror = () => { RIC.stato = 'errore'; s.remove(); render(); };
   document.head.appendChild(s);
+}
+
+/* ---------- 📥 SCARICATE (Mario 08/11 «offline crea il motore… cercare e scaricare… in un click») ----------
+   Le ricette scaricate stanno nella memoria grande del telefono (IndexedDB, centinaia di ricette) e le loro foto nella cache «gz-foto»
+   che il service worker usa senza rete. Il video resta solo online (troppo pesante). Ogni giorno, col Wi-Fi, l'app scarica da sola
+   le ricette nuove di preferite, elenco e «Ispirate» (interruttore nella schermata del ricettario). */
+RIC.scaricate = {}; RIC.scarico = null;
+const DB_RIC = () => new Promise((ok, ko) => {
+  if (!window.indexedDB) { ko(new Error('senza memoria')); return; }
+  const q = indexedDB.open('pit-ricettario', 1);
+  q.onupgradeneeded = () => q.result.createObjectStore('ricette', { keyPath: 'id' });
+  q.onsuccess = () => ok(q.result); q.onerror = () => ko(q.error);
+});
+async function dbRic(modo, fai) {
+  const db = await DB_RIC();
+  return new Promise((ok, ko) => { const tx = db.transaction('ricette', modo), st = tx.objectStore('ricette'), q = fai(st); tx.oncomplete = () => ok(q && q.result); tx.onerror = () => ko(tx.error); });
+}
+function caricaScaricate() {
+  dbRic('readonly', st => st.getAll()).then(tt => { (tt || []).forEach(r => { RIC.scaricate[r.id] = r; }); if (/^(ricettario|ricetta:)/.test(UI.vista)) render(); autoScarica(); }).catch(() => {});
+}
+const fotoDi = r => [r.foto, r.copertina, ...(r.passi || []).flatMap(p => p.foto || [])].filter(f => /^https:\/\/www\.giallozafferano\.it\/images\//.test(f || ''));
+async function scaricaUna(id) {
+  if (RIC.scaricate[id]) return false;
+  const j = await RIC.chiedi({ u: URL_GZ + id.slice(3) + '.html' });
+  const r = Object.assign({}, j.ricetta, { scaricata: Date.now() });
+  await dbRic('readwrite', st => st.put(r));
+  RIC.scaricate[r.id] = r;
+  try { const c = await caches.open('gz-foto'); await Promise.all(fotoDi(r).map(f => c.match(f).then(m => m || fetch(f, { mode: 'no-cors', referrerPolicy: 'no-referrer' }).then(x => c.put(f, x))).catch(() => {}))); } catch (e) { /* le foto restano online */ }
+  return true;
+}
+async function scaricaTante(ids, titolo) {
+  if (RIC.scarico) return;
+  const da = [...new Set(ids)].filter(id => /^gz:/.test(id) && !RIC.scaricate[id]);
+  if (!da.length) { mostraToast('Sono già tutte sul telefono ✓'); return; }
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  const s = RIC.scarico = { titolo, tot: da.length, fatte: 0, errori: 0, stop: false };
+  render();
+  let k = 0;
+  const lavora = async () => { while (k < da.length && !s.stop) { const id = da[k++]; try { await scaricaUna(id); s.fatte++; } catch (e) { s.errori++; } if (/^ricettario/.test(UI.vista)) aggiornaBarraScarico(); } };
+  await Promise.all([lavora(), lavora(), lavora()]);   // 3 alla volta: veloce senza pesare su GialloZafferano
+  RIC.scarico = null;
+  mostraToast(s.stop ? `Fermato: ${s.fatte} ricette scaricate.` : `📥 ${s.fatte} ricette sul telefono${s.errori ? ` (${s.errori} non riuscite: riprova più tardi)` : ''}. Le apri anche senza rete.`);
+  render();
+}
+function aggiornaBarraScarico() { const b = document.getElementById('ric-scarico'); const s = RIC.scarico; if (b && s) b.querySelector('b').textContent = `${s.fatte + s.errori} di ${s.tot}`; }
+const barraScarico = () => RIC.scarico ? `<section class="scheda" id="ric-scarico"><p style="margin:0">📥 Scarico «${esc(RIC.scarico.titolo)}»: <b>${RIC.scarico.fatte + RIC.scarico.errori} di ${RIC.scarico.tot}</b></p><button type="button" class="btn chiaro piccolo" data-a="ric-scarica-stop">Ferma</button></section>` : '';
+/* una volta al giorno, col Wi-Fi (o rete che non si paga a consumo) e l'app aperta: scarica le nuove di preferite, elenco e Ispirate */
+function autoScarica() {
+  if (leggiRic('pit-ric-auto', true) === false || navigator.onLine === false || RIC.scarico) return;
+  const conn = navigator.connection; if (conn && (conn.saveData || conn.type === 'cellular')) return;
+  const oggiS = new Date().toDateString(); if (leggiRic('pit-ric-auto-giorno', '') === oggiS) return;
+  if (typeof Dati === 'undefined' || !Dati.token) return;
+  scriviRic('pit-ric-auto-giorno', oggiS);
+  const ids = preferiteRic().concat(RICETTE_GZ.map(r => r.id), ispirate().map(r => r.id)).filter(id => !RIC.scaricate[id]).slice(0, 40);
+  if (ids.length) setTimeout(() => scaricaTante(ids, 'aggiornamento di oggi'), 8000);
 }
 /* ---------- memoria sul telefono ---------- */
 const leggiRic = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
@@ -80,8 +135,9 @@ function ispira() {
 }
 /* la ricetta completa: mia, già sul telefono, o da chiedere al server */
 function ricetta(id) {
+  if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (/^mia:/.test(id)) { const m = mieRic().find(x => x.id === id); return m ? daMia(m) : null; }
-  return cacheRic()[id] || null;
+  return cacheRic()[id] || RIC.scaricate[id] || null;
 }
 function apriGz(id) {
   if (RIC.apre[id]) return;
@@ -135,12 +191,14 @@ const cartaRic = (r, pref) => `<button type="button" class="ric-carta" data-a="v
     <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.mia ? 'Ricetta tua' : { gallura: 'Gallura', sarda: 'Sardegna', italiana: 'Italia' }[r.zona] || 'GialloZafferano'}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small></span></button>`;
 
 function vRicettario() {
+  if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
   const f = UI.ric || (UI.ric = { q: '', zona: 'tutte', cat: '' });
   const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
   const mie = mieRic().map(daMia);
-  const tutte = mie.concat(RICETTE_GZ.map(r => r.foto || !cache[r.id] ? r : Object.assign({}, r, { foto: cache[r.id].foto || '' })), Object.values(cache).filter(r => !RICETTE_GZ.some(x => x.id === r.id)));
-  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'recenti' ? !!cache[r.id] : f.zona === 'mie' ? r.mia
+  const scar = RIC.scaricate, extra = Object.assign({}, scar, cache);
+  const tutte = mie.concat(RICETTE_GZ.map(r => r.foto || !extra[r.id] ? r : Object.assign({}, r, { foto: extra[r.id].foto || '' })), Object.values(extra).filter(r => !RICETTE_GZ.some(x => x.id === r.id)));
+  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'recenti' ? !!cache[r.id] : f.zona === 'scaricate' ? !!scar[r.id] : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
     && (!q || senzaAccenti(r.nome + ' ' + (r.ingredienti || []).map(i => i.nome).join(' ')).includes(q)));
@@ -157,7 +215,7 @@ function vRicettario() {
   if (c.stato) {
     h += `<section class="scheda" id="ric-risultati"><h2>${c.cat ? '📚 ' + esc(c.q) + ' · tutte' : `Da GialloZafferano: «${esc(c.q)}»`}${c.risultati.length ? ` <small class="tenue">(${c.risultati.length}${c.prossima ? '+' : ''})</small>` : ''}</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
       : c.stato === 'errore' ? `<p style="margin:0">${esc(c.errore)}</p><button type="button" class="btn chiaro" data-a="ric-cerca-gz">Riprova</button>`
-      : c.risultati.length ? `<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
+      : c.risultati.length ? `${RIC.scarico ? '' : `<button type="button" class="btn chiaro pieno" data-a="ric-scarica-cerca">📥 Scarica queste ${c.risultati.length} per usarle senza rete</button>`}<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
       <button type="button" class="btn chiaro piccolo" data-a="ric-chiudi-cerca">Chiudi la ricerca</button></section>`;
   }
   if (f.zona === 'tutte' && !q && !f.cat && !c.stato) {
@@ -183,9 +241,17 @@ function vRicettario() {
     <details class="ric-intro"><summary><b>Per ingrediente</b> <small class="tenue">(${CATALOGO_ING.length})</small></summary><div class="scelte">${CATALOGO_ING.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="ricette-con-${k}">${t}</button>`).join('')}</div></details></section>`;
   if (!q && !c.stato) h += `<section class="scheda"><h2>🔎 Esplora GialloZafferano</h2><p class="piccolo tenue" style="margin:0">Migliaia di ricette: tocca un tema e si aprono qui dentro.</p>
     <div class="scelte">${ESPLORA_RIC.map(t => `<button type="button" class="scelta" data-a="ric-esplora" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div></section>`;
+  h += barraScarico();
+  if (!RIC.scarico && !c.stato) {
+    const n = Object.keys(scar).length;
+    h += `<section class="scheda"><h2>📥 Ricette sul telefono: ${n}</h2><p class="piccolo tenue" style="margin:0">Scaricate con testi e foto: le apri anche senza rete (il video no).</p>
+      <button type="button" class="btn chiaro pieno" data-a="ric-scarica-elenco">📥 Scarica tutto l'elenco (${RICETTE_GZ.length + preferiteRic().filter(id => !RICETTE_GZ.some(r => r.id === id)).length})</button>
+      <label class="interr"><span>Aggiorna da sola ogni giorno<small>Col Wi-Fi scarica le nuove di preferite, elenco e «Ispirate».</small></span><input type="checkbox" data-a="ric-auto" ${leggiRic('pit-ric-auto', true) !== false ? 'checked' : ''}></label>
+      ${n ? '<button type="button" class="btn chiaro piccolo" data-a="ric-scarica-via">Togli le ricette scaricate</button>' : ''}</section>`;
+  }
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
   h += rr.length ? `<div class="ric-elenco">${rr.map(r => cartaRic(r, pref)).join('')}</div>`
-    : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'recenti' ? 'Non hai ancora aperto ricette su questo telefono.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
+    : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'recenti' ? 'Non hai ancora aperto ricette su questo telefono.' : f.zona === 'scaricate' ? 'Nessuna ricetta scaricata: tocca «📥 Scarica» sotto un elenco o una ricerca.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
       <button type="button" class="btn chiaro" data-a="ric-pulisci">Mostra tutte</button></section>`;
   return h + '</main>';
 }
@@ -456,6 +522,15 @@ Object.assign(A, {
     render(); mostraToast('Controlla il nome e tocca Avanti.');
   },
   'ric-dado'() { UI.dado = (UI.dado || 0) + 1; render(); },
+  'ric-scarica-cerca'() { const c = RIC.cerca; scaricaTante(c.risultati.map(r => r.id), c.cat ? c.q : '«' + c.q + '»'); },
+  'ric-scarica-elenco'() { scaricaTante(preferiteRic().concat(RICETTE_GZ.map(r => r.id)), 'tutto l\'elenco'); },
+  'ric-scarica-stop'() { if (RIC.scarico) RIC.scarico.stop = true; },
+  'ric-auto'(el) { scriviRic('pit-ric-auto', el.checked); mostraToast(el.checked ? 'Ogni giorno, col Wi-Fi, scarico le nuove.' : 'Aggiornamento automatico spento.'); },
+  'ric-scarica-via'() {
+    if (!confirm('Tolgo dal telefono le ricette scaricate? Preferite e ricette tue restano.')) return;
+    dbRic('readwrite', st => st.clear()).catch(() => {}); RIC.scaricate = {};
+    caches.delete('gz-foto').catch(() => {}); mostraToast('Ricette scaricate tolte.'); render();
+  },
   'ric-catalogo'(el) {
     const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
     A['ric-cerca-gz'](nome, k);
