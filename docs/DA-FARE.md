@@ -3,7 +3,7 @@
 ## 0. Aspetta Mario
 - 07/11 · 🟡 Principale 16 · Foto del menù ai clienti: IN ATTESA (Mario 07/11 «non sono molto convinto, aspettiamo»; deve verificare i menù). Ora Monica le carica e le manda su WhatsApp; ai clienti si accendono con `menuFotoClienti` quando Mario dice sì.
 - 07/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
-- 08/11 · 🟡 Principale 20 · «Monica parla all'app» (idea 20, `docs/IDEE-2026-11-07.md`): livello gratis o con AI, come si attiva, risposta a voce, da dove partire.
+- 08/11 · 🛑 · 🟡 Principale 20 · «Monica parla all'app» (idea 20, `docs/IDEE-2026-11-07.md`): livello gratis o con AI, come si attiva, risposta a voce, da dove partire.
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
