@@ -37,7 +37,7 @@ Online fino a v0.9.51 (ogni versione: giro completo verde, push con HEAD = origi
 
 ## Prossimi passi
 1. Avvio: titolo verde; a Mario una riga per riga di «Aspetta Mario» (anche la domanda sul controllo dei numeri doppi).
-2. Se Mario dice 1 al controllo dei numeri: hook/guardia che prima del push confronta `VERSIONE_APP` e i C nuovi con `origin` e ferma i doppioni (skill `nuova-regola`, è una regola del kit: chiedere se vale per tutti i progetti).
+2. Mario ha detto 1 (08/11 ~16:00 «consiglio», C89): fare il controllo dei numeri: hook/guardia che prima del push confronta `VERSIONE_APP` e i C nuovi con `origin` e ferma i doppioni (skill `nuova-regola`, è una regola del kit: chiedere se vale per tutti i progetti).
 3. Aspettare le prove di Mario: C84 foto, C85 avviso, C82 versione in vista, C81 prezzi; più le vecchie (filtri C69, Pastiera C73, AI C71, velocità C70).
 4. Idea non chiesta (dire a Mario, non fare): pizzico con due dita per ingrandire in «Sistema la foto».
 
@@ -45,10 +45,11 @@ Online fino a v0.9.51 (ogni versione: giro completo verde, push con HEAD = origi
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
+08/11 ~16:00, DOPO l'handoff, parola per parola: «consiglio» (= 1 al controllo automatico dei numeri doppi → C89).
 08/11 ~16:00, parola per parola: «Con Monica volevo scrivere con Monica.» (correzione del dettato: nel messaggio prima «comunica» = «con Monica»; il ritaglio delle foto è per Monica, già capito così). Prima: «Poi quando esce un aggiornamento, non aggiornare in automatico, perché magari qualcuno sta facendo qualcosa nell'applicazione e lo sbatti fuori. Chiedi, metti un alert, nel senso fai finire quello che sta facendo, poi clicca riavvia, riavvia per applicare aggiornamento, si riavvia e ritorna nella pagina dove era, salvando quello che stava facendo.»; «Ho un problema, comunica, siccome quando scarica le foto da internet le vuole ritagliare… un editor tipo di ritaglio… Molto plug and play.»
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C89; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C90; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
