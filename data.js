@@ -183,11 +183,14 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.57';
+const VERSIONE_APP = '0.9.58';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.58', data: '08/11/2026',
+    nuovo: ['Impostazioni: 14 regole nuove che Monica cambia da sola (avviso in cima al menù, giorni di chiusura, ora limite, giorni avanti, ordine minimo, orari di ritiro, nota dei clienti, durata «Novità», aiutante dei clienti, i 3 messaggi WhatsApp e la firma, tempo di «Annulla»)', 'In cima a Impostazioni «🔎 Cerca un\'impostazione»', 'L\'aiutante porta a ognuna di queste voci e le può cambiare (tu confermi)'] ,
+    migliorato: ['Invito su WhatsApp per le amiche: «la mia cucina casalinga»'] },
   { v: '0.9.57', data: '08/11/2026',
-    nuovo: ['Impostazioni: 14 regole nuove che Monica cambia da sola (avviso in cima al menù, giorni di chiusura, ora limite, giorni avanti, ordine minimo, orari di ritiro, nota dei clienti, durata «Novità», aiutante dei clienti, i 3 messaggi WhatsApp e la firma, tempo di «Annulla»)', 'In cima a Impostazioni «🔎 Cerca un\'impostazione»', 'L\'aiutante porta a ognuna di queste voci e le può cambiare (tu confermi)'] },
+    corretto: ['Clienti con iPhone e un browser diverso da Safari (Chrome, Google…): i passi giusti per mettere l\'app sul telefono', 'Primi passi: scritto chiaro che per ordinare non serve installare l\'app'] },
   { v: '0.9.56', data: '08/11/2026',
     nuovo: ['Aiutante di Monica: «come cambio la foto della parmigiana?» → ti porta dritta lì, apre la voce giusta e ti dice cosa toccare (funziona anche senza internet)', 'Se una cosa non si può ancora cambiare dall\'app, l\'aiutante prepara il messaggio WhatsApp per Mario con tutti i dettagli'] },
   { v: '0.9.55', data: '08/11/2026',
