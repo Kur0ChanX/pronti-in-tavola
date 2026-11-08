@@ -42,8 +42,7 @@ Aperta dalla #19 con `create_session` (catena 2). Nessuna sveglia attiva.
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
-08/11 ~02:30, parola per parola: «cerca la miglior ia gratuita per Queste cose
-iniziaml assistente per monica non clienti» → ricerca fatta (Workers AI), server fatto, app da fare (passo 2).
+08/11 ~02:40, parola per parola: «ma utilizza limiti di altri progetti?» → risposto dalla #20: no, i 10.000 neuroni al giorno sono dell'account Cloudflare «Pronti in Tavola», solo dell'app (PT E5). Prima: «cerca la miglior ia gratuita per Queste cose / iniziaml assistente per monica non clienti» (passo 2).
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C48; prossimo M libero: M1.
