@@ -24,7 +24,8 @@ const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
 const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
 const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
-const PAUSA_MS = 15 * 1000;     // e non più di uno ogni 15 secondi
+const PAUSA_MS = 15 * 1000;
+const SQUILLO_MS = 5000, SQUILLI = 12;   // «sono qui»: uno squillo ogni 5 secondi per 1 minuto (C51)     // e non più di uno ogni 15 secondi
 
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 const daB64u = s => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4)), c => c.charCodeAt(0));
@@ -262,20 +263,20 @@ export class Avvisi extends DurableObject {
     const nome = String((b && b.nome) || 'Un cliente').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 40) || 'Un cliente';
     const n = Number.isInteger(b && b.n) && b.n > 0 && b.n < 1e6 ? b.n : 0;
     const extra = { nome, n, prova: !!(b && b.prova) };
-    /* suoneria (Mario 08/11 «far suonare il telefono a Monica tipo suoneria»): la notifica torna altre 2 volte,
-       ogni 25 secondi, finché chi gestisce non la apre o tocca «Ho visto» (/api/visto-qui) */
+    /* suoneria (Mario 08/11 «tipo suoneria», poi «ogni 5 secondi… vibrazione lunghissima»): la notifica torna ogni 5 secondi
+       per 1 minuto (12 squilli), finché chi gestisce non la apre o tocca «Ho visto» (/api/visto-qui) */
     await this.ctx.storage.put('squillo', { extra, volte: 1 });
-    await this.ctx.storage.setAlarm(Date.now() + 25000);
+    await this.ctx.storage.setAlarm(Date.now() + SQUILLO_MS);
     return this.manda(null, 'qui', null, extra);
   }
   async vistoQui() { await this.ctx.storage.delete('squillo'); return { ok: true }; }
   async alarm() {
     const sq = await this.ctx.storage.get('squillo');
     if (!sq) return;
-    if (sq.volte >= 3) { await this.ctx.storage.delete('squillo'); return; }
+    if (sq.volte >= SQUILLI) { await this.ctx.storage.delete('squillo'); return; }
     await this.ctx.storage.put('squillo', { extra: sq.extra, volte: sq.volte + 1 });
     await this.manda(null, 'qui', null, sq.extra);
-    if (sq.volte + 1 < 3) await this.ctx.storage.setAlarm(Date.now() + 25000); else await this.ctx.storage.delete('squillo');
+    if (sq.volte + 1 < SQUILLI) await this.ctx.storage.setAlarm(Date.now() + SQUILLO_MS); else await this.ctx.storage.delete('squillo');
   }
 
   /* aiutante: quante richieste oggi (tetto per restare nel gratuito) */

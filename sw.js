@@ -54,7 +54,7 @@ self.addEventListener('push', e => {
     return self.registration.showNotification(T[tipo][0], {
       body: T[tipo][1], icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: tipo, renotify: true,
       requireInteraction: ['richiesta', 'primo', 'ordine', 'qui'].includes(tipo),
-      vibrate: tipo === 'qui' ? [1000, 300, 1000, 300, 1000, 300, 1000, 300, 1000] : [300, 150, 300, 150, 300],   // «sono qui»: vibra come una chiamata (C51)
+      vibrate: tipo === 'qui' ? [2500, 200, 2500, 200, 2500, 200, 2500] : [300, 150, 300, 150, 300],   // «sono qui»: vibra come una chiamata (C51)
       data: { url: './#vai=' + (tipo === 'qui' && u.n ? 'qui_' + u.n : tipo), tipo: tipo === 'qui' && u.n ? 'qui_' + u.n : tipo } })
       /* con l'app aperta suona anche lei, forte, finché Monica tocca «Ho visto» (C51) */
       .then(() => tipo === 'qui' ? self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cc => cc.forEach(c => c.postMessage({ suona: { nome: (u && u.nome) || '', n: (u && u.n) || 0, prova: !!(u && u.prova) } }))) : null);
