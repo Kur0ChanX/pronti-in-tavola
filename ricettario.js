@@ -370,7 +370,7 @@ function vRicetta(id) {
   const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
   let h = testataMonica('Ricetta', 'ricettario') + '<main class="corpo">';
   // Mario 08/11: «il play come prima cosa nella ricetta»
-  h += `<button type="button" class="btn pieno ric-play" data-a="vai" data-v="cucina:${esc(id)}">▶️ Ascolta la ricetta passo passo</button>`;
+  h += `<button type="button" class="btn pieno ric-play" data-a="ric-play" data-v="${esc(id)}">▶️ Ascolta la ricetta passo passo</button>`;
   if (/^gz:/.test(id) && !nelRicettario(id)) h += `<section class="scheda ric-aggiungi"><p style="margin:0"><b>Non è ancora nel tuo ricettario.</b> Ti piace? Aggiungila: la vedrete tu e Monica nell'elenco, con video, foto e voce.</p>
     <button type="button" class="btn pieno" data-a="ric-aggiungi" data-v="${esc(id)}">➕ Aggiungi al mio ricettario</button></section>`;
   else if ((RIC.scelte || []).some(x => x.id === id)) h += `<p class="piccolo tenue" style="margin:0">✓ Nel tuo ricettario · <button type="button" class="link" data-a="ric-togli" data-v="${esc(id)}">Togli</button></p>`;
@@ -421,8 +421,10 @@ function vCucina(id) {
   if (RIC.stato !== 'pronto') return attesaRic('Cucina guidata', 'ricettario');
   const r = ricetta(id);
   if (!r || !r.passi.length) { UI.vista = 'ricetta:' + id; return vRicetta(id); }
-  const c = UI.cucina && UI.cucina.id === id ? UI.cucina : (UI.cucina = { id, passo: 0, voce: true });
+  const nuova = !(UI.cucina && UI.cucina.id === id);
+  const c = nuova ? (UI.cucina = { id, passo: 0, voce: true }) : UI.cucina;
   tieniAcceso(true);
+  if (nuova || c.leggi) { c.leggi = false; setTimeout(() => { if (UI.cucina === c && /^cucina:/.test(UI.vista)) leggiPasso(); }, 0); }   // la voce parte da sola al primo passo (Mario 08/11): il tocco su ▶️ ha già dato il permesso audio
   const i = Math.min(c.passo, r.passi.length - 1), p = r.passi[i], ultimo = i === r.passi.length - 1, min = minutiPasso(p.t);
   const mio = timerDi(id, i), altri = RIC.timers.filter(x => x !== mio), nota = notaRic(id);
   let h = testataMonica('Cucina guidata', 'ricetta:' + id) + '<main class="corpo ric-cucina">';
@@ -755,6 +757,7 @@ Object.assign(A, {
     c.passo = Math.min(r.passi.length - 1, Math.max(0, c.passo + Number(el.dataset.v)));
     render(); window.scrollTo(0, 0); leggiPasso();
   },
+  'ric-play'(el) { const id = el.dataset.v; const c = UI.cucina && UI.cucina.id === id ? UI.cucina : (UI.cucina = { id, passo: 0, voce: true }); c.voce = true; c.leggi = true; vai('cucina:' + id); },   // ▶️: entra in cucina e legge subito (anche tornando)
   'ric-ripeti'() { if (UI.cucina) { const v = UI.cucina.voce; UI.cucina.voce = true; leggiPasso(); UI.cucina.voce = v; } },
   'ric-mani'(el) { const c = UI.cucina; if (!c) return; c.mani = el.checked; if (c.mani) { c.voce = true; leggiPasso(); } else fermaAscolto(); render(); },
   'ric-voce'(el) { if (UI.cucina) { UI.cucina.voce = el.checked; if (!el.checked && typeof fermaVoce === 'function') fermaVoce(); if (!el.checked && window.speechSynthesis) speechSynthesis.cancel(); } },

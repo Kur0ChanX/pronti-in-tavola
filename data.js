@@ -183,9 +183,13 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.27';
+const VERSIONE_APP = '0.9.28';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.28', data: '08/11/2026',
+    nuovo: ['Ricettario in ordine: una sola ricerca, i filtri in una riga, l\'elenco subito; «🔎 Scopri» con le ricette nuove, il catalogo e i temi; «➕ Aggiungi al mio ricettario» (uguale su tutti i telefoni)',
+      'Pagina «🗄 Database ricette»: quante ricette hai, quante nuove, quali hanno la voce sul telefono, il motore con «🔄 Cerca adesso» e la barra di avanzamento'],
+    corretto: ['«▶️ Ascolta la ricetta passo passo»: la voce parte da sola al primo passo (prima bisognava toccare «Ripeti»)'] },
   { v: '0.9.27', data: '08/11/2026',
     nuovo: ['Ricettario: «🗄 Il tuo database» sul server dell\'app: cresce da solo ogni 10 minuti con le ricette di GialloZafferano, salva per sempre ogni ricetta aperta e ogni lettura della voce (senza doppioni). «Sfoglia», «Ferma» e «Riprendi»'],
     migliorato: ['Se GialloZafferano non risponde, ricette e ricerche arrivano dal tuo database', 'Cucina guidata: la voce legge il passo e poi il consiglio («di\' avanti»), così le letture si riusano'] },
