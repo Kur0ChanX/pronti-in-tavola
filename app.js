@@ -1538,6 +1538,9 @@ function vistaMonica() {
   }
 }
 let ultimaVista = '', ultimoFoglio = '';
+/* C84 (Mario 08/11 «quando vado indietro voglio che mi ritorni dove ero»): punto della pagina per ogni schermata lasciata.
+   Si torna allo stesso punto con «Indietro» (anche col gesto del telefono) o tornando alla schermata di prima (es. dopo «Salva»). */
+const POS = {}; let penultimaVista = '';
 function render() {
   document.documentElement.classList.toggle('grande', !!P.grande);
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
@@ -1567,7 +1570,17 @@ function render() {
   if (UI.vista !== ultimaVista && $('main.corpo') && !/^cucina:/.test(UI.vista)) $('main.corpo').classList.add('entra');   // cucina guidata: niente entrata, la voce sul telefono blocca le animazioni e la pagina restava vuota (Mario 08/11)
   $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
-  if (UI.vista === ultimaVista) window.scrollTo(0, y); else window.scrollTo(0, 0);
+  if (UI.vista === ultimaVista) window.scrollTo(0, y);
+  else {
+    if (ultimaVista) POS[ultimaVista] = y;
+    const torna = (UI.torna || UI.vista === penultimaVista) && POS[UI.vista] > 0 ? POS[UI.vista] : 0;
+    window.scrollTo(0, torna);
+    // pagine che si allungano dopo (elenco delle ricette, foto): ci riprova finché arriva al punto
+    const vistaTorna = UI.vista; UI.mossoDopo = false;
+    if (torna) [120, 400, 900].forEach(ms => setTimeout(() => { if (UI.vista === vistaTorna && Math.abs(window.scrollY - torna) > 40 && !UI.mossoDopo) window.scrollTo(0, torna); }, ms));
+    penultimaVista = ultimaVista;
+  }
+  UI.torna = false;
   if (UI.inCima) { UI.inCima = false; window.scrollTo(0, 0); }   // dopo il tocco su una notifica: si parte dall'alto
   if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|ai-testo)/.test(attivo)) document.getElementById(attivo).focus();
   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
@@ -2585,10 +2598,12 @@ Object.assign(A, {
 if (Dati.attivo) Lucchetto.disponibile().then(v => { L.puo = v; render(); });
 
 /* ---------- avvio ---------- */
+['touchstart', 'wheel'].forEach(t => document.addEventListener(t, () => { UI.mossoDopo = true; }, { passive: true }));   // C84: se scorri tu, l'app non ti riporta indietro
 document.addEventListener('click', e => {
   const el = e.target.closest('[data-a]');
   if (!el) return;
   UI.tocco = el.dataset.a + '|' + (el.dataset.v || '');
+  if (el.classList.contains('indietro')) UI.torna = true;   // C84: «Indietro» torna al punto di prima
   if (UI.avvisoTesto) { UI.avvisoTesto = ''; const n = $('.notifica'); if (n) n.remove(); }   // il riquadro della notifica sparisce al primo tocco   // solo il pulsante appena toccato fa lo «scatto» (C29)
   const f = A[el.dataset.a];
   if (f) f(el, e);
