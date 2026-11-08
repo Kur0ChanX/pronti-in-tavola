@@ -345,7 +345,7 @@ function guidaInstalla() {
     'Tocca <b>Installa</b>.'];
   const tab = (v, t) => `<button type="button" class="gi-tab" data-a="guida-os" data-v="${v}" aria-pressed="${os === v}">${t}</button>`;
   return `<div class="guida-inst"><div class="gi-tabs" role="group" aria-label="Il tuo telefono">${tab('ios', 'iPhone')}${tab('android', 'Android')}</div>
-    <ol class="gi-passi">${pp.map(t => `<li>${t}</li>`).join('')}</ol></div>`;
+    ${os === 'ios' && window.GuidaIPhone ? GuidaIPhone.guidaIPhone() : `<ol class="gi-passi">${pp.map(t => `<li>${t}</li>`).join('')}</ol>`}</div>`;   // iPhone: guida a figure (C94, guida-iphone.js)
 }
 function cartaHome(dopo) {
   if (suHome()) return '';
