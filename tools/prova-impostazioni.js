@@ -71,6 +71,65 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const r = await page.evaluate(() => { const c = controllaAI({ azione: 'impostazione', chiave: 'giorniChiusi', valore: [0, 1] }); return [c.no, c.dopo]; });
     if (r[0] || r[1] !== 'Lunedì, Domenica') throw new Error(r.join(' | '));
   });
+  /* ---------- lotto 2 (C92) ---------- */
+  await passo('parti del menù: aggiungo «Secondi», la sposto, rinomino; con piatti non si toglie', async () => {
+    await monica('impostazioni');
+    await page.click('details.sez[data-sez="opz-parti"] > summary');
+    await page.fill('#nuova-parte', 'secondi'); await page.click('[data-a="o-parte-agg"]'); await page.waitForTimeout(150);
+    let v = await page.evaluate(() => CATEGORIE.map(c => c.join(':')).join());
+    if (v !== 'stuzzichini:Stuzzichini,primi:Primi,dolci:Dolci,secondi:Secondi') throw new Error('dopo aggiungi: ' + v);
+    await page.click('[data-a="o-parte-su"][data-v="secondi"]'); await page.waitForTimeout(100);
+    v = await page.evaluate(() => CATEGORIE.map(c => c[0]).join());
+    if (v !== 'stuzzichini,primi,secondi,dolci') throw new Error('dopo su: ' + v);
+    const q = page.locator('[data-campo="op.stuzzichini"]'); await q.fill('Antipasti'); await q.dispatchEvent('change'); await page.waitForTimeout(100);
+    v = await page.evaluate(() => CATEGORIE.find(c => c[0] === 'stuzzichini')[1]);
+    if (v !== 'Antipasti') throw new Error('rinomina: ' + v);
+    await page.click('[data-a="o-parte-togli"][data-v="primi"]'); await page.waitForTimeout(100);
+    if (!(await page.evaluate(() => CATEGORIE.some(c => c[0] === 'primi')))) throw new Error('ha tolto una parte con dei piatti');
+    await page.screenshot({ path: OUT + '/opz-parti.png' });
+    await page.click('[data-a="o-parte-togli"][data-v="secondi"]'); await page.waitForTimeout(100);
+    if (await page.evaluate(() => CATEGORIE.some(c => c[0] === 'secondi'))) throw new Error('secondi (vuota) non tolta');
+    await page.evaluate(() => { delete S.impostazioni.parti; render(); });
+  });
+  await passo('piatto in «Secondi»: il cliente lo vede sotto «Secondi»', async () => {
+    await page.evaluate(() => { S.impostazioni.parti = [['stuzzichini', 'Stuzzichini'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['dolci', 'Dolci']];
+      const p = visibili().find(x => x.disponibile); UI.provaCat = [p.id, p.cat]; p.cat = 'secondi'; P.ruolo = 'cliente'; P.benvenuto = true; vai('menu'); });
+    await page.waitForTimeout(200);
+    if (!(await page.locator('h2', { hasText: 'Secondi' }).count())) throw new Error('manca la parte Secondi nel menù');
+    await page.evaluate(() => { piatto(UI.provaCat[0]).cat = UI.provaCat[1]; delete S.impostazioni.parti; render(); });
+  });
+  await passo('aiutante a voce: «aggiungi la parte secondi» → conferma → c\'è', async () => {
+    await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; UI.aiQui = null; vai('aiutante'); });
+    await page.evaluate(() => inviaAI('Aggiungi la parte secondi.')); await page.waitForTimeout(400);
+    const r = await page.evaluate(() => { const m = AI.msgs[AI.msgs.length - 1]; return [m.t, m.piano && m.piano.azioni ? m.piano.azioni.length : (m.azioni || []).length]; });
+    if (!/Secondi|secondi/.test(r[0])) throw new Error('risposta: ' + r[0]);
+    const c = await page.evaluate(() => { const c = controllaAI({ azione: 'impostazione', chiave: 'parti', valore: [...opz('parti'), [null, 'secondi']] }); if (c.fai) c.fai(); return [c.no, c.dopo, CATEGORIE.map(x => x[0]).join()]; });
+    if (c[0] || !/Nuova: Secondi/.test(c[1])) throw new Error(c.join(' | '));
+    const no = await page.evaluate(() => controllaAI({ azione: 'impostazione', chiave: 'parti', valore: 'Antipasti, Secondi, Dolci' }).no || '');
+    if (!/ha dei piatti/.test(no)) throw new Error('toglie parti con piatti: ' + no);
+    await page.screenshot({ path: OUT + '/opz-parti-voce.png' });
+    await page.evaluate(() => { delete S.impostazioni.parti; render(); });
+  });
+  await passo('saluto, frase della pausa, altro pagamento, invito e biglietto', async () => {
+    const r = await page.evaluate(() => {
+      const base = [opz('saluto'), testoInvitoGestore('a'), BIGLIETTI().a.titolo];
+      Object.assign(S.impostazioni, { saluto: 'Ciao da Moni!', invitoAmici: 'Venite a trovarmi!', bigliettoTitolo: 'Prova la mia cucina' });
+      const mio = [opz('saluto'), testoInvitoGestore('a'), BIGLIETTI().a.titolo];
+      ['saluto', 'invitoAmici', 'bigliettoTitolo'].forEach(k => delete S.impostazioni[k]);
+      return [base, mio];
+    });
+    if (!/^Benvenuti da /.test(r[0][0]) || !/la mia cucina casalinga/.test(r[0][1]) || !/#da=monica/.test(r[0][1]) || r[0][2] !== 'Assaggia la mia cucina!') throw new Error('base: ' + JSON.stringify(r[0]));
+    if (r[1][0] !== 'Ciao da Moni!' || !/^Venite a trovarmi!\n\n.*#da=monica$/.test(r[1][1]) || r[1][2] !== 'Prova la mia cucina') throw new Error('mio: ' + JSON.stringify(r[1]));
+    await page.evaluate(() => { const d = new Date(); d.setDate(d.getDate() + 3); S.impostazioni.pausa = { attiva: true, fino: iso(d) };
+      S.impostazioni.pausaTesto = 'Torno presto!'; S.impostazioni.altroPagare = 'Satispay al 333 0000000'; P.ruolo = 'cliente'; P.benvenuto = true; vai('menu'); });
+    await page.waitForTimeout(200);
+    if (!(await page.locator('.avviso', { hasText: 'Torno presto!' }).count())) throw new Error('frase della pausa non vista');
+    await page.evaluate(() => { S.impostazioni.pausa.attiva = false; P.carrello = [{ piatto: 'tiramisu', nome: 'Tiramisù', tipo: 'teglia', formato: 't6', formatoNome: 'Teglia da 6', qta: 1, prezzo: 18, note: [], testo: '', variante: null }]; UI.entro = null; vai('carrello'); });
+    await page.waitForTimeout(200);
+    if (!(await page.locator('.paga-riga', { hasText: 'Satispay' }).count())) throw new Error('altro pagamento non visto nel carrello');
+    await page.screenshot({ path: OUT + '/opz-paga.png' });
+    await page.evaluate(() => { delete S.impostazioni.pausaTesto; delete S.impostazioni.altroPagare; P.carrello = []; });
+  });
   console.log(errori.length ? 'ERRORI: ' + errori.join(' | ') : 'Nessun errore nella pagina');
   await b.close(); process.exit(no || errori.length ? 1 : 0);
 })();

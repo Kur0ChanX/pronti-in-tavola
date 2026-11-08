@@ -26,11 +26,19 @@ Richiesta di Mario (08/11 ~18:40): «aggiungi tantissime impostazioni da modific
 | Firma dei messaggi | in fondo ai messaggi | «<nome> · Pronti in Tavola» |
 | Tempo per «Annulla» | secondi del tasto Annulla | 10 |
 
-## Lotto 2 (idee, da fare dopo; dire a Mario)
-- Nomi e ordine delle parti del menù (stuzzichini, primi, dolci; aggiungerne una, es. «secondi»).
-- Porzioni delle teglie (6 e 8) e nomi dei formati.
-- Teglie al massimo in un GIORNO: serve un contatore sul server (il cliente non vede gli ordini degli altri), come le settimane.
-- Reparti della lista della spesa (nomi e ordine).
-- Testi dei biglietti d'invito e del messaggio d'invito.
-- Testo della pausa per i clienti, saluto nel menù.
-- Altri modi di pagare (es. Satispay) con un testo libero.
+## Lotto 2 (v0.9.59, C92)
+| Voce | Cosa fa | Di base |
+|---|---|---|
+| Parti del menù | nomi, ordine, parti nuove (es. «Secondi»); con piatti non si toglie; a voce «aggiungi la parte secondi» anche senza rete | Stuzzichini, Primi, Dolci |
+| Saluto in cima al menù | per chi non ha scritto il nome | «Benvenuti da <nome>!» |
+| Frase della pausa | sotto «è in pausa fino a…» | «Puoi già ordinare per i giorni dopo.» |
+| Altri modi di pagare | riga nel carrello (es. Satispay) | vuoto |
+| Messaggio d'invito per gli amici | con {link}; senza, il link va in fondo | il testo di oggi |
+| Biglietto: titolo e sottotitolo | il biglietto per gli amici | i testi di oggi |
+
+Come funziona: `CATEGORIE` (data.js) segue `S.impostazioni.parti` (`applicaParti` in render); una parte tolta che ha ancora piatti torna in fondo, così nessun piatto sparisce.
+
+## Non fatti (perché)
+- Porzioni delle teglie e nomi dei formati: si cambiano già piatto per piatto (Prezzi); una regola unica cambierebbe gli ordini vecchi.
+- Teglie al massimo in un giorno: serve un contatore sul server (il cliente non vede gli ordini degli altri): da proporre a Mario.
+- Reparti della spesa: ogni ingrediente è legato al nome del reparto; rinominarli senza rompere la lista chiede un lavoro a parte.

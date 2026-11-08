@@ -379,7 +379,7 @@ function vInvitoGestore() {
 }
 /* testo dell'invito che Mario manda dall'app */
 const testoInvitoGestore = (tipo = 'g') => tipo === 'a'
-  ? `Ciao! Sono ${cuoca()} 🍝 Ho aperto Pronti in Tavola, la mia cucina casalinga: guardi il menù coi prezzi, ordini con pochi tocchi e passi da me a ritirare.\n\nTocca qui:\n${SITO}#da=monica`
+  ? (t => t.includes(SITO) ? t : `${t.trim()}\n\n${SITO}#da=monica`)(riempi(opz('invitoAmici'), { link: `${SITO}#da=monica` }))   // scritto da Monica (C92); senza {link} il link va in fondo
   : tipo === 'm'
   ? `Ciao! 👩‍🍳 Ho preparato per te Pronti in Tavola, la tua cucina online: qui ricevi gli ordini delle amiche, sistemi i piatti e vedi cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore-m`
   : `Ciao! 👩‍🍳 Ti invito a gestire con me Pronti in Tavola: qui arrivano gli ordini, si sistemano i piatti e si vede cosa preparare.\n\nApri il link, entra col tuo account Google e io ti confermo con un tocco:\n${SITO}#gestore`;
@@ -505,7 +505,7 @@ const citta = () => String((S.impostazioni.ritiro || {}).citta || 'Olbia').repla
 const BIGLIETTI = () => ({
   m: { titolo: 'Benvenuta nella tua app!', sotto: 'Pronti in Tavola è pronta per te', righe: ['Ricevi gli ordini delle amiche', 'Sistemi i tuoi piatti e i prezzi', 'Vedi cosa preparare ogni giorno'], box: ['Tocca il link nel messaggio', 'ed entra con Google: basta un minuto'] },
   g: { titolo: 'Ti aspettiamo in cucina!', sotto: 'Gestisci con noi Pronti in Tavola', righe: ['Ricevi gli ordini degli amici', 'Sistemi i piatti e i prezzi', 'Vedi cosa preparare ogni giorno'], box: ['Tocca il link nel messaggio', 'ed entra con Google: basta un minuto'] },
-  a: { titolo: 'Assaggia la mia cucina!', sotto: 'Piatti fatti a mano da me, pronti da ritirare', firma: cuoca(), righe: ['Guarda il menù coi prezzi', 'Ordina con pochi tocchi', 'Ritiri a ' + citta() + ', senza pensieri'], box: ['Tocca il link nel messaggio', 'e scegli cosa ti va'] }
+  a: { titolo: opz('bigliettoTitolo'), sotto: opz('bigliettoSotto'), firma: cuoca(), righe: ['Guarda il menù coi prezzi', 'Ordina con pochi tocchi', 'Ritiri a ' + citta() + ', senza pensieri'], box: ['Tocca il link nel messaggio', 'e scegli cosa ti va'] }
 });
 async function disegnaInvito(tipo = 'g') {
   const B = BIGLIETTI()[tipo] || BIGLIETTI().g;
@@ -589,7 +589,7 @@ function chiGestisce() {
 function vBenvenuto() {
   const b = UI.benv || {};
   let h = `<main class="corpo benvenuto"><img class="benv-logo" src="media/logo-medaglione.webp" alt="Pronti in Tavola con Monica">
-    <h1>Benvenuti da Monica!</h1><p class="tenue">Monica cucina per te a Olbia. Prima di entrare, dicci come ti chiami: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>`;
+    <h1>${esc(opz('saluto'))}</h1><p class="tenue">Monica cucina per te a Olbia. Prima di entrare, dicci come ti chiami: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>`;
   if (b.chiuso) return h + `<div class="avviso"><div><b>Monica in questo momento non prende clienti nuovi.</b><br>Puoi guardare il menù; per ordinare riprova più avanti.</div></div>
     <button type="button" class="btn chiaro pieno" data-a="benv-guarda">Guarda il menù</button></main>`;
   h += `<section class="scheda"><label class="etichetta" for="benv-nome" style="font-weight:800">Il tuo nome</label>
@@ -626,7 +626,7 @@ async function benvEntra(ricollega) {
 function testataCliente() {
   const n = quanti(P.carrello);
   return `<header class="testata"><img class="marchio" src="${LOGO}" alt="">
-    <div class="titolo"><b>Pronti in Tavola</b><span>${(n => n && n !== 'Cliente' ? `Ciao ${esc(n)}!` : 'Benvenuti da Monica!')(nomeBreve(nomeCliente() || ''))}</span></div>
+    <div class="titolo"><b>Pronti in Tavola</b><span>${(n => n && n !== 'Cliente' ? `Ciao ${esc(n)}!` : esc(opz('saluto')))(nomeBreve(nomeCliente() || ''))}</span></div>
     <button type="button" class="icona aa" data-a="testo-grande" aria-pressed="${!!P.grande}" aria-label="Testo più grande">Aa</button>
     <button type="button" class="icona" data-a="vai" data-v="carrello" aria-label="Il tuo ordine: ${n} piatti">${ico('carrello')}${n ? `<span class="pallino">${n}</span>` : ''}</button></header>`;
 }
@@ -691,7 +691,7 @@ function vMenu() {
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
       <div class="fila" style="margin-top:10px"><button type="button" class="btn piccolo" data-a="vai" data-v="modifica">Rivedi la modifica</button></div></div></div>`;
   }
-  if (pausaOra()) h += `<div class="avviso">${ico('pausa')}<div><b>${esc(cuoca())} è in pausa fino a ${giornoLungo(imp.pausa.fino)}.</b><br>Puoi già ordinare per i giorni dopo.</div></div>`;
+  if (pausaOra()) h += `<div class="avviso">${ico('pausa')}<div><b>${esc(cuoca())} è in pausa fino a ${giornoLungo(imp.pausa.fino)}.</b><br>${esc(opz('pausaTesto'))}</div></div>`;
   if (opz('avviso') && !UI.modifica) h += `<div class="avviso">${ico('stella')}<div>${esc(opz('avviso'))}</div></div>`;   // scritto da Monica (C88)
 
   if (imp.natale.attivo && oggi() <= imp.natale.entro) {
@@ -816,6 +816,7 @@ function vCarrello() {
   }
   h += metodi.length === 1 && metodi[0] === 'contanti' ? `<p class="paga-riga">${ico('spunta')}Paghi in contanti quando ritiri.</p>` : `<section class="scheda"><h2>Come paghi</h2><div class="scelte">${metodi.map(m => `<button type="button" class="scelta" data-a="metodo" data-v="${m}" aria-pressed="${UI.metodo === m}">${METODO[m]}</button>`).join('')}</div>
     <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>`;
+  if (opz('altroPagare')) h += `<p class="paga-riga">${ico('aiuto')}<span>Puoi pagare anche così: <b>${esc(opz('altroPagare'))}</b>. ${opz('notaClienti') ? 'Scrivilo nella nota.' : 'Diglielo quando ritiri.'}</span></p>`;   // C92
   const minimo = opz('minimo'), sotto = minimo > 0 && totale(c) < minimo;   // ordine minimo (C88)
   h += `    ${opz('notaClienti') ? `<div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica?</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>` : ''}${sotto ? `<div class="avviso">${ico('euro')}<div>L'ordine minimo è <b>${euro(minimo)}</b>: aggiungi ancora ${euro(minimo - totale(c))}.</div></div>` : ''}
     <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
@@ -1551,6 +1552,7 @@ let ultimaVista = '', ultimoFoglio = '';
    Si torna allo stesso punto con «Indietro» (anche col gesto del telefono) o tornando alla schermata di prima (es. dopo «Salva»). */
 const POS = {}; let penultimaVista = '';
 function render() {
+  applicaParti();   // parti del menù scelte da Monica (opzioni.js, C92)
   document.documentElement.classList.toggle('grande', !!P.grande);
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
@@ -2190,6 +2192,7 @@ function salvaCampo(el) {
   const pid = UI.vista.split(':')[1];
   if (c === 'sel.testo') { UI.sel.testo = val; return; }
   if (c === 'nota') { UI.nota = val; return; }
+  if (c.startsWith('op.')) { salvaParte(c.slice(3), el); return; }   // nome di una parte del menù (opzioni.js, C92)
   if (c.startsWith('o.')) { salvaOpz(c.slice(2), el); return; }   // impostazioni in più (opzioni.js)
   if (c.startsWith('d.') || c.startsWith('sp.')) { salvaCampoSpesa(el); return; }
   if (c === 'p.grande') { P.grande = val; salvaP(); render(); return; }
