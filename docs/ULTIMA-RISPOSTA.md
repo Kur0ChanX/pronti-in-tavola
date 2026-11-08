@@ -1,17 +1,21 @@
-# Ultima risposta di Claude (08/11/2026 03:13 ora italiana)
+# Ultima risposta di Claude (08/11/2026 04:52 ora italiana)
 
-Ho capito: niente foto del menù per ora e il lucchetto va bene. Volevi l'aiutante che risponde alle domande di Monica e cambia anche le impostazioni, ma solo dopo che lei ha visto e confermato. E per i clienti un tasto per scrivere a Monica su WhatsApp, col messaggio già iniziato.
+Ho capito: le ricette devono essere ufficiali, non scritte da me. E il ricettario com'è adesso sembra amatoriale: Monica non si fiderebbe.
 
 ───
 ✅ FATTO
-- **Online la versione 0.9.6.** Le 44 prove sul telefono (Pixel 7) sono tutte passate; il sito vero ha la 0.9.6; anteprima aggiornata.
-- **Aiutante e impostazioni.** Può cambiare i giorni di preavviso, le teglie al giorno, l'ora fino a cui valgono i pronti, il menù di Natale, i modi di pagare e la nota …
+- **Ricettario nascosto** dall'app (versione 0.9.15). Non si vede più finché non scegli la strada. Il codice resta pronto: le schermate e la cucina guidata si possono riusare.
+- Ho scritto l'errore nel diario (PT E25): per le cose di cui bisogna fidarsi, come ricette, dosi e salute, prima chiedo la fonte ufficiale.
+- Prove verdi (47 su 47), tutto salvato su GitHub.
+
+───
+💡 PARERE
+- **GialloZafferano: niente trucchi.** Non ha un collegamento …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-📌 Di cosa parliamo: un file Excel con gli ordini e gli incassi del mese, da scaricare dall'app, per avere una copia dei conti.
-1. Salvataggio mensile degli ordini:
-   1 · Ora
-   2 · Più avanti (consiglio)
-   3 · No
+1. 🛑 Quale strada per le ricette?
+   1 · **Ricettario collegato**: elenco curato di ricette ufficiali (GialloZafferano e Regione Sardegna), che si aprono sul loro sito o sulla loro app; da noi preferiti, ricetta collegata al piatto, dosi per la spesa (consiglio)
+   2 · Niente ricettario nostro: Monica usa l'app gratuita di GialloZafferano, che ha già preferiti e lista della spesa
+   3 · Solo le ricette di Monica, quelle di cui si fida, con la nostra cucina guidata
