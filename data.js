@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.36';
+const VERSIONE_APP = '0.9.37';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.37', data: '08/11/2026', ora: '12:40',
+    nuovo: ['Velocità della voce: la sceglie Mario in «Solo per te, Mario» (da 0,7 a 1,3, con «▶️ Senti») e vale anche per Monica; di base un po\' più lenta di prima'] },
   { v: '0.9.36', data: '08/11/2026', ora: '12:16',
     nuovo: ['Ricettario: le ricette che il motore trova entrano da sole (🆕 per 7 giorni), solo quelle complete (almeno 3 ingredienti, 2 passi e la foto); «⚡ Carica 100 ricette adesso», sarde per prime ma miste, lo fa il server anche a telefono chiuso', 'Le ricette scritte a mano vanno sul server: le vede anche Monica (senza rete partono appena torna)'],
     migliorato: ['«🗄 Il mio database» più chiaro: nel ricettario, nuove, in arrivo, sul telefono e se è tutto salvato'] },

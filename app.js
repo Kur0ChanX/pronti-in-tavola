@@ -1381,9 +1381,18 @@ function schedaMario() {
       : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}
     <label class="interr"><span>Ricettario nella Home<small>${S.impostazioni.ricettario !== false ? 'Acceso: tu e Monica vedete «Ricettario» nella Home. I clienti mai.' : 'Spento: il riquadro non c\'è nella Home.'}</small></span><input type="checkbox" data-campo="i.ricettario" ${S.impostazioni.ricettario !== false ? 'checked' : ''}></label>
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
+    ${velVoceHtml()}
     ${contoAI()}
     ${provaAIhtml()}
     ${originaliHtml()}</section>`;
+}
+/* velocità della voce (Mario 08/11, C70: «Piper è troppo veloce… solo a me ma valido anche per Monica»): sta in S.impostazioni, vale per tutti */
+const velVoceTxt = v => v <= 0.8 ? 'molto lenta' : v < 0.95 ? 'lenta' : v <= 1.05 ? 'normale' : v <= 1.15 ? 'veloce' : 'molto veloce';
+function velVoceHtml() {
+  const v = typeof velVoce === 'function' ? velVoce() : 1;
+  return `<label class="interr" style="display:block"><span>Velocità della voce: <b class="vel-voce-txt">${velVoceTxt(v)} (${v.toFixed(2).replace('.', ',')})</b><small>Vale anche per Monica: Ricettario, cucina guidata e aiutante. Più a sinistra = più lenta.</small></span>
+    <input type="range" min="0.7" max="1.3" step="0.05" value="${v}" data-campo="i.velVoce" aria-label="Velocità della voce" style="width:100%;margin-top:8px"></label>
+    <button type="button" class="btn chiaro" data-a="vel-prova">▶️ Senti la velocità</button>`;
 }
 /* domande all'AI di oggi (C50: Mario vuole capire i limiti). Il conto lo tiene il server; qui si chiede una volta ogni 2 minuti */
 function contoAI() {
@@ -1922,6 +1931,7 @@ const A = {
   },
   'dev-vapore'(el) { P.vapore = el.dataset.v; salvaP(); render(); Vapore.parti(P.vapore); },
   'dev-tutte'() { UI.devTutte = true; render(); },
+  'vel-prova'() { if (typeof parlaAI === 'function') parlaAI('Metti la pasta nell\'acqua bollente e mescola per due minuti.'); },
   async 'orig-scarica'(el) {
     const f = ((UI.originali && UI.originali.foto) || []).find(x => String(x.id) === el.dataset.v); if (!f) return;
     mostraToast('Scarico la foto…');
@@ -2170,7 +2180,7 @@ function salvaCampo(el) {
     parti.slice(0, -1).forEach(k => { o = o[k]; });
     const k = parti[parti.length - 1];
     if (el.type === 'checkbox') { cambia(val ? 'Acceso' : 'Spento', () => { o[k] = val; }); return; }
-    o[k] = val; salva(); salvatoOk();
+    o[k] = el.type === 'range' ? Number(val) : val; salva(); salvatoOk();
   }
 }
 
@@ -2537,6 +2547,7 @@ document.addEventListener('input', e => {
   if (el.dataset.cerca) suggerisci(el);
   if (el.dataset.spcerca) suggerisciSpesa(el);
   if (el.dataset.cercaord) cercaOrdini(el.value);
+  if (el.dataset.campo === 'i.velVoce') { const t = $('.vel-voce-txt'), v = Number(el.value); if (t) t.textContent = `${velVoceTxt(v)} (${v.toFixed(2).replace('.', ',')})`; }
   if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;   // resta anche se la pagina si ridisegna (una foto che arriva)
 });
 document.addEventListener('keydown', e => {
