@@ -297,6 +297,14 @@ function rigaOrdine(r, extra = '') {
 
 /* ================= CLIENTE ================= */
 /* nome del cliente di questo telefono: quello scritto nel benvenuto (Mario 05/11: «entra nome e cognome… e gli dici ciao, il suo nome») */
+/* «Scrivi a Monica» (Mario 08/11): messaggio già iniziato, professionale, il cliente scrive solo la domanda.
+   Il numero di Monica ce l'hanno solo i clienti approvati (impostazioni/approvati): senza numero niente tasto. */
+function waMonica(o) {
+  const chi = nomeCliente(), firma = chi && chi !== 'Cliente' ? ` Sono ${chi}.` : '';
+  const testa = o ? `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola per l'ordine n. ${o.n} (ritiro ${giornoLungo(o.entro)}).${firma}` : `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${firma}`;
+  return wa(S.impostazioni.whatsapp, `${testa}\n\nVolevo chiederti: `);
+}
+const tastoMonica = () => S.impostazioni.whatsapp ? `<a class="wa-monica" href="${waMonica()}" target="_blank" rel="noopener" aria-label="Scrivi a Monica su WhatsApp">${ico('chat')}<span>Scrivi a Monica</span></a>` : '';
 const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && Dati.io.utente.nome) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
 /* il benvenuto: alla prima apertura il cliente nuovo scrive nome e cognome, senza non si entra (nell'anteprima: una volta per telefono) */
 function serveBenvenuto() {
@@ -700,7 +708,7 @@ function vMenu() {
     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
       <div class="voci">${visibili().filter(p => p.cat === k && p.disponibile).map(voce).join('')}</div></section>`;
   });
-  return h + '</main>';
+  return h + tastoMonica() + '</main>';
 }
 
 function apriPiatto(id, pronto, anteprima) {
@@ -853,6 +861,7 @@ function cartaOrdineCliente(o) {
   if (o.stato === 'pronto' || (o.stato === 'accettato' && o.entro === oggi())) h += sonoQui(o);
   if (o.stato === 'ritirato' || chiuso) az.push(`<button type="button" class="btn chiaro" data-a="riordina" data-id="${o.id}">Ordina di nuovo</button>`);
   if (az.length) h += `<div class="fila larga">${az.join('')}</div>`;
+  if (S.impostazioni.whatsapp && !chiuso) h += `<a class="link wa-ordine" href="${waMonica(o)}" target="_blank" rel="noopener">${ico('chat')}Domande su quest'ordine? Scrivi a Monica</a>`;
   if (o.stato === 'nuovo' && !o.modifica) h += `<button type="button" class="link" data-a="annulla-ordine" data-id="${o.id}">Annulla l'ordine</button>`;
   return h + '</article>';
 }
@@ -873,7 +882,7 @@ function vOrdiniCliente() {
       <div class="ord-lista">${oo.map(rigaCliente).join('')}</div></section>`).join('');
     if (passati.length > (UI.ordQuanti || 40)) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri</button>`;
   }
-  return h + cartaNotifica() + '</main>';
+  return h + cartaNotifica() + tastoMonica() + '</main>';
 }
 /* «Sono qui» (Mario 07/11, idea presa dal ritiro in auto): il cliente sotto casa avvisa Monica con un tocco */
 function sonoQui(o) {
