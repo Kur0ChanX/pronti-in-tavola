@@ -2,19 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-05 14:47 · 01QTFEqSmQas
-tanto alla partenza parte con 100k quindi non sò cosa conviene di piú padsaggio o lunghezza.... manda guida firebase parte 3
-e rendi l'app molto plu in play semplice e chiara per i clienti e Monica valuta tu le scelte e dimmele cos hai scelto, cerca fi capire che non tutti i clienti bazzicando tanto di impostazioni ecc per monica l'aiuto io
-
-## 2026-11-05 15:04 · 01QTFEqSmQas
-Cavolo, io in un'altra app che avevo creato ho messo Europa 3, avevo messo, ho penso di aver fatto danno, non avevo letto che c'era Europa 8 con Milano. Cambia qualcosa nella mia app per l'albergo RVC?
-
-## 2026-11-05 15:11 · 01QTFEqSmQas
-fatto
-
-## 2026-11-05 15:14 · 01QTFEqSmQas
-fatto
-
 ## 2026-11-05 15:20 · 01QTFEqSmQas
 lista ho detto di no cosa?
 
@@ -132,3 +119,15 @@ Ok, però al momento l'applicazione è funzionante al 100%, giusto?
 
 ## 2026-11-07 17:00 · 01QTFEqReKuk
 a monica manca proposta se non va bene la giornata del cliente fallo ora
+
+## 2026-11-07 23:43 · 01QTFEqQ5ALf
+mettimi anche il tempo di Monica
+
+## 2026-11-07 23:49 · 01QTFEqQ5ALf
+e pensa bene come ragiona l'app e l'uso basati anche se serve da app gold standard innovative simili e dammi 10 idee geniali, utili , funzionali , smart ,sorprendenti wow 5 prese da app e 7 tue idee ragiona bene
+
+## 2026-11-07 23:53 · 01QTFEqQ5ALf
+Farei sono qui poi pensa sltre 10 tue idee ragiona bene
+
+## 2026-11-08 01:28 · 01QTFEqQ5ALf
+20 ma l'avrei approfondita molto  che idee hai di approfondire? evolviamola al massimo

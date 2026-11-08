@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (07/11/2026 17:00 ora italiana)
+# Ultimo messaggio di Mario (08/11/2026 01:28 ora italiana)
 
-a monica manca proposta se non va bene la giornata del cliente fallo ora
+20 ma l'avrei approfondita molto  che idee hai di approfondire? evolviamola al massimo
