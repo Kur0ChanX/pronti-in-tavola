@@ -540,6 +540,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // cosa cucino con quello che ho: gli ingredienti diventano una ricerca
     await page.fill('#ric-casa', 'zucchine, uova'); await page.press('#ric-casa', 'Enter');
     await page.locator('.scheda h2', { hasText: 'zucchine uova' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
+    // catalogo per portata: 30 ricette, «Carica altre» ne aggiunge altre 30, poi basta
+    await page.evaluate(() => { RIC._c = RIC.chiedi; RIC.chiedi = async c => c.cat ? ({ ricette: Array.from({ length: 30 }, (_, i) => ({ url: 'https://ricette.giallozafferano.it/P' + (c.pagina ? 'b' : 'a') + i + '.html', nome: 'Primo ' + i, foto: '' })), prossima: c.pagina ? '' : 'https://www.giallozafferano.it/ricette-cat/page2/Primi/' }) : RIC._c(c); });
+    await clic('[data-a="ric-catalogo"][data-v="primi"]'); await page.locator('[data-a="ric-altre"]').waitFor({ timeout: 3000 });
+    await clic('[data-a="ric-altre"]'); await page.waitForTimeout(300);
+    if (await page.locator('#ric-risultati .ric-carta').count() !== 60) throw new Error('«Carica altre» non aggiunge le ricette');
+    if (await page.locator('[data-a="ric-altre"]').count()) throw new Error('«Carica altre» resta anche a catalogo finito');
+    await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
     await clic('[data-a="ric-cerca-gz"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 });

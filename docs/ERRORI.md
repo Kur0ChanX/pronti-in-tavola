@@ -18,6 +18,7 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 - **PT E24** (08/11/2026) Ripubblicavo l'artefatto dell'anteprima a ogni avvio e push, ma Mario non lo usa più («perché fai partire sempre l'artefatto?»): prova solo sul sito vero. Prima di un'abitudine scritta nelle consegne, chiedersi se a Mario serve ancora.
 - **PT E25** (08/11/2026) Ho scritto io le ricette del ricettario: Mario «non inventarle, prendile ufficiali… sembra super amatoriale, Monica non si fiderà mai». Contenuti di cui ci si deve fidare (ricette, dosi, salute, leggi): prima chiedere la fonte ufficiale, mai scriverli io; e mostrare a Mario l'aspetto prima di costruire tutto.
 
+- **PT E26** (08/11/2026) La voce della cucina guidata era «robotica, fa pietà» (Mario): tono alzato a 1.1 e frasi lunghe in un pezzo solo. Una voce che parla a persone vere: tono 1.0, frasi corte, sigle lette per intero, e provarla ascoltandola prima di consegnarla.
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
 - **RVC E7** Prima di chiedere a Mario (o di scrivere un prompt a un aiutante), `grep` in documenti e archivio.

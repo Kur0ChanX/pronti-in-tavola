@@ -229,20 +229,36 @@ function fondoAI() { if (UI.vista === 'aiutante') window.scrollTo(0, document.bo
    prima quelle «naturali» o di rete (più umane), poi i nomi femminili noti; mai una voce maschile se ce n'è una femminile */
 const FEMMINILI = /elsa|alice|federica|paola|isabella|bianca|carla|chiara|giulia|francesca|elena|sofia|google italiano|female|donna|femmin/i;
 const MASCHILI = /luca|cosimo|diego|giorgio|roberto|marco|male|uomo|maschi/i;
+/* voce scelta da chi usa l'app (Ricettario → Cucina guidata → «Voce»), altrimenti la migliore femminile italiana del telefono */
+const vociIt = () => window.speechSynthesis ? (speechSynthesis.getVoices() || []).filter(v => /^it/i.test(v.lang)) : [];
 function voceAI() {
-  const vv = (speechSynthesis.getVoices() || []).filter(v => /^it/i.test(v.lang));
+  const vv = vociIt();
+  let scelta = ''; try { scelta = localStorage.getItem('pit-voce') || ''; } catch (e) { /* niente */ }
+  const mia = scelta && vv.find(v => v.name === scelta); if (mia) return mia;
   const punti = v => (FEMMINILI.test(v.name) ? 4 : 0) - (MASCHILI.test(v.name) && !/female/i.test(v.name) ? 6 : 0) + (/natural|neural|enhanced|premium|online/i.test(v.name) ? 3 : 0) + (v.localService === false ? 2 : 0);
   return vv.sort((a, b) => punti(b) - punti(a))[0] || null;
 }
 if (window.speechSynthesis) speechSynthesis.onvoiceschanged = () => { AI.voce = voceAI(); };
+/* frasi corte una dopo l'altra: su Android le frasi lunghe si troncano e la voce suona più piatta.
+   Tono e velocità naturali (il tono alzato la rendeva «robotica»). */
+function frasiVoce(t) {
+  const pulito = String(t).replace(/[«»"*_#]/g, '').replace(/\s+/g, ' ').replace(/\bq\.b\./gi, 'quanto basta').replace(/\b(\d+) ?g\b/g, '$1 grammi').replace(/\b(\d+) ?ml\b/g, '$1 millilitri').replace(/\b(\d+) ?min\b/g, '$1 minuti').trim();
+  const out = [];
+  pulito.split(/(?<=[.!?;:])\s+/).forEach(f => { while (f.length > 180) { const k = f.lastIndexOf(',', 180) > 60 ? f.lastIndexOf(',', 180) + 1 : f.lastIndexOf(' ', 180); out.push(f.slice(0, k)); f = f.slice(k).trim(); } if (f) out.push(f); });
+  return out;
+}
 function parlaAI(t, fine) {
   if (!window.speechSynthesis) { if (fine) fine(); return; }
   try {
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(String(t).replace(/[«»]/g, '')), v = AI.voce || voceAI();
-    u.lang = 'it-IT'; if (v) u.voice = v; u.rate = 1.0; u.pitch = 1.1;
-    if (fine) { u.onend = () => fine(); u.onerror = () => fine(); }
-    speechSynthesis.speak(u);
+    const v = AI.voce = voceAI(), ff = frasiVoce(t), giro = (AI.giroVoce = (AI.giroVoce || 0) + 1);
+    if (!ff.length) { if (fine) fine(); return; }
+    ff.forEach((f, i) => {
+      const u = new SpeechSynthesisUtterance(f);
+      u.lang = 'it-IT'; if (v) u.voice = v; u.rate = 0.97; u.pitch = 1.0;
+      if (i === ff.length - 1 && fine) { u.onend = () => { if (AI.giroVoce === giro) fine(); }; u.onerror = () => { if (AI.giroVoce === giro) fine(); }; }
+      speechSynthesis.speak(u);
+    });
   } catch (e) { if (fine) fine(); /* senza voce: resta scritto */ }
 }
 /* microfono: dettatura in italiano, a fine frase parte da sola */

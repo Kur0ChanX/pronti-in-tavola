@@ -21,7 +21,9 @@
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
-import { gzRicetta, gzCerca, gzVideo, urlGz, UA_GZ } from './gz.mjs';
+import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ } from './gz.mjs';
+/* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
+const CAT_GZ = { antipasti: 'Antipasti', primi: 'Primi', secondi: 'Secondi-piatti', contorni: 'Contorni', dolci: 'Dolci-e-Desserts', lievitati: 'Lievitati', unici: 'Piatti-Unici', sughi: 'Salse-e-Sughi', bevande: 'Bevande' };
 
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
@@ -175,10 +177,17 @@ async function paginaGz(u) {
   return t;
 }
 async function ricettaGz(b) {
-  if (b && typeof b.cerca === 'string') {
-    const q = b.cerca.trim().toLowerCase().replace(/[^\p{L}\p{N} '-]/gu, '').slice(0, 60);
-    if (q.length < 2) return { ricette: [] };
-    return { ricette: gzCerca(await paginaGz(`https://www.giallozafferano.it/ricerca-ricette/${encodeURIComponent(q).replace(/%20/g, "+")}/`)) };
+  if (b && (typeof b.cerca === 'string' || typeof b.cat === 'string')) {
+    let u = '';
+    if (typeof b.pagina === 'string' && /^https:\/\/www\.giallozafferano\.it\/[\w\/%+.,-]*$/.test(b.pagina)) u = b.pagina;   // «Carica altre»
+    else if (b.cat) { if (!CAT_GZ[b.cat]) return { errore: 'portata sconosciuta' }; u = `https://www.giallozafferano.it/ricette-cat/${CAT_GZ[b.cat]}/`; }
+    else {
+      const q = b.cerca.trim().toLowerCase().replace(/[^\p{L}\p{N} '-]/gu, '').slice(0, 60);
+      if (q.length < 2) return { ricette: [] };
+      u = `https://www.giallozafferano.it/ricerca-ricette/${encodeURIComponent(q).replace(/%20/g, "+")}/`;
+    }
+    const html = await paginaGz(u), ricette = gzCerca(html);
+    return { ricette, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
   }
   const u = urlGz(b && b.u);
   if (!u) return { errore: 'indirizzo non valido' };

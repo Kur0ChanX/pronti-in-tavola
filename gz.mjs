@@ -110,3 +110,17 @@ export function gzCerca(html) {
   }
   return out.filter(x => x.nome).slice(0, 30);
 }
+
+/* pagina dopo (catalogo infinito): prima il link «successiva» della pagina; se manca, /pageN/ dopo la sezione (ricerca-ricette, ricette-cat).
+   Solo indirizzi di www.giallozafferano.it. Se la pagina ha poche ricette, non c'è un'altra pagina. */
+export const GZ_SEZIONI = /^(https:\/\/www\.giallozafferano\.it\/(?:ricerca-ricette|ricette-cat))\/(?:page(\d+)\/)?(.+)$/;
+export function gzProssima(html, u, n) {
+  const h = String(html || '');
+  const m = /<link[^>]+rel="next"[^>]+href="([^"]+)"/.exec(h) || /<link[^>]+href="([^"]+)"[^>]+rel="next"/.exec(h)
+    || /<a[^>]+href="([^"]+)"[^>]*(?:rel="next"|class="[^"]*(?:next|successiv)[^"]*")/i.exec(h);
+  const ok = s => /^https:\/\/www\.giallozafferano\.it\/[\w\/%+.,-]*$/.test(s) && s !== u ? s : '';
+  if (m) { const s = ok(assoluto(m[1].replace(/&amp;/g, '&'))); if (s) return s; }
+  if (n < 15) return '';
+  const s = GZ_SEZIONI.exec(u);
+  return s ? ok(`${s[1]}/page${(Number(s[2]) || 1) + 1}/${s[3]}`) : '';
+}

@@ -183,9 +183,14 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.18';
+const VERSIONE_APP = '0.9.19';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.19', data: '08/11/2026',
+    nuovo: ['Ricettario: «Tutto il catalogo» di GialloZafferano per portata (antipasti, primi, secondi, dolci, lievitati…) con «Carica altre ricette» senza fine',
+      'Cucina guidata: scegli la voce che legge fra quelle del telefono (le «online» sono le più naturali)'],
+    migliorato: ['Voce più naturale: tono normale, frasi corte una dopo l\'altra, «g» letto «grammi», «q.b.» letto «quanto basta»',
+      'Più risultati in ogni ricerca: «Carica altre ricette» in fondo'] },
   { v: '0.9.18', data: '08/11/2026',
     nuovo: ['Ricettario: «Cosa cucino con quello che ho?» scrivi 2 o 3 ingredienti (es. zucchine, uova) e trovi le ricette che li usano',
       'Ricettario: «Le tue note» su ogni ricetta, anche di GialloZafferano (es. «metà zucchero»); le rivedi nella cucina guidata',

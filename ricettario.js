@@ -18,6 +18,8 @@ const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: 
 const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['gallura', 'Gallura'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
+/* catalogo completo per portata (sezioni di GialloZafferano lette dal server, pagina dopo pagina) */
+const CATALOGO_RIC = [['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['lievitati', 'Pane, pizze e lievitati'], ['unici', 'Piatti unici'], ['sughi', 'Salse e sughi'], ['bevande', 'Bevande']];
 /* temi della ricerca veloce (si cercano dal vivo su GialloZafferano: niente elenchi da tenere aggiornati) */
 const ESPLORA_RIC = ['ricette sarde', 'dolci sardi', 'culurgiones', 'fregola', 'malloreddus', 'porceddu', 'pane carasau', 'bottarga', 'pecorino sardo', 'mirto', 'amaretti', 'ricette con la ricotta', 'ricette con il pesce spada', 'polpo', 'cozze', 'agnello', 'pasta fresca', 'primi di pesce', 'secondi di carne', 'secondi di pesce', 'contorni', 'antipasti', 'torte salate', 'focacce',
   'dolci al cucchiaio', 'biscotti', 'torte', 'zuppe', 'risotti', 'lasagne', 'polpette', 'verdure ripiene', 'ricette veloci', 'ricette vegetariane', 'senza glutine', 'avanzi', 'per buffet', 'sughi', 'torte salate di verdure', 'crostate', 'dolci della nonna', 'pane fatto in casa', 'ricette in friggitrice ad aria', 'piatti unici', 'ricette di Natale', 'ricette di Pasqua'];
@@ -147,9 +149,9 @@ function vRicettario() {
     <div class="scelte" role="group" aria-label="Portata">${CAT_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-cat" data-v="${k}" aria-pressed="${f.cat === k}">${t}</button>`).join('')}</div>`;
   if (f.q.trim().length >= 2) h += `<button type="button" class="btn chiaro pieno" data-a="ric-cerca-gz">${ico('cerca')}Cerca «${esc(f.q.trim())}» fra tutte le ricette di GialloZafferano</button>`;
   if (c.stato) {
-    h += `<section class="scheda"><h2>Da GialloZafferano: «${esc(c.q)}»</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
+    h += `<section class="scheda" id="ric-risultati"><h2>${c.cat ? '📚 ' + esc(c.q) + ' · tutte' : `Da GialloZafferano: «${esc(c.q)}»`}${c.risultati.length ? ` <small class="tenue">(${c.risultati.length}${c.prossima ? '+' : ''})</small>` : ''}</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
       : c.stato === 'errore' ? `<p style="margin:0">${esc(c.errore)}</p><button type="button" class="btn chiaro" data-a="ric-cerca-gz">Riprova</button>`
-      : c.risultati.length ? `<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>` : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
+      : c.risultati.length ? `<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
       <button type="button" class="btn chiaro piccolo" data-a="ric-chiudi-cerca">Chiudi la ricerca</button></section>`;
   }
   if (f.zona === 'tutte' && !q && !f.cat) {
@@ -162,6 +164,8 @@ function vRicettario() {
   if (!q && !c.stato) h += `<section class="scheda"><h2>🧺 Cosa cucino con quello che ho?</h2><p class="piccolo tenue" style="margin:0">Scrivi 2 o 3 cose che hai in casa: cerco le ricette che le usano.</p>
     <form class="ric-cerca" data-ric-casa="1"><input id="ric-casa" type="search" value="${esc(UI.ricCasa || '')}" placeholder="Es. zucchine, uova, pecorino" autocomplete="off" enterkeyhint="search">
       <button type="submit" class="btn pieno" aria-label="Cerca con questi ingredienti">${ico('cerca')}</button></form></section>`;
+  if (!q && !c.stato) h += `<section class="scheda"><h2>📚 Tutto il catalogo</h2><p class="piccolo tenue" style="margin:0">Tutte le ricette di GialloZafferano, per portata: scorri e tocca «Carica altre».</p>
+    <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div></section>`;
   if (!q && !c.stato) h += `<section class="scheda"><h2>🔎 Esplora GialloZafferano</h2><p class="piccolo tenue" style="margin:0">Migliaia di ricette: tocca un tema e si aprono qui dentro.</p>
     <div class="scelte">${ESPLORA_RIC.map(t => `<button type="button" class="scelta" data-a="ric-esplora" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div></section>`;
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
@@ -249,6 +253,7 @@ function vCucina(id) {
       <button type="button" class="btn chiaro" data-a="ric-ripeti">🔊 Ripeti</button>
       ${ultimo ? `<button type="button" class="btn pieno" data-a="ric-fine">Finito!</button>` : `<button type="button" class="btn pieno" data-a="ric-passo" data-v="1">Avanti</button>`}</div>
     <label class="interr"><span>Leggi i passi ad alta voce<small>La voce legge ogni passo quando lo apri.</small></span><input type="checkbox" data-a="ric-voce" ${c.voce ? 'checked' : ''}></label>
+    ${typeof vociIt === 'function' && vociIt().length > 1 ? `<label>Voce che legge<select id="ric-voce-scelta">${vociIt().map(v => `<option value="${esc(v.name)}" ${AI.voce && AI.voce.name === v.name ? 'selected' : ''}>${esc(v.name.replace(/^(Microsoft|Google)\s*/i, '').replace(/\s*\(.*\)$/, ''))}${v.localService === false ? ' · online, più naturale' : ''}</option>`).join('')}</select></label>` : ''}
     ${RiconosciRic ? `<label class="interr"><span>🎙 Mani libere${RIC.rec ? ' · <b>ti ascolto</b>' : ''}<small>Dopo ogni passo la voce si ferma e aspetta. Di': «avanti», «indietro», «ripeti», «timer», «quanto manca», «ingredienti», «finito», «stop».</small></span><input type="checkbox" data-a="ric-mani" ${c.mani ? 'checked' : ''}></label>` : ''}`;
   return h + '</main>';
 }
@@ -328,6 +333,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const el = e.target;
+  if (el.id === 'ric-voce-scelta') { try { localStorage.setItem('pit-voce', el.value); } catch (er) { /* niente */ } if (typeof parlaAI === 'function') parlaAI('Ciao, sono la tua nuova voce. Ti leggo i passi così.'); }
   if (el.dataset && el.dataset.ric === 'categoria' && UI.ricBozza) UI.ricBozza.categoria = el.value;
   if (el.id !== 'ric-foto-file' || !el.files[0] || !UI.ricBozza) return;
   const f = el.files[0], img = new Image(), url = URL.createObjectURL(f);
@@ -412,11 +418,29 @@ Object.assign(A, {
     v.addEventListener('touchend', e => { if (x0 == null || (window.visualViewport && visualViewport.scale > 1.05)) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 60) { const n = i + (dx < 0 ? 1 : -1); if (n >= 0 && n < tutte.length) { i = n; mostra(); } } });
     mostra(); document.body.appendChild(v);
   },
-  'ric-cerca-gz'(tema) {
+  'ric-catalogo'(el) {
+    const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || [, k])[1];
+    A['ric-cerca-gz'](nome, k);
+  },
+  'ric-altre'() {
+    const c = RIC.cerca; if (!c.prossima || c.altre === 'carico') return;
+    c.altre = 'carico'; render();
+    RIC.chiedi(c.cat ? { cat: c.cat, pagina: c.prossima } : { cerca: c.q, pagina: c.prossima })
+      .then(j => {
+        if (RIC.cerca !== c) return;
+        const nuove = (j.ricette || []).map(daCerca).filter(x => !c.risultati.some(y => y.id === x.id));
+        c.risultati = c.risultati.concat(nuove); c.prossima = nuove.length ? j.prossima || '' : ''; c.altre = '';
+      })
+      .catch(() => { if (RIC.cerca === c) c.altre = 'errore'; })
+      .finally(() => { if (UI.vista === 'ricettario') render(); });
+  },
+  'ric-cerca-gz'(tema, cat) {
     const q = (typeof tema === 'string' ? tema : UI.ric.q || '').trim(); if (q.length < 2) return;
-    RIC.cerca = { q, stato: 'carico', risultati: [] }; render();
-    RIC.chiedi({ cerca: q })
-      .then(j => { if (RIC.cerca.q !== q) return; RIC.cerca.stato = 'ok'; RIC.cerca.risultati = (j.ricette || []).map(daCerca); })
+    if (typeof cat !== 'string') cat = '';
+    RIC.cerca = { q, cat, stato: 'carico', risultati: [], prossima: '' }; render();
+    const ris = document.getElementById('ric-risultati'); if (ris) ris.scrollIntoView({ block: 'start' });
+    RIC.chiedi(cat ? { cat } : { cerca: q })
+      .then(j => { if (RIC.cerca.q !== q) return; RIC.cerca.stato = 'ok'; RIC.cerca.risultati = (j.ricette || []).map(daCerca); RIC.cerca.prossima = j.prossima || ''; })
       .catch(e => { RIC.cerca.stato = 'errore'; RIC.cerca.errore = navigator.onLine === false ? 'Senza rete non posso cercare: riprova quando torna.' : 'Ricerca non riuscita: ' + (e.message || e); })
       .finally(() => { if (UI.vista === 'ricettario') render(); });
   },
