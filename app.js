@@ -1573,7 +1573,7 @@ function render() {
   if (UI.vista === ultimaVista) window.scrollTo(0, y);
   else {
     if (ultimaVista) POS[ultimaVista] = y;
-    const torna = (UI.torna || UI.vista === penultimaVista) && POS[UI.vista] > 0 ? POS[UI.vista] : 0;
+    const torna = (UI.torna || (UI.vista === penultimaVista && !/^(home|menu)$/.test(ultimaVista))) && POS[UI.vista] > 0 ? POS[UI.vista] : 0;
     window.scrollTo(0, torna);
     // pagine che si allungano dopo (elenco delle ricette, foto): ci riprova finché arriva al punto
     const vistaTorna = UI.vista; UI.mossoDopo = false;
