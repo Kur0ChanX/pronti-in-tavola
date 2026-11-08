@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.5';
+const VERSIONE_APP = '0.9.6';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.6', data: '08/11/2026',
+    nuovo: ['Clienti: «Scrivi a Monica» su WhatsApp (tasto verde in basso, e in ogni ordine col suo numero), col messaggio già iniziato «Ciao Monica! Ti scrivo dall\'app Pronti in Tavola… Volevo chiederti:»'],
+    migliorato: ['Aiutante: cambia le impostazioni (preavviso, teglie al giorno, pronti fino a, Natale, pagamenti, nota del ritiro) sempre con «prima → dopo» e conferma; risponde a «come si fa…» con la guida dell\'app; prepara messaggi per tutte le amiche'] },
   { v: '0.9.5', data: '08/11/2026',
     migliorato: ['Aiutante potenziato: più cose in una frase, ognuna mostrata «prima → dopo» con valori da correggere e spunta per toglierla, un solo «Fai» e un solo Annulla; vede le FOTO (lista scritta a mano, menù, piatto); accetta, rifiuta, propone un altro giorno, segna i pronti, crea piatti nuovi «Da controllare», scrive descrizioni, mette in pausa, prepara messaggi WhatsApp, porta alla pagina giusta e raccoglie le idee per Mario; ricorda le ultime frasi; AI più nuova (Qwen 3.8, consigliata da Cloudflare)'] },
   { v: '0.9.4', data: '08/11/2026',
