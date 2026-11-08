@@ -12,7 +12,7 @@ Sessione attuale: #23 (dopo la #22 `session_01QTFEqTUuw7QR3XaijTWabj`, chiusa al
 - Motore e regole: `npm install`, `npm run prova-firebase` → «88 OK, 0 NO» (07/11 ~17:45); regole non toccate.
 - Sito: `python3 -I tools/sito.py` → «OK sito».
 - Sito vero: https://pronti-in-tavola.pronti-in-tavola.workers.dev si pubblica da solo a ogni push di file dell'app (verifica: `gh api "repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/runs?per_page=1" --jq ".workflow_runs[0].conclusion"` → success; curl → 200).
-- Anteprima (https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH): versione 36, più vecchia del codice; ripubblicare con `Artifact` (`url`, `dist/anteprima.html`).
+- Anteprima (https://claude.ai/artifact/MnsfrjTda3bwZscbgER3EH): versione 77 (v0.9.12, 08/11 #23); a ogni push di codice ripubblicare con `Artifact` (`url`, `dist/anteprima.html`).
 - Kit RVC 35.0. Verifica: `for t in tools/test-*.py; do python3 -I $t; done` → tutti verdi.
 - Soglia 320k: vale solo se l'id della sessione è quello della riga «Principale» di `docs/CHI-FA-COSA.md`: la sessione nuova ci mette il suo.
 
