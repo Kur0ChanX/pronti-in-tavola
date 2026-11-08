@@ -2,7 +2,7 @@
 
 La scrive la sessione che chiude, nello stesso commit delle consegne (skill `consegne`, fase 5; righe di fatto da `tools/consegne.py`). Di solito la apre Claude con `create_session`; Mario la apre da qui solo a 8 della catena o al cambio account (i suoi passi: `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
 
-Scritta da: #20 per la #21 · 08/11/2026 · la apre la #20 con `create_session` (catena 2 di 8), motore Opus 5.5, impegno Medio.
+Scritta da: #20 per la #21 · 08/11/2026 · la apre la #20 con `create_session` (catena 2 di 8), motore Opus 5.5, impegno Alto.
 
 - Dove: https://claude.ai/code → repo `Kur0ChanX/pronti-in-tavola`, ramo `claude/pronti-ramo-definitivo`
 - Motore: Opus 5.5 (l'impegno lo prende da solo da `.claude/settings.json`: non si sceglie)
