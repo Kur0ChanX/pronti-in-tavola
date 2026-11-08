@@ -624,9 +624,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-voce-scarica"]'); await page.waitForTimeout(400);
     if (!(await page.locator('.ric-voce-stato', { hasText: 'Voce sul telefono' }).count())) throw new Error('dopo lo scarico non dice ✅ Voce sul telefono');
     if (!(await page.evaluate(() => window._paolaDetto >= 1))) throw new Error('la voce scaricata non legge il passo');
-    await page.evaluate(() => { localStorage.setItem('pit-voce', 'edge:isabella'); AI.voceNo = false; AI.voceAvvisata = true; Dati.token = async () => 'x'; window._fetchVero = fetch; fetch = async () => ({ ok: false, status: 403, headers: new Headers() }); AI.cacheVoce = new Map(); window._paolaDetto = 0; parlaAI('Prova di ripiego.'); });
+    // Microsoft spenta (Mario 08/11 «lasciamo perdere»): una vecchia scelta «edge:…» salvata legge Paola, e nella scelta non c'è più
+    await page.evaluate(() => { localStorage.setItem('pit-voce', 'edge:isabella'); window._fetchVero = fetch; window._paolaDetto = 0; parlaAI('Prova di ripiego.'); });
     await page.waitForTimeout(400);
-    if (!(await page.evaluate(() => window._paolaDetto >= 1))) throw new Error('Microsoft giù: non ripiega sulla voce scaricata');
+    if (!(await page.evaluate(() => sceltaVoce() === 'piper:paola' && window._paolaDetto >= 1))) throw new Error('una vecchia scelta Microsoft non passa a Paola');
+    if (await page.locator('#ric-voce-scelta option[value^="edge:"]').count()) throw new Error('le voci Microsoft sono ancora nella scelta');
     // voce AUTOMATICA (Mario 08/11 «deve funzionare tutto da sola»): senza scelta salvata la voce è Paola e si scarica da sola aprendo la cucina
     await page.evaluate(() => { fetch = window._fetchVero; localStorage.removeItem('pit-voce'); window._paolaOk = false; window._paolaDetto = 0; AI.localiPronte = {}; RIC.voceAutoFatto = false; render(); });
     await page.waitForTimeout(500);
@@ -698,26 +700,6 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       UI.ric = { q: '', zona: 'tutte', cat: '' }; render(); });
     await page.locator('.ric-scorri .ric-carta').first().waitFor({ timeout: 3000 });
     await foto('33-ispirate');
-    // voce vera: chiede /api/voce con la voce scelta; se il server non risponde legge la voce del telefono
-    const voce = await page.evaluate(async () => {
-      const prima = { f: window.fetch, tok: typeof Dati !== 'undefined' ? Dati.token : undefined, play: HTMLMediaElement.prototype.play };
-      const chiesto = []; let telefono = 0;
-      if (typeof Dati === 'undefined') window.Dati = {};
-      Dati.token = async () => 'finto';
-      prima.Audio = window.Audio;   // audio finto: un «x» non è un mp3 vero e il telefono darebbe errore
-      window.Audio = class { constructor(u) { this.src = u; } play() { setTimeout(() => this.onended && this.onended(), 10); return Promise.resolve(); } pause() {} };
-      const sp = speechSynthesis.speak.bind(speechSynthesis); speechSynthesis.speak = u => { telefono++; };
-      localStorage.setItem('pit-voce', 'edge:elsa'); AI.voceNo = false;
-      window.fetch = async (u, o) => { if (u === '/api/voce') { chiesto.push(JSON.parse(o.body)); return new Response(new Blob(['x'], { type: 'audio/mpeg' }), { headers: { 'content-type': 'audio/mpeg' } }); } return prima.f(u, o); };
-      const finita = await new Promise(ok => { parlaAI('Passo uno. Impasta 10 min.', () => ok(true)); setTimeout(() => ok(false), 2000); });
-      window.fetch = async (u, o) => u === '/api/voce' ? new Response('{}', { status: 502 }) : prima.f(u, o);
-      AI.cacheVoce = new Map(); parlaAI('Altro testo.'); await new Promise(ok => setTimeout(ok, 300));
-      window.fetch = prima.f; Dati.token = prima.tok; window.Audio = prima.Audio; speechSynthesis.speak = sp; localStorage.removeItem('pit-voce'); AI.voceNo = false;
-      return { chiesto, finita, telefono };
-    });
-    if (!voce.chiesto.length || voce.chiesto[0].v !== 'elsa' || !/10 minuti/.test(voce.chiesto[0].t)) throw new Error('la voce vera non chiede /api/voce con Elsa: ' + JSON.stringify(voce.chiesto));
-    if (!voce.finita) throw new Error('a voce vera finita non riparte la cucina (fine non chiamata)');
-    if (!voce.telefono) throw new Error('col server giù non legge la voce del telefono');
     // ricetta mia
     await page.evaluate(() => vai('ricmia:nuova')); await page.locator('.ric-modulo').waitFor({ timeout: 3000 });
     await page.fill('[data-ric="nome"]', 'Malloreddus di nonna'); await page.fill('[data-ric="ingredienti"]', 'Semola 300 g\nAcqua 150 ml'); await page.fill('[data-ric="passi"]', 'Impasta 10 minuti.');

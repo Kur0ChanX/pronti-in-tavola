@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.32';
+const VERSIONE_APP = '0.9.33';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.33', data: '08/11/2026', ora: '11:39',
+    migliorato: ['Voce: tolte dalla scelta le voci Microsoft (non rispondevano più); chi le aveva scelte ora sente Paola, la voce sul telefono'] },
   { v: '0.9.32', data: '08/11/2026', ora: '11:45',
     corretto: ['Voce Paola: sul sito vero lo scarico falliva («Failed to fetch»): il sito dei modelli rifiutava le richieste dal nostro indirizzo; ora si scarica'] },
   { v: '0.9.31', data: '08/11/2026', ora: '11:40',

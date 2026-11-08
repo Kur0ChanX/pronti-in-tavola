@@ -249,10 +249,12 @@ function frasiVoce(t) {
 }
 /* VOCE VERA (Mario 08/11 «consiglio 1»): voci neurali di Microsoft lette dal server (/api/voce), solo per chi gestisce.
    Scelta in «Voce che legge» (pit-voce = «edge:isabella», «edge:elsa»…); se il server non risponde si usa la voce del telefono. */
-const VOCI_VERE = [['edge:isabella', 'Isabella · voce vera'], ['edge:elsa', 'Elsa · voce vera'], ['edge:giuseppe', 'Giuseppe · voce vera'], ['edge:diego', 'Diego · voce vera']];
+/* SPENTE (Mario 08/11 ~11:40 «voci Microsoft lasciamo perdere»: Microsoft rifiuta il lasciapassare, 403): niente più nella scelta;
+   una vecchia scelta «edge:…» salvata sul telefono diventa la voce automatica (sceltaVoce). */
+const VOCI_VERE = [];
 /* VOCE AUTOMATICA (Mario 08/11 «deve funzionare tutto automaticamente… la migliore… scaricala anche coi dati»): la voce di base è Paola (Piper),
    l'app la scarica da sola sul telefono di chi gestisce (ricettario.js voceAutomatica); Kokoro resta spento finché non legge l'italiano (il suo fonemizzatore sa solo l'inglese, provato 08/11). */
-const sceltaVoce = () => { try { return localStorage.getItem('pit-voce') || VOCE_AUTO; } catch (e) { return VOCE_AUTO; } };
+const sceltaVoce = () => { try { const v = localStorage.getItem('pit-voce') || VOCE_AUTO; return /^edge:/.test(v) ? VOCE_AUTO : v; } catch (e) { return VOCE_AUTO; } };
 /* VOCI SUL TELEFONO (Mario 08/11 «Kokoro e Piper… integrali»): voce-piper.js e voce-kokoro.js espongono window.VociLocali.<motore>
    = { voci: [[chiave, nome]], mb(chiave), pronta(chiave), scarica(chiave, avanzamento), parla(testo, chiave) → Blob wav, libera() }.
    Scelta «piper:paola», «kokoro:sara»… in pit-voce; si scaricano una volta (50-100 MB) e parlano anche senza rete. */
