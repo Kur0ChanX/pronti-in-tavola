@@ -20,7 +20,7 @@ export const testo = h => String(h || '')
   .replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '')
   .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n)).replace(/&#x([\da-f]+);/gi, (_, n) => String.fromCharCode(parseInt(n, 16)))
   .replace(/&(\w+);/g, (m, n) => ENT[n] || m)
-  .replace(/[ \t\r]+/g, ' ').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();
+  .replace(/[ \t\r]+/g, ' ').replace(/ +([.,;:!?)])/g, '$1').replace(/\( +/g, '(').replace(/ *\n */g, '\n').replace(/\n{3,}/g, '\n\n').trim();   // «cipolla .» → «cipolla.» (C72: GZ toglie i rimandi alle foto e lascia lo spazio)
 const assoluto = s => !s ? '' : /^https?:/.test(s) ? s : 'https://www.giallozafferano.it' + (s[0] === '/' ? '' : '/') + s;
 
 /* «PT1H20M» → 80 minuti */

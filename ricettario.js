@@ -242,6 +242,32 @@ function ingRic(riga) {
 }
 const daMia = m => ({ id: m.id, mia: true, nome: m.nome, intro: m.note || '', foto: m.foto || '', porzioni: m.porzioni || 4, totale: m.minuti || 0,
   categoria: m.categoria || '', ingredienti: (m.ingredienti || []).map(ingRic).filter(i => i.nome), passi: (m.passi || []).map(t => ({ t, foto: [] })), conserva: '', consiglio: '' });
+/* PASSI PIÙ CHIARI (C72, Mario 08/11 «passi completi e chiari… migliorali»): le parole ufficiali di GialloZafferano restano
+   intatte (PT E25: mai inventare); cambia solo come si leggono: 1) niente spazio prima della punteggiatura, 2) una frase per riga,
+   3) accanto al primo nome di un ingrediente la sua dose per le porzioni scelte, 4) tempi e temperature in grassetto.
+   Vale per tutte le ricette, vecchie e nuove, perché si fa quando la ricetta si mostra. */
+const pulisciPasso = t => String(t || '').replace(/[ \t]+([.,;:!?)])/g, '$1').replace(/\([ \t]+/g, '(').replace(/\s{2,}/g, ' ').trim();
+const frasiPasso = t => pulisciPasso(t).split(/(?<=[.!?])\s+(?=[A-ZÀ-Ý«"])/).filter(Boolean);
+const grassettoTempi = h => h.replace(/\b(\d+(?:[.,]\d+)?(?:\s*[-–]\s*\d+)?\s*(?:minuti|minuto|min\b|ore|ora|secondi|gradi|°C?))/gi, '<b>$1</b>');
+const radiceIng = n => { const w = String(n || '').toLowerCase().split(/[\s,'’(]+/)[0] || ''; return w.length < 3 ? '' : w.length <= 4 ? w : w.slice(0, w.length - 1); };
+function passiChiari(r, porz) {
+  const dosi = [], visti = new Set();
+  (r.ingredienti || []).forEach(i => { const k = radiceIng(i.nome); if (!k || visti.has(k)) return; visti.add(k); if (i.q == null) return; const pp = String(i.nome).toLowerCase().split(/\s+/); dosi.push({ k, nomi: [pp.join(' '), pp.slice(0, 3).join(' '), pp.slice(0, 2).join(' ')].filter((n, j, a) => n.includes(' ') && a.indexOf(n) === j), d: qRic(i.q, r.porzioni, porz) + (i.u ? ' ' + i.u : ''), messa: false }); });
+  return (r.passi || []).map(p => frasiPasso(p.t).map(f => {
+    const qui = [];
+    dosi.forEach(x => {
+      if (x.messa) return;
+      const m = x.nomi.map(n => new RegExp(`(^|[^\\p{L}])(${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')}(?![\\p{L}]))`, 'iu').exec(f)).find(Boolean)
+        || new RegExp(`(^|[^\\p{L}])(${x.k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\p{L}*)`, 'iu').exec(f);   // prima il nome intero («passata di pomodoro»), poi la radice
+      if (m && !qui.some(y => y.fine === m.index + m[1].length + m[2].length)) { x.messa = true; qui.push({ fine: m.index + m[1].length + m[2].length, d: x.d }); }
+    });
+    qui.sort((a, b) => a.fine - b.fine);
+    let h = '', da = 0;
+    qui.forEach(y => { h += grassettoTempi(esc(f.slice(da, y.fine))) + ` <span class="ric-dose">(${esc(y.d)})</span>`; da = y.fine; });
+    return h + grassettoTempi(esc(f.slice(da)));
+  }));
+}
+const frasiHtml = ff => ff.length > 1 ? `<ul class="ric-frasi">${ff.map(f => `<li>${f}</li>`).join('')}</ul>` : `<span>${ff[0] || ''}</span>`;
 /* minuti scritti nel passo («cuocete per 20 minuti», «1 ora») → timer nella cucina guidata */
 function minutiPasso(t) {
   const m = /(\d+)(?:\s*[-–]\s*(\d+))?\s*(minut|or[ae]\b)/i.exec(t || '');
@@ -445,7 +471,7 @@ function vRicetta(id) {
     return testataMonica('Ricetta', 'ricettario') + `<main class="corpo">${v && v.foto ? `<figure class="ric-foto"><img src="${esc(v.foto)}" alt="" referrerpolicy="no-referrer"></figure>` : ''}
       <section class="scheda"><p class="tenue" style="margin:0">Apro «${esc(v ? v.nome : 'la ricetta')}» da GialloZafferano…</p></section></main>`;
   }
-  const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
+  const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, chiari = passiChiari(r, porz), spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
   let h = testataMonica('Ricetta', 'ricettario') + '<main class="corpo">';
   // Mario 08/11: «il play come prima cosa nella ricetta»
   h += `<button type="button" class="btn pieno ric-play" data-a="ric-play" data-v="${esc(id)}">▶️ Ascolta la ricetta passo passo</button>`;
@@ -470,7 +496,7 @@ function vRicetta(id) {
       <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${esc(id)}">${ico('carrello')}Metti nella lista della spesa</button></section>
     <section class="scheda"><h2>📝 Le tue note</h2><textarea id="ric-nota" data-ricnota="${esc(id)}" rows="2" maxlength="1000" placeholder="Es. metà zucchero; a Laura piace con più pecorino">${esc(notaRic(id))}</textarea>
       <p class="piccolo tenue" style="margin:0">Si salvano da sole su questo telefono e le rivedi nella cucina guidata.</p></section>
-    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map(p => `<li><div>${p.foto && p.foto.length ? `<div class="ric-fotopassi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}<span>${esc(p.t)}</span></div></li>`).join('')}</ol></section>`;
+    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${r.passi.map((p, ip) => `<li><div>${p.foto && p.foto.length ? `<div class="ric-fotopassi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}${frasiHtml(chiari[ip])}</div></li>`).join('')}</ol></section>`;
   if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di GialloZafferano${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
@@ -509,7 +535,7 @@ function vCucina(id) {
   h += `<p class="tenue" style="margin:0">${esc(r.nome)} · passo <b>${i + 1}</b> di ${r.passi.length}</p>
     <div class="punti ric-punti">${r.passi.map((_, j) => `<i class="${j === i ? 'on' : j < i ? 'fatto' : ''}"></i>`).join('')}</div>
     ${nota ? `<p class="avviso piccolo" style="margin:0">📝 ${esc(nota)}</p>` : ''}
-    <section class="scheda ric-passo">${p.foto && p.foto.length ? `<div class="ric-fotopassi grandi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}<p>${esc(p.t)}</p>
+    <section class="scheda ric-passo">${p.foto && p.foto.length ? `<div class="ric-fotopassi grandi">${p.foto.map(f => `<img src="${esc(f)}" alt="Ingrandisci" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(f)}">`).join('')}</div>` : ''}<div class="ric-passo-testo">${frasiHtml(passiChiari(r, (UI.ricPorz && UI.ricPorz[r.id]) || r.porzioni)[i])}</div>
       ${min ? `<button type="button" class="btn ${mio ? 'chiaro' : 'pieno'}" data-a="ric-timer" data-v="${min}">⏱ ${mio ? `Mancano ${mmssRic(restaTimer(mio))} · ferma` : `Timer ${durataRic(min)}`}</button>` : ''}</section>
     ${altri.map(x => `<p class="avviso piccolo fila" style="margin:0"><span>⏱ ${esc((x.libero ? durataRic(x.min) + ' · ' : '') + (x.id === id ? 'Passo ' + (x.passo + 1) : x.nome + ', passo ' + (x.passo + 1)))}: mancano <b>${mmssRic(restaTimer(x))}</b></span><button type="button" class="btn chiaro piccolo" data-a="ric-timer-via" data-v="${x.n}">Ferma</button></p>`).join('')}
     <button type="button" class="btn chiaro piccolo" data-a="ric-altro" aria-expanded="${!!UI.ricAltro}">⏱ Altro timer${UI.ricAltro ? ' ▴' : ' ▾'}</button>
@@ -528,7 +554,7 @@ function vCucina(id) {
 function testiVoceRic(r) {
   const code = [' Di\' «timer» per il conto alla rovescia.', ' Era l\'ultimo passo: di\' «finito».', ' Quando hai fatto, di\' «avanti».', ' Se vuoi, tocca Timer.',
     ' Di\' «timer» per il conto alla rovescia. Era l\'ultimo passo: di\' «finito».', ' Di\' «timer» per il conto alla rovescia. Quando hai fatto, di\' «avanti».'].map(x => x.trim());
-  return (r.passi || []).map((p, i) => `Passo ${i + 1}. ${p.t}`).concat(code);
+  return (r.passi || []).map((p, i) => `Passo ${i + 1}. ${pulisciPasso(p.t)}`).concat(code);
 }
 /* fila delle voci da scaricare: una ricetta alla volta, così non si intasa niente */
 RIC.filaVoci = []; RIC.vociFatte = leggiRic('pit-ric-voci', {}) || {};
@@ -574,7 +600,7 @@ function leggiPasso() {
   fermaAscolto();
   // due letture: il passo e la coda («di' avanti»…): la coda è uguale in tutte le ricette, il server la salva una volta sola (C60)
   const poi = () => { if (UI.cucina === c && c.mani) ascoltaCucina(); };
-  parlaAI(`Passo ${c.passo + 1}. ${p.t}`, () => { if (UI.cucina !== c) return; if (coda.trim()) parlaAI(coda.trim(), poi); else poi(); });
+  parlaAI(`Passo ${c.passo + 1}. ${pulisciPasso(p.t)}`, () => { if (UI.cucina !== c) return; if (coda.trim()) parlaAI(coda.trim(), poi); else poi(); });
 }
 /* MANI LIBERE: dopo ogni passo la voce si ferma e aspetta un comando detto (Chrome su Android). Comandi in COMANDI_RIC */
 const RiconosciRic = window.SpeechRecognition || window.webkitSpeechRecognition;

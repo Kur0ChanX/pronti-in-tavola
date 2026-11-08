@@ -805,6 +805,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { UI.ric.q = 'zucchine ceci'; render(); });
     t = await elenco(); if (!/Zuppa media prova/.test(t) || /Pasta veloce prova/.test(t)) throw new Error('ricerca per 2 ingredienti sbagliata');
     await page.evaluate(() => { UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); });
+    // C72 passi più chiari: parole intatte, una frase per riga, dose accanto al primo nome (anche per le porzioni), tempi in grassetto
+    const ch = await page.evaluate(() => { const r = { porzioni: 4, ingredienti: [{ nome: 'Passata di pomodoro', q: 300, u: 'g' }, { nome: 'Salsiccia', q: 200, u: 'g' }, { nome: 'Sale', q: null, u: '' }],
+      passi: [{ t: 'Rosolate la salsiccia . Versate la passata di pomodoro e cuocete per 20 minuti.' }, { t: 'Aggiungete la salsiccia e il sale.' }] };
+      return [passiChiari(r, 4), passiChiari(r, 8)[0][1]]; });
+    if (ch[0][0].length !== 2 || !/salsiccia <span class="ric-dose">\(200 g\)<\/span>\.$/.test(ch[0][0][0]) || !/passata di pomodoro <span class="ric-dose">\(300 g\)/.test(ch[0][0][1]) || !/<b>20 minuti<\/b>/.test(ch[0][0][1])
+      || /ric-dose/.test(ch[0][1][0]) || !/600 g/.test(ch[1])) throw new Error('passi chiari sbagliati: ' + JSON.stringify(ch));
   });
   await passo('anteprima di prova senza i dati veri di Monica', async () => {
     const html = fs.readFileSync(FILE.replace('file://', ''), 'utf8');
