@@ -1,7 +1,3 @@
-# Ultima risposta di Claude (08/11/2026 14:35 ora italiana)
+# Ultima risposta di Claude (08/11/2026 17:04 ora italiana)
 
-📌 Di cosa parliamo: la voce che legge le ricette a Monica nella cucina guidata. Le 4 voci di prova non ti piacciono e mi serve sapere che strada prendere.
-
-## Domande a Mario
-
-❓ 🛑 Quale voce? 1 · Google del telefono: italiana vera, gratis, anche senza rete (il mio consiglio) · 2 · Microsoft Isabella: naturale e gratis, ma può smettere di funzionare · 3 · Deepgram Cinzia: la più umana, ma a pagamento con chiave · 4 · resta Piper. Rispondi col numero nella sessione nuova.
+I documenti sono salvati su GitHub. Il codice invece aspetta la fine del giro delle prove: un push del codice mette subito online l'app sul sito vero, e da regola si pubblica solo col giro tutto verde. Mi risveglio io quando le prove finiscono.
