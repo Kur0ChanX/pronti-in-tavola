@@ -2,13 +2,13 @@
 @docs/kit-progetto/REGOLE.md
 
 Sopra il kit (uguale in tutti i progetti, versione in `docs/kit-progetto/VERSIONE`); qui solo il progetto, che nei dettagli vince. Tetto ~1.000 token.
-- Repo `Kur0ChanX/pronti-in-tavola`, ramo unico **`claude/pronti-ramo-definitivo`** (`.claude/ramo-di-lavoro.txt`). Titoli `<segno> 🍝 <Nome> <numero> · <cosa fa>` (catene in `docs/CHI-FA-COSA.md`). Altri progetti di Mario: nessuno (progetto indipendente: «nessuno», e non nominarli mai).
+- Repo `Kur0ChanX/pronti-in-tavola`, ramo unico **`claude/pronti-ramo-definitivo`** (`.claude/ramo-di-lavoro.txt`). Titoli `<segno> 🍝 <Nome> <numero> · <cosa fa>` (catene in `docs/CHI-FA-COSA.md`). Altri progetti di Mario: nessuno (indipendente, mai nominarli).
 - Servizi (Firebase, Cloudflare, GitHub…): quando se ne parla leggo prima `docs/GUIDE-GIUSTE.md`; guida sbagliata → lì quella giusta, subito, con commit. Foto di un sito: pagine nuove e pulsanti esatti lì (foto in `archivio/foto/`).
 - **Link a Mario** (07/11): da aprire → CLICCABILE nel testo; da copiare (mandare, incollare) → un riquadro di codice ciascuno (ha Copia). Vince su «mai nei riquadri» delle skill.
 - Il resto quando serve: skill del kit (`consegne` 🔒, `chat-parallela`, `cambio-account` 🔒, `pr`, `nuova-regola`, `ricerca-aggiornata`); regole per zona in `.claude/rules/` (con `paths:`): se lavoro in una zona solo con Bash, prima le leggo.
 
 ## App con prove
-- Anteprima: `python3 -I tools/anteprima.py` → `dist/anteprima.html`, SOLO per le prove. **Niente più artefatto** (Mario 08/11: «non lo uso più»): vince su «anteprima a ogni push» del kit; Mario prova sul sito vero.
+- Anteprima: `python3 -I tools/anteprima.py` → `dist/anteprima.html`, solo per le prove. **Niente artefatto** (Mario 08/11): vince sul kit; Mario prova sul sito vero.
 - Prove: `node tools/prova.js` (telefono `Pixel 7`) dopo l'anteprima. Regole dell'app in `.claude/rules/progetto.md`.
 
 ## Compact instructions
