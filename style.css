@@ -742,6 +742,7 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-passi { counter-reset: p; }
 /* C72: numerini come su GialloZafferano, sulla frase e sulla sua foto */
 .num-step { display: inline-block; min-width: 20px; height: 20px; line-height: 20px; padding: 0 4px; border-radius: 6px; text-align: center; font-size: .78em; font-weight: 800; background: rgba(232,180,106,.35); color: #7B2318; }
+.nw { white-space: nowrap; }
 .ric-fotonum { position: relative; margin: 0; }
 .ric-fotonum .num-step { position: absolute; left: 6px; top: 6px; background: #FBF4E8; }
 .ric-passo-testo { font-size: 1.12em; line-height: 1.5; }
