@@ -183,14 +183,17 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.47';
+const VERSIONE_APP = '0.9.48';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
-  { v: '0.9.47', data: '08/11/2026', ora: '16:40',
+  { v: '0.9.48', data: '08/11/2026',
+    nuovo: ['Per Mario: il numero della versione è sempre in vista in alto a destra, con l\'ora in piccolo; un tocco apre gli aggiornamenti'],
+    corretto: ['Aggiornamenti dell\'app: l\'ora di ogni versione è quella vera, presa da sola quando l\'app va online (prima era scritta a mano e poteva sbagliare)'] },
+  { v: '0.9.47', data: '08/11/2026',
     corretto: ['Foto dei passi: il numerino ora lo prende dal nome della foto di GialloZafferano, così è giusto anche quando la frase salta un numero (controllate 253 ricette)'] },
   { v: '0.9.46', data: '08/11/2026', ora: '16:05',
     corretto: ['Ricette vecchie di GialloZafferano: le foto dei passi «1-3» ora si vedono tutte, una per numerino (prima solo quella di mezzo)', 'Gesto indietro del telefono (swipe dal bordo): torna indietro nell\'app invece di chiuderla; nella prima schermata ti avvisa e chiude solo al secondo gesto'] },
-  { v: '0.9.45', data: '08/11/2026', ora: '15:50',
+  { v: '0.9.45', data: '08/11/2026',
     nuovo: ['Voce: in «Voce che legge» c\'è «Voce Google del telefono», seconda scelta dopo Paola. Si sente la voce italiana di Google del telefono, anche senza rete'] },
   { v: '0.9.44', data: '08/11/2026', ora: '15:30',
     corretto: ['Cucina guidata: la pagina del passo non resta più vuota mentre parla la voce'] },
@@ -352,7 +355,11 @@ const NOVITA = [
       'Ogni modifica si salva da sola con «Annulla» per 10 secondi'] }
 ];
 /* Ora italiana in cui ogni versione è andata online (dal git), per la cronologia (Mario 08/11: «anche l'orario»).
-   Dalla 0.9.28 in poi l'ora si scrive nella voce di NOVITA: `ora: 'HH:MM'`. Le versioni prima della 0.9 hanno solo la data. */
+   Dalla 0.9.46 l'ora NON si scrive più a mano: la mette tools/sito.py in PUBBLICATE (qui sotto). Le versioni prima della 0.9 hanno solo la data. */
+/* ORA VERA (Mario 08/11 ~16:00 «aggiorna l'orario e risolvilo dalla base»: l'ora scritta a mano era sbagliata, 15:50 alle 15:00).
+   La riempie da sola tools/sito.py quando pubblica: versione → 'gg/mm/aaaa HH:MM' italiana; la versione online = ora della pubblicazione,
+   le altre = ora del commit che l'ha creata. Qui vuota: nell'anteprima valgono `data`/`ora` scritti nelle voci. Non scriverla a mano. */
+const PUBBLICATE = {};
 const ORE_NOVITA = { '0.9.28': '10:22', '0.9.27': '09:31', '0.9.26': '09:03', '0.9.25': '09:00', '0.9.24': '08:47', '0.9.23': '08:20', '0.9.22': '07:49',
   '0.9.21': '07:23', '0.9.20': '06:59', '0.9.19': '06:34', '0.9.18': '06:23', '0.9.17': '06:03', '0.9.16': '05:26', '0.9.15': '04:52',
   '0.9.14': '04:39', '0.9.13': '04:22', '0.9.12': '04:03', '0.9.11': '03:56', '0.9.10': '03:46', '0.9.9': '03:41', '0.9.8': '03:33',

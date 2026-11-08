@@ -33,6 +33,8 @@ jobs:
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # storia intera: tools/sito.py legge l'ora vera di ogni versione dal git
       - name: Prepara la cartella del sito
         run: python3 tools/sito.py
       - name: Pubblica su Cloudflare

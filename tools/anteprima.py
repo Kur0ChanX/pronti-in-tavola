@@ -19,6 +19,10 @@ for nome in ('data.js', 'dati.js', 'lucchetto.js', 'vapore.js', 'app.js', 'spesa
     if nome == 'ricette.js':  # online si scarica solo per chi gestisce; nell'anteprima di prova va dentro, prima di ricettario.js
         html = html.replace('<script src="ricettario.js"></script>', '<script src="ricette.js"></script>\n<script src="ricettario.js"></script>')
     codice = (QUI / nome).read_text(encoding='utf-8')
+    if nome == 'data.js':  # ore vere delle versioni dal git, come sul sito (tools/sito.py, Mario 08/11 «risolvilo dalla base»)
+        import importlib.util, json
+        spec = importlib.util.spec_from_file_location('sito', QUI / 'tools' / 'sito.py'); sito = importlib.util.module_from_spec(spec); spec.loader.exec_module(sito)
+        codice = codice.replace('const PUBBLICATE = {};', 'const PUBBLICATE = ' + json.dumps(sito.ore_vere(codice), ensure_ascii=False) + ';', 1)
     if nome == 'dati.js':  # l'anteprima di prova non si collega ai dati veri di Monica
         codice, n = re.subn(r'const FIREBASE_CONFIG = \{.*?\};', 'const FIREBASE_CONFIG = null;', codice, flags=re.S)
         assert n == 1, 'FIREBASE_CONFIG non trovata in dati.js'

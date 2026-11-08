@@ -548,6 +548,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await foto('37b-aggiornamenti-dal-numerino');
     await clic('.foglio [data-a="chiudi"]');
     if (await page.evaluate(() => !!UI.foglio)) throw new Error('il foglio degli aggiornamenti non si chiude');
+    // versione SEMPRE in vista per Mario anche senza barra (08/11), con l'ora VERA della pubblicazione (PUBBLICATE, riempita da tools/sito.py)
+    await page.evaluate(() => { P.sviluppatore = false; UI.barraDev = false; PUBBLICATE[VERSIONE_APP] = '08/11/2026 09:07'; render(); });
+    const mini = await page.locator('.versione-mini').innerText({ timeout: 2000 }).catch(() => '');
+    if (!mini.includes('v' + await page.evaluate(() => VERSIONE_APP)) || !/09:07/.test(mini)) throw new Error('senza barra sviluppatore non si vede la versione con l\'ora vera: «' + mini + '»');
+    await clic('.versione-mini');
+    if (!/ore 09:07/.test(await page.locator('.foglio .dev-nov').first().innerText())) throw new Error('il foglio non usa l\'ora vera della pubblicazione');
+    await clic('.foglio [data-a="chiudi"]');
+    await page.evaluate(() => { delete PUBBLICATE[VERSIONE_APP]; P.ruolo = 'cliente'; render(); });
+    if (await page.locator('.versione-mini').count()) throw new Error('la versione piccola si vede anche al cliente');
     await page.evaluate(() => { Dati.attivo = _prima.attivo; Dati.io.gestore = _prima.gestore; Dati.io.nomeGestore = _prima.nome; L.aperto = _prima.aperto; P.sviluppatore = false; UI.barraDev = false; render(); });
   });
   await passo('ricettario (C55): GialloZafferano dentro l\'app (finto server), preferite, porzioni, spesa, cucina guidata, ricetta mia', async () => {
