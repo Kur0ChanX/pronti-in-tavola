@@ -546,6 +546,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-altre"]'); await page.waitForTimeout(300);
     if (await page.locator('#ric-risultati .ric-carta').count() !== 60) throw new Error('«Carica altre» non aggiunge le ricette');
     if (await page.locator('[data-a="ric-altre"]').count()) throw new Error('«Carica altre» resta anche a catalogo finito');
+    await clic('[data-a="ric-chiudi-cerca"]'); await clic('.ric-intro summary');
+    await clic('[data-a="ric-catalogo"][data-v="ricette-con-le-Melanzane"]'); await page.locator('#ric-risultati h2', { hasText: 'Melanzane' }).waitFor({ timeout: 3000 });
     await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');

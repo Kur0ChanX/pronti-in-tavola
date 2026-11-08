@@ -23,7 +23,8 @@
 import { DurableObject } from 'cloudflare:workers';
 import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ } from './gz.mjs';
 /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
-const CAT_GZ = { antipasti: 'Antipasti', primi: 'Primi', secondi: 'Secondi-piatti', contorni: 'Contorni', dolci: 'Dolci-e-Desserts', lievitati: 'Lievitati', unici: 'Piatti-Unici', sughi: 'Salse-e-Sughi', bevande: 'Bevande' };
+const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi', secondi: 'ricette-cat/Secondi-piatti', contorni: 'ricette-cat/Contorni', dolci: 'ricette-cat/Dolci-e-Desserts',
+  lievitati: 'ricette-cat/Lievitati', unici: 'ricette-cat/Piatti-Unici', sughi: 'ricette-cat/Salse-e-Sughi', bevande: 'ricette-cat/Bevande', sardegna: 'ricette-regionali/Sardegna' };
 
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
@@ -179,14 +180,18 @@ async function paginaGz(u) {
 async function ricettaGz(b) {
   if (b && (typeof b.cerca === 'string' || typeof b.cat === 'string')) {
     let u = '';
-    if (typeof b.pagina === 'string' && /^https:\/\/www\.giallozafferano\.it\/[\w\/%+.,-]*$/.test(b.pagina)) u = b.pagina;   // «Carica altre»
-    else if (b.cat) { if (!CAT_GZ[b.cat]) return { errore: 'portata sconosciuta' }; u = `https://www.giallozafferano.it/ricette-cat/${CAT_GZ[b.cat]}/`; }
+    if (typeof b.pagina === 'string' && /^https:\/\/(?:www|ricette)\.giallozafferano\.it\/[\w\/%+.,-]*$/.test(b.pagina)) u = b.pagina;   // «Carica altre»
+    else if (b.cat && /^ricette-con-[\w-]{2,60}$/.test(b.cat)) u = `https://ricette.giallozafferano.it/${b.cat}/`;   // per ingrediente
+    else if (b.cat) { if (!CAT_GZ[b.cat]) return { errore: 'portata sconosciuta' }; u = `https://www.giallozafferano.it/${CAT_GZ[b.cat]}/`; }
     else {
       const q = b.cerca.trim().toLowerCase().replace(/[^\p{L}\p{N} '-]/gu, '').slice(0, 60);
       if (q.length < 2) return { ricette: [] };
       u = `https://www.giallozafferano.it/ricerca-ricette/${encodeURIComponent(q).replace(/%20/g, "+")}/`;
     }
-    const html = await paginaGz(u), ricette = gzCerca(html);
+    const html = await paginaGz(u).catch(() => ''), ricette = gzCerca(html);
+    // pagina della sezione vuota o cambiata: si cerca la stessa cosa a parole (così il catalogo non resta mai vuoto)
+    if (!ricette.length && b.cat && !b.pagina && typeof b.cerca === 'string' && b.cerca.trim().length >= 2) return ricettaGz({ cerca: b.cerca });
+    if (!html && !ricette.length) throw new Error('GialloZafferano non risponde');
     return { ricette, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
   }
   const u = urlGz(b && b.u);

@@ -19,7 +19,12 @@ const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['gallura', 'Ga
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
 /* catalogo completo per portata (sezioni di GialloZafferano lette dal server, pagina dopo pagina) */
-const CATALOGO_RIC = [['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['lievitati', 'Pane, pizze e lievitati'], ['unici', 'Piatti unici'], ['sughi', 'Salse e sughi'], ['bevande', 'Bevande']];
+const CATALOGO_RIC = [['sardegna', 'Ricette sarde'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['lievitati', 'Pane, pizze e lievitati'], ['unici', 'Piatti unici'], ['sughi', 'Salse e sughi'], ['bevande', 'Bevande']];
+/* catalogo per ingrediente: pagine «ricette-con-…» di GialloZafferano; se una non esiste, il server cerca la parola */
+const CATALOGO_ING = [['le-Melanzane', 'Melanzane'], ['le-Zucchine', 'Zucchine'], ['le-Patate', 'Patate'], ['i-Pomodori', 'Pomodori'], ['i-Carciofi', 'Carciofi'], ['i-Funghi', 'Funghi'],
+  ['gli-Spinaci', 'Spinaci'], ['i-Ceci', 'Ceci'], ['le-Lenticchie', 'Lenticchie'], ['la-Ricotta', 'Ricotta'], ['la-Mozzarella', 'Mozzarella'], ['Pecorino-sardo', 'Pecorino sardo'],
+  ['le-Uova', 'Uova'], ['il-Pollo', 'Pollo'], ['la-Salsiccia', 'Salsiccia'], ['il-Maiale', 'Maiale'], ['l-Agnello', 'Agnello'], ['il-Tonno', 'Tonno'], ['il-Salmone', 'Salmone'],
+  ['i-Gamberi', 'Gamberi'], ['le-Cozze', 'Cozze'], ['le-Vongole', 'Vongole'], ['il-Polpo', 'Polpo'], ['le-Mele', 'Mele'], ['i-Limoni', 'Limoni'], ['il-Cioccolato', 'Cioccolato'], ['le-Mandorle', 'Mandorle']];
 /* temi della ricerca veloce (si cercano dal vivo su GialloZafferano: niente elenchi da tenere aggiornati) */
 const ESPLORA_RIC = ['ricette sarde', 'dolci sardi', 'culurgiones', 'fregola', 'malloreddus', 'porceddu', 'pane carasau', 'bottarga', 'pecorino sardo', 'mirto', 'amaretti', 'ricette con la ricotta', 'ricette con il pesce spada', 'polpo', 'cozze', 'agnello', 'pasta fresca', 'primi di pesce', 'secondi di carne', 'secondi di pesce', 'contorni', 'antipasti', 'torte salate', 'focacce',
   'dolci al cucchiaio', 'biscotti', 'torte', 'zuppe', 'risotti', 'lasagne', 'polpette', 'verdure ripiene', 'ricette veloci', 'ricette vegetariane', 'senza glutine', 'avanzi', 'per buffet', 'sughi', 'torte salate di verdure', 'crostate', 'dolci della nonna', 'pane fatto in casa', 'ricette in friggitrice ad aria', 'piatti unici', 'ricette di Natale', 'ricette di Pasqua'];
@@ -165,7 +170,8 @@ function vRicettario() {
     <form class="ric-cerca" data-ric-casa="1"><input id="ric-casa" type="search" value="${esc(UI.ricCasa || '')}" placeholder="Es. zucchine, uova, pecorino" autocomplete="off" enterkeyhint="search">
       <button type="submit" class="btn pieno" aria-label="Cerca con questi ingredienti">${ico('cerca')}</button></form></section>`;
   if (!q && !c.stato) h += `<section class="scheda"><h2>📚 Tutto il catalogo</h2><p class="piccolo tenue" style="margin:0">Tutte le ricette di GialloZafferano, per portata: scorri e tocca «Carica altre».</p>
-    <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div></section>`;
+    <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div>
+    <details class="ric-intro"><summary><b>Per ingrediente</b> <small class="tenue">(${CATALOGO_ING.length})</small></summary><div class="scelte">${CATALOGO_ING.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="ricette-con-${k}">${t}</button>`).join('')}</div></details></section>`;
   if (!q && !c.stato) h += `<section class="scheda"><h2>🔎 Esplora GialloZafferano</h2><p class="piccolo tenue" style="margin:0">Migliaia di ricette: tocca un tema e si aprono qui dentro.</p>
     <div class="scelte">${ESPLORA_RIC.map(t => `<button type="button" class="scelta" data-a="ric-esplora" data-v="${esc(t)}">${esc(t)}</button>`).join('')}</div></section>`;
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
@@ -419,13 +425,13 @@ Object.assign(A, {
     mostra(); document.body.appendChild(v);
   },
   'ric-catalogo'(el) {
-    const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || [, k])[1];
+    const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
     A['ric-cerca-gz'](nome, k);
   },
   'ric-altre'() {
     const c = RIC.cerca; if (!c.prossima || c.altre === 'carico') return;
     c.altre = 'carico'; render();
-    RIC.chiedi(c.cat ? { cat: c.cat, pagina: c.prossima } : { cerca: c.q, pagina: c.prossima })
+    RIC.chiedi(c.cat ? { cat: c.cat, cerca: c.q, pagina: c.prossima } : { cerca: c.q, pagina: c.prossima })
       .then(j => {
         if (RIC.cerca !== c) return;
         const nuove = (j.ricette || []).map(daCerca).filter(x => !c.risultati.some(y => y.id === x.id));
@@ -439,7 +445,7 @@ Object.assign(A, {
     if (typeof cat !== 'string') cat = '';
     RIC.cerca = { q, cat, stato: 'carico', risultati: [], prossima: '' }; render();
     const ris = document.getElementById('ric-risultati'); if (ris) ris.scrollIntoView({ block: 'start' });
-    RIC.chiedi(cat ? { cat } : { cerca: q })
+    RIC.chiedi(cat ? { cat, cerca: q } : { cerca: q })
       .then(j => { if (RIC.cerca.q !== q) return; RIC.cerca.stato = 'ok'; RIC.cerca.risultati = (j.ricette || []).map(daCerca); RIC.cerca.prossima = j.prossima || ''; })
       .catch(e => { RIC.cerca.stato = 'errore'; RIC.cerca.errore = navigator.onLine === false ? 'Senza rete non posso cercare: riprova quando torna.' : 'Ricerca non riuscita: ' + (e.message || e); })
       .finally(() => { if (UI.vista === 'ricettario') render(); });
