@@ -612,6 +612,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.ric-db-box', { hasText: 'Carico 100 ricette: 0 fatte' }).count())) throw new Error('«⚡ Carica 100» non mostra il carico in corso');
     await page.evaluate(() => { RIC.chiedi = RIC._c4; RIC.db.turbo = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; render(); });
     if (!(await page.locator('.ric-db-box', { hasText: 'Motore' }).count())) throw new Error('nel Ricettario manca lo stato del motore');
+    // C81: «🔍 Controlla tutte» → esito di tutte le ricette in vista, con quelle da sistemare
+    await page.evaluate(() => { RIC._c5 = RIC.chiedi; RIC.chiedi = async c => c.db === 'controlla' ? { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 }, db: Object.assign({}, RIC.db, { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 } }) } : RIC._c5(c); });
+    await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
+    if (!(await page.locator('.ric-db-box', { hasText: 'Controllate 120 ricette' }).count()) || !(await page.locator('.ric-db-box', { hasText: 'Pane cafone' }).count())) throw new Error('«🔍 Controlla tutte» non mostra l\'esito');
+    await page.evaluate(() => { RIC.chiedi = RIC._c5; });
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
     await clic('[data-a="ric-cerca-gz"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 });
