@@ -740,6 +740,11 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-ing input { width: 22px; height: 22px; flex: none; margin-top: 2px; }
 .ric-ing input:checked + span { text-decoration: line-through; opacity: .55; }
 .ric-passi { counter-reset: p; }
+/* C72: numerini come su GialloZafferano, sulla frase e sulla sua foto */
+.num-step { display: inline-block; min-width: 20px; height: 20px; line-height: 20px; padding: 0 4px; border-radius: 6px; text-align: center; font-size: .78em; font-weight: 800; background: rgba(232,180,106,.35); color: #7B2318; }
+.ric-fotonum { position: relative; margin: 0; }
+.ric-fotonum .num-step { position: absolute; left: 6px; top: 6px; background: #FBF4E8; }
+.ric-passo-testo { font-size: 1.12em; line-height: 1.5; }
 .ric-passi li { counter-increment: p; display: flex; gap: 10px; align-items: flex-start; }
 .ric-passi li::before { content: counter(p); flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--vino, #7B2318); color: #fff; display: grid; place-items: center; font-weight: 700; }
 .ric-disegno { width: 28px; height: 28px; flex: none; color: var(--terracotta, #C4532E); }
