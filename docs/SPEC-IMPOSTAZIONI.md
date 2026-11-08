@@ -26,7 +26,7 @@ Richiesta di Mario (08/11 ~18:40): «aggiungi tantissime impostazioni da modific
 | Firma dei messaggi | in fondo ai messaggi | «<nome> · Pronti in Tavola» |
 | Tempo per «Annulla» | secondi del tasto Annulla | 10 |
 
-## Lotto 2 (v0.9.59, C92)
+## Lotto 2 (v0.9.60, C92)
 | Voce | Cosa fa | Di base |
 |---|---|---|
 | Parti del menù | nomi, ordine, parti nuove (es. «Secondi»); con piatti non si toglie; a voce «aggiungi la parte secondi» anche senza rete | Stuzzichini, Primi, Dolci |

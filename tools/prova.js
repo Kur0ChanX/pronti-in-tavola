@@ -937,6 +937,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await b.textContent() !== '🗄 Database') throw new Error('in cima il tasto dice: ' + await b.textContent());
     await page.evaluate(() => vai('home'));
   });
+  await passo('cliente: guida corta «metti l\'app sul telefono» con schede iPhone | Android (Mario 08/11, Sabrina)', async () => {   // autonoma
+    const r = await page.evaluate(() => { UI.guidaOS = 'ios'; const a = guidaInstalla(); UI.guidaOS = 'android'; const b = guidaInstalla(); UI.guidaOS = null; return [a, b, primiPassi()]; });
+    if (!/Aggiungi alla schermata Home/.test(r[0]) || !/aria-pressed="true">iPhone/.test(r[0])) throw new Error('scheda iPhone sbagliata');
+    if (!/⋮/.test(r[1]) || !/aria-pressed="true">Android/.test(r[1])) throw new Error('scheda Android sbagliata');
+    if (r[2] && /data-a="passi-app"/.test(r[2])) throw new Error('c\'è ancora il tasto che apre solo i passi');
+  });
   await passo('gesto indietro del telefono: torna indietro nell\'app, non la chiude', async () => {   // autonoma
     const url = page.url();
     await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; vai('home'); vai('piatti'); vai('piatto:tiramisu'); });
