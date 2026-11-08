@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "e07f243d3616",
 "giorno": "2026-11-08",
-"turni": 4,
-"peso": 2054346,
-"uscita": 60278,
-"contesto_max": 271163,
+"turni": 5,
+"peso": 2142785,
+"uscita": 60780,
+"contesto_max": 276671,
 "anomalie": [
 "avvio pesante: 182k token dopo il primo turno (tetto 130k)",
 "1 uscite di strumento enormi (87 KB la più grande): leggere a pezzi (grep -n, sed -n)"

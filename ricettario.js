@@ -359,7 +359,7 @@ function vRicettario() {
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
   if (!q && !c.stato) {
     /* SCOPRI: il motore, il catalogo, i temi, le ispirate: tutto in una scheda, aperto solo quello che tocchi */
-    h += riquadroDb();
+    voceAutomatica(); h += riquadroDb();
     h += `<section class="scheda"><h2>🔎 Scopri ricette nuove</h2>
       <button type="button" class="btn pieno" data-a="ric-catalogo" data-v="nuove">🔎 Fammi vedere le ricette nuove</button>
       <p class="piccolo tenue" style="margin:0">Il motore cerca su GialloZafferano quelle che non hai ancora (prima col video e i voti alti): apri, e se ti piace «➕ Aggiungi».</p>
@@ -447,7 +447,7 @@ function vCucina(id) {
   if (!r || !r.passi.length) { UI.vista = 'ricetta:' + id; return vRicetta(id); }
   const nuova = !(UI.cucina && UI.cucina.id === id);
   const c = nuova ? (UI.cucina = { id, passo: 0, voce: true }) : UI.cucina;
-  tieniAcceso(true);
+  tieniAcceso(true); voceAutomatica();
   if (nuova || c.leggi) { c.leggi = false; setTimeout(() => { if (UI.cucina === c && /^cucina:/.test(UI.vista)) leggiPasso(); }, 0); }   // la voce parte da sola al primo passo (Mario 08/11): il tocco su ▶️ ha già dato il permesso audio
   const i = Math.min(c.passo, r.passi.length - 1), p = r.passi[i], ultimo = i === r.passi.length - 1, min = minutiPasso(p.t);
   const mio = timerDi(id, i), altri = RIC.timers.filter(x => x !== mio), nota = notaRic(id);
@@ -490,13 +490,25 @@ async function preparaVociRic(r) {
   return n;
 }
 /* voce sul telefono scelta: dice se è scaricata; se no, «⬇️ Scarica la voce (N MB)» con la barra (Mario 08/11) */
+/* VOCE AUTOMATICA (Mario 08/11): a chi gestisce l'app scarica da sola la voce di base (VOCE_AUTO) la prima volta che apre il Ricettario, con qualunque rete; niente da toccare */
+function voceAutomatica() {
+  if (RIC.voceAutoFatto || typeof motoreLocale !== 'function' || typeof VOCE_AUTO === 'undefined' || !navigator.onLine) return;
+  const k = VOCE_AUTO, M = motoreLocale(k); if (!M) return;
+  RIC.voceAutoFatto = true;
+  M.pronta(k).then(ok => {
+    if (ok) { AI.localiPronte[k] = true; return; }
+    RIC.scaricoVoce = { k, p: 0 };
+    return M.scarica(k, p => { if (RIC.scaricoVoce) RIC.scaricoVoce.p = p; const b = document.querySelector('.ric-voce-stato b'), pr = document.querySelector('.ric-voce-stato progress'); if (b && pr) { b.textContent = Math.round(p * 100) + '%'; pr.value = Math.round(p * 100); } })
+      .then(() => { AI.localiPronte[k] = true; RIC.scaricoVoce = null; if (/^cucina:/.test(UI.vista)) { render(); if (sceltaVoce() === k) leggiPasso(); } });
+  }).catch(() => { RIC.scaricoVoce = null; RIC.voceAutoFatto = false; });   // rete caduta: riprova alla prossima apertura
+}
 function vociLocaleRiga() {
   const k = sceltaVoce(), M = typeof motoreLocale === 'function' && motoreLocale(k);
   if (!M) return /^edge:/.test(k) && typeof AI !== 'undefined' && AI.voceNo ? '<p class="avviso piccolo ric-voce-stato" style="margin:0">⚠️ Microsoft non risponde adesso: legge la voce del telefono (per questo le voci sembrano uguali). Scegli una voce «sul telefono» e scaricala: è tua per sempre.</p>' : '';
   const st = statoVoceLocale(k, () => { if (/^cucina:/.test(UI.vista)) render(); }), sc = RIC.scaricoVoce;
   if (sc && sc.k === k) return `<p class="tenue ric-voce-stato">⬇️ Scarico la voce… <b>${Math.round(sc.p * 100)}%</b><progress max="100" value="${Math.round(sc.p * 100)}" style="width:100%"></progress><small>Resta sul telefono: dopo parla anche senza rete.</small></p>`;
   if (st === true) return '<p class="tenue ric-voce-stato">✅ Voce sul telefono: parla anche senza rete.</p>';
-  if (st === false) return `<p class="ric-voce-stato"><button type="button" class="btn chiaro pieno" data-a="ric-voce-scarica">⬇️ Scarica la voce (${M.mb(k)} MB, una volta sola)</button><small class="tenue">Meglio col Wi-Fi. Finché non è scaricata legge la voce del telefono.</small></p>`;
+  if (st === false) return `<p class="ric-voce-stato"><button type="button" class="btn chiaro pieno" data-a="ric-voce-scarica">⬇️ Scarica la voce (${M.mb(k)} MB, una volta sola)</button><small class="tenue">Finché non è scaricata legge la voce del telefono.</small></p>`;
   return '<p class="tenue ric-voce-stato">Controllo se la voce è sul telefono…</p>';
 }
 function leggiPasso() {
@@ -577,7 +589,7 @@ document.addEventListener('input', e => {
 });
 document.addEventListener('change', e => {
   const el = e.target;
-  if (el.id === 'ric-voce-scelta') { try { localStorage.setItem('pit-voce', el.value); } catch (er) { /* niente */ } if (typeof motoreLocale === 'function' && motoreLocale(el.value) && statoVoceLocale(el.value) !== true) { mostraToast('Prima scaricala: tocca «⬇️ Scarica la voce».'); render(); } else if (typeof parlaAI === 'function') parlaAI('Ciao, sono la tua nuova voce. Ti leggo i passi così.'); }
+  if (el.id === 'ric-voce-scelta') { try { localStorage.setItem('pit-voce', el.value); } catch (er) { /* niente */ } if (typeof motoreLocale === 'function' && motoreLocale(el.value) && statoVoceLocale(el.value) !== true) { mostraToast('La scarico adesso sul telefono: tra poco legge con questa voce.'); A['ric-voce-scarica'](); } else if (typeof parlaAI === 'function') parlaAI('Ciao, sono la tua nuova voce. Ti leggo i passi così.'); }
   if (el.id === 'ric-copia-file' && el.files[0]) { riprendiCopia(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.ric === 'categoria' && UI.ricBozza) UI.ricBozza.categoria = el.value;
   if (el.id !== 'ric-foto-file' || !el.files[0] || !UI.ricBozza) return;

@@ -545,6 +545,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
         difficolta: 'Media', costo: 'Medio', ingredienti: [{ nome: 'Semola', q: 250, u: 'g', nota: '' }, { nome: 'Pecorino fresco', q: 300, u: 'g', nota: '' }, { nome: 'Miele', q: null, u: '', nota: '' }, { nome: 'Strutto', q: 25, u: 'g', nota: '' }, { nome: 'Acqua', q: 120, u: 'ml', nota: '' }, { nome: 'Limone', q: 1, u: '', nota: '' }],
         passi: [{ t: 'Impastate semola e strutto.', foto: ['data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2230%22%3E%3Crect width=%2240%22 height=%2230%22 fill=%22%23c96%22/%3E%3C/svg%3E#1', 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2230%22%3E%3Crect width=%2240%22 height=%2230%22 fill=%22%23c96%22/%3E%3C/svg%3E#2'] }, { t: 'Lasciate riposare 30 minuti.', foto: [] }, { t: 'Friggete e servite col miele.', foto: [] }], conserva: '', consiglio: '', autore: '', hls: '', mp4: '' };
       RIC.chiedi = async c => c.cerca ? { ricette: [{ url: finta.url, nome: finta.nome, foto: '' }] } : { ricetta: finta };
+      RIC.voceAutoFatto = true;   // niente scarico vero della voce (94 MB) durante la prova: la voce automatica si prova sotto col finto Piper
       vai('home');
     });
     await page.locator('.ric-home').click({ timeout: 3000 }); await page.locator('.ric-carta').first().waitFor({ timeout: 3000 });
@@ -626,7 +627,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { localStorage.setItem('pit-voce', 'edge:isabella'); AI.voceNo = false; AI.voceAvvisata = true; Dati.token = async () => 'x'; window._fetchVero = fetch; fetch = async () => ({ ok: false, status: 403, headers: new Headers() }); AI.cacheVoce = new Map(); window._paolaDetto = 0; parlaAI('Prova di ripiego.'); });
     await page.waitForTimeout(400);
     if (!(await page.evaluate(() => window._paolaDetto >= 1))) throw new Error('Microsoft giù: non ripiega sulla voce scaricata');
-    await page.evaluate(() => { fetch = window._fetchVero; VociLocali.piper = window._piperVero; AI.voceNo = false; AI.localiPronte = {}; localStorage.removeItem('pit-voce'); });
+    // voce AUTOMATICA (Mario 08/11 «deve funzionare tutto da sola»): senza scelta salvata la voce è Paola e si scarica da sola aprendo la cucina
+    await page.evaluate(() => { fetch = window._fetchVero; localStorage.removeItem('pit-voce'); window._paolaOk = false; window._paolaDetto = 0; AI.localiPronte = {}; RIC.voceAutoFatto = false; render(); });
+    await page.waitForTimeout(500);
+    if (!(await page.evaluate(() => sceltaVoce() === 'piper:paola' && window._paolaOk === true && window._paolaDetto >= 1))) throw new Error('la voce di base non si scarica da sola o non legge: ' + await page.evaluate(() => JSON.stringify([sceltaVoce(), window._paolaOk, window._paolaDetto])));
+    if (await page.locator('#ric-voce-scelta option[value^="kokoro:"]').count()) throw new Error('Kokoro è ancora fra le voci (in italiano non funziona)');
+    await page.evaluate(() => { VociLocali.piper = window._piperVero; AI.voceNo = false; AI.localiPronte = {}; RIC.voceAutoFatto = true; });
     // due timer insieme: quello del passo e uno veloce; il primo si ferma da solo, l'altro resta
     await clic('[data-a="ric-altro"]'); await clic('[data-a="ric-timer-libero"][data-v="5"]');
     await page.evaluate(() => vai('home')); await page.waitForTimeout(1200);
