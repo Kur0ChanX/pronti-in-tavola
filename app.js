@@ -334,6 +334,10 @@ function cartaHome(dopo) {
   const passi = pp => pp.map((t, i) => `<div class="passo-invito"><span class="num">${i + 1}</span><div>${t}</div></div>`).join('');
   let h = `<section class="scheda passi-invito carta-home"><h2>${ico('scarica')}Metti l'app sul telefono</h2><p class="tenue" style="margin:0">Così la apri con un tocco, come le altre app.</p>`;
   if (installa) h += `<button type="button" class="btn pieno grande" data-a="installa">Mettila sul telefono</button>`;
+  else if (telefono() === 'ios' && /CriOS|FxiOS|EdgiOS|GSA\//.test(navigator.userAgent)) h += passi([   // iPhone con Chrome, Google, Firefox, Edge (Sabrina 08/11: non era Safari)
+    'Tocca il <b>quadrato con la freccia in su</b> (Condividi): è accanto all\'indirizzo, oppure dentro <b>⋯</b>.',
+    'Scorri in giù e tocca <b>Aggiungi alla schermata Home</b> (se non c\'è: tocca <b>Altro</b> o <b>Modifica azioni</b>).',
+    'Tocca <b>Aggiungi</b>. Se proprio non c\'è: apri il link con <b>Safari</b> (la bussola) e rifai.'])
   else if (telefono() === 'ios') h += passi([
     'Apri questa pagina con <b>Safari</b> (l\'icona della bussola).',
     'Tocca <b>⋯</b> (o <b>aA</b>) accanto all\'indirizzo, poi <b>Condividi</b>: il quadrato con la freccia in su.',
@@ -667,7 +671,7 @@ function primiPassi() {
     const passo = (n, fatto, tit, perche, btn) => `<div class="passo-forte${fatto ? ' fatto' : ''}"><span class="num">${fatto ? '✓' : n}</span><div><b>${tit}</b><span class="tenue piccolo">${perche}</span>${fatto ? '' : btn}</div></div>`;
     const due = notifOk || P.avvisiCliente;
     h += `<h2 class="pp-titolo">${due ? 'Due tocchi' : 'Un tocco'} e sei a posto</h2>`
-      + passo(1, !app, "Metti l'app sul telefono", 'La ritrovi tra le app, come WhatsApp: niente più link da cercare.',
+      + passo(1, !app, "Metti l'app sul telefono", 'La ritrovi tra le app, come WhatsApp. <b>Non serve per ordinare</b>: il menù è qui sotto.',
         `<button type="button" class="btn pieno grande" data-a="${installa ? 'installa' : 'passi-app'}">${ico('scarica')}Installa l'app</button>`)
       + (due ? passo(2, !notif, 'Attiva le notifiche', 'Monica ti avvisa quando il tuo ordine è pronto o se ti propone un altro giorno.',
         `<button type="button" class="btn ${app ? 'chiaro' : 'pieno'} grande" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : 'Attiva le notifiche'}</button>`) : '')

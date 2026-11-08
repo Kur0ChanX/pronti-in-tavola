@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.54';
+const VERSIONE_APP = '0.9.57';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.57', data: '08/11/2026',
+    corretto: ['Clienti con iPhone e un browser diverso da Safari (Chrome, Google…): i passi giusti per mettere l\'app sul telefono', 'Primi passi: scritto chiaro che per ordinare non serve installare l\'app'] },
   { v: '0.9.54', data: '08/11/2026',
     corretto: ['Ricettario: entrando dalla Home parti sempre dall\'alto, con le ricette; il punto di prima torna solo con «Indietro» da una ricetta'] },
   { v: '0.9.53', data: '08/11/2026',
