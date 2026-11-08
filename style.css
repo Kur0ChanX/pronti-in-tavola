@@ -623,7 +623,8 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .avviso-prova { background: #EFE6F8; color: #3D1F63; border: 2px solid #6B3FA0; }
 /* modalità sviluppatore (solo Mario) */
 .prova.dev { background: #1F2A44; }
-.prova.dev .dev-v { margin-left: auto; opacity: .7; font-size: .8rem; }
+.prova.dev .dev-v { margin-left: auto; opacity: .9; font-size: .8rem; background: rgba(255, 255, 255, .14); text-decoration: underline dotted; min-height: 28px; }
+.dev-nov .quando { opacity: .75; font-weight: 600; font-size: .85rem; }
 .vapore { position: fixed; inset: 0; z-index: 9999; }
 .vapore canvas { width: 100%; height: 100%; display: block; }
 .dev-scheda, .mario-scheda { border: 2px dashed #1F2A44; display: grid; gap: 8px; }

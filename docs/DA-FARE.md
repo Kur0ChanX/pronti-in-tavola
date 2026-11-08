@@ -1,11 +1,14 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 08/11 · 📒 Aiuto 1 · Regime leggero solo per Pronti in Tavola (avvio a dieta, prove solo del pezzo cambiato, comandi raggruppati, meno rituali; le regole 🔒 restano): 1 sì tutto (consiglio) · 2 solo prove e avvio · 3 no
+- 08/11 · 📒 Aiuto 1 · Divisione dei lavori: 1 principale = ricettario, voce, versioni; Aiuto 1 = Impostazioni di Monica a voci (C39) + pulizia prove fuori dal ricettario (consiglio) · 2 Aiuto 1 fa solo il regime leggero e chiude · 3 altro
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 - 08/11 · 🟡 Principale 17 · Salvataggio mensile degli ordini (file Excel scaricabile): sì ora, più avanti o no?
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C63 | (Mario 08/11 ~10:15 «se clicco quel numerino della versione, mi deve far vedere tutti gli aggiornamenti… anche la data e l'orario») Tocco sul «v0.9.xx» della barra sviluppatore → foglio «Aggiornamenti dell'app»: tutte le versioni con data e ora italiana (ore prese dal git; dalla 0.9.28 ogni voce di NOVITA ha `ora:`). Fatto dalla chat Aiuto 1 (giro completo 49 OK sull'albero con la v0.9.28). 👁 Lo vedi: sito vero, dopo aver riaperto l'app → scorri il dito da sinistra a destra in cima → tocca «v0.9.28» in alto a destra · prova: tua foto o tuo ok | Claude (Aiuto 1) | 🟢 manca la tua prova |
 | C54 | (Mario 08/11 ~04:20 «nelle impostazioni sviluppatore posso provare se risponde Groq?») Tasto «Prova le AI adesso» in «Solo per te, Mario» (v0.9.13): prova Cloudflare (3 modelli) e Groq (2), dice chi risponde e in quanti secondi. 👁 Lo vedi: Impostazioni → «Solo per te, Mario» → «Prova le AI adesso» → righe ✅/❌ · prova: tua foto | Claude | 🟢 manca la foto |
 | C57 | (Mario 08/11 ~07:30 «la voce fa pietà… catalogo molto ampio»; ~08:25 «consiglio 1») Catalogo completo (v0.9.19-0.9.20) e voce vera Microsoft (v0.9.24, `/api/voce`, cache 30 giorni, riserva: voce del telefono). Provati solo con dati finti: da qui GialloZafferano e Microsoft sono bloccati. 👁 Lo vedi: Cucina guidata → «Voce che legge» → Isabella · voce vera → parla come una persona; Ricettario → «Tutto il catalogo» → «Carica altre» · prova: tuo ok | Claude + Mario | 🟢 manca la tua prova |
 | C60 | (Mario 08/11 ~09:05 «le nuove ricette le cerca e le crea nel mio database… voci per sempre senza doppioni») Motore che PROPONE ricette nuove + «➕ Aggiungi al mio ricettario» + pagina «🗄 Database ricette»: fatto in #27 (v0.9.27, piano in `docs/lavori-in-corso/piano-database-ricette.md`), prove dell'app da chiudere. 👁 Lo vedi: Ricettario → «🔎 Fammi vedere le ricette nuove» → ➕; «Database ricette» col numero che cresce. | Claude + Mario | |

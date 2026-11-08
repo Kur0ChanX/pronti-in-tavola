@@ -9,4 +9,4 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 📗 Aiuto 1 | Numerino della versione nella barra sviluppatore → tocco → foglio con tutti gli aggiornamenti (data e ora) · poi indagine lentezza della principale e divisione dei lavori | `app.js` (barraDev, sezioneDev, foglio «novita», azione dev-novita), `style.css` (.dev-v, .dev-nov), `data.js` (solo `ORE_NOVITA` in fondo, dopo NOVITA), `tools/prova.js` (una prova dopo «cronologia completa», riga ~524) | 08/11 10:17 |
+| 📗 Aiuto 1 | Numerino della versione → foglio Aggiornamenti: FATTO e pushato (cbdc470, 49 OK). Ora aspetta Mario: divisione dei lavori (proposta: C39 Impostazioni di Monica a voci + prove fuori dal ricettario) e regime leggero del progetto | `app.js` (sezione impostazioni), `style.css` — solo dopo l'ok di Mario | 08/11 10:17 |
