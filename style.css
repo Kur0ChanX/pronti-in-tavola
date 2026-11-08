@@ -838,3 +838,7 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 .ico-in { width: 1.1em; height: 1.1em; vertical-align: -0.15em; color: var(--vino); }
 /* ricerca in Impostazioni (C88) */
 .cerca-imp input { width: 100%; font-size: 1.05rem; }
+
+/* (C93) «Lo stesso dell'ultima volta?» in cima al menù */
+.rifai h2 { display: flex; gap: 8px; align-items: center; }
+.rifai h2 svg { width: 26px; height: 26px; flex: none; }
