@@ -653,6 +653,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.waitForTimeout(500);
     if (!(await page.evaluate(() => sceltaVoce() === 'piper:paola' && window._paolaOk === true && window._paolaDetto >= 1))) throw new Error('la voce di base non si scarica da sola o non legge: ' + await page.evaluate(() => JSON.stringify([sceltaVoce(), window._paolaOk, window._paolaDetto])));
     if (await page.locator('#ric-voce-scelta option[value^="kokoro:"]').count()) throw new Error('Kokoro è ancora fra le voci (in italiano non funziona)');
+    // voce Google del telefono (Mario 08/11 «proviamo google come seconda voce»): seconda nella scelta, la usa se c'è, se manca lo dice
+    {
+      const ord = await page.locator('#ric-voce-scelta option').evaluateAll(o => o.map(x => x.value));
+      if (ord[1] !== 'tel:google') throw new Error('«Voce Google del telefono» non è la seconda voce: ' + ord.slice(0, 3).join(', '));
+      const r = await page.evaluate(() => { const vero = speechSynthesis.getVoices; speechSynthesis.getVoices = () => [{ name: 'Alice', lang: 'it-IT' }, { name: 'Google italiano', lang: 'it-IT', localService: false }]; localStorage.setItem('pit-voce', 'tel:google'); const g = voceAI(); render(); const conG = document.querySelector('.ric-voce-stato').textContent; speechSynthesis.getVoices = () => [{ name: 'Alice', lang: 'it-IT' }]; render(); const senza = document.querySelector('.ric-voce-stato').textContent, alt = voceAI(); speechSynthesis.getVoices = vero; localStorage.removeItem('pit-voce'); render(); return { g: g && g.name, conG, senza, alt: alt && alt.name }; });
+      if (r.g !== 'Google italiano' || !/Voce Google/.test(r.conG)) throw new Error('con la voce Google scelta non usa Google: ' + JSON.stringify(r));
+      if (r.alt !== 'Alice' || !/non ha la voce Google/.test(r.senza)) throw new Error('senza voce Google non ripiega o non lo dice: ' + JSON.stringify(r));
+    }
     await page.evaluate(() => { VociLocali.piper = window._piperVero; AI.voceNo = false; AI.localiPronte = {}; RIC.voceAutoFatto = true; });
     // due timer insieme: quello del passo e uno veloce; il primo si ferma da solo, l'altro resta
     await clic('[data-a="ric-altro"]'); await clic('[data-a="ric-timer-libero"][data-v="5"]');

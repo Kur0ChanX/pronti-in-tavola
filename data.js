@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.44';
+const VERSIONE_APP = '0.9.45';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.45', data: '08/11/2026', ora: '15:50',
+    nuovo: ['Voce: in «Voce che legge» c\'è «Voce Google del telefono», seconda scelta dopo Paola. Si sente la voce italiana di Google del telefono, anche senza rete'] },
   { v: '0.9.44', data: '08/11/2026', ora: '15:30',
     corretto: ['Cucina guidata: la pagina del passo non resta più vuota mentre parla la voce'] },
   { v: '0.9.43', data: '08/11/2026', ora: '15:10',
