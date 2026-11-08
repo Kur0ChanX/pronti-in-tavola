@@ -129,3 +129,26 @@ export function gzProssima(html, u, n) {
   const s = GZ_SEZIONI.exec(u); if (s) return ok(`${s[1]}/page${(Number(s[2]) || 1) + 1}/${s[3]}`);
   const g = GZ_ING.exec(u); return g ? ok(`${g[1]}page${(Number(g[2]) || 1) + 1}/`) : '';
 }
+
+/* C81 (Mario 08/11 «hai guardato tutte le ricette caricate da GialloZafferano?»): problemi di una ricetta letta (stesse regole
+   per tools/controlla-ricette.mjs e per il controllo del database sul server). [] = a posto. */
+export function esaminaRicetta(r) {
+  const prob = [];
+  if (!r || !r.nome) return ['ricetta vuota'];
+  const passi = Array.isArray(r.passi) ? r.passi : [], ing = Array.isArray(r.ingredienti) ? r.ingredienti : [];
+  if (!passi.length) prob.push('0 passi');
+  if (!ing.length) prob.push('0 ingredienti');
+  const tuttiN = [];
+  passi.forEach((p, k) => {
+    const t = String(p && p.t || ''), foto = Array.isArray(p && p.foto) ? p.foto : [];
+    const nn = [...t.matchAll(/\[\[(\d+)\]\]/g)].map(m => +m[1]); tuttiN.push(...nn);
+    if (/<[a-z/]|&[a-z#]+;/i.test(t)) prob.push(`passo ${k + 1}: resti di HTML`);
+    if (t.length < 15) prob.push(`passo ${k + 1}: testo cortissimo`);
+    if (!/[.!?:)»"…\]]\s*$/.test(t.trim())) prob.push(`passo ${k + 1}: finisce a metà`);
+    if (nn.length && foto.length && foto.length !== nn.length && !(foto.length === 1 && nn.length > 1)) prob.push(`passo ${k + 1}: ${foto.length} foto per ${nn.length} numerini`);
+    if (nn.length && !foto.length) prob.push(`passo ${k + 1}: numerini senza foto`);
+    if (foto.length === 1 && nn.length > 4) prob.push(`passo ${k + 1}: striscia con ${nn.length} foto`);
+  });
+  for (let k = 1; k < tuttiN.length; k++) if (tuttiN[k] !== tuttiN[k - 1] + 1) { prob.push(`foto saltate: ${tuttiN[k - 1]}→${tuttiN[k]}`); break; }
+  return prob;
+}
