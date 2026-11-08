@@ -4,7 +4,7 @@
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
 | Principale | cerchi | 🟢 🟡 🔴 ⚫ | 30 | `session_01WTjqUx82oy6ErYMX4nn4Wx` | |
-| Aiuto | libri | 📗 📒 📕 📓 | 3 | Aiuto 3 (bug), dopo `session_01WTjqUxGGtuXRFWUE5Y5Jkz` (Aiuto 2, chiusa 08/11 16:45) | |
+| Aiuto | libri | 📗 📒 📕 📓 | 3 | Aiuto 3 (bug) `session_01WTjqUxSnvSoGaBqC7GtF6r`, dopo `session_01WTjqUxGGtuXRFWUE5Y5Jkz` (Aiuto 2, chiusa 08/11 16:45) | |
 
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
