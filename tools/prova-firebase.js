@@ -41,6 +41,7 @@ const server = http.createServer((req, res) => {
       r.fulfill({ path: path.join(RADICE, 'node_modules/firebase', nome), contentType: 'text/javascript' });
     });
     await ctx.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
+    if (opz.cookie) await ctx.addCookies([{ name: 'pit_nome', value: encodeURIComponent(opz.cookie), url: `http://127.0.0.1:${PORTA}/` }]);
     const page = await ctx.newPage();
     if (opz.impronta) {
       const cdp = await ctx.newCDPSession(page);
@@ -293,6 +294,51 @@ const server = http.createServer((req, res) => {
     await monica.click('#toast [data-a="annulla"]');
     controlla('Annulla: torna tutto com\'era', await aspetta(monica, id => S.richieste.some(r => r.id === id) && S.ordini.some(o => o.utente === id && o.stato === 'daApprovare' && o.pronto === true), uidT)
       && !(await admin(d => getDoc(doc(d, 'clienti/' + uT.cliente)))).exists() && (await admin(d => getDoc(doc(d, 'utenti/' + uidT)))).data().stato === 'nuovo');
+
+    // b2) (C93) Sabrina: si registra nel browser, poi installa su iPhone (memoria separata) → due richieste con lo stesso nome
+    await admin(async d => {
+      await setDoc(doc(d, 'utenti/sab-browser'), { nome: 'Sabrina Rossi', chiave: 'sabrina-rossi', tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
+      await setDoc(doc(d, 'utenti/sab-app'), { nome: 'Sabrina Rossi', chiave: 'sabrina-rossi', tramite: '', il: oggiPag, stato: 'ricollega', cliente: null, primo: null });
+      await setDoc(doc(d, 'nomi/sabrina-rossi'), { il: oggiPag });
+    });
+    controlla('(C93) Monica vede UNA richiesta di Sabrina, non due', await aspetta(monica, () => S.utenti.filter(u => u.chiave === 'sabrina-rossi').length === 2)
+      && await monica.evaluate(() => S.richieste.filter(r => r.nome === 'Sabrina Rossi').length === 1 && S.richieste.find(r => r.nome === 'Sabrina Rossi').gemelli.length === 1),
+      await monica.evaluate(() => S.richieste.filter(r => r.nome === 'Sabrina Rossi')));
+    await monica.evaluate(() => decidiRichiesta(S.richieste.find(r => r.nome === 'Sabrina Rossi').id, true));
+    const sB = (await admin(d => getDoc(doc(d, 'utenti/sab-browser')))).data(), sA = (await admin(d => getDoc(doc(d, 'utenti/sab-app')))).data();
+    const clientiSab = (await admin(d => getDocs(collection(d, 'clienti')))).docs.filter(x => x.data().chiave === 'sabrina-rossi');
+    controlla('(C93) un Sì vale per i due telefoni: un solo cliente Sabrina', sB.stato === 'approvato' && sA.stato === 'approvato' && sB.cliente === sA.cliente && clientiSab.length === 1, [sB, sA, clientiSab.length]);
+    // stesso caso, ma Monica approva i due quasi insieme (la copia dei clienti non è ancora arrivata)
+    await admin(async d => {
+      await setDoc(doc(d, 'utenti/gio-browser'), { nome: 'Gio Sanna', chiave: 'gio-sanna', tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
+      await setDoc(doc(d, 'utenti/gio-app'), { nome: 'Gio Sanna', chiave: 'gio-sanna', tramite: '', il: oggiPag, stato: 'ricollega', cliente: null, primo: null });
+    });
+    await aspetta(monica, () => S.utenti.filter(u => u.chiave === 'gio-sanna').length === 2);
+    await monica.evaluate(async () => { await Dati.decidi('gio-browser', true); await Dati.decidi('gio-app', true); });
+    const gB = (await admin(d => getDoc(doc(d, 'utenti/gio-browser')))).data(), gA = (await admin(d => getDoc(doc(d, 'utenti/gio-app')))).data();
+    const clientiGio = (await admin(d => getDocs(collection(d, 'clienti')))).docs.filter(x => x.data().chiave === 'gio-sanna');
+    controlla('(C93) due Sì di fila: stesso cliente, nessun doppione', gB.cliente && gB.cliente === gA.cliente && clientiGio.length === 1, [gB, gA, clientiGio.length]);
+
+    // b3) (C93) app installata su iPhone: il cookie col nome è passato (iOS 17.2+) → «Sei Sabrina Rossi? Sì, sono io» con un tocco
+    const sabApp = await apri({ cookie: 'Sabrina Rossi' });
+    controlla('(C93) app installata: «Bentornati! Sei Sabrina Rossi?»', await aspetta(sabApp, () => !!document.querySelector('[data-a="benv-ricordato"]') && /Sabrina Rossi/.test(document.querySelector('main').textContent)));
+    await sabApp.click('[data-a="benv-ricordato"]');
+    const uidSab = await sabApp.evaluate(() => Dati.io.uid);
+    const okSab = await aspetta(sabApp, () => Dati.io.utente && Dati.io.utente.stato === 'ricollega');
+    const docSab = (await admin(d => getDoc(doc(d, 'utenti/' + uidSab)))).data();
+    controlla('(C93) un tocco: nome già usato → chiede di ricollegare (niente errore)', okSab && docSab && docSab.stato === 'ricollega',
+      [uidSab, docSab, await sabApp.evaluate(() => [Dati.io.uid, Dati.io.utente, document.querySelector('#toast') && document.querySelector('#toast').textContent])]);
+    const pinaApp = await apri({ cookie: 'Pina Deiana' });
+    await aspetta(pinaApp, () => !!document.querySelector('[data-a="benv-ricordato"]'));
+    await pinaApp.click('[data-a="benv-ricordato"]');
+    controlla('(C93) un tocco: nome libero → richiesta nuova', await aspetta(pinaApp, () => Dati.io.utente && Dati.io.utente.stato === 'nuovo'));
+    const altra = await apri({ cookie: 'Pina Deiana' });
+    await aspetta(altra, () => !!document.querySelector('[data-a="benv-non-io"]'));
+    await altra.click('[data-a="benv-non-io"]');
+    controlla('(C93) «No, sono un\'altra persona»: nome e cognome vuoti da scrivere', await altra.evaluate(() => !!document.querySelector('#benv-nome') && document.querySelector('#benv-nome').value === ''));
+    await altra.fill('#benv-nome', 'Ugo'); await altra.fill('#benv-cognome', 'Fois'); await altra.click('[data-a="benv-entra"]');
+    controlla('(C93) dopo la registrazione il nome resta nel cookie', await aspetta(altra, () => document.cookie.includes('pit_nome=Ugo%20Fois')));
+    await Promise.all([sabApp, pinaApp, altra].map(p => p.context().close()));
 
     // c) No: il telefono non può più ordinare
     await aspetta(monica, id => !!document.querySelector(`[data-a="richiesta-no"][data-id="${id}"]`), uidT);
