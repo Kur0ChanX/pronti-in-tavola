@@ -9,7 +9,31 @@
   "background_color": "#FBF4E8",
   "theme_color": "#FBF4E8",
   "icons": [
-    { "src": "media/icon-192.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "media/icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "media/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "media/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "media/schermata-1.webp",
+      "sizes": "824x1784",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Pronti in Tavola con Monica"
+    },
+    {
+      "src": "media/schermata-2.webp",
+      "sizes": "824x1784",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Il menù: scegli e ordina"
+    }
   ]
 }
