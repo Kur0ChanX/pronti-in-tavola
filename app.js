@@ -351,7 +351,7 @@ function guidaInstalla() {
    bello ma non bloccante («Più tardi» lo chiude, torna alla prossima apertura). 1) «Che telefono hai?» iPhone | Android (il suo è segnato);
    2) iPhone: guida a figure (guida-iphone.js) · Android: tasto «Installa» vero se il browser lo offre, sennò i passi;
    3) le notifiche: su Android anche dal browser, su iPhone solo dall'app sulla schermata Home (Apple), quindi lì il foglio si riapre dall'icona e chiede solo quelle. */
-const notifPossibili = () => 'Notification' in window && 'serviceWorker' in navigator && Notification.permission !== 'denied' && !P.avvisiCliente && !(Dati.attivo && Dati.io.gestore);
+const notifPossibili = () => 'Notification' in window && 'serviceWorker' in navigator && Notification.permission !== 'denied' && !P.avvisiCliente && !P.vuoleAvvisi && !(Dati.attivo && Dati.io.gestore);
 function serveInvito() {
   if (P.ruolo !== 'cliente' || UI.invitoFatto || UI.foglio || serveBenvenuto() || statoLucchetto()) return false;
   if (!(sulSito() || UI.invitoProva)) return false;   // nelle prove si accende a mano (UI.invitoProva): sennò coprirebbe le altre prove
@@ -466,7 +466,12 @@ async function iscriviTelefono(tok) {
    in silenzio, si rimanda l'iscrizione di oggi (se il telefono l'ha cambiata, quella vecchia non vale più) */
 let rinnovato = false;
 async function rinnovaAvvisi() {
-  if (!rinnovato && P.avvisiCliente && !Dati.io.gestore && sulSito() && 'Notification' in window && Notification.permission === 'granted') { rinnovato = true; iscriviCliente().catch(() => { rinnovato = false; }); return; }
+  // (C96) anche chi ha detto sì alle notifiche PRIMA che Monica lo approvasse: si iscrive da solo appena è approvato
+  if (!rinnovato && (P.avvisiCliente || P.vuoleAvvisi) && P.cliente && !Dati.io.gestore && sulSito() && 'Notification' in window && Notification.permission === 'granted') {
+    rinnovato = true;
+    iscriviCliente().then(() => { if (!P.avvisiCliente || P.vuoleAvvisi) { P.avvisiCliente = true; P.vuoleAvvisi = false; salvaP(); } }).catch(() => { rinnovato = false; });
+    return;
+  }
   if (rinnovato || !P.avvisiAttivi || !sulSito() || !('Notification' in window) || Notification.permission !== 'granted') return;
   rinnovato = true;
   try { const tok = await Dati.token(); if (tok) await iscriviTelefono(tok); } catch (e) { rinnovato = false; }
@@ -497,6 +502,13 @@ async function attivaAvvisiCliente() {
   try {
     const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
     if (perm !== 'granted') throw new Error('permesso non dato: senza «Consenti» non arrivano');
+    /* (C96, foto di Mario 08/11: amico con iPhone in giro continuo «Non attivato: prima Monica deve approvarti»): chi aspetta Monica
+       dà il permesso adesso e si iscrive da solo appena è approvato (rinnovaAvvisi); il foglio non si ripropone */
+    if (!P.cliente) {
+      P.vuoleAvvisi = true; salvaP();
+      UI.notEsito = { ok: true, t: 'Fatto! Le notifiche partono da sole appena Monica ti conferma.' };
+      return;
+    }
     await iscriviCliente();
     P.avvisiCliente = true; salvaP();
     UI.notEsito = { ok: true, t: 'Fatto! Quando il tuo ordine è pronto, ti arriva un avviso qui.' };
