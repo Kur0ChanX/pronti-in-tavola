@@ -57,7 +57,7 @@ function ispira() {
     .then(gruppi => {
       const lista = [], visti = new Set(RICETTE_GZ.map(r => r.id));
       for (let k = 0; k < 3; k++) gruppi.forEach(g => { const r = g[k]; if (r && !visti.has(r.id)) { visti.add(r.id); lista.push(r); } });
-      if (lista.length) scriviRic('pit-ric-ispira', { giorno: oggiRic, firma, lista: lista.slice(0, 24) });
+      scriviRic('pit-ric-ispira', { giorno: oggiRic, firma, lista: lista.slice(0, 24) });   // anche vuota: così non ricerca in giro (una volta al giorno)
     })
     .finally(() => { RIC.ispiraVa = false; if (UI.vista === 'ricettario') render(); });
 }
