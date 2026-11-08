@@ -76,6 +76,8 @@
     const v = versioneIOS(ua), chrome = /CriOS/.test(ua), nuovo = v >= 26;   // Chrome: la versione di iOS non si sa → «se c'è»
     const C = '<b>Condividi</b>';
     const p = [];
+    if (/Instagram|FBAN|FBAV/.test(ua)) return { passi: [['Sei dentro Instagram o Facebook: tocca <b>⋯</b> in alto a destra e scegli <b>Apri nel browser</b>. Poi segui i passi che vedrai.',
+      tel(`<rect x="6" y="20" width="108" height="20" fill="#f6f5f3"/><text x="102" y="34" font-size="10" text-anchor="middle">⋯</text>` + qui(102, 30), 'Tasto con tre puntini in alto a destra')]], v, chrome: true };
     if (chrome) p.push([`Tocca ${C} in alto a destra, vicino all'indirizzo.`, tel(barraChrome(), 'Tasto Condividi in alto a destra')]);
     else if (v >= 27) p.push([`Tocca il tasto <b>a sinistra dell'indirizzo</b>, in basso.`, tel(barra27(), 'Tasto a sinistra dell\'indirizzo')],
       [`Tocca ${C}.`, tel(menu(true), 'Menu con Condividi')]);

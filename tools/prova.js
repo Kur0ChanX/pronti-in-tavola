@@ -948,6 +948,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r.some(x => x.fig !== x.passi)) throw new Error('un passo senza disegno');
     if (!/a sinistra dell'indirizzo/.test(v27.h) || !/⋯<\/b> in basso a destra/.test(v26.h) || !/in basso, al centro/.test(v18.h) || !/in alto a destra, vicino/.test(cr.h)) throw new Error('tasto di partenza sbagliato per una versione');
     if (!v27.web || !v26.web || v18.web) throw new Error('«Apri come app web» deve esserci solo da iOS 26');
+    const ins = await page.evaluate(() => { UI.guidaOS = 'ios'; const g = guidaInstalla(); UI.guidaOS = null;
+      return [/class="gf-fig"/.test(g), (GuidaIPhone.guidaIPhone('Mozilla/5.0 (iPhone) Instagram 300.0').match(/class="gf-passo"/g) || []).length]; });
+    if (!ins[0]) throw new Error('la scheda iPhone della guida non mostra le figure');
+    if (ins[1] !== 1) throw new Error('dentro Instagram deve esserci solo «Apri nel browser»');
   });
   await passo('cliente: guida corta «metti l\'app sul telefono» con schede iPhone | Android (Mario 08/11, Sabrina)', async () => {   // autonoma
     const r = await page.evaluate(() => { UI.guidaOS = 'ios'; const a = guidaInstalla(); UI.guidaOS = 'android'; const b = guidaInstalla(); UI.guidaOS = null; return [a, b, primiPassi()]; });
