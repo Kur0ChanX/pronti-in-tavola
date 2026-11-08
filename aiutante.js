@@ -270,13 +270,15 @@ function statoVoceLocale(k, poi) {
   return undefined;
 }
 const voceLocalePronta = () => Object.keys(AI.localiPronte).find(k => AI.localiPronte[k] === true) || '';
+/* velocità scelta da Mario (C70) in S.impostazioni.velVoce, tetti 0,7-1,3; di base 0,9 (Mario: «Piper è troppo veloce») */
+function velVoce() { const v = Number(typeof S !== 'undefined' && S.impostazioni ? S.impostazioni.velVoce : NaN); return v >= 0.7 && v <= 1.3 ? v : 0.9; }
 async function parlaLocale(t, scelta, fine, giro) {
   const M = motoreLocale(scelta), testo = frasiVoce(t).join(' ');
   if (!testo) { if (fine) fine(); return; }
   try {
     if (!(await M.pronta(scelta))) throw new Error('non scaricata');
     AI.localiPronte[scelta] = true;
-    const b = await M.parla(testo, scelta);
+    const b = await M.parla(testo, scelta, velVoce());
     if (AI.giroVoce !== giro) return;
     const u = URL.createObjectURL(b), a = AI.audio = new Audio(u);
     a.onended = () => { URL.revokeObjectURL(u); if (AI.giroVoce === giro) { AI.audio = null; if (fine) fine(); } };
@@ -353,7 +355,7 @@ function parlaTelefono(t, fine) {
     if (!ff.length) { if (fine) fine(); return; }
     ff.forEach((f, i) => {
       const u = new SpeechSynthesisUtterance(f);
-      u.lang = 'it-IT'; if (v) u.voice = v; u.rate = 0.97; u.pitch = 1.0;
+      u.lang = 'it-IT'; if (v) u.voice = v; u.rate = Math.min(1.3, 0.97 * velVoce() / 0.9); u.pitch = 1.0;
       if (i === ff.length - 1 && fine) { u.onend = () => { if (AI.giroVoce === giro) fine(); }; u.onerror = () => { if (AI.giroVoce === giro) fine(); }; }
       speechSynthesis.speak(u);
     });
