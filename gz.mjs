@@ -63,12 +63,14 @@ export function gzRicetta(html, url) {
   const ld = recipeLd(html);
   if (!ld) return null;
   const passi = [];
-  for (const m of html.matchAll(/<div class="gz-content-recipe-step">([\s\S]*?)<\/p>\s*<\/div>/g)) {
-    const blocco = m[1];
+  /* ogni passo: dal suo <div> al passo dopo; TUTTI i paragrafi (<p> anche con classe, es. «MsoNormal», ed elenchi), non solo l'ultimo
+     (C72: Pastiera, Melanzane ripiene e Spaghetti con la bottarga perdevano frasi o passi interi) */
+  const blocchi = html.split('<div class="gz-content-recipe-step">').slice(1).map(b => b.split(/<div class="gz-content-recipe-step"|<\/section>|<div class="gz-(?:content-recipe-(?!step)|rating|comments|related|adv)/)[0]);
+  for (const blocco of blocchi) {
     const foto = [...blocco.matchAll(/<img[^>]+src="([^"]+)"/g)].map(f => assoluto(f[1])).filter(f => /\/images\/ricette\//.test(f));
-    const p = blocco.slice(blocco.lastIndexOf('<p>'));
-    const t = testo(p.replace(/<span class="num-step">\s*(\d+)\s*<\/span>/g, ' [[$1]]'));   // C72 (Mario «uguali paro paro»): il numerino che lega la frase alla sua foto resta
-    if (t) passi.push({ t, foto });
+    const par = [...blocco.matchAll(/<(p|li)\b[^>]*>([\s\S]*?)<\/\1>/g)].map(m => testo(m[2].replace(/<span class="num-step">\s*(\d+)\s*<\/span>/g, ' [[$1]]'))).filter(Boolean);   // il numerino frase↔foto resta (Mario «uguali paro paro»)
+    const t = par.join('\n');
+    if (t) passi.push({ t, foto: [...new Set(foto)] });
   }
   if (!passi.length) [].concat(ld.recipeInstructions || []).forEach(s => {
     const t = testo(typeof s === 'string' ? s : s.text); if (t) passi.push({ t, foto: [] });
