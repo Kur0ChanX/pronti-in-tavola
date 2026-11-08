@@ -17,3 +17,8 @@ Spostate qui dalle consegne della #13 per tenerle snelle.
 - Link `dash.cloudflare.com/?to=/:account/...` dal telefono: portano alla scelta dell'account e poi alla Home, non alla pagina.
 - Stampantina termica Niimbot B1 (50×30, bianco e nero) per le etichette: fatta e tolta, Mario vuole il colore. Stampante a serbatoi (Epson EcoTank ET-2870 ~180-210 €) proposta, non decisa: «solo A4 per ora».
 - Dire «sbagliato» a una foto senza spiegare dove va ogni casella: 3 giri persi (PT E12).
+
+## Spostate dalle consegne della #23
+- `color-scheme: only light` contro il modo scuro di Samsung Internet: non basta (PT E19).
+- Vapore: sfondo scuro bordeaux (Mario: «non mi convince»), vapore crema su crema (invisibile), nuvole sommate con `lighter` (macchia bianca piatta), «nebbia che si apre» e «coperchio» (Mario: «non nebbia ma vapore di cottura»). Tenuto: batuffoli irregolari sovrapposti normali, a ondate.
+- Aiutante AI: Anthropic a pagamento (Mario vuole gratis), Gemini API gratuita (account Google a parte, dati usati per addestrare), Groq (account in più). Tenuto Workers AI: stesso account Cloudflare dell'app, 10.000 neuroni/giorno ≈ 500 richieste.
