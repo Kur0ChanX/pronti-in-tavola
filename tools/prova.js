@@ -533,10 +533,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       vai('home');
     });
     await page.locator('.ric-home').click({ timeout: 3000 }); await page.locator('.ric-carta').first().waitFor({ timeout: 3000 });
-    const n = await page.locator('.ric-carta').count(); if (n !== await page.evaluate(() => RICETTE_GZ.length)) throw new Error('ricette in elenco: ' + n);
+    const n = await page.locator('.ric-elenco .ric-carta').count(); if (n !== await page.evaluate(() => RICETTE_GZ.length)) throw new Error('ricette in elenco: ' + n);
     if (await page.locator('.ric-cerca svg path, .ric-cerca svg circle').count() < 1) throw new Error('manca la lente');
     await foto('30-ricettario');
     await clic('[data-a="ric-esplora"]'); await page.locator('.scheda h2', { hasText: 'Da GialloZafferano' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
+    // 🎲 cosa cucino oggi: c'è una proposta e «Un'altra» la cambia (quasi sempre)
+    const prop = () => page.locator('.scheda', { hasText: 'Cosa cucino oggi' }).locator('.ric-carta b').innerText();
+    const p1 = await prop(); let cambia = false; for (let i = 0; i < 4 && !cambia; i++) { await clic('[data-a="ric-dado"]'); cambia = (await prop()) !== p1; }
+    if (!cambia) throw new Error('«Un\'altra» non cambia la proposta');
     // cosa cucino con quello che ho: gli ingredienti diventano una ricerca
     await page.fill('#ric-casa', 'zucchine, uova'); await page.press('#ric-casa', 'Enter');
     await page.locator('.scheda h2', { hasText: 'zucchine uova' }).waitFor({ timeout: 3000 }); await clic('[data-a="ric-chiudi-cerca"]');
@@ -575,7 +579,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!/Mancano/.test(await page.locator('[data-a="ric-timer"]').innerText())) throw new Error('il timer non parte');
     await foto('32-cucina-guidata');
     // due timer insieme: quello del passo e uno veloce; il primo si ferma da solo, l'altro resta
-    await clic('[data-a="ric-altro"]'); await clic('[data-a="ric-timer-libero"][data-v="5"]'); await page.waitForTimeout(300);
+    await clic('[data-a="ric-altro"]'); await clic('[data-a="ric-timer-libero"][data-v="5"]');
+    await page.evaluate(() => vai('home')); await page.waitForTimeout(1200);
+    if (!(await page.locator('#ric-barra-timer').count())) throw new Error('fuori dalla cucina non si vede la barretta dei timer');
+    await clic('#ric-barra-timer'); await page.locator('.ric-passo').waitFor({ timeout: 3000 });
+    if (await page.locator('#ric-barra-timer').count()) throw new Error('la barretta resta anche nella cucina guidata'); await page.waitForTimeout(300);
     if (await page.evaluate(() => RIC.timers.length) !== 2) throw new Error('i due timer non partono insieme');
     if (await page.locator('[data-a="ric-timer-via"]').count() !== 1) throw new Error('manca il «Ferma» del secondo timer');
     await clic('[data-a="ric-timer"]'); if (await page.evaluate(() => RIC.timers.length) !== 1) throw new Error('fermare un timer li ferma tutti');

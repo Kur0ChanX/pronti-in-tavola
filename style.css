@@ -770,3 +770,6 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-modulo label { display: grid; gap: 4px; font-weight: 600; }
 .ric-modulo textarea, .ric-modulo select { font: inherit; }
 .ric-mia-foto { width: 76px; height: 76px; object-fit: cover; border-radius: 12px; }
+
+/* barretta dei timer del ricettario, fuori dalla cucina guidata */
+.ric-barra-timer { position: fixed; top: calc(env(safe-area-inset-top, 0px) + 6px); left: 50%; transform: translateX(-50%); z-index: 60; max-width: calc(100% - 32px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; border: 0; border-radius: 999px; padding: 8px 16px; background: #7B2318; color: #fff; font-weight: 700; box-shadow: 0 4px 14px rgba(0,0,0,.25); }

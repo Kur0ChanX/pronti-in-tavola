@@ -160,6 +160,14 @@ function vRicettario() {
       : c.risultati.length ? `<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
       <button type="button" class="btn chiaro piccolo" data-a="ric-chiudi-cerca">Chiudi la ricerca</button></section>`;
   }
+  if (f.zona === 'tutte' && !q && !f.cat && !c.stato) {
+    /* 🎲 una ricetta a caso per oggi: preferite e sarde contano doppio; «Un'altra» ne pesca un'altra */
+    const pool = tutte.filter(x => !x.mia || x.passi), pesi = pool.flatMap(x => pref.includes(x.id) || x.zona === 'sarda' || x.zona === 'gallura' ? [x, x] : [x]);
+    if (pesi.length) {
+      const g = Number(oggi().replace(/\D/g, '')) || 1, k = (g * 7919 + (UI.dado || 0) * 104729) % pesi.length, x = pesi[k];
+      h += `<section class="scheda"><h2>🎲 Cosa cucino oggi?</h2>${cartaRic(x, pref)}<button type="button" class="btn chiaro piccolo" data-a="ric-dado">Un'altra</button></section>`;
+    }
+  }
   if (f.zona === 'tutte' && !q && !f.cat) {
     ispira();
     const isp = ispirate();
@@ -388,12 +396,22 @@ document.addEventListener('visibilitychange', () => { if (document.visibilitySta
 function fermaTimer(x) {
   (x ? [x] : RIC.timers.slice()).forEach(y => { clearTimeout(y.t); RIC.timers = RIC.timers.filter(z => z !== y); });
   if (!RIC.timers.length) { clearInterval(RIC.tick); RIC.tick = null; }
+  barraTimer();
 }
 function avviaTimer(id, nome, passo, min, libero) {
   const x = { n: Date.now() + Math.random(), id, nome, passo, libero: !!libero, min, fine: Date.now() + min * 60000 };
   x.t = setTimeout(() => { fermaTimer(x); suonaTimer(`Il timer di ${durataRic(min)} è finito: ${nome}, passo ${passo + 1}.`); if (/^cucina:/.test(UI.vista)) render(); }, min * 60000);
   RIC.timers.push(x);
-  if (!RIC.tick) RIC.tick = setInterval(() => { if (/^cucina:/.test(UI.vista) && !document.querySelector('.foglio') && document.activeElement.tagName !== 'INPUT') render(); }, 1000);
+  if (!RIC.tick) RIC.tick = setInterval(() => { if (/^cucina:/.test(UI.vista) && !document.querySelector('.foglio') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'SELECT') render(); barraTimer(); }, 1000);
+  barraTimer();
+}
+/* fuori dalla cucina guidata i timer accesi restano in vista: barretta in alto, un tocco riporta alla ricetta */
+function barraTimer() {
+  let b = document.getElementById('ric-barra-timer');
+  const tt = RIC.timers.slice().sort((a, c) => a.fine - c.fine);
+  if (!tt.length || /^cucina:/.test(UI.vista)) { if (b) b.remove(); return; }
+  if (!b) { b = document.createElement('button'); b.type = 'button'; b.id = 'ric-barra-timer'; b.className = 'ric-barra-timer'; b.addEventListener('click', () => { const x = RIC.timers.slice().sort((a, c) => a.fine - c.fine)[0]; if (x) { UI.cucina = { id: x.id, passo: x.passo, voce: false }; vai('cucina:' + x.id); } barraTimer(); }); document.body.appendChild(b); }
+  b.textContent = '⏱ ' + tt.map(x => `${x.nome.slice(0, 22)} ${mmssRic(restaTimer(x))}`).join(' · ');
 }
 function suonaTimer(testo) {
   try {
@@ -437,6 +455,7 @@ Object.assign(A, {
     Object.assign(UI.nuovo, { nome: r.nome.replace(/\s*\(.*\)$/, '').slice(0, 60), cat: { antipasti: 'stuzzichini', primi: 'primi', dolci: 'dolci' }[r.categoria] || '', ricetta: r.id });
     render(); mostraToast('Controlla il nome e tocca Avanti.');
   },
+  'ric-dado'() { UI.dado = (UI.dado || 0) + 1; render(); },
   'ric-catalogo'(el) {
     const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
     A['ric-cerca-gz'](nome, k);
