@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 08/11 · 🟢 Aiuto 5 · C93: quali proposte per i clienti? 1 tutte e tre (consiglio) · 2 solo la guida dopo il primo ordine · 3 nessuna
+- 08/11 · 🛑 · 📒 Aiuto 5 · C93: quali proposte per i clienti? 1 tutte e tre (consiglio) · 2 solo la guida dopo il primo ordine · 3 nessuna
 - 08/11 · 🟡 Principale 32 · Controllo dei numeri doppi (C89) anche negli altri progetti (kit)? 1 sì (consiglio) · 2 solo qui.
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
