@@ -619,6 +619,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { UI.ric = { q: '', zona: 'scaricate', cat: '' }; vai('ricettario'); });
     if (await page.locator('.ric-elenco .ric-carta').count() !== 3) throw new Error('«Sul telefono» non mostra le 3 scaricate');
     await page.evaluate(async () => { await dbRic('readwrite', st => st.clear()); RIC.scaricate = {}; scriviRic('pit-ric-auto', true); UI.ric = { q: '', zona: 'tutte', cat: '' }; });
+    // 💾 copia di sicurezza: si salva un file e riprenderlo rimette note e preferite
+    const [dl] = await Promise.all([page.waitForEvent('download', { timeout: 5000 }), page.evaluate(() => { UI.ric = { q: '', zona: 'tutte', cat: '' }; vai('ricettario'); A['ric-copia-salva'](); })]);
+    const copia = JSON.parse(require('fs').readFileSync(await dl.path(), 'utf8'));
+    if (copia.tipo !== 'pronti-ricettario' || !copia.preferite.includes('gz:Seadas-sebadas')) throw new Error('la copia non contiene le preferite');
+    await page.evaluate(() => { scriviRic('pit-ric-pref', []); render(); });
+    await page.setInputFiles('#ric-copia-file', { name: 'copia.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(copia)) }); await page.waitForTimeout(300);
+    if (!(await page.evaluate(() => preferiteRic().includes('gz:Seadas-sebadas')))) throw new Error('riprendere la copia non rimette le preferite');
     // viste di recente: la ricetta appena aperta c'è
     await page.evaluate(() => { UI.ric = { q: '', zona: 'recenti', cat: '' }; vai('ricettario'); });
     if (!(await page.locator('.ric-elenco .ric-carta', { hasText: 'Seadas' }).count())) throw new Error('«Viste di recente» non mostra la ricetta aperta');

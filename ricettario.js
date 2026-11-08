@@ -93,6 +93,21 @@ function autoScarica() {
   const ids = preferiteRic().concat(RICETTE_GZ.map(r => r.id), ispirate().map(r => r.id)).filter(id => !RIC.scaricate[id]).slice(0, 40);
   if (ids.length) setTimeout(() => scaricaTante(ids, 'aggiornamento di oggi'), 8000);
 }
+/* 💾 riprende una copia: unisce (non cancella): ricette tue per id, note, preferite; un tocco su «Annulla» torna a prima */
+function riprendiCopia(file) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    let c; try { c = JSON.parse(fr.result); } catch (e) { c = null; }
+    if (!c || c.tipo !== 'pronti-ricettario' || !Array.isArray(c.mie) || typeof c.note !== 'object' || !Array.isArray(c.preferite)) { mostraToast('Questo file non è una copia del ricettario.'); return; }
+    const prima = { mie: mieRic(), note: noteRic(), pref: preferiteRic() };
+    const mie = prima.mie.slice(); c.mie.filter(m => m && /^mia:/.test(m.id) && m.nome).forEach(m => { const i = mie.findIndex(x => x.id === m.id); if (i < 0) mie.push(m); else mie[i] = m; });
+    const note = Object.assign({}, prima.note, c.note), pref = [...new Set(prima.pref.concat(c.preferite.filter(x => typeof x === 'string')))];
+    if (!scriviRic('pit-ric-mie', mie) || !scriviRic('pit-ric-note', note) || !scriviRic('pit-ric-pref', pref)) { scriviRic('pit-ric-mie', prima.mie); scriviRic('pit-ric-note', prima.note); scriviRic('pit-ric-pref', prima.pref); mostraToast('Il telefono è pieno: copia non ripresa.'); return; }
+    mostraToast(`📂 Ripresi: ${c.mie.length} ricette tue, ${Object.keys(c.note).length} note, ${c.preferite.length} preferite.`, () => { scriviRic('pit-ric-mie', prima.mie); scriviRic('pit-ric-note', prima.note); scriviRic('pit-ric-pref', prima.pref); render(); });
+    render();
+  };
+  fr.readAsText(file);
+}
 /* ---------- memoria sul telefono ---------- */
 const leggiRic = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) || d; } catch (e) { return d; } };
 function scriviRic(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } }
@@ -250,6 +265,9 @@ function vRicettario() {
       ${n ? '<button type="button" class="btn chiaro piccolo" data-a="ric-scarica-via">Togli le ricette scaricate</button>' : ''}</section>`;
   }
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
+  if (!c.stato && !q) h += `<details class="ric-intro"><summary><b>💾 Copia di sicurezza</b> <small class="tenue">(ricette tue, note, preferite)</small></summary>
+    <p class="piccolo" style="margin:0">Stanno solo su questo telefono: salva una copia (un file) e, se cambi telefono, riprendila da lì.</p>
+    <div class="fila"><button type="button" class="btn chiaro" data-a="ric-copia-salva">💾 Salva una copia</button><label class="btn chiaro">📂 Riprendi da una copia<input type="file" id="ric-copia-file" accept=".json,application/json" hidden></label></div></details>`;
   h += rr.length ? `<div class="ric-elenco">${rr.map(r => cartaRic(r, pref)).join('')}</div>`
     : `<section class="scheda"><p style="margin:0">${f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'recenti' ? 'Non hai ancora aperto ricette su questo telefono.' : f.zona === 'scaricate' ? 'Nessuna ricetta scaricata: tocca «📥 Scarica» sotto un elenco o una ricerca.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : 'Nessuna ricetta in elenco con queste parole: tocca la lente per cercare su tutto GialloZafferano.'}</p>
       <button type="button" class="btn chiaro" data-a="ric-pulisci">Mostra tutte</button></section>`;
@@ -416,6 +434,7 @@ document.addEventListener('input', e => {
 document.addEventListener('change', e => {
   const el = e.target;
   if (el.id === 'ric-voce-scelta') { try { localStorage.setItem('pit-voce', el.value); } catch (er) { /* niente */ } if (typeof parlaAI === 'function') parlaAI('Ciao, sono la tua nuova voce. Ti leggo i passi così.'); }
+  if (el.id === 'ric-copia-file' && el.files[0]) { riprendiCopia(el.files[0]); el.value = ''; return; }
   if (el.dataset && el.dataset.ric === 'categoria' && UI.ricBozza) UI.ricBozza.categoria = el.value;
   if (el.id !== 'ric-foto-file' || !el.files[0] || !UI.ricBozza) return;
   const f = el.files[0], img = new Image(), url = URL.createObjectURL(f);
@@ -530,6 +549,15 @@ Object.assign(A, {
     if (!confirm('Tolgo dal telefono le ricette scaricate? Preferite e ricette tue restano.')) return;
     dbRic('readwrite', st => st.clear()).catch(() => {}); RIC.scaricate = {};
     caches.delete('gz-foto').catch(() => {}); mostraToast('Ricette scaricate tolte.'); render();
+  },
+  'ric-copia-salva'() {
+    const d = new Date(), giorno = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const copia = { tipo: 'pronti-ricettario', versione: 1, data: d.toISOString(), mie: mieRic(), note: noteRic(), preferite: preferiteRic() };
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(copia)], { type: 'application/json' }));
+    a.download = `ricettario-${giorno}.json`; document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+    mostraToast(`💾 Copia salvata nei Download: ${copia.mie.length} ricette tue, ${Object.keys(copia.note).length} note, ${copia.preferite.length} preferite.`);
   },
   'ric-catalogo'(el) {
     const k = el.dataset.v, nome = (CATALOGO_RIC.find(x => x[0] === k) || CATALOGO_ING.find(x => 'ricette-con-' + x[0] === k) || [, k])[1];
