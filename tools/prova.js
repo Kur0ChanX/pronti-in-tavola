@@ -937,6 +937,18 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await b.textContent() !== '🗄 Database') throw new Error('in cima il tasto dice: ' + await b.textContent());
     await page.evaluate(() => vai('home'));
   });
+  await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
+      return ['Version/27.1', 'Version/26.0', 'Version/18.6', 'CriOS/140.0'].map(v => { const h = GuidaIPhone.guidaIPhone(u(v));
+        return { passi: (h.match(/class="gf-passo"/g) || []).length, fig: (h.match(/<svg class="gf-fig"/g) || []).length, web: /Apri come app web/.test(h), h }; });
+    });
+    const [v27, v26, v18, cr] = r;
+    if (v27.passi !== 4 || v26.passi !== 4 || v18.passi !== 3 || cr.passi !== 3) throw new Error('numero di passi sbagliato: ' + r.map(x => x.passi));
+    if (r.some(x => x.fig !== x.passi)) throw new Error('un passo senza disegno');
+    if (!/a sinistra dell'indirizzo/.test(v27.h) || !/⋯<\/b> in basso a destra/.test(v26.h) || !/in basso, al centro/.test(v18.h) || !/in alto a destra, vicino/.test(cr.h)) throw new Error('tasto di partenza sbagliato per una versione');
+    if (!v27.web || !v26.web || v18.web) throw new Error('«Apri come app web» deve esserci solo da iOS 26');
+  });
   await passo('cliente: guida corta «metti l\'app sul telefono» con schede iPhone | Android (Mario 08/11, Sabrina)', async () => {   // autonoma
     const r = await page.evaluate(() => { UI.guidaOS = 'ios'; const a = guidaInstalla(); UI.guidaOS = 'android'; const b = guidaInstalla(); UI.guidaOS = null; return [a, b, primiPassi()]; });
     if (!/Aggiungi alla schermata Home/.test(r[0]) || !/aria-pressed="true">iPhone/.test(r[0])) throw new Error('scheda iPhone sbagliata');
