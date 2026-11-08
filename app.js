@@ -684,7 +684,8 @@ function primiPassi() {
   if (UI.passiVia) return avvisoAttesa();
   const attesa = inAttesa();
   const notifOk = sulSito() && P.cliente && 'Notification' in window && Notification.permission !== 'denied';
-  const notif = notifOk && !P.avvisiCliente, app = !suHome();
+  // (C93) l'invito a mettere l'app sul telefono arriva DOPO il primo ordine (guida web.dev): prima solo il menù, niente distrazioni
+  const notif = notifOk && !P.avvisiCliente, app = !suHome() && !!P.ordinato;
   if (!attesa && !notif && !app) return '';
   let h = '<section class="scheda primi-passi">';
   if (attesa) h += avvisoAttesa();
@@ -704,7 +705,7 @@ function primiPassi() {
 function vMenu() {
   const imp = S.impostazioni, cats = CATEGORIE.filter(([k]) => visibili().some(p => p.cat === k && p.disponibile));
   /* foto del menù ai clienti: in attesa (Mario 07/11 «non sono molto convinto, aspettiamo»): per ora Monica le manda e basta */
-  let h = testataCliente() + '<main class="corpo">' + primiPassi() + (typeof barraAIC === 'function' ? barraAIC() : '') + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
+  let h = testataCliente() + '<main class="corpo">' + primiPassi() + ultimoDaRifare() + (typeof barraAIC === 'function' ? barraAIC() : '') + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
   if (UI.modifica) {
     const o = S.ordini.find(x => x.id === UI.modifica.ordine);
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
@@ -844,11 +845,23 @@ function vCarrello() {
   return h + '</main>';
 }
 
+/* (C93) «Ordina di nuovo» in cima al menù: l'ultimo ordine finito, rifatto con un tocco (va nel carrello, si può cambiare) */
+function ultimoDaRifare() {
+  if (UI.modifica || !P.cliente || P.carrello.length) return '';
+  const o = S.ordini.filter(o => o.cliente === P.cliente && o.stato === 'ritirato').sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n)[0];
+  if (!o) return '';
+  const cosa = o.righe.map(r => { const p = piatto(r.piatto); return p ? `${esc(p.nome)}${r.qta > 1 ? ' ×' + r.qta : ''}` : ''; }).filter(Boolean);
+  if (!cosa.length) return '';
+  return `<section class="scheda rifai"><h2>${ico('carrello')}Lo stesso dell'ultima volta?</h2><p class="tenue" style="margin:0 0 10px">${cosa.slice(0, 4).join(', ')}${cosa.length > 4 ? '…' : ''}</p>
+    <button type="button" class="btn pieno grande" data-a="riordina" data-id="${o.id}">Ordina di nuovo</button></section>`;
+}
 function vInviato() {
+  if (!P.ordinato) { P.ordinato = true; salvaP(); }   // (C93) da ora si propone di mettere l'app sul telefono
   return `${testataCliente()}<main class="corpo"><div class="inviato"><div class="scoppio">${Array.from({ length: 10 }, (_, i) => `<i style="--a:${i * 36}deg"></i>`).join('')}<div class="spunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div></div>
     <h1>Ordine inviato!</h1>${avvisoAttesa()}<p class="tenue" style="margin:0">${Dati.attivo && Dati.io.utente && Dati.io.utente.stato !== 'approvato'
       ? 'È il tuo primo ordine: Monica lo guarda e ti conferma lei.' : 'Monica lo vede appena apre l\'app e ti conferma lei il giorno.'}<br>Lo segui in «I miei ordini».</p>
-    <div class="fila larga" style="width:100%"><button type="button" class="btn" data-a="vai" data-v="ordini">I miei ordini</button><button type="button" class="btn chiaro" data-a="vai" data-v="menu">Torna al menù</button></div></div></main>`;
+    <div class="fila larga" style="width:100%"><button type="button" class="btn" data-a="vai" data-v="ordini">I miei ordini</button><button type="button" class="btn chiaro" data-a="vai" data-v="menu">Torna al menù</button></div></div>
+    ${P.ruolo === 'cliente' ? cartaHome('La prossima volta apri l\'app dall\'icona e ordini in un attimo.') : ''}</main>`;
 }
 
 function tappe(o) {
