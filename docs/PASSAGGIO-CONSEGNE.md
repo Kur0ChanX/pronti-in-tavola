@@ -21,17 +21,14 @@ Sessione attuale: #24 (dopo la #23 `session_01QTFEqQJGdTFBPk1QT7HrVv`, chiusa al
 
 ## Sessione appena chiusa (#23)
 Aperta dalla #22 con `create_session` (catena 4 di 8). Sveglie: nessuna da rifare (la «Ricettario L1: riprendi» è già scattata).
-- File toccati: `worker.js` (`provaAI`), `app.js` (prova AI, viste e riquadro ricettario), `ricettario.js` e `ricette.js` (nuovi), `index.html`, `sw.js`, `style.css`, `data.js` (v0.9.12→0.9.15), `tools/prova.js` (47 passi, passo del ricettario), `tools/anteprima.py`, `tools/sito.py`, `CLAUDE.md` (niente artefatto), `docs/ERRORI.md` (PT E24, E25), `docs/SPEC-RICETTARIO.md`, `docs/DA-FARE.md`, `docs/DA-FARE-FATTE.md`, foto `archivio/foto/2026-11-08-ricettario-*.png`.
+- File toccati: `worker.js`, `app.js`, `ricettario.js`, `ricette.js`, `index.html`, `sw.js`, `style.css`, `data.js` (→0.9.15), `tools/prova.js` (47 passi), `tools/anteprima.py`, `tools/sito.py`, `CLAUDE.md`, `docs/ERRORI.md` (PT E24, E25), `docs/SPEC-RICETTARIO.md`.
 - Groq: chiave messa da Mario, sito ripubblicato da lui (giro «Pubblica sito» verde 04:12). Il rilancio con `gh api …/dispatches` è BLOCCATO dal classificatore (produzione): lo fa Mario da GitHub → Actions → «Pubblica sito» → «Run workflow». Le API Actions via `gh` sono chiuse dal proxy: lo stato dei giri si legge con `curl https://api.github.com/repos/Kur0ChanX/pronti-in-tavola/actions/runs?per_page=1` (pubblico).
 - Modelli Workers AI controllati: nessuno spento il 20/11.
 - Controllo Da fare: 2 voci aggiunte (C54, C55).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Quelle delle sessioni 1-7: `docs/lavori-in-corso/strade-scartate-sessioni-1-7.md` (link unico + richiesta, email-link, leggere `nomi/` dal telefono, lucchetto in anteprima, pronti come numero, ascoltare `foto/`, Gemini acceso, ecc.).
-- `color-scheme: only light` contro il modo scuro di Samsung Internet: non basta (PT E19).
-- Quelle delle sessioni 8-16 (Cloudflare «Connetti GitHub», dosi, stampantina, ecc.): `docs/lavori-in-corso/strade-scartate-sessioni-8-13.md`.
-- Vapore: sfondo scuro bordeaux (Mario: «non mi convince»), vapore crema su crema (invisibile), nuvole sommate con `lighter` (macchia bianca piatta), «nebbia che si apre» e «coperchio» (Mario: «non nebbia ma vapore di cottura»). Tenuto: batuffoli irregolari sovrapposti normali, a ondate.
-- Aiutante AI: Anthropic a pagamento (Mario vuole gratis), Gemini API gratuita (account Google a parte, dati usati per addestrare), Groq (account in più). Tenuto Workers AI: stesso account Cloudflare dell'app, 10.000 neuroni/giorno ≈ 500 richieste.
+- Quelle delle sessioni 8-22 (Cloudflare «Connetti GitHub», dosi, stampantina, vapore, AI a pagamento, ecc.): `docs/lavori-in-corso/strade-scartate-sessioni-8-13.md`.
 - Ricettario con ricette scritte da Claude (5, in `ricette.js`): Mario «non inventarle, prendile ufficiali… sembra super amatoriale». Copiare/leggere in automatico GialloZafferano: no (contenuti protetti Mondadori, nessuna API). API Spoonacular/Edamam: solo inglese, regole strette; Pepesto: a pagamento e foto fatte dall'AI.
 
 ## Prossimi passi
