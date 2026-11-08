@@ -39,6 +39,7 @@ Aperta dalla #27 (catena 3). Versioni online v0.9.28 → v0.9.32 (sito si pubbli
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
+08/11 ~11:40 (dopo l'handoff), parola per parola: «voci Microsoft lasciamo perdere». Riga tolta da «Aspetta Mario»; voci Microsoft da togliere dalla scelta (VOCI_VERE in aiutante.js) o lasciare come ripiego: decidi tu (consiglio: toglierle, così Monica non sceglie voci che non funzionano). Prima:
 08/11 ~11:36, parola per parola: «ok per pronti in tavola» (ok scritto ai file di `.claude/` per il controllo dei comandi raggruppati, C64). Prima (~11:25): foto dello scarico di Paola fallito («Failed to fetch»), corretto in v0.9.32. Prima: «metti che scarica le voci automaticamente… il programma sceglie la miglior voce… gliela scarica automaticamente nel telefono… anche con i dati» (fatto v0.9.31) e «Voice Studio… guarda se c'è l'italiano» (scartato: app a sé).
 
 ## Numeri liberi
