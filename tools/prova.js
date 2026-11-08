@@ -937,6 +937,21 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await b.textContent() !== '🗄 Database') throw new Error('in cima il tasto dice: ' + await b.textContent());
     await page.evaluate(() => vai('home'));
   });
+  await passo('cliente: invito «Installa l\'app» all\'ingresso, scelta iPhone | Android, notifiche (Mario 08/11 «fallo subito»)', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.installata = false; UI.foglio = null; UI.invitoFatto = false; UI.invitoProva = true; vai('menu'); });
+    await page.waitForSelector('.foglio .inv-scelta', { timeout: 3000 });
+    if (await page.locator('.inv-tel.mio').getAttribute('data-v') !== 'android') throw new Error('su Pixel deve essere segnato Android');
+    await foto('94-invito-installa');
+    await page.click('.inv-tel[data-v="ios"]'); await page.waitForTimeout(300);
+    if (await page.locator('.foglio .gf-fig').count() < 3) throw new Error('iPhone: mancano le figure');
+    await foto('94-invito-iphone');
+    await page.click('.foglio [data-a="inv-os"][data-v=""]'); await page.click('.inv-tel[data-v="android"]'); await page.waitForTimeout(300);
+    if (!await page.locator('.foglio .gi-passi, .foglio [data-a="installa"]').count()) throw new Error('Android: niente passi né tasto Installa');
+    await page.click('.foglio .piede [data-a="chiudi"]'); await page.waitForTimeout(500);
+    await page.evaluate(() => render()); await page.waitForTimeout(300);
+    if (await page.locator('.foglio').count()) throw new Error('«Più tardi» non chiude, o il foglio torna nella stessa apertura');
+    await page.evaluate(() => { UI.invitoProva = false; });
+  });
   await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
