@@ -115,7 +115,7 @@ function mostraToast(msg, annulla) {
   clearTimeout(tToast);
   fnAnnulla = annulla || null;
   $('#toast').innerHTML = `<div class="toast" role="status"><span>${esc(msg)}</span>${annulla ? '<button type="button" data-a="annulla">Annulla</button>' : ''}</div>`;
-  tToast = setTimeout(() => { $('#toast').innerHTML = ''; fnAnnulla = null; }, annulla ? 10000 : 3200);
+  tToast = setTimeout(() => { $('#toast').innerHTML = ''; fnAnnulla = null; }, annulla ? opz('annullaSecondi') * 1000 : 3200);   // secondi regolabili (C88)
 }
 /* ogni cambio: salva da solo e, se serve, si può annullare per 10 secondi */
 function cambia(msg, fn, annullabile = true) {
@@ -173,7 +173,7 @@ const totale = rr => arrot(rr.reduce((s, r) => s + prezzoRiga(r), 0));
 const quanti = rr => rr.length;
 const passoDi = f => ({ min: f.min || 1, passo: f.passo || 1 });
 const piuAmato = () => { const p = visibili().filter(x => x.disponibile).sort((a, b) => b.cuori - a.cuori)[0]; return p && p.cuori >= 5 ? p.id : null; };
-const novita = p => p.novita && (!p.novitaDal || giorniFa(p.novitaDal) <= 14);
+const novita = p => p.novita && (!p.novitaDal || giorniFa(p.novitaDal) <= opz('novitaGiorni'));   // giorni regolabili (C88)
 const descPiatto = p => {
   const ing = (p.ing || []).slice(0, 4).map(i => ING(i).n.toLowerCase());
   const v = p.varianti.length ? `${p.varianti.length} gusti` : '';
@@ -198,11 +198,14 @@ function teglieSettimana(sett, escludi) {
 }
 const contaSettimane = St => St.ordini.reduce((m, o) => { const n = teglieOrdine(o); if (n) { const k = settimana(o.entro); m[k] = (m[k] || 0) + n; } return m; }, {});
 function giorniPossibili(teglieNuove, da, escludi) {
-  const imp = S.impostazioni, out = [], primo = da || piuGiorni(oggi(), imp.anticipo);
-  for (let i = 0; i < 14; i++) {
+  const imp = S.impostazioni, out = [], chiusi = opz('giorniChiusi'), lim = opz('oraLimite');
+  let primo = da || piuGiorni(oggi(), imp.anticipo);
+  if (!da && lim && F_ORA.format(new Date()) > lim) primo = piuGiorni(primo, 1);   // dopo l'ora limite si slitta di un giorno (C88)
+  for (let i = 0, n = opz('giorniAvanti'); i < n; i++) {
     const g = piuGiorni(primo, i);
     let no = '';
-    if (imp.pausa.attiva && g <= imp.pausa.fino) no = 'Pausa';
+    if (chiusi.includes(daIso(g).getDay())) no = 'Chiuso';
+    else if (imp.pausa.attiva && g <= imp.pausa.fino) no = 'Pausa';
     else if (imp.limite.attivo && teglieNuove > 0 && teglieSettimana(settimana(g), escludi) + teglieNuove > imp.limite.teglie) no = 'Piena';
     out.push({ g, no });
   }
@@ -232,7 +235,6 @@ const numero = n => { const d = String(n || '').replace(/\D/g, ''); return d ? (
 /* indirizzo del sito: sempre quello di data.js, mai quello salvato nei dati (Mario 07/11: nei dati di Firebase c'era ancora pages.dev, sito mai esistito, e il link dell'invito non si apriva) */
 const SITO = statoIniziale().impostazioni.indirizzoApp;
 const wa = (num, testo) => `https://wa.me/${numero(num)}?text=${encodeURIComponent(testo)}`;
-const firmaMsg = '\nMonica · Pronti in Tavola';
 function righeDaCarrello(rr) { return rr.map(r => Object.assign({}, r)); }
 
 /* ---------- pezzi di pagina ---------- */
@@ -685,7 +687,8 @@ function vMenu() {
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
       <div class="fila" style="margin-top:10px"><button type="button" class="btn piccolo" data-a="vai" data-v="modifica">Rivedi la modifica</button></div></div></div>`;
   }
-  if (pausaOra()) h += `<div class="avviso">${ico('pausa')}<div><b>Monica è in pausa fino a ${giornoLungo(imp.pausa.fino)}.</b><br>Puoi già ordinare per i giorni dopo.</div></div>`;
+  if (pausaOra()) h += `<div class="avviso">${ico('pausa')}<div><b>${esc(cuoca())} è in pausa fino a ${giornoLungo(imp.pausa.fino)}.</b><br>Puoi già ordinare per i giorni dopo.</div></div>`;
+  if (opz('avviso') && !UI.modifica) h += `<div class="avviso">${ico('stella')}<div>${esc(opz('avviso'))}</div></div>`;   // scritto da Monica (C88)
 
   if (imp.natale.attivo && oggi() <= imp.natale.entro) {
     const np = imp.natale.piatti.map(piatto).filter(p => p && !p.cestino && p.disponibile);
@@ -805,13 +808,14 @@ function vCarrello() {
     h += `<section class="scheda"><h2>${pronti.length ? 'Da preparare' : 'I tuoi piatti'}</h2>${dopo.map(riga).join('')}
       <div class="gruppo"><span class="etichetta">Ti serve entro…</span>
       <div class="giorni">${giorni.map(({ g, no }) => { const d = daIso(g); return `<button type="button" class="giorno" data-a="entro" data-v="${g}" aria-pressed="${UI.entro === g}" ${no ? 'disabled' : ''} aria-label="${giornoLungo(g)}${no ? ', non disponibile' : ''}"><small>${no || F_GS.format(d)}</small><b>${d.getDate()}</b><small>${F_MESE.format(d)}</small></button>`; }).join('')}</div>
-      <span class="tenue piccolo">Monica lo prepara entro quel giorno e te lo conferma. Se non ce la fa, ti propone un altro giorno.</span></div></section>`;
+      <span class="tenue piccolo">Monica lo prepara entro quel giorno e te lo conferma. Se non ce la fa, ti propone un altro giorno.</span>${opz('orari') ? `<span class="piccolo"><b>Orari di ritiro:</b> ${esc(opz('orari'))}</span>` : ''}</div></section>`;
   }
   h += metodi.length === 1 && metodi[0] === 'contanti' ? `<p class="paga-riga">${ico('spunta')}Paghi in contanti quando ritiri.</p>` : `<section class="scheda"><h2>Come paghi</h2><div class="scelte">${metodi.map(m => `<button type="button" class="scelta" data-a="metodo" data-v="${m}" aria-pressed="${UI.metodo === m}">${METODO[m]}</button>`).join('')}</div>
     <span class="tenue piccolo">${UI.metodo === 'contanti' ? 'Paghi quando ritiri.' : 'Paghi dopo che Monica ha confermato: nell\'ordine trovi i dati da copiare.'}</span></section>`;
-  h += `    <div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica?</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>
+  const minimo = opz('minimo'), sotto = minimo > 0 && totale(c) < minimo;   // ordine minimo (C88)
+  h += `    ${opz('notaClienti') ? `<div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica?</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>` : ''}${sotto ? `<div class="avviso">${ico('euro')}<div>L'ordine minimo è <b>${euro(minimo)}</b>: aggiungi ancora ${euro(minimo - totale(c))}.</div></div>` : ''}
     <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
-    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
+    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() || sotto ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
     ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : sceltaManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima: ordini davvero o provi l\'app?</span>' : ''}`;
   return h + '</main>';
 }
@@ -1040,12 +1044,11 @@ function diff(o) {
 }
 function waOrdine(o, tipo) {
   const c = cliente(o.cliente), r = S.impostazioni.ritiro;
-  const testi = {
-    pronto: `Ciao ${nomeBreve(c.nome)}! Il tuo ordine n. ${o.n} è pronto.\nTotale: ${euro(totale(o.righe))}\nRitira qui: ${r.via}, ${r.citta}\n${mapsLink()}\n${r.nota}`,
-    proposta: `Ciao ${nomeBreve(c.nome)}! Per il tuo ordine n. ${o.n} ti propongo ${giornoLungo(o.proposta)}. Rispondi dall'app con un tocco: ${SITO}`,
-    accettato: `Ciao ${nomeBreve(c.nome)}! Ho confermato il tuo ordine n. ${o.n} per ${giornoLungo(o.entro)}.`
-  };
-  return wa(c.telefono || '', testi[tipo] + firmaMsg);
+  /* testi scritti da Monica in Impostazioni (C88); di base quelli di sempre */
+  const val = { nome: nomeBreve(c.nome), n: o.n, giorno: giornoLungo(tipo === 'proposta' ? o.proposta : o.entro), totale: euro(totale(o.righe)),
+    indirizzo: [r.via, r.citta].filter(Boolean).join(', '), mappa: mapsLink(), nota: r.nota || '', orari: opz('orari'), link: SITO };
+  const k = { pronto: 'msgPronto', proposta: 'msgProposta', accettato: 'msgAccettato' }[tipo];
+  return wa(c.telefono || '', riempi(opz(k), val) + '\n' + opz('firma'));
 }
 function cartaOrdineMonica(o) {
   const r = richiestaDi(o), righe = daAccettare(o) ? prezziGiusti(o.righe) : o.righe;
@@ -1467,11 +1470,13 @@ function vImpostazioni() {
       <span class="etichetta" style="font-weight:800">Piatti del menù di Natale</span><div class="scelte">${visibili().map(p => `<button type="button" class="chip" data-a="natale-piatto" data-id="${p.id}" aria-pressed="${i.natale.piatti.includes(p.id)}">${esc(p.nome)}</button>`).join('')}</div>` : ''}</section>`]
   ];
   return `${testataMonica('Impostazioni', 'home')}<main class="corpo">
+    ${cercaImpHtml()}
     ${schedaMario()}
     <p class="tenue piccolo" style="margin:0">Tocca una voce per cambiarla. Si salva da sola.</p>
     ${listaSez(tue)}
     <h3 class="tenue" style="margin:14px 0 0;font-size:.95rem">Si cambiano di rado · nel dubbio chiedi a Mario</h3>
     ${listaSez(rare)}
+    ${sezioniOpzioni()}
     ${sezioneDev()}
     ${Dati.attivo ? '' : '<button type="button" class="link" data-a="ricomincia" style="color:var(--allarme)">Ricomincia la prova da capo</button>'}</main>`;
 }
@@ -1569,7 +1574,8 @@ function render() {
   if (UI.tocco) { const [a, v] = UI.tocco.split('|'); document.querySelectorAll(`[data-a="${a}"][aria-pressed="true"]`).forEach(b => { if ((b.dataset.v || '') === v) b.classList.add('scatta'); }); UI.tocco = null; }
   if (UI.vista !== ultimaVista && $('main.corpo') && !/^cucina:/.test(UI.vista)) $('main.corpo').classList.add('entra');   // cucina guidata: niente entrata, la voce sul telefono blocca le animazioni e la pagina restava vuota (Mario 08/11)
   $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
-  if (typeof bannerAI === 'function') bannerAI();   // «Portami lì» dell'aiutante (aiutante.js)
+  if (typeof bannerAI === 'function') bannerAI();
+  dopoRenderOpz();   // ricerca in Impostazioni (opzioni.js)   // «Portami lì» dell'aiutante (aiutante.js)
   document.body.style.overflow = UI.foglio ? 'hidden' : '';
   if (UI.vista === ultimaVista) window.scrollTo(0, y);
   else {
@@ -1906,6 +1912,7 @@ const A = {
   invia() {
     if (UI.devCliente && Dati.attivo) { P.carrello = []; UI.entro = null; UI.nota = ''; UI.prova = undefined; salvaP(); mostraToast('Modalità sviluppatore: ordine NON inviato a Monica. Per un ordine vero usa un altro telefono.'); vai('inviato'); return; }
     if (sceltaManca()) { mostraToast('Scegli prima: ordini davvero o stai provando l\'app?'); return; }
+    if (opz('minimo') > 0 && totale(P.carrello) < opz('minimo')) { mostraToast(`L'ordine minimo è ${euro(opz('minimo'))}.`); return; }
     if (Dati.attivo) { inviaVero(); return; }
     const c = P.carrello, pronti = c.filter(r => r.pronto), dopo = c.filter(r => !r.pronto);
     for (const r of pronti) {
@@ -2179,6 +2186,7 @@ function salvaCampo(el) {
   const pid = UI.vista.split(':')[1];
   if (c === 'sel.testo') { UI.sel.testo = val; return; }
   if (c === 'nota') { UI.nota = val; return; }
+  if (c.startsWith('o.')) { salvaOpz(c.slice(2), el); return; }   // impostazioni in più (opzioni.js)
   if (c.startsWith('d.') || c.startsWith('sp.')) { salvaCampoSpesa(el); return; }
   if (c === 'p.grande') { P.grande = val; salvaP(); render(); return; }
   if (c === 'disp') { const p = piatto(el.dataset.id); cambia(val ? `Di nuovo nel menù: ${p.nome}` : `Tolto dal menù: ${p.nome}`, () => { p.disponibile = val; }); return; }
@@ -2920,3 +2928,4 @@ function foglioNome() {
     : `<button type="button" class="btn pieno" data-a="nome-ok">${ico('invito')}Invia l'ordine a Monica</button>`}`;
 }
 document.addEventListener('focusout', () => { if (renderDopo) setTimeout(() => { if (!staScrivendo() && renderDopo) { renderDopo = false; render(); } }, 0); });
+Object.assign(A, AZIONI_OPZ);   // azioni delle impostazioni in più (opzioni.js, C88)

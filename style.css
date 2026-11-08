@@ -828,3 +828,5 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 .ai-lampo { animation: aiLampo 1.6s ease 2; }
 @keyframes aiLampo { 50% { box-shadow: 0 0 0 4px var(--vino); } }
 @media (prefers-reduced-motion: reduce) { .ai-lampo { animation: none; box-shadow: 0 0 0 3px var(--vino); } }
+/* ricerca in Impostazioni (C88) */
+.cerca-imp input { width: 100%; font-size: 1.05rem; }

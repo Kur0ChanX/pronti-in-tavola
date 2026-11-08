@@ -26,7 +26,8 @@ function datiAI() {
   return { oggi: oggi() + ' ' + giornoLungo(oggi()), pausa: imp.pausa && imp.pausa.attiva ? 'in pausa fino al ' + imp.pausa.fino : 'aperta',
     piatti: visibili().map(p => ({ id: p.id, nome: p.nome, cat: p.cat, nelMenu: !!p.disponibile, descrizione: p.sotto || '', prontiOggi: p.pronto && p.pronto.giorno === oggi() ? p.pronto.qta : 0,
       formati: p.formati.map(f => ({ id: f.id, nome: f.nome, prezzo: f.prezzo })) })),
-    ordini, incassiMese: { giaPresi: c.presi, daPrendere: c.daPrendere, ordini: c.oo.length } };
+    ordini, incassiMese: { giaPresi: c.presi, daPrendere: c.daPrendere, ordini: c.oo.length },
+    impostazioniExtra: OPZIONI.map(o => ({ chiave: o.k, nome: o.nome, tipo: o.tipo, valore: o.tipo === 'messaggio' ? String(opz(o.k)).slice(0, 160) : opz(o.k), cosa: o.aiuto })) };
 }
 
 /* ---------- ogni azione controllata sui dati di ADESSO ----------
@@ -121,7 +122,13 @@ function controllaAI(a) {
         postepay: ['Pagamento con Postepay', 'bool', i => !!i.paga.postepay, (i, v) => { i.paga.postepay = v; }, v => typeof v === 'boolean', v => v ? 'Sì' : 'No'],
         nota_ritiro: ['Nota per il ritiro', 'text', i => i.ritiro.nota || '', (i, v) => { i.ritiro.nota = v; }, v => typeof v === 'string' && v.length <= 140, v => v || '(vuota)']
       };
-      const d = IMP[a.chiave], i = S.impostazioni;
+      const d = IMP[a.chiave], i = S.impostazioni, o = OPZ[a.chiave];
+      if (!d && o) {   // impostazioni in più (opzioni.js, C88)
+        const v = valoreOpz(o, a.valore), campi = ['numero', 'euro', 'testo', 'ora'].includes(o.tipo) ? [['valore', o.tipo === 'numero' || o.tipo === 'euro' ? 'number' : o.tipo === 'ora' ? 'time' : 'text', o.nome]] : [];
+        if (v === undefined) return { no: `${o.nome}: il valore non mi torna, correggilo qui.`, campi };
+        if (JSON.stringify(v) === JSON.stringify(opz(o.k))) return { no: `${o.nome}: è già così (${testoOpz(o, v)}).` };
+        return { titolo: `Impostazioni · ${o.nome}`, prima: testoOpz(o, opz(o.k)), dopo: o.tipo === 'messaggio' ? String(v).slice(0, 120) : testoOpz(o, v), campi, fai: () => { S.impostazioni[o.k] = v; } };
+      }
       if (!d) return { no: 'Questa impostazione si cambia da Impostazioni: ti ci porto?' };
       let v = a.valore;
       if (d[1] === 'number') v = Math.round(Number(String(v).replace(',', '.')));
@@ -497,9 +504,10 @@ const DOVE_AI = {
   nuovo: { vista: 'nuovo', nome: 'Nuovo piatto', come: 'Rispondi alle 4 domande: nome, parte del menù, come lo vendi, prezzi.', parole: /(nuovo|aggiung\w*|mett\w*|cre\w*) (un )?piatt|piatto nuovo/ },
   clienti: { vista: 'clienti', nome: 'Clienti', come: 'Qui inviti le amiche su WhatsApp e approvi le persone nuove.', parole: /client|invit|amich|approv|nuove persone/ },
   spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
-  ricettario: { vista: 'ricettario', nome: 'Ricettario', come: 'Cerca una ricetta per nome o ingrediente, poi tocca «Cucina guidata».', parole: /ricett|ricettari|cucina guidata/ },
-  aggiornamenti: { vista: 'aggiornamenti', nome: 'Novità dell\'app', come: 'Qui vedi cosa è cambiato nell\'app, versione per versione.', parole: /aggiornament|novit[aà] dell'app|cosa (è|e) cambiat/ }
+  ricettario: { vista: 'ricettario', nome: 'Ricettario', come: 'Cerca una ricetta per nome o ingrediente, poi tocca «Cucina guidata».', parole: /ricett|ricettari|cucina guidata/ }
 };
+/* le impostazioni in più (opzioni.js): «Portami lì» per ognuna */
+OPZIONI.forEach(o => { DOVE_AI['opz-' + o.k] = { vista: 'impostazioni', sez: 'opz-' + o.k, nome: o.nome, come: o.aiuto, parole: o.parole, azione: true }; });
 const VOCI_PIATTO = ['foto', 'prezzi', 'pronto', 'nome', 'gusti', 'ingredienti', 'dosi', 'richieste', 'fritto', 'casa', 'novita'];
 const semplice = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const PAROLE_VUOTE = /^(di|del|della|delle|dei|con|alla|alle|al|allo|e|in|la|le|il|lo|gli|tipo|medie|da)$/;
@@ -523,7 +531,7 @@ function capisciDove(testo) {
   if (!voglio) return null;
   const chiavi = Object.keys(DOVE_AI).filter(k => DOVE_AI[k].parole.test(t));
   if (!chiavi.length) return null;
-  const k = chiavi.find(x => VOCI_PIATTO.includes(x)) || chiavi[0], v = DOVE_AI[k];
+  const k = chiavi.find(x => VOCI_PIATTO.includes(x)) || chiavi.find(x => DOVE_AI[x].sez) || chiavi[0], v = DOVE_AI[k];   // la voce precisa vince sulla pagina («ordine minimo» → Ordine minimo, non Ordini)
   if (v.azione && !domanda && /\d/.test(t)) return null;   // «alza le lasagne a 14 euro», «pausa fino al 20»: lo fa l'AI
   if (VOCI_PIATTO.includes(k)) {
     const pp = piattiDetti(testo);
