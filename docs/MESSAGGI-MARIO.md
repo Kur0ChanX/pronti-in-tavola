@@ -131,3 +131,10 @@ Farei sono qui poi pensa sltre 10 tue idee ragiona bene
 
 ## 2026-11-08 01:28 · 01QTFEqQ5ALf
 20 ma l'avrei approfondita molto  che idee hai di approfondire? evolviamola al massimo
+
+## 2026-11-08 01:35 · 01QTFEqQ5ALf
+avrei approfondito tantissimo questa intelligenza artificiale della 20 e avrei messo delle risposte bot però fatte bene se un cliente vuole scriverle e monica che dici ma deve essere qualcosa di super figo come fanno nei siti fatti bene
+
+## 2026-11-08 02:30 · 01QTFEqQ5ALf
+cerca la miglior ia gratuita per Queste cose
+iniziaml assistente per monica non clienti
