@@ -801,3 +801,13 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 /* versione sempre in vista per Mario (08/11): piccola, in alto a destra, non copre niente */
 .versione-mini { display: block; margin: 0 0 0 auto; padding: 2px 10px; min-height: 0; background: none; border: 0; color: var(--tenue, #7a6a5a); font-size: .72rem; text-align: right; opacity: .8; }
 .versione-mini small { font-size: .62rem; opacity: .85; }
+
+/* «Sistema la foto» (Mario 08/11): anteprima che si trascina col dito, senza far scorrere il foglio */
+.rit-cornice { width: 100%; background: #2B2420; border-radius: 14px; overflow: hidden; display: flex; justify-content: center; }
+.rit-cornice canvas { display: block; width: auto; height: auto; max-width: 100%; max-height: 52vh; touch-action: none; cursor: grab; }
+
+/* avviso «C'è l'aggiornamento… Riavvia» (Mario 08/11): fisso in basso, sopra a tutto, non blocca l'app */
+#agg-avviso { position: fixed; left: 10px; right: 10px; bottom: calc(10px + env(safe-area-inset-bottom)); z-index: 60; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 12px 14px; background: #1F2A44; color: #fff; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,.25); max-width: 560px; margin: 0 auto; }
+#agg-avviso span { flex: 1 1 200px; font-size: .95rem; }
+#agg-avviso .btn { flex: none; min-height: 44px; }
+#agg-avviso .link { color: #fff; opacity: .8; }

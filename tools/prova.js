@@ -348,8 +348,27 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
     while (await page.locator('.indietro').count()) { await clic('.indietro'); await page.waitForTimeout(150); }
     await clic('.riquadro >> nth=1');
-    await page.setInputFiles('#file-menu-0', 'media/anteprima-link-1.jpg'); await page.locator('.menu-foto-edit img').first().waitFor({ timeout: 5000 });
-    await page.setInputFiles('#file-menu-1', 'media/icon-512.png'); await page.waitForTimeout(800);
+    // «Sistema la foto» (Mario 08/11 «un editor di ritaglio… molto plug and play»): si apre prima di salvare; quadrata + ruota + trascina → foto quadrata
+    await page.setInputFiles('#file-menu-0', 'media/anteprima-link-1.jpg');
+    await page.locator('#rit-tela').waitFor({ timeout: 5000 });
+    if (await page.locator('[data-a="rit-forma"][data-v="intera"]').getAttribute('aria-pressed') !== 'true') throw new Error('per le foto del menù la forma di base deve essere «Intera»');
+    await clic('[data-a="rit-forma"][data-v="11"]'); await clic('[data-a="rit-ruota"]');
+    const tela = await page.locator('#rit-tela').boundingBox();
+    const prima = await page.evaluate(() => UI.rit.cx + ',' + UI.rit.cy);
+    await page.mouse.move(tela.x + tela.width / 2, tela.y + tela.height / 2); await page.mouse.down(); await page.mouse.move(tela.x + tela.width / 2 + 40, tela.y + tela.height / 2 + 30, { steps: 4 }); await page.mouse.up();
+    await page.locator('[data-rit="luce"]').fill('1.3');
+    if (await page.evaluate(() => UI.rit.luce) !== 1.3) throw new Error('la luce non cambia');
+    if (await page.evaluate(() => UI.rit.cx + ',' + UI.rit.cy) === prima && await page.evaluate(() => UI.rit.base.width !== UI.rit.base.height)) throw new Error('trascinare non sposta la foto');
+    await foto('22a-sistema-la-foto');
+    await clic('[data-a="rit-ok"]'); await page.locator('.menu-foto-edit img').first().waitFor({ timeout: 5000 });
+    const lati = await page.evaluate(() => new Promise(ok => { const i = new Image(); i.onload = () => ok([i.width, i.height]); i.src = S.menuFoto[0]; }));
+    if (lati[0] !== lati[1]) throw new Error('la foto ritagliata «Quadrata» non è quadrata: ' + lati);
+    // Annulla: chiude senza salvare niente
+    await page.setInputFiles('#file-menu-1', 'media/icon-512.png'); await page.locator('#rit-tela').waitFor({ timeout: 5000 });
+    await clic('.foglio [data-a="chiudi"]'); await page.waitForTimeout(400);
+    if (await page.locator('.menu-foto-edit img').count() !== 1) throw new Error('«Annulla» ha salvato la foto lo stesso');
+    await page.setInputFiles('#file-menu-1', 'media/icon-512.png'); await page.locator('#rit-tela').waitFor({ timeout: 5000 });
+    await clic('[data-a="rit-ok"]'); await page.waitForTimeout(800);
     if (!(await page.locator('[data-a="menu-foto-manda"]').count())) throw new Error('manca «Manda le foto»');
     if (await page.locator('.menu-foto-edit img').count() !== 2) throw new Error('foto del menù: ' + await page.locator('.menu-foto-edit img').count());
     await page.locator('.menu-foto-edit').scrollIntoViewIfNeeded(); await foto('22-foto-menu-monica');
@@ -897,11 +916,18 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.toast', { hasText: 'Per uscire' }).count())) throw new Error('nella Home manca l\'avviso «Per uscire…»');
     if (page.url() !== url) throw new Error('il primo gesto nella Home ha chiuso l\'app');
   });
-  await passo('aggiornamento: avvisa, riavvia e riprende dalla stessa schermata', async () => {   // autonoma, ultima (ricarica la pagina)
-    await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'piatto:tiramisu'; render(); document.activeElement && document.activeElement.blur(); nuovaVersione = '9.9.9'; riavviaQuandoPuoi(); });
-    if (!(await page.locator('.toast', { hasText: "C'è l'aggiornamento 9.9.9" }).count())) throw new Error('manca l\'avviso');
-    await page.waitForEvent('load', { timeout: 15000 });
+  await passo('aggiornamento: avvisa, NON riavvia da solo, «Riavvia» riprende dalla stessa schermata col foglio aperto', async () => {   // autonoma, ultima (ricarica la pagina)
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.vista = 'piatto:tiramisu'; UI.foglio = { tipo: 'novita' }; render(); window._stessaPagina = true; nuovaVersione = '9.9.9'; riavviaQuandoPuoi(); });
+    if (!(await page.locator('#agg-avviso', { hasText: "C'è l'aggiornamento 9.9.9" }).count())) throw new Error('manca l\'avviso');
+    await page.waitForTimeout(4000);   // prima ripartiva da sola dopo 2,5 s (Mario 08/11 «non aggiornare in automatico»)
+    if (!(await page.evaluate(() => window._stessaPagina === true))) throw new Error('l\'app si è riavviata da sola');
+    await foto('99-avviso-aggiornamento');
+    await clic('[data-a="agg-dopo"]');
+    if (await page.locator('#agg-avviso').count()) throw new Error('«Dopo» non toglie l\'avviso');
+    await page.evaluate(() => riavviaQuandoPuoi());
+    await Promise.all([page.waitForEvent('load', { timeout: 15000 }), clic('[data-a="agg-riavvia"]')]);
     await page.waitForFunction(() => typeof UI !== 'undefined' && UI.vista === 'piatto:tiramisu', null, { timeout: 15000 });
+    if (!(await page.evaluate(() => UI.foglio && UI.foglio.tipo === 'novita'))) throw new Error('dopo il riavvio il foglio aperto non torna');
     if (!(await page.locator('.toast', { hasText: 'App aggiornata' }).count())) throw new Error('manca «App aggiornata»');
     if (await page.locator('.apertura').count()) throw new Error('dopo l\'aggiornamento riparte l\'apertura animata');
   });
