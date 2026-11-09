@@ -171,8 +171,10 @@ function controllaAI(a) {
         return { vai: 'piatto:' + pp.id, sez: v.sez, etichetta: 'Portami lì', titolo: `${pp.nome} → ${v.nome}`, dopo: v.come };
       }
       if (a.voce === 'imp-gestori' || a.voce === 'imp-lucchetto') { if (!Dati.attivo) return { no: 'Questa voce c\'è solo nell\'app vera, con i dati veri.' }; }
+      if (a.voce === 'clienti-rifiutati' && !(S.rifiutati || []).length) return { no: 'Non hai detto di no a nessuno: la lista delle persone rifiutate è vuota.' };
+      if (a.voce === 'imp-voce' && typeof sonoMarioVero === 'function' && sonoMarioVero()) return { vai: 'impostazioni', sez: null, etichetta: 'Portami lì', titolo: 'Voce', dopo: 'La tua velocità della voce è in alto, nella scheda «Solo per te, Mario».' };
       const pv = a.perVoce && DOVE_AI[a.perVoce];
-      return { vai: v.vista, sez: v.sez || null, etichetta: 'Portami lì', titolo: v.nome, dopo: pv ? `Tocca il piatto, poi «${pv.nome}». ${pv.come}` : v.come };
+      return { vai: v.vista, sez: v.sez || null, ui: v.ui || null, etichetta: 'Portami lì', titolo: v.nome, dopo: pv ? `Tocca il piatto, poi «${pv.nome}». ${pv.come}` : v.come };
     }
     case 'apri':
       if (!VISTE_AI[a.vista]) return { no: 'Non so quale pagina aprire.' };
@@ -508,7 +510,9 @@ const DOVE_AI = {
   'imp-paga': { vista: 'impostazioni', sez: 'imp-paga', nome: 'Pagamenti', come: 'Accendi come vuoi essere pagata: contanti, bonifico (con l\'IBAN) o Postepay.', parole: /pagament|bonific|\biban\b|postepay|contanti|pagar/, azione: true },
   'imp-vista': { vista: 'impostazioni', sez: 'imp-vista', nome: 'Testo grande e guida', come: 'Accendi «Testo grande» se leggi male, o tocca «Rivedi la guida».', parole: /testo grande|scritt[ae] (piccol|grand)|non (ci )?vedo|ingrandi|rivedi la guida/ },
   'imp-gestori': { vista: 'impostazioni', sez: 'imp-gestori', nome: 'Chi gestisce la cucina', come: 'Qui vedi chi entra come te e puoi aggiungere una persona.', parole: /chi gestisc|aiutar(mi)? in cucina|mio marito|socia|altra persona (che )?gestisc/ },
-  'imp-notifiche': { vista: 'impostazioni', sez: 'imp-notifiche', nome: 'Notifiche', come: 'Tocca «Attiva» e poi «Consenti» quando il telefono lo chiede.', parole: /notific|avvis[io] (degli|sul)|suon/ },
+  'imp-notifiche': { vista: 'impostazioni', sez: 'imp-notifiche', nome: 'Notifiche', come: 'Tocca «Attiva» e poi «Consenti» quando il telefono lo chiede. Sotto vedi gli ultimi avvisi arrivati.', parole: /notific|avvis[io] (degli|sul)|suon|ultimi avvisi/ },
+  // (C100) funzioni vecchie che l'aiutante non conosceva
+  'imp-voce': { vista: 'impostazioni', sez: 'imp-voce', nome: 'Voce', come: 'Sposta il cursore: più a sinistra la voce è più lenta. Tocca «Senti la velocità» per provarla.', parole: /\bvoce\b|parla (troppo )?(veloce|lent|pian|fort)|velocita/ },
   'imp-lucchetto': { vista: 'impostazioni', sez: 'imp-lucchetto', nome: 'Lucchetto', come: 'Scegli impronta o PIN per aprire la tua parte dell\'app.', parole: /lucchett|\bpin\b|impront|password|blocc(a|o) (l'app|il telefono)/ },
   'imp-anticipo': { vista: 'impostazioni', sez: 'imp-anticipo', nome: 'Giorni di anticipo', come: 'Con + e − scegli quanti giorni prima devono ordinare.', parole: /anticip|preavvis|giorni prima/, azione: true },
   'imp-limite': { vista: 'impostazioni', sez: 'imp-limite', nome: 'Limite della settimana', come: 'Accendi il limite e scegli quante teglie al massimo.', parole: /limit|troppi ordini|massimo di teglie|teglie al massimo/, azione: true },
@@ -518,6 +522,10 @@ const DOVE_AI = {
   nuovo: { vista: 'nuovo', nome: 'Nuovo piatto', come: 'Rispondi alle 4 domande: nome, parte del menù, come lo vendi, prezzi.', parole: /(nuovo|aggiung\w*|mett\w*|cre\w*) (un )?piatt|piatto nuovo/ },
   // (C99) nome e codice di un cliente: vince sul «nome» del piatto quando si parla di clienti o codici
   'clienti-nome': { vista: 'clienti', nome: 'Nome e codice dei clienti', come: 'In «I tuoi clienti» tocca la matita accanto al nome per cambiarlo; il codice accanto (es. K7P2M) non cambia mai. Se un cliente ha corretto il suo nome, lo vedi lì finché tocchi «Visto».', parole: /(nome|codice|chiam)\w*.*client|client\w*.*(nome|codice|chiam)|codice (fisso|del|della|di)|\bil mio codice\b/ },
+  'clienti-nuovi': { vista: 'clienti', nome: 'Accetta clienti nuovi', come: 'In «Fai conoscere la tua cucina» c\'è l\'interruttore «Accetta clienti nuovi». Spento: chi ha il link vede il menù, ma non può fare il primo ordine.', parole: /accett\w* (client|person|gent)\w* nuov|(client|person|gent)\w* nuov\w* no\b|non (voglio|prendo|accetto) (piu )?(client|person|gent)\w* nuov|nessun (cliente|altro) nuov/ },
+  'clienti-rifiutati': { vista: 'clienti', nome: 'Persone rifiutate', come: 'In fondo, in «Persone rifiutate», ci sono quelle a cui hai detto no. Se hai sbagliato, tocca «Accetta».', parole: /rifiutat|ho detto (di )?no|detto no per sbaglio|riaccett|sbagliato a (rifiut|dire no)/, ui: { rifiutati: true } },
+  'clienti-attesa': { vista: 'clienti', nome: 'Chi aspetta il tuo sì', come: 'Sotto «Nuovi» ci sono le persone che aspettano: tocca Sì o No. Se una persona dice che aspetta e qui non c\'è, dille di toccare «Ricorda a Monica» nell\'app; se ancora non compare, deve riaprire il link e scrivere di nuovo il nome.', parole: /aspett\w* (il mio |il tuo |un )?s[iì]\b|ricorda a monica|non (la|lo|li) trovo (tra|nei|fra) (i )?client|non compar\w* (tra|nei|fra) (i )?client|non c.e (tra|nei|fra) (i )?client/ },
+  'ordini-storico': { vista: 'ordini', nome: 'Storico degli ordini', come: 'Qui ci sono gli ordini finiti, le prove e quelli archiviati.', parole: /storic|ordini (vecchi|passati|finiti|archiviat)|archiviat/, ui: { tab: 'storico' } },
   clienti: { vista: 'clienti', nome: 'Clienti', come: 'Qui inviti le amiche su WhatsApp e approvi le persone nuove.', parole: /client|invit|amich|approv|nuove persone/ },
   spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
   ricettario: { vista: 'ricettario', nome: 'Ricettario', come: 'Cerca una ricetta per nome o ingrediente, poi tocca «Cucina guidata».', parole: /ricett|ricettari|cucina guidata/ }
@@ -581,6 +589,7 @@ function rispostaDove(aa, incerta) {
 /* va nel punto: apre la sezione, la porta in vista e la fa lampeggiare; in cima una riga con cosa fare e «Torna all'aiutante» */
 function portaLi(c) {
   vai(c.vai);
+  if (c.ui) Object.assign(UI, c.ui);   // (C100) es. scheda Storico degli Ordini, Persone rifiutate aperte
   UI.sez = c.sez || null; UI.aiQui = { vista: c.vai, testo: c.dopo, titolo: c.titolo };
   render();
   setTimeout(() => {
