@@ -1,3 +1,8 @@
-# Ultima risposta di Claude (09/11/2026 17:39 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:34 ora italiana)
 
-Consegne rifatte con la tua risposta «Vai avanti da solo» (arrivata a Voce 1 e girata qui): le due domande sono chiuse coi consigli, salvato su GitHub (17e3da63) e avvisata Voce 3, che prosegue da sola fino alla versione online e ti dirà «chiudi e riapri l'app» e dove toccare.
+✅ **FATTO**
+- La **v0.9.85** è online. Prova: il `data.js` del sito dice 0.9.85, e il server dell'ascolto risponde.
+- Il microfono dei clienti ora ascolta con due motori insieme. Poi un **correttore** rimette a posto le parole sentite male usando i nomi del menù. Il correttore è un'AI veloce che corregge solo la frase, per esempio «persa a Mato» diventa «per sabato».
+- Il telefono sceglie la frase che ha più senso e ripara i giorni spezzati.
+- Tutte le prove sono verdi: 75 del telefono, 11 delle impostazioni e 19 nuove del server.
+- Limite: le prove usano motori finti. Con la tua voce vera …
