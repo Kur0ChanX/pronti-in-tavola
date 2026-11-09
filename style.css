@@ -21,7 +21,7 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; margin: 0; }
-html { font-size: 17px; }
+html { font-size: 17px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }   /* C106: in orizzontale iPhone e iPad non ingrandiscono il testo da soli */
 html.grande { font-size: 20px; }
 body {
   /* trama dei tessuti sardi «a pibiones»: chicchi a rombo, appena visibili */
