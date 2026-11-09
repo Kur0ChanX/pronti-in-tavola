@@ -1,11 +1,11 @@
-# Ultima risposta di Claude (09/11/2026 11:09 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:26 ora italiana)
 
+Ho capito la regola: niente limiti per persona che fermano un cliente, amico o collega. Al loro posto un tetto ampio che, superato, non blocca nessuno e manda a chi gestisce una segnalazione nell'app. La regola vale per tutti i progetti.
 
+✅ FATTO
+- La regola è scritta nel diario degli errori, perché avevi detto «come ti avevo già detto». È anche una voce nuova in Da fare (C109). Tutto è salvato su GitHub.
+- La regola **non è ancora** nel kit né applicata nell'app. Questa chat è chiusa per la soglia dei token, quindi ho passato il lavoro alle due chat attive:
 
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: è il controllo automatico che ferma il push quando due versioni o due voci hanno lo stesso numero. Ora c'è solo in Pronti in Tavola.
-1. Lo mettiamo anche negli altri progetti?
-   **1** · sì, in tutti. Lì niente più numeri doppi, fra chat diverse (consiglio).
-   **2** · solo qui. Negli altri progetti i doppioni possono tornare.
+| Chat | Cosa fa |
+|---|---|
+| …
