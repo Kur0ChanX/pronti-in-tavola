@@ -171,7 +171,10 @@ const server = http.createServer((req, res) => {
       x.putImageData(im, 0, 0);
       c.toBlob(b => { caricaFoto({ files: [new File([b], 'rumore.png', { type: 'image/png' })], dataset: { id: 'lasagne-ragu' } }); fine(); }, 'image/png');
     }));
-    await aspetta(monica, () => !!S.piatti.find(p => p.id === 'lasagne-ragu').foto);
+    await aspetta(monica, () => !!(UI.foglio && UI.foglio.tipo === 'ritaglio' && UI.rit && UI.rit.img));   // (C84) prima si apre «Sistema la foto»
+    const fotoPrima = await monica.evaluate(() => S.piatti.find(p => p.id === 'lasagne-ragu').foto || null);
+    await monica.evaluate(() => document.querySelector('[data-a="rit-ok"]').click());
+    await aspetta(monica, prima => { const f = S.piatti.find(p => p.id === 'lasagne-ragu').foto; return !!f && f !== prima; }, fotoPrima);
     await monica.evaluate(() => Dati.confermato()).catch(() => {});
     const fL = await admin(d => getDoc(doc(d, 'foto/lasagne-ragu')));
     controlla('foto pesante: alleggerita sotto i 400.000 caratteri e salvata', fL.exists() && fL.data().foto.length < 400000, fL.exists() && fL.data().foto.length);
@@ -308,6 +311,19 @@ const server = http.createServer((req, res) => {
     const sB = (await admin(d => getDoc(doc(d, 'utenti/sab-browser')))).data(), sA = (await admin(d => getDoc(doc(d, 'utenti/sab-app')))).data();
     const clientiSab = (await admin(d => getDocs(collection(d, 'clienti')))).docs.filter(x => x.data().chiave === 'sabrina-rossi');
     controlla('(C93) un Sì vale per i due telefoni: un solo cliente Sabrina', sB.stato === 'approvato' && sA.stato === 'approvato' && sB.cliente === sA.cliente && clientiSab.length === 1, [sB, sA, clientiSab.length]);
+    // (Mario 09/11, iPad) Lia ha CORRETTO il nome sul primo telefono («Lia Piras» → «Lia Piras Test»); sul secondo entra col nome nuovo → chiave diversa
+    await admin(async d => {
+      await setDoc(doc(d, 'utenti/lia-browser'), { nome: 'Lia Piras Test', chiave: 'lia-piras', nomiPrima: [{ nome: 'Lia Piras', il: oggiPag }], tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
+      await setDoc(doc(d, 'utenti/lia-app'), { nome: 'Lia Piras Test', chiave: 'lia-piras-test', tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
+      await setDoc(doc(d, 'nomi/lia-piras'), { il: oggiPag }); await setDoc(doc(d, 'nomi/lia-piras-test'), { il: oggiPag });
+    });
+    controlla('nome corretto + secondo telefono: Monica vede UNA richiesta di Lia', await aspetta(monica, () => S.utenti.filter(u => /^lia-/.test(u.uid || '') || /lia-piras/.test(u.chiave)).length === 2)
+      && await monica.evaluate(() => S.richieste.filter(r => /Lia Piras/.test(r.nome)).length === 1 && S.richieste.find(r => /Lia Piras/.test(r.nome)).gemelli.length === 1),
+      await monica.evaluate(() => S.richieste.filter(r => /Lia Piras/.test(r.nome))));
+    await monica.evaluate(() => decidiRichiesta(S.richieste.find(r => /Lia Piras/.test(r.nome)).id, true));
+    const lB = (await admin(d => getDoc(doc(d, 'utenti/lia-browser')))).data(), lA = (await admin(d => getDoc(doc(d, 'utenti/lia-app')))).data();
+    const clientiLia = (await admin(d => getDocs(collection(d, 'clienti')))).docs.filter(x => /lia-piras/.test(x.data().chiave));
+    controlla('nome corretto + secondo telefono: un Sì, un solo cliente Lia', lB.stato === 'approvato' && lA.stato === 'approvato' && lB.cliente === lA.cliente && clientiLia.length === 1, [lB, lA, clientiLia.length]);
     // stesso caso, ma Monica approva i due quasi insieme (la copia dei clienti non è ancora arrivata)
     await admin(async d => {
       await setDoc(doc(d, 'utenti/gio-browser'), { nome: 'Gio Sanna', chiave: 'gio-sanna', tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
@@ -349,7 +365,7 @@ const server = http.createServer((req, res) => {
     await aspetta(monica, id => (S.rifiutati || []).some(r => r.id === id), uidT);
     await monica.evaluate(() => { vai('clienti'); UI.rifiutati = true; render(); });
     await aspetta(monica, id => !!document.querySelector(`[data-a="rifiutato-si"][data-id="${id}"]`), uidT);
-    await monica.click(`[data-a="rifiutato-si"][data-id="${uidT}"]`);
+    await monica.evaluate(id => document.querySelector(`[data-a="rifiutato-si"][data-id="${id}"]`).click(), uidT);   // il nodo si rifà a ogni dato dal server: il click di Playwright lo perdeva
     const uR = await aspetta(monica, id => S.ordini.some(o => o.utente === id && o.stato === 'nuovo' && !!o.cliente), uidT);
     const uRd = (await admin(d => getDoc(doc(d, 'utenti/' + uidT)))).data();
     controlla('Accetta dopo un No: diventa cliente e l\'ordine va avanti', uR && uRd.stato === 'approvato' && !!uRd.cliente && !(await monica.evaluate(id => (S.rifiutati || []).some(r => r.id === id), uidT)), uRd);
@@ -366,6 +382,8 @@ const server = http.createServer((req, res) => {
 
     // d) «Accetta clienti nuovi» spento
     await monica.evaluate(() => { vai('clienti'); const i = document.querySelector('[data-campo="i.nuovi"]'); i.checked = false; i.dispatchEvent(new Event('change', { bubbles: true })); });
+    await monica.evaluate(() => document.querySelector('[data-a="nuovi-chiudi-si"]').click());   // (C104, v0.9.77) spegnere chiede conferma
+    await aspetta(monica, () => S.impostazioni.nuovi === false);   // la conferma chiude il foglio e poi salva
     await monica.evaluate(() => Dati.confermato());
     controlla('interruttore spento sul server', (await admin(d => getDoc(doc(d, 'impostazioni/app')))).data().nuovi === false);
     const quarto = await apri();
@@ -398,12 +416,12 @@ const server = http.createServer((req, res) => {
     await monica.impronta(true);
     await monica.click('[data-a="lucchetto-apri"]');
     controlla('impronta giusta col pulsante: si apre', await aspetta(monica, () => L.aperto));
-    await monica.evaluate(() => vai('impostazioni')); await monica.click('[data-a="altre-imp"]');
+    await monica.evaluate(() => { vai('impostazioni'); UI.sez = 'imp-lucchetto'; render(); });   // (C39) voci a fisarmonica: «Altre impostazioni» non c'è più
     controlla('dati veri: niente «Ricomincia la prova da capo»', await monica.evaluate(() => !document.querySelector('[data-a="ricomincia"]')));
-    await monica.click('[data-a="i-lucchetto"][data-d="1"]');
+    await monica.evaluate(() => document.querySelector('details[data-sez="imp-lucchetto"] [data-a="i-lucchetto"][data-d="1"]').click());
     await monica.evaluate(() => Dati.confermato());
     const minSrv = (await admin(d => getDoc(doc(d, 'impostazioni/app')))).data().lucchetto;
-    controlla('Impostazioni: «si richiude dopo» 10 minuti, sul server', minSrv === 10, [minSrv, await monica.evaluate(() => [S.impostazioni.lucchetto, UI.vista, !!document.querySelector('[data-a="i-lucchetto"]'), Dati.io.gestore, Dati.io.pronto])]);
+    controlla('Impostazioni: «si richiude dopo» 10 minuti, sul server', (minSrv && typeof minSrv === 'object' ? minSrv.monica : minSrv) === 10 /* dal 08/11 un tempo a testa (Mario, Monica, ospiti) */, [minSrv, await monica.evaluate(() => [S.impostazioni.lucchetto, UI.vista, !!document.querySelector('[data-a="i-lucchetto"]'), Dati.io.gestore, Dati.io.pronto])]);
     // chiave persa (o telefono che non la trova più): di nuovo Google, poi impronta nuova
     const vecchia = await monica.evaluate(() => { const id = Lucchetto.di(Dati.io.uid).id; Lucchetto.metti(Dati.io.uid, null); Dati.io.entrata = 0; L.aperto = false; render(); return id; });
     controlla('senza chiave e senza entrata fresca: «Entra con Google»', await aspetta(monica, () => statoLucchetto() === 'google' && !!document.querySelector('[data-a="lucchetto-google"]')));
@@ -432,9 +450,9 @@ const server = http.createServer((req, res) => {
       S.piatti.find(p => p.id === 'tiramisu').stagione = 'primavera'; salva();
     }, oL);
     controlla('senza rete: modifiche in coda con l\'avviso «si salverà appena torna»', await aspetta(monica, () => Dati.inAttesa() > 0 && /si salverà appena torna/.test(document.querySelector('#toast').textContent)));
-    await monica.evaluate(() => vai('impostazioni')); await monica.click('[data-a="altre-imp"]');
-    await monica.click('[data-a="lucchetto-esci"]');
-    await monica.click('[data-a="lucchetto-esci"]');
+    await monica.evaluate(() => { vai('impostazioni'); UI.sez = 'imp-lucchetto'; render(); });
+    await monica.evaluate(() => document.querySelector('[data-a="lucchetto-esci"]').click());
+    await monica.evaluate(() => document.querySelector('[data-a="lucchetto-esci"]').click());
     controlla('modifiche in coda: «Esci da questo telefono» aspetta la rete', await aspetta(monica, () => /Non esco ancora/.test(document.querySelector('#toast').textContent) && Dati.io.gestore));
     await monica.context().unroute(SENZA);
     await monica.evaluate(() => dispatchEvent(new Event('online')));
@@ -466,7 +484,7 @@ const server = http.createServer((req, res) => {
     await mario.reload();
     controlla('senza blocco schermo: parte aperta con l\'avviso', await aspetta(mario, () => Dati.io.gestore && L.puo === false && L.aperto
       && /non ha il blocco schermo/.test(document.querySelector('#toast').textContent)));
-    await mario.evaluate(() => vai('impostazioni')); await mario.click('[data-a="altre-imp"]');
+    await mario.evaluate(() => { vai('impostazioni'); UI.sez = 'imp-lucchetto'; render(); });
     controlla('Impostazioni: «Spento: il telefono non ha il blocco schermo»', /Spento: il telefono non ha il blocco schermo/.test(await mario.textContent('#app')));
     await mario.click('[data-a="lucchetto-esci"]');
     await Promise.all([mario.waitForNavigation(), mario.click('[data-a="lucchetto-esci"]')]);
