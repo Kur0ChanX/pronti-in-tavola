@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 14:15 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 18:21 ora italiana)
 
-lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
+@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4" è su app da ipad sento il  suono di attivazione microfono ma non va su android smartphone da app va cosí guarda video
