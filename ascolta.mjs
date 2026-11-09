@@ -106,7 +106,7 @@ export async function ascolta(env, audioB64, tipo, piatti, f = (...a) => fetch(.
     const ctl = new AbortController(), tempo = setTimeout(() => ctl.abort(), 12000);
     try {
       bytes = bytes || Uint8Array.from(atob(audioB64), ch => ch.charCodeAt(0));
-      const q = new URLSearchParams({ model: 'nova-3', language: 'it', smart_format: 'true' });
+      const q = new URLSearchParams({ model: 'nova-3', language: 'it', smart_format: 'true', mip_opt_out: 'true' });   // privacy dei clienti: Deepgram non conserva l'audio e non lo usa per addestrare (stesso prezzo, changelog 05/03/2026)
       paroleChiave(piatti).forEach(k => q.append('keyterm', k));
       const r = await f('https://api.deepgram.com/v1/listen?' + q, { method: 'POST', signal: ctl.signal,
         headers: { authorization: 'Token ' + env.DEEPGRAM_API_KEY, 'content-type': tipo || 'audio/webm' }, body: bytes });
