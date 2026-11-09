@@ -1,37 +1,27 @@
-# Consegne della chat parallela «Aiuto» (bug) · Aiuto 9 → Aiuto 10
+# Consegne della chat parallela «Aiuto» (bug) · Aiuto 10 → chiusa (il resto alla principale)
 
-**Già deciso da Mario (non richiedere):** «vai avanti da solo»; niente artefatto, Mario prova sul sito vero. C99 fatto come da `docs/SPECIFICA.md` «Codice fisso e nome dei profili». Ogni funzione nuova anche nell'aiutante di Monica (`.claude/rules/progetto.md`). C101: Mario VUOLE togliere gli ordini fatti finora (tutti di prova): non richiedere se cancellarli, solo mostrare cosa sparisce prima di farlo.
-**Da non rifare:** C99 (v0.9.71 online, provato); regole C98-C99 già pubblicate (foto `archivio/foto/2026-11-09-regole-c98-c99-pubblicate.jpg`); ricerca limiti Firebase (sono per progetto: Firestore 50.000 letture/giorno per progetto; legato all'account solo il numero di progetti creabili, 5-10 su Spark; fonti firebase.google.com/support/faq e docs/firestore/quotas, 11/2026); la prova Firebase con 2 NO (foto pesante; si ferma su «Accetta dopo un No») fallisce uguale anche SENZA C99 (provato con stash): difetto vecchio, non mio.
-**Cosa preme a Mario adesso:** C101: storico pulito, conteggio dagli ordini veri.
+**Già deciso da Mario (non richiedere):** «vai avanti da solo»; niente artefatto, Mario prova sul sito vero. Ogni funzione nuova anche nell'aiutante di Monica (`.claude/rules/progetto.md`). C101 chiusa (Mario «lo storico è risolto»). Numeri doppi negli altri progetti: Mario ha detto sì in un'altra chat (C89, principale).
+**Da non rifare:** C101 (v0.9.73, usato da Mario coi dati veri); C102 (v0.9.75 online); C100 (v0.9.76).
+**Cosa preme a Mario adesso:** che l'aiutante capisca il senso delle frasi (C102) e conosca tutte le funzioni (C100).
 
-Aiuto 9 = `session_01WTjqUvc6wykACULLz4o3Xx` (catena 7 di 8), chiusa alla soglia 09/11 ~10:20. Impegno: `.claude/settings.json` lasciato com'è (condiviso con la principale).
+Aiuto 10 = `session_01WTjqUwG7wNgyoWoXYNwdic` (catena 8 di 8: non può aprire sessioni né sveglie), chiusa alla soglia 09/11 ~14:40. Resta poco lavoro di zona: passa alla principale (skill `chat-parallela`). Impegno: `.claude/settings.json` lasciato com'è (condiviso con la principale).
 
 ## Stato (controlla, non fidarti)
-- v0.9.71 online: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep VERSIONE_APP` → 0.9.71. Giro completo `node tools/prova.js` 64 OK, 0 NO; regole emulatore 64 OK.
-- C99 nel codice: `dati.js` (`nuovoCodice`, `registra` col codice e riprova senza, `decidi` passa codice e `nomiPrima` al cliente, `assegnaCodici` una volta per sessione dal listener dei gestori, `cambiaNome`, `mioNome`, `mioCodice`); `app.js` (`mostraCodice`, `codiceDi`, `rigaMioCliente`, `foglioMioNome`, `foglioNomeMonica`, `profiloCliente`, azioni `mio-nome*`, `nome-monica*`, `nome-visto`); `worker.js` (`chi` nel diario degli avvisi); `aiutante.js` voce `clienti-nome`; prove in `tools/prova.js` (cerca «C99»).
-- Foto di Mario 10:17 (`archivio/foto/2026-11-09-clienti-codici-v0971.jpg`): codici visibili in Clienti → l'assegnazione automatica funziona coi dati veri.
-- Questo contenitore aveva bisogno di `npm ci` per l'emulatore: nella sessione nuova rifallo prima di `prova-firebase`/`prova-regole`.
+- `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep VERSIONE_APP` → 0.9.76 (0.9.75 controllata online alle ~14:30).
+- C102 in `aiutante.js` `inviaAI`: prima `chiediAiutante` con `dati.indizi` (posti dalle parole, da `capisciDove(testo, 3)`); se l'AI non c'è o `r.fermo` → `aiutoParole`: «Intendi…?» con «Portami lì», mai partenza da sola (`daParole`). Regole «CAPIRE IL SENSO» in `worker.js` `ISTRUZIONI_AI`.
+- C100: voci nuove in `DOVE_AI` (`imp-voce`, `clienti-nuovi`, `clienti-rifiutati` con `ui: {rifiutati}`, `clienti-attesa`, `ordini-storico` con `ui: {tab}`); `portaLi` applica `c.ui`. Tolta la voce morta «aggiornamenti» dal testo dell'AI. Prova in `tools/prova.js` controlla che ogni voce data all'AI esista in `DOVE_AI`.
+- Prove: giro completo 66 passi (65 + C100), `tools/prova-impostazioni.js` 11 OK.
 
-## Prossimi passi
-1. Avvio: titolo «📗 🍝 Aiuto 10 ❔ · ordini di prova».
-2. **C101** (`docs/DA-FARE.md`): togliere gli ordini già fatti (foto: Daniele Cabras 4, Barbara Miscera 2). Occhio critico: è un'azione sui dati veri che non si annulla → prima la «💾 Copia di sicurezza» (C58), poi dire a Mario in una riga cosa sparisce (n. ordini, chi) e farlo; togliere anche `settimane/*` (teglie contate) e rimettere `contatori/ordini.prossimo` a 1 solo se Mario vuole i numeri da 1 (domanda non decisiva: consiglio sì). Strada consigliata: tasto di chi gestisce in Impostazioni → «Togli tutti gli ordini di prova / vecchi» con doppia conferma e «Annulla» 10 s (riusabile; anche voce nell'aiutante, regola del progetto), così niente accessi alla console. Gli ordini «prova» (P.prova) già non contano: lasciarli fuori dai conteggi come oggi.
-3. **C100**: funzioni vecchie di chi gestisce che mancano in `DOVE_AI` di `aiutante.js` (codice e «Ricorda a Monica» in Clienti, ultimi avvisi in Notifiche, «Accetta clienti nuovi», persone rifiutate…): voce + GUIDA in `worker.js` + prova; poi v0.9.72.
-4. C97: quando Mario risponde su Francesco, chiudere la causa in `docs/ERRORI.md`.
-5. Domanda Firebase (riga in «Aspetta Mario»): se Mario dice 1, guida da PC (Impostazioni ⚙ → Utenti e autorizzazioni; pulsanti da controllare sulle sue foto, poi in `docs/GUIDE-GIUSTE.md`): account nuovo proprietario, Mario Editor. Prima controllare che l'account nuovo entri come proprietario.
-6. Aperte da proporre solo se Mario chiede: C98 proposte 1-2, invito doppio dopo il primo ordine.
+## Prossimi passi (per la principale)
+1. C102 e C100: aspettare la prova di Mario con frasi sue (voci 👁 in Da fare).
+2. C97: quando Mario risponde su Francesco, chiudere la causa in `docs/ERRORI.md`.
+3. Firebase (Mario 09/11 ~10:25 «firebase solo account nuovo»): se vuole, guida da PC per lasciare proprietario solo l'account nuovo (Impostazioni ⚙ → Utenti e autorizzazioni; pulsanti da controllare su sue foto, poi `docs/GUIDE-GIUSTE.md`). Prima controllare che l'account nuovo sia proprietario.
+4. Idea non fatta: l'AI potrebbe cambiare da sola «Accetta clienti nuovi» (chiave `nuovi` in `IMP` di `controllaAI`); oggi la porta solo lì.
 
-## Note
-- Il sito si pubblica da solo a ogni push del ramo: codice solo a versione finita e provata.
-- Prima di ogni versione `git fetch` e guardare `VERSIONE_APP` su origin; conflitti solo in `data.js` (novità) e in fondo a `style.css`.
-- Prove autonome: stato con `page.evaluate` in testa; `Object.defineProperty(Dati, 'attivo', …)`.
+## Per riaprire la catena (se Mario vuole Aiuto 11)
+Mario apre una sessione nuova sul repo `Kur0ChanX/pronti-in-tavola`, ramo `claude/pronti-ramo-definitivo`, e incolla: «[AVVIO] Sei la chat parallela «Aiuto 11» (bug) di Pronti in Tavola, ramo claude/pronti-ramo-definitivo. Leggi CLAUDE.md, docs/ERRORI.md e docs/CONSEGNE-PARALLELA-aiuto.md.»
 
-Controllo Da fare: 1 voce aggiunta (C101); C99 aggiornata con la foto. Messaggi di Mario della sessione: domanda limiti Firebase (risposta data, riga in Aspetta Mario); richiesta C101.
+Controllo Da fare: C101 chiusa (in DA-FARE-FATTE); C102 e C100 aggiornate. Messaggi di Mario della sessione: «quando è online dimmi dove premere» (fatto), «parlami dei numeri doppi» (spiegato; risposta data nella principale), «lo storico è risolto vai avanti» (C101 chiusa).
 
-## Messaggio di Mario dopo l'handoff (09/11 ~10:25, parola per parola)
-«firebase solo account nuovo / Regole nuove messe nell'account di monica / Francesco non mi ha ancora risposto / migliora in chiedi l'aiutante che deve capire bene il contesto di quello che dico non che legge la parola e mi porta alla parola scritta»
-- Firebase: risposta alla domanda → probabilmente «1» (proprietario solo l'account nuovo). Riga tolta da Aspetta Mario. Se vuole i passi: guida del passo 5 (prima controllare che l'account nuovo sia proprietario). Nel dubbio una riga a Mario: «Vuoi che ti guidi a toglierti da proprietario?».
-- C97 Francesco: ancora nessuna risposta, la riga resta.
-- Nuova voce **C102** (aiutante che capisce il senso, non la parola): dopo C101, prima di C100 (C100 aggiunge voci allo stesso sistema: farle già col modo nuovo).
-
-## Ultimo messaggio di Mario prima dell'handoff (parola per parola)
-«Vedi, io ti avevo messo che gli ordini che avevamo fatto non venivano conteggiati perché erano tutti di prova, ma anche adesso nessuno, al momento nessuno ha fatto un vero e proprio ordine. Possiamo cancellare questi che vediamo qui, due ordini effettuati? Quindi se un cliente che clicca quando va a ordinare sto solo provando, quella funzione che avevamo messo non viene conteggiato negli ordini, ma adesso questi ordini qui li possiamo togliere, così lo storico rimane pulito. Cioè partiamo dal conteggio dei veri ordini.»
+## Ultimo messaggio di Mario (parola per parola)
+«lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti»
