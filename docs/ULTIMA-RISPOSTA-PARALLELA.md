@@ -1,5 +1,11 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 10:15 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+✅ Le regole nuove sono pubblicate.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+La prova è nella tua foto delle 10:14. La scheda **Regole** mostra il testo nuovo: alle righe 37-46 ci sono le regole dei cuori e del codice fisso (`cuorePrima`, `codiceCliente`). Prima l'elenco a sinistra aveva 3 pallini, adesso ne ha 4: è la versione nuova.
+
+Hai fatto bene, non serviva altro. Ho salvato la foto e avvisato Aiuto 9. Ora continua con lei: https://claude.ai/code/[segreto tolto dalla scorta]
+
+⚠️ Aspettano te
+- 📒 Aiuto 8 · Francesco riapre l'app e scrive il nome: compare in Clienti?
+- 🟡 Principale 32 · Controllo dei numeri doppi anche negli …
