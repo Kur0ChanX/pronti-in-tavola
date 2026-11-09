@@ -1,20 +1,15 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 14:16 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: vuoi sapere a cosa serve il controllo dei numeri doppi.
 
-───
-✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
+**Il problema**
+- Spesso lavorano 2-3 chat insieme sull'app (la Principale e gli Aiuto).
+- Ogni lavoro prende un numero: la versione dell'app (es. 0.9.74) e la voce in Da fare (es. C92).
+- Due chat insieme possono prendere lo stesso numero senza saperlo. L'08/11 è successo 3 volte: due «0.9.57», due «C84», due «C63».
 
-───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
+**Cosa succedeva**
+- Nelle novità dell'app vedevi due versioni uguali con cose diverse: confuso.
+- In Da fare due voci C84: una chiudeva quella sbagliata, o una si perdeva.
 
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+**Cosa fa il controllo**
+- Prima di …
