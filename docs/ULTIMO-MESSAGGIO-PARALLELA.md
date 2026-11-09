@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 17:25 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 20:20 ora italiana)
 
-Continua con pensiero extra e se serve ripensa
+non parlaè corretto? poi a volte ci mette un pó specialmente pa prima volta e non si vapisce quando clicchi il tasto e l'attesa bisogna riempirla se no sembra che non è partito

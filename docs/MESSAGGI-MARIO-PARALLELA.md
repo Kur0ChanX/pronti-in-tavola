@@ -36,3 +36,9 @@ lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra 
 
 ## 2026-11-09 17:25 · 01WTjqUx7JeV
 Continua con pensiero extra e se serve ripensa
+
+## 2026-11-09 20:14 · 01WTjqUwiB7L
+limiti per persona da consiglio e ascomta sempre la stessa qualità come consiglio
+
+## 2026-11-09 20:20 · 01WTjqUwiB7L
+non parlaè corretto? poi a volte ci mette un pó specialmente pa prima volta e non si vapisce quando clicchi il tasto e l'attesa bisogna riempirla se no sembra che non è partito
