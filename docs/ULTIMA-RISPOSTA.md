@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (09/11/2026 18:44 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:38 ora italiana)
 
-Non ti mando nessun video: sull'iPad finto il difetto non compare, quindi non avrei niente da mostrarti.
+Niente video da parte mia: i video delle domande 3 e 5 li devi fare tu dall'iPad, perché sull'iPad finto il difetto non si vede.
