@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 14:15 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 19:18 ora italiana)
 
-lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
+Ok possiamo integrarne una Locale per non consumare limiti? se molti clienti chiedono magari ci sono interruzioni per limiti
