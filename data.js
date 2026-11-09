@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.92';
+const VERSIONE_APP = '0.9.93';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.93', data: '09/11/2026',
+    corretto: ['Ricettario: nelle ricette con le foto «a strisce» (es. Astice alla Catalana) toccando una foto si vedeva la striscia intera con 3 foto unite; ora si ingrandisce una foto alla volta, come nel passo'] },
   { v: '0.9.92', data: '09/11/2026',
     corretto: ['iPhone e iPad: chi metteva l\'app sulla Home dopo il sì di Monica risultava una persona nuova («Dice che ha cambiato telefono») e Monica doveva dire sì una seconda volta. Ora l\'app sulla Home riconosce da sola la stessa persona, già accettata, con i suoi ordini'] },
   { v: '0.9.91', data: '09/11/2026',
