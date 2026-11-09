@@ -1,11 +1,11 @@
-# Ultima risposta di Claude (09/11/2026 11:09 ora italiana)
+# Ultima risposta di Claude (09/11/2026 17:12 ora italiana)
 
+Ho capito: «vai avanti da solo» = Voce 2 va coi miei consigli (sì a voce nel carrello, microfono grande fisso).
 
+✅ FATTO
+- La tua risposta è girata parola per parola a Voce 2, che lavora da sola fino alla versione online e poi ti dice dove toccare.
+- Questa chat (Voce 1) resta chiusa: niente altro lavoro qui.
 
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: è il controllo automatico che ferma il push quando due versioni o due voci hanno lo stesso numero. Ora c'è solo in Pronti in Tavola.
-1. Lo mettiamo anche negli altri progetti?
-   **1** · sì, in tutti. Lì niente più numeri doppi, fra chat diverse (consiglio).
-   **2** · solo qui. Negli altri progetti i doppioni possono tornare.
+───
+⚠️ ATTENZIONE
+- Spreco di token: il turno delle consegne ha aggiunto 171k token (47k scritti) per letture lunghe e la specifica intera in un colpo solo; da ora solo messaggi brevi, il lavoro è di Voce 2.
