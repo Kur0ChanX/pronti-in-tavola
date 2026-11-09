@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 17:25 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 20:14 ora italiana)
 
-Continua con pensiero extra e se serve ripensa
+limiti per persona da consiglio e ascomta sempre la stessa qualità come consiglio
