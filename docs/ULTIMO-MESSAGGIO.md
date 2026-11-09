@@ -1,3 +1,4 @@
-# Ultimo messaggio di Mario (09/11/2026 19:38 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 20:58 ora italiana)
 
-principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
+Fai un controllo perché io ho accettato subito Antonio Sanna e dopo lui ha ordinato e non gli è uscita la scelta stò provando o invio vero
+accettato dopo 5 secondi
