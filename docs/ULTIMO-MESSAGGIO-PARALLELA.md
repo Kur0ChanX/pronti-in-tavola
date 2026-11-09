@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 09:52 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+salva che ogni funzione nuova che andremo ad aggiungere, Monica o io di conseguenza può cercarla e modificare ovviamente funzioni base, cioè senza fare danno al codice, nel comando vocale della pagina iniziale. Adesso non mi ricordo come si chiama, chiedi a Monica, insomma mettila come regola del progetto, che ogni cosa che andremo ad aggiungere va implementata anche in chiedi a Monica. Non chiedi a Monica, scusami, no, non chiedi a Monica, è quella del cliente. Il comando vocale di Monica nella schermata principale, non ricordo come si chiama.
