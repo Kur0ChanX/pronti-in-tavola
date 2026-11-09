@@ -24,3 +24,9 @@ francesco non mi ha risposto
 
 ## 2026-11-09 09:00 · 01WTjqUu72CC
 Fai un bel check di tutte le regole se ci sono buchi
+
+## 2026-11-09 10:34 · 01WTjqUwG7wN
+va bene, quando è online dimmi dove premere
+
+## 2026-11-09 11:08 · 01WTjqUwG7wN
+parlami dei numeri doppi non ho capito bene
