@@ -27,7 +27,7 @@ Aiuto 8 = `session_01WTjqUxwKQtc7WQsefh8EJF` (catena 6 di 8), chiusa alla soglia
 
 7. (Messaggio dopo l'handoff, 09/11 ~10:05) Mario: «sì, controlla anche le funzioni vecchie nell'aiutante» → C100 in `docs/DA-FARE.md`, dopo C99.
 
-8. (Messaggio dopo l'handoff, 09/11 ~10:15) Mario: «Ho incollato le nuove regole. Adesso mi sposterò sulla nuova sessione.» Riga tolta da «Aspetta Mario»; senza foto: verificare con la prima prova vera (codice o nome). Poi Mario: «ho messo tipo applica… non ho cliccato sviluppa e testa, va bene?» → NON sicuro che siano pubblicate: chiesto di guardare in Regole se c'è la riga «nov 9, 2026».
+8. (Messaggio dopo l'handoff, 09/11 ~10:15) Mario: «Ho incollato le nuove regole. Adesso mi sposterò sulla nuova sessione.» Riga tolta da «Aspetta Mario»; senza foto: verificare con la prima prova vera (codice o nome). Poi Mario: «ho messo tipo applica… non ho cliccato sviluppa e testa, va bene?» → NON sicuro che siano pubblicate: chiesto di guardare in Regole se c'è la riga «nov 9, 2026». ✅ Foto 10:14 (`archivio/foto/2026-11-09-regole-c98-c99-pubblicate.jpg`): la scheda Regole mostra le regole nuove, 4 versioni: PUBBLICATE.
 
 ## Note
 - Il sito si pubblica da solo a ogni push del ramo (`.github/workflows/sito.yml`): codice C99 dell'app solo a versione finita e provata.
