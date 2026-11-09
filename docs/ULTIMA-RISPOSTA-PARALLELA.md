@@ -1,5 +1,10 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 10:08 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+Sei già quasi nel posto giusto: la tua foto mostra la scheda **Regole** del database di Monica.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+Link diretto, da aprire con l'account di Monica: https://console.firebase.google.com/project/pronti-in-tavola/firestore/rules
+
+👉 DA FARE TU, partendo da zero
+1. Apri Chrome sul telefono. Tocca i **tre puntini ⋮** in alto a destra e scegli **Sito desktop** (versione da computer). Il testo diventa piccolo, ma i pulsanti sono più facili da trovare.
+2. Apri il link qui sopra. Se Firebase ti chiede l'account, scegli quello di Monica (la **M** viola in alto a destra).
+3. Se in alto vedi più progetti, …
