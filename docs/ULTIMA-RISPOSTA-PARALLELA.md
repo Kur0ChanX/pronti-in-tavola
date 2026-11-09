@@ -1,9 +1,8 @@
-# Ultima risposta di Claude (09/11/2026 21:38 ora italiana)
+# Ultima risposta di Claude (09/11/2026 23:31 ora italiana)
 
-La chat si era riavviata. Ho recuperato e salvato su GitHub il lavoro rimasto a metà: erano solo file di servizio, non codice.
+Ho capito: sono Voce 11, la chat del microfono dei clienti. Il primo lavoro era la privacy delle voci su Deepgram, da fare prima che arrivi la chiave.
 
-La Principale 37 ha messo online la v0.9.91 con quello che le avevo chiesto. Le ho controllate sul sito:
-- In Impostazioni → «Solo per te, Mario» c'è il nuovo numero **«Microfono dei clienti: segnalazione»**. Parte da 40 frasi al giorno e lo puoi cambiare tu tra 10 e 500.
-- C'è anche il testo per l'avviso «oltre 400 frasi di tutti i clienti».
-
-Io resto ferma finché non arriva il tuo video dall'iPad (C110) o la chiave Deepgram (C108).
+✅ FATTO
+- Ho messo `mip_opt_out=true` nella chiamata a Deepgram (`ascolta.mjs`). Significa: Deepgram non conserva l'audio dei clienti e non lo usa per addestrare i suoi programmi. Il prezzo non cambia.
+- Ho aggiunto una prova che controlla la riga. Con la riga: tutte e 40 le prove del microfono passano. Senza la riga: la prova nuova fallisce, quindi controlla davvero.
+- Le prove complete dell'app sono passate tutte e 80, senza errori nella …
