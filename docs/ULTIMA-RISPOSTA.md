@@ -1,20 +1,9 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 18:23 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
-
-───
-✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
+Ho capito: lo zoom su iPad in orizzontale va in coda. È segnato e la sessione nuova parte da lì.
 
 ───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+✅ **FATTO**
+- **v0.9.81 online** alle 18:23: pubblicazione riuscita, prove 72 OK e 98 OK sul server di prova, 0 NO.
+- **Notifiche su iPad:** dalle tue foto il tasto funzionava già, ma l'esito era una riga piccola. Ora compare un riquadro verde grande «Notifiche attive!» e il foglio si chiude da solo dopo 3 secondi.
+- **Due richieste per la stessa persona:** succedeva se il nome era stato corretto su un dispositivo e poi l'app veniva aperta dall'icona. Ora l'app la riconosce da qualunque nome …
