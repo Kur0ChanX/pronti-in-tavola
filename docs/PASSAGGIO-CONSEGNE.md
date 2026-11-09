@@ -33,6 +33,7 @@ Sessione attuale: #37 (dopo la #36 `session_01WTjqUtPqTTxpnkk1cGLaiK`, chiusa al
 - C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
+0. C113 (Principale 37, v0.9.92): accesso anonimo del cliente anche nel cookie `pit_acc` (`ricordaAccesso`, `riprendiAccesso` in dati.js prima di `getAuth`; tolto in `esci` e per Google): iPhone copia nell'app sulla Home solo i cookie (WebKit 17.2), l'SDK riprende l'accesso da localStorage. Prova Firebase «C113» (99 OK). Aspetta la prova di Mario con un iPhone NUOVO. Se ancora no: Mario propone di togliere l'approvazione (🛑, chiedere). Idea dopo: iscrizione alle notifiche anche prima del sì.
 1. C112: online (v0.9.90). Mario ha già le istruzioni per l'ordine di Antonio Sanna («È una prova»). Aspetta la sua foto (voce C112 👁).
 2. C111 (Principale 37, v0.9.91): firma con `touch-action: manipulation` + `cursor: pointer` (iPad: i tocchi veloci erano zoom col doppio tocco; ipotesi, non provata su iPad vero), `accendiDev()` e pulsante «🛠 Accendi la modalità sviluppatore su questo dispositivo» in `schedaMario`, 7 tocchi che rispondono sempre (cliente → «entra da Area riservata»; già sviluppatore → apre/chiude la barra). Tutti i comandi (`button, summary, label, [data-a]`) senza zoom col doppio tocco. Aspetta la foto di Mario dall'iPad; se ancora no: chiedergli come entra (cliente o Google suo).
 3. Per Voce 10: fatto in v0.9.91 (`ascoltoQuota` in `segnalazioniHtml` e `sw.js`, opzione `ascoltoAvviso` nel gruppo 'mario').
@@ -49,7 +50,7 @@ Dopo l'handoff, nella #36 (09/11 ~21:20), parola per parola: «Quindi mi conferm
 Nella chat Voce 9, 20:58: «Poi nel mio ipad non posso neanche aprire la schermata dev» → C111.
 
 ## Numeri liberi
-Prossimo E libero: PT E44; prossimo C libero: C113; prossimo M libero: M1.
+Prossimo E libero: PT E45; prossimo C libero: C114; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).

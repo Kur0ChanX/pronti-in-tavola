@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 09/11 · 🟢 Principale 37 · C113 iPhone v0.9.92: un invito NUOVO a un iPhone → nome → Monica dice sì → l'amico mette l'app sulla Home e la apre dall'icona. Monica riceve una seconda richiesta? Una foto. A cosa serve: sapere se il «sì due volte» è risolto o se togliamo l'approvazione.
 - 09/11 · 🟢 Principale 37 · C111 iPad v0.9.91: chiudi e riapri l'app, scorri in fondo e tocca 7 volte di fila «Powered by». Una foto di cosa compare. A cosa serve: capire se ora la schermata dev si apre sull'iPad o se l'iPad è entrato come cliente.
 - 09/11 · 🟩 Voce 9 · C110 iPad v0.9.88: chiudi e riapri l'app dall'icona, vai in Aiutante, tocca il microfono e di' «due teglie di lasagne per sabato». Un video. A cosa serve: vedere se su iPad ora si capisce subito che ascolta e se la risposta si SENTE da sola (o serve il tasto «Ascolta la risposta»).
 - 09/11 · 🟩 Voce 8 · C108 account Deepgram (gratis, senza carta) e chiave nei segreti di GitHub col nome `DEEPGRAM_API_KEY`: passi nel messaggio di Voce 8. A cosa serve: il secondo motore forte che ascolta i clienti, con un salvadanaio tutto suo.
@@ -11,6 +12,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C113 | (Mario 09/11 ~22:31, foto «Elena Fancello · Dice che ha cambiato telefono»: «un disastro… se non riesci togliamo l'approvazione») v0.9.92: l'accesso del cliente sta anche in un cookie, che iPhone copia nell'app sulla Home: dall'icona è la stessa persona già accettata, niente seconda richiesta. Manca: prova con un iPhone vero. 👁 Lo vedi: invito a un iPhone nuovo → nome → Monica dice sì → l'amico mette l'app sulla Home e la apre → nessuna richiesta nuova, vede i suoi ordini · prova: tua foto | Claude (Principale 37) | 🔴 |
 | C112 | (Mario 09/11 ~20:45 «uno deve cliccare per forza uno dei due… mi è appena arrivato un ordine, ma la voleva solo provare») v0.9.90: «Ordino davvero / Sto solo provando l'app» a TUTTI i clienti a ogni ordine, nessuna già segnata; regola «Chiedi "Ordini davvero o provi l'app?"» (tutti, solo nuovi, mai). 👁 Lo vedi: da cliente già accettato → Carrello → la domanda c'è e «Invia» resta spento finché non tocchi una delle due · prova: tua foto | Claude | 🔴 |
 | C111 | (Mario 09/11 ~20:58 «nel mio ipad non posso neanche aprire la schermata dev») v0.9.91: firma senza zoom col doppio tocco, «🛠 Accendi la modalità sviluppatore» in «Solo per te, Mario», 7 tocchi che dicono sempre cosa fare. Manca: prova sull'iPad vero (causa non provata). 👁 Lo vedi: iPad → riapri l'app → 7 tocchi su «Powered by»: barra in alto o ti dice cosa fare · prova: tua foto | Claude (Principale 37) | 🔴 |
 | C110 | (Mario 09/11 ~20:20-20:23, foto iPad e video Android «per iPad fà schifo… perché????») iPad/iPhone dalla Home come Android. v0.9.88 (Voce 9): pannello subito anche in Aiutante, barrette che seguono la voce, attesa che parla, voce sbloccata nel tocco, «Ascolta la risposta» se resta muta. Manca: sapere se su iPad la voce parte da sola (ipotesi). 👁 Lo vedi: iPad → Aiutante → microfono: «Accendo il microfono», barrette, «Sto capendo», risposta che si SENTE · prova: video dall'iPad | Claude (Voce 9) | 🟡 |

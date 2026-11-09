@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.91';
+const VERSIONE_APP = '0.9.92';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.92', data: '09/11/2026',
+    corretto: ['iPhone e iPad: chi metteva l\'app sulla Home dopo il sì di Monica risultava una persona nuova («Dice che ha cambiato telefono») e Monica doveva dire sì una seconda volta. Ora l\'app sulla Home riconosce da sola la stessa persona, già accettata, con i suoi ordini'] },
   { v: '0.9.91', data: '09/11/2026',
     corretto: ['Su iPad e iPhone i 7 tocchi sulla firma «Powered by» per la modalità sviluppatore non contavano (lo schermo faceva lo zoom col doppio tocco); anche toccando in fretta i pulsanti non si ingrandisce più la pagina (lo zoom con due dita resta)'],
     migliorato: ['In Impostazioni → «Solo per te, Mario» c\'è «🛠 Accendi la modalità sviluppatore su questo dispositivo»: niente più 7 tocchi su un telefono o iPad nuovo', 'I 7 tocchi sulla firma ora dicono cosa fare: se sei entrato come cliente, se sei già sviluppatore (aprono e chiudono la barra in alto)', 'Nuova regola «Microfono dei clienti: segnalazione» in «Solo per te, Mario» e segnalazione quando il microfono di tutti i clienti supera le 400 frasi in un giorno (nessuno viene fermato)'] },
