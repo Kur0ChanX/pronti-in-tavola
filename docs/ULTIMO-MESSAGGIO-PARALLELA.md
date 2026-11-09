@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 10:10 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+Ho incollato le nuove regole. Adesso mi sposterò sulla nuova sessione.
