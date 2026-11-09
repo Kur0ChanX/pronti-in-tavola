@@ -349,6 +349,9 @@ const server = http.createServer((req, res) => {
     controlla('(C113) iPhone, app dall\'icona con i soli cookie: stessa persona già accettata, nessuna richiesta nuova a Monica',
       biscotti.length === 1 && stessa && dopoIcona[1] === statoC && !dopoIcona[2] && atteseDopo === attesePrima, [biscotti.length, uidC, statoC, dopoIcona, attesePrima, atteseDopo]);
     await icona.context().close();
+    // (C117, Mario 09/11 «togliamo il PIN e impronta nei clienti») cliente accettato coi dati veri: niente lucchetto, mai impronta o PIN
+    const lucC = await cliente.evaluate(() => [statoLucchetto(), !!document.querySelector('.lucchetto'), /impronta|\bPIN\b/i.test(document.body.innerText)]);
+    controlla('(C117) cliente coi dati veri: niente lucchetto, né impronta né PIN', lucC.join() === ',false,false', lucC);
 
     // b3) (C93) app installata su iPhone: il cookie col nome è passato (iOS 17.2+) → «Sei Sabrina Rossi? Sì, sono io» con un tocco
     const sabApp = await apri({ cookie: 'Sabrina Rossi' });

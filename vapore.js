@@ -23,7 +23,7 @@ const Vapore = (() => {
     return c;
   }
 
-  function parti(stile = 'A', fatto) {
+  function parti(stile = 'A', fatto, dolce) {   // dolce: entra sfumando (dopo l'apertura, che ha lo stesso color crema)
     if (attivo) attivo.ferma();
     const app = document.getElementById('app');
     if (matchMedia('(prefers-reduced-motion: reduce)').matches || !app) {
@@ -33,6 +33,7 @@ const Vapore = (() => {
     const velo = document.createElement('div'); velo.className = 'vapore'; velo.setAttribute('aria-hidden', 'true');
     const cv = document.createElement('canvas'); cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
     velo.appendChild(cv); document.body.appendChild(velo);
+    if (dolce) velo.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300, easing: 'ease-out' });
     const g = cv.getContext('2d'); g.scale(dpr, dpr);
     const forme = [sbuffo('255,255,255'), sbuffo('255,253,248'), sbuffo('250,242,230'), sbuffo('255,255,255')];
     const pp = [];
