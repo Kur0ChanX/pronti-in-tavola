@@ -1,5 +1,16 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 10:40 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+Ho capito: vuoi sapere dove premere per togliere gli ordini di prova.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+✅ FATTO
+La v0.9.73 è online. L'ho controllata sul sito vero.
+Giro completo delle prove: 64 OK, 0 NO.
+
+───
+👉 DA FARE TU
+1. Apri l'app dal tuo telefono, entrato con il tuo account (non quello di Monica).
+2. Se in basso non vedi «v0.9.73», chiudi l'app e riaprila.
+3. Vai in **Impostazioni**. In alto c'è il riquadro «Solo per te, Mario».
+4. Tocca **«🗑️ Togli tutti gli ordini fatti finora (N)»**.
+   - Se il riquadro non c'è, prima tocca 7 volte la firma in fondo alla pagina.
+5. Si apre un foglio con l'elenco: chi perde quanti …
