@@ -33,3 +33,9 @@ parlami dei numeri doppi non ho capito bene
 
 ## 2026-11-09 14:15 · 01WTjqUwG7wN
 lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
+
+## 2026-11-09 18:21 · 01WTjqUvJr7m
+@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4" è su app da ipad sento il  suono di attivazione microfono ma non va su android smartphone da app va cosí guarda video
+
+## 2026-11-09 18:36 · 01WTjqUvJr7m
+ti ascolto frickera e la pagina deco scrollare in alto per vedere cosa dice
