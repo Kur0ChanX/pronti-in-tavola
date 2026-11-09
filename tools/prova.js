@@ -1430,6 +1430,51 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (android) throw new Error('fuori dall\'iPad dalla Home deve restare il riconoscitore del telefono (gratis e subito)');
     await page.evaluate(() => { window.chiediAiutante = window._chiediVero; AI.msgs = []; AI.attesa = false; render(); });
   });
+  await passo('voce dei clienti C110: iPad dalla Home nella pagina Aiutante → pannello subito, attesa che cambia, voce sbloccata nel tocco, «Ascolta la risposta» se resta muta (Mario 09/11)', async () => {   // autonomo
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; UI.devCliente = false; UI.foglio = null; delete S.impostazioni.aiClienti; P.carrello = []; AIC.msgs = []; AIC.attesa = false; UI.entro = ''; delete S.impostazioni.voceClientiMotore; S.impostazioni.voceClientiRisponde = true; VC.voceSbloccata = false;
+      Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (iPad; CPU OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1', configurable: true });
+      Object.defineProperty(navigator, 'standalone', { get: () => true, configurable: true });
+      window.SpeechRecognition = class { start() {} stop() {} abort() {} };
+      window.__parla = []; Object.defineProperty(window, 'speechSynthesis', { configurable: true, value: { speaking: false, pending: false, getVoices: () => [], cancel() {}, speak(u) { window.__parla.push({ t: u.text, vol: u.volume, tocco: navigator.userActivation ? navigator.userActivation.isActive : null, stato: VC.stato }); } } });   // come iOS: non parte mai da sola (niente onstart)
+      if (!navigator.mediaDevices) Object.defineProperty(navigator, 'mediaDevices', { value: {}, configurable: true });
+      window.__chiuse = 0; navigator.mediaDevices.getUserMedia = async () => { await new Promise(r => setTimeout(r, 700)); return { getTracks: () => [{ stop() { window.__chiuse++; } }] }; };   // iPad: il microfono ci mette un attimo
+      window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/mp4'; } start() { this.state = 'recording'; } stop() { this.state = 'inactive'; this.ondataavailable({ data: new Blob([new Uint8Array(3000)]) }); this.onstop(); } static isTypeSupported(t) { return /mp4/.test(t); } };
+      window.ascoltaServerFinto = async () => { await new Promise(r => setTimeout(r, 3200)); return { testo: 'due teglie di lasagne al ragù per sabato', motore: 'finto' }; };   // server lento
+      vai('aiuto'); });
+    // 1) Annulla mentre il microfono si accende: non deve partire dopo
+    await page.locator('.ai-mic[data-a="ac-detta"]').click(); await page.waitForTimeout(150);
+    const a = await page.evaluate(() => ({ stato: VC.stato, pann: (document.querySelector('#vc:not([hidden]) .vc-pannello b') || {}).textContent, mic: !!document.querySelector('.ai-mic[data-a="ac-detta"].acceso'), campo: ($('#ac-testo') || {}).placeholder, sblocco: window.__parla[0] }));
+    if (a.stato !== 'avvio' || !/Accendo il microfono/.test(a.pann || '') || !a.mic || a.campo !== 'Ti ascolto…') throw new Error('nella pagina Aiutante al tocco non si vede che parte: ' + JSON.stringify(a));
+    if (!a.sblocco || a.sblocco.vol !== 0 || a.sblocco.tocco === false) throw new Error('la voce non viene sbloccata dentro il tocco (iOS): ' + JSON.stringify(a.sblocco));
+    await page.locator('[data-vc="stop"]').click(); await page.waitForTimeout(900);
+    const b = await page.evaluate(() => ({ stato: VC.stato, media: !!VC.media, chiuse: window.__chiuse, vc: document.getElementById('vc').hidden }));
+    if (b.stato || b.media || b.chiuse !== 1 || !b.vc) throw new Error('«Annulla» durante l\'accensione non ferma il microfono: ' + JSON.stringify(b));
+    // 2) giro intero: avvio → registro (barrette che seguono la voce) → capisco con i testi che cambiano → risposta letta
+    await page.locator('.ai-mic[data-a="ac-detta"]').click(); await page.waitForTimeout(1500);   // 0,7 s di accensione + più di 0,5 s di frase
+    const c = await page.evaluate(() => ({ stato: VC.stato, pann: (document.querySelector('#vc:not([hidden]) .vc-pannello b') || {}).textContent }));
+    if (c.stato !== 'registro' || !/attenzione/.test(c.pann || '')) throw new Error('dopo l\'accensione non registra: ' + JSON.stringify(c));
+    await foto('43-voce-c110-ascolto');
+    await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(400);
+    const d = await page.evaluate(() => { const p = document.querySelector('#vc:not([hidden]) .vc-pannello'); if (p) p.__mio = 1; return { stato: VC.stato, testo: p && p.querySelector('p') ? p.querySelector('p').textContent : '' }; });
+    if (d.stato !== 'capisco' || !/capendo/.test(d.testo)) throw new Error('attesa del server senza pannello: ' + JSON.stringify(d));
+    await page.waitForTimeout(2500);
+    const e = await page.evaluate(() => { const p = document.querySelector('#vc:not([hidden]) .vc-pannello'); return { stesso: !!(p && p.__mio), testo: p && p.querySelector('p') ? p.querySelector('p').textContent : '' }; });
+    if (!e.stesso || !/nomi dei piatti/.test(e.testo)) throw new Error('il testo dell\'attesa non cambia (o il pannello lampeggia): ' + JSON.stringify(e));
+    await foto('44-voce-c110-attesa');
+    await page.waitForTimeout(1200);
+    const g = await page.evaluate(() => ({ msgs: AIC.msgs.map(m => m.t), parla: window.__parla.filter(x => x.vol !== 0).map(x => x.t).join(' '), tasto: (document.querySelector('.vc-ascolta') || {}).textContent }));
+    if (g.msgs[0] !== 'due teglie di lasagne al ragù per sabato' || !g.parla || !/Riascolta/.test(g.tasto || '')) throw new Error('la risposta non viene letta o manca «Riascolta»: ' + JSON.stringify(g).slice(0, 300));
+    if (/scaricando/i.test(await page.evaluate(() => (document.querySelector('.toast') || {}).textContent || ''))) throw new Error('al cliente compare «la voce si sta scaricando» (non è vero)');
+    // 3) la voce non parte (iOS muto) → dopo 3 s «Ascolta la risposta»; un tocco la legge
+    await page.waitForTimeout(3300);
+    const h = await page.evaluate(() => ({ tasto: (document.querySelector('.vc-ascolta.forte') || {}).textContent, n: window.__parla.length }));
+    if (!/Ascolta la risposta/.test(h.tasto || '')) throw new Error('con la voce muta non compare «Ascolta la risposta»: ' + JSON.stringify(h));
+    await foto('45-voce-c110-ascolta');
+    await page.locator('.vc-ascolta').first().click(); await page.waitForTimeout(300);
+    const k = await page.evaluate(() => window.__parla.slice(-1)[0]);
+    if (!k || !k.t || k.vol === 0 || k.tocco === false) throw new Error('«Ascolta la risposta» non legge dentro il tocco: ' + JSON.stringify(k));
+    await page.evaluate(() => { delete navigator.userAgent; delete navigator.standalone; delete window.speechSynthesis; S.impostazioni.voceClientiRisponde = false; AIC.msgs = []; UI.vista = 'menu'; render(); });
+  });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
 })();
