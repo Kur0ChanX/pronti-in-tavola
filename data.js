@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.71';
+const VERSIONE_APP = '0.9.72';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.72', data: '09/11/2026',
+    migliorato: ['Codice di Mario con un procione (MARIO 🦝) e di Monica con un cuore rosso (MONICA ❤️), al posto della stellina'] },
   { v: '0.9.71', data: '09/11/2026',
     nuovo: ['Ogni persona ha un codice fisso che non cambia mai (es. K7P2M): lo vedi in Clienti accanto al nome, negli ordini e negli ultimi avvisi. Mario è ⭐MARIO e Monica ⭐MONICA',
       'Il cliente può correggere il suo nome («Correggi il nome»): Monica vede «ora si chiama… prima…» finché tocca «Visto»',
