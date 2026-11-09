@@ -1,15 +1,27 @@
-# Ultima risposta di Claude (09/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (09/11/2026 20:03 ora italiana)
 
+Ho capito: nella chat di Voce 6 hai chiesto «come condivisa con l'aiutante cosa significa?». Ti rispondo con un esempio e con i numeri.
 
+───
+✅ **FATTO**
+- Ho calcolato quanto consumano l'aiutante e il microfono. I numeri sono nello studio, salvato su GitHub.
+- Sono calcoli fatti dal codice dell'app e dalle tariffe ufficiali di Cloudflare (09/11/2026). Una **misura** vera si vede solo dal pannello di Cloudflare, e io lì non entro.
+
+───
+💡 **PARERE**
+Immagina un **salvadanaio** da 10.000 monete al giorno. Le monete si chiamano **neuroni**: è l'unità con cui Cloudflare conta il lavoro della sua …
 
 ## Domande a Mario
 
-❓ DOMANDE
+❓ **DOMANDE**
+**DOMANDA 1** 🛑 (la stessa di prima, con questi numeri)
+📌 **Di cosa parliamo:** come l'app trasforma in testo la voce dei clienti, sempre con la stessa qualità e senza fermare nessuno.
+1 · Groq più Deepgram sempre insieme, 0 €, serve un account Deepgram senza carta (consiglio).
+2 · Groq a pagamento, con la carta: circa 0,40-1,65 € al mese.
+3 · Lascio così e tolgo solo il blocco a 400 frasi.
 
-📌 **Di cosa parliamo:** limiti per persona. Quante domande al giorno può fare all'aiutante ogni cliente. Voce 4 propone di non bloccare mai nessuno e di mandarti solo un avviso oltre un tetto ampio. La proposta è nel file `docs/lavori-in-corso/limiti-per-persona.md`.
-1. 🛑 Va bene così?
-   1 · Sì: nessuno viene mai bloccato, a te arriva solo l'avviso (consiglio).
-   2 · Cambia i numeri: scrivimi quali.
+Se scegli 1, i passi per l'account Deepgram sono nel mio messaggio di prima.
 
-📌 **Di cosa parliamo:** il microfono dei clienti sull'iPad. Dalla v0.9.85 ascolta con due motori e corregge le parole sentite male.
-2. Apri l'app dall'icona, poi Menù → microfono, e …
+⚠️ **Aspettano te: 7**
+- 🛑 Limiti per persona: va bene «mai bloccare, solo un avviso oltre un tetto ampio»?
+- 🛑 …
