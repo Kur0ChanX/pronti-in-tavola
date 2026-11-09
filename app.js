@@ -538,6 +538,12 @@ async function attivaAvvisiCliente() {
     if (perm !== 'granted') throw new Error('permesso non dato: senza «Consenti» non arrivano');
     /* (C96, foto di Mario 08/11: amico con iPhone in giro continuo «Non attivato: prima Monica deve approvarti»): chi aspetta Monica
        dà il permesso adesso e si iscrive da solo appena è approvato (rinnovaAvvisi); il foglio non si ripropone */
+    /* (C97) senza nome Monica non lo vede: prima il nome (il sì alle notifiche resta ricordato) */
+    if (senzaNome()) {
+      P.vuoleAvvisi = true; salvaP(); UI.senzaNome = false; UI.foglio = null;
+      mostraToast('Prima scrivi nome e cognome: così Monica ti vede e ti dice di sì.');
+      return;
+    }
     if (!P.cliente) {
       P.vuoleAvvisi = true; salvaP();
       UI.notEsito = { ok: true, t: 'Fatto! Le notifiche partono da sole appena Monica ti conferma.' };
@@ -762,10 +768,15 @@ function carosello() {
 const suSamsung = /SamsungBrowser/i.test(navigator.userAgent) && !/Android.*wv/.test(navigator.userAgent);
 /* Mario 07/11: il cliente non ancora accettato lo legge chiaro, sempre (anche dopo «Più tardi»), nel menù, dopo l'invio e nei suoi ordini */
 const inAttesa = () => { const u = Dati.attivo ? Dati.io.utente : null; return !!(u && ['nuovo', 'ricollega'].includes(u.stato)); };
-const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta.</b><br>Monica ti conosce e ti dice di sì dall'app: di solito in giornata. Il tuo primo ordine lo vede lei e te lo conferma.${righeAttesa()}</div></div>` : '';
+const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta.</b><br>Monica ti conosce e ti dice di sì dall'app: di solito in giornata. Il tuo primo ordine lo vede lei e te lo conferma.${righeAttesa()}</div></div>` : avvisoSenzaNome();
 /* (C97, Mario 08/11 «gli dice che Monica deve attivarlo ma non c'è nessuno da attivare, come se si fosse persa»):
    chi aspetta vede il suo nome e un codice da dire a Monica, e «Ricorda a Monica» rimanda l'avviso «persona nuova».
    Una volta ogni 6 ore lo rimanda da solo all'apertura: se il primo si è perso, Monica lo riceve di nuovo. */
+/* (C97, Mario 09/11: Francesco «Monica deve attivarlo» ma in Clienti nessuno): chi tocca «Guarda il menù» non ha scritto il nome,
+   quindi Monica non lo vede. Lo leggono chiaro, con il tasto per scriverlo subito. */
+const senzaNome = () => Dati.attivo && P.ruolo === 'cliente' && !Dati.io.gestore && Dati.io.letto && !Dati.io.utente && !UI.devCliente;
+const avvisoSenzaNome = () => senzaNome() ? `<div class="avviso attesa-forte">${ico('clienti')}<div><b>Monica non sa ancora che ci sei.</b><br>Scrivi nome e cognome: le arriva la tua richiesta e ti può dire di sì.
+  <br><button type="button" class="btn piccolo" style="margin-top:8px" data-a="benv-torna">Scrivi il tuo nome</button></div></div>` : '';
 const codiceTel = uid => String(uid || '').slice(0, 4).toUpperCase();
 function righeAttesa() {
   const u = Dati.io.utente || {};
@@ -776,7 +787,7 @@ function righeAttesa() {
 function primiPassi() {
   if (UI.modifica) return '';
   if (UI.passiVia) return avvisoAttesa();
-  const attesa = inAttesa();
+  const attesa = inAttesa() || senzaNome();   // (C97) anche chi non ha scritto il nome lo legge in cima
   const notifOk = sulSito() && P.cliente && 'Notification' in window && Notification.permission !== 'denied';
   // (C93) l'invito a mettere l'app sul telefono arriva DOPO il primo ordine (guida web.dev): prima solo il menù, niente distrazioni
   const notif = notifOk && !P.avvisiCliente, app = !suHome() && !!P.ordinato;
@@ -1987,6 +1998,7 @@ const A = {
   'benv-non-io'() { UI.benv = { nome: '', cognome: '', ricordato: '' }; render(); const i = $('#benv-nome'); if (i) i.focus(); },
   'benv-altro'() { UI.benv.usato = ''; render(); const i = $('#benv-cognome'); if (i) i.focus(); },
   'benv-guarda'() { UI.senzaNome = true; render(); },
+  'benv-torna'() { UI.senzaNome = false; UI.foglio = null; render(); window.scrollTo(0, 0); const i = $('#benv-nome'); if (i) i.focus(); },
   'nome-altro'() { UI.foglio = { tipo: 'nome' }; render(); const i = $('#nome-nuovo'); if (i) i.focus(); },
   async 'inv-google'() {
     if (!Dati.attivo) { mostraToast('Nell\'anteprima non si entra con Google: prova sul sito vero.'); return; }
