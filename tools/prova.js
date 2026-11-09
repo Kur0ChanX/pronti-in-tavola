@@ -65,6 +65,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('[data-a="invia"][disabled]').count())) throw new Error('«Invia» attivo senza la scelta davvero/prova');
     await clic('[data-a="ordine-prova"][data-v="1"]'); await clic('[data-a="ordine-prova"][data-v=""]');   // ci ripensa: ordine vero
     if (await page.locator('[data-a="ordine-prova"][data-v=""][aria-pressed="true"]').count() !== 1) throw new Error('la scelta «Ordino davvero» non resta');
+    // (Mario 09/11) anche un cliente GIÀ accettato deve scegliere; con «Solo a chi non hai ancora accettato» o «Mai» no
+    const q = await page.evaluate(() => {
+      const prima = { attivo: Dati.attivo, utente: Dati.io.utente, scelta: S.impostazioni.chiediProva, prova: UI.prova };
+      Dati.attivo = true; Dati.io.utente = { stato: 'approvato' }; UI.prova = undefined;
+      const r = { base: opz('chiediProva'), tutti: puoProvare() && sceltaManca() };
+      S.impostazioni.chiediProva = 'nuovi'; r.nuovi = puoProvare(); S.impostazioni.chiediProva = 'mai'; r.mai = puoProvare();
+      Dati.attivo = prima.attivo; Dati.io.utente = prima.utente; S.impostazioni.chiediProva = prima.scelta; UI.prova = prima.prova;
+      return r;
+    });
+    if (q.base !== 'tutti' || !q.tutti || q.nuovi || q.mai) throw new Error('scelta davvero/prova per i clienti accettati sbagliata: ' + JSON.stringify(q));
     await clic('[data-a="invia"]'); await page.waitForTimeout(500); await foto('05-inviato');
     if (!(await page.locator('.inviato').count())) throw new Error('niente conferma');
   });
