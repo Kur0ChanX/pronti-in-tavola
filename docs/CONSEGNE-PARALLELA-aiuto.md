@@ -1,4 +1,4 @@
-# Consegne della chat parallela «Aiuto» (bug) · Aiuto 7 → Aiuto 8
+# Consegne della chat parallela «Aiuto» (bug) · Aiuto 7 → Aiuto 8 (in corso: Aiuto 8 = `session_01WTjqUxwKQtc7WQsefh8EJF`)
 
 **Già deciso da Mario (non richiedere):** «vai avanti da solo» (08/11): procedi coi tuoi consigli e pubblica senza aspettarlo; «cerca e vai avanti da solo» (08/11 19:39, su Francesco); niente artefatto, Mario prova sul sito vero; guida iPhone a figure e popup «Installa l'app» già fatti (C94, C95).
 **Da non rifare:** ricerca su dove sta Condividi in Safari (fonti in testa a `guida-iphone.js`); analisi del codice di registrazione e lista di Monica (C97): `dati.js` `registra`/`decidi`/`capi` e `firestore.rules` utenti/nomi sono coerenti, nessun punto dove una richiesta salvata sparisce; «Accetta per il primo ordine» c'è già (chi non è confermato fa il primo ordine `daApprovare`, avviso `primo`).
@@ -16,6 +16,7 @@ Aiuto 7 = `session_01WTjqUu72CCre8257ouny2k` (catena 5 di 8), chiusa alla soglia
 Ha toccato «Guarda il menù» (`benv-guarda`) e non ha mai scritto il nome: nessun documento `utenti`, quindi Monica non vede niente; il popup «Installa l'app» gli faceva attivare le notifiche e (versione vecchia) diceva «prima Monica deve approvarti». Mario dice che Francesco era l'avviso delle 18:50 («penso»): se fosse vero, il documento c'era e poi è sparito: non spiegabile dal codice. Mario ha chiesto a Francesco se l'app gli ha chiesto il nome: risposta non arrivata.
 
 ## Prossimi passi
+- (Aiuto 8, 09/11 09:10) Fatti: passo 3 (v0.9.70 online), passo 4 (iPhone: dati separati, cookie del nome copiato da Safari: già gestito), C98 controllo regole (vedi C98 in Da fare). Restano: passi 2 e 5, C98 punti 1-3.
 0. Messaggio di Mario dopo l'handoff (09/11 ~09:05): «Fai un bel check di tutte le regole se ci sono buchi». Interpretazione (da confermare con Mario in una riga, intanto parti): le regole del database `firestore.rules` (chi legge/scrive cosa: clienti, ordini, utenti, nomi, gestori) e le regole del flusso clienti (nome, approvazione, primo ordine, notifiche), cercando buchi come quello di Francesco. Prova con `npm run prova-firebase` / `tools/prova-regole.js`.
 1. Avvio: titolo «📗 🍝 Aiuto 8 ❔ · Francesco nome» (riga in «Aspetta Mario»).
 2. Quando Mario risponde: Francesco riapre l'app (0.9.69) e scrive il nome → compare in Clienti col codice? Se sì, chiudere la causa in `docs/ERRORI.md` (lezione: senza nome nessuna richiesta). Se no, chiedere foto della schermata di Francesco (codice) e di Clienti.
