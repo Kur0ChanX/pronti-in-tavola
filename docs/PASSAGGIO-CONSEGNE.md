@@ -46,7 +46,8 @@ Online v0.9.78, 0.9.79 (pubblicazione `sito.yml` success); v0.9.81 pushata 18:20
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`.
 
 ## Ultimo messaggio di Mario
-09/11 ~18:12, parola per parola: «in coda quando finisci aggiungi, che se  se da tablet iPad vado in icona poi una volta che rientro esce zoomato nell'app... succede solo in orizzontale» (3 foto: normale, Home dell'iPad, zoomata → C106, in coda).
+09/11 ~18:27 (dopo l'handoff), parola per parola: «aspetta prima di pubblicare aggiungi la risoluzione del problema nell'altra sessione» → letto così: lo zoom dell'iPad (C106) lo risolve la #35, e la prossima pubblicazione deve contenerlo (niente push di codice a metà). La v0.9.81 era già online dalle 18:23 (si pubblica da sola a ogni push). Nel dubbio, chiedere a Mario in una riga (PT E3).
+Prima, 09/11 ~18:12, parola per parola: «in coda quando finisci aggiungi, che se  se da tablet iPad vado in icona poi una volta che rientro esce zoomato nell'app... succede solo in orizzontale» (3 foto: normale, Home dell'iPad, zoomata → C106, in coda).
 Prima: «Clicco su ipad e non succede nulla non sò se ha funzionato o meno correggi poi a monica gli escono 2 richieste anche se è la stessa persona si può correggere? una esce da link e una da app in home anxhe se è la stessa persona» (→ v0.9.81); «Fatto, ho pubblicato le regole».
 
 ## Numeri liberi
