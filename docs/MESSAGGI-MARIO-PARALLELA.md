@@ -30,3 +30,6 @@ va bene, quando è online dimmi dove premere
 
 ## 2026-11-09 11:08 · 01WTjqUwG7wN
 parlami dei numeri doppi non ho capito bene
+
+## 2026-11-09 14:15 · 01WTjqUwG7wN
+lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
