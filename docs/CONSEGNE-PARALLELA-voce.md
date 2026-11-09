@@ -39,12 +39,13 @@ Voce 9 = `session_01WTjqUuB1p39aBRtu1G1T8K` (aperta a mano da Mario 09/11 ~20:27
 In «## 0. Aspetta Mario»: 🟩 Voce 8 · chiave Deepgram; 🟩 Voce 9 · video dall'iPad di C110 (v0.9.88).
 
 ## Ultimo messaggio di Mario (parola per parola)
+09/11 ~20:58 (in Voce 9, dopo l'handoff): «Poi nel mio ipad non posso neanche aprire la schermata dev» → C111 in Da fare, passata alla Principale 36 (non è zona Voce).
 In Voce 9 Mario ha scritto solo il testo di avvio («[AVVIO] Sei la chat parallela «Voce 9» … Continua da sola dal «🔴 Prossimo lavoro», prima C110 (iPad come Android).»). Prima, in Voce 8:
 09/11 ~20:24 (video Android): «poi per android è una bomba per iPad fà schifo a confronto e penso anche per iphone a questo punto» · «guarda che bomba per android per ipad è completamente diverso...perché????»
 09/11 ~20:20 (foto iPad, pagina Aiutante): «non parlaè corretto? poi a volte ci mette un pó specialmente pa prima volta e non si vapisce quando clicchi il tasto e l'attesa bisogna riempirla se no sembra che non è partito»
 
 ## Numeri
-Controllo Da fare (messaggi di Mario in Voce 9: solo l'avvio): 0 voci aggiunte. Prossimo C libero: C111 (controlla su origin); lezioni: Voce 9 ha scritto PT E42, prossima PT E43. Impegno: `.claude/settings.json` com'è (condiviso, non toccato).
+Controllo Da fare (messaggi di Mario in Voce 9: avvio + schermata dev): 1 voce aggiunta (C111, alla Principale). Prossimo C libero: C112 (controlla su origin); lezioni: Voce 9 ha scritto PT E42, prossima PT E43. Impegno: `.claude/settings.json` com'è (condiviso, non toccato).
 
 ## Per riaprire la catena a mano (se Voce 10 non parte)
 Mario apre una sessione sul repo `Kur0ChanX/pronti-in-tavola`, ramo `claude/pronti-ramo-definitivo`, e incolla: «[AVVIO] Sei la chat parallela «Voce 10» (microfono dei clienti) di Pronti in Tavola: git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo. Leggi CLAUDE.md, docs/ERRORI.md e docs/CONSEGNE-PARALLELA-voce.md; continua da sola dal «🔴 Prossimo lavoro».»
