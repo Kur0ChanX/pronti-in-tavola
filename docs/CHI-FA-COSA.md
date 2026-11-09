@@ -4,7 +4,7 @@
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
 | Principale | cerchi | 🟢 🟡 🔴 ⚫ | 34 | `session_01WTjqUxkfi1LrUJwmzh137d` | |
-| Voce | quadrati | 🟩 🟨 🟥 ⬛ | 2 | (Voce 2 scrive qui il suo id all'avvio; Voce 1 `session_01WTjqUuVyq5p6FhV1dVJtVC` chiusa 09/11) | |
+| Voce | quadrati | 🟩 🟨 🟥 ⬛ | 2 | `session_01WTjqUx7JeVdDBrvgVgjfXx` (Voce 1 `session_01WTjqUuVyq5p6FhV1dVJtVC` chiusa 09/11) | |
 | Aiuto | libri | 📗 📒 📕 📓 | 10 | `session_01WTjqUwG7wNgyoWoXYNwdic` (Aiuto 10, catena 8 di 8; il resto alla principale) | 09/11 |
 
 ## Lavori in corso
