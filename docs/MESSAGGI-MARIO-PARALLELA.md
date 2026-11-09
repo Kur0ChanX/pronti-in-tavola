@@ -47,3 +47,6 @@ non parlaè corretto? poi a volte ci mette un pó specialmente pa prima volta e 
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4" poi per android è una bomba per iPad fà schifo a confronto e penso anche per iphone a questo punto
 
 guarda che bomba per android per ipad è completamente diverso...perché????
+
+## 2026-11-09 20:53 · 01WTjqUuB1p3
+Poi nel mio ipad non posso neanche aprire la schermata dev

@@ -1,3 +1,11 @@
-# Ultima risposta di Claude (09/11/2026 20:26 ora italiana)
+# Ultima risposta di Claude (09/11/2026 20:53 ora italiana)
 
-Non è una promessa nuova: la voce che torna a parlare è già nella voce C110 di `docs/DA-FARE.md`, con il suo «👁 Lo vedi» (la risposta si sente, prova con un video dall'iPad).
+Ho capito: dovevo far funzionare il microfono dei clienti su iPad (app aperta dall'icona sulla Home) come su Android (C110).
+
+✅ **FATTO**
+- **v0.9.88 online** (controllato sul sito: `VERSIONE_APP = '0.9.88'`). Giro completo delle prove in locale: 78 OK, 0 falliti.
+- Nella pagina Aiutante, appena tocchi il microfono:
+  - compare subito «Accendo il microfono…»;
+  - poi «Ti ascolto con attenzione…», con le barrette che si muovono con la tua voce;
+  - mentre aspetti, il riquadro dice cosa sta facendo («Controllo i nomi dei piatti…»).
+- **Voce delle risposte su iPad.** Il tocco sul microfono ora …
