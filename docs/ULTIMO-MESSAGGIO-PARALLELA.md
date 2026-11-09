@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 09:55 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+Domanda, ho visto che Firebase mi fa entrare con mario.miscera@gmail.com. Ti volevo chiedere, ma siccome ho una mail creata di pronti in tavola, lo possiamo mettere con un'altra mail o ci sono troppi passaggi da fare?
