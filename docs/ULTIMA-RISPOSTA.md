@@ -1,11 +1,5 @@
-# Ultima risposta di Claude (09/11/2026 19:39 ora italiana)
+# Ultima risposta di Claude (09/11/2026 20:07 ora italiana)
 
+Ramo allineato a GitHub (105eaec9). La chat Voce mi ha avvisato della tua idea: limiti separati per te e Monica e per i clienti. Se scegli la strada 1, l'aiutante dei clienti tocca a me, insieme a C109.
 
-
-## Domande a Mario
-
-❓ DOMANDA
-📌 Di cosa parliamo: `CLAUDE.md` è il file di regole che leggo a ogni avvio. Accorciarlo farebbe risparmiare circa lo 0,2% dei token. In cambio c'è un piccolo rischio di dimenticare le regole sulle prove.
-
-1. Accorcio: risparmio quasi nullo, piccolo rischio di provare l'app vecchia.
-2. Lascio così (consiglio): non cambia niente e tolgo la domanda dalla tua lista.
+Aspetto le tue risposte: per prima la 🛑 di C109 (limiti per persona), poi il tuo 1 o 2 sul file delle regole.
