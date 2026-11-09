@@ -36,3 +36,9 @@ lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra 
 
 ## 2026-11-09 17:25 · 01WTjqUx7JeV
 Continua con pensiero extra e se serve ripensa
+
+## 2026-11-09 20:00 · 01WTjqUwDxxa
+come condivisa con l'aiutante cosa significa?
+
+## 2026-11-09 20:05 · 01WTjqUwDxxa
+non si possono avere monica e me dei limiti e i clienti altri?
