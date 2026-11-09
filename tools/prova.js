@@ -984,6 +984,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('#prova-strisce').screenshot({ path: OUT + '/strisce.png' });   // controllo a occhio: rosso, verde, blu
     const tx = await page.evaluate(() => [...document.querySelectorAll('#prova-strisce img')].map(i => i.style.transform));
     if (tx.join('|') !== 'translateX(0%)|translateX(-33.3333%)|translateX(-66.6667%)') throw new Error('tagli: ' + tx.join('|'));
+    // (C114, foto di Mario 09/11 «se clicchi sono unite») ingrandita: UNA foto della striscia, non tutte e tre
+    await page.locator('#prova-strisce img').nth(1).dispatchEvent('click');
+    const z1 = await page.evaluate(() => { const i = document.querySelector('.ric-zoom-taglio img'); return [i && i.style.transform, document.querySelector('.ric-zoom-n').textContent]; });
+    await page.locator('.ric-zoom-s').click();
+    const z2 = await page.evaluate(() => { const i = document.querySelector('.ric-zoom-taglio img'); return [i && i.style.transform, document.querySelector('.ric-zoom-n').textContent]; });
+    await page.locator('.ric-zoom-x').click();
+    if (z1.join('|') !== 'translateX(-33.3333%)|2 / 3' || z2.join('|') !== 'translateX(-66.6667%)|3 / 3') throw new Error('foto a strisce ingrandite tutte insieme: ' + z1 + ' · ' + z2);
     // i numeri dal nome della foto (GZ): striscia «strip_4-6» anche se la frase salta un numero; foto singole «_27» anche senza numerino nella frase
     const daNome = await page.evaluate(() => {
       const d = document.getElementById('prova-strisce'), svg = d.querySelector('img').getAttribute('src').split('#')[0];
