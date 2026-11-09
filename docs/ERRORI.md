@@ -23,6 +23,7 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 - **PT E28** (08/11/2026) Ho scritto «il permesso l'hai rifiutato»: dal telefono la richiesta di cambiare l'ambiente non si può approvare, c'è solo «Nega» (foto di Mario). Richieste che si approvano solo dal computer: dirlo PRIMA e dare anche la strada dalle impostazioni.
 - **PT E29** (08/11/2026) Il motore delle ricette restava fermo su «Ricette sarde» (Mario: «non mi trova altre nuove ricette»): l'indirizzo della sezione era inventato (404) e il motore su una pagina rotta non andava avanti. Ogni indirizzo di un sito esterno si prova DAL VIVO prima di usarlo, e un giro automatico non deve mai poter restare fermo sullo stesso errore.
 - **PT E35** (09/11/2026) Il cursore della velocità della voce stava dentro `label.interr`: lo stile degli interruttori lo disegnava come un interruttore (pallino bianco finto, quello vero un puntino blu) e Mario non riusciva a tenere 0,75 («ritorna a 1,20»). Un controllo nuovo dentro una classe esistente: guardare la foto sul telefono prima di consegnarlo.
+- **PT E36** (09/11/2026) Ho chiesto a Mario di fare cose (la frase per la sessione del kit) senza dire a cosa servono: «a cosa serve?». Regola di Mario per tutti i progetti e account: ogni cosa che gli chiedo di fare (passi a mano, prove, foto, decisioni) dice in una riga «A cosa serve:», cioè cosa ottiene lui, l'app o il lavoro.
 
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
