@@ -183,9 +183,38 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.60';
+const VERSIONE_APP = '0.9.71';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.71', data: '09/11/2026',
+    nuovo: ['Ogni persona ha un codice fisso che non cambia mai (es. K7P2M): lo vedi in Clienti accanto al nome, negli ordini e negli ultimi avvisi. Mario è ⭐MARIO e Monica ⭐MONICA',
+      'Il cliente può correggere il suo nome («Correggi il nome»): Monica vede «ora si chiama… prima…» finché tocca «Visto»',
+      'In Clienti la matita accanto al nome cambia il nome che vedi tu; il cliente continua a vedere il suo',
+      'Aiutante: «come cambio il nome di un cliente?» ti porta in Clienti'] },
+  { v: '0.9.70', data: '09/11/2026',
+    corretto: ['Il foglio «Installa l\'app» non esce più a chi non ha ancora scritto il nome: prima il nome (così Monica riceve la richiesta), poi l\'app'] },
+  { v: '0.9.69', data: '09/11/2026',
+    corretto: ['Chi tocca «Guarda il menù» senza scrivere il nome legge in cima «Monica non sa ancora che ci sei» con «Scrivi il tuo nome». Se attiva le notifiche, prima gli si chiede il nome: senza nome Monica non riceve nessuna richiesta'] },
+  { v: '0.9.68', data: '08/11/2026',
+    nuovo: ['Chi aspetta il sì di Monica vede il suo nome, un codice e «Ricorda a Monica», che le rimanda l\'avviso. Ogni 6 ore lo rimanda da solo',
+      'Clienti: accanto a ogni persona nuova il suo codice; se non c\'è nessuno, «Nessuno in attesa» spiega cosa fare'] },
+  { v: '0.9.67', data: '08/11/2026',
+    nuovo: ['Impostazioni → Notifiche: chi gestisce vede gli ultimi avvisi mandati (ora, cosa, a quanti telefoni) e se questo telefono è iscritto davvero'],
+    corretto: ['L\'avviso «Persona nuova da accettare» parte sempre, anche se arriva subito dopo un altro'] },
+  { v: '0.9.66', data: '08/11/2026',
+    corretto: ['Clienti non ancora confermati da Monica: «Attiva le notifiche» non va più in giro continuo. Il sì resta ricordato e le notifiche partono da sole appena Monica conferma'] },
+  { v: '0.9.65', data: '08/11/2026',
+    nuovo: ['Clienti: appena entrano sale «Installa l\'app sul telefono»: scelgono iPhone o Android, seguono la guida e poi attivano le notifiche. «Più tardi» lo chiude fino alla prossima apertura'] },
+  { v: '0.9.64', data: '08/11/2026',
+    nuovo: ['Guida iPhone a figure: un disegno per passo con la freccia sul tasto giusto, per iOS 27, 26, 18 e Chrome'] },
+  { v: '0.9.63', data: '08/11/2026',
+    migliorato: ['Guida iPhone: «Lascia acceso Apri come app web e tocca Aggiungi» (iOS 26), così l\'icona apre l\'app e non Safari'] },
+  { v: '0.9.62', data: '08/11/2026',
+    nuovo: ['Clienti: in cima al menù «Lo stesso dell\'ultima volta?» con «Ordina di nuovo» in un tocco'],
+    migliorato: ['Clienti: «Metti l\'app sul telefono» arriva dopo il primo ordine (prima solo il menù, niente distrazioni)', 'Android: la finestra per installare l\'app è quella grande, con le foto dell\'app'] },
+  { v: '0.9.61', data: '08/11/2026',
+    migliorato: ['Cliente che mette l\'app nella schermata Home dopo essersi registrato: l\'app la riconosce da sola («Sei Sabrina Rossi? Sì, sono io», un tocco)'],
+    corretto: ['Stessa persona registrata nel browser e poi nell\'app installata: Monica vede una sola richiesta e il suo Sì fa un solo cliente, mai doppioni'] },
   { v: '0.9.60', data: '08/11/2026',
     nuovo: ['Impostazioni → «Parti del menù»: Monica rinomina, sposta e aggiunge le parti (es. «Secondi»); una parte con dei piatti non si toglie', 'A voce all\'aiutante: «aggiungi la parte secondi» (anche senza rete), poi conferma', 'Impostazioni: saluto in cima al menù, frase della pausa, altri modi di pagare (es. Satispay), messaggio d\'invito per gli amici, titolo e sottotitolo del biglietto'],
     migliorato: ['Piatti dal ricettario nella parte «Secondi» se c\'è'] },

@@ -316,7 +316,7 @@ function waMonica(o) {
   return wa(S.impostazioni.whatsapp, `${testa}\n\nVolevo chiederti: `);
 }
 const tastoMonica = () => S.impostazioni.whatsapp ? `<a class="wa-monica" href="${waMonica()}" target="_blank" rel="noopener" aria-label="Scrivimi su WhatsApp">${ico('chat')}<span>Scrivimi</span></a>` : '';
-const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && Dati.io.utente.nome) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
+const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && (Dati.mioNome ? Dati.mioNome() : Dati.io.utente.nome)) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
 /* il benvenuto: alla prima apertura il cliente nuovo scrive nome e cognome, senza non si entra (nell'anteprima: una volta per telefono) */
 function serveBenvenuto() {
   if (P.ruolo !== 'cliente' || UI.senzaNome || UI.devCliente) return false;   // lo sviluppatore che guarda come cliente non si registra
@@ -339,13 +339,51 @@ function guidaInstalla() {
   const pp = os === 'ios' ? [
     `Tocca <b>Condividi</b> ${CONDIVIDI} vicino all'indirizzo (su Safari tocca prima <b>⋯</b>).`,
     '<b>Scorri in giù</b> l\'elenco e tocca <b>Aggiungi alla schermata Home</b>.<br><small class="tenue">Non c\'è? In fondo tocca <b>Modifica azioni</b> e aggiungilo.</small>',
-    'Tocca <b>Aggiungi</b>.'] : [
+    'Lascia acceso <b>Apri come app web</b> e tocca <b>Aggiungi</b>.'] : [
     'Tocca <b>⋮</b> in alto a destra (Samsung: <b>≡</b> in basso).',
     'Scegli <b>Installa app</b> o <b>Aggiungi a schermata Home</b>.',
     'Tocca <b>Installa</b>.'];
   const tab = (v, t) => `<button type="button" class="gi-tab" data-a="guida-os" data-v="${v}" aria-pressed="${os === v}">${t}</button>`;
   return `<div class="guida-inst"><div class="gi-tabs" role="group" aria-label="Il tuo telefono">${tab('ios', 'iPhone')}${tab('android', 'Android')}</div>
-    <ol class="gi-passi">${pp.map(t => `<li>${t}</li>`).join('')}</ol></div>`;
+    ${os === 'ios' && window.GuidaIPhone ? GuidaIPhone.guidaIPhone() : `<ol class="gi-passi">${pp.map(t => `<li>${t}</li>`).join('')}</ol>`}</div>`;   // iPhone: guida a figure (C94, guida-iphone.js)
+}
+/* Invito «Installa l'app» (Mario 08/11 «fallo subito in priorità»): il cliente entra e naviga; dopo 2,5 secondi sale un foglio
+   bello ma non bloccante («Più tardi» lo chiude, torna alla prossima apertura). 1) «Che telefono hai?» iPhone | Android (il suo è segnato);
+   2) iPhone: guida a figure (guida-iphone.js) · Android: tasto «Installa» vero se il browser lo offre, sennò i passi;
+   3) le notifiche: su Android anche dal browser, su iPhone solo dall'app sulla schermata Home (Apple), quindi lì il foglio si riapre dall'icona e chiede solo quelle. */
+const notifPossibili = () => 'Notification' in window && 'serviceWorker' in navigator && Notification.permission !== 'denied' && !P.avvisiCliente && !P.vuoleAvvisi && !(Dati.attivo && Dati.io.gestore);
+function serveInvito() {
+  if (P.ruolo !== 'cliente' || UI.invitoFatto || UI.foglio || serveBenvenuto() || statoLucchetto() || senzaNome()) return false;   // (C97) prima il nome, poi l'app
+  if (!(sulSito() || UI.invitoProva)) return false;   // nelle prove si accende a mano (UI.invitoProva): sennò coprirebbe le altre prove
+  return !suHome() || notifPossibili();
+}
+function controllaInvito() {
+  if (!serveInvito()) return;
+  UI.invitoFatto = true;   // una volta per apertura
+  setTimeout(() => { if (!UI.foglio && P.ruolo === 'cliente' && !senzaNome()) { UI.foglio = { tipo: 'installa', os: null }; render(); } }, UI.invitoProva ? 50 : 2500);
+}
+function foglioInstalla() {
+  const f = UI.foglio, mio = telefono() === 'ios' ? 'ios' : 'android';
+  const testa = (t, s) => `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div>
+    <div class="dentro inv-app"><div class="inv-logo"><img src="media/icon-192.png" alt=""></div><h1>${t}</h1><p class="tenue" style="margin:0 0 12px">${s}</p>`;
+  const notifBtn = `<button type="button" class="btn pieno grande" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : 'Attiva le notifiche'}</button>
+    ${UI.notEsito ? `<p class="${UI.notEsito.ok ? 'ok' : 'tenue'} piccolo" style="margin:6px 0 0">${esc(UI.notEsito.t)}</p>` : ''}`;
+  const piede = `<div class="piede"><button type="button" class="btn chiaro" data-a="chiudi">${UI.notEsito && UI.notEsito.ok ? 'Chiudi' : 'Più tardi'}</button></div>`;
+  if (suHome()) return testa('Ultimo passo: le notifiche', 'Monica ti avvisa quando il tuo ordine è pronto o se ti propone un altro giorno. Tocca il tasto e poi <b>Consenti</b>.')
+    + notifBtn + '</div>' + piede;
+  if (!f.os) {
+    const scelta = (v, t, s) => `<button type="button" class="inv-tel${v === mio ? ' mio' : ''}" data-a="inv-os" data-v="${v}"><b>${t}</b><span>${s}</span>${v === mio ? '<em>Il tuo telefono</em>' : ''}</button>`;
+    return testa('Installa l\'app sul telefono', 'Gratis, in un minuto. La ritrovi tra le app, come WhatsApp, e Monica ti avvisa quando il tuo ordine è pronto.')
+      + `<p style="margin:0 0 8px"><b>Che telefono hai?</b></p><div class="inv-scelta">${scelta('ios', 'iPhone', 'Apple')}${scelta('android', 'Android', 'Samsung, Xiaomi, Motorola…')}</div></div>` + piede;
+  }
+  const altro = `<button type="button" class="link piccolo" data-a="inv-os" data-v="">← Ho un altro telefono</button>`;
+  if (f.os === 'ios') return testa('Installa su iPhone', 'Segui i disegni: la freccia rossa ti indica dove toccare.')
+    + (window.GuidaIPhone ? GuidaIPhone.guidaIPhone() : guidaInstalla())
+    + `<p class="tenue piccolo" style="margin:10px 0 0">Poi apri <b>Pronti in Tavola</b> dall'icona: ti chiederà di attivare le notifiche.</p>${altro}</div>` + piede;
+  const passiA = ['Tocca <b>⋮</b> in alto a destra (Samsung: <b>≡</b> in basso).', 'Scegli <b>Installa app</b> o <b>Aggiungi a schermata Home</b>.', 'Tocca <b>Installa</b>.'];
+  return testa('Installa su Android', installa ? 'Un tocco qui sotto, poi <b>Installa</b>.' : 'Tre tocchi:')
+    + (installa ? `<button type="button" class="btn pieno grande" data-a="installa">${ico('scarica')}Installa l'app</button>` : `<ol class="gi-passi">${passiA.map(t => `<li>${t}</li>`).join('')}</ol>`)
+    + (notifPossibili() ? `<p style="margin:14px 0 6px"><b>E le notifiche:</b> così sai quando il tuo ordine è pronto.</p>${notifBtn}` : '') + altro + '</div>' + piede;
 }
 function cartaHome(dopo) {
   if (suHome()) return '';
@@ -402,16 +440,50 @@ function cartaNotifica() {
   return `<section class="scheda"><h2>Notifiche</h2><p class="tenue" style="margin:0">${msg}</p>
     ${esito ? `<div class="avviso ${esito.ok ? 'verde' : ''}">${ico(esito.ok ? 'spunta' : 'x')}<div>${esc(esito.t)}</div></div>` : ''}
     ${(st === 'granted' || st === 'default') && sulSito() && Dati.io.gestore ? `<button type="button" class="btn pieno" data-a="avvisi-attiva"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : P.avvisiAttivi ? 'Iscrivi di nuovo questo telefono' : 'Tocca qui: ricevi gli ordini su questo telefono'}</button>
-    <p class="tenue piccolo" style="margin:0">${P.avvisiAttivi ? '✅ Questo telefono è iscritto: a ogni ordine nuovo suona.' : '❌ Questo telefono NON è ancora iscritto agli ordini.'}</p>` : ''}
+    <p class="tenue piccolo" style="margin:0">${P.avvisiAttivi ? '✅ Questo telefono è iscritto: a ogni ordine nuovo suona.' : '❌ Questo telefono NON è ancora iscritto agli ordini.'}</p>${diarioAvvisi()}` : ''}
     ${(st === 'granted' || st === 'default') && sulSito() && !Dati.io.gestore && P.cliente ? `<button type="button" class="btn pieno" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : P.avvisiCliente ? 'Riattiva l\'avviso su questo telefono' : 'Avvisami quando il mio ordine è pronto'}</button>
     <p class="tenue piccolo" style="margin:0">${P.avvisiCliente ? '✅ Avviso attivo: quando Monica segna «pronto», ti suona il telefono.' : 'Se preferisci, Monica ti scrive anche su WhatsApp come sempre.'}</p>` : ''}
     ${st === 'granted' || st === 'default' ? `<button type="button" class="btn chiaro pieno" data-a="notifica-prova"${UI.notProva ? ' disabled' : ''}>${ico('chat')}${UI.notProva ? 'Un attimo…' : 'Prova le notifiche'}</button>` : ''}
     <p class="tenue piccolo" style="margin:0">${Dati.attivo && Dati.io.gestore ? '«Ricevi gli ordini» iscrive questo telefono: a ogni ordine nuovo suona. «Prova» controlla solo che il telefono le sappia mostrare.' : '«Prova» controlla solo che il telefono sappia mostrare le notifiche.'}</p></section>`;
 }
+/* (C97, Mario 08/11 «non mi è arrivata nessuna notifica… di accettarlo»): chi gestisce vede cosa ha mandato il server
+   (ora, cosa, a quanti telefoni, se Google l'ha preso) e se il server conosce QUESTO telefono: così si capisce dove si perde */
+const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare',
+  risposta: 'Risposta sul giorno', modifica: 'Richiesta di modifica', qui: 'Cliente qui per il ritiro', prova: 'Prova', promemoria: 'Promemoria della sera', pronto: 'Ordine pronto (al cliente)', proposta: 'Altro giorno (al cliente)' };
+function voceDiario(d) {
+  const q = new Date(d.quando), ora = q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+  const giorno = q.toDateString() === new Date().toDateString() ? 'oggi' : q.toLocaleDateString('it-IT', { day: 'numeric', month: 'numeric' });
+  const presi = (d.esiti || []).filter(x => /^20\d$/.test(x)).length;
+  const come = d.fermo ? `❌ non partito (${d.fermo === 'tetto' ? 'troppi avvisi oggi' : 'appena dopo un altro'})`
+    : !d.telefoni ? '❌ nessun telefono iscritto' : presi === d.telefoni ? `✅ ${d.telefoni === 1 ? '1 telefono' : d.telefoni + ' telefoni'}` : `⚠️ ${presi} su ${d.telefoni} telefoni`;
+  return `<li><b>${giorno} ${ora}</b> · ${esc(NOMI_AVVISO[d.per] || d.per || 'Avviso')}${d.chi ? ` · codice ${mostraCodice(esc(d.chi))}` : ''} · ${come}</li>`;
+}
+function diarioAvvisi() {
+  const d = UI.diarioAvvisi;
+  if (!d) { if (!UI.diarioChiesto) caricaDiarioAvvisi(); return '<p class="tenue piccolo" style="margin:0">Controllo gli ultimi avvisi…</p>'; }
+  if (d.errore) return '<p class="tenue piccolo" style="margin:0">Ultimi avvisi: non riesco a leggerli adesso (manca la rete?).</p>';
+  const questo = d.questo === true ? '✅ Il server conosce questo telefono: gli avvisi arrivano qui.'
+    : d.questo === false ? '❌ Il server NON conosce questo telefono: tocca il pulsante qui sopra per iscriverlo.' : '';
+  const ultimi = (d.ultimi || []).slice(-5).reverse();
+  return `<div class="tenue piccolo" style="margin:0">${questo ? `<p style="margin:0 0 6px">${questo}</p>` : ''}<b>Ultimi avvisi mandati</b>
+    ${ultimi.length ? `<ul style="margin:4px 0 0;padding-left:18px">${ultimi.map(voceDiario).join('')}</ul>` : '<p style="margin:4px 0 0">Ancora nessuno.</p>'}
+    <p style="margin:6px 0 0">✅ = Google l'ha preso e l'ha mandato al telefono. Se c'è ✅ ma non hai visto niente: sul telefono controlla Impostazioni → App → Pronti in Tavola → Notifiche, e che il risparmio batteria non blocchi l'app.</p></div>`;
+}
+async function caricaDiarioAvvisi() {
+  UI.diarioChiesto = true;
+  try {
+    let e = '';
+    try { const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription(); e = sub ? sub.endpoint : ''; } catch (x) { /* niente iscrizione */ }
+    const r = await fetch('/api/stato' + (e ? '?e=' + encodeURIComponent(e) : ''), { cache: 'no-store' });
+    const j = await r.json();
+    UI.diarioAvvisi = Object.assign(j, { questo: e ? j.questo : false });
+  } catch (x) { UI.diarioAvvisi = { errore: true }; }
+  render();
+}
 /* notifiche vere degli ordini (C3): solo sul sito vero, dove c'è worker.js */
 const sulSito = () => Dati.attivo && location.origin === new URL(SITO).origin;
 /* tipo: ordine (nuovo), richiesta (persona nuova), risposta (alla proposta del giorno), modifica (C27, C33) */
-function avvisaGestori(tipo = 'ordine') { if (sulSito()) fetch('/api/avvisa', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo }) }).catch(() => {}); }
+function avvisaGestori(tipo = 'ordine') { if (sulSito()) fetch('/api/avvisa', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo, chi: Dati.mioCodice ? Dati.mioCodice() : '' }) }).catch(() => {}); }
 /* iscrive (o rinnova) questo telefono presso worker.js; ridà la funzione per altre chiamate col token */
 async function iscriviTelefono(tok) {
   const { chiave } = await (await fetch('/api/chiave')).json();
@@ -428,7 +500,12 @@ async function iscriviTelefono(tok) {
    in silenzio, si rimanda l'iscrizione di oggi (se il telefono l'ha cambiata, quella vecchia non vale più) */
 let rinnovato = false;
 async function rinnovaAvvisi() {
-  if (!rinnovato && P.avvisiCliente && !Dati.io.gestore && sulSito() && 'Notification' in window && Notification.permission === 'granted') { rinnovato = true; iscriviCliente().catch(() => { rinnovato = false; }); return; }
+  // (C96) anche chi ha detto sì alle notifiche PRIMA che Monica lo approvasse: si iscrive da solo appena è approvato
+  if (!rinnovato && (P.avvisiCliente || P.vuoleAvvisi) && P.cliente && !Dati.io.gestore && sulSito() && 'Notification' in window && Notification.permission === 'granted') {
+    rinnovato = true;
+    iscriviCliente().then(() => { if (!P.avvisiCliente || P.vuoleAvvisi) { P.avvisiCliente = true; P.vuoleAvvisi = false; salvaP(); } }).catch(() => { rinnovato = false; });
+    return;
+  }
   if (rinnovato || !P.avvisiAttivi || !sulSito() || !('Notification' in window) || Notification.permission !== 'granted') return;
   rinnovato = true;
   try { const tok = await Dati.token(); if (tok) await iscriviTelefono(tok); } catch (e) { rinnovato = false; }
@@ -459,6 +536,19 @@ async function attivaAvvisiCliente() {
   try {
     const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
     if (perm !== 'granted') throw new Error('permesso non dato: senza «Consenti» non arrivano');
+    /* (C96, foto di Mario 08/11: amico con iPhone in giro continuo «Non attivato: prima Monica deve approvarti»): chi aspetta Monica
+       dà il permesso adesso e si iscrive da solo appena è approvato (rinnovaAvvisi); il foglio non si ripropone */
+    /* (C97) senza nome Monica non lo vede: prima il nome (il sì alle notifiche resta ricordato) */
+    if (senzaNome()) {
+      P.vuoleAvvisi = true; salvaP(); UI.senzaNome = false; UI.foglio = null;
+      mostraToast('Prima scrivi nome e cognome: così Monica ti vede e ti dice di sì.');
+      return;
+    }
+    if (!P.cliente) {
+      P.vuoleAvvisi = true; salvaP();
+      UI.notEsito = { ok: true, t: 'Fatto! Le notifiche partono da sole appena Monica ti conferma.' };
+      return;
+    }
     await iscriviCliente();
     P.avvisiCliente = true; salvaP();
     UI.notEsito = { ok: true, t: 'Fatto! Quando il tuo ordine è pronto, ti arriva un avviso qui.' };
@@ -481,7 +571,7 @@ async function attivaAvvisi() {
     UI.notEsito = { ok: true, t: `Fatto! Da ora ogni ordine nuovo ti suona qui. È partita una notifica di prova${p.telefoni > 1 ? ` (${p.telefoni} telefoni iscritti)` : ''}: guarda in alto.` };
   } catch (e) {
     UI.notEsito = { ok: false, t: 'Non attivate: ' + ((e && e.message) || 'errore sconosciuto') + '.' };
-  } finally { UI.notProva = false; render(); }
+  } finally { UI.notProva = false; UI.diarioAvvisi = null; UI.diarioChiesto = false; render(); }   // (C97) rilegge gli ultimi avvisi
 }
 async function provaNotifica() {
   UI.notProva = true; UI.notEsito = null; render();
@@ -580,13 +670,23 @@ function richiesteGestore() {
 function chiGestisce() {
   const gg = (Dati.attivo && Dati.io.gestoriLista) || [];
   return `<section class="scheda"><h2>Chi gestisce la cucina</h2>
-    ${gg.map(g => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(g.nome || 'Senza nome')}${g.uid === Dati.io.uid ? ' (tu)' : ''}</b>
+    ${gg.map(g => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(g.nome || 'Senza nome')}${g.uid === Dati.io.uid ? ' (tu)' : ''}${g.codice ? ` <span class="codice-cl">${mostraCodice(g.codice)}</span>` : ''}</b>
       ${g.uid === Dati.io.uid ? '' : `<button type="button" class="btn chiaro piccolo" data-a="gest-togli" data-id="${esc(g.uid)}">${UI.gestTogli === g.uid ? 'Tocca ancora per togliere' : 'Togli'}</button>`}</div>`).join('')}
     ${richiesteGestore()}
     <p class="tenue" style="margin:0">Manda l'invito a chi deve gestire con te: entra col suo Google e tu dici sì da qui.</p>
     ${bottoneBiglietto('m', 'Invita Monica', 'pieno')}${bottoneBiglietto('g', 'Invita un\'altra persona', 'chiaro pieno')}</section>`;
 }
+/* (C93) Il nome resta anche in un cookie: iPhone copia i cookie nell'app quando la metti nella schermata Home (iOS 17.2+),
+   così l'app installata ti riconosce da sola con un tocco («Sei Sabrina Rossi? Sì, sono io»). Solo il nome, niente altro. */
+function nomeRicordato() {
+  try { const m = document.cookie.match(/(?:^|;\s*)pit_nome=([^;]*)/); return m ? decodeURIComponent(m[1]).replace(/\s+/g, ' ').trim().slice(0, 60) : ''; } catch (e) { return ''; }
+}
+function ricordaNome(n) {
+  if (!n || n === nomeRicordato()) return;
+  try { document.cookie = `pit_nome=${encodeURIComponent(n)}; max-age=31536000; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`; } catch (e) { /* cookie spenti: si scrive il nome a mano */ }
+}
 function vBenvenuto() {
+  if (!UI.benv) { const r = nomeRicordato(), i = r.indexOf(' '); if (i > 0) UI.benv = { nome: r.slice(0, i), cognome: r.slice(i + 1), ricordato: r }; }
   const b = UI.benv || {};
   let h = `<main class="corpo benvenuto"><img class="benv-logo" src="media/logo-medaglione.webp" alt="Pronti in Tavola con Monica">
     <h1>${esc(opz('saluto'))}</h1><p class="tenue">Monica cucina per te a Olbia. Prima di entrare, dicci come ti chiami: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>`;
@@ -596,6 +696,9 @@ function vBenvenuto() {
     <input type="text" id="benv-nome" autocomplete="given-name" autocapitalize="words" maxlength="30" placeholder="es. Laura" value="${esc(b.nome || '')}">
     <label class="etichetta" for="benv-cognome" style="font-weight:800">Il tuo cognome</label>
     <input type="text" id="benv-cognome" autocomplete="family-name" autocapitalize="words" maxlength="30" placeholder="es. Sanna" value="${esc(b.cognome || '')}" enterkeyhint="go"></section>`;
+  if (b.ricordato && !b.usato) return h.replace(/<p class="tenue">[\s\S]*?<\/p>/, '') + `<section class="scheda benv-ricordato"><h2>Bentornati!</h2><p style="font-size:1.15em;margin:6px 0 14px">Sei <b>${esc(b.ricordato)}</b>?</p>
+    <button type="button" class="btn verde pieno" data-a="benv-ricordato"${UI.benvInvio ? ' disabled' : ''}>${UI.benvInvio ? 'Un attimo…' : `${ico('spunta')}Sì, sono io`}</button>
+    <button type="button" class="btn chiaro pieno" style="margin-top:10px" data-a="benv-non-io">No, sono un'altra persona</button></section></main>`;
   if (b.usato) h += `<div class="avviso"><div><b>«${esc(b.usato)}» c'è già.</b> Sei tu con un telefono nuovo?
     <div class="fila" style="margin-top:10px"><button type="button" class="btn" data-a="benv-ricollega">Sì, sono io</button><button type="button" class="btn chiaro" data-a="benv-altro">No, è un'altra persona</button></div>
     <small>Se è un'altra persona con lo stesso nome, aggiungi qualcosa (es. «Laura Sanna B.»).</small></div></div>`;
@@ -604,13 +707,19 @@ function vBenvenuto() {
 }
 async function benvEntra(ricollega) {
   const prendi = id => { const i = document.getElementById(id); return i ? i.value.replace(/\s+/g, ' ').trim() : ''; };
-  const b = UI.benv = Object.assign({}, UI.benv, ricollega ? {} : { nome: prendi('benv-nome'), cognome: prendi('benv-cognome') });
+  const ricordato = ricollega === 'ricordato';   // (C93) dal cookie: prima come nome nuovo, se c'è già come telefono nuovo
+  if (ricordato) ricollega = false;
+  const b = UI.benv = Object.assign({}, UI.benv, ricollega || ricordato ? {} : { nome: prendi('benv-nome'), cognome: prendi('benv-cognome') });
   if (b.nome.length < 2) { mostraToast('Scrivi il tuo nome.'); const i = $('#benv-nome'); if (i) i.focus(); return; }
   if (b.cognome.length < 2) { mostraToast('Scrivi anche il cognome.'); const i = $('#benv-cognome'); if (i) i.focus(); return; }
-  const tutto = ricollega ? b.usato : [b.nome, b.cognome].map(x => x.split(' ').map(maiuscola).join(' ')).join(' ');
+  const tutto = ricollega ? b.usato : ricordato ? b.ricordato : [b.nome, b.cognome].map(x => x.split(' ').map(maiuscola).join(' ')).join(' ');
   if (Dati.attivo) {
     UI.benvInvio = true; render();
-    try { await Dati.registra(tutto, P.tramite || '', !!ricollega); avvisaGestori('richiesta'); }
+    try {
+      try { await Dati.registra(tutto, P.tramite || '', !!ricollega); }
+      catch (e) { if (!(ricordato && e.code === 'permission-denied')) throw e; await Dati.registra(tutto, P.tramite || '', true); }
+      avvisaGestori('richiesta'); P.ricordatoIl = Date.now(); salvaP(); ricordaNome(tutto);   // (C97) niente secondo avviso subito
+    }
     catch (e) {
       UI.benvInvio = false;
       if (e.code === 'permission-denied' && !ricollega) { UI.benv.usato = tutto; render(); return; }
@@ -618,7 +727,7 @@ async function benvEntra(ricollega) {
       render(); mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); return;
     }
     UI.benvInvio = false;
-  } else { P.benvenuto = true; P.nomeProva = tutto; salvaP(); }
+  } else { P.benvenuto = true; P.nomeProva = tutto; salvaP(); ricordaNome(tutto); }
   UI.benv = null; vai('menu');
   mostraToast(`Ciao ${nomeBreve(tutto)}! Ecco il menù di Monica.`);
 }
@@ -659,13 +768,41 @@ function carosello() {
 const suSamsung = /SamsungBrowser/i.test(navigator.userAgent) && !/Android.*wv/.test(navigator.userAgent);
 /* Mario 07/11: il cliente non ancora accettato lo legge chiaro, sempre (anche dopo «Più tardi»), nel menù, dopo l'invio e nei suoi ordini */
 const inAttesa = () => { const u = Dati.attivo ? Dati.io.utente : null; return !!(u && ['nuovo', 'ricollega'].includes(u.stato)); };
-const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta.</b><br>Monica ti conosce e ti dice di sì dall'app: di solito in giornata. Il tuo primo ordine lo vede lei e te lo conferma.</div></div>` : '';
+const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico('orologio')}<div><b>Attendi che Monica accetti la tua richiesta.</b><br>Monica ti conosce e ti dice di sì dall'app: di solito in giornata. Il tuo primo ordine lo vede lei e te lo conferma.${righeAttesa()}</div></div>` : avvisoSenzaNome();
+/* (C97, Mario 08/11 «gli dice che Monica deve attivarlo ma non c'è nessuno da attivare, come se si fosse persa»):
+   chi aspetta vede il suo nome e un codice da dire a Monica, e «Ricorda a Monica» rimanda l'avviso «persona nuova».
+   Una volta ogni 6 ore lo rimanda da solo all'apertura: se il primo si è perso, Monica lo riceve di nuovo. */
+/* (C97, Mario 09/11: Francesco «Monica deve attivarlo» ma in Clienti nessuno): chi tocca «Guarda il menù» non ha scritto il nome,
+   quindi Monica non lo vede. Lo leggono chiaro, con il tasto per scriverlo subito. */
+const senzaNome = () => Dati.attivo && P.ruolo === 'cliente' && !Dati.io.gestore && Dati.io.letto && !Dati.io.utente && !UI.devCliente;
+const avvisoSenzaNome = () => senzaNome() ? `<div class="avviso attesa-forte">${ico('clienti')}<div><b>Monica non sa ancora che ci sei.</b><br>Scrivi nome e cognome: le arriva la tua richiesta e ti può dire di sì.
+  <br><button type="button" class="btn piccolo" style="margin-top:8px" data-a="benv-torna">Scrivi il tuo nome</button></div></div>` : '';
+const codiceTel = uid => String(uid || '').slice(0, 4).toUpperCase();   // solo per chi non ha ancora il codice fisso
+/* (C99) codice fisso del profilo: ⭐ davanti a quelli di Mario e Monica */
+const mostraCodice = c => c ? (c === 'MARIO' || c === 'MONICA' ? '⭐' + c : c) : '';
+const codiceDi = o => mostraCodice(o.cliente ? (S.clienti.find(c => c.id === o.cliente) || {}).codice
+  : ((S.richieste || []).find(r => r.primo === o.id) || (S.utenti || []).find(u => u.uid === o.utente) || {}).codice);
+const nomeNonVisto = c => { const n = (c.nomiPrima || []).length, u = n && c.nomiPrima[n - 1]; return !!(u && u.chi === 'cliente' && (c.nomiVisti || 0) < n); };
+const quando = il => il ? F_DATA.format(daIso(String(il).slice(0, 10))) : '';
+function profiloCliente() {   // il cliente approvato vede il suo nome e il suo codice, e può correggere il nome
+  if (!Dati.attivo || P.ruolo !== 'cliente' || Dati.io.gestore || UI.devCliente || !Dati.io.utente || Dati.io.utente.stato !== 'approvato') return '';
+  const c = Dati.mioCodice();
+  return `<p class="tenue piccolo" style="margin:6px 0 10px">Sei <b>${esc(Dati.mioNome())}</b>${c ? ` · codice <b>${mostraCodice(c)}</b>` : ''} · <button type="button" class="link piccolo" data-a="mio-nome">Correggi il nome</button></p>`;
+}
+function righeAttesa() {
+  const u = Dati.io.utente || {};
+  if (!UI.ricordoAuto && Date.now() - (P.ricordatoIl || 0) > 6 * 3600e3) { UI.ricordoAuto = true; P.ricordatoIl = Date.now(); salvaP(); avvisaGestori('richiesta'); }
+  return `<br><span class="piccolo">Per Monica sei <b>${esc(Dati.mioNome() || u.nome || '')}</b> · codice <b>${mostraCodice(Dati.mioCodice()) || codiceTel(Dati.io.uid)}</b></span>
+    <br><span class="fila" style="margin-top:8px"><button type="button" class="btn chiaro piccolo" data-a="ricorda-monica">${ico('invito')}Ricorda a Monica</button>
+    <button type="button" class="btn chiaro piccolo" data-a="mio-nome">${ico('matita')}Correggi il nome</button></span>`;
+}
 function primiPassi() {
   if (UI.modifica) return '';
   if (UI.passiVia) return avvisoAttesa();
-  const attesa = inAttesa();
+  const attesa = inAttesa() || senzaNome();   // (C97) anche chi non ha scritto il nome lo legge in cima
   const notifOk = sulSito() && P.cliente && 'Notification' in window && Notification.permission !== 'denied';
-  const notif = notifOk && !P.avvisiCliente, app = !suHome();
+  // (C93) l'invito a mettere l'app sul telefono arriva DOPO il primo ordine (guida web.dev): prima solo il menù, niente distrazioni
+  const notif = notifOk && !P.avvisiCliente, app = !suHome() && !!P.ordinato;
   if (!attesa && !notif && !app) return '';
   let h = '<section class="scheda primi-passi">';
   if (attesa) h += avvisoAttesa();
@@ -685,7 +822,7 @@ function primiPassi() {
 function vMenu() {
   const imp = S.impostazioni, cats = CATEGORIE.filter(([k]) => visibili().some(p => p.cat === k && p.disponibile));
   /* foto del menù ai clienti: in attesa (Mario 07/11 «non sono molto convinto, aspettiamo»): per ora Monica le manda e basta */
-  let h = testataCliente() + '<main class="corpo">' + primiPassi() + (typeof barraAIC === 'function' ? barraAIC() : '') + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
+  let h = testataCliente() + '<main class="corpo">' + primiPassi() + ultimoDaRifare() + (typeof barraAIC === 'function' ? barraAIC() : '') + (UI.modifica || !imp.menuFotoClienti ? '' : carosello());
   if (UI.modifica) {
     const o = S.ordini.find(x => x.id === UI.modifica.ordine);
     h += `<div class="avviso">${ico('matita')}<div><b>Stai cambiando l'ordine n. ${o.n}.</b><br>Tocca i piatti da aggiungere, poi «Rivedi la modifica».
@@ -714,6 +851,7 @@ function vMenu() {
   h += P.allergie.length
     ? `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Le tue allergie:</b> ${esc(P.allergie.map(a => NOME_ALL[a].toLowerCase()).join(', '))}<br><u>Cambia</u></span></button>`
     : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b><br><small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`;
+  h += profiloCliente();
   h += `<nav class="schede-cat" aria-label="Parti del menù">${cats.map(([k, n]) => `<button type="button" class="chip" data-a="cat" data-v="${k}" aria-pressed="${UI.cat === k}">${n}</button>`).join('')}
 </nav>`;
   if (!cats.length && !pronti.length) h += Dati.attivo && !Dati.io.pronto
@@ -825,11 +963,23 @@ function vCarrello() {
   return h + '</main>';
 }
 
+/* (C93) «Ordina di nuovo» in cima al menù: l'ultimo ordine finito, rifatto con un tocco (va nel carrello, si può cambiare) */
+function ultimoDaRifare() {
+  if (UI.modifica || !P.cliente || P.carrello.length) return '';
+  const o = S.ordini.filter(o => o.cliente === P.cliente && o.stato === 'ritirato').sort((a, b) => b.entro.localeCompare(a.entro) || b.n - a.n)[0];
+  if (!o) return '';
+  const cosa = o.righe.map(r => { const p = piatto(r.piatto); return p ? `${esc(p.nome)}${r.qta > 1 ? ' ×' + r.qta : ''}` : ''; }).filter(Boolean);
+  if (!cosa.length) return '';
+  return `<section class="scheda rifai"><h2>${ico('carrello')}Lo stesso dell'ultima volta?</h2><p class="tenue" style="margin:0 0 10px">${cosa.slice(0, 4).join(', ')}${cosa.length > 4 ? '…' : ''}</p>
+    <button type="button" class="btn pieno grande" data-a="riordina" data-id="${o.id}">Ordina di nuovo</button></section>`;
+}
 function vInviato() {
+  if (!P.ordinato) { P.ordinato = true; salvaP(); }   // (C93) da ora si propone di mettere l'app sul telefono
   return `${testataCliente()}<main class="corpo"><div class="inviato"><div class="scoppio">${Array.from({ length: 10 }, (_, i) => `<i style="--a:${i * 36}deg"></i>`).join('')}<div class="spunta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div></div>
     <h1>Ordine inviato!</h1>${avvisoAttesa()}<p class="tenue" style="margin:0">${Dati.attivo && Dati.io.utente && Dati.io.utente.stato !== 'approvato'
       ? 'È il tuo primo ordine: Monica lo guarda e ti conferma lei.' : 'Monica lo vede appena apre l\'app e ti conferma lei il giorno.'}<br>Lo segui in «I miei ordini».</p>
-    <div class="fila larga" style="width:100%"><button type="button" class="btn" data-a="vai" data-v="ordini">I miei ordini</button><button type="button" class="btn chiaro" data-a="vai" data-v="menu">Torna al menù</button></div></div></main>`;
+    <div class="fila larga" style="width:100%"><button type="button" class="btn" data-a="vai" data-v="ordini">I miei ordini</button><button type="button" class="btn chiaro" data-a="vai" data-v="menu">Torna al menù</button></div></div>
+    ${P.ruolo === 'cliente' ? cartaHome('La prossima volta apri l\'app dall\'icona e ordini in un attimo.') : ''}</main>`;
 }
 
 function tappe(o) {
@@ -1057,7 +1207,7 @@ function waOrdine(o, tipo) {
 }
 function cartaOrdineMonica(o) {
   const r = richiestaDi(o), righe = daAccettare(o) ? prezziGiusti(o.righe) : o.righe;
-  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n}</span></div>
+  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n}${codiceDi(o) ? ` · codice ${codiceDi(o)}` : ''}</span></div>
     ${bollinoProva(o)}<span class="stato ${o.stato}">${r && r.cliente ? 'Telefono nuovo' : STATO_MONICA[o.stato]}</span></header>${dateOrdine(o)}${tempiOrdine(o)}`;
   if (r) h += `<div class="avviso">${ico('clienti')}<div>${r.cliente ? `<b>Telefono nuovo.</b> Dice di essere ${esc(r.nome)}, che conosci già. Se è lei, ricollega: vedrà i suoi ordini.`
     : `<b>Prima volta.</b> ${r.tramite ? `Amica di ${esc(r.tramite)}.` : ''} Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.`}</div></div>`;
@@ -1162,7 +1312,7 @@ function rigaOrd(o, conGiorno) {
   if (UI.ordAperto === o.id) return `<div class="ord-aperto">${cartaOrdineMonica(o)}<button type="button" class="link" data-a="ord-apri" data-id="${o.id}">Chiudi</button></div>`;
   const cosa = o.righe.map(r => `${qtaTesto(r.tipo, r.qta, r.formatoNome)} ${r.nome}`).join(', ');
   const chi = chiOrdina(o);
-  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n).toLowerCase())}">
+  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n + ' ' + codiceDi(o).replace('⭐', '')).toLowerCase())}">
     <span class="ord-n">n. ${o.n}${conGiorno ? `<small>${F_BREVE.format(daIso(giornoDi(o)))}</small>` : ''}</span>
     <span class="ord-chi"><b>${bollinoProva(o)}${esc(chi)}</b><small>${esc(cosa)}</small></span>
     <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && !['proposta', 'prova'].includes(o.stato) ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
@@ -1337,22 +1487,49 @@ function bottoniRichiesta(r) {
   const occ = UI.decido === r.id ? ' disabled' : '';
   return `<div class="fila larga"><button type="button" class="btn verde" data-a="richiesta-si" data-id="${r.id}"${occ}>${ico('spunta')}${r.cliente ? 'Sì, ricollega' : 'Sì, può ordinare'}</button><button type="button" class="btn chiaro" data-a="richiesta-no" data-id="${r.id}"${occ}>No</button></div>`;
 }
+/* (C99) ogni cliente col suo codice; la matita cambia il «nome per Monica»; se il cliente ha corretto il suo, Monica lo vede finché tocca «Visto» */
+function rigaMioCliente(c) {
+  const n = S.ordini.filter(o => o.cliente === c.id && o.stato !== 'prova').length, storia = c.nomiPrima || [], ult = storia[storia.length - 1];
+  const nonVisto = nomeNonVisto(c), suo = c.nomeCliente && c.nomeCliente !== c.nome ? c.nomeCliente : '';
+  return `<div class="cliente-riga${nonVisto ? ' nome-cambiato' : ''}" data-id="${c.id}" style="border-bottom:1px dashed var(--riga);padding:8px 0"><div class="fila" style="justify-content:space-between;flex-wrap:nowrap">
+    <div><b>${esc(c.nome || c.nomeCliente || 'Cliente')}</b>${c.codice ? ` <span class="codice-cl">${mostraCodice(c.codice)}</span>` : ''}<br><span class="tenue piccolo">${c.invitato && !n ? 'Invitata, non ha ancora ordinato' : `${n} ordini · dal ${F_DATA.format(daIso(c.da))}`}</span>
+    ${suo && !nonVisto ? `<br><span class="tenue piccolo">Si fa chiamare «${esc(suo)}»</span>` : ''}</div>
+    <button type="button" class="btn chiaro piccolo" data-a="nome-monica" data-id="${c.id}" aria-label="Cambia il nome di ${esc(c.nome || '')}">${ico('matita')}</button></div>
+    ${nonVisto ? `<div class="avviso" style="margin-top:6px">${ico('matita')}<div><b>Nome cambiato.</b> Ora si chiama «${esc(c.nomeCliente || '')}» · prima «${esc(ult.nome)}» (cambiato dal cliente il ${quando(ult.il)}).
+      <br><button type="button" class="btn chiaro piccolo" style="margin-top:6px" data-a="nome-visto" data-id="${c.id}">${ico('spunta')}Visto</button></div></div>` : ''}</div>`;
+}
+function foglioMioNome() {
+  return `<h2>Il tuo nome</h2>
+    <p class="tenue">Hai sbagliato a scriverlo? Correggilo qui. Monica vede il nome nuovo e quello di prima. Il tuo codice resta lo stesso.</p>
+    <input type="text" id="mio-nome" aria-label="Nome e cognome" autocomplete="name" maxlength="60" value="${esc(Dati.mioNome())}">
+    <button type="button" class="btn pieno" data-a="mio-nome-ok">${ico('spunta')}Va bene così</button>`;
+}
+function foglioNomeMonica() {
+  const c = S.clienti.find(x => x.id === UI.foglio.id) || {}, storia = (c.nomiPrima || []).slice(-5).reverse();
+  return `<h2>Come lo chiami tu?</h2>
+    <p class="tenue">Il nome che vedi tu negli ordini e nella lista. Il cliente continua a vedere il suo.${c.codice ? ` Codice: <b>${mostraCodice(c.codice)}</b> (non cambia mai).` : ''}</p>
+    <input type="text" id="nome-monica" aria-label="Nome per te" maxlength="60" value="${esc(c.nome || '')}">
+    <button type="button" class="btn pieno" data-a="nome-monica-ok">${ico('spunta')}Va bene così</button>
+    ${storia.length ? `<p class="tenue piccolo"><b>Si chiamava prima:</b> ${storia.map(x => `«${esc(x.nome)}» (${x.chi === 'cliente' ? 'cambiato dal cliente' : 'cambiato da chi gestisce'} il ${quando(x.il)})`).join(' · ')}</p>` : ''}`;
+}
 function vClienti() {
   const conta = id => S.ordini.filter(o => o.cliente === id && o.stato !== 'prova').length;
   const ordineDi = r => { const o = r.primo && ordine(r.primo); return o && o.stato === 'daApprovare' ? o : null; };
   const riga = r => { const o = ordineDi(r);
     return `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">${r.cliente ? 'Dice che ha cambiato telefono' : r.tramite ? 'Amica di ' + esc(r.tramite) : 'Ha trovato il link'}
+      · codice ${r.codice ? mostraCodice(r.codice) : [r.id, ...(r.gemelli || [])].map(codiceTel).join(', ')}${(r.nomiPrima || []).length ? ` · prima si chiamava «${esc(r.nomiPrima[r.nomiPrima.length - 1].nome)}»` : ''}
       · ${o ? `ha ordinato: ${euro(totale(prezziGiusti(o.righe)))}, ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}` : 'non ha ancora ordinato'}</span></div>${bottoniRichiesta(r)}</div>`; };
   const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
   const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
     <button type="button" class="btn verde piccolo" data-a="rifiutato-si" data-id="${r.id}"${UI.decido === r.id ? ' disabled' : ''}>${ico('spunta')}Accetta</button></div>`;
   return `${testataMonica('Clienti', 'home')}<main class="corpo">
     ${telefoni.length ? `<section class="scheda"><h2>Telefono nuovo</h2><p class="tenue" style="margin:0">Hanno lo stesso nome di un tuo cliente. Se è proprio lei, ricollega: ritrova i suoi ordini.</p>${telefoni.map(riga).join('')}</section>` : ''}
+    ${!nuovi.length && !telefoni.length ? `<section class="scheda"><h2>Nessuno in attesa</h2><p class="tenue" style="margin:0">Qualcuno ti dice che aspetta il tuo sì? Chiedigli di toccare «Ricorda a Monica» nell'app: se c'è, compare qui col suo codice. Se non compare, deve riaprire il link e scrivere di nuovo il nome.</p></section>` : ''}
     ${nuovi.length ? `<section class="scheda"><h2>Nuovi</h2><p class="tenue" style="margin:0">Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.</p>${nuovi.map(riga).join('')}</section>` : ''}
     <section class="scheda"><h2>Fai conoscere la tua cucina</h2><p class="tenue" style="margin:0">Manda il link a chi vuoi: vede il menù e al primo ordine scrive il suo nome. Poi decidi tu.</p>
       ${bottoneBiglietto('a', 'Manda l\'invito su WhatsApp', 'pieno')}
       <label class="interr"><span>Accetta clienti nuovi<small>Spento: chi ha il link vede il menù, ma non può fare il primo ordine.</small></span><input type="checkbox" data-campo="i.nuovi" ${S.impostazioni.nuovi !== false ? 'checked' : ''}></label></section>
-    <section class="scheda"><h2>I tuoi clienti</h2>${S.clienti.map(c => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><div><b>${esc(c.nome)}</b><br><span class="tenue piccolo">${c.invitato && !conta(c.id) ? 'Invitata, non ha ancora ordinato' : `${conta(c.id)} ordini · dal ${F_DATA.format(daIso(c.da))}`}</span></div></div>`).join('')}</section>
+    <section class="scheda"><h2>I tuoi clienti</h2>${S.clienti.map(rigaMioCliente).join('')}</section>
     ${rifiutati.length ? `<section class="scheda"><button type="button" class="link" data-a="rifiutati-apri" aria-expanded="${!!UI.rifiutati}" style="text-align:left">Persone rifiutate (${rifiutati.length}) ${UI.rifiutati ? '▲' : '▼'}</button>
       ${UI.rifiutati ? `<p class="tenue" style="margin:0">Hai detto di no a queste persone: non vedono l'indirizzo e non possono ordinare. Se hai sbagliato, tocca «Accetta»: da quel momento sono tue clienti.</p>${rifiutati.map(rigaRifiutato).join('')}` : ''}</section>` : ''}</main>`;
 }
@@ -1561,6 +1738,7 @@ function render() {
   const invito = !chiuso && P.invitoGestore && P.ruolo !== 'monica';
   const benv = !chiuso && (invito || serveBenvenuto());
   if (!chiuso) controllaRichieste();
+  if (P.ruolo !== 'monica' && Dati.attivo && Dati.io.utente && Dati.io.utente.nome && !Dati.io.gestore) ricordaNome(Dati.io.utente.nome);   // (C93) anche chi si era registrato prima
   $('#app').innerHTML = striscia() + (chiuso ? vLucchetto(chiuso) : P.ruolo === 'monica' ? vistaMonica() : invito ? vInvitoGestore() : benv ? vBenvenuto() : vistaCliente()) + firma()
     + (UI.avvisoTesto && !chiuso ? `<div class="notifica" role="status"><img src="media/icon-192.png" alt=""><div><b>Dalla notifica</b><span>${esc(UI.avvisoTesto)}</span></div></div>` : '');
   $('#barra').innerHTML = P.ruolo === 'cliente' && !benv ? barraCliente() : '';
@@ -1569,7 +1747,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1598,6 +1776,7 @@ function render() {
   if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|ai-testo)/.test(attivo)) document.getElementById(attivo).focus();
   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
   if (chiuso === 'chiuso') setTimeout(provaApri, 0);
+  if (!benv && !chiuso) controllaInvito();   // invito «Installa l'app» per i clienti (Mario 08/11)
 }
 
 /* ================= AZIONI ================= */
@@ -1627,7 +1806,7 @@ function notificaMonica() {
   const o = nuovi[nuovi.length - 1], piu = nuovi.length > 1;
   const el = document.createElement('div');
   el.className = 'notifica'; el.setAttribute('role', 'status');
-  el.innerHTML = `<img src="${LOGO}" alt=""><div><b>${piu ? `${nuovi.length} ordini nuovi` : `${o.stato === 'daApprovare' ? 'Cliente nuovo' : 'Nuovo ordine'}: ${esc(chiOrdina(o))}`}</b><span>${piu ? esc([...new Set(nuovi.map(chiOrdina))].join(', ')) + ' · ' + euro(nuovi.reduce((s, x) => s + totale(x.righe), 0)) : `${o.righe.length} ${o.righe.length === 1 ? 'piatto' : 'piatti'} · ${euro(totale(o.righe))} · ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}`}</span></div>`;
+  el.innerHTML = `<img src="${LOGO}" alt=""><div><b>${piu ? `${nuovi.length} ordini nuovi` : `${o.stato === 'daApprovare' ? 'Cliente nuovo' : 'Nuovo ordine'}: ${esc(chiOrdina(o))}${codiceDi(o) ? ` (${codiceDi(o)})` : ''}`}</b><span>${piu ? esc([...new Set(nuovi.map(chiOrdina))].join(', ')) + ' · ' + euro(nuovi.reduce((s, x) => s + totale(x.righe), 0)) : `${o.righe.length} ${o.righe.length === 1 ? 'piatto' : 'piatti'} · ${euro(totale(o.righe))} · ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}`}</span></div>`;
   document.body.appendChild(el); setTimeout(() => el.remove(), 5200);
 }
 const ordine = id => S.ordini.find(o => o.id === id);
@@ -1827,10 +2006,15 @@ const A = {
   'menu-immagine'() { mandaMenu(); },
   'notifica-prova'() { provaNotifica(); },
   'avvisi-attiva'() { attivaAvvisi(); },
+  'ricorda-monica'() {   // (C97) al massimo uno ogni 5 minuti
+    if (Date.now() - (P.ricordatoIl || 0) < 5 * 60e3) { mostraToast('Monica è già stata avvisata da poco: aspetta qualche minuto.'); return; }
+    P.ricordatoIl = Date.now(); salvaP(); avvisaGestori('richiesta'); mostraToast('Fatto: ho mandato di nuovo l\'avviso a Monica.');
+  },
   'avvisi-cliente'() { attivaAvvisiCliente(); },
   'sel-fritto'(el) { UI.sel.fritto = el.dataset.v === 'si'; UI.sel.forno = el.dataset.v === 'forno'; render(); },
   'passi-app'() { UI.passiApp = !UI.passiApp; render(); },
   'guida-os'(el) { UI.guidaOS = el.dataset.v; render(); },
+  'inv-os'(el) { UI.foglio = { tipo: 'installa', os: el.dataset.v || null }; render(); },
   'passi-via'() { UI.passiVia = true; render(); },
   'inv-manda'(el) { mandaInvito(el.dataset.v || 'g'); },
   async 'inv-condividi'() { try { await navigator.share({ files: [UI.invFile], text: testoInvitoGestore(UI.invTipo) }); chiudiFoglio(); } catch (e) { /* annullato */ } },
@@ -1848,8 +2032,11 @@ const A = {
   },
   'benv-entra'() { benvEntra(false); },
   'benv-ricollega'() { benvEntra(true); },
+  'benv-ricordato'() { benvEntra('ricordato'); },
+  'benv-non-io'() { UI.benv = { nome: '', cognome: '', ricordato: '' }; render(); const i = $('#benv-nome'); if (i) i.focus(); },
   'benv-altro'() { UI.benv.usato = ''; render(); const i = $('#benv-cognome'); if (i) i.focus(); },
   'benv-guarda'() { UI.senzaNome = true; render(); },
+  'benv-torna'() { UI.senzaNome = false; UI.foglio = null; render(); window.scrollTo(0, 0); const i = $('#benv-nome'); if (i) i.focus(); },
   'nome-altro'() { UI.foglio = { tipo: 'nome' }; render(); const i = $('#nome-nuovo'); if (i) i.focus(); },
   async 'inv-google'() {
     if (!Dati.attivo) { mostraToast('Nell\'anteprima non si entra con Google: prova sul sito vero.'); return; }
@@ -1888,6 +2075,26 @@ const A = {
   piatto(el) { apriPiatto(el.dataset.id, !!el.dataset.pronto); },
   chiudi() { chiudiFoglio(); },
   'apri-allergie'() { UI.foglio = { tipo: 'allergie' }; render(); },
+  'mio-nome'() { UI.foglio = { tipo: 'mio-nome' }; render(); const i = $('#mio-nome'); if (i) i.focus(); },
+  async 'mio-nome-ok'() {   // (C99) il cliente corregge il suo nome
+    const i = $('#mio-nome'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
+    if (nome.length < 3 || !nome.includes(' ')) { mostraToast('Scrivi nome e cognome.'); if (i) i.focus(); return; }
+    try { await Dati.cambiaNome(nome); ricordaNome(nome); UI.foglio = null; render(); mostraToast(`Fatto: ora sei ${nome}. Monica lo vede.`); }
+    catch (e) { mostraToast(e.code === 'permission-denied' ? 'Non ancora disponibile: riprova tra qualche giorno.' : e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); }
+  },
+  'nome-monica'(el) { UI.foglio = { tipo: 'nome-monica', id: el.dataset.id }; render(); },
+  'nome-monica-ok'() {
+    const c = S.clienti.find(x => x.id === UI.foglio.id), i = $('#nome-monica'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ').slice(0, 60);
+    if (!c) { UI.foglio = null; render(); return; }
+    if (nome.length < 2) { mostraToast('Scrivi almeno il nome.'); if (i) i.focus(); return; }
+    UI.foglio = null;
+    if (nome === c.nome) { render(); return; }
+    cambia(`Ora lo chiami ${nome}`, () => {
+      c.nomiPrima = [...(c.nomiPrima || []), { nome: c.nome || '', chi: 'gestore', il: new Date().toISOString().slice(0, 16) }].slice(-30);
+      c.nome = nome; c.nomiVisti = c.nomiPrima.length;
+    });
+  },
+  'nome-visto'(el) { const c = S.clienti.find(x => x.id === el.dataset.id); if (c) cambia('', () => { c.nomiVisti = (c.nomiPrima || []).length; }, false); },
   'testo-grande'() { P.grande = !P.grande; salvaP(); render(); mostraToast(P.grande ? 'Testo grande' : 'Testo normale'); },
   'chiudi-fuori'(el, e) { if (e.target === el) A.chiudi(); },
   'sel-var'(el) { UI.sel.variante = el.dataset.v; render(); },
@@ -2150,9 +2357,13 @@ async function decidiRichiesta(id, si) {
   UI.decido = id; render();
   try {
     const esito = await Dati.decidi(id, si);
+    // (C93) lo stesso nome in attesa su un altro telefono (browser e app installata): stessa decisione, stesso cliente
+    const fatti = [esito];
+    for (const g of r.gemelli || []) { try { const e2 = await Dati.decidi(g, si); fatti.push(e2); esito.finiti.push(...e2.finiti.filter(f => !esito.finiti.includes(f))); } catch (e) { /* già deciso */ } }
+    const annullaTutti = async () => { for (const f of fatti.slice().reverse()) await f.annulla(); };
     UI.decido = null; render();
     mostraToast(esito.finiti.length ? `${msg}. I pronti sono finiti (${esito.finiti.join(', ')}): proponi un altro giorno.` : msg, () => {
-      esito.annulla().then(() => mostraToast('Annullato'),
+      annullaTutti().then(() => mostraToast('Annullato'),
         e => mostraToast(e.code === 'gia' ? 'Non si può più annullare: è già cambiato.' : 'Non annullato: controlla la rete e riprova.'));
     });
   } catch (e) {

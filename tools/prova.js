@@ -937,11 +937,170 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await b.textContent() !== '🗄 Database') throw new Error('in cima il tasto dice: ' + await b.textContent());
     await page.evaluate(() => vai('home'));
   });
+  await passo('cliente: invito «Installa l\'app» all\'ingresso, scelta iPhone | Android, notifiche (Mario 08/11 «fallo subito»)', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.installata = false; UI.foglio = null; UI.invitoFatto = false; UI.invitoProva = true; vai('menu'); });
+    await page.waitForSelector('.foglio .inv-scelta', { timeout: 3000 });
+    if (await page.locator('.inv-tel.mio').getAttribute('data-v') !== 'android') throw new Error('su Pixel deve essere segnato Android');
+    await page.waitForTimeout(800); await foto('94-invito-installa');
+    await page.click('.inv-tel[data-v="ios"]'); await page.waitForTimeout(300);
+    if (await page.locator('.foglio .gf-fig').count() < 3) throw new Error('iPhone: mancano le figure');
+    await foto('94-invito-iphone');
+    await page.click('.foglio [data-a="inv-os"][data-v=""]'); await page.click('.inv-tel[data-v="android"]'); await page.waitForTimeout(300);
+    if (!await page.locator('.foglio .gi-passi, .foglio [data-a="installa"]').count()) throw new Error('Android: niente passi né tasto Installa');
+    await page.click('.foglio .piede [data-a="chiudi"]'); await page.waitForTimeout(500);
+    await page.evaluate(() => render()); await page.waitForTimeout(300);
+    if (await page.locator('.foglio').count()) throw new Error('«Più tardi» non chiude, o il foglio torna nella stessa apertura');
+    await page.evaluate(() => { UI.invitoProva = false; });
+  });
+  await passo('cliente non ancora approvato: «Attiva le notifiche» non va in giro continuo (C96, foto di Mario 08/11)', async () => {   // autonoma
+    await page.context().grantPermissions(['notifications']);
+    const r = await page.evaluate(async () => { const c = P.cliente; P.cliente = null; P.vuoleAvvisi = false; P.avvisiCliente = false;
+      await attivaAvvisiCliente(); const out = [P.vuoleAvvisi, notifPossibili(), UI.notEsito && UI.notEsito.t];
+      P.cliente = c; P.vuoleAvvisi = false; UI.notEsito = null; return out; });
+    if (!r[0]) throw new Error('il sì alle notifiche non viene ricordato: ' + r[2]);
+    if (r[1]) throw new Error('dopo il sì il foglio delle notifiche si riproporrebbe');
+    if (!/appena Monica ti conferma/.test(r[2] || '')) throw new Error('messaggio sbagliato: ' + r[2]);
+  });
+  await passo('gestore: ultimi avvisi mandati in Notifiche (C97, Mario 08/11 «non mi è arrivata nessuna notifica»)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const ora = new Date().toISOString(), prima = [UI.diarioAvvisi, UI.diarioChiesto];
+      UI.diarioChiesto = true;
+      UI.diarioAvvisi = { questo: false, ultimi: [{ quando: ora, per: 'richiesta', telefoni: 2, esiti: ['201', '201'] }, { quando: ora, per: 'ordine', telefoni: 0, esiti: [], fermo: 'pausa' }, { quando: ora, per: 'primo', telefoni: 2, esiti: ['201', '410 '] }] };
+      const h = diarioAvvisi(); UI.diarioAvvisi = { errore: true }; const err = diarioAvvisi();
+      [UI.diarioAvvisi, UI.diarioChiesto] = prima; return [h, err];
+    });
+    for (const t of ['NON conosce questo telefono', 'Persona nuova da accettare · ✅ 2 telefoni', 'non partito (appena dopo un altro)', '⚠️ 1 su 2 telefoni', 'oggi '])
+      if (!r[0].includes(t)) throw new Error('manca «' + t + '» negli ultimi avvisi');
+    if (r[0].indexOf('primo ordine') > r[0].indexOf('da accettare')) throw new Error('gli avvisi non sono dal più nuovo');
+    if (!/non riesco a leggerli/.test(r[1])) throw new Error('senza rete manca il messaggio');
+  });
+  await passo('cliente in attesa: codice e «Ricorda a Monica»; Monica vede il codice o «Nessuno in attesa» (C97, Mario 08/11 «come se si fosse persa»)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const prima = [P.ricordatoIl, UI.ricordoAuto]; P.ricordatoIl = Date.now(); UI.ricordoAuto = true;
+      const h = righeAttesa();
+      const sp = Dati.io.uid; const cod = codiceTel('abcd1234');
+      [P.ricordatoIl, UI.ricordoAuto] = prima; return [h, cod];
+    });
+    if (!/Ricorda a Monica/.test(r[0]) || !/codice <b>/.test(r[0])) throw new Error('manca il codice o il tasto: ' + r[0].slice(0, 200));
+    if (r[1] !== 'ABCD') throw new Error('codice sbagliato: ' + r[1]);
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.vista = 'clienti'; UI.foglio = null; render(); });
+    const t = await page.locator('main').innerText();
+    const n = await page.evaluate(() => S.richieste.length);
+    if (!n && !/Nessuno in attesa/.test(t)) throw new Error('senza richieste manca «Nessuno in attesa»');
+    if (n && !/codice /.test(t)) throw new Error('nelle richieste manca il codice');
+    await page.evaluate(() => { P.ruolo = 'cliente'; UI.vista = 'menu'; render(); });
+  });
+  await passo('cliente senza nome («Guarda il menù»): avviso «Monica non sa che ci sei» e notifiche → prima il nome (C97, Mario 09/11)', async () => {   // autonoma
+    await page.context().grantPermissions(['notifications']);
+    const r = await page.evaluate(async () => {
+      const io = Dati.io, prima = [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, UI.senzaNome, P.vuoleAvvisi, P.cliente, io.uid];
+      const ripristina = () => { [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, UI.senzaNome, P.vuoleAvvisi, P.cliente, io.uid] = prima; };
+      try {
+        Object.defineProperty(Dati, 'attivo', { value: true, configurable: true, writable: true });
+        io.utente = null; io.letto = true; io.gestore = false; io.uid = 'prova123'; P.ruolo = 'cliente'; UI.senzaNome = true; P.cliente = null;
+        const banner = avvisoSenzaNome(), menu = primiPassi();
+        UI.invitoProva = true; UI.invitoFatto = false; UI.foglio = null; const invito = serveInvito(); UI.invitoProva = false;
+        await attivaAvvisiCliente();
+        return [banner, menu, UI.senzaNome, P.vuoleAvvisi, serveBenvenuto(), invito];
+      } finally { ripristina(); UI.notEsito = null; render(); }
+    });
+    if (!/Monica non sa ancora che ci sei/.test(r[0])) throw new Error('manca l\'avviso senza nome');
+    if (!/Monica non sa ancora/.test(r[1])) throw new Error('l\'avviso non è in cima al menù');
+    if (r[2] !== false || !r[3]) throw new Error('le notifiche non portano al nome: ' + JSON.stringify(r.slice(2)));
+    if (!r[4]) throw new Error('dopo il tocco non si chiede il nome');
+    if (r[5]) throw new Error('il popup «Installa l\'app» esce anche senza nome');
+  });
+  await passo('codice fisso e nome dei profili: codice, ⭐MARIO, «nome cambiato» con Visto, matita di Monica, aiutante (C99, Mario 09/11)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const primaS = JSON.stringify(S), primaUI = [UI.vista, UI.foglio, P.ruolo];
+      try {
+        const codici = Array.from({ length: 300 }, () => Dati.nuovoCodice());
+        const buoni = codici.every(c => /^[A-HJ-NP-Z2-9]{5}$/.test(c) && /[2-9]/.test(c));
+        const fuori = Dati.nuovoCodice(new Set(codici)), unico = !codici.includes(fuori);
+        P.ruolo = 'monica';
+        S.clienti.push({ id: 'cprova99', nome: 'Laura Rosi', nomeCliente: 'Laura Rossi', chiave: 'laura-rosi', da: '2026-11-01', codice: 'K7P2M',
+          nomiPrima: [{ nome: 'Laura Rosi', chi: 'cliente', il: '2026-11-09T10:00' }] });
+        const c = S.clienti.find(x => x.id === 'cprova99');
+        const riga1 = rigaMioCliente(c);
+        A['nome-visto']({ dataset: { id: 'cprova99' } });
+        const riga2 = rigaMioCliente(c);
+        A['nome-monica']({ dataset: { id: 'cprova99' } });
+        document.querySelector('#nome-monica').value = 'Laura del mercato';
+        A['nome-monica-ok']();
+        const dopo = [c.nome, (c.nomiPrima || []).length, c.codice, nomeNonVisto(c)];
+        const stella = [mostraCodice('MARIO'), mostraCodice('MONICA'), mostraCodice('K7P2M')];
+        const ai = capisciDove('come cambio il nome di un cliente?'), ai2 = capisciDove('come cambio il nome delle lasagne');
+        return { buoni, unico, riga1, riga2, dopo, stella, ai, ai2 };
+      } finally { S = JSON.parse(primaS); salva(); [UI.vista, UI.foglio, P.ruolo] = primaUI; render(); }
+    });
+    if (!r.buoni || !r.unico) throw new Error('codici casuali non validi o doppi');
+    if (!/K7P2M/.test(r.riga1) || !/Nome cambiato/.test(r.riga1) || !/Laura Rossi/.test(r.riga1) || !/Visto/.test(r.riga1)) throw new Error('riga del cliente senza codice o senza «nome cambiato»');
+    if (/Nome cambiato/.test(r.riga2) || !/Si fa chiamare «Laura Rossi»/.test(r.riga2)) throw new Error('«Visto» non toglie l\'avviso');
+    if (r.dopo[0] !== 'Laura del mercato' || r.dopo[1] !== 2 || r.dopo[2] !== 'K7P2M' || r.dopo[3]) throw new Error('matita di Monica: ' + JSON.stringify(r.dopo));
+    if (r.stella.join() !== '⭐MARIO,⭐MONICA,K7P2M') throw new Error('stelle sbagliate: ' + r.stella);
+    if (!r.ai || r.ai[0].voce !== 'clienti-nome') throw new Error('aiutante: il nome del cliente non porta in Clienti ' + JSON.stringify(r.ai));
+    if (!r.ai2 || r.ai2[0].voce !== 'nome') throw new Error('aiutante: il nome del piatto non va più al piatto ' + JSON.stringify(r.ai2));
+  });
+  await passo('cliente: correggi il nome, sempre il suo nome e il suo codice (C99)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const io = Dati.io, prima = [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, io.uid];
+      try {
+        Object.defineProperty(Dati, 'attivo', { value: true, configurable: true, writable: true });
+        io.gestore = false; io.letto = true; io.uid = 'prova99'; P.ruolo = 'cliente';
+        io.utente = { nome: 'Gianni Verdi', stato: 'nuovo', codice: 'AB3CD', cliente: null };
+        const attesa = righeAttesa();
+        io.utente = { nome: 'Gianni Verdi', stato: 'approvato', codice: 'AB3CD', cliente: 'cnonc' };
+        const prof = profiloCliente();
+        A['mio-nome'](); const f = document.querySelector('#mio-nome');
+        return [attesa, prof, f && f.value];
+      } finally { [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, io.uid] = prima; UI.foglio = null; render(); }
+    });
+    if (!/AB3CD/.test(r[0]) || !/Correggi il nome/.test(r[0])) throw new Error('in attesa: manca codice o «Correggi il nome»');
+    if (!/AB3CD/.test(r[1]) || !/Gianni Verdi/.test(r[1]) || !/Correggi il nome/.test(r[1])) throw new Error('profilo del cliente: ' + r[1]);
+    if (r[2] !== 'Gianni Verdi') throw new Error('il foglio non parte dal nome attuale');
+  });
+  await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
+      return ['Version/27.1', 'Version/26.0', 'Version/18.6', 'CriOS/140.0'].map(v => { const h = GuidaIPhone.guidaIPhone(u(v));
+        return { passi: (h.match(/class="gf-passo"/g) || []).length, fig: (h.match(/<svg class="gf-fig"/g) || []).length, web: /Apri come app web/.test(h), h }; });
+    });
+    const [v27, v26, v18, cr] = r;
+    if (v27.passi !== 4 || v26.passi !== 4 || v18.passi !== 3 || cr.passi !== 3) throw new Error('numero di passi sbagliato: ' + r.map(x => x.passi));
+    if (r.some(x => x.fig !== x.passi)) throw new Error('un passo senza disegno');
+    if (!/a sinistra dell'indirizzo/.test(v27.h) || !/⋯<\/b> in basso a destra/.test(v26.h) || !/in basso, al centro/.test(v18.h) || !/in alto a destra, vicino/.test(cr.h)) throw new Error('tasto di partenza sbagliato per una versione');
+    if (!v27.web || !v26.web || v18.web) throw new Error('«Apri come app web» deve esserci solo da iOS 26');
+    const ins = await page.evaluate(() => { UI.guidaOS = 'ios'; const g = guidaInstalla(); UI.guidaOS = null;
+      return [/class="gf-fig"/.test(g), (GuidaIPhone.guidaIPhone('Mozilla/5.0 (iPhone) Instagram 300.0').match(/class="gf-passo"/g) || []).length]; });
+    if (!ins[0]) throw new Error('la scheda iPhone della guida non mostra le figure');
+    if (ins[1] !== 1) throw new Error('dentro Instagram deve esserci solo «Apri nel browser»');
+  });
   await passo('cliente: guida corta «metti l\'app sul telefono» con schede iPhone | Android (Mario 08/11, Sabrina)', async () => {   // autonoma
     const r = await page.evaluate(() => { UI.guidaOS = 'ios'; const a = guidaInstalla(); UI.guidaOS = 'android'; const b = guidaInstalla(); UI.guidaOS = null; return [a, b, primiPassi()]; });
     if (!/Aggiungi alla schermata Home/.test(r[0]) || !/aria-pressed="true">iPhone/.test(r[0])) throw new Error('scheda iPhone sbagliata');
     if (!/⋮/.test(r[1]) || !/aria-pressed="true">Android/.test(r[1])) throw new Error('scheda Android sbagliata');
     if (r[2] && /data-a="passi-app"/.test(r[2])) throw new Error('c\'è ancora il tasto che apre solo i passi');
+  });
+  await passo('cliente (C93): guida a installare dopo il primo ordine, «Ordina di nuovo» in cima al menù', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      P.ruolo = 'cliente'; P.benvenuto = true; P.installata = false; P.ordinato = false; P.carrello = []; UI.passiVia = false; UI.modifica = null; UI.foglio = null;
+      const prima = primiPassi(); vai('inviato'); const dopoInvio = $('main').innerHTML; vai('menu'); const dopo = primiPassi();
+      return [/guida-inst|data-a="installa"/.test(prima), /carta-home/.test(dopoInvio), /guida-inst|data-a="installa"/.test(dopo), P.ordinato];
+    });
+    if (r[0]) throw new Error('la guida a installare compare prima del primo ordine');
+    if (!r[1]) throw new Error('dopo «Ordine inviato!» manca «Metti l\'app sul telefono»');
+    if (!r[2] || !r[3]) throw new Error('dopo il primo ordine la guida non compare nei primi passi');
+    const c = await page.evaluate(() => {
+      if (!P.cliente) P.cliente = (S.clienti[0] || {}).id;
+      const p = S.piatti.find(x => x.disponibile && !x.cestino), f = p.formati[0];
+      S.ordini.push({ id: 'o-c93', n: 999, cliente: P.cliente, stato: 'ritirato', entro: '2999-01-01', paga: {}, righe: [{ piatto: p.id, nome: p.nome, formato: f.id, formatoNome: f.nome, tipo: f.tipo, variante: '', varianteNome: '', qta: 2, prezzo: f.prezzo, note: [], testo: '' }] });
+      P.carrello = []; vai('menu'); return [!!document.querySelector('.rifai [data-a="riordina"]'), p.id];
+    });
+    if (!c[0]) throw new Error('in cima al menù manca «Ordina di nuovo»');
+    await clic('.rifai [data-a="riordina"]');
+    const ok = await page.evaluate(id => UI.vista === 'carrello' && P.carrello.some(r => r.piatto === id && r.qta === 2), c[1]);
+    await page.evaluate(() => { S.ordini = S.ordini.filter(o => o.id !== 'o-c93'); P.carrello = []; P.ordinato = false; });
+    if (!ok) throw new Error('«Ordina di nuovo» non mette i piatti nel carrello');
   });
   await passo('gesto indietro del telefono: torna indietro nell\'app, non la chiude', async () => {   // autonoma
     const url = page.url();

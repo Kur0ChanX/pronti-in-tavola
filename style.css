@@ -838,3 +838,39 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 .ico-in { width: 1.1em; height: 1.1em; vertical-align: -0.15em; color: var(--vino); }
 /* ricerca in Impostazioni (C88) */
 .cerca-imp input { width: 100%; font-size: 1.05rem; }
+
+/* (C93) «Lo stesso dell'ultima volta?» in cima al menù */
+.rifai h2 { display: flex; gap: 8px; align-items: center; }
+.rifai h2 svg { width: 26px; height: 26px; flex: none; }
+
+/* Guida a figure iPhone (C94, guida-iphone.js): un disegno grande per passo, cerchio che pulsa e freccia sul tasto */
+.gf-passi { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.gf-passo { display: grid; gap: 8px; justify-items: center; background: #fff; border-radius: 14px; padding: 10px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+.gf-testo { display: flex; gap: 10px; align-items: flex-start; width: 100%; line-height: 1.35; }
+.gf-num { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--vino); color: #fff; font-weight: 800; display: grid; place-items: center; }
+.gf-fig { width: min(62vw, 230px); height: auto; display: block; }
+.gf-nota { margin: 6px 0 0; font-size: .95em; }
+.gf-pulsa { transform-box: fill-box; transform-origin: center; animation: gf-pulsa 1.4s ease-out infinite; }
+.gf-freccia { animation: gf-giu 1.1s ease-in-out infinite; }
+.gf-scorri { animation: gf-su 1.6s ease-in-out infinite; }
+@keyframes gf-pulsa { 0% { transform: scale(.85); opacity: 1; } 100% { transform: scale(1.6); opacity: 0; } }
+@keyframes gf-giu { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(3px); } }
+@keyframes gf-su { 0%, 100% { transform: translateY(4px); opacity: .5; } 50% { transform: translateY(-4px); opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .gf-pulsa, .gf-freccia, .gf-scorri { animation: none; } }
+
+/* Invito «Installa l'app» per i clienti (foglio 'installa', Mario 08/11) */
+.inv-app { text-align: left; }
+.inv-logo { display: flex; justify-content: center; margin: 4px 0 10px; }
+.inv-logo img { width: 72px; height: 72px; border-radius: 18px; box-shadow: 0 4px 14px rgba(138,36,50,.25); }
+.inv-app h1 { text-align: center; }
+.inv-app > p.tenue:first-of-type { text-align: center; }
+.inv-scelta { display: grid; gap: 10px; }
+.inv-tel { display: grid; gap: 2px; text-align: left; border: 2px solid var(--riga, #e6dfd5); background: #fff; border-radius: 14px; padding: 14px 16px; font: inherit; color: inherit; min-height: 64px; position: relative; }
+.inv-tel b { font-size: 1.2em; }
+.inv-tel span { color: #6b625a; font-size: .92em; }
+.inv-tel.mio { border-color: var(--vino); box-shadow: 0 0 0 3px rgba(138,36,50,.12); }
+.inv-tel em { position: absolute; top: 10px; right: 12px; font-style: normal; font-size: .8em; font-weight: 700; color: #fff; background: var(--vino); border-radius: 999px; padding: 3px 9px; }
+
+/* (C99) codice fisso del profilo, accanto al nome */
+.codice-cl { display: inline-block; font: 800 .78rem/1.2 'Nunito Sans', sans-serif; letter-spacing: .06em; padding: 1px 6px; border-radius: 6px; background: #FBF4E8; border: 1px solid #E8B46A; color: #7B2318; vertical-align: middle; }
+.cliente-riga.nome-cambiato { background: rgba(232, 180, 106, .12); border-radius: 8px; padding-left: 6px !important; }

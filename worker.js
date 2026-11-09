@@ -65,9 +65,9 @@ Azioni possibili (usa solo queste):
 {"azione":"spesa","voci":["2 kg farina","ricotta"]}  aggiunge alla lista della spesa
 {"azione":"whatsapp","n":<n>,"testo":"..."}  prepara un messaggio WhatsApp al cliente di quell'ordine (Monica lo manda lei)
 {"azione":"apri","vista":"ordini|piatti|clienti|impostazioni|spesa"}  porta Monica a una pagina
-{"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche, imp-lucchetto, imp-anticipo, imp-limite, imp-natale. Pagine: ordini, piatti, nuovo, clienti, spesa, ricettario, aggiornamenti. Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
+{"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche, imp-lucchetto, imp-anticipo, imp-limite, imp-natale. Pagine: ordini, piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), spesa, ricettario, aggiornamenti. Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
 {"azione":"idea","testo":"..."}  Monica vuole cambiare o aggiungere qualcosa che NON si può fare dall'app (una funzione nuova, un cambio del funzionamento): scrivi per Mario, che la programma, cosa vuole, dove nell'app e perché, con tutti i dettagli che ha detto
-GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate. Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista.
+GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista.
 Regole: un ordine si riconosce dal numero o dal nome del cliente; se è ambiguo o manca un dato non mettere azioni e chiedi nel testo.
 Con più richieste insieme metti più azioni. Per le domande (cosa cucinare, chi ritira, chi deve pagare, incassi) rispondi nel testo usando SOLO i DATI, senza azioni.
 Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna → prezzi o piatti nuovi; foto di un piatto → descrizione o nuovo_piatto.
@@ -436,9 +436,16 @@ export class Avvisi extends DurableObject {
   }
   async chiavePubblica() { return (await this.chiavi()).pub; }
   /* per capire i guasti (Mario 07/11: notifica non arrivata): quanti telefoni e gli ultimi 10 invii, senza indirizzi */
-  async stato() {
+  /* (C97) e = indirizzo del telefono che chiede: «questo» dice se il server lo conosce (senza mostrare gli indirizzi degli altri) */
+  async stato(e) {
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
-    return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [] };
+    return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), questo: e ? tutti.some(x => x.endpoint === e) : null,
+      conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [] };
+  }
+  async scriviDiario(voce) {
+    const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
+    diario.push(Object.assign({ quando: new Date().toISOString() }, voce));
+    await this.ctx.storage.put('diario', diario);
   }
 
   async iscrivi(uid, sub) {
@@ -450,7 +457,7 @@ export class Avvisi extends DurableObject {
     return true;
   }
 
-  async manda(soloUid, per, perCliente, extra) {
+  async manda(soloUid, per, perCliente, extra, chi) {
     const chiave = perCliente ? 'clienti' : 'iscritti';
     if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) ? per : 'ordine', quando: Date.now() });
     const tutti = (await this.ctx.storage.get(chiave)) || [];
@@ -477,9 +484,7 @@ export class Avvisi extends DurableObject {
       } catch (e) { esiti.push('errore ' + String(e && e.message || e).slice(0, 120)); }
     }
     if (morti.length) await this.ctx.storage.put(chiave, tutti.filter(x => !morti.includes(x.endpoint)));
-    const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
-    diario.push({ quando: new Date().toISOString(), per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti });
-    await this.ctx.storage.put('diario', diario);
+    await this.scriviDiario(Object.assign({ per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti }, chi ? { chi } : {}));
     return { mandati: ok, telefoni: dest.length };
   }
 
@@ -561,12 +566,16 @@ export class Avvisi extends DurableObject {
   }
 
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
-  async avvisa(tipo) {
+  async avvisa(tipo, chi) {
+    chi = typeof chi === 'string' && /^[A-Z0-9]{4,8}$/.test(chi) ? chi : '';   // (C99) codice fisso di chi manda l'avviso
     const oggi = new Date().toISOString().slice(0, 10), c = (await this.ctx.storage.get('conto')) || {};
-    if (c.giorno === oggi && c.n >= TETTO_GIORNO) return { fermo: 'tetto' };
-    if (c.ultimo && Date.now() - c.ultimo < PAUSA_MS && tipo !== 'primo') return { fermo: 'pausa' };   // il primo ordine di una persona nuova passa sempre
+    const t = TIPI_GESTORE.includes(tipo) ? tipo : 'ordine';
+    /* (C97) anche gli avvisi fermati finiscono nel diario: Mario vede in Impostazioni → Notifiche perché non è suonato */
+    if (c.giorno === oggi && c.n >= TETTO_GIORNO) { await this.scriviDiario({ per: t, telefoni: 0, esiti: [], fermo: 'tetto', chi }); return { fermo: 'tetto' }; }
+    // il primo ordine e la richiesta di una persona nuova passano sempre (C97: prima la richiesta si perdeva se cadeva nei 15 secondi)
+    if (c.ultimo && Date.now() - c.ultimo < PAUSA_MS && t !== 'primo' && t !== 'richiesta') { await this.scriviDiario({ per: t, telefoni: 0, esiti: [], fermo: 'pausa', chi }); return { fermo: 'pausa' }; }
     await this.ctx.storage.put('conto', { giorno: oggi, n: (c.giorno === oggi ? c.n : 0) + 1, ultimo: Date.now() });
-    return this.manda(null, TIPI_GESTORE.includes(tipo) ? tipo : 'ordine');
+    return this.manda(null, t, null, null, chi);
   }
 }
 
@@ -775,10 +784,10 @@ export default {
     const av = env.AVVISI.get(env.AVVISI.idFromName('cucina'));
     try {
       if (url.pathname === '/api/chiave' && req.method === 'GET') return json({ chiave: await av.chiavePubblica() });
-      if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato());
+      if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato(url.searchParams.get('e') || ''));
       if (url.pathname === '/api/ultimo' && req.method === 'GET') return json(await av.ultimo(url.searchParams.get('e') || ''));
       if (req.method !== 'POST') return json({ errore: 'metodo' }, 405);
-      if (url.pathname === '/api/avvisa') { const b = await req.json().catch(() => null); return json(await av.avvisa(b && b.tipo)); }
+      if (url.pathname === '/api/avvisa') { const b = await req.json().catch(() => null); return json(await av.avvisa(b && b.tipo, b && b.chi)); }
       if (url.pathname === '/api/cliente') {
         const c = await clienteDa(req);
         if (!c) return json({ errore: 'prima Monica deve approvarti' }, 403);

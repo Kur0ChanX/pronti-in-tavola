@@ -81,7 +81,14 @@ const Dati = (() => {
     const utenti = tutti('utenti'), clienti = tutti('clienti');
     const nomeDi = id => (clienti.find(c => c.id === id) || {}).nome || (id === 'monica' ? 'Monica' : '');
     // «Telefono nuovo»: lo stesso nome di un cliente che c'è già (se no è come un nuovo)
-    const vecchioDi = u => u.stato === 'ricollega' ? (clienti.find(c => c.chiave === u.chiave) || {}).id || null : null;
+    // (C93) o un altro telefono con lo stesso nome già approvato (browser e poi app installata su iPhone)
+    const vecchioDi = u => u.stato === 'ricollega' ? (clienti.find(c => c.chiave === u.chiave) || {}).id
+      || (utenti.find(x => x.uid !== u.uid && x.chiave === u.chiave && x.stato === 'approvato' && x.cliente) || {}).cliente || null : null;
+    // (C93) Lo stesso nome in attesa su due telefoni (browser e app installata): Monica vede UNA richiesta,
+    // la più nuova ('ricollega' viene dopo 'nuovo'); il Sì o il No vale anche per le altre («gemelli»).
+    const attesa = utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega');
+    const peso = u => (u.stato === 'ricollega' ? 2 : 1) * 1e9 + (u.primo ? 1 : 0);
+    const capi = attesa.filter(u => !attesa.some(x => x !== u && x.chiave === u.chiave && (peso(x) > peso(u) || (peso(x) === peso(u) && x.uid > u.uid))));
     // Copia profonda: cambiare S non deve cambiare la copia del server, se no non si vede la differenza.
     const S = copia({
       versione: 1, motore: 'firebase', soloContanti, ingExtra, impostazioni: imp,
@@ -92,10 +99,10 @@ const Dati = (() => {
       settimane: Object.keys(srv).filter(k => k.startsWith('settimane/')).reduce((o, k) => { o[k.slice(10)] = Math.max(0, srv[k].teglie || 0); return o; }, {}),
       utenti,
       spesa: srv['impostazioni/spesa'] || null,
-      richieste: utenti.filter(u => u.stato === 'nuovo' || u.stato === 'ricollega')
-        .map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u) })),
+      richieste: capi.map(u => ({ id: u.uid, nome: u.nome, codice: u.codice || '', nomiPrima: u.nomiPrima || [], tramite: nomeDi(u.tramite), il: u.il, stato: u.stato, primo: u.primo || null, cliente: vecchioDi(u),
+        gemelli: attesa.filter(x => x !== u && x.chiave === u.chiave).map(x => x.uid) })),
       // «Persone rifiutate»: i telefoni a cui Monica ha detto No (può cambiare idea con «Accetta»)
-      rifiutati: utenti.filter(u => u.stato === 'no').map(u => ({ id: u.uid, nome: u.nome, tramite: nomeDi(u.tramite), il: u.il, primo: u.primo || null }))
+      rifiutati: utenti.filter(u => u.stato === 'no').map(u => ({ id: u.uid, nome: u.nome, codice: u.codice || '', tramite: nomeDi(u.tramite), il: u.il, primo: u.primo || null }))
     });
     S.piatti.forEach(p => {
       p.foto = (srv['foto/' + p.id] || {}).foto || null;   // le foto sono testo: niente copia
@@ -205,7 +212,7 @@ const Dati = (() => {
       ['clienti', 'ordini', 'utenti'].forEach(c => ascolta(collection(db, c), c));
       ascolta(doc(db, 'impostazioni', 'approvati')); ascolta(doc(db, 'impostazioni', 'monica')); ascolta(doc(db, 'impostazioni', 'spesa')); ascolta(doc(db, 'contatori', 'ordini'));
       // chi gestisce e chi chiede di gestire (invito per Monica)
-      ascolti.push(F.fs.onSnapshot(collection(db, 'gestori'), s => { io.gestoriLista = s.docs.map(d => ({ uid: d.id, nome: d.data().nome || '' })); avvisaCambio(); if (op.ridisegna) op.ridisegna(); }, () => {}));
+      ascolti.push(F.fs.onSnapshot(collection(db, 'gestori'), s => { io.gestoriLista = s.docs.map(d => ({ uid: d.id, nome: d.data().nome || '', codice: d.data().codice || '' })); avvisaCambio(); if (op.ridisegna) op.ridisegna(); prossimiCodici(); }, () => {}));
       ascolti.push(F.fs.onSnapshot(collection(db, 'richiesteGestore'), s => { io.richiesteGestore = s.docs.map(d => Object.assign({ uid: d.id }, d.data())); avvisaCambio(); if (op.ridisegna) op.ridisegna(); }, () => {}));
       return;
     }
@@ -355,10 +362,19 @@ const Dati = (() => {
     const chiave = chiaveNome(nome);
     if (!chiave || nome.length < 2 || nome.length > 60) throw errore('nome');
     const { doc, writeBatch } = F.fs, b = writeBatch(db);
-    const u = { nome, chiave, tramite: String(tramite || '').slice(0, 40), il: op.oggi(), stato: ricollega ? 'ricollega' : 'nuovo', cliente: null, primo: null };
+    const u = { nome, chiave, tramite: String(tramite || '').slice(0, 40), il: op.oggi(), stato: ricollega ? 'ricollega' : 'nuovo', cliente: null, primo: null, codice: nuovoCodice() };
     b.set(doc(db, 'utenti', io.uid), u);
     if (!ricollega) b.set(doc(db, 'nomi', chiave), { il: u.il });
-    await b.commit();
+    try { await b.commit(); }
+    catch (e) {
+      // (C99) regole vecchie sul server: non conoscono il codice → di nuovo senza (lo assegna poi chi gestisce)
+      if (e.code !== 'permission-denied') throw e;
+      delete u.codice;
+      const b2 = writeBatch(db);
+      b2.set(doc(db, 'utenti', io.uid), u);
+      if (!ricollega) b2.set(doc(db, 'nomi', chiave), { il: u.il });
+      await b2.commit();
+    }
     io.utente = u; io.letto = true; avvisaCambio();
   }
 
@@ -467,7 +483,15 @@ const Dati = (() => {
       const stato = eraNo ? (u.era || (tutti('clienti').some(c => c.chiave === u.chiave) ? 'ricollega' : 'nuovo')) : u.stato;
       const oS = u.primo ? await t.get(doc(db, 'ordini', u.primo)) : null;
       const o = oS && oS.exists() && (oS.data().stato === 'daApprovare' || (eraNo && oS.data().stato === 'rifiutato' && !oS.data().cliente)) ? oS.data() : null;
-      const vecchio = si && stato === 'ricollega' ? tutti('clienti').find(c => c.chiave === u.chiave) : null;
+      let vecchio = si && stato === 'ricollega' ? tutti('clienti').find(c => c.chiave === u.chiave) : null;
+      // (C93) Nessun cliente ancora con quel nome: forse un altro telefono con lo stesso nome è appena stato approvato
+      // (la copia locale dei clienti può non averlo ancora): lo leggo dentro la transazione, così mai due clienti uguali.
+      if (si && !vecchio && u.chiave) {
+        for (const x of tutti('utenti').filter(x => x.uid !== uid && x.chiave === u.chiave)) {
+          const xS = await t.get(doc(db, 'utenti', x.uid));
+          if (xS.exists() && xS.data().stato === 'approvato' && xS.data().cliente) { vecchio = { id: xS.data().cliente }; break; }
+        }
+      }
       const cliente = si ? (vecchio ? vecchio.id : nuovoId) : null;
       const dopo = o ? Object.assign({}, o, si ? { stato: 'nuovo', cliente } : { stato: 'rifiutato' }) : null;
       const vuole = presi(dopo), piatti = {}, finiti = [];
@@ -480,7 +504,9 @@ const Dati = (() => {
       const preso = finiti.length ? {} : vuole, tg = teglie(dopo), sett = {};
       for (const k of Object.keys(tg)) sett[k] = await t.get(doc(db, 'settimane', k));
       // prima tutte le letture, poi le scritture
-      if (si && !vecchio) t.set(doc(db, 'clienti', cliente), { id: cliente, nome: u.nome, chiave: u.chiave, da: op.oggi(), tramite: u.tramite || '' });
+      // (C99) il cliente nuovo prende il codice del suo telefono; «ricollega» tiene quello del cliente che c'è già
+      if (si && !vecchio) t.set(doc(db, 'clienti', cliente), Object.assign({ id: cliente, nome: u.nome, chiave: u.chiave, da: op.oggi(), tramite: u.tramite || '' },
+        u.codice && !tutti('clienti').some(c => c.codice === u.codice) ? { codice: u.codice } : {}, u.nomiPrima ? { nomiPrima: u.nomiPrima } : {}));
       t.update(doc(db, 'utenti', uid), si ? { stato: 'approvato', cliente } : { stato: 'no', era: u.stato });
       if (o) t.update(doc(db, 'ordini', u.primo), { stato: dopo.stato, cliente: dopo.cliente, pronto: !!dopo.pronto });
       Object.keys(preso).forEach(k => {
@@ -506,7 +532,7 @@ const Dati = (() => {
         for (const k of Object.keys(r.preso)) piatti[k] = await t.get(doc(db, 'piatti', k));
         for (const k of Object.keys(r.tg)) sett[k] = await t.get(doc(db, 'settimane', k));
       }
-      t.set(doc(db, 'utenti', uid), r.u);
+      t.set(doc(db, 'utenti', uid), Object.assign({}, r.u, uS.data().codice ? { codice: uS.data().codice } : {}));   // (C99) il codice resta
       if (r.creato) t.delete(doc(db, 'clienti', r.cliente));
       if (!torna) return;
       t.update(doc(db, 'ordini', r.u.primo), { stato: r.o.stato, cliente: r.o.cliente, pronto: !!r.o.pronto });
@@ -516,6 +542,77 @@ const Dati = (() => {
       });
       Object.keys(r.tg).forEach(k => t.set(doc(db, 'settimane', k), { teglie: Math.max(0, (sett[k].exists() ? sett[k].data().teglie || 0 : 0) - r.tg[k]), ultimo: r.u.primo }));
     });
+  }
+
+  /* ---------- (C99) codice fisso dei profili e nome che la persona corregge ---------- */
+  const LETTERE = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // niente O, I, 0, 1: non si confondono a voce
+  function nuovoCodice(usati) {
+    for (;;) {
+      let c = '';
+      for (let i = 0; i < 5; i++) c += LETTERE[Math.floor(Math.random() * LETTERE.length)];
+      if (/[2-9]/.test(c) && !(usati && usati.has(c))) return c;
+    }
+  }
+  const codiciUsati = () => new Set([...tutti('clienti'), ...tutti('utenti'), ...(io.gestoriLista || [])].map(x => x.codice).filter(Boolean));
+  // Chi gestisce dà il codice, una volta sola, a chi non l'ha ancora (persone arrivate prima della v0.9.71).
+  let codiciFatti = false, tCodici = null;
+  function prossimiCodici() { if (!codiciFatti) { clearTimeout(tCodici); tCodici = setTimeout(() => assegnaCodici().catch(e => console.warn('codici', e.code)), 4000); } }
+  async function assegnaCodici() {
+    if (codiciFatti || !io.gestore || !io.pronto || !navigator.onLine || !io.gestoriLista) return 0;
+    const usati = codiciUsati();
+    const daFare = [];
+    tutti('clienti').filter(c => !c.codice).forEach(c => daFare.push(['clienti', c.id]));
+    tutti('utenti').filter(u => !u.codice && u.stato !== 'approvato').forEach(u => daFare.push(['utenti', u.uid]));
+    io.gestoriLista.filter(g => !g.codice).forEach(g => daFare.push(['gestori', g.uid, g.nome]));
+    codiciFatti = true;
+    if (!daFare.length) return 0;
+    const { doc, runTransaction } = F.fs;
+    return runTransaction(db, async t => {
+      const letti = [];
+      for (const d of daFare.slice(0, 200)) letti.push([d, await t.get(doc(db, d[0], d[1]))]);
+      let n = 0;
+      letti.forEach(([d, sn]) => {
+        if (!sn.exists() || sn.data().codice) return;   // intanto l'ha dato un altro telefono di chi gestisce
+        let c = '';
+        if (d[0] === 'gestori') {
+          const nome = String(d[2] || '').toLowerCase();
+          c = /\bmario\b/.test(nome) && !usati.has('MARIO') ? 'MARIO' : /\bmonica\b/.test(nome) && !usati.has('MONICA') ? 'MONICA' : 'G' + nuovoCodice(usati).slice(0, 4);
+        } else c = nuovoCodice(usati);
+        usati.add(c); n++;
+        t.update(doc(db, d[0], d[1]), { codice: c });
+      });
+      return n;
+    });
+  }
+  // Il cliente corregge il suo nome: prima del sì in utenti/, dopo in clienti/ («nome del cliente»). La storia dice com'era.
+  async function cambiaNome(nome) {
+    nome = String(nome || '').replace(/\s+/g, ' ').trim();
+    if (nome.length < 2 || nome.length > 60) throw errore('nome');
+    if (!navigator.onLine) throw errore('unavailable');
+    const u = io.utente;
+    if (!u) throw errore('nome');
+    const { doc, updateDoc } = F.fs, il = new Date().toISOString().slice(0, 16);
+    if (u.stato === 'approvato' && u.cliente) {
+      const c = srv['clienti/' + u.cliente] || {}, prima = c.nomeCliente || u.nome;
+      if (prima === nome) return;
+      await updateDoc(doc(db, 'clienti', u.cliente), { nomeCliente: nome, nomiPrima: [...(c.nomiPrima || []), { nome: prima, chi: 'cliente', il }].slice(-30) });
+    } else {
+      if (u.nome === nome) return;
+      await updateDoc(doc(db, 'utenti', io.uid), { nome, nomiPrima: [...(u.nomiPrima || []), { nome: u.nome, chi: 'cliente', il }].slice(-30) });
+    }
+  }
+  // Il nome che vede il cliente: il suo (corretto da lui), non quello che usa Monica.
+  function mioNome() {
+    const u = io.utente; if (!u) return '';
+    const c = u.cliente ? srv['clienti/' + u.cliente] : null;
+    return (c && c.nomeCliente) || u.nome || '';
+  }
+  function mioCodice() {
+    const u = io.utente;
+    if (io.gestore) return ((io.gestoriLista || []).find(g => g.uid === io.uid) || {}).codice || '';
+    if (!u) return '';
+    const c = u.cliente ? srv['clienti/' + u.cliente] : null;
+    return (c && c.codice) || u.codice || '';
   }
 
   async function entraGoogle() {
@@ -564,7 +661,7 @@ const Dati = (() => {
   }
 
   return {
-    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi, chiediGestore, decidiGestore, togliGestore,
+    attivo, emulatore: EMULATORE, io, copiaLocale, avvia, scrivi, preparaVuoto, entraGoogle, rientra, esci, registra, inviaOrdini, decidi, assegnaCodici, cambiaNome, mioNome, mioCodice, nuovoCodice, chiediGestore, decidiGestore, togliGestore,
     token: () => (auth && auth.currentUser && !auth.currentUser.isAnonymous) ? auth.currentUser.getIdToken() : Promise.resolve(null),   // per le notifiche (worker.js)
     tokenCliente: () => (auth && auth.currentUser) ? auth.currentUser.getIdToken() : Promise.resolve(null),   // avviso «è pronto» al cliente (C25)
     confermato: () => ultimaScrittura,

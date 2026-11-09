@@ -208,6 +208,15 @@ async function semina(env) {
     b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: false } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 9, ultimoOrdine: 'o3' });
     await assertFails(b.commit());
   });
+  await caso('cuori gonfiati (C98): +1 al piatto mentre il cuore dell\'ordine si toglie, o cambia un altro piatto: no', async () => {
+    const d = db('tel1');
+    let b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: false } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 5, ultimoOrdine: 'o3' });
+    await assertFails(b.commit());
+    b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: true, altro: true } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 5, ultimoOrdine: 'o3' });
+    await assertFails(b.commit());
+    b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: false } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 3, ultimoOrdine: 'o3' });
+    await assertSucceeds(b.commit());
+  });
   await caso('proposta di Monica: «Va bene» col suo giorno', () => assertSucceeds(updateDoc(doc(db('tel2'), 'ordini/o2'), { stato: 'accettato', entro: '2026-11-08', proposta: null })));
   await caso('proposta: «accettato» con un altro giorno no', () => assertFails(updateDoc(doc(db('tel2'), 'ordini/o2'), { stato: 'accettato', entro: '2026-11-20', proposta: null })));
   await caso('proposta: «Un altro giorno» torna nuovo', () => assertSucceeds(updateDoc(doc(db('tel2'), 'ordini/o2'), { stato: 'nuovo', entro: '2026-11-10', proposta: null })));
@@ -263,6 +272,36 @@ async function semina(env) {
   });
   await caso('chi ha chiesto non si fa gestore da solo', () => assertFails(setDoc(doc(goo('mon', 'monica@example.com'), 'gestori/mon'), { nome: 'Monica' })));
   await caso('nessuno si fa gestore da solo', () => assertFails(setDoc(doc(db('tel1'), 'gestori/tel1'), { nome: 'io' })));
+
+  // (C99) codice fisso e nomi
+  await caso('codice: il telefono nuovo nasce col suo codice; formato sbagliato no', async () => {
+    const d = db('tel9'), b = writeBatch(d);
+    b.set(doc(d, 'utenti/tel9'), utente({ nome: 'Ugo Pes', chiave: 'ugo-pes', codice: 'K7P2M' })); b.set(doc(d, 'nomi/ugo-pes'), { il: IL });
+    await assertSucceeds(b.commit());
+    const e = db('tel8'), c = writeBatch(e);
+    c.set(doc(e, 'utenti/tel8'), utente({ nome: 'Ida Pes', chiave: 'ida-pes', codice: 'MARIO' })); c.set(doc(e, 'nomi/ida-pes'), { il: IL });
+    await assertFails(c.commit());
+  });
+  await caso('codice: il gestore lo mette una volta, poi nessuno lo cambia', async () => {
+    const g = db('monica');
+    await assertSucceeds(updateDoc(doc(g, 'clienti/c1'), { codice: 'K7P2M' }));
+    await assertFails(updateDoc(doc(g, 'clienti/c1'), { codice: 'Q8R3T' }));
+    await assertSucceeds(updateDoc(doc(g, 'clienti/c1'), { nome: 'Giulia (amica di Mario)' }));
+    await assertSucceeds(updateDoc(doc(g, 'gestori/monica'), { codice: 'MONICA' }));
+    await assertFails(updateDoc(doc(g, 'gestori/monica'), { codice: 'MARIO' }));
+  });
+  await caso('nome: prima del sì il telefono lo corregge; il codice e lo stato no', async () => {
+    const d = db('nuova');
+    await assertSucceeds(updateDoc(doc(d, 'utenti/nuova'), { nome: 'Laura Neri Sanna', nomiPrima: [{ nome: 'Laura Neri', chi: 'cliente', il: IL }] }));
+    await assertFails(updateDoc(doc(d, 'utenti/nuova'), { stato: 'approvato' }));
+    await assertFails(updateDoc(doc(d, 'utenti/nuova'), { nome: 'X' }));
+  });
+  await caso('nome: il cliente approvato cambia il suo, non quello per Monica', async () => {
+    const d = db('tel1');
+    await assertSucceeds(updateDoc(doc(d, 'clienti/c1'), { nomeCliente: 'Giulia B.', nomiPrima: [{ nome: 'Giulia Bianchi', chi: 'cliente', il: IL }] }));
+    await assertFails(updateDoc(doc(d, 'clienti/c1'), { nome: 'Giulia B.' }));
+    await assertFails(updateDoc(doc(d, 'clienti/c2'), { nomeCliente: 'Paolo' }));
+  });
 
   console.log(`\n${ok} OK, ${no} NO`);
   await env.cleanup();

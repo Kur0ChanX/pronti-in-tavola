@@ -33,6 +33,20 @@ service cloud.firestore {
             || getAfter(doc('ordini', id)).data.stato != get(doc('ordini', id)).data.stato
             || getAfter(doc('ordini', id)).data.get('cuori', {}) != get(doc('ordini', id)).data.get('cuori', {}));
     }
+    // «Mi è piaciuto» di quel piatto nell'ordine, prima e dopo questa scrittura (C98: il cuore del piatto segue quello dell'ordine).
+    function cuorePrima(oid, piatto) {
+      return exists(doc('ordini', oid)) && get(doc('ordini', oid)).data.get('cuori', {}).get(piatto, false) == true;
+    }
+    function cuoreDopo(oid, piatto) { return getAfter(doc('ordini', oid)).data.get('cuori', {}).get(piatto, false) == true; }
+    // (C99) Codice fisso del profilo: si scrive una volta sola, poi nessuno lo cambia (nemmeno chi gestisce).
+    function codiceCliente(c) { return c is string && c.matches('^[A-HJ-NP-Z2-9]{5}$') && c.matches('.*[2-9].*'); }
+    function codiceFermo() {
+      return !('codice' in resource.data) ? (!('codice' in request.resource.data) || (request.resource.data.codice is string && request.resource.data.codice.matches('^[A-Z0-9]{4,8}$')))
+        : request.resource.data.get('codice', '') == resource.data.codice;
+    }
+    // (C99) Nome scritto dalla persona e storia dei nomi (al massimo 30 cambi).
+    function nomeGiusto(n) { return n is string && n.size() >= 2 && n.size() <= 60; }
+    function storiaGiusta() { return !('nomiPrima' in request.resource.data) || (request.resource.data.nomiPrima is list && request.resource.data.nomiPrima.size() <= 30); }
     // Numero dell'ordine preso dal contatore, che sale di 1 nella stessa scrittura.
     function numeroDalContatore() {
       return request.resource.data.n == get(doc('contatori', 'ordini')).data.prossimo
@@ -41,7 +55,8 @@ service cloud.firestore {
 
     match /gestori/{uid} {
       allow read: if (entrato() && io() == uid) || gestore();
-      allow write: if gestore();
+      allow create, delete: if gestore();
+      allow update: if gestore() && codiceFermo();
     }
 
     // Richiesta di chi apre l'invito per gestire (Monica): solo con Google, col SUO indirizzo.
@@ -60,13 +75,16 @@ service cloud.firestore {
     match /piatti/{id} {
       allow read: if entrato();
       allow write: if gestore();
-      // Approvato: solo i pronti (presi o rimessi) e i cuori (+1 o -1), sempre insieme a un suo ordine.
+      // Approvato: solo i pronti (presi o rimessi) e i cuori (+1 o -1 come il cuore del piatto nel suo ordine), sempre insieme a un suo ordine.
       allow update: if approvato()
         && cambiati().hasOnly(['pronto', 'cuori', 'ultimoOrdine'])
         && ordineMioCheCambia(request.resource.data.ultimoOrdine)
         && (!cambiati().hasAny(['cuori'])
-            || (request.resource.data.cuori is int && request.resource.data.cuori - resource.data.cuori <= 1
-                && resource.data.cuori - request.resource.data.cuori <= 1 && request.resource.data.cuori >= 0))
+            || (request.resource.data.cuori is int && request.resource.data.cuori >= 0
+                && ((request.resource.data.cuori - resource.data.cuori == 1
+                     && cuoreDopo(request.resource.data.ultimoOrdine, id) && !cuorePrima(request.resource.data.ultimoOrdine, id))
+                    || (resource.data.cuori - request.resource.data.cuori == 1
+                     && cuorePrima(request.resource.data.ultimoOrdine, id) && !cuoreDopo(request.resource.data.ultimoOrdine, id)))))
         && (!cambiati().hasAny(['pronto'])
             || (resource.data.pronto != null && request.resource.data.pronto != null
                 && request.resource.data.pronto.diff(resource.data.pronto).affectedKeys().hasOnly(['qta'])
@@ -99,9 +117,11 @@ service cloud.firestore {
     // «nuovo» col suo nome unico, o «ricollega» se il nome c'è già (telefono nuovo della stessa persona).
     match /utenti/{uid} {
       allow read: if (entrato() && io() == uid) || gestore();
-      allow write: if gestore();
+      allow create, delete: if gestore();
+      allow update: if gestore() && codiceFermo();
       allow create: if entrato() && io() == uid && accettaNuovi()
-        && request.resource.data.keys().hasOnly(['nome', 'chiave', 'tramite', 'il', 'stato', 'cliente', 'primo'])
+        && request.resource.data.keys().hasOnly(['nome', 'chiave', 'tramite', 'il', 'stato', 'cliente', 'primo', 'codice'])
+        && (!('codice' in request.resource.data) || codiceCliente(request.resource.data.codice))
         && request.resource.data.keys().hasAll(['nome', 'chiave', 'tramite', 'il', 'stato', 'cliente', 'primo'])
         && request.resource.data.nome is string
         && request.resource.data.nome.size() >= 2 && request.resource.data.nome.size() <= 60
@@ -122,6 +142,11 @@ service cloud.firestore {
         && cambiati().hasOnly(['primo'])
         && (resource.data.primo == null || get(doc('ordini', resource.data.primo)).data.stato == 'annullato')
         && ordineNuovoMio(request.resource.data.primo);
+      // (C99) Prima dell'ok di Monica il telefono corregge il suo nome (la storia dice com'era).
+      allow update: if entrato() && io() == uid
+        && resource.data.stato in ['nuovo', 'ricollega']
+        && cambiati().hasOnly(['nome', 'nomiPrima'])
+        && nomeGiusto(request.resource.data.nome) && storiaGiusta();
     }
 
     // Nomi già usati: si creano una volta sola, insieme al documento utenti/ nuovo. Li legge solo Monica.
@@ -136,7 +161,12 @@ service cloud.firestore {
 
     match /clienti/{id} {
       allow read: if gestore() || (approvato() && mioCliente() == id);
-      allow write: if gestore();
+      allow create, delete: if gestore();
+      allow update: if gestore() && codiceFermo();
+      // (C99) Il cliente cambia il SUO nome («nome del cliente»); il «nome per Monica» (nome) resta a chi gestisce.
+      allow update: if approvato() && mioCliente() == id
+        && cambiati().hasOnly(['nomeCliente', 'nomiPrima'])
+        && nomeGiusto(request.resource.data.nomeCliente) && storiaGiusta();
     }
 
     match /ordini/{id} {
