@@ -1,20 +1,14 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 14:18 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: regola per tutti i progetti e gli account. Ogni volta che ti chiedo di fare qualcosa, ti dico a cosa serve.
 
 ───
 ✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
+- **Qui vale da subito**: è scritta nel diario degli errori (`docs/ERRORI.md`, PT E36), che ogni sessione legge all'avvio.
+- **Per gli altri progetti e account**: il testo pronto è in `docs/PER-IL-KIT.md` (voce C103), insieme a C89 e C20.
+- La regola: ogni cosa che ti chiedo (passi a mano, prove, foto, decisioni) ha una riga «A cosa serve».
+- Salvato su GitHub.
 
 ───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+💡 PARERE
+- Il kit si cambia solo dal repo RVC. Collegarlo da qui spegnerebbe i controlli …
