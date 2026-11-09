@@ -1,3 +1,8 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 10:21 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+firebase solo account nuovo
+Regole nuove messe nell'account di monica
+Francesco non mi ha ancora risposto
+
+
+migliora in chiedi l'aiutante che deve capire bene il contesto di quello che dico non che legge la parola e mi porta alla parola scritta

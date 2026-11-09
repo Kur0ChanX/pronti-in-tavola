@@ -24,3 +24,17 @@ francesco non mi ha risposto
 
 ## 2026-11-09 09:00 · 01WTjqUu72CC
 Fai un bel check di tutte le regole se ci sono buchi
+
+## 2026-11-09 10:03 · 01WTjqUvc6wy
+Quando sono entrato nell'account che abbiamo creato come nuovo, come proprietario, abbiamo messo su Firebase quello di Monica, vorrei che avesse dei limiti suoi, tutti suoi. Come possiamo fare senza utilizzare i limiti del mio account, che adesso il progetto di Monica Pronti in Tavola è sul mio account Firebase.
+
+## 2026-11-09 10:18 · 01WTjqUvc6wy
+Vedi, io ti avevo messo che gli ordini che avevamo fatto non venivano conteggiati perché erano tutti di prova, ma anche adesso nessuno, al momento nessuno ha fatto un vero e proprio ordine. Possiamo cancellare questi che vediamo qui, due ordini effettuati? Quindi se un cliente che clicca quando va a ordinare sto solo provando, quella funzione che avevamo messo non viene conteggiato negli ordini, ma adesso questi ordini qui li possiamo togliere, così lo storico rimane pulito. Cioè partiamo dal conteggio dei veri ordini.
+
+## 2026-11-09 10:21 · 01WTjqUvc6wy
+firebase solo account nuovo
+Regole nuove messe nell'account di monica
+Francesco non mi ha ancora risposto
+
+
+migliora in chiedi l'aiutante che deve capire bene il contesto di quello che dico non che legge la parola e mi porta alla parola scritta
