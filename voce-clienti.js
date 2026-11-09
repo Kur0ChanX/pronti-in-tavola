@@ -523,8 +523,17 @@ function disegnaVC() {
   box.hidden = !su; document.body.classList.toggle('vc-su', fab);
   if (!su) return;
   const st = VC.stato, primo = fab && !st && (() => { try { return !localStorage.getItem('pit-vc-visto'); } catch (e) { return false; } })();
+  const suggerimento = VC.perSi != null ? 'Di\' «sì» oppure «no»' : VC.dettato ? 'Dimmi piatti, quantità e giorno, tutto in una frase' : 'Parla pure: mi fermo da sola quando finisci';
+  const chiave = [fab, st, primo, ascoltoInCorso()].join('|');
+  if (box.dataset.chiave === chiave && (st === 'ascolto' || st === 'registro' || st === 'capito')) {   // stessa struttura: cambio solo i testi, senza rifare il pannello (su iPad lampeggiava a ogni render)
+    const p = box.querySelector('.vc-pannello p'), b = box.querySelector('[data-vc="stop"]');
+    if (p) { if (st === 'capito') p.textContent = `«${VC.testo}»`; else { p.className = VC.testo ? '' : 'tenue'; p.textContent = VC.testo ? `Ho capito: «${VC.testo}»` : suggerimento; } }
+    if (b) b.textContent = VC.testo ? 'Basta così' : 'Annulla';
+    return;
+  }
+  box.dataset.chiave = chiave;
   let pann = '';
-  if (st === 'ascolto' || st === 'registro') pann = `<div class="vc-pannello" aria-live="polite"><div class="vc-onda"><span></span><span></span><span></span><span></span><span></span></div><b>${st === 'registro' ? 'Ti ascolto con attenzione…' : 'Ti ascolto…'}</b>${VC.testo ? `<p>Ho capito: «${esc(VC.testo)}»</p>` : `<p class="tenue">${VC.perSi != null ? 'Di\' «sì» oppure «no»' : VC.dettato ? 'Dimmi piatti, quantità e giorno, tutto in una frase' : 'Parla pure: mi fermo da sola quando finisci'}</p>`}<button type="button" class="btn piccolo chiaro" data-vc="stop">${VC.testo ? 'Basta così' : 'Annulla'}</button></div>`;
+  if (st === 'ascolto' || st === 'registro') pann = `<div class="vc-pannello" aria-live="polite"><div class="vc-onda"><span></span><span></span><span></span><span></span><span></span></div><b>${st === 'registro' ? 'Ti ascolto con attenzione…' : 'Ti ascolto…'}</b>${VC.testo ? `<p>Ho capito: «${esc(VC.testo)}»</p>` : `<p class="tenue">${suggerimento}</p>`}<button type="button" class="btn piccolo chiaro" data-vc="stop">${VC.testo ? 'Basta così' : 'Annulla'}</button></div>`;
   else if (st === 'capisco') pann = `<div class="vc-pannello"><div class="ai-pensa" style="padding:0"><span></span><span></span><span></span></div><b>Un attimo, sto capendo le parole…</b></div>`;
   else if (st === 'capito') pann = `<div class="vc-pannello"><b>Ho capito:</b><p>«${esc(VC.testo)}»</p></div>`;
   else if (primo) pann = `<div class="vc-pannello vc-primo"><b>Puoi parlarmi!</b><p>Tocca il microfono e prova a dire: ${esempiVoce().slice(0, 3).join(', ')}.</p><button type="button" class="btn piccolo chiaro" data-vc="visto">Ho capito</button></div>`;
