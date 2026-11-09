@@ -990,6 +990,24 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (n && !/codice /.test(t)) throw new Error('nelle richieste manca il codice');
     await page.evaluate(() => { P.ruolo = 'cliente'; UI.vista = 'menu'; render(); });
   });
+  await passo('cliente senza nome («Guarda il menù»): avviso «Monica non sa che ci sei» e notifiche → prima il nome (C97, Mario 09/11)', async () => {   // autonoma
+    await page.context().grantPermissions(['notifications']);
+    const r = await page.evaluate(async () => {
+      const io = Dati.io, prima = [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, UI.senzaNome, P.vuoleAvvisi, P.cliente];
+      const ripristina = () => { [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, UI.senzaNome, P.vuoleAvvisi, P.cliente] = prima; };
+      try {
+        Object.defineProperty(Dati, 'attivo', { value: true, configurable: true, writable: true });
+        io.utente = null; io.letto = true; io.gestore = false; P.ruolo = 'cliente'; UI.senzaNome = true; P.cliente = null;
+        const banner = avvisoSenzaNome(), menu = primiPassi();
+        await attivaAvvisiCliente();
+        return [banner, menu, UI.senzaNome, P.vuoleAvvisi, serveBenvenuto()];
+      } finally { ripristina(); UI.notEsito = null; render(); }
+    });
+    if (!/Monica non sa ancora che ci sei/.test(r[0])) throw new Error('manca l\'avviso senza nome');
+    if (!/Monica non sa ancora/.test(r[1])) throw new Error('l\'avviso non è in cima al menù');
+    if (r[2] !== false || !r[3]) throw new Error('le notifiche non portano al nome: ' + JSON.stringify(r.slice(2)));
+    if (!r[4]) throw new Error('dopo il tocco non si chiede il nome');
+  });
   await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
