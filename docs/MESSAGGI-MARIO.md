@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:42 · 01QTFEqRMnzm
-Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigzag, i fiorellini toglili, al posto del zigzag metti tipo una cucitura da sarta, fatta bene. Fai con cura tutti gli spazi, sposta il loghetto in base a quello che ti serve, insomma. Deve essere tutto ordinato, fatto bene, senza che nulla si sovrapponga. Quello uno di due secondo me la può aiutare, perché almeno gli dice quanti prodotti sono. Secondo me può aiutarli in piccolino a metterlo.
-
 ## 2026-11-06 19:49 · 01QTFEqRMnzm
 Una volta che è fatto le etichette, continua con il progetto.
 
@@ -131,3 +128,6 @@ Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità,
 
 ## 2026-11-09 19:38 · 01WTjqUxhhMW
 principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
+
+## 2026-11-09 20:46 · 01WTjqUtPqTT
+Per chi ordina è sparito il comando, prima di ordinare voglio solo provare l'app, oppure adesso non mi ricordo, ordina sul serio, che uno deve cliccare per forza uno dei due, che non è già preselezionato prima di ordinare. Perché mi è appena, per far provare l'app mi è appena arrivato un ordine, ma mi ha detto che la voleva solo provare. Quindi si è creato un po' di caos.
