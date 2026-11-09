@@ -4,7 +4,7 @@
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
 | Principale | cerchi | 🟢 🟡 🔴 ⚫ | 34 | `session_01WTjqUxkfi1LrUJwmzh137d` | |
-| Voce | quadrati | 🟩 🟨 🟥 ⬛ | 4 | (Voce 4 scrive qui il suo id all'avvio, aperta da Voce 3 09/11 ~19:45 per l'urgenza iPad; Voce 3 `session_01WTjqUvuFacpinWPAvkMDYG` chiusa 09/11 ~19:20 alla soglia: v0.9.80 pubblicata; Voce 2 `session_01WTjqUx7JeVdDBrvgVgjfXx` chiusa 09/11 alla soglia; Voce 1 `session_01WTjqUuVyq5p6FhV1dVJtVC` chiusa 09/11) | |
+| Voce | quadrati | 🟩 🟨 🟥 ⬛ | 4 | Voce 4 `session_01WTjqUvJr7mmfdSNihHR6LZ` (aperta da Voce 3 09/11 ~19:45 per l'urgenza iPad; Voce 3 `session_01WTjqUvuFacpinWPAvkMDYG` chiusa 09/11 ~19:20 alla soglia: v0.9.80 pubblicata; Voce 2 `session_01WTjqUx7JeVdDBrvgVgjfXx` chiusa 09/11 alla soglia; Voce 1 `session_01WTjqUuVyq5p6FhV1dVJtVC` chiusa 09/11) | |
 | Aiuto | libri | 📗 📒 📕 📓 | 10 | `session_01WTjqUwG7wNgyoWoXYNwdic` (Aiuto 10, catena 8 di 8; il resto alla principale) | 09/11 |
 
 ## Lavori in corso
