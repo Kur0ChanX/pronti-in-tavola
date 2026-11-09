@@ -31,7 +31,8 @@ const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi',
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
 const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
-const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui', 'chiusi'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
+const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui', 'chiusi'];
+const TIPI_SERVER = ['esagera'];   // (C109) avvisi che manda solo il server (un telefono non li può chiedere con /api/avvisa)   // cosa è successo, per il testo e per aprire il punto giusto (C27)
 const PAUSA_MS = 15 * 1000;
 const SQUILLO_MS = 5000, SQUILLI = 12;   // «sono qui»: uno squillo ogni 5 secondi per 1 minuto (C51)     // e non più di uno ogni 15 secondi
 
@@ -76,7 +77,14 @@ Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna
 Gli ordini con "prova":true sono di prova: non contarli negli incassi né tra le cose da cucinare.
 Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 3 frasi.`;
 /* aiutante dei clienti (C50, Mario 08/11 «per i clienti fallo al meglio ma tienilo disattivato»): solo menù e i suoi ordini, mai dati di altri */
-const TETTO_AIC = 60, TETTO_AIC_CLIENTE = 10;   // domande al giorno: in tutto e per ogni cliente (restano neuroni per Monica)
+const TETTO_AIC = 200;   // domande dei clienti con l'AI al giorno, in tutto (C108: Groq, 3 modelli da ~70-100 domande l'uno); oltre risponde il telefono
+/* (C109, PT E41; Mario 09/11 «limiti per persona da consiglio») nessun cliente viene MAI fermato:
+   oltre SOGLIA domande di UN cliente arriva una segnalazione a chi gestisce (di nuovo al doppio);
+   oltre RIDOTTO al giorno, o RAFFICA in un minuto (telefono inceppato, robot), «modo ridotto»: niente AI per lui, risponde il telefono.
+   Soglia e ridotto li sceglie Mario («Solo per te, Mario»: impostazioni/app aicAvviso, aicRidotto), qui i valori di base e i tetti sicuri */
+const SOGLIA_AIC_CLIENTE = 30, RIDOTTO_AIC_CLIENTE = 100, RAFFICA_AIC = 10;
+const QUOTA_AVVISO = 0.8;   // all'80% delle domande dei clienti di tutto il giorno una segnalazione a chi gestisce
+const RISPOSTA_RIDOTTA = 'Dimmi il piatto, quanti e per che giorno (es. «2 lasagne per sabato»), oppure chiedimi prezzi e allergie. Per altro tocca «Scrivi a Monica».';
 const ISTRUZIONI_CLIENTE = `Sei l'aiutante gentile dell'app «Pronti in Tavola» di Monica, che cucina da asporto a Olbia: i clienti ordinano dall'app e ritirano a casa sua.
 Parli con UN cliente. Ricevi i DATI in JSON: il menù di oggi (piatti, prezzi, formati, gusti, ingredienti e allergeni scritti da Monica), le regole degli ordini, gli ordini di QUESTO cliente, il suo carrello e le sue allergie.
 Rispondi SOLO con un oggetto JSON, senza altro testo: {"testo":"<risposta breve>","azioni":[ ...da 0 a 4 azioni... ]}
@@ -105,13 +113,17 @@ const testoDi = r => { const x = typeof r === 'string' ? r : (r && (r.response ?
    (1.000 richieste e 200.000 token al giorno, senza carta, non addestra sui dati; docs lette l'08/11/2026). Stesso modello Qwen 3.8.
    La chiave è il segreto GROQ_API_KEY del Worker (lo mette il giro sito.yml dai segreti di GitHub): senza, il ponte non c'è. */
 const PONTE = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b'];
+/* (C108, Mario 09/11 «salvadanai separati», «come consiglio»): l'aiutante dei CLIENTI usa Groq per primo, tre modelli in fila
+   (gratis: 1.000 domande e 200.000 token al giorno PER MODELLO, 8.000 token al minuto; console.groq.com/docs/rate-limits letta il 09/11/2026);
+   i neuroni di Cloudflare restano a Monica e Mario, ai clienti solo per ultimo. Nessuno risponde → «modo ridotto» (risponde il telefono) */
+const PONTE_CLIENTI = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
 const TETTO_ASCOLTO = 400, TETTO_ASCOLTO_CLIENTE = 40;   // ascolti al giorno: in tutto e per cliente (Whisper: ~4 neuroni a frase)
-async function ponteAI(env, messaggi) {
+async function ponteAI(env, messaggi, modelli = PONTE) {
   if (!env.GROQ_API_KEY) return null;
-  for (const m of PONTE) {
+  for (const m of modelli) {
     try {
       const r = await fetch('https://api.groq.com/openai/v1/chat/completions', { method: 'POST', headers: { authorization: 'Bearer ' + env.GROQ_API_KEY, 'content-type': 'application/json' },
-        body: JSON.stringify({ model: m, messages: messaggi, temperature: 0.2, max_tokens: 1500 }) });
+        body: JSON.stringify({ model: m, messages: messaggi, temperature: 0.2, max_tokens: 1500, ...(/gpt-oss/.test(m) ? { reasoning_effort: 'low' } : {}) }) });   // gpt-oss «pensa»: poco, così resta spazio per la risposta (C71)
       if (r.ok) return { r: await r.json(), modello: 'groq:' + m };
     } catch (e) { /* prova il prossimo */ }
   }
@@ -131,7 +143,7 @@ async function provaAI(env) {
     const nome = 'Cloudflare · ' + m.split('/').pop();
     esiti.push(env.AI ? await giro(nome, () => env.AI.run(m, { messages: msg, max_completion_tokens: 400, temperature: 0, reasoning_effort: 'low' })) : { nome, ok: false, errore: 'AI non collegata' });
   }
-  for (const m of PONTE) {
+  for (const m of [...new Set([...PONTE, ...PONTE_CLIENTI])]) {
     const nome = 'Groq · ' + m.split('/').pop();
     if (!env.GROQ_API_KEY) { esiti.push({ nome, ok: false, errore: 'chiave GROQ_API_KEY assente nel sito' }); continue; }
     esiti.push(await giro(nome, async () => {
@@ -152,7 +164,15 @@ async function chiediAI(env, testo, dati, storia, foto, cliente) {
   const soloTesto = [messaggi[0], ...passate, { role: 'user', content: domanda }];
   const finiti = e => /4006|neuron|allocation/i.test(String(e && e.message));
   const ponte = async () => { const p = await ponteAI(env, soloTesto); if (p) { r = p.r; modello = p.modello; } return !!p; };
-  try { r = await env.AI.run(MODELLO_AI, { messages: messaggi, max_completion_tokens: 2000, temperature: 0.2, reasoning_effort: 'low' }); }
+  if (cliente) {   // (C108) clienti: Groq per primo, poi Cloudflare; nessuno risponde → risponde il telefono, mai «riprova domani»
+    const p = await ponteAI(env, soloTesto, PONTE_CLIENTI);
+    if (p) { r = p.r; modello = p.modello; }
+    else if (env.AI) for (const m of [MODELLO_AI, ...RISERVE]) {
+      try { r = await env.AI.run(m, { messages: soloTesto, max_completion_tokens: 1500, temperature: 0.2, ...(m === MODELLO_AI ? { reasoning_effort: 'low' } : {}) }); modello = m; break; }
+      catch (e) { if (finiti(e)) break; }
+    }
+    if (!r) return { fermo: 'ridotto', testo: RISPOSTA_RIDOTTA, azioni: [] };
+  } else try { r = await env.AI.run(MODELLO_AI, { messages: messaggi, max_completion_tokens: 2000, temperature: 0.2, reasoning_effort: 'low' }); }
   catch (e) {
     if (finiti(e)) {   // finiti i neuroni gratuiti di Cloudflare: passa a Groq (solo testo)
       if (!(await ponte())) return { testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] };
@@ -405,13 +425,24 @@ async function gestoreDa(req) {
   return r.ok ? uid : null;
 }
 
-/* l'aiutante dei clienti è acceso? (impostazioni/app.aiClienti, letto col token del cliente) */
-async function aiClientiAcceso(req) {
+/* impostazioni/app lette col token di chi chiede (cliente o gestore): i campi di Firestore, o null */
+async function campiApp(req) {
   const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const r = await fetch(`https://firestore.googleapis.com/v1/projects/${PROGETTO}/databases/(default)/documents/impostazioni/app`, { headers: { authorization: 'Bearer ' + tok } });
-  if (!r.ok) return false;
-  const f = ((await r.json()) || {}).fields || {};
-  return !(f.aiClienti && f.aiClienti.booleanValue === false);   // acceso di base (Mario 08/11): spento solo se Mario lo spegne
+  return r.ok ? ((await r.json()) || {}).fields || {} : null;
+}
+const accesoAIC = f => !!f && !(f.aiClienti && f.aiClienti.booleanValue === false);   // acceso di base (Mario 08/11): spento solo se Mario lo spegne
+/* l'aiutante dei clienti è acceso? (impostazioni/app.aiClienti, letto col token del cliente) */
+async function aiClientiAcceso(req) { return accesoAIC(await campiApp(req)); }
+/* un numero delle impostazioni nei suoi tetti sicuri, altrimenti quello di base */
+function numeroApp(f, k, min, max, base) {
+  const x = f && f[k], n = Number(x && (x.integerValue ?? x.doubleValue ?? x.stringValue));
+  return Number.isFinite(n) && n >= min && n <= max ? Math.round(n) : base;
+}
+/* (C109) soglie per cliente scelte da Mario: avviso 10-200 (base 30), modo ridotto 20-1000 (base 100), sempre sopra l'avviso */
+function limitiAIC(f) {
+  const soglia = numeroApp(f, 'aicAvviso', 10, 200, SOGLIA_AIC_CLIENTE);
+  return { soglia, ridotto: Math.max(numeroApp(f, 'aicRidotto', 20, 1000, RIDOTTO_AIC_CLIENTE), soglia + 1) };
 }
 
 /* cliente approvato? Firestore legge utenti/<uid> col suo token (anche anonimo): ridà il suo numero di cliente */
@@ -451,18 +482,18 @@ export class Avvisi extends DurableObject {
     await this.ctx.storage.put('diario', diario);
   }
 
-  async iscrivi(uid, sub) {
+  async iscrivi(uid, sub, dev) {
     if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint) || sub.endpoint.length > 1000) return false;
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
     const altri = tutti.filter(x => x.endpoint !== sub.endpoint);
-    altri.push({ uid, endpoint: sub.endpoint, da: Date.now() });
+    altri.push({ uid, endpoint: sub.endpoint, da: Date.now(), ...(dev ? { dev: true } : {}) });   // dev: telefono di Mario (C109)
     await this.ctx.storage.put('iscritti', altri.slice(-20));   // al massimo 20 telefoni
     return true;
   }
 
   async manda(soloUid, per, perCliente, extra, chi) {
     const chiave = perCliente ? 'clienti' : 'iscritti';
-    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) ? per : 'ordine', quando: Date.now() });
+    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) || TIPI_SERVER.includes(per) ? per : 'ordine', quando: Date.now() });
     const tutti = (await this.ctx.storage.get(chiave)) || [];
     const dest = perCliente ? tutti.filter(x => x.cliente === perCliente) : tutti.filter(x => !soloUid || x.uid === soloUid);
     if (perCliente) {   // il testo «è pronto» vale solo per i telefoni di quel cliente
@@ -552,15 +583,39 @@ export class Avvisi extends DurableObject {
     return true;
   }
 
-  /* aiutante dei clienti: tetto in tutto e per cliente (chi gestisce che prova conta in tutto, non a testa) */
-  async contaAIC(cliente) {
+  /* aiutante dei clienti (C109): nessun blocco. '' = risponde l'AI; 'ridotto' = risponde il telefono (quota del giorno finita,
+     o un cliente oltre il «modo ridotto» o in raffica). Ogni soglia passata: una segnalazione a chi gestisce, una volta sola */
+  async contaAIC(cliente, lim) {
+    const soglia = (lim && lim.soglia) || SOGLIA_AIC_CLIENTE, ridotto = Math.max((lim && lim.ridotto) || RIDOTTO_AIC_CLIENTE, soglia + 1);
     const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('aic')) || {};
     const c = c0.giorno === oggi ? c0 : { giorno: oggi, n: 0, chi: {} };
-    if (c.n >= TETTO_AIC) return 'tetto';
-    if (cliente && (c.chi[cliente] || 0) >= TETTO_AIC_CLIENTE) return 'tuo';
-    c.n++; if (cliente) c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+    c.raf = c.raf || {}; c.visti = c.visti || {};
+    const segnala = async (chiave, ...a) => { if (c.visti[chiave]) return; c.visti[chiave] = 1; await this.segnala(...a).catch(() => {}); };
+    let esito = '';
+    if (cliente) {
+      const ora = Date.now(), r = (c.raf[cliente] || []).filter(t => ora - t < 60000).concat(ora).slice(-RAFFICA_AIC);
+      c.raf[cliente] = r;
+      const n = c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+      if (r.length >= RAFFICA_AIC) { esito = 'ridotto'; await segnala('raffica:' + cliente, 'raffica', cliente, RAFFICA_AIC, RAFFICA_AIC); }
+      if (n >= ridotto) { esito = 'ridotto'; await segnala('ridotto:' + cliente, 'ridotto', cliente, n, ridotto); }
+      else if (n === soglia + 1 || n === 2 * soglia + 1) await segnala('aiutante:' + cliente + ':' + n, 'aiutante', cliente, n, soglia);
+    }
+    if (!esito && c.n >= TETTO_AIC) { esito = 'ridotto'; await segnala('quota', 'quota', '', c.n, TETTO_AIC); }
+    if (!esito) {
+      c.n++;
+      if (c.n === Math.ceil(TETTO_AIC * QUOTA_AVVISO)) await segnala('quota80', 'quota80', '', c.n, TETTO_AIC);
+    }
     await this.ctx.storage.put('aic', c);
-    return '';
+    return esito;
+  }
+  /* (C109, PT E41) UNA funzione per segnalare a chi gestisce che una persona usa molto una cosa: non ferma mai nessuno.
+     Registro (ultime 30, «Solo per te, Mario») + notifica solo ai telefoni di Mario (iscritti con dev). La usa anche l'ascolto (Voce). */
+  async segnala(cosa, cliente, n, soglia) {
+    const reg = ((await this.ctx.storage.get('segnalazioni')) || []).slice(-29);
+    reg.push({ quando: new Date().toISOString(), cosa, cliente: cliente || '', n, soglia });
+    await this.ctx.storage.put('segnalazioni', reg);
+    const mario = [...new Set(((await this.ctx.storage.get('iscritti')) || []).filter(x => x.dev).map(x => x.uid))];   // solo a Mario (consiglio C109): Monica non deve fare niente
+    for (const uid of mario) await this.manda(uid, 'esagera', null, { cosa, cliente: cliente || '', n });
   }
   /* ascolto preciso dei clienti: stesso conto, chiave «asc» */
   async contaAscolto(cliente) {
@@ -575,7 +630,8 @@ export class Avvisi extends DurableObject {
   async contoAI() {
     const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {}, s = (await this.ctx.storage.get('asc')) || {};
     return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0, ascolti: s.giorno === oggi ? s.n : 0,
-      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
+      segnalazioni: ((await this.ctx.storage.get('segnalazioni')) || []).slice(-10),
+      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, sogliaCliente: SOGLIA_AIC_CLIENTE, ridottoCliente: RIDOTTO_AIC_CLIENTE, raffica: RAFFICA_AIC, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
   }
 
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
@@ -815,14 +871,15 @@ export default {
       if (url.pathname === '/api/aiuto-cliente') {
         const c = await clienteDa(req), g = c ? null : await gestoreDa(req);   // chi gestisce lo prova anche spento («guarda come»)
         if (!c && !g) return json({ errore: 'prima Monica deve approvarti' }, 403);
-        if (c && !(await aiClientiAcceso(req))) return json({ errore: 'spento' }, 403);
+        const f = c ? await campiApp(req) : null;
+        if (c && !accesoAIC(f)) return json({ errore: 'spento' }, 403);
         const b = await req.json().catch(() => null);
         const testo = String((b && b.testo) || '').trim().slice(0, 300), dati = JSON.stringify((b && b.dati) || {});
         if (!testo) return json({ errore: 'frase vuota' }, 400);
         if (dati.length > 40000) return json({ errore: 'dati troppo grandi' }, 413);
-        if (!env.AI) return json({ errore: 'AI non collegata' }, 503);
-        const fermo = await av.contaAIC(c);
-        if (fermo) return json({ fermo, testo: fermo === 'tuo' ? 'Per oggi abbiamo parlato tanto! Riprova domani, o scrivi a Monica.' : 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
+        if (!env.AI && !env.GROQ_API_KEY) return json({ errore: 'AI non collegata' }, 503);
+        const fermo = await av.contaAIC(c, limitiAIC(f));
+        if (fermo) return json({ fermo, testo: RISPOSTA_RIDOTTA, azioni: [] });   // (C109) mai «hai finito»: il telefono risponde da solo
         return json(await chiediAI(env, testo, dati, b.storia, null, true));
       }
       if (url.pathname === '/api/ascolta') {   // «ascolto preciso» dei clienti (C105): audio → Whisper Groq v3 + Cloudflare → correttore → { testo, alternative }
@@ -846,7 +903,7 @@ export default {
       if (url.pathname === '/api/visto-qui') return json(await av.vistoQui());
       if (url.pathname === '/api/iscrivi') {
         const b = await req.json().catch(() => null);
-        return (await av.iscrivi(uid, b && b.sub)) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
+        return (await av.iscrivi(uid, b && b.sub, !!(b && b.dev))) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
       }
       if (url.pathname === '/api/prova') return json(await av.manda(uid));
       if (url.pathname === '/api/pronto') {
