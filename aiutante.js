@@ -735,7 +735,7 @@ async function inviaAC(testo, voce, extra = {}) {
   if (UI.vista === 'aiuto') { render(); fondoAC(); }
   const i = AIC.msgs.length - 1, haFai = pi.azioni.some(x => controllaAIC(x.a).fai);
   const o = k => typeof opz !== 'function' || opz(k) !== false, poi = () => { if (typeof dopoVoceCliente === 'function') dopoVoceCliente(i); };
-  if (voce) { if (o('voceClientiRisponde')) parlaAI((typeof perVoceCliente === 'function' ? perVoceCliente(pi.testo) : pi.testo) + (haFai ? (o('voceClientiConferma') ? ' Lo metto nel carrello? Dimmi sì o no.' : ' Controlla e tocca Conferma.') : ''), poi); else poi(); }
+  if (voce) { if (o('voceClientiRisponde')) parlaAI((typeof perVoceCliente === 'function' ? perVoceCliente(pi.testo) : pi.testo) + (haFai ? (o('voceClientiConferma') && (typeof vocePuoSentireSi !== 'function' || vocePuoSentireSi()) ? ' Lo metto nel carrello? Dimmi sì o no.' : ' Controlla e tocca Conferma.') : ''), poi); else poi(); }
 }
 window.chiediAiutoCliente = chiediAiutoCliente;
 function fondoAC() { if (UI.vista === 'aiuto') window.scrollTo(0, document.body.scrollHeight); }
