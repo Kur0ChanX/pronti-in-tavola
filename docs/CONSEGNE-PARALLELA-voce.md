@@ -31,12 +31,11 @@ Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 09/11 17:11, chius
 5. Giro completo UNA volta in un file; versione libera + NOVITA (una riga per funzione); `docs/DA-FARE.md` C105; push → `sito.yml` success → a Mario: «chiudi e riapri l'app», Menù → microfono in basso a sinistra → «due teglie di lasagne per sabato» → «sì»; «A cosa serve». Poi prova dal vivo di `/api/ascolta` (curl col token non si può: chiedere a Mario una frase col microfono e leggere `/api/conto-ai` → `ascolti`).
 6. Alla soglia: consegne qui (mai in PASSAGGIO-CONSEGNE), Voce 4 solo se resta più di mezza sessione; a lavoro finito la zona torna alla principale (skill `chat-parallela`).
 
-## Domande aperte a Mario (non bloccanti: vai col consiglio e diglielo nel primo messaggio)
-- «Sì» detto a voce mette nel carrello (fatto così, consiglio 1) oppure serve sempre il tocco su Conferma (2)? Si cambia da Impostazioni («Sì detto a voce mette nel carrello»).
-- Microfono fisso a sinistra in basso nel menù e nel carrello (fatto così, consiglio 1) oppure solo nel riquadro dell'aiutante (2)? Si spegne da Impostazioni («Microfono fisso per i clienti»).
+## Domande a Mario: nessuna aperta
+Mario (09/11, nella chat Voce 1, girato da Voce 1 con send_message): «Vai avanti da solo» = vale il consiglio per entrambe: 1) il «sì» detto a voce mette nel carrello (l'ordine parte solo con «Invia»); 2) microfono grande fisso nel menù e nel carrello (Voce 1 scriveva «a destra»: a destra c'è già «Scrivimi», quindi va a SINISTRA, stessa altezza; se Mario lo vuole a destra basta spostare `.vc-fabs`). Niente altro da chiedergli: lavorare da sola fino alla versione online e dirglielo con «chiudi e riapri l'app» e dove toccare.
 
-## Ultimo messaggio di Mario (parola per parola, 09/11 ~17:35, in questa chat)
-«Continua con pensiero extra e se serve ripensa»
+## Ultimo messaggio di Mario (parola per parola)
+09/11 ~17:35 in questa chat: «Continua con pensiero extra e se serve ripensa». 09/11, nella chat Voce 1 (girato da Voce 1): «Vai avanti da solo».
 (Prima, 09/11 ~17:00, alla principale: «aggiungi una sessione parallela per un team tavola che mi potenzi molto il comando vocale per i clienti. Abbiamo potenziato quello di Monica, quello dei clienti lo voglio veramente performante a livello di lettura della voce, di quello che riesci a fare. Lo voglio ampliare molto come potenza, insomma, valuta tutto quello che si può fare per un comando vocale per il cliente. Mi sembra che chiedi a Monica, inventati cose intelligenti, smart, insomma, fai tutto quello che è in tuo potere di veramente utile al cliente, è sorprendente, ecco, innovativo.»)
 
 ## Numeri
