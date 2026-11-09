@@ -897,4 +897,10 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 .vc-onda span:nth-child(2) { animation-delay: .12s; } .vc-onda span:nth-child(3) { animation-delay: .24s; } .vc-onda span:nth-child(4) { animation-delay: .36s; } .vc-onda span:nth-child(5) { animation-delay: .48s; }
 @keyframes vc-onda { 0%, 100% { height: 6px; } 50% { height: 22px; } }
 body.vc-su main.corpo { padding-bottom: 150px; }
+#vc.vc-senza-fab .vc-pannello { bottom: calc(84px + env(safe-area-inset-bottom)); }
+.vc-onda.viva span { animation: none; height: calc(6px + 16px * var(--liv, 0)); transition: height .12s ease-out; }   /* C110: le barrette seguono la voce */
+.vc-onda.viva span:nth-child(2n) { height: calc(6px + 10px * var(--liv, 0)); }
+.vc-ascolta { display: flex; width: fit-content; align-items: center; gap: 6px; margin: 8px 0 0; padding: 6px 12px; border-radius: 999px; border: 1.5px solid var(--grano); background: transparent; color: var(--vino); font: inherit; font-size: .9rem; font-weight: 700; cursor: pointer; }
+.vc-ascolta svg { width: 18px; height: 18px; }
+.vc-ascolta.forte { background: var(--vino); border-color: var(--vino); color: #FFF7EC; animation: ai-ascolta 1.2s ease-in-out 3; }
 @media (prefers-reduced-motion: reduce) { .vc-fab.acceso, .vc-onda span, .vc-pannello { animation: none; } }
