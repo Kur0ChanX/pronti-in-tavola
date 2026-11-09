@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:42 · 01QTFEqRMnzm
-Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigzag, i fiorellini toglili, al posto del zigzag metti tipo una cucitura da sarta, fatta bene. Fai con cura tutti gli spazi, sposta il loghetto in base a quello che ti serve, insomma. Deve essere tutto ordinato, fatto bene, senza che nulla si sovrapponga. Quello uno di due secondo me la può aiutare, perché almeno gli dice quanti prodotti sono. Secondo me può aiutarli in piccolino a metterlo.
-
 ## 2026-11-06 19:49 · 01QTFEqRMnzm
 Una volta che è fatto le etichette, continua con il progetto.
 
@@ -131,3 +128,6 @@ Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità,
 
 ## 2026-11-09 19:38 · 01WTjqUxhhMW
 principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
+
+## 2026-11-09 22:37 · 01WTjqUwYZ9r
+ho fatto un test con un invito ad un iphone un  disastro allora le notifiche non puoi abilitarle perché vanno approvate da monica dopo  che abbiamo approvato gli ha fatto uscire e rientrare con un altra richiesta di approvazione che monica ha dovuto avvertare non ha cambiato telefono se non riesci a risolvere togliamo l'approvazione sembra quello il problema di tutto

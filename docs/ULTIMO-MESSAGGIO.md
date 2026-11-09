@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 19:38 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 22:37 ora italiana)
 
-principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
+ho fatto un test con un invito ad un iphone un  disastro allora le notifiche non puoi abilitarle perché vanno approvate da monica dopo  che abbiamo approvato gli ha fatto uscire e rientrare con un altra richiesta di approvazione che monica ha dovuto avvertare non ha cambiato telefono se non riesci a risolvere togliamo l'approvazione sembra quello il problema di tutto
