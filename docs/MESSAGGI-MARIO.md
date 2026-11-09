@@ -2,31 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:38 · 01QTFEqRMnzm
-Allora, tutte le scritte sono un po' attaccate. Lasagne, la teglia, poco cacao sopra, è tutto un po' appiccicato. Poi i rombetti che hai fatto attorno, boh, sono strani, puoi fare di meglio secondo me. A tema cucina, a tema sardo.
-E forse il loghetto, il logo che c'è nelle etichette in alto a destra, forse è un pochettino troppo nell'angolo. Forse. E fallo poco poco poco più grande. Staccalo dagli angoli e fallo poco poco più grande.
-
-## 2026-11-06 19:42 · 01QTFEqRMnzm
-Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigzag, i fiorellini toglili, al posto del zigzag metti tipo una cucitura da sarta, fatta bene. Fai con cura tutti gli spazi, sposta il loghetto in base a quello che ti serve, insomma. Deve essere tutto ordinato, fatto bene, senza che nulla si sovrapponga. Quello uno di due secondo me la può aiutare, perché almeno gli dice quanti prodotti sono. Secondo me può aiutarli in piccolino a metterlo.
-
-## 2026-11-06 19:49 · 01QTFEqRMnzm
-Una volta che è fatto le etichette, continua con il progetto.
-
-## 2026-11-07 00:12 · 01QTFEqU1M1r
-come tutti gli altri progetti non inventarti nulla manuale tutto plug in play
-
-## 2026-11-07 00:17 · 01QTFEqU1M1r
-mandami il link nel passaggio dove devo cliccare per andare avanti
-
-## 2026-11-07 00:25 · 01QTFEqU1M1r
-mi sono rotto siamo un ora che problemi hai oggi????
-
-## 2026-11-07 00:28 · 01QTFEqU1M1r
-manda il link
-
-## 2026-11-07 00:34 · 01QTFEqU1M1r
-risolvi per piacere siamo 2 ore cerca bene
-
 ## 2026-11-07 01:09 · 01QTFEqU1M1r
 link e passaggi chiari
 
@@ -132,3 +107,27 @@ nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me met
 
 ## 2026-11-09 10:56 · 01WTjqUwCuTd
 Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
+
+## 2026-11-09 16:48 · 01WTjqUxkfi1
+Ok, ma se apri o riapri ai clienti che sono già entrati, non è che gli richiede il nome e cognome, cioè non mi stai facendo fare questa cosa. Cioè, i clienti che sono già dentro, che li funziona, l'app, cioè non voglio che gli si creano dei problemi o che devono rifare passaggi, non mi sembra poco professionale, no?
+
+## 2026-11-09 16:55 · 01WTjqUxkfi1
+Mi confermi che poi c'è in modo molto semplice, chiaro e ottimizzato al massimo, plug and play, come avevamo studiato, se non meglio pure, fallo meglio se riesci, ancora meglio, la questione delle notifiche per abilitarle e la questione per mettere la schermata a home su iPhone, che è un po' complicato, sia per un utente non consapevole, e Android però dovrebbe esserci direttamente il tasto, che lo fa in automatico, giusto?
+
+## 2026-11-09 16:56 · 01WTjqUxkfi1
+Ad esempio nel caso di Francesco, dopo che l'abbiamo riabilitato, non gli è uscito aggiungi ad home, non gli è uscito attiva notifiche, ma tipo ad esempio attiva notifiche se l'ha trovato nelle impostazioni. Ma forse è solo un caso di Francesco, giusto?
+
+## 2026-11-09 17:09 · 01WTjqUxkfi1
+No, scusa, mi ha detto appena l'ho aggiunta nella home, però non gliel'aveva chiesto l'applicazione di aggiungere nella home, ma lui è uno che ci sa fare col telefono, quindi l'ha fatto lui in automatico, senza che lui glielo chiedesse l'applicazione. Una volta che l'ha aggiunta home, l'applicazione gli ha chiesto: vuoi attivare le notifiche? Scusa, prima ho sbagliato come messaggio.
+
+## 2026-11-09 17:11 · 01WTjqUxkfi1
+Fatto, ho pubblicato le regole
+
+## 2026-11-09 17:54 · 01WTjqUxkfi1
+Clicco su ipad e non succede nulla non sò se ha funzionato o meno correggi poi a monica gli escono 2 richieste anche se è la stessa persona si può correggere? una esce da link e una da app in home anxhe se è la stessa persona
+
+## 2026-11-09 18:12 · 01WTjqUxkfi1
+in coda quando finisci aggiungi, che se  se da tablet iPad vado in icona poi una volta che rientro esce zoomato nell'app... succede solo in orizzontale
+
+## 2026-11-09 18:24 · 01WTjqUxkfi1
+aspetta prima di pubblicare aggiungi la risoluzione del problema nell'altra sessione

@@ -1,20 +1,5 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 18:24 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito così: lo zoom dell'iPad lo risolve la sessione nuova, e la prossima pubblicazione deve già contenerlo. L'ho scritto nelle consegne e gliel'ho mandato: il messaggio è arrivato.
 
-───
-✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
-
-───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+Attenzione: la v0.9.81 (notifiche e richiesta unica) è già online dalle 18:23, perché ogni salvataggio su GitHub la pubblica da solo. Se intendevi un'altra cosa, scrivilo nella [sessione nuova](https://claude.ai/code/[segreto tolto dalla scorta]).
