@@ -8,3 +8,4 @@ Date, citazioni di Mario e motivi delle regole del CLAUDE.md (che resta senza st
 - 05/11/2026 · Soglia del passaggio di consegne della catena Principale: 320k invece di 250k («porta questa sessione a 320mila in catena», Mario). File `docs/misure/prova-soglia.json` (fino al 05/11/2027); le altre catene restano a 250k.
 - 06/11 «quando ti mando le foto di sito registra i tasti su github per tutti i progetti…»: regola in `CLAUDE.md` (guide), da portare nel kit (C12).
 - 07/11 · Link a Mario: riquadro con Copia (cliccabile solo se Mario deve aprirlo) (scelta 3 di Mario), in `CLAUDE.md` del progetto; PER LA SESSIONE DEL KIT: portarlo in `domande` e `ricerca-aggiornata` (oggi dicono «mai nei riquadri»).
+- 09/11/2026 (Mario, Aiuto 8) «ogni cosa che andremo ad aggiungere va implementata anche nel comando vocale di Monica nella schermata principale» → `.claude/rules/progetto.md`.
