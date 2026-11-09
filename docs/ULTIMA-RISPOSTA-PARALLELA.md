@@ -1,9 +1,9 @@
-# Ultima risposta di Claude (09/11/2026 21:38 ora italiana)
+# Ultima risposta di Claude (09/11/2026 23:24 ora italiana)
 
-La chat si era riavviata. Ho recuperato e salvato su GitHub il lavoro rimasto a metà: erano solo file di servizio, non codice.
+Ho capito: vuoi sapere cos'è la chiave Deepgram e perché mi serve.
 
-La Principale 37 ha messo online la v0.9.91 con quello che le avevo chiesto. Le ho controllate sul sito:
-- In Impostazioni → «Solo per te, Mario» c'è il nuovo numero **«Microfono dei clienti: segnalazione»**. Parte da 40 frasi al giorno e lo puoi cambiare tu tra 10 e 500.
-- C'è anche il testo per l'avviso «oltre 400 frasi di tutti i clienti».
+**Cos'è.** Deepgram è un'azienda americana che trasforma la voce in testo. La **chiave API** è una password lunga che permette alla nostra app di usare il loro servizio. È come dare al vicino una chiave che apre solo la cucina, non tutta la casa.
 
-Io resto ferma finché non arriva il tuo video dall'iPad (C110) o la chiave Deepgram (C108).
+**A cosa serve.** È il secondo «orecchio» forte del microfono dei clienti:
+- **Oggi**: ogni frase la ascoltano Groq e Cloudflare. Cloudflare però è il salvadanaio di risposte gratuite tuo e di Monica, e i clienti lo consumano.
+- **Con la chiave**: per i clienti ascoltano Groq e …
