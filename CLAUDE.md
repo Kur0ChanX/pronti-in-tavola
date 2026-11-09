@@ -25,4 +25,4 @@ Alla compressione conserva: ultimo messaggio di Mario parola per parola, domande
 # Pronti in Tavola
 App per **Monica** (sorella di Mario): cucina a Olbia e vende da asporto ad amici, che ordinano dal link WhatsApp. Semplicissima: Monica e i clienti non sono pratici.
 - Codice: `index.html`, `style.css`, `data.js`, `app.js` (solo `carica()`/`salva()` toccano i dati), `spesa.js` (lista della spesa), `media/`. Niente framework.
-- Stato: v0.7 di prova, dati sul telefono. Decisioni in `docs/SPECIFICA.md`, lavori in `docs/DA-FARE.md`.
+- Stato: v0.9 online, dati veri su Firebase (`dati.js`). Decisioni in `docs/SPECIFICA.md`, lavori in `docs/DA-FARE.md`.

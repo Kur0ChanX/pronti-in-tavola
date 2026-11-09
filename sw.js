@@ -47,13 +47,14 @@ self.addEventListener('push', e => {
       primo: ['Una persona nuova ha ordinato: accettala 🍝', 'Il suo primo ordine aspetta il tuo sì. Tocca per vedere chi è.'],
       risposta: ['Un cliente ha risposto sul giorno 🍝', 'Tocca per vedere la sua risposta.'],
       modifica: ['Un cliente chiede una modifica 🍝', 'Tocca per vedere cosa cambia.'],
+      chiusi: ['Una persona nuova non riesce a entrare 🔒', '«Accetta clienti nuovi» è spento. Tocca per riaprire.'],   // (C104)
       qui: [`${(u && u.prova) ? 'PROVA · ' : ''}${(u && u.nome) || 'Un cliente'} è qui per il ritiro 🍝`, `${u && u.n ? 'Ordine n. ' + u.n + '. ' : ''}Tocca per vederlo.`],
       ordine: ['Pronti in Tavola', 'Hai un ordine nuovo da guardare 🍝']
     };
     const tipo = t === 'promemoria' && !(u.n > 0) ? 'ordine' : (T[t] ? t : 'ordine');
     return self.registration.showNotification(T[tipo][0], {
       body: T[tipo][1], icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: tipo, renotify: true,
-      requireInteraction: ['richiesta', 'primo', 'ordine', 'qui'].includes(tipo),
+      requireInteraction: ['richiesta', 'primo', 'ordine', 'qui', 'chiusi'].includes(tipo),
       vibrate: tipo === 'qui' ? [2500, 200, 2500, 200, 2500, 200, 2500] : [300, 150, 300, 150, 300],   // «sono qui»: vibra come una chiamata (C51)
       data: { url: './#vai=' + (tipo === 'qui' && u.n ? 'qui_' + u.n : tipo), tipo: tipo === 'qui' && u.n ? 'qui_' + u.n : tipo } })
       /* con l'app aperta suona anche lei, forte, finché Monica tocca «Ho visto» (C51) */
