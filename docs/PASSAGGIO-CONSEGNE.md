@@ -51,7 +51,7 @@ Online v0.9.60, 0.9.72, 0.9.74, 0.9.77 (giro completo verde ogni volta, pubblica
 Prima: foto del telefono di Francesco «mi hai bloccato l'app?!?… né aggiungi a home né notifiche… Risolvi tutto bene una volta per tutte»; «regola per tutti i progetti ed account dimmi sempre a cosa serve quello che vuoi farmi fare» (C103, PT E36); «c89 come consiglio».
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C105; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C106; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-fable-5-1** (Fable 5.1) · impegno **Medio** (`medium`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
