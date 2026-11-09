@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 09/11 · 📒 Aiuto 7 · C97: Francesco riapre l'app (v0.9.69) e scrive il nome: compare in Clienti?
+- 09/11 · 📒 Aiuto 8 · C97: Francesco riapre l'app (v0.9.69) e scrive il nome: compare in Clienti?
 - 08/11 · 🟡 Principale 32 · Controllo dei numeri doppi (C89) anche negli altri progetti (kit)? 1 sì (consiglio) · 2 solo qui.
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
