@@ -1,5 +1,13 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 09:59 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+Ho capito: vuoi che l'aiutante di Monica conosca anche le funzioni che ci sono già, non solo quelle nuove.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+✅ FATTO
+- Ho scritto il lavoro in Da fare. Aiuto 9 lo farà subito dopo nome e codice, e l'ho già avvisata.
+- Controllerà una per una le funzioni che tu e Monica usate già. Ogni funzione che manca nell'aiutante verrà aggiunta con la sua prova.
+- Esempi di funzioni da controllare:
+  - codice e «Ricorda a Monica» in Clienti;
+  - ultimi avvisi in Notifiche;
+  - «Accetta clienti nuovi»;
+  - persone rifiutate.
+- Quando è finito, l'elenco delle funzioni aggiunte lo vedi nelle novità …
