@@ -1196,7 +1196,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.toast', { hasText: 'App aggiornata' }).count())) throw new Error('manca «App aggiornata»');
     if (await page.locator('.apertura').count()) throw new Error('dopo l\'aggiornamento riparte l\'apertura animata');
   });
-  await passo('clienti nuovi (C104): spegnere chiede conferma, avviso rosso con «Riapri», il cliente bloccato tiene il nome', async () => {   // autonoma
+  await passo('clienti nuovi (C104): spegnere chiede conferma, avviso rosso con «Riapri», il cliente bloccato tiene il nome e avvisa, la notifica apre Clienti', async () => {   // autonoma
     await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; UI.sez = null; delete S.impostazioni.nuovi; vai('clienti'); });
     await page.waitForTimeout(250);
     if (await page.locator('.avviso-chiusi').count()) throw new Error('avviso rosso visibile con la porta aperta');
@@ -1213,9 +1213,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // il cliente che trova chiuso: testo onesto, il nome resta per la prossima volta
     const cl = await page.evaluate(() => { P.ruolo = 'cliente'; UI.devCliente = false; UI.benvPrima = P.benvenuto; P.benvenuto = false; UI.benv = { nome: 'Francesco', cognome: 'Prova', chiuso: true }; vai('menu'); return document.querySelector('.benvenuto .avviso') ? document.querySelector('.benvenuto .avviso').textContent : ''; });
     if (!/non accetta clienti nuovi/.test(cl) || !/Sì, sono io/.test(cl)) throw new Error('testo del cliente bloccato: ' + cl.slice(0, 120));
+    // (C104, v0.9.78) chi trova chiuso avvisa chi gestisce, una volta sola ogni 3 ore
+    const bus = await page.evaluate(() => { const vero = window.avvisaGestori, tipi = []; window.avvisaGestori = t => tipi.push(t); P.bussatoIl = 0; bussaChiusi(); bussaChiusi(); window.avvisaGestori = vero; return tipi; });
+    if (bus.join() !== 'chiusi') throw new Error('avviso della porta chiusa: ' + JSON.stringify(bus));
     await page.evaluate(() => { P.ruolo = 'monica'; P.benvenuto = UI.benvPrima; P.guida = true; P.homeNo = true; UI.benv = null; UI.foglio = null; vai('home'); }); await page.waitForTimeout(250);
     const st = await page.evaluate(() => [UI.vista, P.ruolo, S.impostazioni.nuovi, !!document.querySelector('.avviso-chiusi'), (document.querySelector('main.corpo') || {}).className]);
     if (!st[3]) throw new Error('tornata in Home senza avviso rosso: ' + JSON.stringify(st));
+    await page.evaluate(() => { UI.vaiDopo = 'chiusi'; vaiDaNotifica(); render(); }); await page.waitForTimeout(250);   // il tocco sulla notifica apre Clienti
+    const nt = await page.evaluate(() => [UI.vista, !!document.querySelector('.avviso-chiusi [data-a="nuovi-riapri"]')]);
+    if (nt[0] !== 'clienti' || !nt[1]) throw new Error('la notifica «non riesce a entrare» non apre Clienti con «Riapri»: ' + JSON.stringify(nt));
     try { await page.locator('[data-a="nuovi-riapri"]').first().click({ timeout: 5000 }); } catch (e) { await foto('23-errore'); throw new Error('«Riapri» non cliccabile: ' + e.message.split('\n').slice(0, 6).join(' | ')); }
     await page.waitForTimeout(300);
     const dopo = await page.evaluate(() => [S.impostazioni.nuovi, document.querySelectorAll('.avviso-chiusi').length]);

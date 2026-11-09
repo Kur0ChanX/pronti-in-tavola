@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.77';
+const VERSIONE_APP = '0.9.78';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.78', data: '09/11/2026',
+    nuovo: ['Se «Accetta clienti nuovi» è spento e una persona nuova prova a entrare, a te e a Monica arriva subito la notifica «Una persona nuova non riesce a entrare»: il tocco apre Clienti, dove c\'è «Riapri». Così nessuno resta fuori per ore senza che lo sappiate'] },
   { v: '0.9.77', data: '09/11/2026',
     corretto: ['«Accetta clienti nuovi» spento per sbaglio bloccava chi apriva il link senza che nessuno lo sapesse. Ora spegnerlo chiede conferma; finché è spento, in Home e in Clienti c\'è un avviso rosso con «Riapri ai clienti nuovi»', 'Chi trova chiuso legge un testo chiaro e il suo nome resta: alla riapertura basta «Sì, sono io»'] },
   { v: '0.9.76', data: '09/11/2026',
