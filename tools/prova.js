@@ -25,6 +25,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('.vapore').waitFor({ state: 'detached', timeout: 6000 });
     if (await page.evaluate(() => document.getElementById('app').style.opacity) !== '') throw new Error('app rimasta nascosta dopo il vapore');
   });
+  await passo('strisce di GZ senza numerini (C118, Astice alla Catalana): i numeri continuano dal passo prima', async () => {
+    const f = n => `https://www.giallozafferano.it/images/ricette/1/123/foto_seq${n}.jpg`;
+    const r = { passi: [{ t: 'a [[1]] b [[2]] c [[3]]', foto: [f(1)] }, { t: 'd [[4]] e [[5]] f [[6]]', foto: [f(2)] }, { t: 'g [[7]]', foto: [f(3)] }, { t: 'h [[12]]', foto: [f(4)] }] };
+    const n = await page.evaluate(r => fotoRicetta(r).map(q => q.map(x => x.num + (x.n ? 's' : '')).join(',')).join('|'), r);
+    if (n !== '1s,2s,3s|4s,5s,6s|7s,8s,9s|10s,11s,12s') throw new Error('numeri: ' + n);
+    const nuova = await page.evaluate(() => fotoRicetta({ passi: [{ t: 'x [[1]] y [[2]]', foto: ['a_1.jpg', 'a_2.jpg'] }, { t: 'z', foto: ['a_3.jpg'] }] }).map(q => q.map(x => x.num + (x.n ? 's' : '')).join(',')).join('|'));
+    if (nuova !== '1,2|3') throw new Error('ricetta nuova cambiata: ' + nuova);
+  });
   await passo('benvenuto: nome e cognome alla prima apertura, poi «Ciao»', async () => {
     await page.locator('#benv-nome').waitFor(); await foto('00-benvenuto');
     if (await page.locator('.voce').count()) throw new Error('il menù si vede senza nome');
