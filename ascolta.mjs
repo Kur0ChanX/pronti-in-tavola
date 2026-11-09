@@ -73,7 +73,7 @@ export function paroleChiave(piatti) {
   return out;
 }
 const estensione = tipo => /mp4|m4a/.test(tipo) ? 'mp4' : /aac/.test(tipo) ? 'aac' : /ogg/.test(tipo) ? 'ogg' : /wav/.test(tipo) ? 'wav' : 'webm';
-export async function ascolta(env, audioB64, tipo, piatti, f = (...a) => fetch(...a), { cliente = true } = {}) {
+export async function ascolta(env, audioB64, tipo, piatti, f = (...a) => fetch(...a), { cliente = true, ridotto = false } = {}) {
   const prompt = promptAscolto(piatti), errori = [];
   let bytes = null;
   const groq = async modello => {
@@ -118,12 +118,16 @@ export async function ascolta(env, audioB64, tipo, piatti, f = (...a) => fetch(.
     } catch (e) { errori.push('deepgram ' + (e.message || e)); } finally { clearTimeout(tempo); }
     return null;
   };
-  /* clienti con Deepgram: Groq v3 + Deepgram; altrimenti (o chi gestisce) Groq v3 + Cloudflare. Riserve finché non sono due */
-  const conDg = cliente && !!env.DEEPGRAM_API_KEY;
-  const principali = conDg ? [() => groq('whisper-large-v3'), deepgram] : [() => groq('whisper-large-v3'), cf];
-  const riserve = conDg ? [() => groq('whisper-large-v3-turbo'), cf] : [() => groq('whisper-large-v3-turbo')];
+  /* clienti con Deepgram: Groq v3 + Deepgram; altrimenti (o chi gestisce) Groq v3 + Cloudflare. Riserve finché non sono due.
+     (C108b) cliente «ridotto» (oltre le frasi del giorno di tutti i clienti): Cloudflare solo se nessun altro ha risposto, mai fermo */
+  const conDg = cliente && !!env.DEEPGRAM_API_KEY, senzaCf = cliente && ridotto;
+  const principali = conDg ? [() => groq('whisper-large-v3'), deepgram] : senzaCf ? [() => groq('whisper-large-v3'), () => groq('whisper-large-v3-turbo')] : [() => groq('whisper-large-v3'), cf];
+  const riserve = conDg ? [() => groq('whisper-large-v3-turbo'), cf] : senzaCf ? [cf] : [() => groq('whisper-large-v3-turbo')];
   const trovati = (await Promise.allSettled(principali.map(m => m()))).map(x => x.status === 'fulfilled' ? x.value : null).filter(Boolean);
-  for (const m of riserve) { if (trovati.length >= 2) break; const t = await m().catch(() => null); if (t) trovati.push(t); }   // limiti o servizio giù: le riserve hanno limiti loro
+  for (const m of riserve) {   // limiti o servizio giù: le riserve hanno limiti loro
+    if (trovati.length >= (senzaCf && m === cf ? 1 : 2)) break;
+    const t = await m().catch(() => null); if (t) trovati.push(t);
+  }
   const alternative = [];
   trovati.forEach(x => { if (!alternative.some(a => chiave(a) === chiave(x.testo))) alternative.push(x.testo); });
   if (!alternative.length) return { testo: '', errore: errori.join(' / ') || 'nessun motore' };
