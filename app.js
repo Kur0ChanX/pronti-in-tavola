@@ -316,7 +316,7 @@ function waMonica(o) {
   return wa(S.impostazioni.whatsapp, `${testa}\n\nVolevo chiederti: `);
 }
 const tastoMonica = () => S.impostazioni.whatsapp ? `<a class="wa-monica" href="${waMonica()}" target="_blank" rel="noopener" aria-label="Scrivimi su WhatsApp">${ico('chat')}<span>Scrivimi</span></a>` : '';
-const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && Dati.io.utente.nome) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
+const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && (Dati.mioNome ? Dati.mioNome() : Dati.io.utente.nome)) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
 /* il benvenuto: alla prima apertura il cliente nuovo scrive nome e cognome, senza non si entra (nell'anteprima: una volta per telefono) */
 function serveBenvenuto() {
   if (P.ruolo !== 'cliente' || UI.senzaNome || UI.devCliente) return false;   // lo sviluppatore che guarda come cliente non si registra
@@ -456,7 +456,7 @@ function voceDiario(d) {
   const presi = (d.esiti || []).filter(x => /^20\d$/.test(x)).length;
   const come = d.fermo ? `❌ non partito (${d.fermo === 'tetto' ? 'troppi avvisi oggi' : 'appena dopo un altro'})`
     : !d.telefoni ? '❌ nessun telefono iscritto' : presi === d.telefoni ? `✅ ${d.telefoni === 1 ? '1 telefono' : d.telefoni + ' telefoni'}` : `⚠️ ${presi} su ${d.telefoni} telefoni`;
-  return `<li><b>${giorno} ${ora}</b> · ${esc(NOMI_AVVISO[d.per] || d.per || 'Avviso')} · ${come}</li>`;
+  return `<li><b>${giorno} ${ora}</b> · ${esc(NOMI_AVVISO[d.per] || d.per || 'Avviso')}${d.chi ? ` · codice ${mostraCodice(esc(d.chi))}` : ''} · ${come}</li>`;
 }
 function diarioAvvisi() {
   const d = UI.diarioAvvisi;
@@ -483,7 +483,7 @@ async function caricaDiarioAvvisi() {
 /* notifiche vere degli ordini (C3): solo sul sito vero, dove c'è worker.js */
 const sulSito = () => Dati.attivo && location.origin === new URL(SITO).origin;
 /* tipo: ordine (nuovo), richiesta (persona nuova), risposta (alla proposta del giorno), modifica (C27, C33) */
-function avvisaGestori(tipo = 'ordine') { if (sulSito()) fetch('/api/avvisa', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo }) }).catch(() => {}); }
+function avvisaGestori(tipo = 'ordine') { if (sulSito()) fetch('/api/avvisa', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo, chi: Dati.mioCodice ? Dati.mioCodice() : '' }) }).catch(() => {}); }
 /* iscrive (o rinnova) questo telefono presso worker.js; ridà la funzione per altre chiamate col token */
 async function iscriviTelefono(tok) {
   const { chiave } = await (await fetch('/api/chiave')).json();
@@ -670,7 +670,7 @@ function richiesteGestore() {
 function chiGestisce() {
   const gg = (Dati.attivo && Dati.io.gestoriLista) || [];
   return `<section class="scheda"><h2>Chi gestisce la cucina</h2>
-    ${gg.map(g => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(g.nome || 'Senza nome')}${g.uid === Dati.io.uid ? ' (tu)' : ''}</b>
+    ${gg.map(g => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(g.nome || 'Senza nome')}${g.uid === Dati.io.uid ? ' (tu)' : ''}${g.codice ? ` <span class="codice-cl">${mostraCodice(g.codice)}</span>` : ''}</b>
       ${g.uid === Dati.io.uid ? '' : `<button type="button" class="btn chiaro piccolo" data-a="gest-togli" data-id="${esc(g.uid)}">${UI.gestTogli === g.uid ? 'Tocca ancora per togliere' : 'Togli'}</button>`}</div>`).join('')}
     ${richiesteGestore()}
     <p class="tenue" style="margin:0">Manda l'invito a chi deve gestire con te: entra col suo Google e tu dici sì da qui.</p>
@@ -777,12 +777,24 @@ const avvisoAttesa = () => inAttesa() ? `<div class="avviso attesa-forte">${ico(
 const senzaNome = () => Dati.attivo && P.ruolo === 'cliente' && !Dati.io.gestore && Dati.io.letto && !Dati.io.utente && !UI.devCliente;
 const avvisoSenzaNome = () => senzaNome() ? `<div class="avviso attesa-forte">${ico('clienti')}<div><b>Monica non sa ancora che ci sei.</b><br>Scrivi nome e cognome: le arriva la tua richiesta e ti può dire di sì.
   <br><button type="button" class="btn piccolo" style="margin-top:8px" data-a="benv-torna">Scrivi il tuo nome</button></div></div>` : '';
-const codiceTel = uid => String(uid || '').slice(0, 4).toUpperCase();
+const codiceTel = uid => String(uid || '').slice(0, 4).toUpperCase();   // solo per chi non ha ancora il codice fisso
+/* (C99) codice fisso del profilo: ⭐ davanti a quelli di Mario e Monica */
+const mostraCodice = c => c ? (c === 'MARIO' || c === 'MONICA' ? '⭐' + c : c) : '';
+const codiceDi = o => mostraCodice(o.cliente ? (S.clienti.find(c => c.id === o.cliente) || {}).codice
+  : ((S.richieste || []).find(r => r.primo === o.id) || (S.utenti || []).find(u => u.uid === o.utente) || {}).codice);
+const nomeNonVisto = c => { const n = (c.nomiPrima || []).length, u = n && c.nomiPrima[n - 1]; return !!(u && u.chi === 'cliente' && (c.nomiVisti || 0) < n); };
+const quando = il => il ? F_DATA.format(daIso(String(il).slice(0, 10))) : '';
+function profiloCliente() {   // il cliente approvato vede il suo nome e il suo codice, e può correggere il nome
+  if (!Dati.attivo || P.ruolo !== 'cliente' || Dati.io.gestore || UI.devCliente || !Dati.io.utente || Dati.io.utente.stato !== 'approvato') return '';
+  const c = Dati.mioCodice();
+  return `<p class="tenue piccolo" style="margin:6px 0 10px">Sei <b>${esc(Dati.mioNome())}</b>${c ? ` · codice <b>${mostraCodice(c)}</b>` : ''} · <button type="button" class="link piccolo" data-a="mio-nome">Correggi il nome</button></p>`;
+}
 function righeAttesa() {
   const u = Dati.io.utente || {};
   if (!UI.ricordoAuto && Date.now() - (P.ricordatoIl || 0) > 6 * 3600e3) { UI.ricordoAuto = true; P.ricordatoIl = Date.now(); salvaP(); avvisaGestori('richiesta'); }
-  return `<br><span class="piccolo">Per Monica sei <b>${esc(u.nome || '')}</b> · codice <b>${codiceTel(Dati.io.uid)}</b></span>
-    <br><button type="button" class="btn chiaro piccolo" style="margin-top:8px" data-a="ricorda-monica">${ico('invito')}Ricorda a Monica</button>`;
+  return `<br><span class="piccolo">Per Monica sei <b>${esc(Dati.mioNome() || u.nome || '')}</b> · codice <b>${mostraCodice(Dati.mioCodice()) || codiceTel(Dati.io.uid)}</b></span>
+    <br><span class="fila" style="margin-top:8px"><button type="button" class="btn chiaro piccolo" data-a="ricorda-monica">${ico('invito')}Ricorda a Monica</button>
+    <button type="button" class="btn chiaro piccolo" data-a="mio-nome">${ico('matita')}Correggi il nome</button></span>`;
 }
 function primiPassi() {
   if (UI.modifica) return '';
@@ -839,6 +851,7 @@ function vMenu() {
   h += P.allergie.length
     ? `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Le tue allergie:</b> ${esc(P.allergie.map(a => NOME_ALL[a].toLowerCase()).join(', '))}<br><u>Cambia</u></span></button>`
     : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b><br><small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`;
+  h += profiloCliente();
   h += `<nav class="schede-cat" aria-label="Parti del menù">${cats.map(([k, n]) => `<button type="button" class="chip" data-a="cat" data-v="${k}" aria-pressed="${UI.cat === k}">${n}</button>`).join('')}
 </nav>`;
   if (!cats.length && !pronti.length) h += Dati.attivo && !Dati.io.pronto
@@ -1194,7 +1207,7 @@ function waOrdine(o, tipo) {
 }
 function cartaOrdineMonica(o) {
   const r = richiestaDi(o), righe = daAccettare(o) ? prezziGiusti(o.righe) : o.righe;
-  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n}</span></div>
+  let h = `<article class="scheda ordine-carta"><header><div><h3>${esc(chiOrdina(o))}</h3><span class="tenue piccolo">Ordine n. ${o.n}${codiceDi(o) ? ` · codice ${codiceDi(o)}` : ''}</span></div>
     ${bollinoProva(o)}<span class="stato ${o.stato}">${r && r.cliente ? 'Telefono nuovo' : STATO_MONICA[o.stato]}</span></header>${dateOrdine(o)}${tempiOrdine(o)}`;
   if (r) h += `<div class="avviso">${ico('clienti')}<div>${r.cliente ? `<b>Telefono nuovo.</b> Dice di essere ${esc(r.nome)}, che conosci già. Se è lei, ricollega: vedrà i suoi ordini.`
     : `<b>Prima volta.</b> ${r.tramite ? `Amica di ${esc(r.tramite)}.` : ''} Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.`}</div></div>`;
@@ -1299,7 +1312,7 @@ function rigaOrd(o, conGiorno) {
   if (UI.ordAperto === o.id) return `<div class="ord-aperto">${cartaOrdineMonica(o)}<button type="button" class="link" data-a="ord-apri" data-id="${o.id}">Chiudi</button></div>`;
   const cosa = o.righe.map(r => `${qtaTesto(r.tipo, r.qta, r.formatoNome)} ${r.nome}`).join(', ');
   const chi = chiOrdina(o);
-  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n).toLowerCase())}">
+  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n + ' ' + codiceDi(o).replace('⭐', '')).toLowerCase())}">
     <span class="ord-n">n. ${o.n}${conGiorno ? `<small>${F_BREVE.format(daIso(giornoDi(o)))}</small>` : ''}</span>
     <span class="ord-chi"><b>${bollinoProva(o)}${esc(chi)}</b><small>${esc(cosa)}</small></span>
     <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && !['proposta', 'prova'].includes(o.stato) ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
@@ -1474,12 +1487,37 @@ function bottoniRichiesta(r) {
   const occ = UI.decido === r.id ? ' disabled' : '';
   return `<div class="fila larga"><button type="button" class="btn verde" data-a="richiesta-si" data-id="${r.id}"${occ}>${ico('spunta')}${r.cliente ? 'Sì, ricollega' : 'Sì, può ordinare'}</button><button type="button" class="btn chiaro" data-a="richiesta-no" data-id="${r.id}"${occ}>No</button></div>`;
 }
+/* (C99) ogni cliente col suo codice; la matita cambia il «nome per Monica»; se il cliente ha corretto il suo, Monica lo vede finché tocca «Visto» */
+function rigaMioCliente(c) {
+  const n = S.ordini.filter(o => o.cliente === c.id && o.stato !== 'prova').length, storia = c.nomiPrima || [], ult = storia[storia.length - 1];
+  const nonVisto = nomeNonVisto(c), suo = c.nomeCliente && c.nomeCliente !== c.nome ? c.nomeCliente : '';
+  return `<div class="cliente-riga${nonVisto ? ' nome-cambiato' : ''}" data-id="${c.id}" style="border-bottom:1px dashed var(--riga);padding:8px 0"><div class="fila" style="justify-content:space-between;flex-wrap:nowrap">
+    <div><b>${esc(c.nome || c.nomeCliente || 'Cliente')}</b>${c.codice ? ` <span class="codice-cl">${mostraCodice(c.codice)}</span>` : ''}<br><span class="tenue piccolo">${c.invitato && !n ? 'Invitata, non ha ancora ordinato' : `${n} ordini · dal ${F_DATA.format(daIso(c.da))}`}</span>
+    ${suo && !nonVisto ? `<br><span class="tenue piccolo">Si fa chiamare «${esc(suo)}»</span>` : ''}</div>
+    <button type="button" class="btn chiaro piccolo" data-a="nome-monica" data-id="${c.id}" aria-label="Cambia il nome di ${esc(c.nome || '')}">${ico('matita')}</button></div>
+    ${nonVisto ? `<div class="avviso" style="margin-top:6px">${ico('matita')}<div><b>Nome cambiato.</b> Ora si chiama «${esc(c.nomeCliente || '')}» · prima «${esc(ult.nome)}» (cambiato dal cliente il ${quando(ult.il)}).
+      <br><button type="button" class="btn chiaro piccolo" style="margin-top:6px" data-a="nome-visto" data-id="${c.id}">${ico('spunta')}Visto</button></div></div>` : ''}</div>`;
+}
+function foglioMioNome() {
+  return `<h2>Il tuo nome</h2>
+    <p class="tenue">Hai sbagliato a scriverlo? Correggilo qui. Monica vede il nome nuovo e quello di prima. Il tuo codice resta lo stesso.</p>
+    <input type="text" id="mio-nome" aria-label="Nome e cognome" autocomplete="name" maxlength="60" value="${esc(Dati.mioNome())}">
+    <button type="button" class="btn pieno" data-a="mio-nome-ok">${ico('spunta')}Va bene così</button>`;
+}
+function foglioNomeMonica() {
+  const c = S.clienti.find(x => x.id === UI.foglio.id) || {}, storia = (c.nomiPrima || []).slice(-5).reverse();
+  return `<h2>Come lo chiami tu?</h2>
+    <p class="tenue">Il nome che vedi tu negli ordini e nella lista. Il cliente continua a vedere il suo.${c.codice ? ` Codice: <b>${mostraCodice(c.codice)}</b> (non cambia mai).` : ''}</p>
+    <input type="text" id="nome-monica" aria-label="Nome per te" maxlength="60" value="${esc(c.nome || '')}">
+    <button type="button" class="btn pieno" data-a="nome-monica-ok">${ico('spunta')}Va bene così</button>
+    ${storia.length ? `<p class="tenue piccolo"><b>Si chiamava prima:</b> ${storia.map(x => `«${esc(x.nome)}» (${x.chi === 'cliente' ? 'cambiato dal cliente' : 'cambiato da chi gestisce'} il ${quando(x.il)})`).join(' · ')}</p>` : ''}`;
+}
 function vClienti() {
   const conta = id => S.ordini.filter(o => o.cliente === id && o.stato !== 'prova').length;
   const ordineDi = r => { const o = r.primo && ordine(r.primo); return o && o.stato === 'daApprovare' ? o : null; };
   const riga = r => { const o = ordineDi(r);
     return `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">${r.cliente ? 'Dice che ha cambiato telefono' : r.tramite ? 'Amica di ' + esc(r.tramite) : 'Ha trovato il link'}
-      · codice ${[r.id, ...(r.gemelli || [])].map(codiceTel).join(', ')}
+      · codice ${r.codice ? mostraCodice(r.codice) : [r.id, ...(r.gemelli || [])].map(codiceTel).join(', ')}${(r.nomiPrima || []).length ? ` · prima si chiamava «${esc(r.nomiPrima[r.nomiPrima.length - 1].nome)}»` : ''}
       · ${o ? `ha ordinato: ${euro(totale(prezziGiusti(o.righe)))}, ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}` : 'non ha ancora ordinato'}</span></div>${bottoniRichiesta(r)}</div>`; };
   const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
   const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
@@ -1491,7 +1529,7 @@ function vClienti() {
     <section class="scheda"><h2>Fai conoscere la tua cucina</h2><p class="tenue" style="margin:0">Manda il link a chi vuoi: vede il menù e al primo ordine scrive il suo nome. Poi decidi tu.</p>
       ${bottoneBiglietto('a', 'Manda l\'invito su WhatsApp', 'pieno')}
       <label class="interr"><span>Accetta clienti nuovi<small>Spento: chi ha il link vede il menù, ma non può fare il primo ordine.</small></span><input type="checkbox" data-campo="i.nuovi" ${S.impostazioni.nuovi !== false ? 'checked' : ''}></label></section>
-    <section class="scheda"><h2>I tuoi clienti</h2>${S.clienti.map(c => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><div><b>${esc(c.nome)}</b><br><span class="tenue piccolo">${c.invitato && !conta(c.id) ? 'Invitata, non ha ancora ordinato' : `${conta(c.id)} ordini · dal ${F_DATA.format(daIso(c.da))}`}</span></div></div>`).join('')}</section>
+    <section class="scheda"><h2>I tuoi clienti</h2>${S.clienti.map(rigaMioCliente).join('')}</section>
     ${rifiutati.length ? `<section class="scheda"><button type="button" class="link" data-a="rifiutati-apri" aria-expanded="${!!UI.rifiutati}" style="text-align:left">Persone rifiutate (${rifiutati.length}) ${UI.rifiutati ? '▲' : '▼'}</button>
       ${UI.rifiutati ? `<p class="tenue" style="margin:0">Hai detto di no a queste persone: non vedono l'indirizzo e non possono ordinare. Se hai sbagliato, tocca «Accetta»: da quel momento sono tue clienti.</p>${rifiutati.map(rigaRifiutato).join('')}` : ''}</section>` : ''}</main>`;
 }
@@ -1709,7 +1747,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1768,7 +1806,7 @@ function notificaMonica() {
   const o = nuovi[nuovi.length - 1], piu = nuovi.length > 1;
   const el = document.createElement('div');
   el.className = 'notifica'; el.setAttribute('role', 'status');
-  el.innerHTML = `<img src="${LOGO}" alt=""><div><b>${piu ? `${nuovi.length} ordini nuovi` : `${o.stato === 'daApprovare' ? 'Cliente nuovo' : 'Nuovo ordine'}: ${esc(chiOrdina(o))}`}</b><span>${piu ? esc([...new Set(nuovi.map(chiOrdina))].join(', ')) + ' · ' + euro(nuovi.reduce((s, x) => s + totale(x.righe), 0)) : `${o.righe.length} ${o.righe.length === 1 ? 'piatto' : 'piatti'} · ${euro(totale(o.righe))} · ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}`}</span></div>`;
+  el.innerHTML = `<img src="${LOGO}" alt=""><div><b>${piu ? `${nuovi.length} ordini nuovi` : `${o.stato === 'daApprovare' ? 'Cliente nuovo' : 'Nuovo ordine'}: ${esc(chiOrdina(o))}${codiceDi(o) ? ` (${codiceDi(o)})` : ''}`}</b><span>${piu ? esc([...new Set(nuovi.map(chiOrdina))].join(', ')) + ' · ' + euro(nuovi.reduce((s, x) => s + totale(x.righe), 0)) : `${o.righe.length} ${o.righe.length === 1 ? 'piatto' : 'piatti'} · ${euro(totale(o.righe))} · ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}`}</span></div>`;
   document.body.appendChild(el); setTimeout(() => el.remove(), 5200);
 }
 const ordine = id => S.ordini.find(o => o.id === id);
@@ -2037,6 +2075,26 @@ const A = {
   piatto(el) { apriPiatto(el.dataset.id, !!el.dataset.pronto); },
   chiudi() { chiudiFoglio(); },
   'apri-allergie'() { UI.foglio = { tipo: 'allergie' }; render(); },
+  'mio-nome'() { UI.foglio = { tipo: 'mio-nome' }; render(); const i = $('#mio-nome'); if (i) i.focus(); },
+  async 'mio-nome-ok'() {   // (C99) il cliente corregge il suo nome
+    const i = $('#mio-nome'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
+    if (nome.length < 3 || !nome.includes(' ')) { mostraToast('Scrivi nome e cognome.'); if (i) i.focus(); return; }
+    try { await Dati.cambiaNome(nome); ricordaNome(nome); UI.foglio = null; render(); mostraToast(`Fatto: ora sei ${nome}. Monica lo vede.`); }
+    catch (e) { mostraToast(e.code === 'permission-denied' ? 'Non ancora disponibile: riprova tra qualche giorno.' : e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); }
+  },
+  'nome-monica'(el) { UI.foglio = { tipo: 'nome-monica', id: el.dataset.id }; render(); },
+  'nome-monica-ok'() {
+    const c = S.clienti.find(x => x.id === UI.foglio.id), i = $('#nome-monica'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ').slice(0, 60);
+    if (!c) { UI.foglio = null; render(); return; }
+    if (nome.length < 2) { mostraToast('Scrivi almeno il nome.'); if (i) i.focus(); return; }
+    UI.foglio = null;
+    if (nome === c.nome) { render(); return; }
+    cambia(`Ora lo chiami ${nome}`, () => {
+      c.nomiPrima = [...(c.nomiPrima || []), { nome: c.nome || '', chi: 'gestore', il: new Date().toISOString().slice(0, 16) }].slice(-30);
+      c.nome = nome; c.nomiVisti = c.nomiPrima.length;
+    });
+  },
+  'nome-visto'(el) { const c = S.clienti.find(x => x.id === el.dataset.id); if (c) cambia('', () => { c.nomiVisti = (c.nomiPrima || []).length; }, false); },
   'testo-grande'() { P.grande = !P.grande; salvaP(); render(); mostraToast(P.grande ? 'Testo grande' : 'Testo normale'); },
   'chiudi-fuori'(el, e) { if (e.target === el) A.chiudi(); },
   'sel-var'(el) { UI.sel.variante = el.dataset.v; render(); },
