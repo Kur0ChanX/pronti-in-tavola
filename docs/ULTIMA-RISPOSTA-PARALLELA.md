@@ -1,5 +1,3 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 10:03 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
-
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+Tutte e due le notizie sono già nel ramo: le ho unite prima (passo 6 Firebase, passo 7 = C100 dopo C99). Le prove complete girano ancora: aspetto l'esito prima di pubblicare.
