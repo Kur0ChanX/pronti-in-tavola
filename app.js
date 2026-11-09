@@ -369,7 +369,8 @@ function foglioInstalla() {
   const testa = (t, s) => `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div>
     <div class="dentro inv-app"><div class="inv-logo"><img src="media/icon-192.png" alt=""></div><h1>${t}</h1><p class="tenue" style="margin:0 0 12px">${s}</p>`;
   const notifBtn = `<button type="button" class="btn pieno grande" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : 'Attiva le notifiche'}</button>
-    ${UI.notEsito ? `<p class="${UI.notEsito.ok ? 'ok' : 'tenue'} piccolo" style="margin:6px 0 0">${esc(UI.notEsito.t)}</p>` : ''}`;
+    ${UI.notEsito ? (UI.notEsito.ok ? `<div class="avviso verde" style="margin:10px 0 0">${ico('spunta')}<div><b>Notifiche attive!</b><br>${esc(UI.notEsito.t)}</div></div>`
+      : `<div class="avviso" style="margin:10px 0 0">${ico('x')}<div>${esc(UI.notEsito.t)}</div></div>`) : ''}`;
   const piede = `<div class="piede"><button type="button" class="btn chiaro" data-a="chiudi">${UI.notEsito && UI.notEsito.ok ? 'Chiudi' : 'Più tardi'}</button></div>`;
   if (suHome()) return testa('Ultimo passo: le notifiche', 'Monica ti avvisa quando il tuo ordine è pronto o se ti propone un altro giorno. Tocca il tasto e poi <b>Consenti</b>.')
     + notifBtn + '</div>' + piede;
@@ -536,6 +537,11 @@ async function iscriviCliente() {
   const r = await fetch('/api/cliente', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ sub: sub.toJSON() }) });
   if (!r.ok) throw new Error(((await r.json().catch(() => ({}))).errore) || 'iscrizione rifiutata');
 }
+/* (foto di Mario 09/11, iPad: «clicco e non succede nulla») l'esito era una riga piccola: ora riquadro verde grande
+   e il foglio si chiude da solo dopo 3 secondi, con un avviso in basso */
+function chiudiInstallaDopo() {
+  setTimeout(() => { if (UI.foglio && UI.foglio.tipo === 'installa') { UI.foglio = null; UI.notEsito = null; render(); mostraToast('Notifiche attive ✅ Ti avviso io quando l\'ordine è pronto.'); } }, 3000);
+}
 async function attivaAvvisiCliente() {
   UI.notProva = true; UI.notEsito = null; render();
   try {
@@ -552,11 +558,12 @@ async function attivaAvvisiCliente() {
     if (!P.cliente) {
       P.vuoleAvvisi = true; salvaP();
       UI.notEsito = { ok: true, t: 'Fatto! Le notifiche partono da sole appena Monica ti conferma.' };
-      return;
+      chiudiInstallaDopo(); return;
     }
     await iscriviCliente();
     P.avvisiCliente = true; salvaP();
     UI.notEsito = { ok: true, t: 'Fatto! Quando il tuo ordine è pronto, ti arriva un avviso qui.' };
+    chiudiInstallaDopo();
   } catch (e) { UI.notEsito = { ok: false, t: 'Non attivato: ' + ((e && e.message) || 'errore sconosciuto') + '.' }; }
   finally { UI.notProva = false; render(); }
 }
