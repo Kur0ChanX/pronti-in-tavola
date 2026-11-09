@@ -4,7 +4,7 @@
 - 09/11 · 🟨 Voce 4 · 🛑 C109 limiti per persona: va bene la proposta (`docs/lavori-in-corso/limiti-per-persona.md`: mai blocchi; avviso oltre un tetto ampio; telefono che esagera → modo senza AI; allarme all'80% del totale)? 1 sì · 2 cambia i numeri.
 - 09/11 · 🟨 Voce 5 · C105 su iPad (app dalla Home), v0.9.85 (capisce meglio: due motori + correttore col menù): chiudi e riapri l'app, Menù → microfono → «due teglie di lasagne per sabato» (parla normale): cosa scrive? Una foto. A cosa serve: vedere se ora capisce bene sul tuo iPad vero.
 - 09/11 · 🟢 Principale 35 · C106 iPad v0.9.83: in orizzontale apri l'app dall'icona, vai alla Home dell'iPad e rientra: la pagina resta della misura giusta? Una foto.
-- 09/11 · 🟢 Principale 34 · ⏭ Accorcio le regole sempre caricate (`CLAUDE.md` ~1.450 token, tetto 1.000) spostando le righe sulle prove in `.claude/rules/prove.md`? 1 sì (consiglio) · 2 lascia così.
+- 09/11 · 🟢 Principale 34 · ⏭ Accorcio le regole sempre caricate (`CLAUDE.md` ~1.450 token, tetto 1.000) spostando le righe sulle prove in `.claude/rules/prove.md`? 1 sì · 2 lascia così (consiglio cambiato dalla Principale 35: risparmio ~150-350 token su ~170k dell'avvio, ~0,2%, e rischio di dimenticare le regole delle prove). Mario 09/11 ha chiesto «ne vale la pena?»: risposta data, aspetta il numero.
 - 09/11 · 📒 Aiuto 8 · C97: Francesco riapre l'app (v0.9.70) e scrive il nome: compare in Clienti?
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
