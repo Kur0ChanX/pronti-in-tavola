@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 09/11 · 🟨 Voce 4 · C105 su iPad (app dalla Home), v0.9.82: chiudi e riapri l'app, Menù → microfono → «due teglie di lasagne per sabato»: compare «Ti ascolto con attenzione…» e poi la proposta? Un video o una foto. A cosa serve: conferma che la correzione va sul tuo iPad vero.
+- 09/11 · 🟨 Voce 4 · C105 su iPad (app dalla Home), v0.9.84 (riquadro che lampeggiava e risposta da scorrere: corretti): chiudi e riapri l'app, Menù → microfono → «due teglie di lasagne per sabato»: compare «Ti ascolto con attenzione…» e poi la proposta? Un video o una foto. A cosa serve: conferma che la correzione va sul tuo iPad vero.
 - 09/11 · 🟢 Principale 35 · C106 iPad v0.9.83: in orizzontale apri l'app dall'icona, vai alla Home dell'iPad e rientra: la pagina resta della misura giusta? Una foto.
 - 09/11 · 🟢 Principale 34 · ⏭ Accorcio le regole sempre caricate (`CLAUDE.md` ~1.450 token, tetto 1.000) spostando le righe sulle prove in `.claude/rules/prove.md`? 1 sì (consiglio) · 2 lascia così.
 - 09/11 · 📒 Aiuto 8 · C97: Francesco riapre l'app (v0.9.70) e scrive il nome: compare in Clienti?
