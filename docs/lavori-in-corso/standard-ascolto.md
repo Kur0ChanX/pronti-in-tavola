@@ -38,3 +38,4 @@ Scartate: server su un PC di Mario (acceso sempre, più guasti); Voxtral gratis 
 ## Da fare dopo la scelta
 - Codice in `ascolta.mjs` (motori in parallelo + riserve in ordine), `worker.js` solo `/api/ascolta` e `contaAscolto` (avviso, niente blocco), `.github/workflows/sito.yml` (segreto `DEEPGRAM_API_KEY` come `GROQ_API_KEY`), prova `tools/prova-ascolta.mjs` col server finto per ogni riserva; con la chiave: 5-10 frasi vere a confronto Groq / Deepgram / Cloudflare prima di decidere il secondo fisso.
 - Chiavi nuove SOLO nei segreti di GitHub (diventano segreti del Worker): mai in chat né nel repo.
+- (Voce 10, 09/11/2026, developers.deepgram.com/trust-security/your-data e changelog 05/03/2026) Privacy: Deepgram di base conserva l'audio e lo usa per addestrare (Model Improvement Program); `mip_opt_out=true` a ogni richiesta = zero conservazione, stesso prezzo. Endpoint UE `api.eu.deepgram.com`.
