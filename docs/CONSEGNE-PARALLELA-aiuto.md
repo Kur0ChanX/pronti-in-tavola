@@ -16,6 +16,7 @@ Aiuto 7 = `session_01WTjqUu72CCre8257ouny2k` (catena 5 di 8), chiusa alla soglia
 Ha toccato «Guarda il menù» (`benv-guarda`) e non ha mai scritto il nome: nessun documento `utenti`, quindi Monica non vede niente; il popup «Installa l'app» gli faceva attivare le notifiche e (versione vecchia) diceva «prima Monica deve approvarti». Mario dice che Francesco era l'avviso delle 18:50 («penso»): se fosse vero, il documento c'era e poi è sparito: non spiegabile dal codice. Mario ha chiesto a Francesco se l'app gli ha chiesto il nome: risposta non arrivata.
 
 ## Prossimi passi
+0. Messaggio di Mario dopo l'handoff (09/11 ~09:05): «Fai un bel check di tutte le regole se ci sono buchi». Interpretazione (da confermare con Mario in una riga, intanto parti): le regole del database `firestore.rules` (chi legge/scrive cosa: clienti, ordini, utenti, nomi, gestori) e le regole del flusso clienti (nome, approvazione, primo ordine, notifiche), cercando buchi come quello di Francesco. Prova con `npm run prova-firebase` / `tools/prova-regole.js`.
 1. Avvio: titolo «📗 🍝 Aiuto 8 ❔ · Francesco nome» (riga in «Aspetta Mario»).
 2. Quando Mario risponde: Francesco riapre l'app (0.9.69) e scrive il nome → compare in Clienti col codice? Se sì, chiudere la causa in `docs/ERRORI.md` (lezione: senza nome nessuna richiesta). Se no, chiedere foto della schermata di Francesco (codice) e di Clienti.
 3. Idea da valutare: togliere il popup «Installa l'app» a chi non ha scritto il nome (`serveInvito`), così prima il nome poi l'app.
@@ -29,6 +30,4 @@ Ha toccato «Guarda il menù» (`benv-guarda`) e non ha mai scritto il nome: nes
 Controllo Da fare: 0 voci aggiunte (C97 aggiornata; riga in «## 0. Aspetta Mario»). Messaggi di Mario della sessione: foto ultimi avvisi; «Francesco… era quello delle 18»; «perché non c'è il nome nei clienti?… ho chiesto a Francesco se l'app gli ha chiesto il nome»; «non c'è persone rifiutate… non c'è Francesco da nessuna parte, Francesco non mi ha risposto».
 
 ## Ultimo messaggio di Mario (parola per parola)
-«no n c'è persone rifiutate... ci deve essere?
-non c'è Francesco da nessuna parte.
-francesco non mi ha risposto»
+«Fai un bel check di tutte le regole se ci sono buchi»
