@@ -508,6 +508,8 @@ const DOVE_AI = {
   ordini: { vista: 'ordini', nome: 'Ordini', come: 'In alto le schede Nuovi, Oggi, Prossimi e Storico; tocca un ordine per accettarlo o segnarlo pronto.', parole: /\bordin[ie]\b|chi (ha )?ordinat|da accettar/ },
   piatti: { vista: 'piatti', nome: 'I miei piatti', come: 'Tocca un piatto per cambiarlo; l\'interruttore lo toglie o lo rimette nel menù.', parole: /i miei piatti|\bmen[uù]\b|tutti i piatti/ },
   nuovo: { vista: 'nuovo', nome: 'Nuovo piatto', come: 'Rispondi alle 4 domande: nome, parte del menù, come lo vendi, prezzi.', parole: /(nuovo|aggiung\w*|mett\w*|cre\w*) (un )?piatt|piatto nuovo/ },
+  // (C99) nome e codice di un cliente: vince sul «nome» del piatto quando si parla di clienti o codici
+  'clienti-nome': { vista: 'clienti', nome: 'Nome e codice dei clienti', come: 'In «I tuoi clienti» tocca la matita accanto al nome per cambiarlo; il codice accanto (es. K7P2M) non cambia mai. Se un cliente ha corretto il suo nome, lo vedi lì finché tocchi «Visto».', parole: /(nome|codice|chiam)\w*.*client|client\w*.*(nome|codice|chiam)|codice (fisso|del|della|di)|\bil mio codice\b/ },
   clienti: { vista: 'clienti', nome: 'Clienti', come: 'Qui inviti le amiche su WhatsApp e approvi le persone nuove.', parole: /client|invit|amich|approv|nuove persone/ },
   spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
   ricettario: { vista: 'ricettario', nome: 'Ricettario', come: 'Cerca una ricetta per nome o ingrediente, poi tocca «Cucina guidata».', parole: /ricett|ricettari|cucina guidata/ }
@@ -539,7 +541,7 @@ function capisciDove(testo) {
   if (np) { const nome = np[1].trim(); return [{ azione: 'impostazione', chiave: 'parti', valore: [...opz('parti'), [null, nome]], detta: nome }]; }   // «aggiungi la parte secondi» anche senza rete (C92)
   const chiavi = Object.keys(DOVE_AI).filter(k => DOVE_AI[k].parole.test(t));
   if (!chiavi.length) return null;
-  const k = chiavi.find(x => VOCI_PIATTO.includes(x)) || chiavi.find(x => DOVE_AI[x].sez) || chiavi[0], v = DOVE_AI[k];   // la voce precisa vince sulla pagina («ordine minimo» → Ordine minimo, non Ordini)
+  const k = (chiavi.includes('clienti-nome') && 'clienti-nome') || chiavi.find(x => VOCI_PIATTO.includes(x)) || chiavi.find(x => DOVE_AI[x].sez) || chiavi[0], v = DOVE_AI[k];   // la voce precisa vince sulla pagina («ordine minimo» → Ordine minimo, non Ordini)
   if (v.azione && !domanda && /\d/.test(t)) return null;   // «alza le lasagne a 14 euro», «pausa fino al 20»: lo fa l'AI
   if (VOCI_PIATTO.includes(k)) {
     const pp = piattiDetti(testo);
