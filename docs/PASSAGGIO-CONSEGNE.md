@@ -36,6 +36,7 @@ Sessione attuale: #38 (dopo la #37 `session_01WTjqUwYZ9ro8F9Ku7rJMWq`, chiusa al
 - C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
+0. C118 (Mario 09/11 ~23:05, dopo l'handoff): ricette col «sistema vecchio» (foto a strisce di GZ) anche fra quelle nuove. Prima capire con 2-3 esempi veri cosa vede Mario (da v0.9.93 le strisce si tagliano anche ingrandite: forse basta); poi motore del ricettario migliorato e un controllo nell'app/server che riguarda TUTTE le ricette e le sistema col lettore nuovo (c'è già `tools/controlla-ricette.mjs` e «🔍 Controlla tutte», C83: partire da lì, niente doppioni). Risposta a Mario con numeri (PT E34).
 1. C115: vapore (`vapore.js`, stile scelto da Mario «A Pentola», `P.vapore`) anche per i clienti: oggi parte solo dopo lo sblocco di chi gestisce (cercare `Vapore.parti`). Proposta: all'apertura dell'app del cliente, una volta, breve; occhio a non coprire «Come ti chiami?» e il foglio «Installa l'app».
 2. C116: contare le ricette col video (campo video nei dati del ricettario e sul server) e controllare 3-5 ricette senza video sulla pagina vera di GialloZafferano: se GZ il video ce l'ha, il lettore lo perde → correggerlo. Risposta a Mario con SÌ/NO e numeri (PT E34).
 3. C117: cercare il lucchetto (`L.`, `Lucchetto`, PIN, impronta) nei percorsi del cliente; Mario dice che ai clienti non lo chiede già: togliere ogni resto (opzioni, fogli, testi) e lasciarlo solo a chi gestisce. Prova: da cliente nessun PIN/impronta.
@@ -46,6 +47,7 @@ Sessione attuale: #38 (dopo la #37 `session_01WTjqUwYZ9ro8F9Ku7rJMWq`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md` (8 righe: 5 della principale, fra cui C113 iPhone e C111 iPad di questa sessione). Nessuna 🛑 nuova.
 
 ## Ultimo messaggio di Mario
+Dopo l'handoff, nella #37 (09/11 ~23:05), parola per parola: «sembra che alcune ricerte hanno il sistema vecchio alcune il sistema nuovo anche aggiunte da poco come nuove ricette migliora il motore del ricettario che prende le ricette e metti un motore nell'app che le controllantitte e le aggiusta al meglio con la nuova versione» → C118 (Prossimi passi 0).
 09/11 ~22:47 (in questa chat), con 4 foto (Culurgiones e Astice alla Catalana, la foto ingrandita con 1-2-3 unite), parola per parola: «poi correggi il ricettario molte ricette sembrano ancora con il sistema vecchio le foto se clichi sono unite e non va bene
 
 poi l'animazione del fumo ci deve essere anche nell'app dei clienti 
@@ -54,7 +56,7 @@ togliamo il PIN e impronta nei clienti tanto ho visto che non la chiede mantenia
 Prima, 09/11 ~22:31, con foto «Elena Fancello · Dice che ha cambiato telefono»: «ho fatto un test con un invito ad un iphone un  disastro allora le notifiche non puoi abilitarle perché vanno approvate da monica dopo  che abbiamo approvato gli ha fatto uscire e rientrare con un altra richiesta di approvazione che monica ha dovuto avvertare non ha cambiato telefono se non riesci a risolvere togliamo l'approvazione sembra quello il problema di tutto» → C113, v0.9.92.
 
 ## Numeri liberi
-Prossimo E libero: PT E45; prossimo C libero: C118; prossimo M libero: M1.
+Prossimo E libero: PT E45; prossimo C libero: C119; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
