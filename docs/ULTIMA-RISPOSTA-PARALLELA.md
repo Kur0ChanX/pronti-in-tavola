@@ -1,11 +1,7 @@
-# Ultima risposta di Claude (09/11/2026 11:09 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:17 ora italiana)
 
+Ho capito: su iPad il microfono ora ascolta, ma le parole escono storpiate. Nella tua foto «per sabato» è diventato «persa a Mato», e «due teglie» è diventato «Dette». La correzione non è ancora fatta: questa chat era alla soglia dei token. Il piano è scritto e l'ho passato a una chat nuova, Voce 5, che ci lavora già.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: è il controllo automatico che ferma il push quando due versioni o due voci hanno lo stesso numero. Ora c'è solo in Pronti in Tavola.
-1. Lo mettiamo anche negli altri progetti?
-   **1** · sì, in tutti. Lì niente più numeri doppi, fra chat diverse (consiglio).
-   **2** · solo qui. Negli altri progetti i doppioni possono tornare.
+✅ FATTO
+- L'audio arriva al server, ma il **Whisper** (il programma che trasforma la voce in testo) che usiamo è la versione veloce, meno precisa sull'italiano. In più il telefono usa la sua frase così com'è, senza controllarla col menù.
+- La chat nuova si chiama Voce 5 …
