@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 14:15 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 18:17 ora italiana)
 
-lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
+su ipad non funziona il comando vocale e il microfono è abilitato, risolvi
