@@ -366,7 +366,7 @@ function rispondiSiNoCliente(intento) {
   if (i === undefined) return false;
   const m = AIC.msgs[i];
   if (intento === 'si') { if (!m.piano.some(x => x.on && controllaAIC(x.a).fai)) return false; A['ac-si']({ dataset: { i: String(i) } }); return true; }
-  if (intento === 'no') { m.esito = 'no'; render(); if (m.voce && vcOpz('voceClientiRisponde', true)) parlaAI('Va bene, lascio stare.'); return true; }
+  if (intento === 'no') { m.esito = 'no'; render(); if (m.voce && vcOpz('voceClientiRisponde', true)) parlaCliente('Va bene, lascio stare.'); return true; }
   return false;
 }
 
@@ -376,10 +376,36 @@ function ticVoce(alto) {
   try { if (navigator.vibrate) navigator.vibrate(30); } catch (e) { /* iPhone non vibra */ }
 }
 const nomiPiattiVoce = () => visibili().filter(p => p.disponibile).map(p => p.nome).slice(0, 60);
-function statoVC(stato, testo) { VC.stato = stato; VC.testo = testo || ''; disegnaVC(); if (UI.vista === 'aiuto' && stato === 'capito') { const el = $('#ac-testo'); if (el) el.value = VC.testo; } }
-const ascoltoInCorso = () => !!(VC.rec || VC.media || VC.stato === 'capisco');
+function statoVC(stato, testo) {
+  VC.stato = stato; VC.testo = testo || '';
+  clearInterval(VC.tCap);
+  if (stato === 'capisco') { VC.daCapisco = Date.now(); VC.tCap = setInterval(() => { if (VC.stato !== 'capisco') { clearInterval(VC.tCap); return; } const p = document.querySelector('#vc .vc-pannello p'); if (p) p.textContent = testoCapisco(); }, 500); }
+  disegnaVC();
+  if (UI.vista === 'aiuto' && stato === 'capito') { const el = $('#ac-testo'); if (el) el.value = VC.testo; }
+  // C110: il microfono della pagina (Aiutante, barra del menù) si accende e si spegne subito, senza ridisegnare la pagina
+  const su = ascoltoInCorso();
+  document.querySelectorAll('.ai-mic[data-a="ac-detta"], .ai-mic[data-a="ai-detta"]').forEach(b => { b.classList.toggle('acceso', su); b.setAttribute('aria-label', su ? 'Smetti di ascoltare' : 'Chiedi a voce'); });
+  const campo = document.getElementById('ac-testo'); if (campo) campo.placeholder = su ? 'Ti ascolto…' : 'Scrivi qui…';
+}
+/* attesa dell'ascolto preciso riempita (C110, Mario 09/11 «l'attesa bisogna riempirla se no sembra che non è partito») */
+function testoCapisco() {
+  const s = (Date.now() - (VC.daCapisco || Date.now())) / 1000;
+  return s < 2.5 ? 'Sto capendo le parole…' : s < 6 ? 'Controllo i nomi dei piatti…' : s < 15 ? 'Ci metto un po\' più del solito: quasi fatto…' : 'La rete è lenta: ancora qualche secondo…';
+}
+const ascoltoInCorso = () => !!(VC.rec || VC.media || VC.stato === 'capisco' || VC.stato === 'avvio');
+/* iPhone/iPad: la voce delle risposte parte solo se il primo speak() è dentro un tocco (la risposta arriva dopo la rete).
+   Si chiama nel tocco del microfono, prima di ogni await: un «parla» muto sblocca la voce per tutta la pagina. */
+function sbloccaVoceIOS() {
+  try { const ac = VC.audio || (VC.audio = new (window.AudioContext || window.webkitAudioContext)()); if (ac.state === 'suspended') ac.resume(); } catch (e) { /* senza bip */ }
+  if (!suiOS() || !window.speechSynthesis || VC.voceSbloccata) return;
+  if (navigator.userActivation && !navigator.userActivation.isActive) return;   // non è un tocco vero: riprova al prossimo
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; u.lang = 'it-IT'; speechSynthesis.speak(u); VC.voceSbloccata = true; } catch (e) { /* resta il tasto «Ascolta» */ }
+}
+/* iPhone/iPad (Safari 17+): dice al telefono cosa facciamo; col microfono aperto la voce del telefono va bassa, dopo torna normale */
+function sessioneAudio(tipo) { try { if (suiOS() && navigator.audioSession) navigator.audioSession.type = tipo; } catch (e) { /* telefono senza Audio Session */ } }
 function fermaAscoltoCliente() {
   clearTimeout(VC.tGuardia);
+  if (VC.stato === 'avvio') { VC.giro++; statoVC('', ''); return; }   // il microfono non è ancora acceso: annullo prima che parta
   if (VC.rec) { try { VC.rec.stop(); } catch (e) { /* già fermo */ } }
   if (VC.media && VC.media.state === 'recording') { try { VC.media.stop(); } catch (e) { VC.media = null; } }
 }
@@ -485,23 +511,28 @@ function scegliTrascrizione(r) {
 async function registraCliente(o = {}) {
   if (!navigator.mediaDevices || !window.MediaRecorder) { mostraToast('Questo telefono non sa registrare: scrivi la frase.'); statoVC('', ''); return; }
   if (!navigator.onLine) { mostraToast('Per l\'ascolto preciso serve internet: intanto scrivi la frase.'); statoVC('', ''); return; }
-  try { const ac = VC.audio || (VC.audio = new (window.AudioContext || window.webkitAudioContext)()); if (ac.state === 'suspended') ac.resume(); } catch (e) { /* senza misura del volume */ }   // subito, dentro il tocco: Safari non lo fa partire dopo
+  sbloccaVoceIOS();   // subito, dentro il tocco (bip e voce delle risposte): Safari non lo fa partire dopo
+  const giro = VC.giro; VC.sento = false;
+  statoVC('avvio', '');   // C110: si vede subito che è partito (su iPad il microfono ci mette un attimo e a volte chiede il permesso)
+  sessioneAudio('play-and-record');
   let stream;
-  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { mostraToast('Per parlare serve il microfono: tocca «Consenti» quando il telefono lo chiede.'); statoVC('', ''); return; }
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { sessioneAudio('auto'); if (VC.giro === giro) { mostraToast('Per parlare serve il microfono: tocca «Consenti» quando il telefono lo chiede.'); statoVC('', ''); } return; }
+  if (VC.giro !== giro) { stream.getTracks().forEach(t => t.stop()); sessioneAudio('auto'); return; }   // annullato mentre si accendeva
   const tipo = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac', ''].find(t => !t || (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)));
   let mr; try { mr = new MediaRecorder(stream, tipo ? { mimeType: tipo } : undefined); } catch (e) { mr = new MediaRecorder(stream); }
-  const pezzi = [], giro = VC.giro, inizio = Date.now(), silenzioMs = Math.max(2, Math.min(6, Number(vcOpz('voceClientiSecondi', 3)) || 3)) * 1000;
+  const pezzi = [], inizio = Date.now(), silenzioMs = Math.max(2, Math.min(6, Number(vcOpz('voceClientiSecondi', 3)) || 3)) * 1000;
   let analizza = null, parlato = false, ultimoSuono = Date.now();
   try {   // misura il volume: dopo «silenzioMs» di silenzio (dopo aver parlato) si ferma da sola
     const ac = VC.audio || (VC.audio = new (window.AudioContext || window.webkitAudioContext)()); if (ac.state === 'suspended') ac.resume();
     const an = ac.createAnalyser(); an.fftSize = 512; ac.createMediaStreamSource(stream).connect(an); const buf = new Uint8Array(an.fftSize);
     analizza = setInterval(() => { an.getByteTimeDomainData(buf); let s = 0; for (let i = 0; i < buf.length; i++) { const v = (buf[i] - 128) / 128; s += v * v; } const rms = Math.sqrt(s / buf.length);
-      if (rms > 0.02) { parlato = true; ultimoSuono = Date.now(); } else if (parlato && Date.now() - ultimoSuono > silenzioMs && mr.state === 'recording') mr.stop(); }, 100);
+      if (rms > 0.02) { parlato = true; ultimoSuono = Date.now(); if (!VC.sento && VC.giro === giro) { VC.sento = true; disegnaVC(); } } else if (parlato && Date.now() - ultimoSuono > silenzioMs && mr.state === 'recording') mr.stop();
+      const onda = VC.stato === 'registro' && document.querySelector('#vc .vc-onda'); if (onda) { onda.classList.add('viva'); onda.style.setProperty('--liv', Math.min(1, rms * 10).toFixed(2)); } }, 100);   // le barrette seguono la voce: si vede che sente
   } catch (e) { /* senza misura: si ferma al tempo massimo o al tocco */ }
   const tMax = setTimeout(() => { if (mr.state === 'recording') mr.stop(); }, 15000);
   mr.ondataavailable = ev => { if (ev.data && ev.data.size) pezzi.push(ev.data); };
   mr.onstop = async () => {
-    clearInterval(analizza); clearTimeout(tMax); stream.getTracks().forEach(t => t.stop()); VC.media = null; ticVoce(false);
+    clearInterval(analizza); clearTimeout(tMax); stream.getTracks().forEach(t => t.stop()); VC.media = null; ticVoce(false); sessioneAudio('playback');   // microfono chiuso: la risposta a voce torna forte
     if (VC.giro !== giro) return;
     const blob = new Blob(pezzi, { type: mr.mimeType || tipo || 'audio/webm' });
     if (Date.now() - inizio < 500 || blob.size < 1200) { statoVC('', ''); mostraToast('Non ho sentito nulla: riprova.'); return; }
@@ -528,6 +559,38 @@ async function ascoltaServer(corpo) {
     return j;
   } catch (e) { if (e.name === 'AbortError') throw new Error('Ci sto mettendo troppo: riprova.'); if (e instanceof TypeError) throw new Error('Non riesco a collegarmi: scrivi la frase.'); throw e; }
   finally { clearTimeout(t); }
+}
+/* RISPOSTA A VOCE DEI CLIENTI (C110): la voce del telefono, sempre pronta (i clienti non scaricano Paola: niente avviso «si sta scaricando»).
+   Niente cancel() se non sta parlando (su iPhone un cancel subito prima di speak può far perdere la frase).
+   iPhone/iPad: se dopo 3 s la voce non è partita, il fumetto mostra «Ascolta la risposta» (un tocco la fa partire di sicuro). */
+function parlaCliente(t, fine, i) {
+  const k = typeof sceltaVoce === 'function' ? sceltaVoce() : '';
+  if (!suiOS() && typeof motoreLocale === 'function' && motoreLocale(k) && AI.localiPronte && AI.localiPronte[k] === true) { parlaAI(t, fine); return; }   // Paola già sul telefono (chi gestisce che guarda come cliente)
+  const m = i != null ? AIC.msgs[i] : null; if (m) m.detto = t;
+  if (!window.speechSynthesis || typeof frasiVoce !== 'function') { if (fine) fine(); return; }
+  AI.giroVoce = (AI.giroVoce || 0) + 1;
+  if (AI.audio) { try { AI.audio.pause(); } catch (e) { /* già ferma */ } AI.audio = null; }
+  try { if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel(); } catch (e) { /* niente */ }
+  const giro = AI.giroVoce, ff = frasiVoce(t), v = typeof voceAI === 'function' ? voceAI() : null;
+  if (!ff.length) { if (fine) fine(); return; }
+  let partita = false;
+  try {
+    ff.forEach((f, j) => {
+      const u = new SpeechSynthesisUtterance(f);
+      u.lang = 'it-IT'; if (v) u.voice = v; u.rate = Math.min(1.3, 0.97 * (typeof velVoce === 'function' ? velVoce() : 0.9) / 0.9); u.pitch = 1.0;
+      u.onstart = () => { partita = true; };
+      if (j === ff.length - 1) u.onend = u.onerror = () => { if (AI.giroVoce === giro && fine) fine(); };
+      speechSynthesis.speak(u);
+    });
+  } catch (e) { if (fine) fine(); return; }
+  if (m && suiOS()) setTimeout(() => { if (partita || AI.giroVoce !== giro || m.muta) return; m.muta = true; if (UI.vista === 'aiuto') { render(); fondoAC(); } mostraToast('Tocca «Ascolta la risposta» per sentirla.'); }, 3000);
+}
+/* tocco su «Ascolta la risposta» / «Riascolta»: dentro il tocco la voce parte sempre */
+function riascoltaCliente(i) {
+  const m = AIC.msgs[i]; if (!m) return;
+  sbloccaVoceIOS(); sessioneAudio('playback');
+  if (m.muta) { m.muta = false; render(); }
+  parlaCliente(m.detto || perVoceCliente(m.t), null, null);
 }
 /* la frase capita → all'aiutante (o alla domanda «lo metto nel carrello?» se stavamo aspettando un sì) */
 function consegnaDetto(testo, o) {
@@ -556,7 +619,7 @@ function dopoConfermaCliente(m) {
   vai('carrello');
   if (m.voce && vcOpz('voceClientiRisponde', true)) {
     const n = P.carrello.length;
-    parlaAI(perVoceCliente(`Nel carrello hai ${n} ${n === 1 ? 'cosa' : 'cose'}, totale ${euro(totale(P.carrello))}.${UI.entro ? ` Ritiro ${giornoLungo(UI.entro)}.` : ' Scegli il giorno.'} Quando sei pronto tocca Invia.`));
+    parlaCliente(perVoceCliente(`Nel carrello hai ${n} ${n === 1 ? 'cosa' : 'cose'}, totale ${euro(totale(P.carrello))}.${UI.entro ? ` Ritiro ${giornoLungo(UI.entro)}.` : ' Scegli il giorno.'} Quando sei pronto tocca Invia.`));
   }
 }
 
@@ -565,22 +628,24 @@ const fabVisibile = () => P.ruolo !== 'monica' && typeof aiClientiVisibile === '
 function disegnaVC() {
   let box = document.getElementById('vc');
   if (!box) { box = document.createElement('div'); box.id = 'vc'; document.body.appendChild(box); agganciaFab(box); }
-  const fab = fabVisibile(), su = fab || (ascoltoInCorso() && UI.vista !== 'aiuto') || VC.stato === 'capito';
+  const fab = fabVisibile(), su = fab || ascoltoInCorso() || VC.stato === 'capito';   // C110: anche nella pagina Aiutante (su iPad sembrava che non partisse)
   box.hidden = !su; document.body.classList.toggle('vc-su', fab);
   if (!su) return;
   const st = VC.stato, primo = fab && !st && (() => { try { return !localStorage.getItem('pit-vc-visto'); } catch (e) { return false; } })();
   const suggerimento = VC.perSi != null ? 'Di\' «sì» oppure «no»' : VC.dettato ? 'Dimmi piatti, quantità e giorno, tutto in una frase' : 'Parla pure: mi fermo da sola quando finisci';
-  const chiave = [fab, st, primo, ascoltoInCorso()].join('|');
-  if (box.dataset.chiave === chiave && (st === 'ascolto' || st === 'registro' || st === 'capito')) {   // stessa struttura: cambio solo i testi, senza rifare il pannello (su iPad lampeggiava a ogni render)
+  const chiave = [fab, st, primo, ascoltoInCorso(), UI.vista === 'aiuto'].join('|');
+  const attesa = VC.sento ? 'Ti sento! Quando finisci mi fermo da sola.' : suggerimento;
+  if (box.dataset.chiave === chiave && ['ascolto', 'registro', 'capito', 'capisco', 'avvio'].includes(st)) {   // stessa struttura: cambio solo i testi, senza rifare il pannello (su iPad lampeggiava a ogni render)
     const p = box.querySelector('.vc-pannello p'), b = box.querySelector('[data-vc="stop"]');
-    if (p) { if (st === 'capito') p.textContent = `«${VC.testo}»`; else { p.className = VC.testo ? '' : 'tenue'; p.textContent = VC.testo ? `Ho capito: «${VC.testo}»` : suggerimento; } }
+    if (p) { if (st === 'capito') p.textContent = `«${VC.testo}»`; else if (st === 'capisco') p.textContent = testoCapisco(); else if (st !== 'avvio') { p.className = VC.testo ? '' : 'tenue'; p.textContent = VC.testo ? `Ho capito: «${VC.testo}»` : st === 'registro' ? attesa : suggerimento; } }
     if (b) b.textContent = VC.testo ? 'Basta così' : 'Annulla';
     return;
   }
   box.dataset.chiave = chiave;
   let pann = '';
-  if (st === 'ascolto' || st === 'registro') pann = `<div class="vc-pannello" aria-live="polite"><div class="vc-onda"><span></span><span></span><span></span><span></span><span></span></div><b>${st === 'registro' ? 'Ti ascolto con attenzione…' : 'Ti ascolto…'}</b>${VC.testo ? `<p>Ho capito: «${esc(VC.testo)}»</p>` : `<p class="tenue">${suggerimento}</p>`}<button type="button" class="btn piccolo chiaro" data-vc="stop">${VC.testo ? 'Basta così' : 'Annulla'}</button></div>`;
-  else if (st === 'capisco') pann = `<div class="vc-pannello"><div class="ai-pensa" style="padding:0"><span></span><span></span><span></span></div><b>Un attimo, sto capendo le parole…</b></div>`;
+  if (st === 'avvio') pann = `<div class="vc-pannello" aria-live="polite"><div class="ai-pensa" style="padding:0"><span></span><span></span><span></span></div><b>Accendo il microfono…</b><p class="tenue">Se il telefono chiede il permesso, tocca «Consenti».</p><button type="button" class="btn piccolo chiaro" data-vc="stop">Annulla</button></div>`;
+  else if (st === 'ascolto' || st === 'registro') pann = `<div class="vc-pannello" aria-live="polite"><div class="vc-onda"><span></span><span></span><span></span><span></span><span></span></div><b>${st === 'registro' ? 'Ti ascolto con attenzione…' : 'Ti ascolto…'}</b>${VC.testo ? `<p>Ho capito: «${esc(VC.testo)}»</p>` : `<p class="tenue">${esc(st === 'registro' ? attesa : suggerimento)}</p>`}<button type="button" class="btn piccolo chiaro" data-vc="stop">${VC.testo ? 'Basta così' : 'Annulla'}</button></div>`;
+  else if (st === 'capisco') pann = `<div class="vc-pannello" aria-live="polite"><div class="ai-pensa" style="padding:0"><span></span><span></span><span></span></div><b>Un attimo…</b><p>${testoCapisco()}</p></div>`;
   else if (st === 'capito') pann = `<div class="vc-pannello"><b>Ho capito:</b><p>«${esc(VC.testo)}»</p></div>`;
   else if (primo) pann = `<div class="vc-pannello vc-primo"><b>Puoi parlarmi!</b><p>Tocca il microfono e prova a dire: ${esempiVoce().slice(0, 3).join(', ')}.</p><button type="button" class="btn piccolo chiaro" data-vc="visto">Ho capito</button></div>`;
   box.innerHTML = `${pann}<div class="vc-fabs">${fab && !ascoltoInCorso() && st !== 'capito' ? `<button type="button" class="vc-detta" data-vc="detta">${ico('carrello')}<span>Dettami l'ordine</span></button>` : ''}<button type="button" class="vc-fab ${ascoltoInCorso() ? 'acceso' : ''}" data-vc="mic" aria-label="${ascoltoInCorso() ? 'Smetti di ascoltare' : 'Parla: ordina o chiedi a voce'}">${ico('microfono')}</button></div>`;
@@ -588,9 +653,10 @@ function disegnaVC() {
 /* tocco = ascolta finché finisci di parlare; tieni premuto = parla finché tieni (al rilascio capisce); tocco mentre ascolta = basta così */
 function agganciaFab(box) {
   box.addEventListener('pointerdown', ev => { if (!ev.target.closest('[data-vc="mic"]')) return; ev.preventDefault(); VC.giu = Date.now(); VC.partito = !ascoltoInCorso(); if (VC.partito) ascoltaCliente(); });
-  box.addEventListener('pointerup', ev => { if (!ev.target.closest('[data-vc="mic"]')) return; if (!VC.partito || Date.now() - VC.giu > 700) fermaAscoltoCliente(); });
+  box.addEventListener('pointerup', ev => { if (!ev.target.closest('[data-vc="mic"]')) return; if (VC.partito && VC.stato === 'avvio') return; if (!VC.partito || Date.now() - VC.giu > 700) fermaAscoltoCliente(); });
   box.addEventListener('click', ev => {
     const el = ev.target.closest('[data-vc]'); if (!el) return;
+    if (el.dataset.vc === 'mic') sbloccaVoceIOS();   // C110: Safari conta come tocco il click, non il pointerdown
     if (el.dataset.vc === 'stop') fermaAscoltoCliente();
     if (el.dataset.vc === 'detta') ascoltaCliente({ dettato: true });
     if (el.dataset.vc === 'visto') { try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ } disegnaVC(); }
@@ -603,6 +669,8 @@ if (typeof window.render === 'function') {
 }
 Object.assign(A, {
   'vc-alt'(el) { const m = AIC.msgs[Number(el.dataset.m)], alt = m && m.alt && m.alt[Number(el.dataset.j)]; if (!alt) return; m.altFatto = true; inviaAC(alt.testo, false, { scelte: alt.scelte, nome: alt.nome }); },
-  'vc-detta'() { ascoltaCliente({ dettato: true }); }
+  'vc-detta'() { ascoltaCliente({ dettato: true }); },
+  'vc-ascolta'(el) { riascoltaCliente(Number(el.dataset.m)); }
 });
+if (typeof PATH === 'object' && !PATH.altoparlante) PATH.altoparlante = '<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>';
 try { disegnaVC(); } catch (e) { /* al prossimo render */ }
