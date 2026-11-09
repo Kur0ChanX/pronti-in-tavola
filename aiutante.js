@@ -312,8 +312,7 @@ function statoVoceLocale(k, poi) {
   return undefined;
 }
 const voceLocalePronta = () => Object.keys(AI.localiPronte).find(k => AI.localiPronte[k] === true) || '';
-/* velocità scelta da Mario (C70) in S.impostazioni.velVoce, tetti 0,7-1,3; di base 0,9 (Mario: «Piper è troppo veloce») */
-function velVoce() { const v = Number(typeof S !== 'undefined' && S.impostazioni ? S.impostazioni.velVoce : NaN); return v >= 0.7 && v <= 1.3 ? v : 0.9; }
+/* velVoce(), velMia(), velDiTutti(): in app.js (si carica prima: PT E23) */
 async function parlaLocale(t, scelta, fine, giro) {
   const M = motoreLocale(scelta), testo = frasiVoce(t).join(' ');
   if (!testo) { if (fine) fine(); return; }
