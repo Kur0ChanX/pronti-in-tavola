@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 09/11 · 📒 Aiuto 7 · C97: ti è arrivata la notifica delle 23:16 (1 sì · 2 no · 3 non so)? In Clienti c'è Francesco Sanciu col codice (1 sì · 2 «Nessuno in attesa»)?
+- 09/11 · 📒 Aiuto 7 · C97: Francesco = avviso delle 18:50 (Mario). Ti è arrivata quella notifica? In Clienti c'è Francesco col codice (1 sì · 2 «Nessuno in attesa»)? Chi era alle 23:16?
 - 08/11 · 🟡 Principale 32 · Controllo dei numeri doppi (C89) anche negli altri progetti (kit)? 1 sì (consiglio) · 2 solo qui.
 - 08/11 · 🟡 Principale 21 · Prova «Scrivi a Monica» da cliente (C49) e l'aiutante con l'AI vera (Home → «Chiedi all'aiutante…» → «Cosa devo cucinare oggi?» e una frase detta) e manda una foto (C48).
 
