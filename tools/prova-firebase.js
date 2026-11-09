@@ -308,6 +308,19 @@ const server = http.createServer((req, res) => {
     const sB = (await admin(d => getDoc(doc(d, 'utenti/sab-browser')))).data(), sA = (await admin(d => getDoc(doc(d, 'utenti/sab-app')))).data();
     const clientiSab = (await admin(d => getDocs(collection(d, 'clienti')))).docs.filter(x => x.data().chiave === 'sabrina-rossi');
     controlla('(C93) un Sì vale per i due telefoni: un solo cliente Sabrina', sB.stato === 'approvato' && sA.stato === 'approvato' && sB.cliente === sA.cliente && clientiSab.length === 1, [sB, sA, clientiSab.length]);
+    // (Mario 09/11, iPad) Lia ha CORRETTO il nome sul primo telefono («Lia Piras» → «Lia Piras Test»); sul secondo entra col nome nuovo → chiave diversa
+    await admin(async d => {
+      await setDoc(doc(d, 'utenti/lia-browser'), { nome: 'Lia Piras Test', chiave: 'lia-piras', nomiPrima: [{ nome: 'Lia Piras', il: oggiPag }], tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
+      await setDoc(doc(d, 'utenti/lia-app'), { nome: 'Lia Piras Test', chiave: 'lia-piras-test', tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
+      await setDoc(doc(d, 'nomi/lia-piras'), { il: oggiPag }); await setDoc(doc(d, 'nomi/lia-piras-test'), { il: oggiPag });
+    });
+    controlla('nome corretto + secondo telefono: Monica vede UNA richiesta di Lia', await aspetta(monica, () => S.utenti.filter(u => /^lia-/.test(u.uid || '') || /lia-piras/.test(u.chiave)).length === 2)
+      && await monica.evaluate(() => S.richieste.filter(r => /Lia Piras/.test(r.nome)).length === 1 && S.richieste.find(r => /Lia Piras/.test(r.nome)).gemelli.length === 1),
+      await monica.evaluate(() => S.richieste.filter(r => /Lia Piras/.test(r.nome))));
+    await monica.evaluate(() => decidiRichiesta(S.richieste.find(r => /Lia Piras/.test(r.nome)).id, true));
+    const lB = (await admin(d => getDoc(doc(d, 'utenti/lia-browser')))).data(), lA = (await admin(d => getDoc(doc(d, 'utenti/lia-app')))).data();
+    const clientiLia = (await admin(d => getDocs(collection(d, 'clienti')))).docs.filter(x => /lia-piras/.test(x.data().chiave));
+    controlla('nome corretto + secondo telefono: un Sì, un solo cliente Lia', lB.stato === 'approvato' && lA.stato === 'approvato' && lB.cliente === lA.cliente && clientiLia.length === 1, [lB, lA, clientiLia.length]);
     // stesso caso, ma Monica approva i due quasi insieme (la copia dei clienti non è ancora arrivata)
     await admin(async d => {
       await setDoc(doc(d, 'utenti/gio-browser'), { nome: 'Gio Sanna', chiave: 'gio-sanna', tramite: '', il: oggiPag, stato: 'nuovo', cliente: null, primo: null });
@@ -349,7 +362,7 @@ const server = http.createServer((req, res) => {
     await aspetta(monica, id => (S.rifiutati || []).some(r => r.id === id), uidT);
     await monica.evaluate(() => { vai('clienti'); UI.rifiutati = true; render(); });
     await aspetta(monica, id => !!document.querySelector(`[data-a="rifiutato-si"][data-id="${id}"]`), uidT);
-    await monica.click(`[data-a="rifiutato-si"][data-id="${uidT}"]`);
+    await monica.evaluate(id => document.querySelector(`[data-a="rifiutato-si"][data-id="${id}"]`).click(), uidT);   // il nodo si rifà a ogni dato dal server: il click di Playwright lo perdeva
     const uR = await aspetta(monica, id => S.ordini.some(o => o.utente === id && o.stato === 'nuovo' && !!o.cliente), uidT);
     const uRd = (await admin(d => getDoc(doc(d, 'utenti/' + uidT)))).data();
     controlla('Accetta dopo un No: diventa cliente e l\'ordine va avanti', uR && uRd.stato === 'approvato' && !!uRd.cliente && !(await monica.evaluate(id => (S.rifiutati || []).some(r => r.id === id), uidT)), uRd);
@@ -366,6 +379,7 @@ const server = http.createServer((req, res) => {
 
     // d) «Accetta clienti nuovi» spento
     await monica.evaluate(() => { vai('clienti'); const i = document.querySelector('[data-campo="i.nuovi"]'); i.checked = false; i.dispatchEvent(new Event('change', { bubbles: true })); });
+    await monica.evaluate(() => document.querySelector('[data-a="nuovi-chiudi-si"]').click());   // (C104, v0.9.77) spegnere chiede conferma
     await monica.evaluate(() => Dati.confermato());
     controlla('interruttore spento sul server', (await admin(d => getDoc(doc(d, 'impostazioni/app')))).data().nuovi === false);
     const quarto = await apri();
