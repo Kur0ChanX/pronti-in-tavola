@@ -1,4 +1,4 @@
-# Consegne della chat parallela «Voce» (comando vocale dei CLIENTI, C105) · Voce 2 → Voce 3
+# Consegne della chat parallela «Voce» (comando vocale dei CLIENTI, C105) · Voce 3 (`session_01WTjqUvuFacpinWPAvkMDYG`, aperta 09/11 17:37)
 
 **Già deciso da Mario (non richiedere):** aiutante dei clienti ACCESO per tutti (08/11); l'AI propone, il cliente conferma e l'ordine lo manda lui; voce femminile non robotica; Microsoft lasciata perdere; allergie solo sul telefono; niente artefatto, Mario prova sul sito vero; ogni funzione nuova anche nell'aiutante di Monica (`.claude/rules/progetto.md`); ogni «👉 DA FARE TU» con «A cosa serve» (PT E36). Mario 09/11 ~17:35: «Continua con pensiero extra e se serve ripensa» (= ragiona di più, cambia strada se serve: fatto, vedi «Decisioni»).
 **Da non rifare:** lo studio (`docs/SPEC-VOCE-CLIENTI.md`) e il cuore del codice: `voce-clienti.js` è SCRITTO (543 righe, sintassi ok, commit f22334b3, non collegato). Non riscriverlo né rileggerlo per intero: le funzioni che espone e i ganci esatti, con il codice già pronto da incollare, sono in `docs/lavori-in-corso/voce-clienti-ganci.md`. Non rileggere aiutante.js/worker.js per intero: righe nella specifica §1 e `grep -n`.
@@ -17,19 +17,17 @@ Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 09/11 17:11, chius
 - **Aggancio a `window.render`** per ridisegnare il microfono fisso senza toccare app.js (fuori zona). Se Mario o la principale preferiscono una riga in `render()`, basta chiamare `disegnaVC()` con typeof.
 - **Prezzi letti bene** (`perVoceCliente`): «12,50 €» → «dodici euro e cinquanta», «1,5 kg» → «un chilo e mezzo».
 
-## Stato (controlla, non fidarti)
-- Ramo `claude/pronti-ramo-definitivo` = origin (f22334b3 + queste consegne): `git log -1 --oneline`. Online v0.9.78+ (la principale «🟢 🍝 Principale 34», `session_01WTjqUxkfi1LrUJwmzh137d`, pubblica spesso: prima del push `git fetch` + merge e versione libera).
-- `voce-clienti.js` c'è ma NON è in index.html né in anteprima.py (`grep -n voce-clienti index.html tools/anteprima.py` → niente): online non cambia nulla finché Voce 3 non lo collega.
-- Zona e file nostri: riga «Voce» di `docs/CHI-FA-COSA.md`. Sveglie di questa catena: nessuna (`list_triggers` limit 3).
-- Controllo Da fare: 0 voci aggiunte (`docs/MESSAGGI-MARIO-PARALLELA.md`: nessun messaggio per questa catena dopo l'avvio).
+## Stato (Voce 3, 09/11 sera; controlla, non fidarti)
+- Tutto collegato: index.html, anteprima.py, aiutante.js (zona clienti), style.css `.vc-*`, worker.js `/api/ascolta` + `contaAscolto` (Groq prima per webm/ogg: Cloudflare non decodifica bene l'opus, blog 06/2026; base64 confermato dal manuale Cloudflare 09/11), opzioni.js 6 voci + tipo `scelta`, prova.js 4 passi nuovi + C50. Versione 0.9.80 in data.js, NOVITA, C105 in Da fare.
+- Prove verdi in locale: 31 frasi, microfono finto, ascolto preciso finto, dettatura, C50 (`SOLO="benvenuto|voce dei clienti|C50"`). Giro completo + `prova-impostazioni.js`: vedi l'ultimo commit (se non è scritto «giro completo verde» qui, rifallo prima del push).
+- Decisioni di Voce 3: `UNITA` → `UNITA_VOCE` (scontro con spesa.js); «ha il glutine?» → allergeni; a parità di punti vince la frase già giusta («lasagne» e non «la sagne»); il «sì»/«no» dopo la proposta lo sente SEMPRE il telefono (gratis, subito), mai l'ascolto preciso; senza riconoscitore (iPhone dentro WhatsApp) resta il tocco su Conferma; «parmigiana» è doppia nel menù → «Quale intendi?» (giusto così).
+- Non ancora provato dal vivo: `/api/ascolta` sul sito vero (serve una frase col microfono di Mario, poi `/api/conto-ai` → `ascolti`); `env.AI.run` con audio base64 (manuale sì); Groq Whisper (chiave già nel Worker per il ponte).
 
-## Prossimi passi (occhio critico prima di ognuno, C333; i ganci sono in `docs/lavori-in-corso/voce-clienti-ganci.md`)
-1. Avvio: titolo «🟩 🍝 Voce 3 · collega la voce», id tuo in `docs/CHI-FA-COSA.md` («## Catene», riga Voce), fetch e merge. Prima riga a Mario: cosa farai in 3 righe, poi codice.
-2. Ganci §1-§2 (index.html, anteprima.py, aiutante.js) → `python3 -I tools/anteprima.py && SOLO="C50" node tools/prova.js` (il passo C50 va aggiornato come in §6.5). Poi passo 1 delle prove (tabella di frasi): è la prova che il cuore funziona; correggi `capisciCliente` dove sbaglia (regex in `intentoVoce`, quantità in `quantitaDette`).
-3. Ganci §5 (style.css) e passi 2-4 (microfono finto, ascolto preciso finto, dettatura). Foto `40-voce-clienti` da guardare (≤ 1000 px) prima di mandarla a Mario: pannello «Ti ascolto…», microfono a sinistra, «Scrivimi» a destra, niente sovrapposizioni.
-4. Ganci §3 (worker.js) e §4 (opzioni.js + `tools/prova-impostazioni.js`).
-5. Giro completo UNA volta in un file; versione libera + NOVITA (una riga per funzione); `docs/DA-FARE.md` C105; push → `sito.yml` success → a Mario: «chiudi e riapri l'app», Menù → microfono in basso a sinistra → «due teglie di lasagne per sabato» → «sì»; «A cosa serve». Poi prova dal vivo di `/api/ascolta` (curl col token non si può: chiedere a Mario una frase col microfono e leggere `/api/conto-ai` → `ascolti`).
-6. Alla soglia: consegne qui (mai in PASSAGGIO-CONSEGNE), Voce 4 solo se resta più di mezza sessione; a lavoro finito la zona torna alla principale (skill `chat-parallela`).
+## Prossimi passi (occhio critico prima di ognuno, C333)
+1. Giro completo verde in locale (un file) → `git fetch` + merge → push (sito.yml pubblica dal ramo) → `actions` success → a Mario: «chiudi e riapri l'app», Menù → microfono in basso a sinistra → «due teglie di lasagne per sabato» → «sì»; «Dettami l'ordine»; «A cosa serve». Foto `40-voce-clienti` già guardata (pannello «Puoi parlarmi!» leggibile).
+2. Prova dal vivo dell'ascolto preciso: Mario tocca «Dettami l'ordine» e dice una frase lunga; leggo `/api/conto-ai` (`ascolti`) e, se fallisce, i log del Worker. Se Cloudflare sbaglia con webm, resta Groq (già prima per webm).
+3. Chiusura della voce 👁 di C105 solo con la foto o la lettura di Mario; poi la zona torna alla principale (skill `chat-parallela`), riga in CHI-FA-COSA.
+4. Idee dopo (non fatte, da proporre a Mario): «ripeti» legge l'ultima risposta; suggerimenti a voce nel carrello («manca il giorno: per quando?»); voce di Monica che legge gli ordini dettati.
 
 ## Domande a Mario: nessuna aperta
 Mario (09/11, nella chat Voce 1, girato da Voce 1 con send_message): «Vai avanti da solo» = vale il consiglio per entrambe: 1) il «sì» detto a voce mette nel carrello (l'ordine parte solo con «Invia»); 2) microfono grande fisso nel menù e nel carrello (Voce 1 scriveva «a destra»: a destra c'è già «Scrivimi», quindi va a SINISTRA, stessa altezza; se Mario lo vuole a destra basta spostare `.vc-fabs`). Niente altro da chiedergli: lavorare da sola fino alla versione online e dirglielo con «chiudi e riapri l'app» e dove toccare.
