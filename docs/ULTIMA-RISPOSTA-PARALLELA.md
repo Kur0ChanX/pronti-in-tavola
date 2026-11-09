@@ -1,3 +1,15 @@
-# Ultima risposta di Claude (09/11/2026 17:39 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:51 ora italiana)
 
-Consegne rifatte con la tua risposta «Vai avanti da solo» (arrivata a Voce 1 e girata qui): le due domande sono chiuse coi consigli, salvato su GitHub (17e3da63) e avvisata Voce 3, che prosegue da sola fino alla versione online e ti dirà «chiudi e riapri l'app» e dove toccare.
+
+
+## Domande a Mario
+
+❓ DOMANDE
+
+📌 **Di cosa parliamo:** limiti per persona. Quante domande al giorno può fare all'aiutante ogni cliente. Voce 4 propone di non bloccare mai nessuno e di mandarti solo un avviso oltre un tetto ampio. La proposta è nel file `docs/lavori-in-corso/limiti-per-persona.md`.
+1. 🛑 Va bene così?
+   1 · Sì: nessuno viene mai bloccato, a te arriva solo l'avviso (consiglio).
+   2 · Cambia i numeri: scrivimi quali.
+
+📌 **Di cosa parliamo:** il microfono dei clienti sull'iPad. Dalla v0.9.85 ascolta con due motori e corregge le parole sentite male.
+2. Apri l'app dall'icona, poi Menù → microfono, e …
