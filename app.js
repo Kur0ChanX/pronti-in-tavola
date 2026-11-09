@@ -354,13 +354,15 @@ function guidaInstalla() {
 const notifPossibili = () => 'Notification' in window && 'serviceWorker' in navigator && Notification.permission !== 'denied' && !P.avvisiCliente && !P.vuoleAvvisi && !(Dati.attivo && Dati.io.gestore);
 function serveInvito() {
   if (P.ruolo !== 'cliente' || UI.invitoFatto || UI.foglio || serveBenvenuto() || statoLucchetto() || senzaNome()) return false;   // (C97) prima il nome, poi l'app
+  if (Dati.attivo && !Dati.io.letto) return false;   // (foto di Francesco 09/11) finché il server non dice chi è, niente foglio: sennò copriva «Come ti chiami?»
+  if ((P.invitoDopo || 0) > Date.now()) return false;   // «Più tardi» = ci riprova domani, non a ogni apertura
   if (!(sulSito() || UI.invitoProva)) return false;   // nelle prove si accende a mano (UI.invitoProva): sennò coprirebbe le altre prove
   return !suHome() || notifPossibili();
 }
 function controllaInvito() {
   if (!serveInvito()) return;
   UI.invitoFatto = true;   // una volta per apertura
-  setTimeout(() => { if (!UI.foglio && P.ruolo === 'cliente' && !senzaNome()) { UI.foglio = { tipo: 'installa', os: null }; render(); } }, UI.invitoProva ? 50 : 2500);
+  setTimeout(() => { if (!UI.foglio && P.ruolo === 'cliente' && !senzaNome() && !serveBenvenuto()) { UI.foglio = { tipo: 'installa', os: null }; render(); } }, UI.invitoProva ? 50 : 2500);
 }
 function foglioInstalla() {
   const f = UI.foglio, mio = telefono() === 'ios' ? 'ios' : 'android';
@@ -2128,7 +2130,7 @@ const A = {
   vai(el) { vai(el.dataset.v); },
   cat(el) { UI.cat = el.dataset.v; const t = document.getElementById('cat-' + el.dataset.v); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-a="cat"]').forEach(b => b.setAttribute('aria-pressed', b === el)); },
   piatto(el) { apriPiatto(el.dataset.id, !!el.dataset.pronto); },
-  chiudi() { chiudiFoglio(); },
+  chiudi() { if (UI.foglio && UI.foglio.tipo === 'installa' && !(UI.notEsito && UI.notEsito.ok)) { P.invitoDopo = Date.now() + 864e5; salvaP(); } chiudiFoglio(); },   // «Più tardi»: torna domani
   'apri-allergie'() { UI.foglio = { tipo: 'allergie' }; render(); },
   'mio-nome'() { UI.foglio = { tipo: 'mio-nome' }; render(); const i = $('#mio-nome'); if (i) i.focus(); },
   async 'mio-nome-ok'() {   // (C99) il cliente corregge il suo nome
