@@ -52,7 +52,8 @@ self.addEventListener('push', e => {
         raffica: ['Tante domande in un minuto da un cliente ⚠️', 'Telefono inceppato? Per un minuto risponde il telefono, senza AI. Tocca per i dettagli.'],
         quota80: ['Aiutante dei clienti: domande di oggi quasi finite', 'Siamo all\'80%. Nessuno è fermato. Tocca per i dettagli.'],
         quota: ['Aiutante dei clienti: domande di oggi finite', 'Fino a domani risponde il telefono, senza AI. Nessuno è fermato.'],
-        ascolto: ['Un cliente usa molto il microfono', 'Nessuno è stato fermato. Tocca per vedere i dettagli.']
+        ascolto: ['Un cliente usa molto il microfono', 'Nessuno è stato fermato. Tocca per vedere i dettagli.'],
+        ascoltoQuota: ['Microfono dei clienti molto usato oggi', 'Oltre 400 frasi: ora ascoltano solo Groq e Deepgram. Nessuno è fermato.']
       })[u && u.cosa] || ['Un cliente usa molto l\'aiutante', 'Nessuno è stato fermato. Tocca per vedere i dettagli.'],
       chiusi: ['Una persona nuova non riesce a entrare 🔒', '«Accetta clienti nuovi» è spento. Tocca per riaprire.'],   // (C104)
       qui: [`${(u && u.prova) ? 'PROVA · ' : ''}${(u && u.nome) || 'Un cliente'} è qui per il ritiro 🍝`, `${u && u.n ? 'Ordine n. ' + u.n + '. ' : ''}Tocca per vederlo.`],

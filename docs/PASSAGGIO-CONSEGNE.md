@@ -1,29 +1,26 @@
 # Passaggio di consegne
 
-Sessione attuale: #36 (dopo la #35 `session_01WTjqUxhhMWGG64KBFbuwNR`, chiusa alla soglia 09/11 20:15; la apre la #35 con `create_session` (catena 3 di 8)).
+Sessione attuale: #37 (dopo la #36 `session_01WTjqUtPqTTxpnkk1cGLaiK`, chiusa alla soglia 09/11 20:57; la apre la #36 con `create_session` (catena 3 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (09/11 ~20:20):** 1) C109 🔴: Mario ha detto «limiti per persona da consiglio» (nella chat Voce 8, 09/11 ~21:20 ora della Voce) = sì alla proposta `docs/lavori-in-corso/limiti-per-persona.md`: applicare la patch `docs/lavori-in-corso/c109-codice-pronto.patch` (soglia da 20 a 30, poi «modo ridotto» a 100 al giorno o 10 al minuto) e avvisare Voce 8 con `send_message` quando è nel ramo (lei tocca dopo `contaAscolto` e `/api/ascolta`); 2) C108 = 1 «salvadanai separati»: l'aiutante dei CLIENTI (`chiediAI` con cliente, `/api/aiuto-cliente`, zona nostra) passa a Groq qwen3.8-27b → gpt-oss-120b → gpt-oss-20b, Cloudflare per ultimo (`docs/lavori-in-corso/standard-ascolto.md`); 3) C106: prova di Mario sull'iPad.
+- **Cosa preme a Mario adesso (09/11 ~20:55):** 1) C112: la scelta «Ordino davvero / Sto solo provando» deve uscire a TUTTI i clienti a ogni ordine, mai già segnata (un amico che provava ha mandato un ordine vero): codice fatto in v0.9.90, va PROVATO e PUBBLICATO (vedi Prossimi passi 1); 2) C111 🔴: sull'iPad di Mario la schermata dev non si apre (messaggio arrivato in Voce 9, passato a noi); 3) le prove di Mario su C106, C109, C108.
 
-## Stato (09/11 20:15 ora italiana)
-- Ramo comune ≠ origin: PUSH DA FARE (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?.
-- App: `python3 -I tools/anteprima.py && node tools/prova.js` → 72 OK, 0 NO (09/11 ~18:15, codice unito con la v0.9.80 della Voce). `SOLO=ricettario` NON funziona da solo (serve il giro completo, ~3 minuti). Dal contenitore il sito vero, GialloZafferano e Microsoft sono bloccati (curl 000): esito dei giri con `mcp__github__actions_list` (sito.yml, perPage 1).
-- Motore e regole: `npm install`, `npm run prova-firebase` → 98 OK, 0 NO; `npm run prova-regole` → 66 OK, 0 NO (09/11 ~18:00). Regole cambiate in v0.9.79 (`accettaNuovi()` solo per stato 'nuovo') e pubblicate da Mario 09/11 ~17:20.
-- Sito: `python3 -I tools/sito.py` → «OK sito».
-- Sito vero: https://pronti-in-tavola.pronti-in-tavola.workers.dev si pubblica da solo a ogni push di file dell'app (verifica: `gh api "repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/runs?per_page=1" --jq ".workflow_runs[0].conclusion"` → success; curl → 200).
-- Anteprima artefatto: NON si pubblica più (Mario 08/11 «non lo uso più»); `dist/anteprima.html` serve solo alle prove.
-- Kit RVC 35.0. Verifica: `for t in tools/test-*.py; do python3 -I $t; done` → tutti verdi.
-- Soglia 320k: vale solo se l'id della sessione è quello della riga «Principale» di `docs/CHI-FA-COSA.md`: la sessione nuova ci mette il suo.
+## Stato (09/11 20:58 ora italiana)
+- Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Sito vero: v0.9.90 online (C112), giro «Pubblica sito» success sul commit e356f431 (09/11 ~21:10); `grep -m1 VERSIONE_APP data.js` → 0.9.90. App: 78 OK, 0 NO sul codice unito con Voce 10.
+- App: `python3 -I tools/anteprima.py && node tools/prova.js` → 77 OK, 0 NO (09/11 ~20:40, v0.9.87). `SOLO=carrello` NON va da solo (il carrello dipende dai passi prima): giro completo, ~3 minuti.
+- Server: `node tools/prova-limiti.mjs` → 22 OK (limiti C109 + catena Groq C108, memoria finta); `node tools/prova-ascolta.mjs` → 27 OK (di Voce).
+- Motore e regole: `npm run prova-firebase` → 98 OK; `npm run prova-regole` → 66 OK (09/11 ~18:00, non toccati qui). Regole Firebase NON cambiate in questa sessione (il campo `prova` negli ordini dei clienti accettati è già permesso).
+- Sito: `python3 -I tools/sito.py` → «OK sito: 18 file». Sito vero https://pronti-in-tavola.pronti-in-tavola.workers.dev si pubblica a ogni push di file dell'app; esito: `gh api "repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/runs?per_page=1" --jq ".workflow_runs[0].conclusion"` (NON `mcp__github__actions_list`: ignora per_page e manda 30 giri, ~25k token).
+- Kit RVC 35.0. Soglia 320k: vale se l'id della sessione è nella riga «Principale» di `docs/CHI-FA-COSA.md`.
 
 ## Riferimenti
 - Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C3, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#35)
-- v0.9.83 online (C106): `ZoomIOS` in app.js (al rientro, al giro e al cambio di larghezza: per 400 ms `maximum-scale=1`, poi la regola normale; solo iPhone/iPad; `pageshow` solo se `persisted`), `text-size-adjust: 100%` su html; causa: WebKit 262207 (app installate, ancora aperto 2026); nessun pezzo esce dai bordi (1180/1194/1366 px). Prova `C106 iPad` in tools/prova.js. Poi le versioni 0.9.82, 0.9.84-0.9.86 sono della catena Voce (contengono la C106).
-- C109: codice del livello «Avviso» scritto e provato (prova C109 verde, prova del server con memoria finta: 45 domande, nessun blocco, segnalazioni a 21 e 41), poi NON pubblicato perché Mario aveva chiesto un consiglio prima: tutto in `docs/lavori-in-corso/c109-codice-pronto.patch` (`git apply --check` OK sul ramo di allora). Contiene: worker.js `TIPI_SERVER` ['esagera'], `SOGLIA_AIC_CLIENTE`, `contaAIC` senza 'tuo', `segnala(cosa, cliente, n, soglia)` (registro 'segnalazioni' ultime 30 + `manda(null,'esagera')`), `contoAI` con `segnalazioni`; sw.js testo «esagera»; app.js `NOMI_AVVISO.esagera`, `vaiDaNotifica` 'esagera' → Impostazioni, `segnalazioniHtml()` in «Solo per te, Mario»; aiutante.js `DOVE_AI['imp-notifiche']` parole «segnalazion…»; regola per il kit in `docs/PER-IL-KIT.md`. La versione nella patch NON c'è: usare la prossima libera (dopo 0.9.86).
-- `CLAUDE.md` più corto: misurato, risparmio ~0,2%: consiglio cambiato in «2 lascia così» (riga in Aspetta Mario).
-- Controllo Da fare: 0 voci aggiunte (l'unico messaggio di Mario qui ha già la sua riga).
+## Sessione appena chiusa (#36)
+- v0.9.87 online (C109 + C108 parte nostra). worker.js: `contaAIC(cliente, lim)` senza blocchi (segnalazione a 30 e 60, 'ridotto' oltre 100 o 10 in un minuto, quota `TETTO_AIC` 200 con avviso all'80%), una segnalazione per soglia (`c.visti`); `segnala()` manda la notifica 'esagera' SOLO agli iscritti con `dev:true` (il telefono di Mario lo manda a `/api/iscrivi`, app.js `iscriviTelefono`); `campiApp`/`accesoAIC`/`limitiAIC` leggono le soglie da impostazioni/app (`aicAvviso` 10-200 base 30, `aicRidotto` 20-1000 base 100); `RISPOSTA_RIDOTTA` al posto di «riprova domani»; `PONTE_CLIENTI` Groq qwen3.8-27b → gpt-oss-120b → gpt-oss-20b, poi Cloudflare, poi 'ridotto' (Monica resta Cloudflare per prima). opzioni.js: gruppo 'mario' (non in GRUPPI_OPZ, filtrato dall'aiutante di Monica). sw.js: testo di 'esagera' secondo `cosa`. app.js: `segnalazioniHtml`, le due soglie in `schedaMario`. Patch spostata in `docs/piani-finiti/`. Voce 9 avvisata (usa `segnala('ascolto', …)`).
+- C112 (Mario 09/11 ~20:45): `puoProvare()` ora segue l'opzione `chiediProva` (opzioni.js, gruppo clienti: 'tutti' di base, 'nuovi', 'mai'); prima valeva solo per chi non era accettato e, con l'accettazione prima del primo ordine (C93-C97), non usciva più. Prova nuova nel passo «carrello: giorno, bonifico, invio». Versione 0.9.90 (Voce 9 e Voce 10 avevano già preso la 0.9.88 e la 0.9.89). Lezione PT E43.
+- Controllo Da fare: 1 voce aggiunta (C112); C111 l'ha scritta Voce 9.
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Voci (#30): Supertonic 3 (F1, M1) e Kokoro italiano (Sara, Nicola): Mario «tono, pause e accenti sembrano stranieri». Chatterbox/OmniVoice: >1 GB, GPU. Kitten: solo inglese.
@@ -32,24 +29,27 @@ Sessione attuale: #36 (dopo la #35 `session_01WTjqUxhhMWGG64KBFbuwNR`, chiusa al
 - Sessioni 1-22: `docs/lavori-in-corso/strade-scartate-sessioni-1-7.md` e `strade-scartate-sessioni-8-13.md`. Ricette scritte da Claude: NO (PT E25).
 - C109 (#35): codice scritto PRIMA della scelta di Mario (la regola era arrivata da un'altra chat, ma Mario aveva poi chiesto un consiglio): messo in patch. Prima di codice su una regola nuova, controllare in «Aspetta Mario» se c'è una 🛑 sullo stesso numero.
 - C106 (#35): niente `maximum-scale=1` fisso (toglierebbe lo zoom con due dita a tutti) e niente prova con WebKit vero (non installato nel contenitore).
+- C109 (#36): segnalazioni a tutti i gestori → NO, solo a Mario (Monica non può cambiare le soglie). Raffica e quota con blocco → NO, sempre «modo ridotto» (PT E41).
+- C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
-1. Avvio: titolo verde ❔. Leggi `docs/lavori-in-corso/limiti-per-persona.md` e `standard-ascolto.md` (a pezzi, grep).
-2. C109: `git apply docs/lavori-in-corso/c109-codice-pronto.patch` (togli le righe che iniziano con «# » o usa `grep -v '^# '`); soglia 30; aggiungi il «modo ridotto» per l'aiutante dei clienti (100 al giorno o 10 in un minuto → `fermo:'ridotto'` e il telefono risponde con `capisciCliente` di voce-clienti.js: zona Voce, accordarsi); versione nuova in data.js; prove (`SOLO=C109`, poi giro completo); push; `send_message` a Voce 8 «patch C109 nel ramo». Chiedere a Mario solo «segnalazione solo a te o anche a Monica» (riga da scrivere in Aspetta Mario, consiglio: solo a lui).
-3. C108 parte nostra: aiutante dei clienti su Groq (modelli e limiti in `standard-ascolto.md`, 09/11/2026: verificarli con la skill `ricerca-aggiornata`), Cloudflare per ultimo; Monica resta su Cloudflare.
-4. C106 e C107: aspettare le prove di Mario (foto). C104/C97: Francesco in Clienti.
-5. Regola C109 nel kit: testo già in `docs/PER-IL-KIT.md` (sezione C109, aggiornare coi tre livelli della proposta).
+1. C112: online (v0.9.90). Mario ha già le istruzioni per l'ordine di Antonio Sanna («È una prova»). Aspetta la sua foto (voce C112 👁).
+2. C111 (Principale 37, v0.9.91): firma con `touch-action: manipulation` + `cursor: pointer` (iPad: i tocchi veloci erano zoom col doppio tocco; ipotesi, non provata su iPad vero), `accendiDev()` e pulsante «🛠 Accendi la modalità sviluppatore su questo dispositivo» in `schedaMario`, 7 tocchi che rispondono sempre (cliente → «entra da Area riservata»; già sviluppatore → apre/chiude la barra). Tutti i comandi (`button, summary, label, [data-a]`) senza zoom col doppio tocco. Aspetta la foto di Mario dall'iPad; se ancora no: chiedergli come entra (cliente o Google suo).
+3. Per Voce 10: fatto in v0.9.91 (`ascoltoQuota` in `segnalazioniHtml` e `sw.js`, opzione `ascoltoAvviso` nel gruppo 'mario').
+4. C106, C108, C109, C107: aspettare le prove di Mario (foto). C104/C97: Francesco in Clienti.
+5. Regola C109 nel kit: testo pronto in `docs/PER-IL-KIT.md` (tre livelli), la porta una sessione del kit.
 
 ## Domande aperte
-- In «## 0. Aspetta Mario» di `docs/DA-FARE.md` (le 🛑 C108 e C109 tolte: Mario ha risposto «da consiglio» nella chat Voce 8).
+- In «## 0. Aspetta Mario» di `docs/DA-FARE.md` (6 righe: 3 della principale). Nessuna 🛑 nuova: «segnalazioni solo a te» deciso col consiglio e detto a Mario.
 
 ## Ultimo messaggio di Mario
-09/11 19:38 (in questa chat), parola per parola: «principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?» → risposta: no, ~0,2%, piccolo rischio sulle prove; consiglio 2 «lascia così», aspetta il numero.
-Nella chat Voce 8, ~21:20 (ora scritta dalla Voce), riportato da Voce 8: «limiti per persona da consiglio e ascomta sempre la stessa qualità come consiglio» (= C109 1, C108 1).
-Prima, 09/11 ~18:27: «aspetta prima di pubblicare aggiungi la risoluzione del problema nell'altra sessione» (→ C106 nella v0.9.83).
+09/11 ~20:45 (in questa chat), parola per parola: «Per chi ordina è sparito il comando, prima di ordinare voglio solo provare l'app, oppure adesso non mi ricordo, ordina sul serio, che uno deve cliccare per forza uno dei due, che non è già preselezionato prima di ordinare. Perché mi è appena, per far provare l'app mi è appena arrivato un ordine, ma mi ha detto che la voleva solo provare. Quindi si è creato un po' di caos.» → C112, v0.9.90 online, risposta data.
+Poi, 09/11 ~21:00, parola per parola: «Fai un controllo perché io ho accettato subito Antonio Sanna e dopo lui ha ordinato e non gli è uscita la scelta stò provando o invio vero» · «accettato dopo 5 secondi» → conferma la causa di C112 (accettato prima di ordinare = niente scelta); risposto: v0.9.90 la corregge, l'ordine di Antonio si segna «È una prova».
+Dopo l'handoff, nella #36 (09/11 ~21:20), parola per parola: «Quindi mi confermi che adesso esce a tutti quanti prima di ordinare? Devono cliccare per forza se è una prova o se vogliono ordinare seriamente, e poi per qualsiasi motivo magari hanno cliccato per sbaglio la scelta sbagliata, io posso cliccare che è stata una prova o viceversa.» → risposto dalla #36: sì (v0.9.90, provato solo con le prove automatiche); nell'ordine «È una prova» e, sugli ordini di prova, «Non è una prova: rimettilo tra i veri».
+Nella chat Voce 9, 20:58: «Poi nel mio ipad non posso neanche aprire la schermata dev» → C111.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C110; prossimo M libero: M1.
+Prossimo E libero: PT E44; prossimo C libero: C113; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).

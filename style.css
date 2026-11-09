@@ -332,6 +332,10 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
 .firma { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 26px 0 8px; color: var(--tenue); font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
 .firma { padding: 32px 0 14px; color: #9A7D66; }
 .firma .yn { width: 124px; }
+/* (C111) su iPad/iPhone i tocchi veloci sulla firma facevano lo zoom col doppio tocco e non contavano; cursor:pointer = cliccabile anche per Safari vecchi */
+.firma { cursor: pointer; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+.velo { cursor: pointer; } .velo .foglio { cursor: auto; }
+button, summary, label, [data-a] { touch-action: manipulation; }   /* niente zoom col doppio tocco sui comandi (lo zoom con due dita resta) */
 .firma .yn i { background: var(--vino); opacity: .85; animation: none !important; }
 
 /* messaggio in basso con Annulla */

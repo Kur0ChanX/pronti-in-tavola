@@ -30,6 +30,12 @@ const OPZIONI = [
   { k: 'voceClientiRisponde', g: 'clienti', nome: 'L\'aiutante risponde a voce ai clienti', tipo: 'si', def: true, aiuto: 'Acceso: quando il cliente parla, la risposta viene anche letta a voce.', parole: /rispond\w* a voce|legge le risposte|voce dell.aiutante/ },
   { k: 'voceClientiConferma', g: 'clienti', nome: '«Sì» detto a voce mette nel carrello', tipo: 'si', def: true, aiuto: 'Acceso: dopo la proposta l\'aiutante chiede «Lo metto nel carrello?» e basta dire sì. L\'ordine parte comunque solo con «Invia».', parole: /si a voce|conferma a voce|senza toccare/ },
   { k: 'voceClientiSecondi', g: 'clienti', nome: 'Silenzio che chiude l\'ascolto preciso', tipo: 'numero', min: 2, max: 6, def: 3, unita: 'secondi', aiuto: 'Quanti secondi di silenzio aspetta l\'ascolto preciso prima di capire la frase.', parole: /secondi di silenzio|ascolto (troppo )?(lungo|corto)|si ferma (troppo )?(presto|tardi)/ },
+  /* (Mario 09/11 «è sparito… uno deve cliccare per forza uno dei due»): dopo C93/C97 le persone sono accettate PRIMA del primo ordine
+     e la scelta, che valeva solo per chi non era accettato, non usciva più: un amico che provava ha mandato un ordine vero */
+  { k: 'chiediProva', g: 'clienti', nome: 'Chiedi «Ordini davvero o provi l\'app?»', tipo: 'scelta',
+    scelte: [['tutti', 'A tutti, a ogni ordine'], ['nuovi', 'Solo a chi non hai ancora accettato'], ['mai', 'Mai']], def: 'tutti',
+    aiuto: 'Prima di inviare il cliente deve toccare una delle due: «Ordino davvero» o «Sto solo provando l\'app». Nessuna è già segnata. Le prove ti arrivano con la scritta PROVA e non si cucinano.',
+    parole: /solo provando|ordin\w* (davvero|di prova)|prova(re)? l'app|ordini? (finti|per prova)/ },
   { k: 'voceClientiMotore', g: 'clienti', nome: 'Come ascolta i clienti', tipo: 'scelta', scelte: [['auto', 'Da sola: telefono, poi ascolto preciso se serve'], ['telefono', 'Solo il telefono'], ['preciso', 'Sempre l\'ascolto preciso (sul server)']], def: 'auto', aiuto: 'L\'ascolto preciso capisce meglio i nomi sardi e le frasi lunghe, ma passa dal server.', parole: /ascolto preciso|motore (della |di )?voce|come ascolta/ },
   { k: 'voceClientiSinonimi', g: 'clienti', nome: 'Parole dei clienti per i piatti', tipo: 'testo', max: 400, def: '', es: 'es. sebadas=seadas, culurgionis=culurgiones', aiuto: 'Come i clienti chiamano i tuoi piatti, se diverso dal menù: «parola detta=parola del menù», separate da virgola.', parole: /sinonim|parole (dei|per i) piatt|come (li )?chiamano/ },
   { k: 'parti', g: 'clienti', nome: 'Parti del menù', tipo: 'parti', def: () => PARTI_BASE.map(c => c.slice()),
@@ -64,7 +70,9 @@ const OPZIONI = [
   { k: 'aicAvviso', g: 'mario', nome: 'Aiutante dei clienti: segnalazione', tipo: 'numero', min: 10, max: 200, def: 30, unita: 'domande al giorno',
     aiuto: 'Quando un cliente supera questo numero di domande in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' },
   { k: 'aicRidotto', g: 'mario', nome: 'Aiutante dei clienti: risposte semplici', tipo: 'numero', min: 20, max: 1000, def: 100, unita: 'domande al giorno',
-    aiuto: 'Oltre questo numero (o con 10 domande in un minuto) a quel cliente risponde il telefono, senza AI: ordini, prezzi, allergie. Non viene fermato e ti arriva una segnalazione. Vale solo se è più alto della segnalazione.' }
+    aiuto: 'Oltre questo numero (o con 10 domande in un minuto) a quel cliente risponde il telefono, senza AI: ordini, prezzi, allergie. Non viene fermato e ti arriva una segnalazione. Vale solo se è più alto della segnalazione.' },
+  { k: 'ascoltoAvviso', g: 'mario', nome: 'Microfono dei clienti: segnalazione', tipo: 'numero', min: 10, max: 500, def: 40, unita: 'frasi al giorno',
+    aiuto: 'Quando un cliente supera questo numero di frasi dette al microfono in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' }
 ];
 const OPZ = Object.fromEntries(OPZIONI.map(o => [o.k, o]));
 const baseOpz = o => typeof o.def === 'function' ? o.def() : Array.isArray(o.def) ? o.def.slice() : o.def;

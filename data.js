@@ -183,9 +183,15 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.89';
+const VERSIONE_APP = '0.9.91';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.91', data: '09/11/2026',
+    corretto: ['Su iPad e iPhone i 7 tocchi sulla firma «Powered by» per la modalità sviluppatore non contavano (lo schermo faceva lo zoom col doppio tocco); anche toccando in fretta i pulsanti non si ingrandisce più la pagina (lo zoom con due dita resta)'],
+    migliorato: ['In Impostazioni → «Solo per te, Mario» c\'è «🛠 Accendi la modalità sviluppatore su questo dispositivo»: niente più 7 tocchi su un telefono o iPad nuovo', 'I 7 tocchi sulla firma ora dicono cosa fare: se sei entrato come cliente, se sei già sviluppatore (aprono e chiudono la barra in alto)', 'Nuova regola «Microfono dei clienti: segnalazione» in «Solo per te, Mario» e segnalazione quando il microfono di tutti i clienti supera le 400 frasi in un giorno (nessuno viene fermato)'] },
+  { v: '0.9.90', data: '09/11/2026',
+    corretto: ['Prima di inviare un ordine TUTTI i clienti devono toccare «Ordino davvero» o «Sto solo provando l\'app» (nessuna è già segnata): la domanda usciva solo a chi Monica non aveva ancora accettato, e oggi un amico che provava l\'app ha mandato un ordine vero'],
+    migliorato: ['In Impostazioni → «Altre regole dell\'app» → «Chiedi "Ordini davvero o provi l\'app?"» si sceglie a chi chiederlo: a tutti (di base), solo ai nuovi o mai'] },
   { v: '0.9.89', data: '09/11/2026',
     migliorato: ['Il microfono dei clienti non ferma più nessuno: niente più «Per oggi ho ascoltato tanto». Oltre 40 frasi in un giorno di un cliente arriva una segnalazione solo a Mario; oltre 400 frasi di tutti i clienti insieme il microfono va avanti con Groq e Deepgram, senza toccare le risposte gratuite di Monica e Mario',
       'Aiutante dei clienti: quando il server risponde senza AI, il cliente vede quello che il telefono ha capito (piatto, quantità, giorno) invece di un messaggio generico'] },
