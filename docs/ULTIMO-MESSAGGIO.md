@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 10:56 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 17:00 ora italiana)
 
-Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
+aggiungi una sessione parallela per un team tavola che mi potenzi molto il comando vocale per i clienti. Abbiamo potenziato quello di Monica, quello dei clienti lo voglio veramente performante a livello di lettura della voce, di quello che riesci a fare. Lo voglio ampliare molto come potenza, insomma, valuta tutto quello che si può fare per un comando vocale per il cliente. Mi sembra che chiedi a Monica, inventati cose intelligenti, smart, insomma, fai tutto quello che è in tuo potere di veramente utile al cliente, è sorprendente, ecco, innovativo.
