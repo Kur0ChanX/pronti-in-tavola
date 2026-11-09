@@ -1,5 +1,9 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 10:15 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+Ho capito: dovevo finire C99 (codice fisso e nome modificabile) e metterlo online.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+✅ FATTO
+- **v0.9.71 online**: il sito risponde con la versione 0.9.71, l'ho controllato.
+- Ogni persona ha un codice che non cambia mai (es. K7P2M). Tu sei ⭐MARIO, Monica ⭐MONICA. Il codice si vede in Clienti, negli ordini e negli ultimi avvisi.
+- Il cliente ha il pulsante «Correggi il nome». In Clienti, accanto a ogni nome, c'è una matita: cambia il nome che vedete voi. Se il cliente corregge il suo, voi leggete «Nome cambiato… prima…» finché non toccate «Visto».
+- Nell'aiutante: «come cambio il nome di un …
