@@ -1198,6 +1198,27 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.toast', { hasText: 'Per uscire' }).count())) throw new Error('nella Home manca l\'avviso «Per uscire…»');
     if (page.url() !== url) throw new Error('il primo gesto nella Home ha chiuso l\'app');
   });
+  await passo('C109 nessun cliente fermato: la segnalazione «esagera» apre le Impostazioni, elenco con nome e numeri, l\'aiutante porta alle Notifiche', async () => {
+    const r = await page.evaluate(() => {
+      P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'home'; render();
+      const k = S.clienti[0];
+      const h = segnalazioniHtml([{ quando: new Date().toISOString(), cosa: 'aiutante', cliente: k.id, n: 31, soglia: 30 }]);
+      const h2 = segnalazioniHtml([{ quando: new Date().toISOString(), cosa: 'ridotto', cliente: k.id, n: 100, soglia: 100 }, { quando: new Date().toISOString(), cosa: 'quota', cliente: '', n: 60, soglia: 60 }]);
+      UI.vista = 'impostazioni'; render();
+      const mario = { avviso: !!document.querySelector('[data-sez="opz-aicAvviso"], #opz-aicAvviso, [data-campo="o.aicAvviso"]') || document.body.innerHTML.includes('Aiutante dei clienti: segnalazione'),
+        monicaNo: !('opz-aicAvviso' in DOVE_AI) && !datiAI().impostazioniExtra.some(o => o.chiave === 'aicAvviso'), base: opz('aicAvviso') === 30 && opz('aicRidotto') === 100 };
+      UI.vaiDopo = 'esagera'; vaiDaNotifica(); render();
+      const voce = DOVE_AI['imp-notifiche'].parole.test('chi usa molto l\'aiutante?');
+      return { h, h2, mario, nome: k.nome, vista: UI.vista, avviso: UI.avvisoTesto, nomeAvviso: NOMI_AVVISO.esagera, voce };
+    });
+    if (!r.h.includes(r.nome) || !/31 domande/.test(r.h) || !/segnalazione a 30/.test(r.h)) throw new Error('elenco delle segnalazioni sbagliato: ' + r.h);
+    if (!/risponde il telefono senza AI/.test(r.h2) || !/Tutti i clienti: domande di oggi finite/.test(r.h2) || /fermat[oa] /.test(r.h2.replace('nessuno fermato', ''))) throw new Error('segnalazioni «ridotto» e «quota» sbagliate: ' + r.h2);
+    if (!r.mario.avviso || !r.mario.monicaNo || !r.mario.base) throw new Error('soglie di Mario: in «Solo per te, Mario» ' + r.mario.avviso + ', nascoste all\'aiutante di Monica ' + r.mario.monicaNo + ', base 30/100 ' + r.mario.base);
+    if (r.vista !== 'impostazioni' || !/Nessuno è stato fermato/.test(r.avviso)) throw new Error('il tocco su «esagera» non apre le Impostazioni con l\'avviso: ' + r.vista + ' · ' + r.avviso);
+    if (!r.nomeAvviso) throw new Error('manca il nome dell\'avviso «esagera» negli ultimi avvisi');
+    if (r.voce !== true) throw new Error('l\'aiutante non porta alle Notifiche con «chi usa molto l\'aiutante?»');
+    await page.evaluate(() => { UI.avvisoTesto = ''; UI.vista = 'home'; render(); });
+  });
   await passo('C106 iPad in orizzontale: al rientro nell\'app lo zoom torna a 1 (regola «mai più grande di 1» per un attimo, poi quella normale)', async () => {
     const c2 = await browser.newContext({ ...devices['iPad Pro 11 landscape'], deviceScaleFactor: 1 });
     const p2 = await c2.newPage(); const errori = [];

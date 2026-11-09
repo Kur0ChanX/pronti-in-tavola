@@ -183,12 +183,16 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.87';
+const VERSIONE_APP = '0.9.88';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
-  { v: '0.9.87', data: '09/11/2026',
+  { v: '0.9.88', data: '09/11/2026',
     migliorato: ['Su iPad e iPhone il microfono dei clienti si comporta come su Android: al tocco compare subito «Accendo il microfono…» (anche nella pagina Aiutante), le barrette si muovono mentre parli, durante l\'attesa il riquadro dice cosa sta facendo e la risposta viene letta a voce; se il telefono non la fa partire da sola, sul fumetto c\'è «Ascolta la risposta»'],
     corretto: ['Ai clienti non compare più l\'avviso sbagliato «la voce si sta ancora scaricando»: per loro legge subito la voce del telefono'] },
+  { v: '0.9.87', data: '09/11/2026',
+    migliorato: ['L\'aiutante dei clienti non ferma più nessuno: niente più «per oggi abbiamo parlato tanto». Oltre 30 domande in un giorno di un cliente arriva una segnalazione solo a Mario; oltre 100 (o 10 in un minuto) a quel cliente risponde il telefono, senza AI, e il cliente ordina lo stesso',
+      'Mario sceglie i due numeri in «Solo per te, Mario» e lì vede l\'elenco delle segnalazioni: chi, quante domande e quando; anche le domande di tutti i clienti all\'80% e a fine giornata',
+      'L\'aiutante dei clienti ora usa per primo Groq (tre modelli in fila, circa 200 domande al giorno): le risposte gratuite di Cloudflare restano a Monica e a Mario, ai clienti solo per ultime'] },
   { v: '0.9.86', data: '09/11/2026',
     corretto: ['Su iPad e iPhone con l\'app sulla schermata Home il microfono dell\'aiutante di Monica usava il riconoscitore del telefono, che lì non parte: ora detta con l\'ascolto preciso, come quello dei clienti (serve internet)'] },
   { v: '0.9.85', data: '09/11/2026',

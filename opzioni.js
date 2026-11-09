@@ -58,7 +58,13 @@ const OPZIONI = [
   { k: 'firma', g: 'messaggi', nome: 'Firma dei messaggi', tipo: 'testo', max: 60, def: () => `${cuoca()} · Pronti in Tavola`, vuotoDiBase: true,
     aiuto: 'Va in fondo a ogni messaggio ai clienti. Vuota = quella di base.', parole: /\bfirma\b/ },
   { k: 'annullaSecondi', g: 'cucina', nome: 'Tempo per «Annulla»', tipo: 'numero', min: 5, max: 30, def: 10, unita: 'secondi',
-    aiuto: 'Dopo un cambio, per quanti secondi resta il tasto «Annulla» in basso.', parole: /tasto annulla|tempo per annull|annullare (dopo|se sbaglio)/ }
+    aiuto: 'Dopo un cambio, per quanti secondi resta il tasto «Annulla» in basso.', parole: /tasto annulla|tempo per annull|annullare (dopo|se sbaglio)/ },
+  /* (C109, PT E41) solo per Mario, in «Solo per te, Mario»: il gruppo 'mario' non è in GRUPPI_OPZ, Monica e il suo aiutante non le vedono.
+     Il server le legge da impostazioni/app (worker.js limitiAIC, con gli stessi tetti) */
+  { k: 'aicAvviso', g: 'mario', nome: 'Aiutante dei clienti: segnalazione', tipo: 'numero', min: 10, max: 200, def: 30, unita: 'domande al giorno',
+    aiuto: 'Quando un cliente supera questo numero di domande in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' },
+  { k: 'aicRidotto', g: 'mario', nome: 'Aiutante dei clienti: risposte semplici', tipo: 'numero', min: 20, max: 1000, def: 100, unita: 'domande al giorno',
+    aiuto: 'Oltre questo numero (o con 10 domande in un minuto) a quel cliente risponde il telefono, senza AI: ordini, prezzi, allergie. Non viene fermato e ti arriva una segnalazione. Vale solo se è più alto della segnalazione.' }
 ];
 const OPZ = Object.fromEntries(OPZIONI.map(o => [o.k, o]));
 const baseOpz = o => typeof o.def === 'function' ? o.def() : Array.isArray(o.def) ? o.def.slice() : o.def;
