@@ -1,20 +1,10 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 16:50 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: vuoi essere sicuro che riaccendere l'interruttore non faccia riscrivere il nome a chi usa già l'app.
 
-───
-✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
+**No: chi è già cliente non si accorge di niente.** Non gli viene chiesto il nome e non deve rifare nessun passaggio, né adesso né quando riaccendi.
 
 ───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+✅ **FATTO (la prova)**
+- **Nel codice:** l'interruttore conta in un punto solo, cioè quando un telefono si presenta all'app **per la prima volta**. Un telefono già conosciuto non passa mai da lì.
+- **Sul server:** ho aggiunto una prova delle **regole** (i controlli del server su chi può leggere e scrivere cosa). Con …
