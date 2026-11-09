@@ -1010,6 +1010,55 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!r[4]) throw new Error('dopo il tocco non si chiede il nome');
     if (r[5]) throw new Error('il popup «Installa l\'app» esce anche senza nome');
   });
+  await passo('codice fisso e nome dei profili: codice, ⭐MARIO, «nome cambiato» con Visto, matita di Monica, aiutante (C99, Mario 09/11)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const primaS = JSON.stringify(S), primaUI = [UI.vista, UI.foglio, P.ruolo];
+      try {
+        const codici = Array.from({ length: 300 }, () => Dati.nuovoCodice());
+        const buoni = codici.every(c => /^[A-HJ-NP-Z2-9]{5}$/.test(c) && /[2-9]/.test(c));
+        const fuori = Dati.nuovoCodice(new Set(codici)), unico = !codici.includes(fuori);
+        P.ruolo = 'monica';
+        S.clienti.push({ id: 'cprova99', nome: 'Laura Rosi', nomeCliente: 'Laura Rossi', chiave: 'laura-rosi', da: '2026-11-01', codice: 'K7P2M',
+          nomiPrima: [{ nome: 'Laura Rosi', chi: 'cliente', il: '2026-11-09T10:00' }] });
+        const c = S.clienti.find(x => x.id === 'cprova99');
+        const riga1 = rigaMioCliente(c);
+        A['nome-visto']({ dataset: { id: 'cprova99' } });
+        const riga2 = rigaMioCliente(c);
+        A['nome-monica']({ dataset: { id: 'cprova99' } });
+        document.querySelector('#nome-monica').value = 'Laura del mercato';
+        A['nome-monica-ok']();
+        const dopo = [c.nome, (c.nomiPrima || []).length, c.codice, nomeNonVisto(c)];
+        const stella = [mostraCodice('MARIO'), mostraCodice('MONICA'), mostraCodice('K7P2M')];
+        const ai = capisciDove('come cambio il nome di un cliente?'), ai2 = capisciDove('come cambio il nome delle lasagne');
+        return { buoni, unico, riga1, riga2, dopo, stella, ai, ai2 };
+      } finally { S = JSON.parse(primaS); salva(); [UI.vista, UI.foglio, P.ruolo] = primaUI; render(); }
+    });
+    if (!r.buoni || !r.unico) throw new Error('codici casuali non validi o doppi');
+    if (!/K7P2M/.test(r.riga1) || !/Nome cambiato/.test(r.riga1) || !/Laura Rossi/.test(r.riga1) || !/Visto/.test(r.riga1)) throw new Error('riga del cliente senza codice o senza «nome cambiato»');
+    if (/Nome cambiato/.test(r.riga2) || !/Si fa chiamare «Laura Rossi»/.test(r.riga2)) throw new Error('«Visto» non toglie l\'avviso');
+    if (r.dopo[0] !== 'Laura del mercato' || r.dopo[1] !== 2 || r.dopo[2] !== 'K7P2M' || r.dopo[3]) throw new Error('matita di Monica: ' + JSON.stringify(r.dopo));
+    if (r.stella.join() !== '⭐MARIO,⭐MONICA,K7P2M') throw new Error('stelle sbagliate: ' + r.stella);
+    if (!r.ai || r.ai[0].voce !== 'clienti-nome') throw new Error('aiutante: il nome del cliente non porta in Clienti ' + JSON.stringify(r.ai));
+    if (!r.ai2 || r.ai2[0].voce !== 'nome') throw new Error('aiutante: il nome del piatto non va più al piatto ' + JSON.stringify(r.ai2));
+  });
+  await passo('cliente: correggi il nome, sempre il suo nome e il suo codice (C99)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const io = Dati.io, prima = [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, io.uid];
+      try {
+        Object.defineProperty(Dati, 'attivo', { value: true, configurable: true, writable: true });
+        io.gestore = false; io.letto = true; io.uid = 'prova99'; P.ruolo = 'cliente';
+        io.utente = { nome: 'Gianni Verdi', stato: 'nuovo', codice: 'AB3CD', cliente: null };
+        const attesa = righeAttesa();
+        io.utente = { nome: 'Gianni Verdi', stato: 'approvato', codice: 'AB3CD', cliente: 'cnonc' };
+        const prof = profiloCliente();
+        A['mio-nome'](); const f = document.querySelector('#mio-nome');
+        return [attesa, prof, f && f.value];
+      } finally { [Dati.attivo, io.utente, io.letto, io.gestore, P.ruolo, io.uid] = prima; UI.foglio = null; render(); }
+    });
+    if (!/AB3CD/.test(r[0]) || !/Correggi il nome/.test(r[0])) throw new Error('in attesa: manca codice o «Correggi il nome»');
+    if (!/AB3CD/.test(r[1]) || !/Gianni Verdi/.test(r[1]) || !/Correggi il nome/.test(r[1])) throw new Error('profilo del cliente: ' + r[1]);
+    if (r[2] !== 'Gianni Verdi') throw new Error('il foglio non parte dal nome attuale');
+  });
   await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const u = v => `Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) ${v} Mobile/15E148 Safari/604.1`;
