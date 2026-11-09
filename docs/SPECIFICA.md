@@ -54,3 +54,17 @@ Monica: home a 4 riquadri, guida della prima volta, notifica (finta nella prova)
 - Ingredienti, allergeni e istruzioni dei 23 piatti sono una **bozza** di Claude (segnati «Da controllare»).
 - Prezzi confermati da Mario (05/11): panade medie tipo oschiresi carciofi e patate 1,50 € al pezzo, carne 1,00 € al pezzo; impanade a mezza luna 15 € al kg (circa 20 pezzi).
 - Impanade: ripieno da far scrivere a Monica negli ingredienti.
+
+## Codice fisso e nome dei profili (C99, Mario 09/11 ~09:45, deciso)
+**Codice** (saldato al profilo, nessuno lo cambia, nemmeno chi gestisce):
+- Clienti: 5 caratteri, maiuscole senza O e I + cifre 2-9, almeno una cifra (es. `K7P2M`). Mario `MARIO`, Monica `MONICA`, mostrati con ⭐ davanti; altri gestori `G` + 4 caratteri.
+- Nasce in `registra` (`utenti.codice`); al «Sì» passa a `clienti.codice`. Telefono nuovo («ricollega»): codice provvisorio, al «Sì» prende quello del cliente. Clienti, utenti e gestori già esistenti senza codice: lo assegna l'app di chi gestisce, una volta sola. Gestori: `gestori/<uid>.codice`.
+- Regole del database: `codice` si scrive una volta sola e poi mai più (anche per i gestori); facoltativo nella creazione, così l'app vecchia e le regole vecchie non si rompono.
+- Si vede: in Clienti su ogni riga, negli ordini, negli avvisi e nel diario degli avvisi, in piccolo sotto il nome del cliente.
+**Nome** (due nomi, ognuno col suo padrone, così niente macello):
+- «Nome del cliente»: lo cambia solo il cliente, quando vuole (prima del sì `utenti.nome`, dopo `clienti.nomeCliente`). Il cliente vede sempre il suo.
+- «Nome per Monica» (`clienti.nome`): lo cambiano solo i gestori; vuoto = quello del cliente.
+- Ogni cambio va nella storia (`nomiPrima`: nome, chi, quando). Monica vede «ora si chiama Y · prima X (cambiato dal cliente il gg/mm)» col segno «nome cambiato» finché non tocca «Visto».
+- `chiave` e `nomi/` (nomi unici) non cambiano: per riconoscere la persona c'è il codice.
+- Prima che Mario incolli le regole nuove: «Correggi il nome» del cliente dice «non ancora disponibile», senza errori.
+**Ordine**: 1) regole nuove (cuori C98 + codice + nome) provate nell'emulatore → UNA guida a Mario per incollarle in Firebase; 2) poi l'app.
