@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 10:56 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 17:54 ora italiana)
 
-Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
+Clicco su ipad e non succede nulla non sò se ha funzionato o meno correggi poi a monica gli escono 2 richieste anche se è la stessa persona si può correggere? una esce da link e una da app in home anxhe se è la stessa persona
