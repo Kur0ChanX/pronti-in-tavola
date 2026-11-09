@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:42 · 01QTFEqRMnzm
-Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigzag, i fiorellini toglili, al posto del zigzag metti tipo una cucitura da sarta, fatta bene. Fai con cura tutti gli spazi, sposta il loghetto in base a quello che ti serve, insomma. Deve essere tutto ordinato, fatto bene, senza che nulla si sovrapponga. Quello uno di due secondo me la può aiutare, perché almeno gli dice quanti prodotti sono. Secondo me può aiutarli in piccolino a metterlo.
-
-## 2026-11-06 19:49 · 01QTFEqRMnzm
-Una volta che è fatto le etichette, continua con il progetto.
-
-## 2026-11-07 00:12 · 01QTFEqU1M1r
-come tutti gli altri progetti non inventarti nulla manuale tutto plug in play
-
 ## 2026-11-07 00:17 · 01QTFEqU1M1r
 mandami il link nel passaggio dove devo cliccare per andare avanti
 
@@ -131,3 +122,16 @@ Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità,
 
 ## 2026-11-09 19:38 · 01WTjqUxhhMW
 principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
+
+## 2026-11-09 22:37 · 01WTjqUwYZ9r
+ho fatto un test con un invito ad un iphone un  disastro allora le notifiche non puoi abilitarle perché vanno approvate da monica dopo  che abbiamo approvato gli ha fatto uscire e rientrare con un altra richiesta di approvazione che monica ha dovuto avvertare non ha cambiato telefono se non riesci a risolvere togliamo l'approvazione sembra quello il problema di tutto
+
+## 2026-11-09 22:52 · 01WTjqUwYZ9r
+poi correggi il ricettario molte ricette sembrano ancora con il sistema vecchio le foto se clichi sono unite e non va bene
+
+poi l'animazione del fumo ci deve essere anche nell'app dei clienti 
+poi nel ricettario non tutte le ricette hanno il video è normale o dimenticanza o entrambe? poi
+togliamo il PIN e impronta nei clienti tanto ho visto che non la chiede manteniamola spenta per accesso piú rapido
+
+## 2026-11-09 23:03 · 01WTjqUwYZ9r
+sembra che alcune ricerte hanno il sistema vecchio alcune il sistema nuovo anche aggiunte da poco come nuove ricette migliora il motore del ricettario che prende le ricette e metti un motore nell'app che le controllantitte e le aggiusta al meglio con la nuova versione
