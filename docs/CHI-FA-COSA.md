@@ -10,5 +10,5 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟢 Principale 38 | C115 vapore anche per i clienti, C116 video delle ricette, C117 niente PIN/impronta per i clienti | `vapore.js`, `app.js` (zona cliente), `ricettario.js`, `lucchetto` | 09/11 |
+| 🟡 Principale 38 | v0.9.94 (C115 vapore clienti, C116 video, C117 lucchetto) e v0.9.95 (C118 strisce) online; aspetta le prove di Mario | — | 09/11 |
 | 🟩 Voce 11 | Comando vocale dei CLIENTI potenziato (C105, Mario 09/11 ~17:00): riconoscimento (telefono + ascolto preciso sul server), capire senza rete, risposta e conferma a voce, ordine dettato | NUOVO `voce-clienti.js` · `aiutante.js` solo la zona «AIUTANTE DEI CLIENTI» (`inviaAC`, `barraAIC`, `ac-detta`) e `ascoltaAI` + i 2 pulsanti microfono dell'aiutante di Monica (dettatura su iPad/iPhone dalla Home, Voce 6) · `worker.js` solo `/api/ascolta` · NUOVO `ascolta.mjs` (Whisper + correttore, solo server) e `tools/prova-ascolta.mjs` · `.github/workflows/sito.yml` una riga (`'*.mjs'` nei percorsi: anche `gz.mjs` ora pubblica) · `index.html` (script) · `style.css` solo classi `.vc-*` · `tools/prova.js` passi nuovi in fondo · `docs/CONSEGNE-PARALLELA-voce.md` | 09/11 |

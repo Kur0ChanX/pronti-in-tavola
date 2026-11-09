@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 09/11 · 🟡 Principale 38 · C118 e C115 v0.9.95: chiudi e riapri l'app, Ricettario → Astice alla Catalana → passi 3 e 4: 3 foto separate e numerate? Poi «guarda come cliente»: dopo il logo il vapore. Una foto. A cosa serve: chiudere le strisce unite e il vapore dei clienti.
 - 09/11 · 🟢 Principale 37 · C113 iPhone v0.9.92: un invito NUOVO a un iPhone → nome → Monica dice sì → l'amico mette l'app sulla Home e la apre dall'icona. Monica riceve una seconda richiesta? Una foto. A cosa serve: sapere se il «sì due volte» è risolto o se togliamo l'approvazione.
 - 09/11 · 🟢 Principale 37 · C111 iPad v0.9.91: chiudi e riapri l'app, scorri in fondo e tocca 7 volte di fila «Powered by». Una foto di cosa compare. A cosa serve: capire se ora la schermata dev si apre sull'iPad o se l'iPad è entrato come cliente.
 - 09/11 · 🟩 Voce 9 · C110 iPad v0.9.88: chiudi e riapri l'app dall'icona, vai in Aiutante, tocca il microfono e di' «due teglie di lasagne per sabato». Un video. A cosa serve: vedere se su iPad ora si capisce subito che ascolta e se la risposta si SENTE da sola (o serve il tasto «Ascolta la risposta»).
