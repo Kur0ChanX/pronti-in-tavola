@@ -2757,8 +2757,11 @@ function apertura() {
   const esci = () => {
     if (!d.isConnected || d.classList.contains('esce')) return;
     clearTimeout(tEsci); d.classList.add('esce');
+    /* (C115, Mario 09/11 «il fumo anche nell'app dei clienti») senza lucchetto da aprire (clienti, o gestore già aperto) l'app entra col vapore;
+       col lucchetto il vapore parte dopo lo sblocco (apriLucchetto) */
+    if (typeof Vapore !== 'undefined' && !statoLucchetto()) Vapore.parti(P.vapore || 'A', null, true);
     /* la Home entra MENTRE l'apertura svanisce (Mario 07/11: prima spariva e rientrava dopo, «movimento scattoso») */
-    const m = $('main.corpo'); if (m) { m.classList.remove('entra'); void m.offsetWidth; m.classList.add('entra'); }
+    else { const m = $('main.corpo'); if (m) { m.classList.remove('entra'); void m.offsetWidth; m.classList.add('entra'); } }
     setTimeout(() => { d.remove(); provaApri(); }, 560);
   };
   const parti = () => {

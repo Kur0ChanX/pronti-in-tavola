@@ -262,7 +262,7 @@ function fotoPasso(p, grandi) {
     riq.push({ f, num: uno ? uno[1] : p.foto.length === nn.length ? nn[k] : '' });
   });
   const strisce = riq.some(x => x.n);
-  return `<div class="ric-fotopassi${grandi ? ' grandi' : ''}${strisce ? ' strisce' : ''}">${riq.map(x => `<figure class="ric-fotonum${x.n ? ' ric-striscia' : ''}"><img src="${esc(x.f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(x.f)}"${x.n ? ` style="width:${x.n * 100}%;transform:translateX(-${(x.j * 100 / x.n).toFixed(4)}%)"` : ''}>${x.num ? `<span class="num-step">${x.num}</span>` : ''}</figure>`).join('')}</div>`;
+  return `<div class="ric-fotopassi${grandi ? ' grandi' : ''}${strisce ? ' strisce' : ''}">${riq.map(x => `<figure class="ric-fotonum${x.n ? ' ric-striscia' : ''}"><img src="${esc(x.f)}" alt="Ingrandisci" loading="lazy" referrerpolicy="no-referrer" data-a="ric-zoom" data-v="${esc(x.f)}"${x.n ? ` data-n="${x.n}" data-j="${x.j}"` : ''}${x.n ? ` style="width:${x.n * 100}%;transform:translateX(-${(x.j * 100 / x.n).toFixed(4)}%)"` : ''}>${x.num ? `<span class="num-step">${x.num}</span>` : ''}</figure>`).join('')}</div>`;
 }
 /* minuti scritti nel passo («cuocete per 20 minuti», «1 ora») → timer nella cucina guidata */
 function minutiPasso(t) {
@@ -471,7 +471,7 @@ function vRicettario() {
 function vRicetta(id) {
   if (RIC.stato !== 'pronto') return attesaRic('Ricetta', 'ricettario');
   const r = ricetta(id), v = voceElenco(id);
-  if (r && !r.mia && !(r.v >= 4) && /^gz:/.test(id) && navigator.onLine && !(RIC.riletta = RIC.riletta || {})[id]) { RIC.riletta[id] = true; apriGz(id); }   // una volta sola: se il server ridà la copia vecchia, niente giri infiniti   // C72: copia vecchia senza i numerini → si rilegge da sola, intanto si vede questa
+  if (r && !r.mia && (!(r.v >= 4) || (r.videoChiave && !r.hls && !r.mp4)) && /^gz:/.test(id) && navigator.onLine && !(RIC.riletta = RIC.riletta || {})[id]) { RIC.riletta[id] = true; apriGz(id); }   // una volta sola: se il server ridà la copia vecchia, niente giri infiniti   // (C116) copia col video perso per un errore di rete → si rilegge   // C72: copia vecchia senza i numerini → si rilegge da sola, intanto si vede questa
   if (!r) {
     if (/^mia:/.test(id) || !/^gz:[\w%-]+$/.test(id)) { UI.vista = 'ricettario'; return vRicettario(); }
     if (RIC.errore[id]) return testataMonica('Ricetta', 'ricettario') + `<main class="corpo"><section class="scheda"><p style="margin:0"><b>Non riesco ad aprire «${esc(v ? v.nome : 'la ricetta')}».</b></p>
@@ -761,10 +761,12 @@ Object.assign(A, {
   'ric-chiudi-cerca'() { RIC.cerca = { q: '', stato: '', risultati: [] }; UI.ric.q = ''; render(); },   // chiude e pulisce anche la casella
   'ric-esplora'(el) { UI.ric.q = ''; A['ric-cerca-gz'](el.dataset.v); },
   'ric-zoom'(el) {
-    const tutte = [...document.querySelectorAll('[data-a="ric-zoom"]')].map(i => i.dataset.v), i0 = Math.max(0, tutte.indexOf(el.dataset.v));
+    /* (C114, foto di Mario 09/11: «se clicchi sono unite») le foto a strisce delle ricette vecchie si ingrandiscono UNA alla volta, tagliate come nel passo */
+    const imgs = [...document.querySelectorAll('[data-a="ric-zoom"]')], tutte = imgs.map(x => ({ f: x.dataset.v, n: +x.dataset.n || 0, j: +x.dataset.j || 0 })), i0 = Math.max(0, imgs.indexOf(el));
+    const foto = x => x.n ? `<div class="ric-zoom-taglio"><img src="${esc(x.f)}" alt="" referrerpolicy="no-referrer" style="width:${x.n * 100}%;transform:translateX(-${(x.j * 100 / x.n).toFixed(4)}%)"></div>` : `<img src="${esc(x.f)}" alt="" referrerpolicy="no-referrer">`;
     const v = document.createElement('div'); v.className = 'ric-zoom'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-label', 'Foto ingrandita');
     let i = i0;
-    const mostra = () => { v.innerHTML = `<img src="${esc(tutte[i])}" alt="" referrerpolicy="no-referrer"><span class="ric-zoom-n">${i + 1} / ${tutte.length}</span>
+    const mostra = () => { v.innerHTML = `${foto(tutte[i])}<span class="ric-zoom-n">${i + 1} / ${tutte.length}</span>
       <button type="button" class="ric-zoom-x" aria-label="Chiudi">✕</button>${i > 0 ? '<button type="button" class="ric-zoom-p" aria-label="Foto prima">‹</button>' : ''}${i < tutte.length - 1 ? '<button type="button" class="ric-zoom-s" aria-label="Foto dopo">›</button>' : ''}`; };
     let x0 = null;
     v.addEventListener('click', e => { e.stopPropagation(); const t = e.target.className; if (t === 'ric-zoom-p') { i--; mostra(); } else if (t === 'ric-zoom-s') { i++; mostra(); } else if (t === 'ric-zoom-x' || t === 'ric-zoom') v.remove(); });
