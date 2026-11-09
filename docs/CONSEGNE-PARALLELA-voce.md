@@ -4,7 +4,7 @@
 **Da non rifare:** lo studio è fatto: TUTTO in `docs/SPEC-VOCE-CLIENTI.md` (mappa del codice con righe, ricerca del 09/11, strada scelta, cosa non fare, prove). Non rileggere aiutante.js/worker.js per intero: usa le righe della specifica e `grep -n`.
 **Cosa preme a Mario adesso:** un comando vocale dei clienti «veramente performante», smart e sorprendente. Lo vuole vedere nell'app vera.
 
-Voce 1 = `session_01WTjqUuVyq5p6FhV1dVJtVC`, aperta a mano da Mario 09/11 17:00, chiusa alla soglia 09/11 ~17:20 (250k token spesi solo in letture e ricerca: colpa degli strumenti con uscite enormi, `list_triggers` e la ricerca web; lezione: `list_triggers` con `limit` 3 e ricerche web una alla volta con obiettivo stretto). Catena 1 di 8. Impegno: `.claude/settings.json` com'è (condiviso); Mario ha scelto «Extra» nel selettore per questa catena.
+Voce 1 = `session_01WTjqUuVyq5p6FhV1dVJtVC`, aperta a mano da Mario 09/11 17:00, chiusa alla soglia 09/11 ~17:20 (250k token spesi solo in letture e ricerca: colpa degli strumenti con uscite enormi, `list_triggers` e la ricerca web; lezione: `list_triggers` con `limit` 3 e ricerche web una alla volta con obiettivo stretto). Catena 1 di 8. Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 con create_session, catena 2 di 8). Impegno: `.claude/settings.json` com'è (condiviso); Mario ha scelto «Extra» nel selettore per questa catena.
 
 ## Stato (controlla, non fidarti)
 - Ramo `claude/pronti-ramo-definitivo` = origin (b655445b + queste consegne). Online v0.9.78 (la principale, «🟢 🍝 Principale 34», `session_01WTjqUxkfi1LrUJwmzh137d`, lavora su installazione e notifiche e può pubblicare altre versioni: prima del tuo push `git fetch` + merge e versione libera).
