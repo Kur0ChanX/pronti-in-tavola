@@ -1,20 +1,5 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 17:12 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Messaggio della chat Voce letto: ha preso il numero C105 e la sua zona di file (voce-clienti.js, parte clienti di aiutante.js, `/api/ascolta`, classi `.vc-*`). Non la tocco; numeri aggiornati e salvati. Nessuna azione per te.
 
-───
-✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
-
-───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+⚠️ Aspettano te: 3 · Francesco in Clienti · prova «Scrivi a Monica» e aiutante · regole più corte
