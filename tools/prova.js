@@ -538,6 +538,25 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { S.impostazioni.whatsapp = ''; UI.vista = 'menu'; render(); });
     if (await page.locator('.wa-monica').count()) throw new Error('tasto visibile senza numero (cliente non approvato)');
   });
+  await passo('Monica: l\'aiutante capisce il senso, le parole sono solo indizi; senza AI chiede «Intendi…?» (C102)', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; AI.attesa = false; UI.aiQui = null; UI.foglio = null; window._chiediVero = window._chiediVero || chiediAiutante; vai('aiutante'); });
+    // 1) con l'AI: decide lei dal senso, anche se le parole portano altrove; le parole le arrivano come indizi
+    await page.evaluate(() => { window.chiediAiutante = async (t, d) => { window._indizi = d.indizi || null; return { testo: 'Ti porto nelle notifiche.', azioni: [{ azione: 'vai', voce: 'imp-notifiche' }] }; }; });
+    await page.evaluate(() => inviaAI('voglio che i clienti vedano subito la foto quando ordinano')); await page.waitForTimeout(1900);
+    const a = await page.evaluate(() => ({ v: UI.vista, s: UI.sez, ind: (window._indizi || []).map(x => x.voce) }));
+    if (a.v !== 'impostazioni' || a.s !== 'imp-notifiche') throw new Error('non segue l\'AI: ' + JSON.stringify(a));
+    if (!a.ind.length) throw new Error('le parole non arrivano all\'AI come indizi');
+    // 2) senza AI: «Intendi…?» con «Portami lì», e non parte da sola
+    await page.evaluate(() => { AI.msgs = []; UI.aiQui = null; window.chiediAiutante = async () => { throw new Error('Sei senza internet: riprova quando torna la rete.'); }; vai('aiutante'); });
+    await page.evaluate(() => inviaAI('dove metto la pausa?')); await page.waitForTimeout(1900);
+    const b = await page.evaluate(() => ({ v: UI.vista, t: AI.msgs[AI.msgs.length - 1].t }));
+    if (b.v !== 'aiutante' || !/intendi/i.test(b.t)) throw new Error('senza AI è partita da sola o non chiede: ' + JSON.stringify(b));
+    await foto('33b-aiutante-intendi');
+    await clic('[data-a="ai-vai"]'); await page.waitForTimeout(300);
+    const c = await page.evaluate(() => UI.vista + ' ' + UI.sez);
+    if (c !== 'impostazioni imp-pausa') throw new Error('«Portami lì» non porta alla pausa: ' + c);
+    await page.evaluate(() => { window.chiediAiutante = window._chiediVero; AI.msgs = []; UI.aiQui = null; UI.sez = null; vai('home'); });
+  });
   await passo('cliente: aiutante AI acceso di base, spento da Mario, carrello solo dopo «Conferma» (C50)', async () => {
     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.aiClienti = false; UI.devCliente = false; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; render(); });
     if (await page.locator('.ai-cliente').count()) throw new Error('aiutante visibile ai clienti da spento');

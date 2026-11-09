@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.74';
+const VERSIONE_APP = '0.9.75';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.75', data: '09/11/2026',
+    migliorato: ['«Chiedi all\'aiutante»: capisce il senso di quello che dici, non solo una parola. Se non è sicuro ti chiede «Intendi…?»',
+      'Senza internet l\'aiutante non ti porta più da solo in un posto a caso: ti propone dove andare e scegli tu con un tocco'] },
   { v: '0.9.74', data: '09/11/2026',
     corretto: ['Velocità della voce: il cursore sembrava un interruttore e non teneva la scelta. Ora è un cursore vero con «− lenta» e «veloce +», si salva a ogni tocco e resta anche dopo gli aggiornamenti'],
     nuovo: ['Velocità di base 0,75 per tutti (la sceglie Mario); Monica in Impostazioni → «Voce» può sceglierne una sua, che vale solo sul suo telefono'] },
