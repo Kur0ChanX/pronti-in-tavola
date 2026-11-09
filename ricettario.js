@@ -471,7 +471,7 @@ function vRicettario() {
 function vRicetta(id) {
   if (RIC.stato !== 'pronto') return attesaRic('Ricetta', 'ricettario');
   const r = ricetta(id), v = voceElenco(id);
-  if (r && !r.mia && !(r.v >= 4) && /^gz:/.test(id) && navigator.onLine && !(RIC.riletta = RIC.riletta || {})[id]) { RIC.riletta[id] = true; apriGz(id); }   // una volta sola: se il server ridà la copia vecchia, niente giri infiniti   // C72: copia vecchia senza i numerini → si rilegge da sola, intanto si vede questa
+  if (r && !r.mia && (!(r.v >= 4) || (r.videoChiave && !r.hls && !r.mp4)) && /^gz:/.test(id) && navigator.onLine && !(RIC.riletta = RIC.riletta || {})[id]) { RIC.riletta[id] = true; apriGz(id); }   // una volta sola: se il server ridà la copia vecchia, niente giri infiniti   // (C116) copia col video perso per un errore di rete → si rilegge   // C72: copia vecchia senza i numerini → si rilegge da sola, intanto si vede questa
   if (!r) {
     if (/^mia:/.test(id) || !/^gz:[\w%-]+$/.test(id)) { UI.vista = 'ricettario'; return vRicettario(); }
     if (RIC.errore[id]) return testataMonica('Ricetta', 'ricettario') + `<main class="corpo"><section class="scheda"><p style="margin:0"><b>Non riesco ad aprire «${esc(v ? v.nome : 'la ricetta')}».</b></p>

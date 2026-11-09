@@ -20,6 +20,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
   await page.waitForTimeout(5200);
+  await passo('vapore dopo l\'apertura anche per i clienti (C115)', async () => {
+    await page.locator('.vapore').waitFor({ state: 'attached', timeout: 4000 });
+    await page.locator('.vapore').waitFor({ state: 'detached', timeout: 6000 });
+    if (await page.evaluate(() => document.getElementById('app').style.opacity) !== '') throw new Error('app rimasta nascosta dopo il vapore');
+  });
   await passo('benvenuto: nome e cognome alla prima apertura, poi «Ciao»', async () => {
     await page.locator('#benv-nome').waitFor(); await foto('00-benvenuto');
     if (await page.locator('.voce').count()) throw new Error('il menù si vede senza nome');
