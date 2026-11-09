@@ -448,7 +448,7 @@ function cartaNotifica() {
 }
 /* (C97, Mario 08/11 «non mi è arrivata nessuna notifica… di accettarlo»): chi gestisce vede cosa ha mandato il server
    (ora, cosa, a quanti telefoni, se Google l'ha preso) e se il server conosce QUESTO telefono: così si capisce dove si perde */
-const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare',
+const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare', chiusi: 'Persona nuova fermata: clienti nuovi chiusi',
   risposta: 'Risposta sul giorno', modifica: 'Richiesta di modifica', qui: 'Cliente qui per il ritiro', prova: 'Prova', promemoria: 'Promemoria della sera', pronto: 'Ordine pronto (al cliente)', proposta: 'Altro giorno (al cliente)' };
 function voceDiario(d) {
   const q = new Date(d.quando), ora = q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -483,6 +483,9 @@ async function caricaDiarioAvvisi() {
 /* notifiche vere degli ordini (C3): solo sul sito vero, dove c'è worker.js */
 const sulSito = () => Dati.attivo && location.origin === new URL(SITO).origin;
 /* tipo: ordine (nuovo), richiesta (persona nuova), risposta (alla proposta del giorno), modifica (C27, C33) */
+/* (C104) chi trova «Accetta clienti nuovi» spento avvisa chi gestisce (al massimo una volta ogni 3 ore da questo telefono):
+   Francesco è rimasto fuori per ore e nessuno lo sapeva */
+function bussaChiusi() { if (Date.now() - (P.bussatoIl || 0) < 3 * 3600e3) return; P.bussatoIl = Date.now(); salvaP(); avvisaGestori('chiusi'); }
 function avvisaGestori(tipo = 'ordine') { if (sulSito()) fetch('/api/avvisa', { method: 'POST', keepalive: true, headers: { 'content-type': 'application/json' }, body: JSON.stringify({ tipo, chi: Dati.mioCodice ? Dati.mioCodice() : '' }) }).catch(() => {}); }
 /* iscrive (o rinnova) questo telefono presso worker.js; ridà la funzione per altre chiamate col token */
 async function iscriviTelefono(tok) {
@@ -723,7 +726,7 @@ async function benvEntra(ricollega) {
     catch (e) {
       UI.benvInvio = false;
       if (e.code === 'permission-denied' && !ricollega) { UI.benv.usato = tutto; render(); return; }
-      if (e.code === 'chiuso') { ricordaNome(tutto); UI.benv.chiuso = true; render(); return; }   // (C104) il nome resta: alla riapertura un tocco
+      if (e.code === 'chiuso') { ricordaNome(tutto); UI.benv.chiuso = true; bussaChiusi(); render(); return; }   // (C104) il nome resta: alla riapertura un tocco
       render(); mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); return;
     }
     UI.benvInvio = false;
@@ -3018,7 +3021,8 @@ function vaiDaNotifica() {
   }
   if (P.ruolo === 'monica') {
     if (t === 'promemoria') { UI.vista = 'ordini'; UI.tab = 'prossimi'; UI.ordAperto = null; UI.avvisoTesto = 'Ecco gli ordini dei prossimi giorni: in cima quelli di domani.'; return; }
-    if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }   // il riquadro delle persone nuove si apre da solo
+    if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }
+    if (t === 'chiusi') { UI.vista = 'clienti'; UI.avvisoTesto = S.impostazioni.nuovi === false ? 'Una persona nuova ha provato a entrare: tocca «Riapri ai clienti nuovi».' : 'Già riaperto: ora le persone nuove possono entrare.'; return; }   // (C104)   // il riquadro delle persone nuove si apre da solo
     const g = daGuardare().slice().sort((a, b) => (b.tempi && b.tempi.nuovo || 0) - (a.tempi && a.tempi.nuovo || 0) || b.n - a.n);
     UI.vista = 'ordini'; UI.tab = 'nuovi'; UI.ordAperto = g.length ? g[0].id : null;
     UI.avvisoTesto = { ordine: 'Ordine nuovo: lo vedi qui sotto, già aperto.', risposta: 'Il cliente ha risposto sul giorno: lo vedi qui sotto.', modifica: 'Il cliente chiede una modifica: la vedi qui sotto.' }[t] || '';
@@ -3208,6 +3212,7 @@ async function decidiGestore(uid, si) {
   UI.gestDecido = false; render();
 }
 function erroreNome(e, nome) {
+  if (e.code === 'chiuso') bussaChiusi();
   if (e.code === 'permission-denied' && nome) { UI.foglio = { tipo: 'nome', usato: nome }; render(); return; }
   mostraToast(e.code === 'chiuso' ? 'Monica in questo momento non prende clienti nuovi.' : e.code === 'nome' ? 'Scrivi nome e cognome.'
     : e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.');
