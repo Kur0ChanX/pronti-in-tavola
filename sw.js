@@ -47,6 +47,13 @@ self.addEventListener('push', e => {
       primo: ['Una persona nuova ha ordinato: accettala 🍝', 'Il suo primo ordine aspetta il tuo sì. Tocca per vedere chi è.'],
       risposta: ['Un cliente ha risposto sul giorno 🍝', 'Tocca per vedere la sua risposta.'],
       modifica: ['Un cliente chiede una modifica 🍝', 'Tocca per vedere cosa cambia.'],
+      esagera: ({   // (C109) solo a Mario: nessuno viene mai fermato
+        ridotto: ['Un cliente usa tantissimo l\'aiutante ⚠️', 'Ora gli risponde il telefono, senza AI: non è fermato. Tocca per vedere chi è.'],
+        raffica: ['Tante domande in un minuto da un cliente ⚠️', 'Telefono inceppato? Per un minuto risponde il telefono, senza AI. Tocca per i dettagli.'],
+        quota80: ['Aiutante dei clienti: domande di oggi quasi finite', 'Siamo all\'80%. Nessuno è fermato. Tocca per i dettagli.'],
+        quota: ['Aiutante dei clienti: domande di oggi finite', 'Fino a domani risponde il telefono, senza AI. Nessuno è fermato.'],
+        ascolto: ['Un cliente usa molto il microfono', 'Nessuno è stato fermato. Tocca per vedere i dettagli.']
+      })[u && u.cosa] || ['Un cliente usa molto l\'aiutante', 'Nessuno è stato fermato. Tocca per vedere i dettagli.'],
       chiusi: ['Una persona nuova non riesce a entrare 🔒', '«Accetta clienti nuovi» è spento. Tocca per riaprire.'],   // (C104)
       qui: [`${(u && u.prova) ? 'PROVA · ' : ''}${(u && u.nome) || 'Un cliente'} è qui per il ritiro 🍝`, `${u && u.n ? 'Ordine n. ' + u.n + '. ' : ''}Tocca per vederlo.`],
       ordine: ['Pronti in Tavola', 'Hai un ordine nuovo da guardare 🍝']

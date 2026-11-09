@@ -451,7 +451,7 @@ function cartaNotifica() {
 }
 /* (C97, Mario 08/11 «non mi è arrivata nessuna notifica… di accettarlo»): chi gestisce vede cosa ha mandato il server
    (ora, cosa, a quanti telefoni, se Google l'ha preso) e se il server conosce QUESTO telefono: così si capisce dove si perde */
-const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare', chiusi: 'Persona nuova fermata: clienti nuovi chiusi',
+const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare', chiusi: 'Persona nuova fermata: clienti nuovi chiusi', esagera: 'Un cliente usa molto l\'aiutante (nessuno fermato)',
   risposta: 'Risposta sul giorno', modifica: 'Richiesta di modifica', qui: 'Cliente qui per il ritiro', prova: 'Prova', promemoria: 'Promemoria della sera', pronto: 'Ordine pronto (al cliente)', proposta: 'Altro giorno (al cliente)' };
 function voceDiario(d) {
   const q = new Date(d.quando), ora = q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -498,7 +498,7 @@ async function iscriviTelefono(tok) {
   if (sub && sub.options && sub.options.applicationServerKey && new Uint8Array(sub.options.applicationServerKey).join() !== b.join()) { await sub.unsubscribe(); sub = null; }
   sub = sub || await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: b });
   const post = (u, corpo) => fetch(u, { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify(corpo || {}) });
-  const r = await post('/api/iscrivi', { sub: sub.toJSON() });
+  const r = await post('/api/iscrivi', { sub: sub.toJSON(), dev: !!(Dati.io && Dati.io.gestore && /^mario\b/i.test(Dati.io.nomeGestore || '')) });   // (C109) le segnalazioni vanno solo a Mario
   if (!r.ok) throw new Error(((await r.json().catch(() => ({}))).errore) || 'iscrizione rifiutata');
   return post;
 }
@@ -1594,6 +1594,7 @@ function schedaMario() {
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
     ${velVoceHtml(false)}
     ${contoAI()}
+    ${listaSez(OPZIONI.filter(o => o.g === 'mario').map(sezOpz))}
     ${provaAIhtml()}
     ${originaliHtml()}</section>`;
 }
@@ -1633,8 +1634,25 @@ function contoAI() {
     Dati.token().then(tok => tok && fetch('/api/conto-ai', { method: 'POST', headers: { authorization: 'Bearer ' + tok } })).then(r => r && r.ok ? r.json() : null)
       .then(j => { if (j) { UI.contoAI = Object.assign(j, { quando: Date.now() }); if (UI.vista === 'impostazioni') render(); } }).catch(() => {}).finally(() => { UI.contoAIin = false; });
   }
-  const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (tetto ${c.tetti.clienti}, ${c.tetti.aCliente} a testa).` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
+  const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (${c.tetti.clienti} con l'AI, poi risponde il telefono). Nessun cliente viene mai fermato: oltre ${opz('aicAvviso')} domande a testa ti arriva una segnalazione, oltre ${Math.max(opz('aicRidotto'), opz('aicAvviso') + 1)} (o ${c.tetti.raffica || 10} in un minuto) gli risponde il telefono, senza AI.${segnalazioniHtml(c.segnalazioni)}` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
   return `<p class="tenue piccolo" style="margin:0">${riga}<br>Limite gratuito vero: 10.000 «neuroni» al giorno per tutto l'account (si azzera all'una di notte, ora italiana). Una domanda ne usa circa 150-300: stima 30-60 risposte al giorno in tutto. Finiti: «riprova domani», nessun costo.</p>`;
+}
+/* (C109, PT E41) segnalazioni del server: un cliente ha usato molto una funzione (mai fermato). Le ultime 5, la più nuova in cima */
+function segnalazioniHtml(l) {
+  if (!l || !l.length) return '';
+  const frase = (x, chi) => { const n = Number(x.n) || 0, s = Number(x.soglia) || 0;
+    switch (x.cosa) {
+      case 'aiutante': return `${chi}: ${n} domande all'aiutante (segnalazione a ${s})`;
+      case 'ridotto': return `${chi}: ${n} domande, ora gli risponde il telefono senza AI (da ${s})`;
+      case 'raffica': return `${chi}: ${s} domande in un minuto, per un minuto risposte senza AI`;
+      case 'quota80': return `Tutti i clienti: ${n} domande su ${s} di oggi (80%)`;
+      case 'quota': return `Tutti i clienti: domande di oggi finite (${s}), fino a domani risposte senza AI`;
+      case 'ascolto': return `${chi}: ${n} ascolti del microfono (segnalazione a ${s})`;
+      default: return `${chi}: ${n} ${esc(String(x.cosa || ''))}`;
+    } };
+  return '<br><b>Segnalazioni</b> (nessuno fermato):' + l.slice(-5).reverse().map(x => { const q = new Date(x.quando), cl = S.clienti.find(k => k.id === x.cliente) || {};
+    const chi = esc(cl.nome || 'un cliente') + (cl.codice ? ' ' + esc(mostraCodice(cl.codice)) : '');
+    return `<br>· ${q.toLocaleDateString('it-IT', { day: 'numeric', month: 'numeric' })} ${q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} · ${frase(x, chi)}`; }).join('');
 }
 /* Prova le AI (Mario 08/11): un tocco, ogni AI risponde o dice perché no */
 function provaAIhtml() {
@@ -3031,6 +3049,7 @@ function vaiDaNotifica() {
   if (P.ruolo === 'monica') {
     if (t === 'promemoria') { UI.vista = 'ordini'; UI.tab = 'prossimi'; UI.ordAperto = null; UI.avvisoTesto = 'Ecco gli ordini dei prossimi giorni: in cima quelli di domani.'; return; }
     if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }
+    if (t === 'esagera') { UI.vista = 'impostazioni'; UI.avvisoTesto = 'L\'aiutante dei clienti è molto usato. Nessuno è stato fermato: ' + (puoSviluppare() ? 'chi e quante in «Solo per te, Mario».' : 'non devi fare niente.'); return; }   // (C109)
     if (t === 'chiusi') { UI.vista = 'clienti'; UI.avvisoTesto = S.impostazioni.nuovi === false ? 'Una persona nuova ha provato a entrare: tocca «Riapri ai clienti nuovi».' : 'Già riaperto: ora le persone nuove possono entrare.'; return; }   // (C104)   // il riquadro delle persone nuove si apre da solo
     const g = daGuardare().slice().sort((a, b) => (b.tempi && b.tempi.nuovo || 0) - (a.tempi && a.tempi.nuovo || 0) || b.n - a.n);
     UI.vista = 'ordini'; UI.tab = 'nuovi'; UI.ordAperto = g.length ? g[0].id : null;
