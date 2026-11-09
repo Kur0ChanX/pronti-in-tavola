@@ -60,9 +60,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!/è pronto\.\nTotale/.test(t[0]) || !/Pronti in Tavola/.test(t[0])) throw new Error('messaggio di base cambiato: ' + t[0].slice(0, 120));
     if (!/Ehi .+, il n\. \d+ ti aspetta!\nMoni/.test(t[1])) throw new Error('messaggio di Monica: ' + t[1].slice(0, 120));
   });
-  await passo('aiutante: «dove cambio l\'ordine minimo?» porta alla voce', async () => {
+  await passo('aiutante: «dove cambio l\'ordine minimo?» → «Intendi…?» → porta alla voce', async () => {
     await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; UI.aiQui = null; vai('aiutante'); });
     await page.evaluate(() => inviaAI('dove cambio l\'ordine minimo?')); await page.waitForTimeout(1900);
+    await page.click('[data-a="ai-vai"]'); await page.waitForTimeout(300);   // senza AI (anteprima) chiede «Intendi…?» (C102)
     const r = await page.evaluate(() => UI.vista + ' ' + UI.sez + ' ' + !!document.querySelector('details.sez[data-sez="opz-minimo"][open]'));
     if (r !== 'impostazioni opz-minimo true') throw new Error(r);
     await page.screenshot({ path: OUT + '/opz-aiutante.png' });
