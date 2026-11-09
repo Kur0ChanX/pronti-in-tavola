@@ -1026,6 +1026,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r[1]) throw new Error('dopo il sì il foglio delle notifiche si riproporrebbe');
     if (!/appena Monica ti conferma/.test(r[2] || '')) throw new Error('messaggio sbagliato: ' + r[2]);
   });
+  await passo('«Attiva le notifiche» (foto di Mario 09/11, iPad): esito in un riquadro verde grande, il foglio si chiude da solo', async () => {   // autonoma
+    await page.context().grantPermissions(['notifications']);
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.installata = true; P.vuoleAvvisi = false; P.avvisiCliente = false; UI.foglio = { tipo: 'installa', os: null }; UI.notEsito = null; render(); });
+    await page.waitForSelector('.foglio [data-a="avvisi-cliente"]', { timeout: 3000 });
+    await page.evaluate(async () => { const c = P.cliente; P.cliente = null; await attivaAvvisiCliente(); P.cliente = c; });
+    await page.waitForSelector('.foglio .avviso.verde', { timeout: 3000 });
+    const t = await page.locator('.foglio .avviso.verde').innerText();
+    if (!/Notifiche attive!/.test(t)) throw new Error('manca il riquadro verde «Notifiche attive!»: ' + t.slice(0, 80));
+    await foto('96-notifiche-attive');
+    await page.waitForTimeout(3400);
+    if (await page.locator('.foglio').count()) throw new Error('il foglio non si chiude da solo dopo l\'esito');
+    await page.evaluate(() => { P.installata = false; P.vuoleAvvisi = false; UI.notEsito = null; });
+  });
   await passo('gestore: ultimi avvisi mandati in Notifiche (C97, Mario 08/11 «non mi è arrivata nessuna notifica»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const ora = new Date().toISOString(), prima = [UI.diarioAvvisi, UI.diarioChiesto];
