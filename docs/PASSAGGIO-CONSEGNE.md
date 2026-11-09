@@ -1,12 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #37 (dopo la #36 `session_01WTjqUtPqTTxpnkk1cGLaiK`, chiusa alla soglia 09/11 20:57; la apre la #36 con `create_session` (catena 3 di 8)).
+Sessione attuale: #38 (dopo la #37 `session_01WTjqUwYZ9ro8F9Ku7rJMWq`, chiusa alla soglia 09/11 23:01; la apre la #37 con `create_session` (catena 4 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (09/11 ~20:55):** 1) C112: la scelta «Ordino davvero / Sto solo provando» deve uscire a TUTTI i clienti a ogni ordine, mai già segnata (un amico che provava ha mandato un ordine vero): codice fatto in v0.9.90, va PROVATO e PUBBLICATO (vedi Prossimi passi 1); 2) C111 🔴: sull'iPad di Mario la schermata dev non si apre (messaggio arrivato in Voce 9, passato a noi); 3) le prove di Mario su C106, C109, C108.
+- **Cosa preme a Mario adesso (09/11 ~22:50):** 1) C113: con un iPhone la stessa persona chiedeva due volte il sì di Monica («un disastro… se non riesci togliamo l'approvazione»): corretto in v0.9.92, aspetta la prova di Mario con un iPhone NUOVO; 2) le 4 richieste delle 22:47: C114 foto a strisce (fatto v0.9.93), C115 vapore anche per i clienti, C116 video delle ricette (normale o dimenticanza?), C117 niente PIN/impronta per i clienti.
 
-## Stato (09/11 20:58 ora italiana)
+## Stato (09/11 23:01 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261109-01WTjqUwYZ9r/claude/pronti-ramo-definitivo.
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Sito vero: v0.9.90 online (C112), giro «Pubblica sito» success sul commit e356f431 (09/11 ~21:10); `grep -m1 VERSIONE_APP data.js` → 0.9.90. App: 78 OK, 0 NO sul codice unito con Voce 10.
 - App: `python3 -I tools/anteprima.py && node tools/prova.js` → 77 OK, 0 NO (09/11 ~20:40, v0.9.87). `SOLO=carrello` NON va da solo (il carrello dipende dai passi prima): giro completo, ~3 minuti.
 - Server: `node tools/prova-limiti.mjs` → 22 OK (limiti C109 + catena Groq C108, memoria finta); `node tools/prova-ascolta.mjs` → 27 OK (di Voce).
@@ -17,10 +18,12 @@ Sessione attuale: #37 (dopo la #36 `session_01WTjqUtPqTTxpnkk1cGLaiK`, chiusa al
 ## Riferimenti
 - Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C3, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#36)
-- v0.9.87 online (C109 + C108 parte nostra). worker.js: `contaAIC(cliente, lim)` senza blocchi (segnalazione a 30 e 60, 'ridotto' oltre 100 o 10 in un minuto, quota `TETTO_AIC` 200 con avviso all'80%), una segnalazione per soglia (`c.visti`); `segnala()` manda la notifica 'esagera' SOLO agli iscritti con `dev:true` (il telefono di Mario lo manda a `/api/iscrivi`, app.js `iscriviTelefono`); `campiApp`/`accesoAIC`/`limitiAIC` leggono le soglie da impostazioni/app (`aicAvviso` 10-200 base 30, `aicRidotto` 20-1000 base 100); `RISPOSTA_RIDOTTA` al posto di «riprova domani»; `PONTE_CLIENTI` Groq qwen3.8-27b → gpt-oss-120b → gpt-oss-20b, poi Cloudflare, poi 'ridotto' (Monica resta Cloudflare per prima). opzioni.js: gruppo 'mario' (non in GRUPPI_OPZ, filtrato dall'aiutante di Monica). sw.js: testo di 'esagera' secondo `cosa`. app.js: `segnalazioniHtml`, le due soglie in `schedaMario`. Patch spostata in `docs/piani-finiti/`. Voce 9 avvisata (usa `segnala('ascolto', …)`).
-- C112 (Mario 09/11 ~20:45): `puoProvare()` ora segue l'opzione `chiediProva` (opzioni.js, gruppo clienti: 'tutti' di base, 'nuovi', 'mai'); prima valeva solo per chi non era accettato e, con l'accettazione prima del primo ordine (C93-C97), non usciva più. Prova nuova nel passo «carrello: giorno, bonifico, invio». Versione 0.9.90 (Voce 9 e Voce 10 avevano già preso la 0.9.88 e la 0.9.89). Lezione PT E43.
-- Controllo Da fare: 1 voce aggiunta (C112); C111 l'ha scritta Voce 9.
+## Sessione appena chiusa (#37)
+- v0.9.91 (C111): firma «Powered by» con `touch-action: manipulation` + `cursor: pointer` (iPad: i 7 tocchi veloci erano zoom col doppio tocco, ipotesi non provata), `accendiDev()` + pulsante «🛠 Accendi la modalità sviluppatore» in `schedaMario`, 7 tocchi che rispondono sempre; `button, summary, label, [data-a]` senza zoom col doppio tocco. C109: `ascoltoQuota` in `segnalazioniHtml` e `sw.js`, opzione `ascoltoAvviso` (gruppo 'mario'), Voce 10 avvisata.
+- v0.9.92 (C113): accesso anonimo del cliente anche nel cookie `pit_acc` (dati.js `ricordaAccesso` dopo l'accesso, `riprendiAccesso` prima di `getAuth`, `cancellaAccesso` in `esci` e per Google). iPhone copia nell'app sulla Home solo i cookie (WebKit 17.2; OpenPWA 20/10/2026 su iOS 18.6.2); l'SDK trova l'accesso in localStorage e lo sposta in IndexedDB. Prova Firebase «C113» (contesto coi soli cookie): 99 OK, 0 NO. Lezione PT E44.
+- v0.9.93 (C114): `ric-zoom` in ricettario.js ingrandisce UNA foto della striscia (`data-n`/`data-j`, `.ric-zoom-taglio`), prova nel passo «foto a strisce». App 79 OK, 0 NO.
+- Foto di Mario in `archivio/foto/2026-11-09-2231-iphone-doppia-richiesta.jpg` e `2026-11-09-2247-ricetta-*.jpg`. Per far girare `npm run prova-firebase` in un contenitore nuovo: prima `npm ci`.
+- Controllo Da fare: 5 voci aggiunte (C113-C117).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Voci (#30): Supertonic 3 (F1, M1) e Kokoro italiano (Sara, Nicola): Mario «tono, pause e accenti sembrano stranieri». Chatterbox/OmniVoice: >1 GB, GPU. Kitten: solo inglese.
@@ -33,24 +36,25 @@ Sessione attuale: #37 (dopo la #36 `session_01WTjqUtPqTTxpnkk1cGLaiK`, chiusa al
 - C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
-0. C113 (Principale 37, v0.9.92): accesso anonimo del cliente anche nel cookie `pit_acc` (`ricordaAccesso`, `riprendiAccesso` in dati.js prima di `getAuth`; tolto in `esci` e per Google): iPhone copia nell'app sulla Home solo i cookie (WebKit 17.2), l'SDK riprende l'accesso da localStorage. Prova Firebase «C113» (99 OK). Aspetta la prova di Mario con un iPhone NUOVO. Se ancora no: Mario propone di togliere l'approvazione (🛑, chiedere). Idea dopo: iscrizione alle notifiche anche prima del sì.
-1. C112: online (v0.9.90). Mario ha già le istruzioni per l'ordine di Antonio Sanna («È una prova»). Aspetta la sua foto (voce C112 👁).
-2. C111 (Principale 37, v0.9.91): firma con `touch-action: manipulation` + `cursor: pointer` (iPad: i tocchi veloci erano zoom col doppio tocco; ipotesi, non provata su iPad vero), `accendiDev()` e pulsante «🛠 Accendi la modalità sviluppatore su questo dispositivo» in `schedaMario`, 7 tocchi che rispondono sempre (cliente → «entra da Area riservata»; già sviluppatore → apre/chiude la barra). Tutti i comandi (`button, summary, label, [data-a]`) senza zoom col doppio tocco. Aspetta la foto di Mario dall'iPad; se ancora no: chiedergli come entra (cliente o Google suo).
-3. Per Voce 10: fatto in v0.9.91 (`ascoltoQuota` in `segnalazioniHtml` e `sw.js`, opzione `ascoltoAvviso` nel gruppo 'mario').
-4. C106, C108, C109, C107: aspettare le prove di Mario (foto). C104/C97: Francesco in Clienti.
-5. Regola C109 nel kit: testo pronto in `docs/PER-IL-KIT.md` (tre livelli), la porta una sessione del kit.
+1. C115: vapore (`vapore.js`, stile scelto da Mario «A Pentola», `P.vapore`) anche per i clienti: oggi parte solo dopo lo sblocco di chi gestisce (cercare `Vapore.parti`). Proposta: all'apertura dell'app del cliente, una volta, breve; occhio a non coprire «Come ti chiami?» e il foglio «Installa l'app».
+2. C116: contare le ricette col video (campo video nei dati del ricettario e sul server) e controllare 3-5 ricette senza video sulla pagina vera di GialloZafferano: se GZ il video ce l'ha, il lettore lo perde → correggerlo. Risposta a Mario con SÌ/NO e numeri (PT E34).
+3. C117: cercare il lucchetto (`L.`, `Lucchetto`, PIN, impronta) nei percorsi del cliente; Mario dice che ai clienti non lo chiede già: togliere ogni resto (opzioni, fogli, testi) e lasciarlo solo a chi gestisce. Prova: da cliente nessun PIN/impronta.
+4. C113: aspettare la prova di Mario con un iPhone NUOVO. Se ancora due richieste: Mario propone di togliere l'approvazione (🛑, chiedere prima). Idea dopo: iscrizione alle notifiche anche prima del sì (il server già accetta, il blocco è `P.cliente` in app.js ~510).
+5. C111, C106, C108, C109, C110: aspettare le prove di Mario (foto). C104/C97: Francesco in Clienti. C112: foto di Mario.
 
 ## Domande aperte
-- In «## 0. Aspetta Mario» di `docs/DA-FARE.md` (6 righe: 3 della principale). Nessuna 🛑 nuova: «segnalazioni solo a te» deciso col consiglio e detto a Mario.
+- In «## 0. Aspetta Mario» di `docs/DA-FARE.md` (8 righe: 5 della principale, fra cui C113 iPhone e C111 iPad di questa sessione). Nessuna 🛑 nuova.
 
 ## Ultimo messaggio di Mario
-09/11 ~20:45 (in questa chat), parola per parola: «Per chi ordina è sparito il comando, prima di ordinare voglio solo provare l'app, oppure adesso non mi ricordo, ordina sul serio, che uno deve cliccare per forza uno dei due, che non è già preselezionato prima di ordinare. Perché mi è appena, per far provare l'app mi è appena arrivato un ordine, ma mi ha detto che la voleva solo provare. Quindi si è creato un po' di caos.» → C112, v0.9.90 online, risposta data.
-Poi, 09/11 ~21:00, parola per parola: «Fai un controllo perché io ho accettato subito Antonio Sanna e dopo lui ha ordinato e non gli è uscita la scelta stò provando o invio vero» · «accettato dopo 5 secondi» → conferma la causa di C112 (accettato prima di ordinare = niente scelta); risposto: v0.9.90 la corregge, l'ordine di Antonio si segna «È una prova».
-Dopo l'handoff, nella #36 (09/11 ~21:20), parola per parola: «Quindi mi confermi che adesso esce a tutti quanti prima di ordinare? Devono cliccare per forza se è una prova o se vogliono ordinare seriamente, e poi per qualsiasi motivo magari hanno cliccato per sbaglio la scelta sbagliata, io posso cliccare che è stata una prova o viceversa.» → risposto dalla #36: sì (v0.9.90, provato solo con le prove automatiche); nell'ordine «È una prova» e, sugli ordini di prova, «Non è una prova: rimettilo tra i veri».
-Nella chat Voce 9, 20:58: «Poi nel mio ipad non posso neanche aprire la schermata dev» → C111.
+09/11 ~22:47 (in questa chat), con 4 foto (Culurgiones e Astice alla Catalana, la foto ingrandita con 1-2-3 unite), parola per parola: «poi correggi il ricettario molte ricette sembrano ancora con il sistema vecchio le foto se clichi sono unite e non va bene
+
+poi l'animazione del fumo ci deve essere anche nell'app dei clienti 
+poi nel ricettario non tutte le ricette hanno il video è normale o dimenticanza o entrambe? poi
+togliamo il PIN e impronta nei clienti tanto ho visto che non la chiede manteniamola spenta per accesso piú rapido» → C114 fatto (v0.9.93), C115-C117 nei Prossimi passi.
+Prima, 09/11 ~22:31, con foto «Elena Fancello · Dice che ha cambiato telefono»: «ho fatto un test con un invito ad un iphone un  disastro allora le notifiche non puoi abilitarle perché vanno approvate da monica dopo  che abbiamo approvato gli ha fatto uscire e rientrare con un altra richiesta di approvazione che monica ha dovuto avvertare non ha cambiato telefono se non riesci a risolvere togliamo l'approvazione sembra quello il problema di tutto» → C113, v0.9.92.
 
 ## Numeri liberi
-Prossimo E libero: PT E45; prossimo C libero: C114; prossimo M libero: M1.
+Prossimo E libero: PT E45; prossimo C libero: C118; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
