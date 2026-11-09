@@ -1,20 +1,9 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 11:21 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: la velocità della voce non restava salvata. Vuoi 0,75 di base per tutti, la tua scelta tenuta per sempre, e quella di Monica valida solo per lei.
 
 ───
 ✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
-
-───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+- **v0.9.74 è online.** Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita. La foto del cursore nuovo è qui sopra.
+- **Il guasto**: il cursore aveva lo stile di un interruttore. Il pallino bianco era finto, quello vero era il puntino blu: per questo restava a 1,20.
+- **Ora**: un cursore vero più i tasti «− lenta» e «veloce +». Si salva a ogni tocco e resta anche dopo gli aggiornamenti, perché è salvato …
