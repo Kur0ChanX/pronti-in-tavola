@@ -1198,6 +1198,25 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.toast', { hasText: 'Per uscire' }).count())) throw new Error('nella Home manca l\'avviso «Per uscire…»');
     if (page.url() !== url) throw new Error('il primo gesto nella Home ha chiuso l\'app');
   });
+  await passo('C106 iPad in orizzontale: al rientro nell\'app lo zoom torna a 1 (regola «mai più grande di 1» per un attimo, poi quella normale)', async () => {
+    const c2 = await browser.newContext({ ...devices['iPad Pro 11 landscape'], deviceScaleFactor: 1 });
+    const p2 = await c2.newPage(); const errori = [];
+    p2.on('pageerror', e => errori.push(e.message));
+    try {
+      await p2.goto(FILE); await p2.waitForTimeout(2500);
+      const base = await p2.evaluate(() => document.querySelector('meta[name="viewport"]').content);
+      if (/maximum-scale/.test(base)) throw new Error('la regola normale non deve bloccare lo zoom: ' + base);
+      await p2.evaluate(() => document.dispatchEvent(new Event('visibilitychange')));
+      const subito = await p2.evaluate(() => document.querySelector('meta[name="viewport"]').content);
+      if (!/maximum-scale=1/.test(subito)) throw new Error('al rientro manca «maximum-scale=1»: ' + subito);
+      await p2.waitForTimeout(2000);
+      const dopo = await p2.evaluate(() => document.querySelector('meta[name="viewport"]').content);
+      if (dopo !== base) throw new Error('dopo il rientro la regola non torna quella normale: ' + dopo);
+      const largo = await p2.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      if (largo > 0) throw new Error('la pagina esce dai bordi di ' + largo + ' px');
+      if (errori.length) throw new Error('errori nella pagina: ' + errori.join(' | '));
+    } finally { await c2.close(); }
+  });
   await passo('aggiornamento: avvisa, NON riavvia da solo, «Riavvia» riprende dalla stessa schermata col foglio aperto', async () => {   // autonoma, ultima (ricarica la pagina)
     await page.evaluate(() => { P.ruolo = 'monica'; UI.vista = 'piatto:tiramisu'; UI.foglio = { tipo: 'novita' }; render(); window._stessaPagina = true; nuovaVersione = '9.9.9'; riavviaQuandoPuoi(); });
     if (!(await page.locator('#agg-avviso', { hasText: "C'è l'aggiornamento 9.9.9" }).count())) throw new Error('manca l\'avviso');

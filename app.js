@@ -3143,6 +3143,35 @@ setInterval(controllaAggiornamento, 5 * 60000);
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') controllaAggiornamento(); });
 setTimeout(controllaAggiornamento, 20000);
 
+/* C106 (Mario 09/11, iPad): app dall'icona, in orizzontale, uscendo e rientrando la pagina restava ingrandita e tagliata.
+   Difetto noto di Safari sulle app installate (WebKit 262207): al rientro perde le regole di misura della pagina.
+   Rimedio: al rientro, a un giro dello schermo o a un cambio di larghezza, per un attimo «mai più grande di 1»,
+   poi la regola normale (lo zoom con due dita resta possibile). Solo iPhone e iPad. */
+const ZoomIOS = (() => {
+  const ios = /iP(ad|hone|od)/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  const meta = document.querySelector('meta[name="viewport"]');
+  if (!ios || !meta) return { rimetti() {} };
+  const base = meta.getAttribute('content');
+  let dita = 0, torna = 0, cambio = 0, largo = document.documentElement.clientWidth;
+  const conta = e => { dita = e.touches ? e.touches.length : 0; };
+  ['touchstart', 'touchend', 'touchcancel'].forEach(t => addEventListener(t, conta, { passive: true }));
+  const rimetti = () => {
+    if (dita > 1) return;   // pizzico in corso: lo zoom lo sta scegliendo la persona
+    meta.setAttribute('content', base + ', maximum-scale=1');
+    clearTimeout(torna); torna = setTimeout(() => meta.setAttribute('content', base), 400);
+  };
+  const alRientro = () => { rimetti(); setTimeout(rimetti, 300); setTimeout(rimetti, 1200); };
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') alRientro(); });
+  addEventListener('pageshow', e => { if (e.persisted) alRientro(); });   // pagina ripresa dalla memoria (non la prima apertura)
+  addEventListener('orientationchange', alRientro);
+  addEventListener('resize', () => {   // solo se cambia la larghezza vera (non lo zoom con due dita)
+    const w = document.documentElement.clientWidth;
+    if (w === largo) return;
+    largo = w; clearTimeout(cambio); cambio = setTimeout(rimetti, 150);
+  });
+  return { rimetti };
+})();
+
 /* ---------- dati veri (motore «firebase», dati.js) ---------- */
 let renderDopo = false;
 const staScrivendo = () => { const a = document.activeElement; return !!a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && !!($('#app').contains(a) || $('#foglio').contains(a)); };   /* anche le finestre (nota del piatto, nome): se no si chiude la tastiera */
