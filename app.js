@@ -1587,11 +1587,14 @@ function sezioneDev() {
     <button type="button" class="link piccolo" data-a="dev-esci">Esci dalla modalità sviluppatore</button></section>`;
 }
 /* Solo per Mario (07/11): ordini fatti per provare → PROVA, in vista nelle Impostazioni, con conferma a foglio */
+/* (C111) modalità sviluppatore su questo telefono o iPad: dai 7 tocchi sulla firma o dal pulsante in «Solo per te, Mario» */
+function accendiDev() { P.sviluppatore = true; UI.barraDev = true; salvaP(); render(); mostraToast('Modalità sviluppatore accesa: barra in alto. La trovi anche in Impostazioni.'); }
 function schedaMario() {
   if (P.ruolo !== 'monica' || UI.devCliente || !puoSviluppare()) return '';
   const n = S.ordini.filter(o => !diProva(o)).length;
   return `<section class="scheda mario-scheda"><h2>Solo per te, Mario</h2>
     <p class="tenue piccolo" style="margin:0">La vedi solo tu. Monica non vede questa scheda.</p>
+    ${P.sviluppatore ? '' : '<button type="button" class="btn chiaro" data-a="dev-attiva">🛠 Accendi la modalità sviluppatore su questo dispositivo</button>'}
     ${n ? `<button type="button" class="btn chiaro" data-a="tutti-prova-apri">Segna come PROVA gli ordini fatti finora (${n})</button>`
       : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}
     ${ordiniDaTogliere().length ? `<button type="button" class="btn chiaro" data-a="togli-ordini-apri">🗑️ Togli tutti gli ordini fatti finora (${ordiniDaTogliere().length})</button>` : ''}
@@ -1653,6 +1656,7 @@ function segnalazioniHtml(l) {
       case 'quota80': return `Tutti i clienti: ${n} domande su ${s} di oggi (80%)`;
       case 'quota': return `Tutti i clienti: domande di oggi finite (${s}), fino a domani risposte senza AI`;
       case 'ascolto': return `${chi}: ${n} ascolti del microfono (segnalazione a ${s})`;
+      case 'ascoltoQuota': return `Tutti i clienti: ${n} frasi al microfono oggi (oltre ${s}): ora le ascoltano solo Groq e Deepgram, nessuno fermato`;
       default: return `${chi}: ${n} ${esc(String(x.cosa || ''))}`;
     } };
   return '<br><b>Segnalazioni</b> (nessuno fermato):' + l.slice(-5).reverse().map(x => { const q = new Date(x.quando), cl = S.clienti.find(k => k.id === x.cliente) || {};
@@ -2242,12 +2246,16 @@ const A = {
   },
   'firma-tocco'(el, e) {
     if (e && e.target.closest('button')) return;
-    if (!puoSviluppare() || P.sviluppatore) return;
     const t = Date.now(); UI.firmaTocchi = (UI.firmaTocchi || []).filter(x => t - x < 4000).concat(t);
-    const manca = 7 - UI.firmaTocchi.length;
-    if (manca <= 0) { P.sviluppatore = true; UI.firmaTocchi = []; salvaP(); render(); mostraToast('Ora sei sviluppatore: la trovi in Impostazioni. Barra in alto: scorri il dito da sinistra a destra in cima.'); }
-    else if (manca <= 3) mostraToast(manca === 1 ? 'Ancora 1 tocco per la modalità sviluppatore' : `Ancora ${manca} tocchi per la modalità sviluppatore`);
+    const manca = 7 - UI.firmaTocchi.length, puo = puoSviluppare();
+    if (manca > 0) { if (manca <= 3 && puo && !P.sviluppatore) mostraToast(manca === 1 ? 'Ancora 1 tocco per la modalità sviluppatore' : `Ancora ${manca} tocchi per la modalità sviluppatore`); return; }
+    UI.firmaTocchi = [];
+    /* (C111) prima i 7 tocchi non dicevano niente se non potevi (entrato come cliente) o se eri già sviluppatore: ora lo dicono */
+    if (!puo) { if (Dati.attivo && !Dati.io.gestore) mostraToast('Modalità sviluppatore: prima entra da «Area riservata», in fondo al menù, col tuo Google.'); return; }
+    if (P.sviluppatore) { UI.barraDev = !UI.barraDev; render(); mostraToast(UI.barraDev ? 'Barra sviluppatore aperta in alto.' : 'Barra sviluppatore chiusa.'); return; }
+    accendiDev();
   },
+  'dev-attiva'() { if (puoSviluppare()) accendiDev(); },
   'dev-come'(el) {
     UI.devCliente = el.dataset.v === 'cliente'; UI.foglio = null; UI.modifica = null;
     if (Dati.attivo) P.ruolo = UI.devCliente ? 'cliente' : 'monica'; else { P.ruolo = UI.devCliente ? 'cliente' : 'monica'; salvaP(); }
@@ -3054,7 +3062,7 @@ function vaiDaNotifica() {
   if (P.ruolo === 'monica') {
     if (t === 'promemoria') { UI.vista = 'ordini'; UI.tab = 'prossimi'; UI.ordAperto = null; UI.avvisoTesto = 'Ecco gli ordini dei prossimi giorni: in cima quelli di domani.'; return; }
     if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }
-    if (t === 'esagera') { UI.vista = 'impostazioni'; UI.avvisoTesto = 'L\'aiutante dei clienti è molto usato. Nessuno è stato fermato: ' + (puoSviluppare() ? 'chi e quante in «Solo per te, Mario».' : 'non devi fare niente.'); return; }   // (C109)
+    if (t === 'esagera') { UI.vista = 'impostazioni'; UI.avvisoTesto = 'L\'aiutante o il microfono dei clienti sono molto usati. Nessuno è stato fermato: ' + (puoSviluppare() ? 'chi e quante in «Solo per te, Mario».' : 'non devi fare niente.'); return; }   // (C109)
     if (t === 'chiusi') { UI.vista = 'clienti'; UI.avvisoTesto = S.impostazioni.nuovi === false ? 'Una persona nuova ha provato a entrare: tocca «Riapri ai clienti nuovi».' : 'Già riaperto: ora le persone nuove possono entrare.'; return; }   // (C104)   // il riquadro delle persone nuove si apre da solo
     const g = daGuardare().slice().sort((a, b) => (b.tempi && b.tempi.nuovo || 0) - (a.tempi && a.tempi.nuovo || 0) || b.n - a.n);
     UI.vista = 'ordini'; UI.tab = 'nuovi'; UI.ordAperto = g.length ? g[0].id : null;
