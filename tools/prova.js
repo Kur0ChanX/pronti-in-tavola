@@ -999,14 +999,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
         Object.defineProperty(Dati, 'attivo', { value: true, configurable: true, writable: true });
         io.utente = null; io.letto = true; io.gestore = false; io.uid = 'prova123'; P.ruolo = 'cliente'; UI.senzaNome = true; P.cliente = null;
         const banner = avvisoSenzaNome(), menu = primiPassi();
+        UI.invitoProva = true; UI.invitoFatto = false; UI.foglio = null; const invito = serveInvito(); UI.invitoProva = false;
         await attivaAvvisiCliente();
-        return [banner, menu, UI.senzaNome, P.vuoleAvvisi, serveBenvenuto()];
+        return [banner, menu, UI.senzaNome, P.vuoleAvvisi, serveBenvenuto(), invito];
       } finally { ripristina(); UI.notEsito = null; render(); }
     });
     if (!/Monica non sa ancora che ci sei/.test(r[0])) throw new Error('manca l\'avviso senza nome');
     if (!/Monica non sa ancora/.test(r[1])) throw new Error('l\'avviso non è in cima al menù');
     if (r[2] !== false || !r[3]) throw new Error('le notifiche non portano al nome: ' + JSON.stringify(r.slice(2)));
     if (!r[4]) throw new Error('dopo il tocco non si chiede il nome');
+    if (r[5]) throw new Error('il popup «Installa l\'app» esce anche senza nome');
   });
   await passo('cliente: guida a figure iPhone per iOS 27, 26, 18 e Chrome (C94, Mario 08/11 «1 guida a figure»)', async () => {   // autonoma
     const r = await page.evaluate(() => {

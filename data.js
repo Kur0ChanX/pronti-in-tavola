@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.69';
+const VERSIONE_APP = '0.9.70';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.70', data: '09/11/2026',
+    corretto: ['Il foglio «Installa l\'app» non esce più a chi non ha ancora scritto il nome: prima il nome (così Monica riceve la richiesta), poi l\'app'] },
   { v: '0.9.69', data: '09/11/2026',
     corretto: ['Chi tocca «Guarda il menù» senza scrivere il nome legge in cima «Monica non sa ancora che ci sei» con «Scrivi il tuo nome». Se attiva le notifiche, prima gli si chiede il nome: senza nome Monica non riceve nessuna richiesta'] },
   { v: '0.9.68', data: '08/11/2026',
