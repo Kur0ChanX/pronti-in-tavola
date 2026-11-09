@@ -882,7 +882,7 @@ export default {
         if (fermo) return json({ fermo, testo: RISPOSTA_RIDOTTA, azioni: [] });   // (C109) mai «hai finito»: il telefono risponde da solo
         return json(await chiediAI(env, testo, dati, b.storia, null, true));
       }
-      if (url.pathname === '/api/ascolta') {   // «ascolto preciso» dei clienti (C105): audio → Whisper Groq v3 + Cloudflare → correttore → { testo, alternative }
+      if (url.pathname === '/api/ascolta') {   // «ascolto preciso» (C105): clienti Groq v3 + Deepgram, chi gestisce Groq v3 + Cloudflare (C108) → correttore → { testo, alternative }
         const c = await clienteDa(req), g = c ? null : await gestoreDa(req);
         if (!c && !g) return json({ errore: 'prima Monica deve approvarti' }, 403);
         if (c && !(await aiClientiAcceso(req))) return json({ errore: 'spento' }, 403);
@@ -892,7 +892,7 @@ export default {
         const fermo = await av.contaAscolto(c);
         if (fermo) return json({ fermo, testo: '' });
         const piatti = Array.isArray(b.piatti) ? b.piatti.filter(x => typeof x === 'string').slice(0, 60).map(x => x.slice(0, 40)) : [];
-        return json(await ascolta(env, audio, String(b.tipo || ''), piatti));
+        return json(await ascolta(env, audio, String(b.tipo || ''), piatti, undefined, { cliente: !!c }));
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
