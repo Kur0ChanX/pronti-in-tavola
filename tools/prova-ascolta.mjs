@@ -13,7 +13,7 @@ function finti({ v3 = 'Due teglie di lasagne persa a Mato.', turbo = 'turbo', cf
   const chiamate = [];
   const f = async (url, o) => {
     if (/deepgram/.test(url)) {
-      const q = new URL(url).searchParams; chiamate.push({ tipo: 'deepgram', modello: q.get('model'), lingua: q.get('language'), chiavi: q.getAll('keyterm'), auth: o.headers.authorization, ct: o.headers['content-type'] });
+      const q = new URL(url).searchParams; chiamate.push({ tipo: 'deepgram', modello: q.get('model'), lingua: q.get('language'), privacy: q.get('mip_opt_out'), chiavi: q.getAll('keyterm'), auth: o.headers.authorization, ct: o.headers['content-type'] });
       return erroreDg ? json({ err_msg: 'credito finito' }, 402) : json({ results: { channels: [{ alternatives: [{ transcript: dg, confidence: 0.93 }] }] } });
     }
     if (/transcriptions/.test(url)) {
@@ -91,6 +91,7 @@ function finti({ v3 = 'Due teglie di lasagne persa a Mato.', turbo = 'turbo', cf
   const d = chiamate.find(c => c.tipo === 'deepgram') || {};
   prova('cliente: v3 + Deepgram, niente Cloudflare', r.motore.startsWith('groq:whisper-large-v3+deepgram') && !chiamate.some(c => c.tipo === 'cf'), r.motore);
   prova('Deepgram: nova-3, italiano, «Token», tipo dell\'audio', d.modello === 'nova-3' && d.lingua === 'it' && d.auth === 'Token finta' && d.ct === 'audio/mp4', JSON.stringify(d));
+  prova('Deepgram: privacy, l\'audio dei clienti non resta a Deepgram (mip_opt_out)', d.privacy === 'true', JSON.stringify(d));
   prova('Deepgram: parole chiave con misure e piatti', d.chiavi && d.chiavi.includes('teglie') && d.chiavi.includes('Lasagne al ragù'), JSON.stringify(d.chiavi));
   prova('correttore riceve le due trascrizioni', r.alternative.length === 2 && r.corretto === true, JSON.stringify(r));
 }
