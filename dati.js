@@ -256,6 +256,33 @@ const Dati = (() => {
       }, () => { io.utente = null; io.letto = true; apriAscolti(); });
     } else { ascoltoUtente && ascoltoUtente(); ascoltoUtente = null; apriAscolti(); }
   }
+  /* (C113, Mario 09/11 «un disastro» con un iPhone) L'app messa sulla Home di iPhone/iPad ha una memoria sua: da Safari prende
+     SOLO i cookie (WebKit, Safari 17.2+; provato su iOS 18.6.2 da OpenPWA 20/10/2026). L'accesso del cliente stava solo in IndexedDB:
+     dall'icona era una persona nuova e Monica doveva dire sì una seconda volta («Dice che ha cambiato telefono»).
+     Ora l'accesso del cliente (anonimo, mai quello Google) sta anche nel cookie pit_acc; all'avvio, se il telefono non ha già un accesso,
+     lo si mette dove l'SDK lo cerca (localStorage) e l'SDK lo sposta da solo in IndexedDB: stessa persona, nessuna richiesta nuova. */
+  const chiaveAccesso = () => `firebase:authUser:${CONFIG.apiKey}:[DEFAULT]`;
+  function cookieAccesso() {
+    try { const m = document.cookie.match(/(?:^|;\s*)pit_acc=([^;]*)/); return m ? JSON.parse(decodeURIComponent(m[1])) : null; } catch (e) { return null; }
+  }
+  function riprendiAccesso() {
+    try {
+      const a = cookieAccesso();
+      if (!a || typeof a.u !== 'string' || typeof a.r !== 'string' || localStorage.getItem(chiaveAccesso())) return;
+      localStorage.setItem(chiaveAccesso(), JSON.stringify({ uid: a.u, isAnonymous: true, emailVerified: false, providerData: [],
+        stsTokenManager: { refreshToken: a.r }, createdAt: a.c || undefined, lastLoginAt: a.l || undefined, apiKey: CONFIG.apiKey, appName: '[DEFAULT]' }));
+    } catch (e) { /* senza localStorage si entra come prima (nome dal cookie pit_nome) */ }
+  }
+  function cancellaAccesso() { try { document.cookie = 'pit_acc=; max-age=0; path=/'; } catch (e) { /* niente */ } }
+  function ricordaAccesso(user) {
+    try {
+      if (!user.isAnonymous) { cancellaAccesso(); return; }   // chi gestisce entra con Google: mai in un cookie
+      const j = user.toJSON(), r = j.stsTokenManager && j.stsTokenManager.refreshToken;
+      if (!r) return;
+      const v = encodeURIComponent(JSON.stringify({ u: user.uid, r, c: j.createdAt, l: j.lastLoginAt }));
+      document.cookie = `pit_acc=${v}; max-age=31536000; path=/; SameSite=Lax${location.protocol === 'https:' ? '; Secure' : ''}`;
+    } catch (e) { /* cookie spenti: dall'icona si entra col nome (pit_nome) */ }   // riscritto a ogni avvio: Safari tiene i cookie dello script 7 giorni
+  }
   async function avvia(cambio, statoRete, opzioni) {
     alCambio = cambio; alStato = statoRete || (() => {}); op = opzioni || {};
     const base = 'https://www.gstatic.com/firebasejs/' + FIREBASE_VERSIONE + '/';
@@ -266,6 +293,7 @@ const Dati = (() => {
       ignoreUndefinedProperties: true,
       localCache: fs.persistentLocalCache({ tabManager: fs.persistentMultipleTabManager() })
     });
+    riprendiAccesso();   // (C113) prima di getAuth: l'SDK all'avvio cerca l'accesso anche in localStorage
     auth = au.getAuth(fa);
     if (EMULATORE) {
       fs.connectFirestoreEmulator(db, '127.0.0.1', 8080);
@@ -273,7 +301,7 @@ const Dati = (() => {
     }
     au.onAuthStateChanged(auth, user => {
       if (uscito) return;
-      if (user) chiSono(user);
+      if (user) { ricordaAccesso(user); chiSono(user); }
       else au.signInAnonymously(auth).catch(e => alStato({ errore: e.code }));
     });
     addEventListener('online', () => alStato({ rete: true, inAttesa }));
@@ -661,6 +689,7 @@ const Dati = (() => {
     await F.fs.terminate(db).catch(() => {});
     await F.fs.clearIndexedDbPersistence(db).catch(() => {});
     try { localStorage.removeItem(CHIAVE_COPIA); } catch (e) { /* niente */ }
+    cancellaAccesso();   // (C113) uscendo, l'accesso nel cookie non deve tornare
     await F.au.signOut(auth);
   }
 
