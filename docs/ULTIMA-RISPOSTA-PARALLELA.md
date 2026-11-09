@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (09/11/2026 20:26 ora italiana)
+# Ultima risposta di Claude (09/11/2026 20:54 ora italiana)
 
-Non è una promessa nuova: la voce che torna a parlare è già nella voce C110 di `docs/DA-FARE.md`, con il suo «👁 Lo vedi» (la risposta si sente, prova con un video dall'iPad).
+Salvato su GitHub l'ultimo file che mancava (il conteggio dei consumi della chat). La copia qui e quella su GitHub ora sono uguali e non resta niente in sospeso. Questa chat è chiusa e continua Voce 10.
