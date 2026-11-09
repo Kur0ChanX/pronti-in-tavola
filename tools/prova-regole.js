@@ -175,6 +175,16 @@ async function semina(env) {
     b.set(doc(d, 'settimane/2026-45'), { teglie: 1, ultimo: 'o9' });
     return assertSucceeds(b.commit());
   });
+  // (Mario 09/11) «Accetta clienti nuovi» spento o riacceso non tocca chi è già cliente: niente nome da riscrivere, ordina come prima
+  await caso('«Accetta nuovi clienti» spento: chi è già cliente legge e ordina come prima', async () => {
+    await senzaRegole(d => updateDoc(doc(d, 'impostazioni/app'), { nuovi: false }));
+    const d = db('tel1');
+    for (const p of ['utenti/tel1', 'clienti/c1', 'piatti/lasagne', 'impostazioni/app', 'ordini/o1']) await assertSucceeds(getDoc(doc(d, p)));
+    const b = nuovoOrdine(d, 5, 'c1');
+    b.update(doc(d, 'piatti/lasagne'), { pronto: Object.assign({}, pronto, { qta: 1 }), ultimoOrdine: 'o9' });
+    b.set(doc(d, 'settimane/2026-45'), { teglie: 1, ultimo: 'o9' });
+    await assertSucceeds(b.commit());
+  });
   await caso('ordine col numero sbagliato: no', () => assertFails(nuovoOrdine(db('tel1'), 7, 'c1').commit()));
   await caso('ordine a nome di un altro cliente: no', () => assertFails(nuovoOrdine(db('tel1'), 5, 'c2').commit()));
   await caso('ordine col telefono di un altro: no', () => assertFails(nuovoOrdine(db('tel1'), 5, 'c1', { utente: 'tel2' }).commit()));
