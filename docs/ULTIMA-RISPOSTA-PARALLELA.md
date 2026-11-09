@@ -1,5 +1,8 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 10:20 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+Ho capito: vuoi togliere gli ordini fatti finora, tutti di prova, così il conteggio parte dagli ordini veri. Lo farà la chat nuova, Aiuto 10, che parte da qui.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+✅ FATTO
+- La tua foto conferma che i codici funzionano: ogni cliente in Clienti ha il suo (JN3TT, 5BHZB…). Le regole nuove sono pubblicate, quindi anche «Correggi il nome» è attivo.
+- Ho scritto la tua richiesta in Da fare come C101: togliere gli ordini (Daniele Cabras 4, Barbara Miscera 2). I clienti restano.
+- Questa chat ha finito lo spazio, quindi ho fatto il passaggio di consegne. Ho aperto io la nuova: [Aiuto …
