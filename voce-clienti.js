@@ -436,6 +436,43 @@ function scegliAlternativa(finali) {
   combinazioni.forEach(c => { const e = capisciCliente(c), punti = e.confidenza + (e.piatti.length ? 0.3 : 0) - (e.piatti.some(p => p.ambiguo) ? 0.1 : 0) + (applicaSinonimi(vcS(c), sin) === vcS(c) ? 0.05 : 0); /* a parità vince la frase già giusta («lasagne», non «la sagne») */ if (!best || punti > best.punti) best = { testo: c.trim(), confidenza: e.confidenza, punti }; });
   return best;
 }
+/* giorni spezzati o storpiati da Whisper (Voce 5, 09/11: Mario ha detto «per sabato», scritto «persa a Mato»):
+   «sa bato» → «sabato», «dopo domani» → «dopodomani» (sennò vale «domani»!) sempre; «persa a Mato» → «per sabato» solo come
+   frase in più da confrontare (scegliTrascrizione), e solo dopo «per/entro» o attaccato a «per», mai a caso («salato» resta). */
+const GIORNI_SCRITTI = { domenica: 'domenica', lunedi: 'lunedì', martedi: 'martedì', mercoledi: 'mercoledì', giovedi: 'giovedì', venerdi: 'venerdì', sabato: 'sabato' };
+function ritoccaGiorni(testo) {
+  const w = String(testo || '').replace(/\bdopo domani\b/gi, 'dopodomani').split(' ');
+  for (let i = 0; i < w.length - 1; i++) {
+    const unito = vcS(w[i] + w[i + 1]);
+    if (unito in GIORNI_SCRITTI && !(vcS(w[i]) in GIORNI_SCRITTI)) w.splice(i, 2, GIORNI_SCRITTI[unito] + ((/[.,!?;:]+$/.exec(w[i + 1]) || [''])[0]));
+  }
+  return w.join(' ');
+}
+function giornoSimile(testo) {
+  const w = String(testo || '').split(' '), s = w.map(vcS);
+  if (s.some(x => x in GIORNI_SCRITTI || /^(oggi|domani|dopodomani|stasera)$/.test(x))) return '';
+  for (let i = 0; i < w.length; i++) for (let n = 1; n <= 3 && i + n <= w.length; n++) {
+    const unito = s.slice(i, i + n).join(''), dopoPer = i > 0 && /^(per|entro)$/.test(s[i - 1]), attaccato = !dopoPer && /^per./.test(unito);
+    if (!dopoPer && !attaccato) continue;
+    const resto = attaccato ? unito.slice(3) : unito;
+    if (resto.length < 5) continue;
+    const g = Object.keys(GIORNI_SCRITTI).find(k => { const d = lev(resto, k); return d > 0 && d <= (attaccato ? 2 : 1); });
+    if (g) return [...w.slice(0, i), (attaccato ? 'per ' : '') + GIORNI_SCRITTI[g] + ((/[.,!?;:]+$/.exec(w[i + n - 1]) || [''])[0]), ...w.slice(i + n)].join(' ');
+  }
+  return '';
+}
+/* il server manda la frase corretta (r.testo, r.corretto) e le trascrizioni di Whisper (r.alternative): vince quella che ha più
+   senso sul menù (piatti, quantità, giorno); la frase del correttore parte avvantaggiata. Senza alternative: r.testo ritoccato. */
+function scegliTrascrizione(r) {
+  const cand = [];
+  const metti = (t, bonus) => { t = ritoccaGiorni(String(t || '').replace(/\s+/g, ' ').trim()); if (t && !cand.some(c => vcS(c.t) === vcS(t))) cand.push({ t, bonus }); const g = t && giornoSimile(t); if (g && !cand.some(c => vcS(c.t) === vcS(g))) cand.push({ t: g, bonus }); };
+  metti(r && r.testo, r && r.corretto ? 0.15 : 0.02);
+  ((r && Array.isArray(r.alternative)) ? r.alternative : []).forEach(a => metti(a, 0));
+  if (cand.length < 2) return cand[0] ? cand[0].t : String((r && r.testo) || '');
+  let best = null;
+  cand.forEach(c => { const e = capisciCliente(c.t), p = e.confidenza + (e.piatti.length ? 0.3 : 0) + (e.quantita.length ? 0.1 : 0) + (e.giorno ? 0.1 : 0) + c.bonus; if (!best || p > best.p) best = { t: c.t, p }; });
+  return best.t;
+}
 /* «ascolto preciso»: registra (si ferma da sola al silenzio), manda al server (Whisper), riceve il testo */
 async function registraCliente(o = {}) {
   if (!navigator.mediaDevices || !window.MediaRecorder) { mostraToast('Questo telefono non sa registrare: scrivi la frase.'); statoVC('', ''); return; }
@@ -465,7 +502,7 @@ async function registraCliente(o = {}) {
     try {
       const r = await (window.ascoltaServerFinto || ascoltaServer)({ audio: await base64Di(blob), tipo: blob.type, piatti: nomiPiattiVoce() });
       if (VC.giro !== giro) return;
-      if (r && r.testo) { consegnaDetto(r.testo, o); return; }
+      if (r && r.testo) { consegnaDetto(scegliTrascrizione(r), o); return; }
       statoVC('', ''); mostraToast(r && r.fermo ? 'Per oggi ho ascoltato tanto: scrivimi la frase.' : 'Non ho capito le parole: riprova o scrivi la frase.');
     } catch (e) { if (VC.giro === giro) { statoVC('', ''); mostraToast(e.message || 'Adesso non riesco a capire la voce: scrivi la frase.'); } }
   };
