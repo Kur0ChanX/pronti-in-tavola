@@ -1,20 +1,8 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 14:54 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: Francesco non entra, non vede né «Aggiungi a Home» né le notifiche, e vuoi che sia risolto per sempre.
 
 ───
 ✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
-
-───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+- **Causa trovata, con prova**: ho letto il documento vero sul server: l'interruttore **«Accetta clienti nuovi» è SPENTO** dalle 11:01 di oggi. Non l'ho spento io: lo spegne solo un tocco in Clienti (probabilmente per sbaglio, mentre provavi). Finché è spento, chi apre il link vede quella schermata e non entra; per questo a Francesco non sono usciti né «Aggiungi a Home» né le notifiche: escono solo dopo l'entrata.
+- **Correzione (v0.9.76, prove in corso, poi …
