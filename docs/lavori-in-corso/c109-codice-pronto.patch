@@ -1,0 +1,190 @@
+# C109 · codice pronto della Principale 35 (09/11), NON applicato: aspetta la scelta di Mario (riga 🛑 C109 in «0. Aspetta Mario», proposta in docs/lavori-in-corso/limiti-per-persona.md).
+# Fa il livello «Avviso»: niente blocco per cliente nell'aiutante, segnala() nel server (registro + notifica 'esagera'), elenco in «Solo per te, Mario», prova C109 in tools/prova.js. Soglia 20 (la proposta dice 30: cambiare SOGLIA_AIC_CLIENTE). Manca il «modo ridotto».
+# Si applica con: git apply docs/lavori-in-corso/c109-codice-pronto.patch (poi versione nuova in data.js e prove)
+diff --git a/aiutante.js b/aiutante.js
+index 4ba2ab8a..de115cfb 100644
+--- a/aiutante.js
++++ b/aiutante.js
+@@ -510,7 +510,7 @@ const DOVE_AI = {
+   'imp-paga': { vista: 'impostazioni', sez: 'imp-paga', nome: 'Pagamenti', come: 'Accendi come vuoi essere pagata: contanti, bonifico (con l\'IBAN) o Postepay.', parole: /pagament|bonific|\biban\b|postepay|contanti|pagar/, azione: true },
+   'imp-vista': { vista: 'impostazioni', sez: 'imp-vista', nome: 'Testo grande e guida', come: 'Accendi «Testo grande» se leggi male, o tocca «Rivedi la guida».', parole: /testo grande|scritt[ae] (piccol|grand)|non (ci )?vedo|ingrandi|rivedi la guida/ },
+   'imp-gestori': { vista: 'impostazioni', sez: 'imp-gestori', nome: 'Chi gestisce la cucina', come: 'Qui vedi chi entra come te e puoi aggiungere una persona.', parole: /chi gestisc|aiutar(mi)? in cucina|mio marito|socia|altra persona (che )?gestisc/ },
+-  'imp-notifiche': { vista: 'impostazioni', sez: 'imp-notifiche', nome: 'Notifiche', come: 'Tocca «Attiva» e poi «Consenti» quando il telefono lo chiede. Sotto vedi gli ultimi avvisi arrivati.', parole: /notific|avvis[io] (degli|sul)|suon|ultimi avvisi/ },
++  'imp-notifiche': { vista: 'impostazioni', sez: 'imp-notifiche', nome: 'Notifiche', come: 'Tocca «Attiva» e poi «Consenti» quando il telefono lo chiede. Sotto vedi gli ultimi avvisi arrivati, anche le segnalazioni di un cliente che usa molto l\'aiutante (nessuno viene fermato).', parole: /notific|avvis[io] (degli|sul)|suon|ultimi avvisi|segnalazion|esager|(usa|chied\w*) (tanto|molto|troppo)/ },
+   // (C100) funzioni vecchie che l'aiutante non conosceva
+   'imp-voce': { vista: 'impostazioni', sez: 'imp-voce', nome: 'Voce', come: 'Sposta il cursore: più a sinistra la voce è più lenta. Tocca «Senti la velocità» per provarla.', parole: /\bvoce\b|parla (troppo )?(veloce|lent|pian|fort)|velocita/ },
+   'imp-lucchetto': { vista: 'impostazioni', sez: 'imp-lucchetto', nome: 'Lucchetto', come: 'Scegli impronta o PIN per aprire la tua parte dell\'app.', parole: /lucchett|\bpin\b|impront|password|blocc(a|o) (l'app|il telefono)/ },
+diff --git a/app.js b/app.js
+index 350cdc76..912b355c 100644
+--- a/app.js
++++ b/app.js
+@@ -451,7 +451,7 @@ function cartaNotifica() {
+ }
+ /* (C97, Mario 08/11 «non mi è arrivata nessuna notifica… di accettarlo»): chi gestisce vede cosa ha mandato il server
+    (ora, cosa, a quanti telefoni, se Google l'ha preso) e se il server conosce QUESTO telefono: così si capisce dove si perde */
+-const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare', chiusi: 'Persona nuova fermata: clienti nuovi chiusi',
++const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare', chiusi: 'Persona nuova fermata: clienti nuovi chiusi', esagera: 'Un cliente usa molto l\'aiutante (nessuno fermato)',
+   risposta: 'Risposta sul giorno', modifica: 'Richiesta di modifica', qui: 'Cliente qui per il ritiro', prova: 'Prova', promemoria: 'Promemoria della sera', pronto: 'Ordine pronto (al cliente)', proposta: 'Altro giorno (al cliente)' };
+ function voceDiario(d) {
+   const q = new Date(d.quando), ora = q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
+@@ -1633,9 +1633,16 @@ function contoAI() {
+     Dati.token().then(tok => tok && fetch('/api/conto-ai', { method: 'POST', headers: { authorization: 'Bearer ' + tok } })).then(r => r && r.ok ? r.json() : null)
+       .then(j => { if (j) { UI.contoAI = Object.assign(j, { quando: Date.now() }); if (UI.vista === 'impostazioni') render(); } }).catch(() => {}).finally(() => { UI.contoAIin = false; });
+   }
+-  const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (tetto ${c.tetti.clienti}, ${c.tetti.aCliente} a testa).` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
++  const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (tetto ${c.tetti.clienti}; nessun cliente viene fermato: oltre ${c.tetti.sogliaCliente} domande a testa arriva una segnalazione).${segnalazioniHtml(c.segnalazioni)}` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
+   return `<p class="tenue piccolo" style="margin:0">${riga}<br>Limite gratuito vero: 10.000 «neuroni» al giorno per tutto l'account (si azzera all'una di notte, ora italiana). Una domanda ne usa circa 150-300: stima 30-60 risposte al giorno in tutto. Finiti: «riprova domani», nessun costo.</p>`;
+ }
++/* (C109, PT E41) segnalazioni del server: un cliente ha usato molto una funzione (mai fermato). Le ultime 5, la più nuova in cima */
++function segnalazioniHtml(l) {
++  if (!l || !l.length) return '';
++  const nomi = { aiutante: 'domande all\'aiutante', ascolto: 'ascolti del microfono' };
++  return '<br><b>Segnalazioni</b> (nessuno fermato):' + l.slice(-5).reverse().map(x => { const q = new Date(x.quando), cl = S.clienti.find(k => k.id === x.cliente) || {};
++    return `<br>· ${q.toLocaleDateString('it-IT', { day: 'numeric', month: 'numeric' })} ${q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} · ${esc(cl.nome || 'un cliente')}${cl.codice ? ' ' + esc(mostraCodice(cl.codice)) : ''}: ${Number(x.n) || 0} ${nomi[x.cosa] || esc(String(x.cosa || ''))} (soglia ${Number(x.soglia) || 0})`; }).join('');
++}
+ /* Prova le AI (Mario 08/11): un tocco, ogni AI risponde o dice perché no */
+ function provaAIhtml() {
+   const p = UI.provaAI;
+@@ -3031,6 +3038,7 @@ function vaiDaNotifica() {
+   if (P.ruolo === 'monica') {
+     if (t === 'promemoria') { UI.vista = 'ordini'; UI.tab = 'prossimi'; UI.ordAperto = null; UI.avvisoTesto = 'Ecco gli ordini dei prossimi giorni: in cima quelli di domani.'; return; }
+     if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }
++    if (t === 'esagera') { UI.vista = 'impostazioni'; UI.avvisoTesto = 'Un cliente ha fatto tante domande all\'aiutante. Nessuno è stato fermato: ' + (puoSviluppare() ? 'chi e quante in «Solo per te, Mario».' : 'non devi fare niente.'); return; }   // (C109)
+     if (t === 'chiusi') { UI.vista = 'clienti'; UI.avvisoTesto = S.impostazioni.nuovi === false ? 'Una persona nuova ha provato a entrare: tocca «Riapri ai clienti nuovi».' : 'Già riaperto: ora le persone nuove possono entrare.'; return; }   // (C104)   // il riquadro delle persone nuove si apre da solo
+     const g = daGuardare().slice().sort((a, b) => (b.tempi && b.tempi.nuovo || 0) - (a.tempi && a.tempi.nuovo || 0) || b.n - a.n);
+     UI.vista = 'ordini'; UI.tab = 'nuovi'; UI.ordAperto = g.length ? g[0].id : null;
+diff --git a/docs/PER-IL-KIT.md b/docs/PER-IL-KIT.md
+index bd015cef..f6d0fd6c 100644
+--- a/docs/PER-IL-KIT.md
++++ b/docs/PER-IL-KIT.md
+@@ -17,3 +17,9 @@ Questo progetto non può toccare il repo del kit (`add_repo` di un altro repo sp
+ - Nel blocco `👉 DA FARE TU`: prima dei passi una riga «A cosa serve: …»; nelle domande è già nel «📌 Di cosa parliamo» (skill `domande`): aggiungere «a cosa serve la risposta».
+ - Preferenze: `PREFERENZE-CHAT.txt` è a ~2.400 caratteri su 2.500: accorciare un'altra riga senza cambiarne il senso.
+ - Imporla con un hook (consiglio): allo Stop, se l'ultimo messaggio ha «👉 DA FARE TU» senza «A cosa serve», una riga di richiamo.
++
++## C109 · Niente blocchi per persona (Mario 09/11 ~20:35: «aggiungi la regola come ti avevo già detto per tutto l'account»)
++- Cercata nel kit e nel repo del kit (09/11): non c'è. Le parole di Mario: `docs/CONSEGNE-PARALLELA-voce.md` «Ultimo messaggio di Mario»; lezione PT E41 in `docs/ERRORI.md`.
++- Testo per `REGOLE.md`, sezione «Parere e occhio critico», sotto «App indipendenti da Claude»: «**Niente blocchi per persona**: mai un limite che interrompe un cliente, un amico o un collega (sembra un'app amatoriale); un limite per persona si chiede prima a Mario. Al suo posto un tetto AMPIO che, superato, non blocca: manda a chi gestisce una segnalazione nell'app e la registra (molto oltre = c'è un problema; poco oltre = si alza il tetto).»
++- Nella skill `nuova-funzione`, fra i controlli dell'occhio critico: «limiti per persona? → niente blocchi, tetto ampio + segnalazione (regola Niente blocchi per persona)».
++- Esempio fatto qui (v0.9.85): `segnala()` in `worker.js` (registro + notifica a chi gestisce), soglia `SOGLIA_AIC_CLIENTE` 20 al posto del blocco a 10.
+diff --git a/sw.js b/sw.js
+index 024385a4..3ed4b11e 100644
+--- a/sw.js
++++ b/sw.js
+@@ -47,6 +47,7 @@ self.addEventListener('push', e => {
+       primo: ['Una persona nuova ha ordinato: accettala 🍝', 'Il suo primo ordine aspetta il tuo sì. Tocca per vedere chi è.'],
+       risposta: ['Un cliente ha risposto sul giorno 🍝', 'Tocca per vedere la sua risposta.'],
+       modifica: ['Un cliente chiede una modifica 🍝', 'Tocca per vedere cosa cambia.'],
++      esagera: ['Un cliente usa molto l\'aiutante', 'Nessuno è stato fermato. Tocca per vedere i dettagli.'],   // (C109)
+       chiusi: ['Una persona nuova non riesce a entrare 🔒', '«Accetta clienti nuovi» è spento. Tocca per riaprire.'],   // (C104)
+       qui: [`${(u && u.prova) ? 'PROVA · ' : ''}${(u && u.nome) || 'Un cliente'} è qui per il ritiro 🍝`, `${u && u.n ? 'Ordine n. ' + u.n + '. ' : ''}Tocca per vederlo.`],
+       ordine: ['Pronti in Tavola', 'Hai un ordine nuovo da guardare 🍝']
+diff --git a/tools/prova.js b/tools/prova.js
+index 2a59b38a..beda36cd 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -1198,6 +1198,21 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     if (!(await page.locator('.toast', { hasText: 'Per uscire' }).count())) throw new Error('nella Home manca l\'avviso «Per uscire…»');
+     if (page.url() !== url) throw new Error('il primo gesto nella Home ha chiuso l\'app');
+   });
++  await passo('C109 nessun cliente fermato: la segnalazione «esagera» apre le Impostazioni, elenco con nome e numeri, l\'aiutante porta alle Notifiche', async () => {
++    const r = await page.evaluate(() => {
++      P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'home'; render();
++      const k = S.clienti[0];
++      const h = segnalazioniHtml([{ quando: new Date().toISOString(), cosa: 'aiutante', cliente: k.id, n: 21, soglia: 20 }]);
++      UI.vaiDopo = 'esagera'; vaiDaNotifica(); render();
++      const voce = DOVE_AI['imp-notifiche'].parole.test('chi usa molto l\'aiutante?');
++      return { h, nome: k.nome, vista: UI.vista, avviso: UI.avvisoTesto, nomeAvviso: NOMI_AVVISO.esagera, voce };
++    });
++    if (!r.h.includes(r.nome) || !/21 domande/.test(r.h) || !/soglia 20/.test(r.h)) throw new Error('elenco delle segnalazioni sbagliato: ' + r.h);
++    if (r.vista !== 'impostazioni' || !/Nessuno è stato fermato/.test(r.avviso)) throw new Error('il tocco su «esagera» non apre le Impostazioni con l\'avviso: ' + r.vista + ' · ' + r.avviso);
++    if (!r.nomeAvviso) throw new Error('manca il nome dell\'avviso «esagera» negli ultimi avvisi');
++    if (r.voce !== true) throw new Error('l\'aiutante non porta alle Notifiche con «chi usa molto l\'aiutante?»');
++    await page.evaluate(() => { UI.avvisoTesto = ''; UI.vista = 'home'; render(); });
++  });
+   await passo('C106 iPad in orizzontale: al rientro nell\'app lo zoom torna a 1 (regola «mai più grande di 1» per un attimo, poi quella normale)', async () => {
+     const c2 = await browser.newContext({ ...devices['iPad Pro 11 landscape'], deviceScaleFactor: 1 });
+     const p2 = await c2.newPage(); const errori = [];
+diff --git a/worker.js b/worker.js
+index 6a06e34b..d2cd296e 100644
+--- a/worker.js
++++ b/worker.js
+@@ -30,7 +30,8 @@ const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi',
+ const PROGETTO = 'pronti-in-tavola';
+ const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
+ const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
+-const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui', 'chiusi'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
++const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui', 'chiusi'];
++const TIPI_SERVER = ['esagera'];   // (C109) avvisi che manda solo il server (un telefono non li può chiedere con /api/avvisa)   // cosa è successo, per il testo e per aprire il punto giusto (C27)
+ const PAUSA_MS = 15 * 1000;
+ const SQUILLO_MS = 5000, SQUILLI = 12;   // «sono qui»: uno squillo ogni 5 secondi per 1 minuto (C51)     // e non più di uno ogni 15 secondi
+ 
+@@ -75,7 +76,8 @@ Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna
+ Gli ordini con "prova":true sono di prova: non contarli negli incassi né tra le cose da cucinare.
+ Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 3 frasi.`;
+ /* aiutante dei clienti (C50, Mario 08/11 «per i clienti fallo al meglio ma tienilo disattivato»): solo menù e i suoi ordini, mai dati di altri */
+-const TETTO_AIC = 60, TETTO_AIC_CLIENTE = 10;   // domande al giorno: in tutto e per ogni cliente (restano neuroni per Monica)
++const TETTO_AIC = 60;   // domande al giorno dei clienti, in tutto (limite gratuito dei «neuroni»: restano per Monica)
++const SOGLIA_AIC_CLIENTE = 20;   // (C109, PT E41) oltre 20 domande di UN cliente arriva una segnalazione a chi gestisce: MAI un blocco
+ const ISTRUZIONI_CLIENTE = `Sei l'aiutante gentile dell'app «Pronti in Tavola» di Monica, che cucina da asporto a Olbia: i clienti ordinano dall'app e ritirano a casa sua.
+ Parli con UN cliente. Ricevi i DATI in JSON: il menù di oggi (piatti, prezzi, formati, gusti, ingredienti e allergeni scritti da Monica), le regole degli ordini, gli ordini di QUESTO cliente, il suo carrello e le sue allergie.
+ Rispondi SOLO con un oggetto JSON, senza altro testo: {"testo":"<risposta breve>","azioni":[ ...da 0 a 4 azioni... ]}
+@@ -487,7 +489,7 @@ export class Avvisi extends DurableObject {
+ 
+   async manda(soloUid, per, perCliente, extra, chi) {
+     const chiave = perCliente ? 'clienti' : 'iscritti';
+-    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) ? per : 'ordine', quando: Date.now() });
++    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) || TIPI_SERVER.includes(per) ? per : 'ordine', quando: Date.now() });
+     const tutti = (await this.ctx.storage.get(chiave)) || [];
+     const dest = perCliente ? tutti.filter(x => x.cliente === perCliente) : tutti.filter(x => !soloUid || x.uid === soloUid);
+     if (perCliente) {   // il testo «è pronto» vale solo per i telefoni di quel cliente
+@@ -577,16 +579,27 @@ export class Avvisi extends DurableObject {
+     return true;
+   }
+ 
+-  /* aiutante dei clienti: tetto in tutto e per cliente (chi gestisce che prova conta in tutto, non a testa) */
++  /* aiutante dei clienti: tetto in tutto (limite gratuito). Per cliente nessun blocco (C109): oltre la soglia una segnalazione, di nuovo al doppio */
+   async contaAIC(cliente) {
+     const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('aic')) || {};
+     const c = c0.giorno === oggi ? c0 : { giorno: oggi, n: 0, chi: {} };
+     if (c.n >= TETTO_AIC) return 'tetto';
+-    if (cliente && (c.chi[cliente] || 0) >= TETTO_AIC_CLIENTE) return 'tuo';
+-    c.n++; if (cliente) c.chi[cliente] = (c.chi[cliente] || 0) + 1;
++    c.n++;
++    if (cliente) {
++      const n = c.chi[cliente] = (c.chi[cliente] || 0) + 1;
++      if (n === SOGLIA_AIC_CLIENTE + 1 || n === 2 * SOGLIA_AIC_CLIENTE + 1) this.segnala('aiutante', cliente, n, SOGLIA_AIC_CLIENTE).catch(() => {});
++    }
+     await this.ctx.storage.put('aic', c);
+     return '';
+   }
++  /* (C109, PT E41) UNA funzione per segnalare a chi gestisce che una persona usa molto una cosa: non ferma mai nessuno.
++     Registro (ultime 30, Impostazioni → «Le AI e i limiti») + notifica a chi gestisce. La usa anche l'ascolto (Voce). */
++  async segnala(cosa, cliente, n, soglia) {
++    const reg = ((await this.ctx.storage.get('segnalazioni')) || []).slice(-29);
++    reg.push({ quando: new Date().toISOString(), cosa, cliente: cliente || '', n, soglia });
++    await this.ctx.storage.put('segnalazioni', reg);
++    return this.manda(null, 'esagera', null, { cosa, cliente: cliente || '', n });
++  }
+   /* ascolto preciso dei clienti: stesso conto, chiave «asc» */
+   async contaAscolto(cliente) {
+     const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('asc')) || {};
+@@ -600,7 +613,8 @@ export class Avvisi extends DurableObject {
+   async contoAI() {
+     const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {}, s = (await this.ctx.storage.get('asc')) || {};
+     return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0, ascolti: s.giorno === oggi ? s.n : 0,
+-      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
++      segnalazioni: ((await this.ctx.storage.get('segnalazioni')) || []).slice(-10),
++      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, sogliaCliente: SOGLIA_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
+   }
+ 
+   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
+@@ -847,7 +861,7 @@ export default {
+         if (dati.length > 40000) return json({ errore: 'dati troppo grandi' }, 413);
+         if (!env.AI) return json({ errore: 'AI non collegata' }, 503);
+         const fermo = await av.contaAIC(c);
+-        if (fermo) return json({ fermo, testo: fermo === 'tuo' ? 'Per oggi abbiamo parlato tanto! Riprova domani, o scrivi a Monica.' : 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
++        if (fermo) return json({ fermo, testo: 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
+         return json(await chiediAI(env, testo, dati, b.storia, null, true));
+       }
+       if (url.pathname === '/api/ascolta') {   // «ascolto preciso» dei clienti (C105): audio → Whisper (Cloudflare, poi Groq) → testo
