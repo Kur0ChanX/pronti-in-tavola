@@ -45,6 +45,7 @@ Sessione attuale: #37 (dopo la #36 `session_01WTjqUtPqTTxpnkk1cGLaiK`, chiusa al
 ## Ultimo messaggio di Mario
 09/11 ~20:45 (in questa chat), parola per parola: «Per chi ordina è sparito il comando, prima di ordinare voglio solo provare l'app, oppure adesso non mi ricordo, ordina sul serio, che uno deve cliccare per forza uno dei due, che non è già preselezionato prima di ordinare. Perché mi è appena, per far provare l'app mi è appena arrivato un ordine, ma mi ha detto che la voleva solo provare. Quindi si è creato un po' di caos.» → C112, v0.9.90 online, risposta data.
 Poi, 09/11 ~21:00, parola per parola: «Fai un controllo perché io ho accettato subito Antonio Sanna e dopo lui ha ordinato e non gli è uscita la scelta stò provando o invio vero» · «accettato dopo 5 secondi» → conferma la causa di C112 (accettato prima di ordinare = niente scelta); risposto: v0.9.90 la corregge, l'ordine di Antonio si segna «È una prova».
+Dopo l'handoff, nella #36 (09/11 ~21:20), parola per parola: «Quindi mi confermi che adesso esce a tutti quanti prima di ordinare? Devono cliccare per forza se è una prova o se vogliono ordinare seriamente, e poi per qualsiasi motivo magari hanno cliccato per sbaglio la scelta sbagliata, io posso cliccare che è stata una prova o viceversa.» → risposto dalla #36: sì (v0.9.90, provato solo con le prove automatiche); nell'ordine «È una prova» e, sugli ordini di prova, «Non è una prova: rimettilo tra i veri».
 Nella chat Voce 9, 20:58: «Poi nel mio ipad non posso neanche aprire la schermata dev» → C111.
 
 ## Numeri liberi
