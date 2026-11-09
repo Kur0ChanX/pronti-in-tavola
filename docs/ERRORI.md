@@ -36,6 +36,7 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 
 - **PT E42** (09/11/2026) Mario: «per Android è una bomba, per iPad fa schifo… perché????». Metà della differenza era mia: nella pagina Aiutante avevo nascosto apposta il pannello «Ti ascolto», e su Android non si notava perché il riconoscitore scrive subito. Ogni stato di attesa (accensione, ascolto, risposta del server, voce) si prova sul percorso più lento (iPad dalla Home, server lento), non su quello veloce.
 - **PT E44** (09/11/2026) iPhone: dopo il sì di Monica l'app messa sulla Home risultava una persona nuova («Dice che ha cambiato telefono») e Monica doveva dire sì di nuovo; Mario: «un disastro… se non riesci togliamo l'approvazione». L'app sulla Home di iPhone prende da Safari SOLO i cookie (WebKit 17.2): nel cookie c'era il nome, non l'accesso. Ogni identità che deve sopravvivere all'installazione su iPhone va anche in un cookie, e il passaggio Safari → icona si prova con un contesto che ha SOLO i cookie.
+- **PT E45** (09/11/2026) Ho tagliato le strisce di GZ e ingrandito ogni pezzo a tutto schermo senza guardarne la misura vera (220×170 px): Mario «sgranatissime». Prima di ingrandire o tagliare una foto, misurare i pixel veri e non mostrarla oltre ~2 volte la sua misura; se la fonte non ha una versione grande, dirlo subito con i numeri.
 
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
