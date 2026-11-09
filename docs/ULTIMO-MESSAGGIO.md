@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 10:56 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 17:09 ora italiana)
 
-Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
+No, scusa, mi ha detto appena l'ho aggiunta nella home, però non gliel'aveva chiesto l'applicazione di aggiungere nella home, ma lui è uno che ci sa fare col telefono, quindi l'ha fatto lui in automatico, senza che lui glielo chiedesse l'applicazione. Una volta che l'ha aggiunta home, l'applicazione gli ha chiesto: vuoi attivare le notifiche? Scusa, prima ho sbagliato come messaggio.
