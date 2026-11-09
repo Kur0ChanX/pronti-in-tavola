@@ -24,6 +24,7 @@ Piano (ricerca 09/11/2026: Groq docs speech-to-text e rate-limits; Cloudflare mo
 5. **Sul telefono**: con `r.alternative`, scelta con `scegliAlternativa([r.alternative])` (vince la frase con più senso sul menù); in più un ritocco locale dei giorni simili («persa a Mato» → «per sabato», «sa bato») dentro `giornoDetto` o come alternativa in più. La proposta resta da confermare.
 6. Prove: in `tools/prova.js` passo con `ascoltaServerFinto` che restituisce `alternative` storpiate; una prova del Worker con `env.AI` e `fetch` finti (oggi non c'è: crearla piccola, es. `tools/prova-ascolta.mjs`). Poi giro completo, versione libera (oggi 0.9.85 se la principale non l'ha presa), push: `sito.yml` pubblica sito e Worker. Dal vivo: `/api/conto-ai` → `ascolti` (solo per chi gestisce).
 7. A Mario: «chiudi e riapri, di' la stessa frase» + riga in «## 0. Aspetta Mario» (quella di Voce 4 c'è già: aggiornarla, non doppiarla).
+8. **Domanda di Mario (dopo l'handoff): motore LOCALE per non consumare limiti?** Rispondigli tu, dopo una ricerca aggiornata (mese e anno): riconoscimento nel browser (Whisper con transformers.js o whisper.cpp in WASM/WebGPU, Vosk italiano con vocabolario ristretto ai piatti, altri nuovi) su iPhone/iPad: peso da scaricare, velocità, precisione in italiano. Parere di Voce 4 da verificare: i limiti di oggi bastano per un negozio di amici (Groq 2.000 frasi al giorno, Cloudflare ~200 minuti al giorno coi neuroni gratis condivisi con le altre AI dell'app, tetto dell'app 400 al giorno e 40 per cliente; Android usa già il riconoscitore del telefono, gratis); un motore locale pesa decine o centinaia di MB sul telefono del cliente e su iPhone è lento. Proposta probabile: niente locale ora; due fornitori in fila + contatore, e il locale (es. Vosk col vocabolario del menù) solo come ultima riserva se i contatori mostrano limiti raggiunti. Decide Mario (🛑 cosa scaricano i clienti).
 Strada scartata: Deepgram Nova-3 su Cloudflare (italiano sì, parole chiave sì) costa ~10 volte Whisper in neuroni (473 al minuto) e il formato d'ingresso va verificato; da tenere come terza strada solo se 1-5 non bastano.
 
 ## Decisioni di Voce 2 (col perché; cambiarle solo con un motivo)
@@ -44,6 +45,7 @@ Strada scartata: Deepgram Nova-3 su Cloudflare (italiano sì, parole chiave sì)
 Nessuna nuova. In «## 0. Aspetta Mario» resta la riga di Voce 4 (prova su iPad): dopo la correzione si aggiorna con la versione nuova.
 
 ## Ultimo messaggio di Mario (parola per parola)
+09/11 ~20:25, chat Voce 4 (dopo l'handoff): «Ok possiamo integrarne una Locale per non consumare limiti? se molti clienti chiedono magari ci sono interruzioni per limiti».
 09/11 ~20:15, chat Voce 4, con la foto dell'iPad: «non capisce bene e parlo normale».
 Prima, in Voce 4: «ti ascolto frickera e la pagina deco scrollare in alto per vedere cosa dice» (→ v0.9.84); «è su app da ipad sento il  suono di attivazione microfono ma non va su android smartphone da app va cosí guarda video» (→ v0.9.82). In Voce 3: «su ipad non funziona il comando vocale e il microfono è abilitato, risolvi».
 
