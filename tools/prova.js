@@ -1013,6 +1013,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.click('.foglio .piede [data-a="chiudi"]'); await page.waitForTimeout(500);
     await page.evaluate(() => render()); await page.waitForTimeout(300);
     if (await page.locator('.foglio').count()) throw new Error('«Più tardi» non chiude, o il foglio torna nella stessa apertura');
+    const dopo = await page.evaluate(() => { UI.invitoFatto = false; const a = serveInvito(); P.invitoDopo = 0; UI.invitoFatto = false; const b = serveInvito(); return [a, b]; });
+    if (dopo[0] || !dopo[1]) throw new Error('«Più tardi» deve rimandare a domani (e non oltre): ' + JSON.stringify(dopo));
     await page.evaluate(() => { UI.invitoProva = false; });
   });
   await passo('cliente non ancora approvato: «Attiva le notifiche» non va in giro continuo (C96, foto di Mario 08/11)', async () => {   // autonoma

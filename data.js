@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.78';
+const VERSIONE_APP = '0.9.79';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.79', data: '09/11/2026',
+    corretto: ['Su iPhone il foglio «Ultimo passo: le notifiche» poteva comparire sopra «Come ti chiami?» prima che l\'app sapesse chi eri: ora aspetta', 'Con «Accetta clienti nuovi» spento, chi è già cliente e apre l\'app da un telefono nuovo (o dall\'icona sull\'iPhone) rientra con «Sì, sono io»: la porta chiusa ferma solo i nomi nuovi'],
+    migliorato: ['«Più tardi» sul foglio «Installa l\'app» lo rimanda a domani, non alla prossima apertura'] },
   { v: '0.9.78', data: '09/11/2026',
     nuovo: ['Se «Accetta clienti nuovi» è spento e una persona nuova prova a entrare, a te e a Monica arriva subito la notifica «Una persona nuova non riesce a entrare»: il tocco apre Clienti, dove c\'è «Riapri». Così nessuno resta fuori per ore senza che lo sappiate'] },
   { v: '0.9.77', data: '09/11/2026',
