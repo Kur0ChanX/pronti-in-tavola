@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 11:08 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+parlami dei numeri doppi non ho capito bene
