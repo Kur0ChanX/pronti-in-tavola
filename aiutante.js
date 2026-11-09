@@ -736,7 +736,7 @@ async function inviaAC(testo, voce, extra = {}) {
   if (UI.vista === 'aiuto') { render(); fondoAC(); }
   const i = AIC.msgs.length - 1, haFai = pi.azioni.some(x => controllaAIC(x.a).fai);
   const o = k => typeof opz !== 'function' || opz(k) !== false, poi = () => { if (typeof dopoVoceCliente === 'function') dopoVoceCliente(i); };
-  if (voce) { if (o('voceClientiRisponde')) parlaAI((typeof perVoceCliente === 'function' ? perVoceCliente(pi.testo) : pi.testo) + (haFai ? (o('voceClientiConferma') && (typeof vocePuoSentireSi !== 'function' || vocePuoSentireSi()) ? ' Lo metto nel carrello? Dimmi sì o no.' : ' Controlla e tocca Conferma.') : ''), poi); else poi(); }
+  if (voce) { if (o('voceClientiRisponde')) (typeof parlaCliente === 'function' ? (t, f) => parlaCliente(t, f, i) : parlaAI)((typeof perVoceCliente === 'function' ? perVoceCliente(pi.testo) : pi.testo) + (haFai ? (o('voceClientiConferma') && (typeof vocePuoSentireSi !== 'function' || vocePuoSentireSi()) ? ' Lo metto nel carrello? Dimmi sì o no.' : ' Controlla e tocca Conferma.') : ''), poi); else poi(); }
 }
 window.chiediAiutoCliente = chiediAiutoCliente;
 function fondoAC() {
@@ -764,6 +764,7 @@ function rigaAC(x, i, j, fermo) {
 function fumettoAC(m, i) {
   if (m.chi === 'io') return `<div class="ai-fum io">${esc(m.t)}</div>`;
   let h = `<div class="ai-fum lei">${esc(m.t)}`;
+  if (m.voce && typeof riascoltaCliente === 'function') h += `<button type="button" class="vc-ascolta ${m.muta ? 'forte' : ''}" data-a="vc-ascolta" data-m="${i}">${ico('altoparlante')}${m.muta ? 'Ascolta la risposta' : 'Riascolta'}</button>`;   // C110: su iPhone/iPad la voce parte di sicuro con un tocco
   if (m.alt && !m.altFatto) h += `<div class="scelte vc-alt">${m.alt.map((a, j) => `<button type="button" class="chip" data-a="vc-alt" data-m="${i}" data-j="${j}">${esc(a.nome)}</button>`).join('')}</div>`;   // «Quale intendi?» (voce-clienti.js)
   if (m.piano) {
     const fermo = !!m.esito, quante = m.piano.filter(x => x.on && controllaAIC(x.a).fai).length;

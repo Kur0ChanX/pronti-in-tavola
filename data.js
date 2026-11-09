@@ -183,12 +183,15 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.88';
+const VERSIONE_APP = '0.9.89';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
-  { v: '0.9.88', data: '09/11/2026',
+  { v: '0.9.89', data: '09/11/2026',
     corretto: ['Prima di inviare un ordine TUTTI i clienti devono toccare «Ordino davvero» o «Sto solo provando l\'app» (nessuna è già segnata): la domanda usciva solo a chi Monica non aveva ancora accettato, e oggi un amico che provava l\'app ha mandato un ordine vero'],
     migliorato: ['In Impostazioni → «Altre regole dell\'app» → «Chiedi "Ordini davvero o provi l\'app?"» si sceglie a chi chiederlo: a tutti (di base), solo ai nuovi o mai'] },
+  { v: '0.9.88', data: '09/11/2026',
+    migliorato: ['Su iPad e iPhone il microfono dei clienti si comporta come su Android: al tocco compare subito «Accendo il microfono…» (anche nella pagina Aiutante), le barrette si muovono mentre parli, durante l\'attesa il riquadro dice cosa sta facendo e la risposta viene letta a voce; se il telefono non la fa partire da sola, sul fumetto c\'è «Ascolta la risposta»'],
+    corretto: ['Ai clienti non compare più l\'avviso sbagliato «la voce si sta ancora scaricando»: per loro legge subito la voce del telefono'] },
   { v: '0.9.87', data: '09/11/2026',
     migliorato: ['L\'aiutante dei clienti non ferma più nessuno: niente più «per oggi abbiamo parlato tanto». Oltre 30 domande in un giorno di un cliente arriva una segnalazione solo a Mario; oltre 100 (o 10 in un minuto) a quel cliente risponde il telefono, senza AI, e il cliente ordina lo stesso',
       'Mario sceglie i due numeri in «Solo per te, Mario» e lì vede l\'elenco delle segnalazioni: chi, quante domande e quando; anche le domande di tutti i clienti all\'80% e a fine giornata',
