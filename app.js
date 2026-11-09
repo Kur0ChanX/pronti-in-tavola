@@ -915,7 +915,7 @@ function foglioPiatto() {
     ${p.aiuto ? `<span class="tenue piccolo">${esc(p.aiuto)}</span>` : ''}</div>`;
   h += `<div class="gruppo"><span class="etichetta">Ingredienti</span><p class="ingr">${esc(ing.map(i => ING(i).n).join(', ')) || 'Monica li sta scrivendo.'}</p></div>`;
   h += `<div class="gruppo"><span class="etichetta">Allergeni</span>${all.length ? `<div class="allergeni">${all.map(a => `<span class="${mie.has(a) ? 'mio' : ''}">${NOME_ALL[a]}</span>`).join('')}</div>` : '<span class="tenue">Nessuno dei 14 allergeni di legge.</span>'}
-    <span class="tenue piccolo">Calcolati dagli ingredienti. La cucina è di casa: per allergie gravi chiedi a Monica.</span></div>`;
+    <span class="tenue piccolo">Calcolati dagli ingredienti. Possono essere presenti contaminazioni, per allergie e/o intolleranze scrivimi!</span></div>`;
   const fr = p.fritto > 0, fo = p.forno > 0;
   if ((fr || fo) && !anteprima) h += `<div class="gruppo fritto-scelta"><span class="etichetta">Lo cuoci tu o lo cuoce Monica?</span>
     <div class="scelte"><button type="button" class="scelta" data-a="sel-fritto" data-v="no" aria-pressed="${!s.fritto && !s.forno}">Lo cuocio io<small>prezzo del menù</small></button>${fr ? `<button type="button" class="scelta" data-a="sel-fritto" data-v="si" aria-pressed="${!!s.fritto}">Fritto da Monica<small>+ ${euro(p.fritto)} in tutto</small></button>` : ''}${fo ? `<button type="button" class="scelta" data-a="sel-fritto" data-v="forno" aria-pressed="${!!s.forno}">Al forno da Monica<small>+ ${euro(p.forno)} in tutto</small></button>` : ''}</div>

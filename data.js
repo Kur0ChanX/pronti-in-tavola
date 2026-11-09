@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.95';
+const VERSIONE_APP = '0.9.96';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.96', data: '09/11/2026',
+    migliorato: ['Scheda del piatto, sotto gli allergeni: «Possono essere presenti contaminazioni, per allergie e/o intolleranze scrivimi!»'] },
   { v: '0.9.95', data: '09/11/2026',
     corretto: ['Ricettario: nelle ricette vecchie di GialloZafferano (foto a strisce, es. Astice alla Catalana, Lorighittas) alcuni passi mostravano ancora 3 foto unite in una; ora tutte le strisce sono tagliate e numerate, anche nelle ricette già salvate'] },
   { v: '0.9.94', data: '09/11/2026',

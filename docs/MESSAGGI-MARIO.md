@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:49 · 01QTFEqRMnzm
-Una volta che è fatto le etichette, continua con il progetto.
-
 ## 2026-11-07 00:12 · 01QTFEqU1M1r
 come tutti gli altri progetti non inventarti nulla manuale tutto plug in play
 
@@ -133,3 +130,6 @@ principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo verame
 Calcolati dagli ingredienti. La cucina è di casa: per allergie gravi chiedi a Monica.
 
 Da modificare con : Calcolati dagli ingredienti. Possono essere presenti contaminazioni, per allergie e/o intolleranze scrivimi!
+
+## 2026-11-09 23:58 · 01WTjqUx6Bw4
+quelle che separi sono sgranatissime controllale tutte se sono in hd di tutte le rivette e evita questo problema in futuro e risolvi tutte le foto in bassa qualità e riscaricale in tutte le ricette
