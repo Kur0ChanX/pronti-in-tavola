@@ -35,8 +35,9 @@ Sessione attuale: #37 (dopo la #36 `session_01WTjqUtPqTTxpnkk1cGLaiK`, chiusa al
 ## Prossimi passi
 1. C112 prima di tutto: se `grep -m1 VERSIONE_APP data.js` dà 0.9.89 ma HEAD ≠ origin, `python3 -I tools/anteprima.py && node tools/prova.js` (giro completo, in sottofondo) → verde → fetch, merge, push → esito di «Pubblica sito» col comando corto. Poi a Mario: cosa fare con l'ordine arrivato per sbaglio (Monica apre l'ordine → in fondo «È una prova» → «Tocca ancora: è una prova»: esce da incassi e spesa) e dove si cambia (Impostazioni → «Altre regole dell'app» → «Chiedi "Ordini davvero o provi l'app?"»).
 2. C111: chiedere a Mario (DOMANDA con foto) come entra sull'iPad (Google suo o cliente, app dalla Home o Safari) e cosa tocca per aprire la schermata dev (7 tocchi sulla firma? barra dev col dito in cima?). Codice: `puoSviluppare()` (app.js ~247: vale solo se `Dati.io.nomeGestore` inizia con «mario»), `sviluppatore()`, `barraDev()`. Ipotesi da verificare, non dire come certa: sull'iPad entra come cliente o col nome gestore diverso da «Mario…».
-3. C106, C108, C109, C107: aspettare le prove di Mario (foto). C104/C97: Francesco in Clienti.
-4. Regola C109 nel kit: testo pronto in `docs/PER-IL-KIT.md` (tre livelli), la porta una sessione del kit.
+3. Per Voce 10 (messaggio 09/11 20:56, C108b microfono: usa `segnala('ascolto', …)` e una cosa NUOVA 'ascoltoQuota'): due righe nei nostri file. app.js `segnalazioniHtml`: `case 'ascoltoQuota': return \`Tutti i clienti: ${n} frasi al microfono oggi (oltre ${s}): ora le ascoltano solo Groq e Deepgram, nessuno fermato\`;` · sw.js `esagera`: `ascoltoQuota: ['Microfono dei clienti molto usato oggi', 'Oltre 400 frasi: niente più Cloudflare per loro, nessuno è fermato.']`. Facoltativo: opzione `ascoltoAvviso` nel gruppo 'mario' di opzioni.js (numero 10-500, base 40, «Segnalazione: ascolti del microfono a testa»; il server la legge con `numeroApp(f, 'ascoltoAvviso', 10, 500, 40)`). Prova in `tools/prova-limiti.mjs`.
+4. C106, C108, C109, C107: aspettare le prove di Mario (foto). C104/C97: Francesco in Clienti.
+5. Regola C109 nel kit: testo pronto in `docs/PER-IL-KIT.md` (tre livelli), la porta una sessione del kit.
 
 ## Domande aperte
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md` (6 righe: 3 della principale). Nessuna 🛑 nuova: «segnalazioni solo a te» deciso col consiglio e detto a Mario.
