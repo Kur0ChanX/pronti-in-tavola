@@ -25,6 +25,8 @@ Aiuto 8 = `session_01WTjqUxwKQtc7WQsefh8EJF` (catena 6 di 8), chiusa alla soglia
 
 6. (Messaggio dopo l'handoff, 09/11 ~10:00) Mario chiede se Firebase può passare dalla sua Gmail alla mail di Pronti in Tavola. Risposta data da Aiuto 8: pochi passi, Impostazioni → Utenti e autorizzazioni → Aggiungi membro → mail nuova come Proprietario, accetta l'invito, la vecchia resta finché la nuova funziona. Se Mario la fa: guidarlo (pulsanti da controllare sulle sue foto) e scriverla in `docs/GUIDE-GIUSTE.md`.
 
+7. (Messaggio dopo l'handoff, 09/11 ~10:05) Mario: «sì, controlla anche le funzioni vecchie nell'aiutante» → C100 in `docs/DA-FARE.md`, dopo C99.
+
 ## Note
 - Il sito si pubblica da solo a ogni push del ramo (`.github/workflows/sito.yml`): codice C99 dell'app solo a versione finita e provata.
 - Prima di ogni versione `git fetch` e guardare `VERSIONE_APP` su origin; conflitti solo in `data.js` (novità) e in fondo a `style.css`.
