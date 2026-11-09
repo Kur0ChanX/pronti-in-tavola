@@ -17,7 +17,7 @@ Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 09/11 17:11, chius
 - **Aggancio a `window.render`** per ridisegnare il microfono fisso senza toccare app.js (fuori zona). Se Mario o la principale preferiscono una riga in `render()`, basta chiamare `disegnaVC()` con typeof.
 - **Prezzi letti bene** (`perVoceCliente`): «12,50 €» → «dodici euro e cinquanta», «1,5 kg» → «un chilo e mezzo».
 
-## iPad (Voce 4, 09/11 sera): FATTO in v0.9.81, aspetta la prova di Mario
+## iPad (Voce 4, 09/11 sera): FATTO in v0.9.82, aspetta la prova di Mario
 - Mario 09/11 ~19:40 «su ipad non funziona il comando vocale e il microfono è abilitato»; poi col video: «è su app da ipad, sento il suono di attivazione microfono ma non va; su android smartphone da app va».
 - Causa (confermata dalle fonti, non ancora dal vivo su iPad): nell'app installata sulla Home di iOS `webkitSpeechRecognition` c'è ma non parte mai (WebKit 225298, caniuse); dopo un audio resta muto anche in Safari (WebKit 321436, 08/2026); dentro WhatsApp dà «service-not-allowed».
 - Correzione in `voce-clienti.js`: `suiOS`, `appSullaHome`, `telefonoAscoltaBene`, `vocePuoSentireSi`; in modalità auto su iPhone/iPad parte subito `registraCliente` (MediaRecorder `audio/mp4` → `/api/ascolta`); ogni errore del riconoscitore (anche not-allowed) → ascolto preciso; guardia 4 s su iOS; AudioContext creato dentro il tocco; il «sì» a voce su iOS non si ascolta (resta Conferma; `aiutante.js` dice «Controlla e tocca Conferma»). Prova nuova in `tools/prova.js` (iPad finto).
