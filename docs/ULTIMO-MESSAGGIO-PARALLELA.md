@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 09:48 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+il cliente può correggere il suo nome, li aggiorna anche da Monica, che il cliente ha cambiato il nome, però a Monica li fa vedere sempre se c'è una differita tra il nome che aveva e quello modificato. Monica li fa vedere, insomma, che lui prima si chiamava così e ha cambiato il nome, e anche Monica di conseguenza può cambiare il nome, però può vedere come si è cambiato il cliente, cioè insomma trova una regola per non creare macello se o Monica o il cliente cambiano il nome. Comunque il codice deve rimanere sempre saldato al profilo, di tutti i profili. Anch'io devo avere un codice, anche Monica deve avere un codice. Magari a me mettimi un codice particolare, più riconoscibile degli altri, e anche quello di Monica più riconoscibile degli altri, ecco.
