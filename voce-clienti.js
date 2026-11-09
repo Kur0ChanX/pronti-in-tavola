@@ -10,6 +10,12 @@ const VC = { rec: null, media: null, stato: '', testo: '', perSi: null, dettato:
 const vcS = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/['’]/g, ' ').replace(/[^a-z0-9\s]/g, ' ').replace(/\s+/g, ' ').trim();
 const vcOpz = (k, base) => { try { const v = typeof opz === 'function' ? opz(k) : undefined; return v === undefined ? base : v; } catch (e) { return base; } };
 const riconoscitore = () => window.SpeechRecognition || window.webkitSpeechRecognition || null;
+/* iPhone e iPad: il riconoscitore di Safari c'è ma è a rischio: nell'app installata sulla Home non parte mai (WebKit 225298, dal 2021, ancora così 11/2026),
+   dentro WhatsApp dà «service-not-allowed», e anche in Safari dopo un audio (la risposta a voce) resta muto (WebKit 321436, 08/2026). Lì si registra e capisce il server. */
+const suiOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const appSullaHome = () => navigator.standalone === true || !!(window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+const telefonoAscoltaBene = () => !!riconoscitore() && !(suiOS() && appSullaHome());
+const vocePuoSentireSi = () => !!riconoscitore() && !suiOS();   // il «sì» a voce arriva dopo un audio: su iPhone e iPad resta il tocco su Conferma
 const VC_VUOTE = /^(di|del|della|delle|dei|con|alla|alle|al|allo|ai|e|ed|in|la|le|il|lo|gli|a|da|per|un|una|uno|tipo|medie|mezza|luna)$/;
 /* come i clienti chiamano i piatti (parola detta → parola del menù); Monica ne aggiunge altre da Impostazioni («sebadas=seadas, …») */
 const SINONIMI_VOCE = { lasagna: 'lasagne', lasagnette: 'lasagne', 'la sagne': 'lasagne', 'la sagna': 'lasagne', 'le sagne': 'lasagne', sebadas: 'seadas', sebada: 'seadas', seada: 'seadas', sebadaz: 'seadas',
@@ -386,8 +392,8 @@ function ascoltaCliente(o = {}) {
   try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ }
   VC.perSi = o.perSi == null ? null : o.perSi; VC.dettato = !!o.dettato; VC.giro++;
   const R = riconoscitore(), motore = o.perSi != null ? 'telefono' : vcOpz('voceClientiMotore', 'auto');   // il «sì»/«no» lo sente il telefono (gratis, subito); senza riconoscitore resta il tocco su Conferma
-  if (o.perSi != null && !R) return;
-  if (motore === 'preciso' || (motore === 'auto' && (!R || VC.precisoDopo || (o.dettato && puoAscoltoPreciso())))) { VC.precisoDopo = false; registraCliente(o); return; }
+  if (o.perSi != null && !vocePuoSentireSi()) return;
+  if (motore === 'preciso' || (motore === 'auto' && (!R || !telefonoAscoltaBene() || VC.precisoDopo || ((o.dettato || suiOS()) && puoAscoltoPreciso())))) { VC.precisoDopo = false; registraCliente(o); return; }
   if (!R) { mostraToast('Questo telefono non sa dettare: scrivi la frase.'); return; }
   const rec = new R(), giro = VC.giro; let finali = [], interim = '', avuto = false;
   rec.lang = 'it-IT'; rec.interimResults = true; rec.maxAlternatives = 5; rec.continuous = false;
@@ -407,7 +413,7 @@ function ascoltaCliente(o = {}) {
     const err = VC.errore; VC.errore = '';
     if (!finali.length && interim) finali = [[interim]];
     if (!finali.length) {
-      if (motore === 'auto' && err && !['not-allowed', 'service-not-allowed', 'no-speech', 'aborted'].includes(err) && puoAscoltoPreciso()) { registraCliente(o); return; }
+      if (motore === 'auto' && err && !['no-speech', 'aborted'].includes(err) && puoAscoltoPreciso()) { registraCliente(o); return; }   // anche «not-allowed»: il microfono vero lo chiede getUserMedia
       statoVC('', ''); return;
     }
     const scelto = scegliAlternativa(finali);
@@ -418,8 +424,8 @@ function ascoltaCliente(o = {}) {
   VC.rec = rec; VC.errore = '';
   try { rec.start(); } catch (e) { VC.rec = null; mostraToast('Il microfono non parte: riprova.'); return; }
   ticVoce(true); statoVC('ascolto', '');
-  // cane da guardia (bug iPhone: dopo un audio la dettatura resta muta): nessun segno entro 8 s → ascolto preciso
-  VC.tGuardia = setTimeout(() => { if (VC.rec !== rec || avuto || VC.giro !== giro) return; VC.rec = null; try { rec.abort(); } catch (e) { /* niente */ } if (motore === 'auto' && puoAscoltoPreciso()) registraCliente(o); else { statoVC('', ''); mostraToast('Non ho sentito nulla: riprova.'); } }, 8000);
+  // cane da guardia (bug iPhone: dopo un audio la dettatura resta muta): nessun segno entro 8 s (4 su iPhone e iPad) → ascolto preciso
+  VC.tGuardia = setTimeout(() => { if (VC.rec !== rec || avuto || VC.giro !== giro) return; VC.rec = null; try { rec.abort(); } catch (e) { /* niente */ } if (motore === 'auto' && puoAscoltoPreciso()) registraCliente(o); else { statoVC('', ''); mostraToast('Non ho sentito nulla: riprova.'); } }, suiOS() ? 4000 : 8000);
 }
 /* fra le frasi che il telefono propone vince quella che ha più senso sul menù */
 function scegliAlternativa(finali) {
@@ -434,6 +440,7 @@ function scegliAlternativa(finali) {
 async function registraCliente(o = {}) {
   if (!navigator.mediaDevices || !window.MediaRecorder) { mostraToast('Questo telefono non sa registrare: scrivi la frase.'); statoVC('', ''); return; }
   if (!navigator.onLine) { mostraToast('Per l\'ascolto preciso serve internet: intanto scrivi la frase.'); statoVC('', ''); return; }
+  try { const ac = VC.audio || (VC.audio = new (window.AudioContext || window.webkitAudioContext)()); if (ac.state === 'suspended') ac.resume(); } catch (e) { /* senza misura del volume */ }   // subito, dentro il tocco: Safari non lo fa partire dopo
   let stream;
   try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch (e) { mostraToast('Per parlare serve il microfono: tocca «Consenti» quando il telefono lo chiede.'); statoVC('', ''); return; }
   const tipo = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/aac', ''].find(t => !t || (MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t)));
@@ -493,7 +500,7 @@ function consegnaDetto(testo, o) {
 function dopoVoceCliente(i) {
   const m = AIC.msgs[i];
   if (!m || !m.piano || m.esito || !m.voce || UI.vista !== 'aiuto' || ascoltoInCorso()) return;
-  if (!vcOpz('voceClientiConferma', true) || !m.piano.some(x => x.on && controllaAIC(x.a).fai)) return;
+  if (!vcOpz('voceClientiConferma', true) || !vocePuoSentireSi() || !m.piano.some(x => x.on && controllaAIC(x.a).fai)) return;
   ascoltaCliente({ perSi: i, dettato: m.dettato });
 }
 /* dopo «Conferma» (a voce o col tocco) di una proposta nata dalla voce: giorno nel carrello, poi al carrello con il riepilogo letto */
