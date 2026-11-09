@@ -870,3 +870,7 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 .inv-tel span { color: #6b625a; font-size: .92em; }
 .inv-tel.mio { border-color: var(--vino); box-shadow: 0 0 0 3px rgba(138,36,50,.12); }
 .inv-tel em { position: absolute; top: 10px; right: 12px; font-style: normal; font-size: .8em; font-weight: 700; color: #fff; background: var(--vino); border-radius: 999px; padding: 3px 9px; }
+
+/* (C99) codice fisso del profilo, accanto al nome */
+.codice-cl { display: inline-block; font: 800 .78rem/1.2 'Nunito Sans', sans-serif; letter-spacing: .06em; padding: 1px 6px; border-radius: 6px; background: #FBF4E8; border: 1px solid #E8B46A; color: #7B2318; vertical-align: middle; }
+.cliente-riga.nome-cambiato { background: rgba(232, 180, 106, .12); border-radius: 8px; padding-left: 6px !important; }
