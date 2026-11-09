@@ -415,6 +415,7 @@ function parlaTelefono(t, fine) {
 }
 /* microfono: dettatura in italiano, a fine frase parte da sola */
 function ascoltaAI(manda = inviaAI, box = AI) {
+  if (typeof dettaConAscoltoPreciso === 'function' && dettaturaServe()) { dettaConAscoltoPreciso(t => manda(t, true)); return; }   // iPad/iPhone dalla Home: il telefono non detta (PT E39)
   if (!Riconosci) { mostraToast('Questo telefono non sa dettare: scrivi la frase.'); return; }
   if (AI.rec) { AI.rec.stop(); return; }
   let detto = '';
@@ -447,7 +448,7 @@ function fotoAI(file) {
 /* ---------- disegno ---------- */
 function barraAI() {   // nella Home, sotto il saluto: come la ricerca dei siti fatti bene
   return `<div class="ai-barra"><button type="button" class="ai-apri" data-a="vai" data-v="aiutante">${ico('scintille')}<span>Chiedi all'aiutante…</span></button>
-    ${Riconosci ? `<button type="button" class="ai-mic" data-a="ai-detta" aria-label="Detta all'aiutante">${ico('microfono')}</button>` : ''}</div>`;
+    ${(Riconosci || window.MediaRecorder) ? `<button type="button" class="ai-mic" data-a="ai-detta" aria-label="Detta all'aiutante">${ico('microfono')}</button>` : ''}</div>`;
 }
 function rigaPiano(x, i, j, fermo) {
   const c = controllaAI(x.a), id = `${i}|${j}`;
@@ -482,7 +483,7 @@ function vAiutante() {
   if (AI.foto) h += `<div class="ai-foto-pronta"><img src="${AI.foto}" alt="Foto da mandare"><span>Foto pronta: scrivi cosa vuoi (o tocca Invia)</span><button type="button" class="icona" data-a="ai-foto-via" aria-label="Togli la foto">${ico('x')}</button></div>`;
   h += `<div class="ai-scrivi"><label class="ai-mic chiaro" aria-label="Manda una foto">${ico('foto')}<input type="file" accept="image/*" id="ai-file" hidden></label>
     <input id="ai-testo" type="text" enterkeyhint="send" autocomplete="off" maxlength="400" placeholder="${AI.rec ? 'Ti ascolto…' : 'Scrivi qui…'}" value="${esc(AI.bozza)}" aria-label="Cosa vuoi fare?">
-    ${Riconosci ? `<button type="button" class="ai-mic ${AI.rec ? 'acceso' : ''}" data-a="ai-detta" aria-label="${AI.rec ? 'Smetti di ascoltare' : 'Detta'}">${ico('microfono')}</button>` : ''}
+    ${(Riconosci || window.MediaRecorder) ? `<button type="button" class="ai-mic ${AI.rec || (typeof ascoltoInCorso === 'function' && ascoltoInCorso()) ? 'acceso' : ''}" data-a="ai-detta" aria-label="${AI.rec ? 'Smetti di ascoltare' : 'Detta'}">${ico('microfono')}</button>` : ''}
     <button type="button" class="btn" data-a="ai-invia" ${AI.attesa ? 'disabled' : ''}>Invia</button></div>
     <p class="tenue piccolo" style="margin:0">L'aiutante usa un'intelligenza artificiale gratuita: può sbagliare, per questo ti mostra sempre prima cosa cambia.</p>`;
   return h + '</main>';
