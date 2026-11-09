@@ -27,6 +27,8 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 - **PT E37** (09/11/2026) Francesco (telefono vero) bloccato per ore su «Monica non prende clienti nuovi»: l'interruttore «Accetta clienti nuovi» era spento sul server (dalle 11:01, probabilmente un tocco per sbaglio in Clienti) e nessuno lo vedeva; Mario «mi hai bloccato l'app?!?». Un interruttore che chiude la porta ai clienti: conferma prima di spegnerlo, avviso rosso con «Riapri» finché è spento, e il cliente bloccato non perde il nome. Nel dubbio sul server: una lettura vera del documento (REST con un accesso anonimo), non ipotesi.
 - **PT E38** (09/11/2026) v0.9.80 online senza `voce-clienti.js` (404): il sito pubblica solo i file elencati in `FILE_APP` di `tools/sito.py` e nel `GUSCIO` di `sw.js`; l'anteprima li elenca a parte. Ogni file nuovo dell'app va in tutti e tre, e dopo il push si prova l'indirizzo pubblicato del file (`curl -o /dev/null -w %{http_code}`), non solo la versione.
 
+- **PT E39** (09/11/2026) Su iPad (app installata sulla Home) il microfono dei clienti suonava e non capiva nulla (Mario, video): `webkitSpeechRecognition` su iOS esiste ma nell'app sulla Home non parte mai (WebKit 225298, dal 2021) e dopo un audio resta muto anche in Safari (WebKit 321436, 08/2026). «L'API c'è» non vuol dire «funziona»: per ogni funzione del telefono cercare i bug WebKit noti e provarla anche nell'app installata su iPhone/iPad, non solo in Safari e su Android.
+
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
 - **RVC E7** Prima di chiedere a Mario (o di scrivere un prompt a un aiutante), `grep` in documenti e archivio.

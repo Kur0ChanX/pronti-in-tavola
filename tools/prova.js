@@ -1367,6 +1367,25 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r.n !== 3 || r.vista !== 'carrello' || r.entro !== sab) throw new Error('dopo Conferma: ' + JSON.stringify(r) + ' atteso sabato ' + sab);
     await page.evaluate(() => { P.carrello = []; salvaP(); AIC.msgs = []; UI.entro = ''; delete S.impostazioni.voceClientiMotore; delete S.impostazioni.voceClientiRisponde; S.impostazioni.whatsapp = ''; UI.vista = 'menu'; render(); });
   });
+  await passo('voce dei clienti: iPad con l\'app sulla Home → il riconoscitore di Safari non parte mai, si registra subito e il «sì» resta col tocco (C105, Mario 09/11)', async () => {
+    await page.evaluate(() => { UI.vista = 'menu'; P.carrello = []; AIC.msgs = []; UI.entro = ''; delete S.impostazioni.voceClientiMotore; S.impostazioni.voceClientiRisponde = false;
+      Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (iPad; CPU OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1', configurable: true });
+      Object.defineProperty(navigator, 'standalone', { get: () => true, configurable: true });
+      window.__partito = 0; window.SpeechRecognition = class { start() { window.__partito++; } stop() {} abort() {} };   // come su iPad: c'è, ma non dice mai nulla
+      if (!navigator.mediaDevices) Object.defineProperty(navigator, 'mediaDevices', { value: {}, configurable: true });
+      navigator.mediaDevices.getUserMedia = async () => ({ getTracks: () => [] });
+      window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/mp4'; } start() { this.state = 'recording'; } stop() { this.state = 'inactive'; this.ondataavailable({ data: new Blob([new Uint8Array(3000)]) }); this.onstop(); } static isTypeSupported(t) { return /mp4/.test(t); } };
+      window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'due teglie di lasagne al ragù per sabato', motore: 'finto' }; };
+      render(); });
+    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
+    const st = await page.evaluate(() => ({ stato: VC.stato, media: !!VC.media, partito: window.__partito, si: vocePuoSentireSi(), bene: telefonoAscoltaBene(), pann: (document.querySelector('.vc-pannello b') || {}).textContent }));
+    if (st.stato !== 'registro' || !st.media || st.partito || st.si || st.bene || !/attenzione/.test(st.pann || '')) throw new Error('su iPad non parte subito l\'ascolto preciso: ' + JSON.stringify(st));
+    await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(900);
+    const r = await page.evaluate(() => ({ tipo: (window.__mandato || {}).tipo, msgs: AIC.msgs.map(m => m.t), rec: !!VC.rec, vista: UI.vista, az: (((AIC.msgs[1] || {}).piano || [])[0] || {}).a }));
+    if (r.tipo !== 'audio/mp4' || r.msgs[0] !== 'due teglie di lasagne al ragù per sabato' || r.vista !== 'aiuto' || !r.az || r.az.id !== 'lasagne-ragu') throw new Error('la frase registrata (mp4) non arriva all\'aiutante: ' + JSON.stringify(r).slice(0, 300));
+    if (r.rec) throw new Error('su iPad il «sì» a voce col riconoscitore non deve partire (resta il tocco su Conferma)');
+    await page.evaluate(() => { delete navigator.userAgent; delete navigator.standalone; });
+  });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
 })();

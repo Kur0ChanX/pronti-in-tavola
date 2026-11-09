@@ -183,11 +183,13 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.82';
+const VERSIONE_APP = '0.9.83';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
-  { v: '0.9.82', data: '09/11/2026',
+  { v: '0.9.83', data: '09/11/2026',
     corretto: ['Su iPad (e iPhone) con l\'app dall\'icona, in orizzontale: uscendo e rientrando la pagina poteva restare ingrandita e tagliata a destra. Ora al rientro torna sempre alla misura giusta'] },
+  { v: '0.9.82', data: '09/11/2026',
+    corretto: ['Su iPhone e iPad con l\'app installata sulla schermata Home il microfono dei clienti suonava ma non capiva nulla: ora lì la frase la capisce l\'ascolto preciso (serve internet) e il «sì» dopo la proposta si dà col tocco su Conferma'] },
   { v: '0.9.81', data: '09/11/2026',
     corretto: ['«Attiva le notifiche»: l\'esito era una riga piccola e sembrava che non succedesse niente. Ora compare un riquadro verde «Notifiche attive!» e il foglio si chiude da solo', 'Chi aveva corretto il nome e poi apriva l\'app da un altro telefono (o dall\'icona sull\'iPhone) compariva a Monica come due persone: ora è una richiesta sola e un solo cliente'] },
   { v: '0.9.80', data: '09/11/2026',
