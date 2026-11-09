@@ -542,7 +542,7 @@ async function registraCliente(o = {}) {
       const r = await (window.ascoltaServerFinto || ascoltaServer)({ audio: await base64Di(blob), tipo: blob.type, piatti: nomiPiattiVoce() });
       if (VC.giro !== giro) return;
       if (r && r.testo) { consegnaDetto(scegliTrascrizione(r), o); return; }
-      statoVC('', ''); mostraToast(r && r.fermo ? 'Per oggi ho ascoltato tanto: scrivimi la frase.' : 'Non ho capito le parole: riprova o scrivi la frase.');
+      statoVC('', ''); mostraToast('Non ho capito le parole: riprova o scrivi la frase.');   // (C108b, PT E41) il server non ferma mai nessuno
     } catch (e) { if (VC.giro === giro) { statoVC('', ''); mostraToast(e.message || 'Adesso non riesco a capire la voce: scrivi la frase.'); } }
   };
   VC.media = mr; mr.start(250); ticVoce(true); statoVC('registro', '');
