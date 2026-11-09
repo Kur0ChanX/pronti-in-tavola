@@ -117,5 +117,57 @@ function finti({ v3 = 'Due teglie di lasagne persa a Mato.', turbo = 'turbo', cf
   const k = paroleChiave(Array.from({ length: 200 }, (_, i) => 'Piatto numero ' + i + ' (vegano)'));
   prova('parole chiave: massimo 80, misure sempre dentro, niente parentesi', k.length <= 80 && k.join(' ').length <= 1000 && k[0] === 'teglia' && !/[()]/.test(k.join('')), k.length + ' ' + k.slice(0, 8).join('|'));
 }
+// 12. (C108b) cliente «ridotto» (frasi del giorno di tutti i clienti finite): Cloudflare non si tocca, il cliente è ascoltato lo stesso
+{
+  const { f, env, chiamate } = finti({ turbo: 'Due teglie di lasagne per sabato.' });
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f, { cliente: true, ridotto: true });
+  prova('ridotto senza Deepgram: v3 + turbo, niente Cloudflare', r.testo !== '' && /groq:whisper-large-v3\+groq:whisper-large-v3-turbo/.test(r.motore) && !chiamate.some(c => c.tipo === 'cf'), r.motore);
+}
+{
+  const { f, env, chiamate } = finti({ erroreDg: true }); env.DEEPGRAM_API_KEY = 'finta';
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f, { cliente: true, ridotto: true });
+  prova('ridotto con Deepgram giù: v3 + turbo, niente Cloudflare', /groq:whisper-large-v3\+groq:whisper-large-v3-turbo/.test(r.motore) && !chiamate.some(c => c.tipo === 'cf'), r.motore);
+}
+{
+  const { f, env, chiamate } = finti({ erroreV3: true, erroreTurbo: true });
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f, { cliente: true, ridotto: true });
+  prova('ridotto e Groq giù: Cloudflare per ultimo, mai fermo', r.testo !== '' && /cloudflare/.test(r.motore) && chiamate.filter(c => c.tipo === 'cf').length === 1, JSON.stringify(r));
+}
+{
+  const { f, env, chiamate } = finti({ erroreV3: true, turbo: 'Un chilo di polpette per domani.' });
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f, { cliente: true, ridotto: true });
+  prova('ridotto, risponde solo turbo: basta lui, Cloudflare no', /groq:whisper-large-v3-turbo/.test(r.motore) && !chiamate.some(c => c.tipo === 'cf'), r.motore);
+}
+{
+  const { f, env } = finti();
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f, { cliente: false, ridotto: true });
+  prova('chi gestisce: «ridotto» non lo tocca (resta Groq v3 + Cloudflare)', /groq:whisper-large-v3\+cloudflare/.test(r.motore), r.motore);
+}
+// 13. (C108b, PT E41) il conto del server: mai un blocco, segnalazioni solo a Mario, oltre il tetto di tutti «ridotto»
+{
+  const fs = await import('node:fs'), os = await import('node:os'), path = await import('node:path'), { pathToFileURL, fileURLToPath } = await import('node:url');
+  const radice = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+  const src = fs.readFileSync(path.join(radice, 'worker.js'), 'utf8')
+    .replace("import { DurableObject } from 'cloudflare:workers';", 'class DurableObject { constructor(ctx, env) { this.ctx = ctx; this.env = env; } }')
+    .replace("from './gz.mjs'", `from '${pathToFileURL(path.join(radice, 'gz.mjs'))}'`).replace("from './ascolta.mjs'", `from '${pathToFileURL(path.join(radice, 'ascolta.mjs'))}'`)
+    + '\nexport { Avvisi as _Avvisi, TETTO_ASCOLTO as _TA, TETTO_ASCOLTO_CLIENTE as _TAC, numeroApp as _numeroApp };\n';
+  const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'pit-asc-')), 'worker.mjs'); fs.writeFileSync(tmp, src);
+  const { _Avvisi: Avvisi, _TA: TA, _TAC: TAC, _numeroApp: numeroApp } = await import(pathToFileURL(tmp));
+  const mem = new Map(), ctx = { storage: { get: async k => structuredClone(mem.get(k)), put: async (k, v) => { mem.set(k, structuredClone(v)); } } };
+  const av = new Avvisi(ctx, {}), mandati = [];
+  av.manda = async (uid, per, pc, extra) => { mandati.push({ uid, per, ...extra }); };
+  mem.set('iscritti', [{ uid: 'monica', endpoint: 'https://a' }, { uid: 'mario', endpoint: 'https://b', dev: true }]);
+  const esiti = []; for (let i = 0; i < TAC * 3; i++) esiti.push(await av.contaAscolto('laura', TAC));
+  prova('un cliente oltre la soglia: mai fermo', esiti.every(e => e === ''), [...new Set(esiti)].join(','));
+  const asc = mandati.filter(m => m.cosa === 'ascolto');
+  prova('segnalazione a ' + (TAC + 1) + ' e ' + (2 * TAC + 1) + ', solo a Mario', asc.length === 2 && asc[0].n === TAC + 1 && asc[1].n === 2 * TAC + 1 && mandati.every(m => m.uid === 'mario'), JSON.stringify(mandati));
+  for (let i = 0; i < 5; i++) await av.contaAscolto(null);
+  prova('chi gestisce non entra nel conto dei clienti', mem.get('asc').n === TAC * 3 && mem.get('asc').g === 5);
+  const altri = []; for (let i = mem.get('asc').n; i < TA + 3; i++) altri.push(await av.contaAscolto('cliente' + (i % 50), TAC));
+  prova('tetto di tutti: «ridotto» dalla ' + (TA + 1) + 'a, mai blocco', altri.slice(0, -3).every(e => e === '') && altri.slice(-3).every(e => e === 'ridotto'), altri.slice(-5).join(','));
+  prova('tetto di tutti segnalato una volta', mandati.filter(m => m.cosa === 'ascoltoQuota').length === 1);
+  prova('registro delle segnalazioni', (mem.get('segnalazioni') || []).some(s => s.cosa === 'ascolto' && s.cliente === 'laura'));
+  prova('soglia dalle impostazioni nei tetti sicuri', numeroApp({ ascoltoAvviso: { integerValue: '80' } }, 'ascoltoAvviso', 10, 500, TAC) === 80 && numeroApp({ ascoltoAvviso: { integerValue: '9999' } }, 'ascoltoAvviso', 10, 500, TAC) === TAC);
+}
 console.log(`\n${ok} OK, ${ko} NO`);
 process.exit(ko ? 1 : 0);

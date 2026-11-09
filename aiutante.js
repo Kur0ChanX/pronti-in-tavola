@@ -727,6 +727,7 @@ async function inviaAC(testo, voce, extra = {}) {
   else {
     try { r = await window.chiediAiutoCliente(testo, Object.assign(datiAIC(), loc ? { indizi: loc.indizi } : {}), storia); }
     catch (e) { r = { testo: e.message + (loc ? ' ' + loc.risposta.testo : ''), azioni: loc ? loc.risposta.azioni : [] }; }
+    if (r && r.fermo && loc && loc.confidenza > 0) r = loc.risposta;   // (C109) server in «modo ridotto»: meglio quello che il telefono ha capito
   }
   const pi = pianoDa(r);
   pi.azioni = pi.azioni.slice(0, 4);
