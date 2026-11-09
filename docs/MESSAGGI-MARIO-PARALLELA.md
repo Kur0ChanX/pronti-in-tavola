@@ -36,3 +36,14 @@ lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra 
 
 ## 2026-11-09 17:25 · 01WTjqUx7JeV
 Continua con pensiero extra e se serve ripensa
+
+## 2026-11-09 20:14 · 01WTjqUwiB7L
+limiti per persona da consiglio e ascomta sempre la stessa qualità come consiglio
+
+## 2026-11-09 20:20 · 01WTjqUwiB7L
+non parlaè corretto? poi a volte ci mette un pó specialmente pa prima volta e non si vapisce quando clicchi il tasto e l'attesa bisogna riempirla se no sembra che non è partito
+
+## 2026-11-09 20:24 · 01WTjqUwiB7L
+@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4" poi per android è una bomba per iPad fà schifo a confronto e penso anche per iphone a questo punto
+
+guarda che bomba per android per ipad è completamente diverso...perché????
