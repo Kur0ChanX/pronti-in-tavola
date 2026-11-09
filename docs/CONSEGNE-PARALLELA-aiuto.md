@@ -27,5 +27,11 @@ Aiuto 9 = `session_01WTjqUvc6wykACULLz4o3Xx` (catena 7 di 8), chiusa alla soglia
 
 Controllo Da fare: 1 voce aggiunta (C101); C99 aggiornata con la foto. Messaggi di Mario della sessione: domanda limiti Firebase (risposta data, riga in Aspetta Mario); richiesta C101.
 
-## Ultimo messaggio di Mario (parola per parola)
+## Messaggio di Mario dopo l'handoff (09/11 ~10:25, parola per parola)
+«firebase solo account nuovo / Regole nuove messe nell'account di monica / Francesco non mi ha ancora risposto / migliora in chiedi l'aiutante che deve capire bene il contesto di quello che dico non che legge la parola e mi porta alla parola scritta»
+- Firebase: risposta alla domanda → probabilmente «1» (proprietario solo l'account nuovo). Riga tolta da Aspetta Mario. Se vuole i passi: guida del passo 5 (prima controllare che l'account nuovo sia proprietario). Nel dubbio una riga a Mario: «Vuoi che ti guidi a toglierti da proprietario?».
+- C97 Francesco: ancora nessuna risposta, la riga resta.
+- Nuova voce **C102** (aiutante che capisce il senso, non la parola): dopo C101, prima di C100 (C100 aggiunge voci allo stesso sistema: farle già col modo nuovo).
+
+## Ultimo messaggio di Mario prima dell'handoff (parola per parola)
 «Vedi, io ti avevo messo che gli ordini che avevamo fatto non venivano conteggiati perché erano tutti di prova, ma anche adesso nessuno, al momento nessuno ha fatto un vero e proprio ordine. Possiamo cancellare questi che vediamo qui, due ordini effettuati? Quindi se un cliente che clicca quando va a ordinare sto solo provando, quella funzione che avevamo messo non viene conteggiato negli ordini, ma adesso questi ordini qui li possiamo togliere, così lo storico rimane pulito. Cioè partiamo dal conteggio dei veri ordini.»
