@@ -80,7 +80,7 @@ Fase 2 (costi e dosi): raccolta a parte che legge solo Monica.
 - Libreria Firebase caricata dal suo indirizzo ufficiale, versione fissa (controllata con Context7 prima del codice).
 - La configurazione web di Firebase (`apiKey` ecc.) non è un segreto: la protezione sono le regole di sicurezza. Nessuna vera chiave nel repository.
 - Regole di sicurezza in `firestore.rules`, con prove automatiche nell'emulatore (simulatore di Firebase sul computer) prima di pubblicarle: `npm run prova-regole`.
-- ⚠️ (09/11, C98) `firestore.rules` nel repo è PIÙ NUOVO di quello online: cambiati i cuori dei piatti (seguono il cuore dell'ordine). Online solo dopo che Mario incolla il file in Firebase → Regole → Pubblica.
+- ⚠️ (09/11, C98-C99) `firestore.rules` nel repo è PIÙ NUOVO di quello online: cuori dei piatti legati all'ordine, codice fisso dei profili, nome corretto dal cliente (64 prove OK). Online solo dopo che Mario incolla il file in Firebase → Regole → Pubblica.
 
 ## Passi a mano di Mario (dopo l'ok a questa specifica, uno alla volta)
 1. Creare il progetto Firebase (Analytics spento).
