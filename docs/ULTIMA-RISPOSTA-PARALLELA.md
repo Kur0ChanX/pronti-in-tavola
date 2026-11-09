@@ -1,15 +1,9 @@
-# Ultima risposta di Claude (09/11/2026 19:51 ora italiana)
+# Ultima risposta di Claude (09/11/2026 20:09 ora italiana)
 
+Ho capito: nella chat di Voce 6 hai chiesto «non si possono avere Monica e me dei limiti e i clienti altri?». Sì, si può: la scelta 1 della domanda sull'ascolto adesso fa proprio questo. Poi ho passato il lavoro a Voce 8, perché avevo riempito la memoria della chat.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-
-📌 **Di cosa parliamo:** limiti per persona. Quante domande al giorno può fare all'aiutante ogni cliente. Voce 4 propone di non bloccare mai nessuno e di mandarti solo un avviso oltre un tetto ampio. La proposta è nel file `docs/lavori-in-corso/limiti-per-persona.md`.
-1. 🛑 Va bene così?
-   1 · Sì: nessuno viene mai bloccato, a te arriva solo l'avviso (consiglio).
-   2 · Cambia i numeri: scrivimi quali.
-
-📌 **Di cosa parliamo:** il microfono dei clienti sull'iPad. Dalla v0.9.85 ascolta con due motori e corregge le parole sentite male.
-2. Apri l'app dall'icona, poi Menù → microfono, e …
+───
+✅ **FATTO**
+- Nella scelta 1 tu e Monica avete due salvadanai separati da quelli dei clienti. Tutto salvato su GitHub.
+- Ho avvisato la chat Principale: l'aiutante dei clienti è la sua parte dell'app.
+- Consegne scritte e salvate. Ho aperto **Voce 8** (`[segreto tolto dalla scorta]`): stesso progetto, stesso ramo, stesso …
