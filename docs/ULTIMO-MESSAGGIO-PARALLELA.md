@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 14:15 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 17:00 ora italiana)
 
-lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
+aggiungi una sessione parallela per un team tavola che mi potenzi molto il comando vocale per i clienti. Abbiamo potenziato quello di Monica, quello dei clienti lo voglio veramente performante a livello di lettura della voce, di quello che riesci a fare. Lo voglio ampliare molto come potenza, insomma, valuta tutto quello che si può fare per un comando vocale per il cliente. Mi sembra che chiedi a Monica, inventati cose intelligenti, smart, insomma, fai tutto quello che è in tuo potere di veramente utile al cliente, è sorprendente, ecco, innovativo.
