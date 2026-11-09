@@ -33,6 +33,8 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 
 - **PT E41** (09/11/2026) Avevo messo limiti PER CLIENTE che bloccano la persona (aiutante 10 domande al giorno, ascolto 40): Mario «come ti avevo già detto… sembra un'app amatoriale». Regola di Mario per tutti i progetti e account: niente limiti che interrompono un cliente, amico o collega; un limite per persona si chiede prima a Mario; si mette un tetto AMPIO che, superato, NON blocca ma manda a chi gestisce una segnalazione nell'app (e si registra): molto oltre = c'è un problema; poco oltre = si alza il tetto.
 
+- **PT E42** (09/11/2026) Mario: «per Android è una bomba, per iPad fa schifo… perché????». Metà della differenza era mia: nella pagina Aiutante avevo nascosto apposta il pannello «Ti ascolto», e su Android non si notava perché il riconoscitore scrive subito. Ogni stato di attesa (accensione, ascolto, risposta del server, voce) si prova sul percorso più lento (iPad dalla Home, server lento), non su quello veloce.
+
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
 - **RVC E7** Prima di chiedere a Mario (o di scrivere un prompt a un aiutante), `grep` in documenti e archivio.
