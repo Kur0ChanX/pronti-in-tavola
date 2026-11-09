@@ -1,3 +1,8 @@
-# Ultima risposta di Claude (09/11/2026 17:39 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:57 ora italiana)
 
-Consegne rifatte con la tua risposta «Vai avanti da solo» (arrivata a Voce 1 e girata qui): le due domande sono chiuse coi consigli, salvato su GitHub (17e3da63) e avvisata Voce 3, che prosegue da sola fino alla versione online e ti dirà «chiudi e riapri l'app» e dove toccare.
+Ho capito: alla soglia delle consegne chiudo Voce 6 e passo a Voce 7.
+
+✅ FATTO
+- La **v0.9.86** è salvata su GitHub e passa tutte le prove (76 dell'app, quelle delle impostazioni e 19 dell'ascolto). Cosa cambia: l'aiutante di Monica, su iPad/iPhone con l'app aperta dall'icona sulla Home, ora capisce quando gli parli.
+- Un minuto fa il sito diceva ancora 0.9.85: la pubblicazione era ancora in corso. Il primo controllo di Voce 7 è verificare che il sito sia passato alla 0.9.86.
+- Ho fatto lo studio su come avere un ascolto sempre di alta qualità e senza limiti che finiscono. È salvato su …
