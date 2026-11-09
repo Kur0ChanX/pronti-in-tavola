@@ -1,20 +1,10 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 17:08 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: vuoi la conferma che installare l'app e attivare le notifiche sia semplice al massimo, su iPhone e Android, e capire il caso di Francesco.
 
-───
-✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
+**Risposta corta:** Android sì, un tasto che fa tutto. iPhone no, e non è colpa nostra: Apple non lascia a nessun sito un tasto «Installa», quindi lì c'è la guida a disegni. Il caso di Francesco **non era un caso**: la tua foto mi ha mostrato un errore vero, l'ho corretto.
 
 ───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+✅ **FATTO**
+- Interruttore «Accetta clienti nuovi»: l'hai riacceso alle 16:47, letto dal server. Bene.
+- **v0.9.79 online** (prove: app 67 OK, regole 66 OK; …
