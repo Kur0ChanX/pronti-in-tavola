@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.76';
+const VERSIONE_APP = '0.9.77';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.77', data: '09/11/2026',
+    corretto: ['«Accetta clienti nuovi» spento per sbaglio bloccava chi apriva il link senza che nessuno lo sapesse. Ora spegnerlo chiede conferma; finché è spento, in Home e in Clienti c\'è un avviso rosso con «Riapri ai clienti nuovi»', 'Chi trova chiuso legge un testo chiaro e il suo nome resta: alla riapertura basta «Sì, sono io»'] },
   { v: '0.9.76', data: '09/11/2026',
     migliorato: ['«Chiedi all\'aiutante» ora conosce anche: velocità della voce, Storico degli ordini, «Accetta clienti nuovi», Persone rifiutate (le apre già), chi aspetta il tuo sì e «Ricorda a Monica», gli ultimi avvisi nelle Notifiche'],
     corretto: ['L\'aiutante non prova più a portarti nella pagina «aggiornamenti», che non c\'è più'] },
