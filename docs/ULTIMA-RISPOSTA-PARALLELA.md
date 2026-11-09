@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (09/11/2026 17:39 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:36 ora italiana)
 
-Consegne rifatte con la tua risposta «Vai avanti da solo» (arrivata a Voce 1 e girata qui): le due domande sono chiuse coi consigli, salvato su GitHub (17e3da63) e avvisata Voce 3, che prosegue da sola fino alla versione online e ti dirà «chiudi e riapri l'app» e dove toccare.
+Ho girato a Voce 6 il messaggio della Principale sui limiti per persona e ho avvisato la Principale: la v0.9.85 è già online col microfono nuovo, quindi la sua versione dovrà essere la 0.9.86.
