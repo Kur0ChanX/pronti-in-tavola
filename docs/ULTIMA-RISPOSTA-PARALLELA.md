@@ -1,5 +1,11 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 09:55 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+Ho capito: vuoi gestire Firebase con la mail di Pronti in Tavola invece di mario.miscera@gmail.com.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+💡 PARERE
+- **Si può fare, sono pochi passi** (circa 5 minuti, stima). L'app e i dati restano tutti dove sono.
+- Il modo sicuro è **aggiungere** la mail nuova come seconda proprietaria, non sostituire subito la vecchia. Se qualcosa va storto, entri ancora con la Gmail.
+- È più ordinato e professionale: il progetto non dipende dalla tua mail personale.
+
+👉 DA FARE TU (quando ti fermi, da computer)
+1. Entra in Firebase con la Gmail: …
