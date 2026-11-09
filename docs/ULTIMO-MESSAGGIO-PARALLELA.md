@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 14:15 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 19:24 ora italiana)
 
-lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
+Metti, aggiungi la regola come ti avevo già detto per tutto l'account, che se metti un limite per cliente non lo devi mettere per cliente, o me lo devi chiedere che cosa vuoi applicare, perché io vorrei applicare una regola che se un cliente esagera, secondo te, mi manda una segnalazione nell'app, però non vorrei, vorrei evitare di avere un'interruzione da parte del cliente, perché o del cliente o del collega o cioè della persona, perché mi sembra un'app amatoriale, ecco, se ci sono questi limiti. Quindi metterei un limite un po' ampio e se lo oltrepassa mi manda una notifica, così vedo come comportarmi, perché se esagera di molto significa c'è un problema e te lo registri tu. Se oltrepassa di poco, vediamo di aumentare un po' il limite, ecco. Però vorrei evitare le interruzioni da parte del cliente, cliente, persona, amico, eccetera, eccetera, eccetera, per tutti i progetti.
