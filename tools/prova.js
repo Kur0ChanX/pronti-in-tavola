@@ -1196,6 +1196,32 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.toast', { hasText: 'App aggiornata' }).count())) throw new Error('manca «App aggiornata»');
     if (await page.locator('.apertura').count()) throw new Error('dopo l\'aggiornamento riparte l\'apertura animata');
   });
+  await passo('clienti nuovi (C104): spegnere chiede conferma, avviso rosso con «Riapri», il cliente bloccato tiene il nome', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.foglio = null; UI.sez = null; delete S.impostazioni.nuovi; vai('clienti'); });
+    await page.waitForTimeout(250);
+    if (await page.locator('.avviso-chiusi').count()) throw new Error('avviso rosso visibile con la porta aperta');
+    const sw = page.locator('input[data-campo="i.nuovi"]'); await sw.scrollIntoViewIfNeeded(); await sw.click(); await page.waitForTimeout(300);
+    if (!(await page.locator('.foglio', { hasText: 'Chiudere ai clienti nuovi?' }).count())) throw new Error('manca la conferma prima di chiudere');
+    if ((await page.evaluate(() => S.impostazioni.nuovi)) === false) throw new Error('chiuso prima della conferma');
+    await foto('23-chiudi-nuovi-conferma');
+    await clic('[data-a="nuovi-chiudi-si"]'); await page.waitForTimeout(400);
+    if ((await page.evaluate(() => S.impostazioni.nuovi)) !== false) throw new Error('la conferma non ha chiuso');
+    if (!(await page.locator('.avviso-chiusi').count())) throw new Error('manca l\'avviso rosso in Clienti');
+    await page.evaluate(() => vai('home')); await page.waitForTimeout(250);
+    if (!(await page.locator('.avviso-chiusi [data-a="nuovi-riapri"]').count())) throw new Error('manca l\'avviso rosso con «Riapri» in Home');
+    await foto('23-home-chiusi');
+    // il cliente che trova chiuso: testo onesto, il nome resta per la prossima volta
+    const cl = await page.evaluate(() => { P.ruolo = 'cliente'; UI.devCliente = false; UI.benvPrima = P.benvenuto; P.benvenuto = false; UI.benv = { nome: 'Francesco', cognome: 'Prova', chiuso: true }; vai('menu'); return document.querySelector('.benvenuto .avviso') ? document.querySelector('.benvenuto .avviso').textContent : ''; });
+    if (!/non accetta clienti nuovi/.test(cl) || !/Sì, sono io/.test(cl)) throw new Error('testo del cliente bloccato: ' + cl.slice(0, 120));
+    await page.evaluate(() => { P.ruolo = 'monica'; P.benvenuto = UI.benvPrima; P.guida = true; P.homeNo = true; UI.benv = null; UI.foglio = null; vai('home'); }); await page.waitForTimeout(250);
+    const st = await page.evaluate(() => [UI.vista, P.ruolo, S.impostazioni.nuovi, !!document.querySelector('.avviso-chiusi'), (document.querySelector('main.corpo') || {}).className]);
+    if (!st[3]) throw new Error('tornata in Home senza avviso rosso: ' + JSON.stringify(st));
+    try { await page.locator('[data-a="nuovi-riapri"]').first().click({ timeout: 5000 }); } catch (e) { await foto('23-errore'); throw new Error('«Riapri» non cliccabile: ' + e.message.split('\n').slice(0, 6).join(' | ')); }
+    await page.waitForTimeout(300);
+    const dopo = await page.evaluate(() => [S.impostazioni.nuovi, document.querySelectorAll('.avviso-chiusi').length]);
+    if (dopo[0] !== true || dopo[1]) throw new Error('«Riapri» non riapre: ' + JSON.stringify(dopo));
+    await page.evaluate(() => { delete S.impostazioni.nuovi; salva(); });
+  });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
 })();
