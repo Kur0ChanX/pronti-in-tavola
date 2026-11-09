@@ -1576,18 +1576,38 @@ function schedaMario() {
     ${ordiniDaTogliere().length ? `<button type="button" class="btn chiaro" data-a="togli-ordini-apri">🗑️ Togli tutti gli ordini fatti finora (${ordiniDaTogliere().length})</button>` : ''}
     <label class="interr"><span>Ricettario nella Home<small>${S.impostazioni.ricettario !== false ? 'Acceso: tu e Monica vedete «Ricettario» nella Home. I clienti mai.' : 'Spento: il riquadro non c\'è nella Home.'}</small></span><input type="checkbox" data-campo="i.ricettario" ${S.impostazioni.ricettario !== false ? 'checked' : ''}></label>
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
-    ${velVoceHtml()}
+    ${velVoceHtml(false)}
     ${contoAI()}
     ${provaAIhtml()}
     ${originaliHtml()}</section>`;
 }
-/* velocità della voce (Mario 08/11, C70: «Piper è troppo veloce… solo a me ma valido anche per Monica»): sta in S.impostazioni, vale per tutti */
+/* velocità della voce, tetti 0,7-1,3 (Mario 09/11: «predefinita a 0,75 anche per Monica… se la cambia Monica la salva solo per lei»):
+   quella di base la sceglie Mario (S.impostazioni.voceVel, sul server: resta dopo ogni aggiornamento); chi non è Mario può sceglierne
+   una sua, solo su quel telefono (localStorage 'pit-vel-voce'). Il vecchio campo velVoce (cursore rotto, salvava 1,20) non si legge più. */
+const VEL_BASE = 0.75, velOk = v => Number.isFinite(v) && v >= 0.7 && v <= 1.3;
+function velDiTutti() { const v = Number(typeof S !== 'undefined' && S.impostazioni ? S.impostazioni.voceVel : NaN); return velOk(v) ? v : VEL_BASE; }
+function velMia() { try { const t = localStorage.getItem('pit-vel-voce'), v = Number(t); return t !== null && velOk(v) ? v : null; } catch (e) { return null; } }
+const sonoMarioVero = () => typeof Dati !== 'undefined' && Dati.attivo && typeof chiLucchetto === 'function' && chiLucchetto() === 'mario';
+function velVoce() { const m = sonoMarioVero() ? null : velMia(); return m !== null ? m : velDiTutti(); }
+/* velocità della voce (C70; Mario 09/11: il cursore sembrava un interruttore e non teneva la scelta): mia = solo questo telefono (chi non è Mario),
+   altrimenti quella di base per tutti (la sceglie Mario). Cursore vero + tasti − e +; si salva a ogni tocco. */
 const velVoceTxt = v => v <= 0.8 ? 'molto lenta' : v < 0.95 ? 'lenta' : v <= 1.05 ? 'normale' : v <= 1.15 ? 'veloce' : 'molto veloce';
-function velVoceHtml() {
-  const v = typeof velVoce === 'function' ? velVoce() : 1;
-  return `<label class="interr" style="display:block"><span>Velocità della voce: <b class="vel-voce-txt">${velVoceTxt(v)} (${v.toFixed(2).replace('.', ',')})</b><small>Vale anche per Monica: Ricettario, cucina guidata e aiutante. Più a sinistra = più lenta.</small></span>
-    <input type="range" min="0.7" max="1.3" step="0.05" value="${v}" data-campo="i.velVoce" aria-label="Velocità della voce" style="width:100%;margin-top:8px"></label>
-    <button type="button" class="btn chiaro" data-a="vel-prova">▶️ Senti la velocità</button>`;
+const velTesto = v => `${velVoceTxt(v)} (${v.toFixed(2).replace('.', ',')})`;
+function velVoceHtml(mia) {
+  const v = mia ? (velMia() !== null ? velMia() : velDiTutti()) : velDiTutti(), q = mia ? 'mia' : 'tutti';
+  return `<div class="vel-voce" data-q="${q}"><p style="margin:0"><b>Velocità della voce: <span class="vel-voce-txt">${velTesto(v)}</span></b><br>
+    <small class="tenue">${mia ? 'Solo per te, su questo telefono: Ricettario, cucina guidata e aiutante.' : 'È quella di base, anche per Monica (finché lei non sceglie la sua): Ricettario, cucina guidata e aiutante.'}</small></p>
+    <div class="vel-fila"><button type="button" class="btn chiaro piccolo" data-a="vel-passo" data-q="${q}" data-v="-1" aria-label="Più lenta">− lenta</button>
+    <input type="range" class="vel-cursore" min="0.7" max="1.3" step="0.05" value="${v}" data-q="${q}" aria-label="Velocità della voce">
+    <button type="button" class="btn chiaro piccolo" data-a="vel-passo" data-q="${q}" data-v="1" aria-label="Più veloce">veloce +</button></div>
+    <button type="button" class="btn chiaro" data-a="vel-prova">▶️ Senti la velocità</button>
+    ${mia && velMia() !== null ? `<button type="button" class="link" data-a="vel-base">Rimetti quella di base (${velDiTutti().toFixed(2).replace('.', ',')})</button>` : ''}</div>`;
+}
+function salvaVel(q, v) {
+  v = Math.round(Math.min(1.3, Math.max(0.7, Number(v))) * 20) / 20;
+  if (q === 'mia') { try { localStorage.setItem('pit-vel-voce', String(v)); } catch (e) { mostraToast('Questo telefono non riesce a salvarla.'); return; } salvatoOk(); }
+  else { S.impostazioni.voceVel = v; salva(); salvatoOk(); }
+  render();
 }
 /* domande all'AI di oggi (C50: Mario vuole capire i limiti). Il conto lo tiene il server; qui si chiede una volta ogni 2 minuti */
 function contoAI() {
@@ -1656,6 +1676,7 @@ function vImpostazioni() {
     ['imp-paga', 'Pagamenti', pagamenti, `<section class="scheda sez-dentro">${sw('i.paga.contanti', i.paga.contanti, 'Contanti al ritiro')}${sw('i.paga.bonifico', i.paga.bonifico, 'Bonifico istantaneo')}
       ${i.paga.bonifico ? `<input type="text" data-campo="i.paga.iban" value="${esc(i.paga.iban)}" placeholder="IBAN, es. IT60 X054 2811 1010 0000 0123 456" aria-label="IBAN"><input type="text" data-campo="i.paga.intestataria" value="${esc(i.paga.intestataria)}" placeholder="Intestato a" aria-label="Intestato a">` : ''}
       ${sw('i.paga.postepay', i.paga.postepay, 'Postepay a Postepay')}${i.paga.postepay ? `<input type="tel" data-campo="i.paga.telefonoPostepay" value="${esc(i.paga.telefonoPostepay)}" placeholder="Numero collegato alla Postepay" aria-label="Numero Postepay">` : ''}</section>`],
+    ...(sonoMarioVero() ? [] : [['imp-voce', 'Voce', `Velocità: ${velTesto(velVoce())}${velMia() !== null ? ', scelta da te' : ''}`, `<section class="scheda sez-dentro">${velVoceHtml(true)}</section>`]]),
     ['imp-vista', 'Testo grande e guida', P.grande ? 'Testo grande acceso' : 'Testo normale', `<section class="scheda"><label class="interr"><span>Testo grande<small>Per leggere meglio</small></span><input type="checkbox" data-campo="p.grande" ${P.grande ? 'checked' : ''}></label>
       <button type="button" class="link" data-a="rivedi-guida">Rivedi la guida</button></section>`]
   ];
@@ -2213,6 +2234,8 @@ const A = {
   },
   'dev-vapore'(el) { P.vapore = el.dataset.v; salvaP(); render(); Vapore.parti(P.vapore); },
   'dev-tutte'() { UI.devTutte = true; render(); },
+  'vel-passo'(el) { const q = el.dataset.q, ora = q === 'mia' ? (velMia() !== null ? velMia() : velDiTutti()) : velDiTutti(); salvaVel(q, ora + 0.05 * Number(el.dataset.v)); },
+  'vel-base'() { try { localStorage.removeItem('pit-vel-voce'); } catch (e) { /* niente */ } salvatoOk(); render(); },
   'vel-prova'() { if (typeof parlaAI === 'function') parlaAI('Metti la pasta nell\'acqua bollente e mescola per due minuti.'); },
   async 'orig-scarica'(el) {
     const f = ((UI.originali && UI.originali.foto) || []).find(x => String(x.id) === el.dataset.v); if (!f) return;
@@ -2905,13 +2928,14 @@ function cercaOrdini(q) {
   });
   const n = $('.ord-nessuno'); if (n) n.classList.toggle('nascosto', visti > 0);
 }
+document.addEventListener('change', e => { if (e.target.classList && e.target.classList.contains('vel-cursore')) salvaVel(e.target.dataset.q, e.target.value); });   // velocità della voce
 document.addEventListener('input', e => {
   const el = e.target;
   if (el.dataset.campo === 'sel.testo' || el.dataset.campo === 'nota') salvaCampo(el);
   if (el.dataset.cerca) suggerisci(el);
   if (el.dataset.spcerca) suggerisciSpesa(el);
   if (el.dataset.cercaord) cercaOrdini(el.value);
-  if (el.dataset.campo === 'i.velVoce') { const t = $('.vel-voce-txt'), v = Number(el.value); if (t) t.textContent = `${velVoceTxt(v)} (${v.toFixed(2).replace('.', ',')})`; }
+  if (el.classList.contains('vel-cursore')) { const t = el.closest('.vel-voce').querySelector('.vel-voce-txt'); if (t) t.textContent = velTesto(Number(el.value)); }
   if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;   // resta anche se la pagina si ridisegna (una foto che arriva)
 });
 document.addEventListener('keydown', e => {

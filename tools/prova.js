@@ -201,13 +201,22 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.mario-scheda', { hasText: 'Foto originali di Monica' }).count())) throw new Error('manca «📷 Foto originali di Monica» nella scheda di Mario');
     const coda = await page.evaluate(async () => { await mandaOriginale(new File([new Uint8Array(5000)], 'x.jpg', { type: 'image/jpeg' }), 'Prova'); const d = await dbOriginali(); const n = await new Promise(ok => { const r = d.transaction('coda').objectStore('coda').count(); r.onsuccess = () => ok(r.result); }); await new Promise(ok => { const t = d.transaction('coda', 'readwrite'); t.objectStore('coda').clear(); t.oncomplete = ok; }); return n; });
     if (coda !== 1) throw new Error('la foto originale non resta in coda sul telefono: ' + coda);
-    // velocità della voce (C70): cursore nella scheda di Mario, salvato in S.impostazioni come numero, letto da velVoce()
-    const cur = page.locator('.mario-scheda input[data-campo="i.velVoce"]'); if (!(await cur.count())) throw new Error('manca il cursore della velocità della voce');
-    await cur.evaluate(el => { el.value = '0.75'; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); });
-    const vel = await page.evaluate(() => [S.impostazioni.velVoce, velVoce(), document.querySelector('.vel-voce-txt').textContent]);
-    if (vel[0] !== 0.75 || vel[1] !== 0.75 || !/molto lenta/.test(vel[2])) throw new Error('velocità non salvata: ' + JSON.stringify(vel));
-    await page.evaluate(() => { S.impostazioni.velVoce = 9; }); if ((await page.evaluate(() => velVoce())) !== 0.9) throw new Error('velocità fuori dai tetti non riportata a 0,9');
-    await page.evaluate(() => { delete S.impostazioni.velVoce; salva(); });
+    // velocità della voce (C70; Mario 09/11 «non salva… predefinita 0,75… se la cambia Monica solo per lei»): di base 0,75, il vecchio campo rotto non conta
+    const vel0 = await page.evaluate(() => { localStorage.removeItem('pit-vel-voce'); S.impostazioni.velVoce = 1.2; delete S.impostazioni.voceVel; render(); return [velVoce(), document.querySelector('.mario-scheda .vel-cursore').value]; });
+    if (vel0[0] !== 0.75 || vel0[1] !== '0.75') throw new Error('velocità di base non 0,75: ' + JSON.stringify(vel0));
+    const cur = page.locator('.mario-scheda .vel-cursore'); if ((await cur.evaluate(el => getComputedStyle(el).appearance)) === 'none') throw new Error('il cursore ha ancora lo stile di un interruttore');
+    await cur.evaluate(el => { el.value = '0.9'; el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); });
+    await clic('.mario-scheda [data-a="vel-passo"][data-v="-1"]');
+    const vel = await page.evaluate(() => [S.impostazioni.voceVel, velVoce(), document.querySelector('.mario-scheda .vel-cursore').value, document.querySelector('.mario-scheda .vel-voce-txt').textContent]);
+    if (vel[0] !== 0.85 || vel[1] !== 0.85 || vel[2] !== '0.85' || !/lenta/.test(vel[3])) throw new Error('velocità di tutti non salvata o non rimasta dopo il ridisegno: ' + JSON.stringify(vel));
+    // Monica: la sua, solo sul suo telefono; quella di base resta
+    await page.evaluate(() => { UI.sez = 'imp-voce'; vai('impostazioni'); });
+    await page.locator('details[data-sez="imp-voce"] .vel-cursore').evaluate(el => { el.value = '1.1'; el.dispatchEvent(new Event('change', { bubbles: true })); });
+    const mia = await page.evaluate(() => [localStorage.getItem('pit-vel-voce'), velVoce(), S.impostazioni.voceVel, !!document.querySelector('details[data-sez="imp-voce"] [data-a="vel-base"]')]);
+    if (mia[0] !== '1.1' || mia[1] !== 1.1 || mia[2] !== 0.85 || !mia[3]) throw new Error('velocità personale: ' + JSON.stringify(mia));
+    await clic('details[data-sez="imp-voce"] [data-a="vel-base"]');
+    if ((await page.evaluate(() => velVoce())) !== 0.85) throw new Error('«Rimetti quella di base» non torna a quella di Mario');
+    await page.evaluate(() => { delete S.impostazioni.velVoce; delete S.impostazioni.voceVel; UI.sez = null; salva(); vai('impostazioni'); });
     await clic('.dev-scheda [data-a="dev-come"]'); await page.locator('.voce').first().waitFor({ timeout: 3000 });
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
   });
