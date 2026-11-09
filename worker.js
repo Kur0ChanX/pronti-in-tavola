@@ -31,7 +31,8 @@ const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi',
 const PROGETTO = 'pronti-in-tavola';
 const CONTATTO = 'https://pronti-in-tavola.pronti-in-tavola.workers.dev/';
 const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al giorno
-const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui', 'chiusi'];   // cosa è successo, per il testo e per aprire il punto giusto (C27)
+const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui', 'chiusi'];
+const TIPI_SERVER = ['esagera'];   // (C109) avvisi che manda solo il server (un telefono non li può chiedere con /api/avvisa)   // cosa è successo, per il testo e per aprire il punto giusto (C27)
 const PAUSA_MS = 15 * 1000;
 const SQUILLO_MS = 5000, SQUILLI = 12;   // «sono qui»: uno squillo ogni 5 secondi per 1 minuto (C51)     // e non più di uno ogni 15 secondi
 
@@ -76,7 +77,8 @@ Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna
 Gli ordini con "prova":true sono di prova: non contarli negli incassi né tra le cose da cucinare.
 Usa solo numeri, id e nomi presenti nei DATI: non inventare mai. Il testo è breve, caldo, in italiano semplice, al massimo 3 frasi.`;
 /* aiutante dei clienti (C50, Mario 08/11 «per i clienti fallo al meglio ma tienilo disattivato»): solo menù e i suoi ordini, mai dati di altri */
-const TETTO_AIC = 60, TETTO_AIC_CLIENTE = 10;   // domande al giorno: in tutto e per ogni cliente (restano neuroni per Monica)
+const TETTO_AIC = 60;   // domande al giorno dei clienti, in tutto (limite gratuito dei «neuroni»: restano per Monica)
+const SOGLIA_AIC_CLIENTE = 20;   // (C109, PT E41) oltre 20 domande di UN cliente arriva una segnalazione a chi gestisce: MAI un blocco
 const ISTRUZIONI_CLIENTE = `Sei l'aiutante gentile dell'app «Pronti in Tavola» di Monica, che cucina da asporto a Olbia: i clienti ordinano dall'app e ritirano a casa sua.
 Parli con UN cliente. Ricevi i DATI in JSON: il menù di oggi (piatti, prezzi, formati, gusti, ingredienti e allergeni scritti da Monica), le regole degli ordini, gli ordini di QUESTO cliente, il suo carrello e le sue allergie.
 Rispondi SOLO con un oggetto JSON, senza altro testo: {"testo":"<risposta breve>","azioni":[ ...da 0 a 4 azioni... ]}
@@ -462,7 +464,7 @@ export class Avvisi extends DurableObject {
 
   async manda(soloUid, per, perCliente, extra, chi) {
     const chiave = perCliente ? 'clienti' : 'iscritti';
-    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) ? per : 'ordine', quando: Date.now() });
+    if (!perCliente && per !== 'promemoria') await this.ctx.storage.put('ultimo', { ...(extra || {}), tipo: TIPI_GESTORE.includes(per) || TIPI_SERVER.includes(per) ? per : 'ordine', quando: Date.now() });
     const tutti = (await this.ctx.storage.get(chiave)) || [];
     const dest = perCliente ? tutti.filter(x => x.cliente === perCliente) : tutti.filter(x => !soloUid || x.uid === soloUid);
     if (perCliente) {   // il testo «è pronto» vale solo per i telefoni di quel cliente
@@ -552,15 +554,26 @@ export class Avvisi extends DurableObject {
     return true;
   }
 
-  /* aiutante dei clienti: tetto in tutto e per cliente (chi gestisce che prova conta in tutto, non a testa) */
+  /* aiutante dei clienti: tetto in tutto (limite gratuito). Per cliente nessun blocco (C109): oltre la soglia una segnalazione, di nuovo al doppio */
   async contaAIC(cliente) {
     const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('aic')) || {};
     const c = c0.giorno === oggi ? c0 : { giorno: oggi, n: 0, chi: {} };
     if (c.n >= TETTO_AIC) return 'tetto';
-    if (cliente && (c.chi[cliente] || 0) >= TETTO_AIC_CLIENTE) return 'tuo';
-    c.n++; if (cliente) c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+    c.n++;
+    if (cliente) {
+      const n = c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+      if (n === SOGLIA_AIC_CLIENTE + 1 || n === 2 * SOGLIA_AIC_CLIENTE + 1) this.segnala('aiutante', cliente, n, SOGLIA_AIC_CLIENTE).catch(() => {});
+    }
     await this.ctx.storage.put('aic', c);
     return '';
+  }
+  /* (C109, PT E41) UNA funzione per segnalare a chi gestisce che una persona usa molto una cosa: non ferma mai nessuno.
+     Registro (ultime 30, Impostazioni → «Le AI e i limiti») + notifica a chi gestisce. La usa anche l'ascolto (Voce). */
+  async segnala(cosa, cliente, n, soglia) {
+    const reg = ((await this.ctx.storage.get('segnalazioni')) || []).slice(-29);
+    reg.push({ quando: new Date().toISOString(), cosa, cliente: cliente || '', n, soglia });
+    await this.ctx.storage.put('segnalazioni', reg);
+    return this.manda(null, 'esagera', null, { cosa, cliente: cliente || '', n });
   }
   /* ascolto preciso dei clienti: stesso conto, chiave «asc» */
   async contaAscolto(cliente) {
@@ -575,7 +588,8 @@ export class Avvisi extends DurableObject {
   async contoAI() {
     const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {}, s = (await this.ctx.storage.get('asc')) || {};
     return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0, ascolti: s.giorno === oggi ? s.n : 0,
-      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
+      segnalazioni: ((await this.ctx.storage.get('segnalazioni')) || []).slice(-10),
+      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, sogliaCliente: SOGLIA_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
   }
 
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
@@ -822,7 +836,7 @@ export default {
         if (dati.length > 40000) return json({ errore: 'dati troppo grandi' }, 413);
         if (!env.AI) return json({ errore: 'AI non collegata' }, 503);
         const fermo = await av.contaAIC(c);
-        if (fermo) return json({ fermo, testo: fermo === 'tuo' ? 'Per oggi abbiamo parlato tanto! Riprova domani, o scrivi a Monica.' : 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
+        if (fermo) return json({ fermo, testo: 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
         return json(await chiediAI(env, testo, dati, b.storia, null, true));
       }
       if (url.pathname === '/api/ascolta') {   // «ascolto preciso» dei clienti (C105): audio → Whisper Groq v3 + Cloudflare → correttore → { testo, alternative }

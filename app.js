@@ -451,7 +451,7 @@ function cartaNotifica() {
 }
 /* (C97, Mario 08/11 «non mi è arrivata nessuna notifica… di accettarlo»): chi gestisce vede cosa ha mandato il server
    (ora, cosa, a quanti telefoni, se Google l'ha preso) e se il server conosce QUESTO telefono: così si capisce dove si perde */
-const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare', chiusi: 'Persona nuova fermata: clienti nuovi chiusi',
+const NOMI_AVVISO = { ordine: 'Ordine nuovo', ordineProva: 'Ordine di prova', primo: 'Persona nuova con il primo ordine', richiesta: 'Persona nuova da accettare', chiusi: 'Persona nuova fermata: clienti nuovi chiusi', esagera: 'Un cliente usa molto l\'aiutante (nessuno fermato)',
   risposta: 'Risposta sul giorno', modifica: 'Richiesta di modifica', qui: 'Cliente qui per il ritiro', prova: 'Prova', promemoria: 'Promemoria della sera', pronto: 'Ordine pronto (al cliente)', proposta: 'Altro giorno (al cliente)' };
 function voceDiario(d) {
   const q = new Date(d.quando), ora = q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -1633,8 +1633,15 @@ function contoAI() {
     Dati.token().then(tok => tok && fetch('/api/conto-ai', { method: 'POST', headers: { authorization: 'Bearer ' + tok } })).then(r => r && r.ok ? r.json() : null)
       .then(j => { if (j) { UI.contoAI = Object.assign(j, { quando: Date.now() }); if (UI.vista === 'impostazioni') render(); } }).catch(() => {}).finally(() => { UI.contoAIin = false; });
   }
-  const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (tetto ${c.tetti.clienti}, ${c.tetti.aCliente} a testa).` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
+  const riga = c ? `Oggi: <b>${c.monica}</b> domande di chi gestisce (tetto ${c.tetti.monica}) · <b>${c.clienti}</b> dei clienti${c.persone ? ` (${c.persone} ${c.persone === 1 ? 'persona' : 'persone'})` : ''} (tetto ${c.tetti.clienti}; nessun cliente viene fermato: oltre ${c.tetti.sogliaCliente} domande a testa arriva una segnalazione).${segnalazioniHtml(c.segnalazioni)}` : sulSito() ? 'Conto delle domande di oggi: lo sto chiedendo…' : 'Il conto delle domande si vede nell\'app vera.';
   return `<p class="tenue piccolo" style="margin:0">${riga}<br>Limite gratuito vero: 10.000 «neuroni» al giorno per tutto l'account (si azzera all'una di notte, ora italiana). Una domanda ne usa circa 150-300: stima 30-60 risposte al giorno in tutto. Finiti: «riprova domani», nessun costo.</p>`;
+}
+/* (C109, PT E41) segnalazioni del server: un cliente ha usato molto una funzione (mai fermato). Le ultime 5, la più nuova in cima */
+function segnalazioniHtml(l) {
+  if (!l || !l.length) return '';
+  const nomi = { aiutante: 'domande all\'aiutante', ascolto: 'ascolti del microfono' };
+  return '<br><b>Segnalazioni</b> (nessuno fermato):' + l.slice(-5).reverse().map(x => { const q = new Date(x.quando), cl = S.clienti.find(k => k.id === x.cliente) || {};
+    return `<br>· ${q.toLocaleDateString('it-IT', { day: 'numeric', month: 'numeric' })} ${q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })} · ${esc(cl.nome || 'un cliente')}${cl.codice ? ' ' + esc(mostraCodice(cl.codice)) : ''}: ${Number(x.n) || 0} ${nomi[x.cosa] || esc(String(x.cosa || ''))} (soglia ${Number(x.soglia) || 0})`; }).join('');
 }
 /* Prova le AI (Mario 08/11): un tocco, ogni AI risponde o dice perché no */
 function provaAIhtml() {
@@ -3031,6 +3038,7 @@ function vaiDaNotifica() {
   if (P.ruolo === 'monica') {
     if (t === 'promemoria') { UI.vista = 'ordini'; UI.tab = 'prossimi'; UI.ordAperto = null; UI.avvisoTesto = 'Ecco gli ordini dei prossimi giorni: in cima quelli di domani.'; return; }
     if (t === 'richiesta' || t === 'primo') { UI.richViste = []; UI.vista = 'ordini'; return; }
+    if (t === 'esagera') { UI.vista = 'impostazioni'; UI.avvisoTesto = 'Un cliente ha fatto tante domande all\'aiutante. Nessuno è stato fermato: ' + (puoSviluppare() ? 'chi e quante in «Solo per te, Mario».' : 'non devi fare niente.'); return; }   // (C109)
     if (t === 'chiusi') { UI.vista = 'clienti'; UI.avvisoTesto = S.impostazioni.nuovi === false ? 'Una persona nuova ha provato a entrare: tocca «Riapri ai clienti nuovi».' : 'Già riaperto: ora le persone nuove possono entrare.'; return; }   // (C104)   // il riquadro delle persone nuove si apre da solo
     const g = daGuardare().slice().sort((a, b) => (b.tempi && b.tempi.nuovo || 0) - (a.tempi && a.tempi.nuovo || 0) || b.n - a.n);
     UI.vista = 'ordini'; UI.tab = 'nuovi'; UI.ordAperto = g.length ? g[0].id : null;

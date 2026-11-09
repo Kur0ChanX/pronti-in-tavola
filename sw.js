@@ -47,6 +47,7 @@ self.addEventListener('push', e => {
       primo: ['Una persona nuova ha ordinato: accettala 🍝', 'Il suo primo ordine aspetta il tuo sì. Tocca per vedere chi è.'],
       risposta: ['Un cliente ha risposto sul giorno 🍝', 'Tocca per vedere la sua risposta.'],
       modifica: ['Un cliente chiede una modifica 🍝', 'Tocca per vedere cosa cambia.'],
+      esagera: ['Un cliente usa molto l\'aiutante', 'Nessuno è stato fermato. Tocca per vedere i dettagli.'],   // (C109)
       chiusi: ['Una persona nuova non riesce a entrare 🔒', '«Accetta clienti nuovi» è spento. Tocca per riaprire.'],   // (C104)
       qui: [`${(u && u.prova) ? 'PROVA · ' : ''}${(u && u.nome) || 'Un cliente'} è qui per il ritiro 🍝`, `${u && u.n ? 'Ordine n. ' + u.n + '. ' : ''}Tocca per vederlo.`],
       ordine: ['Pronti in Tavola', 'Hai un ordine nuovo da guardare 🍝']
