@@ -4,9 +4,9 @@
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
 | Principale | cerchi | 🟢 🟡 🔴 ⚫ | 33 | `session_01WTjqUwCuTdUjXP6DJCbr8T` | |
-| Aiuto | libri | 📗 📒 📕 📓 | 9 | Aiuto 9 (bug), dopo `session_01WTjqUxwKQtc7WQsefh8EJF` (Aiuto 8, chiusa 09/11 ~09:55); prima `session_01WTjqUu72CCre8257ouny2k` (Aiuto 7) | |
+| Aiuto | libri | 📗 📒 📕 📓 | 10 | Aiuto 10 (bug), dopo `session_01WTjqUvc6wykACULLz4o3Xx` (Aiuto 9, chiusa 09/11 ~10:20); prima `session_01WTjqUxwKQtc7WQsefh8EJF` (Aiuto 8) | |
 
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 📗 Aiuto 9 (bug) | C99 codice e nome dei profili | app.js, dati.js, aiutante.js | 09/11 09:55 |
+| 📗 Aiuto 10 (bug) | C101 ordini di prova da togliere, C100 aiutante | app.js, dati.js, aiutante.js | 09/11 10:20 |
