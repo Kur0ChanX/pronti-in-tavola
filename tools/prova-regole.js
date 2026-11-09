@@ -208,6 +208,15 @@ async function semina(env) {
     b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: false } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 9, ultimoOrdine: 'o3' });
     await assertFails(b.commit());
   });
+  await caso('cuori gonfiati (C98): +1 al piatto mentre il cuore dell\'ordine si toglie, o cambia un altro piatto: no', async () => {
+    const d = db('tel1');
+    let b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: false } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 5, ultimoOrdine: 'o3' });
+    await assertFails(b.commit());
+    b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: true, altro: true } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 5, ultimoOrdine: 'o3' });
+    await assertFails(b.commit());
+    b = writeBatch(d); b.update(doc(d, 'ordini/o3'), { cuori: { lasagne: false } }); b.update(doc(d, 'piatti/lasagne'), { cuori: 3, ultimoOrdine: 'o3' });
+    await assertSucceeds(b.commit());
+  });
   await caso('proposta di Monica: «Va bene» col suo giorno', () => assertSucceeds(updateDoc(doc(db('tel2'), 'ordini/o2'), { stato: 'accettato', entro: '2026-11-08', proposta: null })));
   await caso('proposta: «accettato» con un altro giorno no', () => assertFails(updateDoc(doc(db('tel2'), 'ordini/o2'), { stato: 'accettato', entro: '2026-11-20', proposta: null })));
   await caso('proposta: «Un altro giorno» torna nuovo', () => assertSucceeds(updateDoc(doc(db('tel2'), 'ordini/o2'), { stato: 'nuovo', entro: '2026-11-10', proposta: null })));

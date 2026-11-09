@@ -33,6 +33,11 @@ service cloud.firestore {
             || getAfter(doc('ordini', id)).data.stato != get(doc('ordini', id)).data.stato
             || getAfter(doc('ordini', id)).data.get('cuori', {}) != get(doc('ordini', id)).data.get('cuori', {}));
     }
+    // «Mi è piaciuto» di quel piatto nell'ordine, prima e dopo questa scrittura (C98: il cuore del piatto segue quello dell'ordine).
+    function cuorePrima(oid, piatto) {
+      return exists(doc('ordini', oid)) && get(doc('ordini', oid)).data.get('cuori', {}).get(piatto, false) == true;
+    }
+    function cuoreDopo(oid, piatto) { return getAfter(doc('ordini', oid)).data.get('cuori', {}).get(piatto, false) == true; }
     // Numero dell'ordine preso dal contatore, che sale di 1 nella stessa scrittura.
     function numeroDalContatore() {
       return request.resource.data.n == get(doc('contatori', 'ordini')).data.prossimo
@@ -60,13 +65,16 @@ service cloud.firestore {
     match /piatti/{id} {
       allow read: if entrato();
       allow write: if gestore();
-      // Approvato: solo i pronti (presi o rimessi) e i cuori (+1 o -1), sempre insieme a un suo ordine.
+      // Approvato: solo i pronti (presi o rimessi) e i cuori (+1 o -1 come il cuore del piatto nel suo ordine), sempre insieme a un suo ordine.
       allow update: if approvato()
         && cambiati().hasOnly(['pronto', 'cuori', 'ultimoOrdine'])
         && ordineMioCheCambia(request.resource.data.ultimoOrdine)
         && (!cambiati().hasAny(['cuori'])
-            || (request.resource.data.cuori is int && request.resource.data.cuori - resource.data.cuori <= 1
-                && resource.data.cuori - request.resource.data.cuori <= 1 && request.resource.data.cuori >= 0))
+            || (request.resource.data.cuori is int && request.resource.data.cuori >= 0
+                && ((request.resource.data.cuori - resource.data.cuori == 1
+                     && cuoreDopo(request.resource.data.ultimoOrdine, id) && !cuorePrima(request.resource.data.ultimoOrdine, id))
+                    || (resource.data.cuori - request.resource.data.cuori == 1
+                     && cuorePrima(request.resource.data.ultimoOrdine, id) && !cuoreDopo(request.resource.data.ultimoOrdine, id)))))
         && (!cambiati().hasAny(['pronto'])
             || (resource.data.pronto != null && request.resource.data.pronto != null
                 && request.resource.data.pronto.diff(resource.data.pronto).affectedKeys().hasOnly(['qta'])
