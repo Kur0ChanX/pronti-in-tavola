@@ -11,3 +11,9 @@ Questo progetto non può toccare il repo del kit (`add_repo` di un altro repo sp
 
 ## C20 · Link a Mario: da aprire cliccabile, da copiare in un riquadro con Copia
 - Oggi solo nel `CLAUDE.md` di questo progetto; le skill `domande` e `ricerca-aggiornata` del kit dicono ancora «mai nei riquadri».
+
+## C103 · «A cosa serve» in tutto ciò che chiedo a Mario (Mario 09/11: «regola per tutti i progetti ed account»)
+- Testo per «COME PARLARMI» delle Preferenze (tutte le chat e tutti gli account) e per `REGOLE.md` (sezione «Come parlo a Mario»): «Ogni cosa che chiedo a Mario di fare (passi a mano, prove, foto, decisioni) dice in una riga a cosa serve: cosa ottiene lui, l'app o il lavoro.»
+- Nel blocco `👉 DA FARE TU`: prima dei passi una riga «A cosa serve: …»; nelle domande è già nel «📌 Di cosa parliamo» (skill `domande`): aggiungere «a cosa serve la risposta».
+- Preferenze: `PREFERENZE-CHAT.txt` è a ~2.400 caratteri su 2.500: accorciare un'altra riga senza cambiarne il senso.
+- Imporla con un hook (consiglio): allo Stop, se l'ultimo messaggio ha «👉 DA FARE TU» senza «A cosa serve», una riga di richiamo.
