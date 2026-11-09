@@ -738,7 +738,13 @@ async function inviaAC(testo, voce, extra = {}) {
   if (voce) { if (o('voceClientiRisponde')) parlaAI((typeof perVoceCliente === 'function' ? perVoceCliente(pi.testo) : pi.testo) + (haFai ? (o('voceClientiConferma') && (typeof vocePuoSentireSi !== 'function' || vocePuoSentireSi()) ? ' Lo metto nel carrello? Dimmi sì o no.' : ' Controlla e tocca Conferma.') : ''), poi); else poi(); }
 }
 window.chiediAiutoCliente = chiediAiutoCliente;
-function fondoAC() { if (UI.vista === 'aiuto') window.scrollTo(0, document.body.scrollHeight); }
+function fondoAC() {
+  if (UI.vista !== 'aiuto') return;
+  const fum = document.querySelectorAll('.ai-fum.lei'), ultimo = fum[fum.length - 1];
+  const testa = document.querySelector('.testata'), fissa = testa && /sticky|fixed/.test(getComputedStyle(testa).position), sopra = (fissa ? testa.getBoundingClientRect().height : 0) + 12;
+  window.scrollTo(0, document.body.scrollHeight);
+  if (ultimo && ultimo.getBoundingClientRect().top < sopra) window.scrollTo(0, ultimo.getBoundingClientRect().top + window.scrollY - sopra);   // schermo basso (iPad in orizzontale): l'inizio della risposta deve restare in vista
+}
 function barraAIC() {
   if (!aiClientiVisibile()) return '';
   return `<div class="ai-barra ai-cliente"><button type="button" class="ai-apri" data-a="vai" data-v="aiuto">${ico('scintille')}<span>Hai una domanda? Allergie, prezzi, cosa prendere…</span></button>
