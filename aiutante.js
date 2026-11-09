@@ -27,7 +27,7 @@ function datiAI() {
     piatti: visibili().map(p => ({ id: p.id, nome: p.nome, cat: p.cat, nelMenu: !!p.disponibile, descrizione: p.sotto || '', prontiOggi: p.pronto && p.pronto.giorno === oggi() ? p.pronto.qta : 0,
       formati: p.formati.map(f => ({ id: f.id, nome: f.nome, prezzo: f.prezzo })) })),
     ordini, incassiMese: { giaPresi: c.presi, daPrendere: c.daPrendere, ordini: c.oo.length },
-    impostazioniExtra: OPZIONI.map(o => ({ chiave: o.k, nome: o.nome, tipo: o.tipo, valore: o.tipo === 'messaggio' ? String(opz(o.k)).slice(0, 160) : o.tipo === 'parti' ? opz(o.k).map(c => c[1]).join(', ') : opz(o.k), cosa: o.aiuto + (o.perAI ? ' · ' + o.perAI : '') })) };
+    impostazioniExtra: OPZIONI.filter(o => o.g !== 'mario').map(o => ({ chiave: o.k, nome: o.nome, tipo: o.tipo, valore: o.tipo === 'messaggio' ? String(opz(o.k)).slice(0, 160) : o.tipo === 'parti' ? opz(o.k).map(c => c[1]).join(', ') : opz(o.k), cosa: o.aiuto + (o.perAI ? ' · ' + o.perAI : '') })) };
 }
 
 /* ---------- ogni azione controllata sui dati di ADESSO ----------
@@ -511,7 +511,7 @@ const DOVE_AI = {
   'imp-paga': { vista: 'impostazioni', sez: 'imp-paga', nome: 'Pagamenti', come: 'Accendi come vuoi essere pagata: contanti, bonifico (con l\'IBAN) o Postepay.', parole: /pagament|bonific|\biban\b|postepay|contanti|pagar/, azione: true },
   'imp-vista': { vista: 'impostazioni', sez: 'imp-vista', nome: 'Testo grande e guida', come: 'Accendi «Testo grande» se leggi male, o tocca «Rivedi la guida».', parole: /testo grande|scritt[ae] (piccol|grand)|non (ci )?vedo|ingrandi|rivedi la guida/ },
   'imp-gestori': { vista: 'impostazioni', sez: 'imp-gestori', nome: 'Chi gestisce la cucina', come: 'Qui vedi chi entra come te e puoi aggiungere una persona.', parole: /chi gestisc|aiutar(mi)? in cucina|mio marito|socia|altra persona (che )?gestisc/ },
-  'imp-notifiche': { vista: 'impostazioni', sez: 'imp-notifiche', nome: 'Notifiche', come: 'Tocca «Attiva» e poi «Consenti» quando il telefono lo chiede. Sotto vedi gli ultimi avvisi arrivati.', parole: /notific|avvis[io] (degli|sul)|suon|ultimi avvisi/ },
+  'imp-notifiche': { vista: 'impostazioni', sez: 'imp-notifiche', nome: 'Notifiche', come: 'Tocca «Attiva» e poi «Consenti» quando il telefono lo chiede. Sotto vedi gli ultimi avvisi arrivati, anche le segnalazioni di un cliente che usa molto l\'aiutante (nessuno viene fermato).', parole: /notific|avvis[io] (degli|sul)|suon|ultimi avvisi|segnalazion|esager|(usa|chied\w*) (tanto|molto|troppo)/ },
   // (C100) funzioni vecchie che l'aiutante non conosceva
   'imp-voce': { vista: 'impostazioni', sez: 'imp-voce', nome: 'Voce', come: 'Sposta il cursore: più a sinistra la voce è più lenta. Tocca «Senti la velocità» per provarla.', parole: /\bvoce\b|parla (troppo )?(veloce|lent|pian|fort)|velocita/ },
   'imp-lucchetto': { vista: 'impostazioni', sez: 'imp-lucchetto', nome: 'Lucchetto', come: 'Scegli impronta o PIN per aprire la tua parte dell\'app.', parole: /lucchett|\bpin\b|impront|password|blocc(a|o) (l'app|il telefono)/ },
@@ -532,7 +532,7 @@ const DOVE_AI = {
   ricettario: { vista: 'ricettario', nome: 'Ricettario', come: 'Cerca una ricetta per nome o ingrediente, poi tocca «Cucina guidata».', parole: /ricett|ricettari|cucina guidata/ }
 };
 /* le impostazioni in più (opzioni.js): «Portami lì» per ognuna */
-OPZIONI.forEach(o => { DOVE_AI['opz-' + o.k] = { vista: 'impostazioni', sez: 'opz-' + o.k, nome: o.nome, come: o.aiuto, parole: o.parole, azione: true }; });
+OPZIONI.filter(o => o.g !== 'mario').forEach(o => { DOVE_AI['opz-' + o.k] = { vista: 'impostazioni', sez: 'opz-' + o.k, nome: o.nome, come: o.aiuto, parole: o.parole, azione: true }; });
 const VOCI_PIATTO = ['foto', 'prezzi', 'pronto', 'nome', 'gusti', 'ingredienti', 'dosi', 'richieste', 'fritto', 'casa', 'novita'];
 const semplice = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 const PAROLE_VUOTE = /^(di|del|della|delle|dei|con|alla|alle|al|allo|e|in|la|le|il|lo|gli|tipo|medie|da)$/;
