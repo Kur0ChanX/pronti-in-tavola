@@ -29,6 +29,10 @@ Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, qu
 
 - **PT E39** (09/11/2026) Su iPad (app installata sulla Home) il microfono dei clienti suonava e non capiva nulla (Mario, video): `webkitSpeechRecognition` su iOS esiste ma nell'app sulla Home non parte mai (WebKit 225298, dal 2021) e dopo un audio resta muto anche in Safari (WebKit 321436, 08/2026). «L'API c'è» non vuol dire «funziona»: per ogni funzione del telefono cercare i bug WebKit noti e provarla anche nell'app installata su iPhone/iPad, non solo in Safari e su Android.
 
+- **PT E40** (09/11/2026) Con l'ascolto preciso su iPad le parole uscivano storpiate («persa a Mato» per «per sabato»; Mario: «non capisce bene e parlo normale»): avevo provato che il testo ARRIVA, non che è GIUSTO. Un riconoscimento vocale si prova con frasi vere e si rende robusto (modello più preciso, più trascrizioni, correzione col menù), non basta che risponda.
+
+- **PT E41** (09/11/2026) Avevo messo limiti PER CLIENTE che bloccano la persona (aiutante 10 domande al giorno, ascolto 40): Mario «come ti avevo già detto… sembra un'app amatoriale». Regola di Mario per tutti i progetti e account: niente limiti che interrompono un cliente, amico o collega; un limite per persona si chiede prima a Mario; si mette un tetto AMPIO che, superato, NON blocca ma manda a chi gestisce una segnalazione nell'app (e si registra): molto oltre = c'è un problema; poco oltre = si alza il tetto.
+
 ## Lezioni ereditate da RVC (numeri «RVC E..»)
 - **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
 - **RVC E7** Prima di chiedere a Mario (o di scrivere un prompt a un aiutante), `grep` in documenti e archivio.
