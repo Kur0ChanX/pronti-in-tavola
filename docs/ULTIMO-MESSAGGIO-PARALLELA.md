@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 10:06 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+Sono entrato su regole dell'account di Monica. Adesso come posso aggiungere le regole e incollare il testo?
