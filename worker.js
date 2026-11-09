@@ -117,7 +117,9 @@ const PONTE = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b'];
    (gratis: 1.000 domande e 200.000 token al giorno PER MODELLO, 8.000 token al minuto; console.groq.com/docs/rate-limits letta il 09/11/2026);
    i neuroni di Cloudflare restano a Monica e Mario, ai clienti solo per ultimo. Nessuno risponde → «modo ridotto» (risponde il telefono) */
 const PONTE_CLIENTI = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'openai/gpt-oss-20b'];
-const TETTO_ASCOLTO = 400, TETTO_ASCOLTO_CLIENTE = 40;   // ascolti al giorno: in tutto e per cliente (Whisper: ~4 neuroni a frase)
+/* ascolti dei clienti al giorno (C108b, PT E41: mai un blocco). TETTO_ASCOLTO = in tutto: oltre, ascolto senza Cloudflare (~4 neuroni
+   a frase, salvadanaio di Monica e Mario) + una segnalazione; TETTO_ASCOLTO_CLIENTE = soglia di segnalazione a testa (base, cambiabile: 'ascoltoAvviso') */
+const TETTO_ASCOLTO = 400, TETTO_ASCOLTO_CLIENTE = 40;
 async function ponteAI(env, messaggi, modelli = PONTE) {
   if (!env.GROQ_API_KEY) return null;
   for (const m of modelli) {
@@ -433,7 +435,6 @@ async function campiApp(req) {
 }
 const accesoAIC = f => !!f && !(f.aiClienti && f.aiClienti.booleanValue === false);   // acceso di base (Mario 08/11): spento solo se Mario lo spegne
 /* l'aiutante dei clienti è acceso? (impostazioni/app.aiClienti, letto col token del cliente) */
-async function aiClientiAcceso(req) { return accesoAIC(await campiApp(req)); }
 /* un numero delle impostazioni nei suoi tetti sicuri, altrimenti quello di base */
 function numeroApp(f, k, min, max, base) {
   const x = f && f[k], n = Number(x && (x.integerValue ?? x.doubleValue ?? x.stringValue));
@@ -617,15 +618,21 @@ export class Avvisi extends DurableObject {
     const mario = [...new Set(((await this.ctx.storage.get('iscritti')) || []).filter(x => x.dev).map(x => x.uid))];   // solo a Mario (consiglio C109): Monica non deve fare niente
     for (const uid of mario) await this.manda(uid, 'esagera', null, { cosa, cliente: cliente || '', n });
   }
-  /* ascolto preciso dei clienti: stesso conto, chiave «asc» */
-  async contaAscolto(cliente) {
+  /* ascolto preciso (C108b, PT E41): nessuno viene mai fermato. '' = ascolto normale; 'ridotto' = oltre TETTO_ASCOLTO frasi dei
+     clienti nel giorno: ascolto senza Cloudflare (Groq e Deepgram hanno limiti loro). Ogni soglia passata: una segnalazione, una volta sola.
+     Chi gestisce (cliente vuoto) si conta a parte e non tocca il conto dei clienti */
+  async contaAscolto(cliente, soglia = TETTO_ASCOLTO_CLIENTE) {
     const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('asc')) || {};
     const c = c0.giorno === oggi ? c0 : { giorno: oggi, n: 0, chi: {} };
-    if (c.n >= TETTO_ASCOLTO) return 'tetto';
-    if (cliente && (c.chi[cliente] || 0) >= TETTO_ASCOLTO_CLIENTE) return 'tuo';
-    c.n++; if (cliente) c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+    c.chi = c.chi || {}; c.visti = c.visti || {};
+    const segnala = async (chiave, ...a) => { if (c.visti[chiave]) return; c.visti[chiave] = 1; await this.segnala(...a).catch(() => {}); };
+    if (!cliente) { c.g = (c.g || 0) + 1; await this.ctx.storage.put('asc', c); return ''; }
+    c.n++;
+    const n = c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+    if (n === soglia + 1 || n === 2 * soglia + 1) await segnala('ascolto:' + cliente + ':' + n, 'ascolto', cliente, n, soglia);
+    if (c.n === TETTO_ASCOLTO + 1) await segnala('ascoltoQuota', 'ascoltoQuota', '', c.n, TETTO_ASCOLTO);
     await this.ctx.storage.put('asc', c);
-    return '';
+    return c.n > TETTO_ASCOLTO ? 'ridotto' : '';
   }
   async contoAI() {
     const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {}, s = (await this.ctx.storage.get('asc')) || {};
@@ -885,14 +892,14 @@ export default {
       if (url.pathname === '/api/ascolta') {   // «ascolto preciso» (C105): clienti Groq v3 + Deepgram, chi gestisce Groq v3 + Cloudflare (C108) → correttore → { testo, alternative }
         const c = await clienteDa(req), g = c ? null : await gestoreDa(req);
         if (!c && !g) return json({ errore: 'prima Monica deve approvarti' }, 403);
-        if (c && !(await aiClientiAcceso(req))) return json({ errore: 'spento' }, 403);
+        const f = c ? await campiApp(req) : null;
+        if (c && !accesoAIC(f)) return json({ errore: 'spento' }, 403);
         const b = await req.json().catch(() => null), audio = b && typeof b.audio === 'string' ? b.audio : '';
         if (!audio) return json({ errore: 'audio vuoto' }, 400);
         if (audio.length > 1700000) return json({ errore: 'audio troppo lungo' }, 413);
-        const fermo = await av.contaAscolto(c);
-        if (fermo) return json({ fermo, testo: '' });
+        const modo = await av.contaAscolto(c, numeroApp(f, 'ascoltoAvviso', 10, 500, TETTO_ASCOLTO_CLIENTE));   // (C108b) mai fermo
         const piatti = Array.isArray(b.piatti) ? b.piatti.filter(x => typeof x === 'string').slice(0, 60).map(x => x.slice(0, 40)) : [];
-        return json(await ascolta(env, audio, String(b.tipo || ''), piatti, undefined, { cliente: !!c }));
+        return json(await ascolta(env, audio, String(b.tipo || ''), piatti, undefined, { cliente: !!c, ridotto: modo === 'ridotto' }));
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
