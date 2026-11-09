@@ -11,6 +11,7 @@ on:
     branches: [claude/pronti-ramo-definitivo]
     paths:
       - '*.js'
+      - '*.mjs'
       - '*.html'
       - '*.css'
       - 'manifest.webmanifest'
