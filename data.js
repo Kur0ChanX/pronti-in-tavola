@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.85';
+const VERSIONE_APP = '0.9.86';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.86', data: '09/11/2026',
+    corretto: ['Su iPad e iPhone con l\'app sulla schermata Home il microfono dell\'aiutante di Monica usava il riconoscitore del telefono, che lì non parte: ora detta con l\'ascolto preciso, come quello dei clienti (serve internet)'] },
   { v: '0.9.85', data: '09/11/2026',
     migliorato: ['Il microfono dei clienti capisce molto meglio: ascolta con due motori insieme e rimette a posto le parole sentite male usando i nomi del menù (per esempio «persa a Mato» diventa «per sabato»)'] },
   { v: '0.9.84', data: '09/11/2026',

@@ -383,6 +383,14 @@ function fermaAscoltoCliente() {
   if (VC.rec) { try { VC.rec.stop(); } catch (e) { /* già fermo */ } }
   if (VC.media && VC.media.state === 'recording') { try { VC.media.stop(); } catch (e) { VC.media = null; } }
 }
+/* aiutante di MONICA (aiutante.js): dove il riconoscitore del telefono non parte (iPad/iPhone con l'app sulla Home, PT E39) detta con l'ascolto preciso */
+const dettaturaServe = () => !telefonoAscoltaBene() && !!(navigator.mediaDevices && window.MediaRecorder);
+function dettaConAscoltoPreciso(manda) {
+  if (ascoltoInCorso()) { fermaAscoltoCliente(); return; }
+  if (typeof fermaVoce === 'function') fermaVoce();
+  VC.perSi = null; VC.dettato = false; VC.giro++;
+  registraCliente({ manda });
+}
 const puoAscoltoPreciso = () => navigator.onLine && !!(navigator.mediaDevices && window.MediaRecorder) && ((typeof sulSito === 'function' && sulSito()) || !!window.ascoltaServerFinto);
 /* tocco sul microfono: il telefono ascolta; se non ce la fa (errore, muto per 8 s, frase senza senso) passa all'ascolto preciso.
    «Dettami l'ordine» parte subito con l'ascolto preciso: il telefono taglia alla prima pausa, una frase lunga no. */
@@ -525,6 +533,7 @@ async function ascoltaServer(corpo) {
 function consegnaDetto(testo, o) {
   testo = String(testo || '').trim(); if (!testo) { statoVC('', ''); return; }
   statoVC('capito', testo);
+  if (o && typeof o.manda === 'function') { setTimeout(() => { if (VC.stato === 'capito') statoVC('', ''); }, 900); o.manda(testo); return; }   // aiutante di Monica
   if (o && o.perSi != null) {
     const e = capisciCliente(testo);
     if ((e.intento === 'si' || e.intento === 'no') && rispondiSiNoCliente(e.intento)) { statoVC('', ''); return; }
