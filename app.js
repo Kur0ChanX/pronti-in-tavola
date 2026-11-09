@@ -778,8 +778,9 @@ const senzaNome = () => Dati.attivo && P.ruolo === 'cliente' && !Dati.io.gestore
 const avvisoSenzaNome = () => senzaNome() ? `<div class="avviso attesa-forte">${ico('clienti')}<div><b>Monica non sa ancora che ci sei.</b><br>Scrivi nome e cognome: le arriva la tua richiesta e ti può dire di sì.
   <br><button type="button" class="btn piccolo" style="margin-top:8px" data-a="benv-torna">Scrivi il tuo nome</button></div></div>` : '';
 const codiceTel = uid => String(uid || '').slice(0, 4).toUpperCase();   // solo per chi non ha ancora il codice fisso
-/* (C99) codice fisso del profilo: ⭐ davanti a quelli di Mario e Monica */
-const mostraCodice = c => c ? (c === 'MARIO' || c === 'MONICA' ? '⭐' + c : c) : '';
+/* (C99) codice fisso del profilo; dopo il nome di Mario un procione, dopo quello di Monica un cuore rosso (Mario 09/11, al posto della ⭐) */
+const SEGNO_CODICE = { MARIO: ' 🦝', MONICA: ' ❤️' };
+const mostraCodice = c => c ? c + (SEGNO_CODICE[c] || '') : '';
 const codiceDi = o => mostraCodice(o.cliente ? (S.clienti.find(c => c.id === o.cliente) || {}).codice
   : ((S.richieste || []).find(r => r.primo === o.id) || (S.utenti || []).find(u => u.uid === o.utente) || {}).codice);
 const nomeNonVisto = c => { const n = (c.nomiPrima || []).length, u = n && c.nomiPrima[n - 1]; return !!(u && u.chi === 'cliente' && (c.nomiVisti || 0) < n); };
@@ -1312,7 +1313,7 @@ function rigaOrd(o, conGiorno) {
   if (UI.ordAperto === o.id) return `<div class="ord-aperto">${cartaOrdineMonica(o)}<button type="button" class="link" data-a="ord-apri" data-id="${o.id}">Chiudi</button></div>`;
   const cosa = o.righe.map(r => `${qtaTesto(r.tipo, r.qta, r.formatoNome)} ${r.nome}`).join(', ');
   const chi = chiOrdina(o);
-  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n + ' ' + codiceDi(o).replace('⭐', '')).toLowerCase())}">
+  return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n + ' ' + codiceDi(o).replace(/ (🦝|❤️)$/u, '')).toLowerCase())}">
     <span class="ord-n">n. ${o.n}${conGiorno ? `<small>${F_BREVE.format(daIso(giornoDi(o)))}</small>` : ''}</span>
     <span class="ord-chi"><b>${bollinoProva(o)}${esc(chi)}</b><small>${esc(cosa)}</small></span>
     <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && !['proposta', 'prova'].includes(o.stato) ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
