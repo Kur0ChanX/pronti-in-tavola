@@ -2,10 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:33 · 01QTFEqRMnzm
-E lo sfondo, senza fare una cosa pacchiana, puoi mettere qualcosina, sempre quella trama un po' sarda, magari puoi riprendere, per non lasciarlo completamente a tinta unita.
-La scritta scalda e temperatura è un pochettino troppo attaccato alla parte bassa, alla riga della parte bassa. Alzala poco. E poi buon appetito usa un font come se fosse che lo stesse scrivendo lei in corsivo. Un po' come un tratto scritto a mano. Buon appetito il cuoricino.
-
 ## 2026-11-06 19:36 · 01QTFEqRMnzm
 Metti in coda che Powered by nell'ingresso di animazione, fallo più piccolo, è troppo grande, e sposta più sotto, sia Powered by che il mio logo,
 
@@ -133,3 +129,6 @@ riscrivimi la domanda 4 voci l'ho persa
 
 ## 2026-11-08 14:33 · 01WTjqUx82oy
 non mi piacciono come tono e pause e accenti sembrano stranieri ai altre alternative?
+
+## 2026-11-09 10:23 · 01WTjqUwCuTd
+nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me mettimi un procione nel mio nome, dopo il mio nome, nel mio utente, Monica mettili dopo il suo nome e metti un cuoricino rosso.
