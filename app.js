@@ -690,7 +690,7 @@ function vBenvenuto() {
   const b = UI.benv || {};
   let h = `<main class="corpo benvenuto"><img class="benv-logo" src="media/logo-medaglione.webp" alt="Pronti in Tavola con Monica">
     <h1>${esc(opz('saluto'))}</h1><p class="tenue">Monica cucina per te a Olbia. Prima di entrare, dicci come ti chiami: così Monica sa chi ordina. Te lo chiediamo una volta sola.</p>`;
-  if (b.chiuso) return h + `<div class="avviso"><div><b>Monica in questo momento non prende clienti nuovi.</b><br>Puoi guardare il menù; per ordinare riprova più avanti.</div></div>
+  if (b.chiuso) return h + `<div class="avviso"><div><b>Monica in questo momento non accetta clienti nuovi.</b><br>Ho tenuto il tuo nome: appena riapre, riapri questo link e tocca «Sì, sono io». Intanto puoi guardare il menù.</div></div>
     <button type="button" class="btn chiaro pieno" data-a="benv-guarda">Guarda il menù</button></main>`;
   h += `<section class="scheda"><label class="etichetta" for="benv-nome" style="font-weight:800">Il tuo nome</label>
     <input type="text" id="benv-nome" autocomplete="given-name" autocapitalize="words" maxlength="30" placeholder="es. Laura" value="${esc(b.nome || '')}">
@@ -723,7 +723,7 @@ async function benvEntra(ricollega) {
     catch (e) {
       UI.benvInvio = false;
       if (e.code === 'permission-denied' && !ricollega) { UI.benv.usato = tutto; render(); return; }
-      if (e.code === 'chiuso') { UI.benv.chiuso = true; render(); return; }
+      if (e.code === 'chiuso') { ricordaNome(tutto); UI.benv.chiuso = true; render(); return; }   // (C104) il nome resta: alla riapertura un tocco
       render(); mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); return;
     }
     UI.benvInvio = false;
@@ -1123,9 +1123,13 @@ function agenda() {
   return `<div class="agenda">${Object.entries(perGiorno).slice(0, 5).map(([g, oo]) => { const d = daIso(g); return `<div class="agenda-giorno"><div class="data"><small>${F_GS.format(d)}</small><b>${d.getDate()}</b><small>${F_MESE.format(d)}</small></div>
     <ul>${oo.map(o => `<li><b>${esc(cliente(o.cliente).nome)}</b>: ${esc(o.righe.map(r => `${r.nome.toLowerCase()} (${descRiga(r)})`).join(', '))}</li>`).join('')}</ul></div>`; }).join('')}</div>`;
 }
+/* (C104, 09/11: Francesco bloccato per ore, l'interruttore era spento senza che nessuno lo sapesse) finché «Accetta clienti nuovi» è spento,
+   chi gestisce lo legge in rosso in Home e in Clienti, con il tasto per riaprire */
+const avvisoChiusi = () => S.impostazioni.nuovi === false ? `<div class="avviso rosso avviso-chiusi">${ico('aiuto')}<div><b>Non accetti clienti nuovi.</b> Chi apre il link non può scrivere il nome né ordinare.
+    <div class="fila" style="margin-top:10px"><button type="button" class="btn piccolo" data-a="nuovi-riapri">Riapri ai clienti nuovi</button></div></div></div>` : '';
 function vHome() {
   const n = daGuardare().length, imp = S.impostazioni, pronti = prontiOggi();
-  let h = testataMonica('Pronti in Tavola') + '<main class="corpo">';
+  let h = testataMonica('Pronti in Tavola') + '<main class="corpo">' + avvisoChiusi();
   if (pausaOra()) h += `<div class="avviso">${ico('pausa')}<div><b>Sei in pausa fino a ${giornoLungo(imp.pausa.fino)}.</b> I clienti possono ordinare solo per dopo.
     <div class="fila" style="margin-top:10px"><button type="button" class="btn piccolo" data-a="riprendi">Riprendi adesso</button></div></div></div>`;
   h += richiesteGestore();
@@ -1523,7 +1527,7 @@ function vClienti() {
   const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
   const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
     <button type="button" class="btn verde piccolo" data-a="rifiutato-si" data-id="${r.id}"${UI.decido === r.id ? ' disabled' : ''}>${ico('spunta')}Accetta</button></div>`;
-  return `${testataMonica('Clienti', 'home')}<main class="corpo">
+  return `${testataMonica('Clienti', 'home')}<main class="corpo">${avvisoChiusi()}
     ${telefoni.length ? `<section class="scheda"><h2>Telefono nuovo</h2><p class="tenue" style="margin:0">Hanno lo stesso nome di un tuo cliente. Se è proprio lei, ricollega: ritrova i suoi ordini.</p>${telefoni.map(riga).join('')}</section>` : ''}
     ${!nuovi.length && !telefoni.length ? `<section class="scheda"><h2>Nessuno in attesa</h2><p class="tenue" style="margin:0">Qualcuno ti dice che aspetta il tuo sì? Chiedigli di toccare «Ricorda a Monica» nell'app: se c'è, compare qui col suo codice. Se non compare, deve riaprire il link e scrivere di nuovo il nome.</p></section>` : ''}
     ${nuovi.length ? `<section class="scheda"><h2>Nuovi</h2><p class="tenue" style="margin:0">Se la conosci, dille di sì: vedrà l'indirizzo e potrà ordinare.</p>${nuovi.map(riga).join('')}</section>` : ''}
@@ -1644,6 +1648,12 @@ function foglioTogliOrdini() {
     <div class="avviso">${ico('occhio')}<div>Dopo:<br>· <b>Ordini</b> e storico vuoti, ogni cliente a <b>0 ordini</b><br>· teglie della settimana a zero, il prossimo ordine è il <b>n. ${resta ? Math.max(...S.ordini.filter(o => !oo.includes(o)).map(o => o.n || 0)) + 1 : 1}</b><br>· i <b>clienti restano</b>, con nome e codice${resta ? `<br>· restano ${resta === 1 ? 'l\'ordine' : `i ${resta} ordini`} di chi aspetta ancora l'ok di Monica` : ''}</div></div>
     <p class="tenue piccolo" style="margin:0">Prima scarico una copia nei Download. Se sbagli, subito dopo puoi toccare «Annulla».</p></div>
     <div class="piede"><button type="button" class="btn pieno" data-a="togli-ordini-si">Sì, togli ${n === 1 ? 'l\'ordine' : `i ${n} ordini`}</button><button type="button" class="btn chiaro pieno" data-a="chiudi">No, lascia così</button></div>`;
+}
+function foglioChiudiNuovi() {
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro">
+    <h1>Chiudere ai clienti nuovi?</h1>
+    <div class="avviso rosso">${ico('aiuto')}<div>Chi apre il link <b>non potrà scrivere il nome né fare il primo ordine</b>. I clienti che hai già continuano a ordinare.<br>In Home vedrai un avviso rosso finché non riapri.</div></div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="nuovi-chiudi-si">Sì, chiudi ai nuovi</button><button type="button" class="btn chiaro pieno" data-a="chiudi">No, lascia aperto</button></div></div>`;
 }
 function foglioTuttiProva() {
   const oo = S.ordini.filter(o => !diProva(o)).sort((x, y) => x.n - y.n), n = oo.length;
@@ -1788,7 +1798,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'togli-ordini' ? foglioTogliOrdini() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'togli-ordini' ? foglioTogliOrdini() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : UI.foglio.tipo === 'chiudi-nuovi' ? foglioChiudiNuovi() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -2208,6 +2218,8 @@ const A = {
     if (Dati.attivo) P.ruolo = UI.devCliente ? 'cliente' : 'monica'; else { P.ruolo = UI.devCliente ? 'cliente' : 'monica'; salvaP(); }
     vai(UI.devCliente ? 'menu' : 'home');
   },
+  'nuovi-chiudi-si'() { chiudiFoglio(() => cambia('Chiuso ai clienti nuovi', () => { S.impostazioni.nuovi = false; })); },
+  'nuovi-riapri'() { cambia('Riaperto ai clienti nuovi', () => { S.impostazioni.nuovi = true; }); },
   'tutti-prova-apri'() { UI.foglio = { tipo: 'tutti-prova' }; render(); },
   'togli-ordini-apri'() { UI.foglio = { tipo: 'togli-ordini' }; render(); },
   'togli-ordini-si'() {
@@ -2490,6 +2502,7 @@ function salvaCampo(el) {
     const parti = c.slice(2).split('.'); let o = S.impostazioni;
     parti.slice(0, -1).forEach(k => { o = o[k]; });
     const k = parti[parti.length - 1];
+    if (c === 'i.nuovi' && !val) { UI.foglio = { tipo: 'chiudi-nuovi' }; render(); return; }   // (C104) chiude la porta ai clienti: prima la conferma
     if (el.type === 'checkbox') { cambia(val ? 'Acceso' : 'Spento', () => { o[k] = val; }); return; }
     o[k] = el.type === 'range' ? Number(val) : val; salva(); salvatoOk();
   }
