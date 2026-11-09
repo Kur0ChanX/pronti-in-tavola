@@ -385,7 +385,8 @@ function ascoltaCliente(o = {}) {
   if (typeof fermaVoce === 'function') fermaVoce();
   try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ }
   VC.perSi = o.perSi == null ? null : o.perSi; VC.dettato = !!o.dettato; VC.giro++;
-  const motore = vcOpz('voceClientiMotore', 'auto'), R = riconoscitore();
+  const R = riconoscitore(), motore = o.perSi != null ? 'telefono' : vcOpz('voceClientiMotore', 'auto');   // il «sì»/«no» lo sente il telefono (gratis, subito); senza riconoscitore resta il tocco su Conferma
+  if (o.perSi != null && !R) return;
   if (motore === 'preciso' || (motore === 'auto' && (!R || VC.precisoDopo || (o.dettato && puoAscoltoPreciso())))) { VC.precisoDopo = false; registraCliente(o); return; }
   if (!R) { mostraToast('Questo telefono non sa dettare: scrivi la frase.'); return; }
   const rec = new R(), giro = VC.giro; let finali = [], interim = '', avuto = false;

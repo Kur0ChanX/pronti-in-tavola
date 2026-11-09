@@ -26,6 +26,12 @@ const OPZIONI = [
     aiuto: 'Quanti giorni resta l\'etichetta «Novità» su un piatto.', parole: /quanto dura (la |l.etichetta )?novit|giorni (della )?novit/ },
   { k: 'aiClienti', g: 'clienti', nome: 'Aiutante per i clienti', tipo: 'si', def: true,
     aiuto: 'Acceso: i clienti possono chiedere all\'aiutante (allergie, cosa ordinare, a che punto è l\'ordine).', parole: /aiutante (per i|dei) client/ },
+  { k: 'voceClientiFab', g: 'clienti', nome: 'Microfono fisso per i clienti', tipo: 'si', def: true, aiuto: 'Acceso: nel menù e nel carrello c\'è un microfono sempre a portata di dito, per ordinare e chiedere a voce.', parole: /microfono (fisso|grande|nel menu)|tasto (del )?microfono|comando vocale|voce dei client/ },
+  { k: 'voceClientiRisponde', g: 'clienti', nome: 'L\'aiutante risponde a voce ai clienti', tipo: 'si', def: true, aiuto: 'Acceso: quando il cliente parla, la risposta viene anche letta a voce.', parole: /rispond\w* a voce|legge le risposte|voce dell.aiutante/ },
+  { k: 'voceClientiConferma', g: 'clienti', nome: '«Sì» detto a voce mette nel carrello', tipo: 'si', def: true, aiuto: 'Acceso: dopo la proposta l\'aiutante chiede «Lo metto nel carrello?» e basta dire sì. L\'ordine parte comunque solo con «Invia».', parole: /si a voce|conferma a voce|senza toccare/ },
+  { k: 'voceClientiSecondi', g: 'clienti', nome: 'Silenzio che chiude l\'ascolto preciso', tipo: 'numero', min: 2, max: 6, def: 3, unita: 'secondi', aiuto: 'Quanti secondi di silenzio aspetta l\'ascolto preciso prima di capire la frase.', parole: /secondi di silenzio|ascolto (troppo )?(lungo|corto)|si ferma (troppo )?(presto|tardi)/ },
+  { k: 'voceClientiMotore', g: 'clienti', nome: 'Come ascolta i clienti', tipo: 'scelta', scelte: [['auto', 'Da sola: telefono, poi ascolto preciso se serve'], ['telefono', 'Solo il telefono'], ['preciso', 'Sempre l\'ascolto preciso (sul server)']], def: 'auto', aiuto: 'L\'ascolto preciso capisce meglio i nomi sardi e le frasi lunghe, ma passa dal server.', parole: /ascolto preciso|motore (della |di )?voce|come ascolta/ },
+  { k: 'voceClientiSinonimi', g: 'clienti', nome: 'Parole dei clienti per i piatti', tipo: 'testo', max: 400, def: '', es: 'es. sebadas=seadas, culurgionis=culurgiones', aiuto: 'Come i clienti chiamano i tuoi piatti, se diverso dal menù: «parola detta=parola del menù», separate da virgola.', parole: /sinonim|parole (dei|per i) piatt|come (li )?chiamano/ },
   { k: 'parti', g: 'clienti', nome: 'Parti del menù', tipo: 'parti', def: () => PARTI_BASE.map(c => c.slice()),
     aiuto: 'I nomi e l\'ordine delle parti del menù (Stuzzichini, Primi, Dolci…). Puoi aggiungerne una, es. «Secondi». Una parte con dei piatti dentro non si toglie: prima sposta i piatti.',
     perAI: 'valore = elenco dei nomi delle parti in ordine, separati da virgola (es. "Stuzzichini, Primi, Secondi, Dolci")',
@@ -68,6 +74,7 @@ function valoreOpz(o, v) {
     case 'si': return v === true || v === 'true' || v === 'sì' || v === 'si' ? true : v === false || v === 'false' || v === 'no' ? false : undefined;
     case 'ora': { const t = String(v || '').trim(); return t === '' || /^([01]\d|2[0-3]):[0-5]\d$/.test(t) ? t : undefined; }
     case 'parti': return valoreParti(v);
+    case 'scelta': return o.scelte.some(([k]) => k === v) ? v : undefined;
     case 'giorni': { const a = (Array.isArray(v) ? v : String(v || '').split(',')).map(Number); return a.every(x => Number.isInteger(x) && x >= 0 && x <= 6) && a.length < 7 ? [...new Set(a)].sort() : undefined; }
     default: return String(v == null ? '' : v).replace(/[<>]/g, '').slice(0, o.max || 200);
   }
@@ -90,6 +97,7 @@ function testoOpz(o, v) {
     case 'ora': return v || 'Nessuna';
     case 'giorni': return v.length ? GIORNI_SETT.filter(([n]) => v.includes(n)).map(([, t]) => t).join(', ') : 'Nessuno: sempre aperta';
     case 'parti': return v.map(c => c[1]).join(', ');
+    case 'scelta': return (o.scelte.find(([k]) => k === v) || ['', v])[1];
     case 'messaggio': return cambiataOpz(o.k) ? 'Scritto da te' : 'Quello di base';
     default: return v ? `«${v.length > 50 ? v.slice(0, 50) + '…' : v}»` : 'Vuoto';
   }
@@ -131,6 +139,7 @@ function sezOpz(o) {
   if (o.tipo === 'numero' || o.tipo === 'euro') dentro += `<div class="fila"><input type="number" ${campo} inputmode="${o.tipo === 'euro' ? 'decimal' : 'numeric'}" min="${o.min}" max="${o.max}" step="${o.tipo === 'euro' ? '0.5' : '1'}" value="${v}" style="max-width:120px" aria-label="${esc(o.nome)}"><span class="tenue">${o.tipo === 'euro' ? 'euro' : esc(o.unita || '')} (da ${o.min} a ${o.max})</span></div>`;
   if (o.tipo === 'si') dentro += `<label class="interr"><span>${esc(o.nome)}</span><input type="checkbox" ${campo} ${v ? 'checked' : ''}></label>`;
   if (o.tipo === 'ora') dentro += `<div class="fila"><input type="time" ${campo} value="${esc(v)}" style="max-width:140px" aria-label="${esc(o.nome)}">${v ? `<button type="button" class="link" data-a="o-base" data-k="${o.k}">Togli l'ora</button>` : ''}</div>`;
+  if (o.tipo === 'scelta') dentro += `<div class="scelte">${o.scelte.map(([k, t]) => `<button type="button" class="chip" data-a="o-scelta" data-k="${o.k}" data-v="${k}" aria-pressed="${v === k}">${esc(t)}</button>`).join('')}</div>`;
   if (o.tipo === 'giorni') dentro += `<div class="scelte">${GIORNI_SETT.map(([n, t]) => `<button type="button" class="chip" data-a="o-giorno" data-k="${o.k}" data-v="${n}" aria-pressed="${v.includes(n)}">${t}</button>`).join('')}</div>`;
   if (o.tipo === 'parti') {
     dentro += v.map(([k, n], i) => { const quanti = S.piatti.filter(p => !p.cestino && p.cat === k).length;
@@ -206,6 +215,7 @@ const AZIONI_OPZ = {   // app.js le aggiunge ad A (A nasce dopo questo file)
     if (i >= 0) v.splice(i, 1); else if (v.length < 6) v.push(n); else { mostraToast('Almeno un giorno deve restare aperto.'); return; }
     cambia(i >= 0 ? 'Riaperto' : 'Chiuso', () => { S.impostazioni[k] = v.sort(); });
   },
+  'o-scelta'(el) { const k = el.dataset.k, v = el.dataset.v, o = OPZ[k]; if (!o || opz(k) === v) return; cambia(testoOpz(o, v), () => { S.impostazioni[k] = v; }); },
   'o-parte-su'(el) { spostaParte(el.dataset.v, -1); },
   'o-parte-giu'(el) { spostaParte(el.dataset.v, 1); },
   'o-parte-togli'(el) {

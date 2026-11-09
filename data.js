@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.79';
+const VERSIONE_APP = '0.9.80';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.80', data: '09/11/2026',
+    nuovo: ['Comando vocale dei clienti: nel menù e nel carrello c\'è un microfono in basso a sinistra, parli e ordini («due teglie di lasagne al ragù per sabato»)', 'L\'app capisce sul telefono, anche senza internet: ordini, prezzi, allergie, cosa c\'è di pronto, consigli, il tuo ordine; se un nome è doppio («lasagne») chiede quale', 'Dopo la proposta chiede «Lo metto nel carrello?»: basta dire «sì» (l\'ordine parte sempre e solo con «Invia»)', '«Dettami l\'ordine»: una frase lunga con più piatti e il giorno, capita dall\'ascolto preciso sul server (nomi sardi compresi)', 'Tieni premuto il microfono per parlare finché lo tieni; un tocco ascolta finché finisci', 'Per Monica 6 impostazioni nuove: microfono fisso, risposta a voce, «sì» a voce, secondi di silenzio, come ascolta, parole dei clienti per i piatti'] },
   { v: '0.9.79', data: '09/11/2026',
     corretto: ['Su iPhone il foglio «Ultimo passo: le notifiche» poteva comparire sopra «Come ti chiami?» prima che l\'app sapesse chi eri: ora aspetta', 'Con «Accetta clienti nuovi» spento, chi è già cliente e apre l\'app da un telefono nuovo (o dall\'icona sull\'iPhone) rientra con «Sì, sono io»: la porta chiusa ferma solo i nomi nuovi'],
     migliorato: ['«Più tardi» sul foglio «Installa l\'app» lo rimanda a domani, non alla prossima apertura'] },
