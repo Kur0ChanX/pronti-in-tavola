@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 09:00 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 09:46 ora italiana)
 
-Fai un bel check di tutte le regole se ci sono buchi
+Poi un'altra cosa, un cliente se sbaglia a mettersi il nome, schiaccia invito, invia richiesta. Se un cliente manda la richiesta e mette il nome sbagliato, non ha modo di editarlo, né lui né io posso farlo, né Monica. Questo è uno. Cosa numero 2, metterei un codice fisso. Di un cliente, tipo un codice profilo, per tracciarlo nel senso di capire chi è, se è un cliente cambia il nome, o io ad esempio gli cambio il nome, per Monica, per essere più riconoscibile, per lei, non si capisce chi è il cliente, però col codice che è legato al suo profilo, che non possiamo cambiare né il cliente né io né Monica, perché è legato proprio al codice, tutti devono avere un codice. Riusciamo a capire chi è, ma forse anche tu come sviluppatore, come cloud, riesci a capire meglio le situazioni, chi ha fatto cosa, per avere una tracciabilità di tutto. Che dici? Appena mi fermo che sto guidando, mi proviamo a risolvere se devo fare qualcosa manualmente per risolvere i problemi che mi hai elencato.
