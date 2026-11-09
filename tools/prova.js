@@ -1367,8 +1367,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r.n !== 3 || r.vista !== 'carrello' || r.entro !== sab) throw new Error('dopo Conferma: ' + JSON.stringify(r) + ' atteso sabato ' + sab);
     await page.evaluate(() => { P.carrello = []; salvaP(); AIC.msgs = []; UI.entro = ''; delete S.impostazioni.voceClientiMotore; delete S.impostazioni.voceClientiRisponde; S.impostazioni.whatsapp = ''; UI.vista = 'menu'; render(); });
   });
-  await passo('voce dei clienti: iPad con l\'app sulla Home → il riconoscitore di Safari non parte mai, si registra subito e il «sì» resta col tocco (C105, Mario 09/11)', async () => {
-    await page.evaluate(() => { UI.vista = 'menu'; P.carrello = []; AIC.msgs = []; UI.entro = ''; delete S.impostazioni.voceClientiMotore; S.impostazioni.voceClientiRisponde = false;
+  await passo('voce dei clienti: iPad con l\'app sulla Home → il riconoscitore di Safari non parte mai, si registra subito e il «sì» resta col tocco (C105, Mario 09/11)', async () => {   // autonomo
+    await page.evaluate(() => { P.ruolo = 'cliente'; UI.devCliente = false; UI.foglio = null; delete S.impostazioni.aiClienti; UI.vista = 'menu'; P.carrello = []; AIC.msgs = []; UI.entro = ''; delete S.impostazioni.voceClientiMotore; S.impostazioni.voceClientiRisponde = false;
       Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (iPad; CPU OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1', configurable: true });
       Object.defineProperty(navigator, 'standalone', { get: () => true, configurable: true });
       window.__partito = 0; window.SpeechRecognition = class { start() { window.__partito++; } stop() {} abort() {} };   // come su iPad: c'è, ma non dice mai nulla
@@ -1405,6 +1405,30 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r.spezzato !== 'un chilo di polpette di carne per sabato') throw new Error('«sa bato» non riparato: ' + r.spezzato);
     if (r.dopo !== 'dopodomani') throw new Error('«dopo domani» capito come ' + r.dopo);
     if (r.salato !== '' || r.si !== 'Sì.') throw new Error('ritocco dei giorni a caso: ' + JSON.stringify(r));
+  });
+  await passo('aiutante di Monica: su iPad con l\'app sulla Home il microfono detta con l\'ascolto preciso (il riconoscitore di Safari lì non parte, PT E39)', async () => {   // autonomo
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.devCliente = false; UI.foglio = null; AI.msgs = []; AI.attesa = false; UI.aiQui = null;
+      Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (iPad; CPU OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1', configurable: true });
+      Object.defineProperty(navigator, 'standalone', { get: () => true, configurable: true });
+      window.__partito = 0; window.SpeechRecognition = class { start() { window.__partito++; } stop() {} abort() {} };
+      if (!navigator.mediaDevices) Object.defineProperty(navigator, 'mediaDevices', { value: {}, configurable: true });
+      navigator.mediaDevices.getUserMedia = async () => ({ getTracks: () => [] });
+      window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/mp4'; } start() { this.state = 'recording'; } stop() { this.state = 'inactive'; this.ondataavailable({ data: new Blob([new Uint8Array(3000)]) }); this.onstop(); } static isTypeSupported(t) { return /mp4/.test(t); } };
+      window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'quante teglie di lasagne devo fare domani', motore: 'finto' }; };
+      window.__chiesto = null; window._chiediVero = window._chiediVero || chiediAiutante; window.chiediAiutante = (...a) => { window.__chiesto = a[0]; return new Promise(() => {}); };
+      vai('aiutante'); });
+    const mic = page.locator('.ai-mic[data-a="ai-detta"]').last();
+    if (!(await mic.count())) throw new Error('nell\'aiutante di Monica manca il microfono');
+    await mic.click(); await page.waitForTimeout(700);
+    const st = await page.evaluate(() => ({ stato: VC.stato, media: !!VC.media, partito: window.__partito, rec: !!AI.rec, pann: (document.querySelector('.vc-pannello b') || {}).textContent }));
+    if (st.stato !== 'registro' || !st.media || st.partito || st.rec || !/attenzione/.test(st.pann || '')) throw new Error('su iPad l\'aiutante di Monica non registra: ' + JSON.stringify(st));
+    await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(1200);
+    const r = await page.evaluate(() => ({ tipo: (window.__mandato || {}).tipo, io: (AI.msgs[0] || {}).t, chi: (AI.msgs[0] || {}).chi, vista: UI.vista, carrello: P.carrello.length, aic: AIC.msgs.length, stato: VC.stato }));
+    if (r.tipo !== 'audio/mp4' || r.io !== 'quante teglie di lasagne devo fare domani' || r.chi !== 'io' || r.vista !== 'aiutante' || r.aic || r.stato) throw new Error('la frase dettata non arriva all\'aiutante di Monica: ' + JSON.stringify(r));
+    await page.evaluate(() => { delete navigator.userAgent; delete navigator.standalone; });
+    const android = await page.evaluate(() => dettaturaServe());
+    if (android) throw new Error('fuori dall\'iPad dalla Home deve restare il riconoscitore del telefono (gratis e subito)');
+    await page.evaluate(() => { window.chiediAiutante = window._chiediVero; AI.msgs = []; AI.attesa = false; render(); });
   });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
