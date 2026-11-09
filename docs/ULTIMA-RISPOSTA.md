@@ -1,20 +1,7 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 17:09 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: Francesco l'ha messa sulla Home da solo, e appena aperta dall'icona l'app gli ha chiesto le notifiche. Tutto torna.
 
-───
-✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
+**Perché non gliel'ha chiesto l'app:** il foglio «Installa l'app» parte solo dopo che la persona ha scritto il nome. Francesco era fermo prima, alla porta chiusa, quindi il foglio non è mai arrivato. Lui ci sa fare e l'ha fatto a mano. Un cliente normale invece lo vedrà, perché ora la porta è aperta.
 
-───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+**Il foglio delle notifiche sopra «Benvenuti»** era l'errore vero della tua foto: dall'icona l'iPhone riparte da zero (Safari e l'app sulla Home non condividono i …
