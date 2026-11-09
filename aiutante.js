@@ -227,19 +227,28 @@ async function inviaAI(testo, voce) {
   AI.msgs.forEach(m => { if (m.piano && !m.esito) m.esito = 'no'; });   // si decide solo sull'ultimo piano: quelli vecchi non tornano attivi da soli
   AI.bozza = ''; AI.foto = null; AI.msgs.push({ chi: 'io', t: testo || 'Guarda la foto', foto }); AI.attesa = true;
   render(); fondoAI();
-  let r;
-  const qui = !foto && capisciDove(testo);
-  if (qui) r = rispostaDove(qui);
-  else {
-    try { r = await chiediAiutante(testo, datiAI(), storia, foto); }
-    catch (e) { r = /funzion|vorrei che|si potrebbe|sarebbe bello|mi servirebbe|manca |aggiung/.test(semplice(testo)) ? { testo: 'Questa la chiedo a Mario: controlla il messaggio e mandalo.', azioni: [{ azione: 'idea', testo }] } : { testo: e.message, azioni: [] }; }
-  }
+  /* (C102, Mario 09/11 «deve capire il contesto di quello che dico, non che legge la parola e mi porta alla parola scritta»):
+     prima l'AI legge la frase intera; i posti trovati dalle parole le arrivano solo come indizi.
+     Senza AI (niente rete, anteprima, risposte del giorno finite) le parole propongono fino a 3 posti con «Intendi…?»
+     e non la portano da sola: decide lei con un tocco. */
+  let r, daParole = false;
+  const aiutoParole = motivo => {
+    const qui = !foto && capisciDove(testo, 3);
+    if (qui) { daParole = true; return rispostaDove(qui, true); }
+    return /funzion|vorrei che|si potrebbe|sarebbe bello|mi servirebbe|manca |aggiung/.test(semplice(testo)) ? { testo: 'Questa la chiedo a Mario: controlla il messaggio e mandalo.', azioni: [{ azione: 'idea', testo }] } : { testo: motivo, azioni: [] };
+  };
+  try {
+    const dati = datiAI(), ind = foto ? [] : (capisciDove(testo, 3) || []).filter(a => a.azione === 'vai').map(a => ({ voce: a.voce, id: a.id, posto: (DOVE_AI[a.voce] || {}).nome }));
+    if (ind.length) dati.indizi = ind;
+    r = await chiediAiutante(testo, dati, storia, foto);
+    if (r && r.fermo) r = aiutoParole(r.testo || 'Per oggi l\'aiutante ha finito le risposte.');
+  } catch (e) { r = aiutoParole(e.message); }
   const pi = pianoDa(r);
   AI.attesa = false;
   AI.msgs.push({ chi: 'lei', t: pi.testo, piano: pi.azioni.length ? pi.azioni : null });
   AI.msgs = AI.msgs.slice(-30);
   if (UI.vista === 'aiutante') { render(); fondoAI(); }
-  const soloVai = pi.azioni.length === 1 && controllaAI(pi.azioni[0].a);
+  const soloVai = !daParole && pi.azioni.length === 1 && controllaAI(pi.azioni[0].a);   // dalle sole parole non si parte da soli (C102)
   if (soloVai && soloVai.vai) {   // Mario 08/11 «portala direttamente»: un attimo per leggere, poi ci va da sola
     if (voce) parlaAI(pi.testo);
     setTimeout(() => { if (UI.vista === 'aiutante' && !AI.attesa) portaLi(soloVai); }, 1400);
@@ -529,8 +538,9 @@ function piattiDetti(t) {
   const top = Math.max(0, ...voti.map(v => v.n));
   return voti.filter(v => v.n === top).map(v => v.p).slice(0, 4);
 }
-/* capisce da sola «dove vuoi andare»; null = lo decide l'AI (azioni con numeri o date, domande sui dati) */
-function capisciDove(testo) {
+/* i posti che le PAROLE fanno pensare (C102: solo indizi per l'AI, o riserva «Intendi…?» senza AI); quanti = quanti posti al massimo.
+   null = niente di sicuro (azioni con numeri o date, domande sui dati) */
+function capisciDove(testo, quanti = 1) {
   const t = semplice(testo);
   if (!t || t.length > 200) return null;
   const domanda = /\bcome\b|\bdove\b|non (so|trovo|riesco|capisco)|si fa|posso|aiut|portami|fammi vedere|apri|vai /.test(t);
@@ -540,20 +550,32 @@ function capisciDove(testo) {
   if (np) { const nome = np[1].trim(); return [{ azione: 'impostazione', chiave: 'parti', valore: [...opz('parti'), [null, nome]], detta: nome }]; }   // «aggiungi la parte secondi» anche senza rete (C92)
   const chiavi = Object.keys(DOVE_AI).filter(k => DOVE_AI[k].parole.test(t));
   if (!chiavi.length) return null;
-  const k = (chiavi.includes('clienti-nome') && 'clienti-nome') || chiavi.find(x => VOCI_PIATTO.includes(x)) || chiavi.find(x => DOVE_AI[x].sez) || chiavi[0], v = DOVE_AI[k];   // la voce precisa vince sulla pagina («ordine minimo» → Ordine minimo, non Ordini)
-  if (v.azione && !domanda && /\d/.test(t)) return null;   // «alza le lasagne a 14 euro», «pausa fino al 20»: lo fa l'AI
-  if (VOCI_PIATTO.includes(k)) {
-    const pp = piattiDetti(testo);
-    if (!pp.length && k === 'nome' && !domanda) return null;
-    return pp.length ? pp.map(p => ({ azione: 'vai', voce: k, id: p.id })) : [{ azione: 'vai', voce: 'piatti', perVoce: k }];
+  // in ordine: la voce precisa vince sulla pagina («ordine minimo» → Ordine minimo, non Ordini)
+  const ordine = [...new Set([...chiavi.filter(x => x === 'clienti-nome'), ...chiavi.filter(x => VOCI_PIATTO.includes(x)), ...chiavi.filter(x => DOVE_AI[x].sez), ...chiavi])];
+  const fuori = [];
+  for (const k of ordine) {
+    if (fuori.length >= quanti) break;
+    const v = DOVE_AI[k];
+    if (v.azione && !domanda && /\d/.test(t)) { if (!fuori.length) return null; continue; }   // «alza le lasagne a 14 euro», «pausa fino al 20»: lo fa l'AI
+    if (VOCI_PIATTO.includes(k)) {
+      const pp = piattiDetti(testo);
+      if (!pp.length && k === 'nome' && !domanda) continue;
+      if (pp.length) { if (!fuori.length && pp.length > 1) return pp.map(p => ({ azione: 'vai', voce: k, id: p.id })); fuori.push({ azione: 'vai', voce: k, id: pp[0].id }); }
+      else if (!fuori.some(a => a.voce === 'piatti')) fuori.push({ azione: 'vai', voce: 'piatti', perVoce: k });
+      continue;
+    }
+    fuori.push({ azione: 'vai', voce: k });
   }
-  return [{ azione: 'vai', voce: k }];
+  return fuori.length ? fuori : null;
 }
-function rispostaDove(aa) {
+function rispostaDove(aa, incerta) {
+  if (incerta) aa = aa.filter(a => !controllaAI(a).no);
+  if (!aa.length) return { testo: 'Non ho capito dove vuoi andare: dimmelo con altre parole.', azioni: [] };
   const c = controllaAI(aa[0]);
   if (c.no) return { testo: c.no, azioni: [] };
   if (aa[0].azione === 'impostazione') return { testo: `Aggiungo «${aa[0].detta}» alle parti del menù: controlla e conferma qui sotto.`, azioni: aa };
-  if (aa.length > 1) return { testo: `Quale piatto? Ne ho trovati ${aa.length}: tocca quello giusto.`, azioni: aa };
+  if (aa.length > 1 && aa.every(a => a.voce === aa[0].voce && a.id)) return { testo: `Quale piatto? Ne ho trovati ${aa.length}: tocca quello giusto.`, azioni: aa };
+  if (incerta) return { testo: aa.length > 1 ? 'Ho capito solo qualche parola: intendi uno di questi? Tocca quello giusto.' : `Ho capito solo qualche parola: intendi «${c.titolo}»? Se sì tocca «Portami lì».`, azioni: aa };
   return { testo: `Ti porto in ${c.titolo}. ${c.dopo}`, azioni: aa };
 }
 /* va nel punto: apre la sezione, la porta in vista e la fa lampeggiare; in cima una riga con cosa fare e «Torna all'aiutante» */
