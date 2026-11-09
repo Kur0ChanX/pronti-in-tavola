@@ -589,7 +589,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (d.n > 40000) throw new Error('dati per l\'AI dei clienti troppo grandi: ' + d.n);
     if (!d.altri) throw new Error('nei dati ci sono ordini di altri clienti');
     if (d.ind) throw new Error('nei dati c\'è l\'indirizzo di Monica');
-    await clic('[data-a="ac-chiedi"]'); await page.waitForTimeout(400);
+    await clic('[data-a="ac-chiedi"]'); await page.waitForTimeout(400);   // «Cosa c'è di pronto oggi?» ora risponde sul telefono (C105)
+    if (!(await page.locator('.ai-fum.lei').count()) || await page.locator('.ai-fum.lei', { hasText: 'anteprima' }).count()) throw new Error('la domanda sui pronti non ha avuto la risposta locale');
+    await page.fill('#ac-testo', 'blu vermiglio quattordici'); await page.press('#ac-testo', 'Enter'); await page.waitForTimeout(400);   // frase senza senso → server
     if (!(await page.locator('.ai-fum.lei', { hasText: 'anteprima' }).count())) throw new Error('nell\'anteprima non spiega che risponde solo nell\'app vera');
     const pid = await page.evaluate(() => { const p = visibili().find(x => x.disponibile && !x.varianti.length) || visibili().find(x => x.disponibile); return p.id; });
     await page.evaluate(id => { window.chiediAiutoCliente = async () => ({ testo: 'Ecco!', azioni: [{ azione: 'carrello', id, qta: 2 }, { azione: 'carrello', id: 'inventato' }] }); }, pid);
@@ -1229,6 +1231,54 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const dopo = await page.evaluate(() => [S.impostazioni.nuovi, document.querySelectorAll('.avviso-chiusi').length]);
     if (dopo[0] !== true || dopo[1]) throw new Error('«Riapri» non riapre: ' + JSON.stringify(dopo));
     await page.evaluate(() => { delete S.impostazioni.nuovi; salva(); });
+  });
+
+  /* ===== COMANDO VOCALE DEI CLIENTI (C105, voce-clienti.js): passi autonomi ===== */
+  await passo('voce dei clienti: capisce 30 frasi senza rete (C105)', async () => {
+    await page.evaluate(() => { P.ruolo = 'cliente'; UI.devCliente = false; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; AIC.msgs = []; delete S.impostazioni.aiClienti; delete S.impostazioni.voceClientiSinonimi; render(); });
+    const sab = await page.evaluate(() => { for (let i = 1; i <= 7; i++) { const g = piuGiorni(oggi(), i); if (daIso(g).getDay() === 6) return g; } });
+    const dom = await page.evaluate(() => piuGiorni(oggi(), 1));
+    const casi = [
+      ['due teglie di lasagne al ragù per sabato', { intento: 'ordina', id: 'lasagne-ragu', qta: 2, formato: 't6', giorno: sab }],
+      ['una teglia da 8 di lasagne al ragu', { intento: 'ordina', id: 'lasagne-ragu', qta: 1, formato: 't8' }],
+      ['un chilo e mezzo di polpette di carne', { intento: 'ordina', id: 'polpette-carne', qta: 1.5, formato: 'kg' }],
+      ['tre etti di papassini', { intento: 'ordina', id: 'papassini', qta: 0.5, formato: 'kg', testo: 'minimo' }],
+      ['la sagne al ragù', { id: 'lasagne-ragu', alt: 0 }],
+      ['quanto costa il tiramisù', { intento: 'prezzo', id: 'tiramisu', carrello: 0 }],
+      ['il tiramisù ha il glutine?', { intento: 'allergeni', id: 'tiramisu', testo: 'glutine' }],
+      ['cosa c\'è di pronto oggi', { intento: 'pronti' }],
+      ['il mio ordine è pronto?', { intento: 'stato' }],
+      ['cosa mi consigli', { intento: 'consiglio' }],
+      ['lasagne', { alt: 3 }],
+      ['polpette', { alt: 4 }],
+      ['scrivi a Monica che arrivo alle 18', { intento: 'monica', carrello: 0 }],
+      ['lo stesso dell\'ultima volta', { intento: 'rifai' }],
+      ['apri il carrello', { intento: 'apri' }],
+      ['sì', { intento: 'si' }], ['no', { intento: 'no' }], ['ciao', { intento: 'saluto' }], ['grazie', { intento: 'saluto' }],
+      ['una domanda: quanto costa la parmigiana', { intento: 'prezzo', alt: 2, carrello: 0, testo: 'Quale intendi' }],   // nel menù ci sono due «parmigiana»: chiede, non sceglie
+      ['blu vermiglio', { confMax: 0.6 }],
+      ['vorrei un chilo di ravioli alla ricotta', { intento: 'ordina', id: 'ravioli', qta: 1, formato: 'kg', gusto: 'ricotta' }],
+      ['un tiramisù per domani', { intento: 'ordina', id: 'tiramisu', qta: 1, giorno: dom }],
+      ['due panade di carne', { intento: 'ordina', id: 'panade-carne', qta: 2 }],
+      ['quanto costano le polpette di tonno', { intento: 'prezzo', id: 'polpette-tonno', carrello: 0 }],
+      ['cosa posso mangiare con le mie allergie', { intento: 'allergeni' }],
+      ['come si paga', { intento: 'info' }],
+      ['a che ora posso ritirare', { intento: 'info' }],
+      ['mettimi una parmigiana', { intento: 'ordina', alt: 2, carrello: 0 }],
+      ['mettimi una parmigiana di melanzane', { intento: 'ordina', id: 'parmigiana', qta: 1, alt: 0 }],
+      ['cosa sai fare', { intento: 'aiuto' }],
+      ['due teglie di lasagne al ragù, un chilo di polpette di carne e un tiramisù per sabato', { intento: 'ordina', carrello: 3, giorno: sab }]
+    ];
+    const esiti = await page.evaluate(casi => casi.map(([f]) => { const e = capisciCliente(f), az = (e.risposta.azioni || []).filter(x => x.azione === 'carrello'), a = az[0] || {};
+      return { f, intento: e.intento, id: a.id || (e.piatti[0] || {}).id, qta: a.qta, formato: a.formato, gusto: a.gusto, giorno: e.giorno, conf: e.confidenza, alt: e.alternative.length, carrello: az.length, testo: e.risposta.testo || '' }; }), casi);
+    const err = [];
+    esiti.forEach((e, i) => Object.entries(casi[i][1]).forEach(([k, v]) => {
+      if (k === 'testo') { if (!new RegExp(v, 'i').test(e.testo)) err.push(`«${e.f}»: risposta senza «${v}»: ${e.testo.slice(0, 90)}`); }
+      else if (k === 'confMax') { if (!(e.conf < v)) err.push(`«${e.f}»: confidenza ${e.conf}, attesa sotto ${v}`); }
+      else if (JSON.stringify(e[k]) !== JSON.stringify(v)) err.push(`«${e.f}»: ${k} = ${JSON.stringify(e[k])}, atteso ${JSON.stringify(v)} (${e.testo.slice(0, 60)})`);
+    }));
+    fs.writeFileSync(`${OUT}/frasi.txt`, err.join('\n'));
+    if (err.length) throw new Error(err.length + ' su ' + casi.length + ' sbagliate:\n' + err.join('\n'));
   });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
