@@ -101,6 +101,10 @@ async function semina(env) {
     await senzaRegole(d => updateDoc(doc(d, 'impostazioni/app'), { nuovi: false }));
     await assertFails(primoOrdine(db('tel3'), 'tel3', { u: {} }).commit());
   });
+  await caso('«Accetta nuovi clienti» spento: chi c\'è già rientra da un telefono nuovo («ricollega») sì', async () => {
+    await senzaRegole(d => updateDoc(doc(d, 'impostazioni/app'), { nuovi: false }));
+    await assertSucceeds(setDoc(doc(db('tel3'), 'utenti/tel3'), utente({ nome: 'Giulia Bianchi', chiave: 'giulia-bianchi', stato: 'ricollega' })));
+  });
   await caso('telefono nuovo col nome già usato: «ricollega» sì', () => assertSucceeds(setDoc(doc(db('tel3'), 'utenti/tel3'), utente({ nome: 'Giulia Bianchi', chiave: 'giulia-bianchi', stato: 'ricollega' }))));
   await caso('«ricollega» con un nome che non c\'è: no', () => assertFails(setDoc(doc(db('tel3'), 'utenti/tel3'), utente({ stato: 'ricollega' }))));
   await caso('«ricollega» col primo ordine da approvare: sì', () => assertSucceeds(primoOrdine(db('tel3'), 'tel3', { u: { nome: 'Giulia Bianchi', chiave: 'giulia-bianchi', stato: 'ricollega' }, nome: false }).commit()));

@@ -357,7 +357,7 @@ const Dati = (() => {
 
   // Il telefono si presenta: nome unico (nomi/), o «ricollega» se è lo stesso nome su un telefono nuovo.
   async function registra(nome, tramite, ricollega) {
-    if ((srv['impostazioni/app'] || {}).nuovi === false) throw errore('chiuso');
+    if (!ricollega && (srv['impostazioni/app'] || {}).nuovi === false) throw errore('chiuso');   // chi c'è già rientra anche a porta chiusa
     if (!navigator.onLine) throw errore('unavailable');
     const chiave = chiaveNome(nome);
     if (!chiave || nome.length < 2 || nome.length > 60) throw errore('nome');

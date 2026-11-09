@@ -119,7 +119,7 @@ service cloud.firestore {
       allow read: if (entrato() && io() == uid) || gestore();
       allow create, delete: if gestore();
       allow update: if gestore() && codiceFermo();
-      allow create: if entrato() && io() == uid && accettaNuovi()
+      allow create: if entrato() && io() == uid
         && request.resource.data.keys().hasOnly(['nome', 'chiave', 'tramite', 'il', 'stato', 'cliente', 'primo', 'codice'])
         && (!('codice' in request.resource.data) || codiceCliente(request.resource.data.codice))
         && request.resource.data.keys().hasAll(['nome', 'chiave', 'tramite', 'il', 'stato', 'cliente', 'primo'])
@@ -131,6 +131,7 @@ service cloud.firestore {
         && request.resource.data.cliente == null
         && (request.resource.data.primo == null || ordineNuovoMio(request.resource.data.primo))
         && ((request.resource.data.stato == 'nuovo'
+             && accettaNuovi()   // la porta chiusa ferma solo i nomi nuovi: chi c'è già rientra da un telefono nuovo (iPhone dall'icona)
              && !exists(doc('nomi', request.resource.data.chiave))
              && existsAfter(doc('nomi', request.resource.data.chiave)))
             || (request.resource.data.stato == 'ricollega'
