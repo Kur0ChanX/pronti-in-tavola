@@ -1,4 +1,4 @@
-# Consegne della chat parallela «Voce» (comando vocale dei CLIENTI, C105) · Voce 3 (`session_01WTjqUvuFacpinWPAvkMDYG`, aperta 09/11 17:37)
+# Consegne della chat parallela «Voce» (comando vocale dei CLIENTI, C105) · Voce 3 → Voce 4
 
 **Già deciso da Mario (non richiedere):** aiutante dei clienti ACCESO per tutti (08/11); l'AI propone, il cliente conferma e l'ordine lo manda lui; voce femminile non robotica; Microsoft lasciata perdere; allergie solo sul telefono; niente artefatto, Mario prova sul sito vero; ogni funzione nuova anche nell'aiutante di Monica (`.claude/rules/progetto.md`); ogni «👉 DA FARE TU» con «A cosa serve» (PT E36). Mario 09/11 ~17:35: «Continua con pensiero extra e se serve ripensa» (= ragiona di più, cambia strada se serve: fatto, vedi «Decisioni»).
 **Da non rifare:** lo studio (`docs/SPEC-VOCE-CLIENTI.md`) e il cuore del codice: `voce-clienti.js` è SCRITTO (543 righe, sintassi ok, commit f22334b3, non collegato). Non riscriverlo né rileggerlo per intero: le funzioni che espone e i ganci esatti, con il codice già pronto da incollare, sono in `docs/lavori-in-corso/voce-clienti-ganci.md`. Non rileggere aiutante.js/worker.js per intero: righe nella specifica §1 e `grep -n`.
@@ -16,6 +16,13 @@ Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 09/11 17:11, chius
 - **Quantità prudenti**: «un/una» conta solo davanti a un piatto («una parmigiana», non «una domanda»); «teglia da 8», «per il 15», «alle 18» non sono quantità; le quantità si arrotondano al minimo e al passo del formato (come `controllaAIC`) e il testo dice il valore vero («0,5 kg… è il minimo che Monica prepara»).
 - **Aggancio a `window.render`** per ridisegnare il microfono fisso senza toccare app.js (fuori zona). Se Mario o la principale preferiscono una riga in `render()`, basta chiamare `disegnaVC()` con typeof.
 - **Prezzi letti bene** (`perVoceCliente`): «12,50 €» → «dodici euro e cinquanta», «1,5 kg» → «un chilo e mezzo».
+
+## 🔴 URGENTE per Voce 4 (Mario 09/11 ~19:40, nella chat Voce 3 chiusa: «su ipad non funziona il comando vocale e il microfono è abilitato, risolvi»)
+Niente di provato ancora: sono IPOTESI (PT E10), da verificare con Mario (Safari o app installata sulla schermata Home? cosa vede toccando il microfono: niente, un avviso, «Ti ascolto…» che non finisce?).
+1. iPad/iPhone con l'app installata (standalone) o dentro WhatsApp: `webkitSpeechRecognition` spesso non funziona (bug WebKit noto, cercare «SpeechRecognition standalone PWA iOS» con mese e anno). In `ascoltaCliente` l'errore `not-allowed`/`service-not-allowed` oggi dà solo un toast e NON passa all'ascolto preciso (è nella lista esclusa di `rec.onend`); il cane da guardia aspetta 8 s. Correzione probabile: su iOS (`/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)`) in modalità `auto` partire DIRETTAMENTE con `registraCliente` (MediaRecorder + Whisper funziona in Safari e nell'app installata, iOS ≥ 14.3), o almeno passare all'ascolto preciso a ogni errore del riconoscitore e con guardia a 4 s.
+2. Safari registra `audio/mp4` (AAC): `/api/ascolta` lo manda prima a Cloudflare (ordine: Groq solo per webm/ogg); se Cloudflare sbaglia con mp4, mettere Groq per primo sempre. Controllo dal vivo: `/api/conto-ai` → `ascolti`.
+3. `getUserMedia` su iOS chiede il permesso a ogni apertura dell'app installata: testo chiaro «tocca Consenti».
+4. Prova in locale con `SOLO="voce dei clienti"` dopo la correzione (aggiungere un passo con userAgent iPad finto: `devices['iPad (gen 7)']` in Playwright, dove `SpeechRecognition` manca → deve partire `registro`). Poi versione 0.9.81 (se libera), push, a Mario «chiudi e riapri».
 
 ## Chiusura della catena (Voce 3, 09/11 ~19:20)
 - Giro completo in locale VERDE sull'ultimo commit di codice (71 passi OK, `tools/prova.js` + `tools/prova-impostazioni.js` 11 OK, «Nessun errore nella pagina»); push `57c80e9c` = origin; sito.yml pubblica v0.9.80 (controllo: `curl -s …/data.js | grep VERSIONE_APP`).
@@ -38,6 +45,7 @@ Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 09/11 17:11, chius
 Mario (09/11, nella chat Voce 1, girato da Voce 1 con send_message): «Vai avanti da solo» = vale il consiglio per entrambe: 1) il «sì» detto a voce mette nel carrello (l'ordine parte solo con «Invia»); 2) microfono grande fisso nel menù e nel carrello (Voce 1 scriveva «a destra»: a destra c'è già «Scrivimi», quindi va a SINISTRA, stessa altezza; se Mario lo vuole a destra basta spostare `.vc-fabs`). Niente altro da chiedergli: lavorare da sola fino alla versione online e dirglielo con «chiudi e riapri l'app» e dove toccare.
 
 ## Ultimo messaggio di Mario (parola per parola)
+09/11 ~19:40, chat Voce 3: «su ipad non funziona il comando vocale e il microfono è abilitato, risolvi».
 09/11 ~17:35 in questa chat: «Continua con pensiero extra e se serve ripensa». 09/11, nella chat Voce 1 (girato da Voce 1): «Vai avanti da solo».
 (Prima, 09/11 ~17:00, alla principale: «aggiungi una sessione parallela per un team tavola che mi potenzi molto il comando vocale per i clienti. Abbiamo potenziato quello di Monica, quello dei clienti lo voglio veramente performante a livello di lettura della voce, di quello che riesci a fare. Lo voglio ampliare molto come potenza, insomma, valuta tutto quello che si può fare per un comando vocale per il cliente. Mi sembra che chiedi a Monica, inventati cose intelligenti, smart, insomma, fai tutto quello che è in tuo potere di veramente utile al cliente, è sorprendente, ecco, innovativo.»)
 
