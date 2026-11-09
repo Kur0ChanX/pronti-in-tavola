@@ -557,6 +557,28 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (c !== 'impostazioni imp-pausa') throw new Error('«Portami lì» non porta alla pausa: ' + c);
     await page.evaluate(() => { window.chiediAiutante = window._chiediVero; AI.msgs = []; UI.aiQui = null; UI.sez = null; vai('home'); });
   });
+  await passo('aiutante: conosce anche le funzioni vecchie (voce, Storico, clienti nuovi, rifiutati, chi aspetta) e tutte le voci date all\'AI esistono (C100)', async () => {   // autonoma
+    const W = require('fs').readFileSync(require('path').join(__dirname, '..', 'worker.js'), 'utf8');
+    const pezzo = (da, a) => W.slice(W.indexOf(da) + da.length, W.indexOf(a, W.indexOf(da))).replace(/\([^)]*\)/g, '').split(',').map(x => x.replace(/[.\s]+$/, '').trim()).filter(Boolean);
+    const voci = [...pezzo('Voci del piatto (con id):', 'Voci delle Impostazioni:'), ...pezzo('Voci delle Impostazioni:', 'Pagine:'), ...pezzo('Pagine:', 'Usala per')];
+    const r = await page.evaluate(voci => {
+      const primaS = JSON.stringify(S), primaUI = [UI.vista, UI.tab, UI.rifiutati, P.ruolo];
+      try {
+        P.ruolo = 'monica';
+        const mancano = voci.filter(v => !DOVE_AI[v]);
+        const prime = ['dove vedo gli ordini vecchi?', 'come faccio a non accettare clienti nuovi?', 'ho detto no per sbaglio a una persona, come la riaccetto?', 'come rallento la voce che parla troppo veloce?', 'Laura dice che aspetta il mio sì ma non la trovo tra i clienti']
+          .map(t => ((capisciDove(t) || [])[0] || {}).voce);
+        S.rifiutati = []; const vuota = controllaAI({ azione: 'vai', voce: 'clienti-rifiutati' }).no || '';
+        portaLi(controllaAI({ azione: 'vai', voce: 'ordini-storico' })); const storico = UI.vista + ' ' + UI.tab;
+        return { mancano, prime, vuota, storico };
+      } finally { S = JSON.parse(primaS); [UI.vista, UI.tab, UI.rifiutati, P.ruolo] = primaUI; UI.aiQui = null; render(); }
+    }, voci);
+    if (voci.length < 20) throw new Error('non trovo l\'elenco delle voci in worker.js: ' + voci.join());
+    if (r.mancano.length) throw new Error('voci date all\'AI che l\'app non conosce: ' + r.mancano.join());
+    if (r.prime.join() !== 'ordini-storico,clienti-nuovi,clienti-rifiutati,imp-voce,clienti-attesa') throw new Error('posti sbagliati: ' + r.prime.join());
+    if (!/vuota/.test(r.vuota)) throw new Error('rifiutati vuoti: ' + r.vuota);
+    if (r.storico !== 'ordini storico') throw new Error('«Portami lì» non apre lo Storico: ' + r.storico);
+  });
   await passo('cliente: aiutante AI acceso di base, spento da Mario, carrello solo dopo «Conferma» (C50)', async () => {
     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.aiClienti = false; UI.devCliente = false; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; render(); });
     if (await page.locator('.ai-cliente').count()) throw new Error('aiutante visibile ai clienti da spento');
