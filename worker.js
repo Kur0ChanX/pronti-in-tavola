@@ -104,6 +104,28 @@ const testoDi = r => { const x = typeof r === 'string' ? r : (r && (r.response ?
    (1.000 richieste e 200.000 token al giorno, senza carta, non addestra sui dati; docs lette l'08/11/2026). Stesso modello Qwen 3.8.
    La chiave è il segreto GROQ_API_KEY del Worker (lo mette il giro sito.yml dai segreti di GitHub): senza, il ponte non c'è. */
 const PONTE = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b'];
+const TETTO_ASCOLTO = 400, TETTO_ASCOLTO_CLIENTE = 40;   // ascolti al giorno: in tutto e per cliente (Whisper: ~4 neuroni a frase)
+/* «ascolto preciso» dei clienti (C105): audio (base64) → Whisper su Cloudflare, se manca o sbaglia → Whisper su Groq → testo */
+async function ascolta(env, audioB64, tipo, piatti) {
+  const prompt = `Pronti in Tavola, cucina sarda di Monica a Olbia. Piatti: ${piatti.join(', ')}. Parole: teglia da sei, teglia da otto, al chilo, mezzo chilo, etti, pezzi, sabato, domenica, culurgiones, seadas, panade, malloreddus.`.slice(0, 800);
+  const pulisci = t => String(t || '').replace(/\s+/g, ' ').trim().slice(0, 300);
+  let errore = '';
+  if (env.AI) {
+    try { const r = await env.AI.run('@cf/openai/whisper-large-v3-turbo', { audio: audioB64, language: 'it', initial_prompt: prompt }); const t = pulisci(r && r.text); if (t) return { testo: t, motore: 'cloudflare' }; errore = 'vuoto'; }
+    catch (e) { errore = String(e.message || e); }
+  }
+  if (env.GROQ_API_KEY) {
+    try {
+      const bytes = Uint8Array.from(atob(audioB64), ch => ch.charCodeAt(0)), est = /mp4/.test(tipo) ? 'mp4' : /aac/.test(tipo) ? 'aac' : /ogg/.test(tipo) ? 'ogg' : 'webm';
+      const fd = new FormData(); fd.append('file', new Blob([bytes], { type: tipo || 'audio/webm' }), 'voce.' + est); fd.append('model', 'whisper-large-v3-turbo'); fd.append('language', 'it'); fd.append('prompt', prompt.slice(0, 600)); fd.append('temperature', '0');
+      const r = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', { method: 'POST', headers: { authorization: 'Bearer ' + env.GROQ_API_KEY }, body: fd });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok && j.text) return { testo: pulisci(j.text), motore: 'groq' };
+      errore += ' / groq ' + (j.error ? j.error.message : r.status);
+    } catch (e) { errore += ' / groq ' + e.message; }
+  }
+  return { testo: '', errore: errore || 'nessun motore' };
+}
 async function ponteAI(env, messaggi) {
   if (!env.GROQ_API_KEY) return null;
   for (const m of PONTE) {
@@ -560,10 +582,20 @@ export class Avvisi extends DurableObject {
     await this.ctx.storage.put('aic', c);
     return '';
   }
+  /* ascolto preciso dei clienti: stesso conto, chiave «asc» */
+  async contaAscolto(cliente) {
+    const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('asc')) || {};
+    const c = c0.giorno === oggi ? c0 : { giorno: oggi, n: 0, chi: {} };
+    if (c.n >= TETTO_ASCOLTO) return 'tetto';
+    if (cliente && (c.chi[cliente] || 0) >= TETTO_ASCOLTO_CLIENTE) return 'tuo';
+    c.n++; if (cliente) c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+    await this.ctx.storage.put('asc', c);
+    return '';
+  }
   async contoAI() {
-    const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {};
-    return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0,
-      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE } };
+    const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {}, s = (await this.ctx.storage.get('asc')) || {};
+    return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0, ascolti: s.giorno === oggi ? s.n : 0,
+      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
   }
 
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
@@ -812,6 +844,18 @@ export default {
         const fermo = await av.contaAIC(c);
         if (fermo) return json({ fermo, testo: fermo === 'tuo' ? 'Per oggi abbiamo parlato tanto! Riprova domani, o scrivi a Monica.' : 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
         return json(await chiediAI(env, testo, dati, b.storia, null, true));
+      }
+      if (url.pathname === '/api/ascolta') {   // «ascolto preciso» dei clienti (C105): audio → Whisper (Cloudflare, poi Groq) → testo
+        const c = await clienteDa(req), g = c ? null : await gestoreDa(req);
+        if (!c && !g) return json({ errore: 'prima Monica deve approvarti' }, 403);
+        if (c && !(await aiClientiAcceso(req))) return json({ errore: 'spento' }, 403);
+        const b = await req.json().catch(() => null), audio = b && typeof b.audio === 'string' ? b.audio : '';
+        if (!audio) return json({ errore: 'audio vuoto' }, 400);
+        if (audio.length > 1700000) return json({ errore: 'audio troppo lungo' }, 413);
+        const fermo = await av.contaAscolto(c);
+        if (fermo) return json({ fermo, testo: '' });
+        const piatti = Array.isArray(b.piatti) ? b.piatti.filter(x => typeof x === 'string').slice(0, 60).map(x => x.slice(0, 40)) : [];
+        return json(await ascolta(env, audio, String(b.tipo || ''), piatti));
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
