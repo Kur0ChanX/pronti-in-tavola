@@ -47,7 +47,7 @@ const paroleMenu = (n, sin) => applicaSinonimi(vcS(n), sin).split(' ').filter(w 
 
 /* ---------- numeri, formati e quantità nella frase ---------- */
 const numeroDetto = w => /^\d+([.,]\d+)?$/.test(w) ? Number(w.replace(',', '.')) : w in NUM_VOCE ? NUM_VOCE[w] : /^(qualche|alcune|alcuni)$/.test(w) ? 2 : null;
-const UNITA = /^(teglia|teglie|tegliette|vassoi\w*|chilo|chili|kg|chilogramm\w*|etto|etti|pezzo|pezzi|pezzetti|porzion\w*|person\w*)$/;
+const UNITA_VOCE = /^(teglia|teglie|tegliette|vassoi\w*|chilo|chili|kg|chilogramm\w*|etto|etti|pezzo|pezzi|pezzetti|porzion\w*|person\w*)$/;
 /* gruppi «numero + unità» con la posizione: «due teglie da 8», «un chilo e mezzo», «tre etti», «teglia grande», «sei pezzi», «per 8 persone» */
 function quantitaDette(tok, eMenu) {
   const out = [], usati = new Set();
@@ -56,7 +56,7 @@ function quantitaDette(tok, eMenu) {
     const soloUnita = q === null && /^(teglia|teglie|chilo|kg|etto|pezzo)$/.test(tok[i]) && !/^(al|a|il|la|lo|le|i|del|della|dello|allo|alla|per|ogni|quante|quanti|quanto|che|una|un|uno|mezza|mezzo)$/.test(tok[i - 1] || '');
     if (q === null && !soloUnita) continue;
     if (soloUnita) { q = /^etto$/.test(tok[i]) ? 0.1 : 1; fine = i - 1; }
-    if (q !== null && !soloUnita && /^(da|per|il|entro il|alle|ore)$/.test(tok[i - 1] || '') && !UNITA.test(tok[i + 1] || '')) continue;   // «teglia da 8», «per il 15», «alle 18»: non sono quantità
+    if (q !== null && !soloUnita && /^(da|per|il|entro il|alle|ore)$/.test(tok[i - 1] || '') && !UNITA_VOCE.test(tok[i + 1] || '')) continue;   // «teglia da 8», «per il 15», «alle 18»: non sono quantità
     let j = fine + 1;
     if (tok[j] === 'e' && /^(mezzo|mezza)$/.test(tok[j + 1] || '')) { q += 0.5; fine = j + 1; j = fine + 1; }
     const u = tok[j] || '';
@@ -178,6 +178,7 @@ function intentoVoce(t, haPiatti, haQta) {
   if (!haPiatti && !haQta && /\be pronto\b|\bsono pronti\b|quando (e|sara|saranno) pront|quando (lo |li )?(ritiro|passo|vengo)/.test(t)) return 'stato';
   if (!haQta && !verbo && /\b(pront[oi] (subito|oggi|adesso|ora)|cosa c e (gia )?(di )?pronto|qualcosa (di )?(gia )?pronto|gia pronto|pronti subito|pronto|pronti|subito|adesso|per oggi|per stasera|oggi stesso)\b/.test(t)) return 'pronti';
   if (/\b(consigli\w*|suggerisc\w*|cosa (mi )?(prendo|scelgo|consigli)|specialit\w*|cosa c e di buono|piatto del giorno|novita|cosa (c e|avete|hai|cucini|cucina|fa|prepara) (oggi|di buono|nel menu|questa settimana)|menu di oggi|cosa (mi )?conviene|il piu (buono|richiesto|amato))\b/.test(t)) return 'consiglio';
+  if (!haQta && !verbo && /\b(ha|hanno|c e|ci sono|contiene|contengono|e con|sono con|va bene per|vanno bene per|adatt[oi] a)\b.{0,12}\b(glutine|lattosio|arachid\w*|crostace\w*|sedano|soia|frutta a guscio|noci|nocciol\w*|mandorl\w*|uova|uovo|latte|latticin\w*|pesce|senape|sesamo|lupin\w*|mollusch\w*|solfit\w*|celiac\w*|vegetarian\w*|vegan\w*)\b/.test(t)) return 'allergeni';   // «il tiramisù ha il glutine?»
   if (!haQta && /\b(allergi\w*|intolleran\w*|celiac\w*|vegetarian\w*|vegan\w*|posso mangiar\w*|contiene|contengono|cosa c e dentro|c e dentro|ingredient\w*|fatt[oi] con|senza (glutine|lattosio|latte|uova|noci|frutta|pesce|crostacei|soia|sedano|formaggio|carne))\b/.test(t)) return 'allergeni';
   if (!haQta && /\b(quanto (costa|costano|viene|vengono|e il prezzo|si paga|spendo)|prezz\w*|costo|costa)\b/.test(t)) return 'prezzo';
   if (/\b(orari\w*|a che ora|dove (si ritira|ritiro|sei|siete|vengo)|come (si )?paga|pagare|pago|contanti|bonifico|postepay|quanto (prima|anticipo)|quanti giorni (prima|di anticipo)|come (si )?ordina|come faccio a ordinare|indirizzo|consegn\w* a casa|a domicilio|minimo)\b/.test(t)) return 'info';
@@ -384,7 +385,8 @@ function ascoltaCliente(o = {}) {
   if (typeof fermaVoce === 'function') fermaVoce();
   try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ }
   VC.perSi = o.perSi == null ? null : o.perSi; VC.dettato = !!o.dettato; VC.giro++;
-  const motore = vcOpz('voceClientiMotore', 'auto'), R = riconoscitore();
+  const R = riconoscitore(), motore = o.perSi != null ? 'telefono' : vcOpz('voceClientiMotore', 'auto');   // il «sì»/«no» lo sente il telefono (gratis, subito); senza riconoscitore resta il tocco su Conferma
+  if (o.perSi != null && !R) return;
   if (motore === 'preciso' || (motore === 'auto' && (!R || VC.precisoDopo || (o.dettato && puoAscoltoPreciso())))) { VC.precisoDopo = false; registraCliente(o); return; }
   if (!R) { mostraToast('Questo telefono non sa dettare: scrivi la frase.'); return; }
   const rec = new R(), giro = VC.giro; let finali = [], interim = '', avuto = false;
@@ -424,7 +426,8 @@ function scegliAlternativa(finali) {
   const combinazioni = [finali.map(a => a[0]).join(' ')];
   finali.forEach((alts, i) => alts.slice(1).forEach(alt => combinazioni.push(finali.map((a, j) => (j === i ? alt : a[0])).join(' '))));
   let best = null;
-  combinazioni.forEach(c => { const e = capisciCliente(c), punti = e.confidenza + (e.piatti.length ? 0.3 : 0) - (e.piatti.some(p => p.ambiguo) ? 0.1 : 0); if (!best || punti > best.punti) best = { testo: c.trim(), confidenza: e.confidenza, punti }; });
+  const sin = sinonimiVoce();
+  combinazioni.forEach(c => { const e = capisciCliente(c), punti = e.confidenza + (e.piatti.length ? 0.3 : 0) - (e.piatti.some(p => p.ambiguo) ? 0.1 : 0) + (applicaSinonimi(vcS(c), sin) === vcS(c) ? 0.05 : 0); /* a parità vince la frase già giusta («lasagne», non «la sagne») */ if (!best || punti > best.punti) best = { testo: c.trim(), confidenza: e.confidenza, punti }; });
   return best;
 }
 /* «ascolto preciso»: registra (si ferma da sola al silenzio), manda al server (Whisper), riceve il testo */

@@ -879,3 +879,22 @@ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
 .vel-voce { display: grid; gap: 8px; }
 .vel-fila { display: flex; align-items: center; gap: 8px; }
 .vel-cursore { flex: 1; min-width: 0; min-height: 40px; accent-color: var(--vino); background: none; }
+
+/* ===== comando vocale dei CLIENTI (C105, voce-clienti.js): microfono fisso a SINISTRA (a destra c'è «Scrivimi») ===== */
+#vc[hidden] { display: none; }
+.vc-fabs { position: fixed; left: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 30; display: flex; gap: 8px; align-items: center; }
+.vc-fab { width: 58px; height: 58px; flex: none; border-radius: 50%; border: 1.5px solid var(--vino); background: var(--vino); color: #FFF7EC; display: grid; place-items: center; cursor: pointer; box-shadow: 0 6px 18px rgba(60, 20, 10, .28); touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.vc-fab svg { width: 26px; height: 26px; }
+.vc-fab.acceso { background: var(--cotto); border-color: var(--cotto); animation: ai-ascolta 1.2s ease-in-out infinite; }
+.vc-detta { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1.5px solid var(--grano); background: var(--foglio); color: var(--vino); font-weight: 700; font-size: .95rem; cursor: pointer; box-shadow: 0 4px 14px rgba(60, 20, 10, .18); touch-action: manipulation; }
+.vc-detta svg { width: 20px; height: 20px; }
+@media (max-width: 379px) { .vc-detta { display: none; } }
+.vc-pannello { position: fixed; left: 16px; right: 16px; bottom: calc(150px + env(safe-area-inset-bottom)); z-index: 31; background: var(--foglio); border: 1.5px solid var(--grano); border-radius: 18px; padding: 14px 16px; box-shadow: 0 10px 30px rgba(60, 20, 10, .3); display: grid; gap: 8px; justify-items: start; animation: sale .22s ease-out both; }
+.vc-pannello p { margin: 0; }
+.vc-pannello.vc-primo { background: #FFF3DC; }
+.vc-onda { display: flex; gap: 4px; align-items: center; height: 22px; }
+.vc-onda span { width: 5px; height: 8px; border-radius: 3px; background: var(--cotto); animation: vc-onda .9s ease-in-out infinite; }
+.vc-onda span:nth-child(2) { animation-delay: .12s; } .vc-onda span:nth-child(3) { animation-delay: .24s; } .vc-onda span:nth-child(4) { animation-delay: .36s; } .vc-onda span:nth-child(5) { animation-delay: .48s; }
+@keyframes vc-onda { 0%, 100% { height: 6px; } 50% { height: 22px; } }
+body.vc-su main.corpo { padding-bottom: 150px; }
+@media (prefers-reduced-motion: reduce) { .vc-fab.acceso, .vc-onda span, .vc-pannello { animation: none; } }
