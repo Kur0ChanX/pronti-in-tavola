@@ -1,5 +1,5 @@
-# Ultima risposta di Claude (09/11/2026 09:00 ora italiana)
+# Ultima risposta di Claude (09/11/2026 10:25 ora italiana)
 
-Questa chat è chiusa. Ho passato il controllo delle regole (voce C98) alla chat «Aiuto 8», che lo farà: https://claude.ai/code/[segreto tolto dalla scorta]
+Aspetto l'esito di questa prova.
 
-Per «regole» ho inteso le regole del database (chi può leggere e scrivere cosa) e il percorso del cliente nuovo (nome, sì di Monica, primo ordine, notifiche). Se intendevi le regole di lavoro di Claude, scrivilo in «Aiuto 8».
+⚠️ ATTENZIONE: l'avvio è stato pesante (143.000 token, il tetto è 130.000) perché ho letto molti file. Da ora leggo solo le righe che servono.

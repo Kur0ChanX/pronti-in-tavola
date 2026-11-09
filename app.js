@@ -1572,6 +1572,7 @@ function schedaMario() {
     <p class="tenue piccolo" style="margin:0">La vedi solo tu. Monica non vede questa scheda.</p>
     ${n ? `<button type="button" class="btn chiaro" data-a="tutti-prova-apri">Segna come PROVA gli ordini fatti finora (${n})</button>`
       : '<p style="margin:0"><b>Tutti gli ordini sono già di PROVA.</b> Non contano negli incassi né nella spesa.</p>'}
+    ${ordiniDaTogliere().length ? `<button type="button" class="btn chiaro" data-a="togli-ordini-apri">🗑️ Togli tutti gli ordini fatti finora (${ordiniDaTogliere().length})</button>` : ''}
     <label class="interr"><span>Ricettario nella Home<small>${S.impostazioni.ricettario !== false ? 'Acceso: tu e Monica vedete «Ricettario» nella Home. I clienti mai.' : 'Spento: il riquadro non c\'è nella Home.'}</small></span><input type="checkbox" data-campo="i.ricettario" ${S.impostazioni.ricettario !== false ? 'checked' : ''}></label>
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
     ${velVoceHtml()}
@@ -1604,6 +1605,24 @@ function provaAIhtml() {
   const righe = p && p.esiti ? `<ul class="piccolo" style="margin:0;padding-left:20px">${p.esiti.map(e => `<li>${e.ok ? '✅' : '❌'} <b>${esc(e.nome)}</b> · ${e.ok ? `risponde (${(e.ms / 1000).toFixed(1)} s)` : esc(e.errore || 'non risponde')}</li>`).join('')}</ul>
     <p class="tenue piccolo" style="margin:0">Groq è la riserva: entra da sola solo quando finiscono le risposte gratuite di Cloudflare.</p>` : p && p.errore ? `<p class="piccolo" style="margin:0">${esc(p.errore)}</p>` : '';
   return `<button type="button" class="btn chiaro" data-a="prova-ai" ${p && p.inCorso ? 'disabled' : ''}>${p && p.inCorso ? 'Sto provando le AI… (circa 20 secondi)' : 'Prova le AI adesso (Cloudflare e Groq)'}</button>${righe}`;
+}
+/* (C101, Mario 09/11 «cancellare questi… lo storico rimane pulito, partiamo dal conteggio dei veri ordini»):
+   via tutti gli ordini, tranne quelli di chi aspetta ancora l'ok di Monica (le regole li legano al suo telefono).
+   I clienti restano. Prima scarica una copia in un file; dopo, «Annulla» li rimette. */
+const ordiniDaTogliere = () => {
+  const legati = new Set((S.richieste || []).map(r => r.primo).filter(Boolean));
+  return S.ordini.filter(o => o.stato !== 'daApprovare' && !legati.has(o.id));
+};
+function foglioTogliOrdini() {
+  const oo = ordiniDaTogliere(), per = {};
+  oo.forEach(o => { const k = o.cliente ? nomeBreve((cliente(o.cliente) || {}).nome || 'Cliente') : chiOrdina(o); per[k] = (per[k] || 0) + 1; });
+  const resta = S.ordini.length - oo.length, n = oo.length;
+  return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro">
+    <h1>${n === 1 ? 'Togliere questo ordine?' : `Togliere questi ${n} ordini?`}</h1>
+    <ul class="lista-togli" style="margin:0;padding-left:20px">${Object.keys(per).map(k => `<li><b>${esc(k)}</b> · ${per[k]} ${per[k] === 1 ? 'ordine' : 'ordini'}</li>`).join('')}</ul>
+    <div class="avviso">${ico('occhio')}<div>Dopo:<br>· <b>Ordini</b> e storico vuoti, ogni cliente a <b>0 ordini</b><br>· teglie della settimana a zero, il prossimo ordine è il <b>n. ${resta ? Math.max(...S.ordini.filter(o => !oo.includes(o)).map(o => o.n || 0)) + 1 : 1}</b><br>· i <b>clienti restano</b>, con nome e codice${resta ? `<br>· restano ${resta === 1 ? 'l\'ordine' : `i ${resta} ordini`} di chi aspetta ancora l'ok di Monica` : ''}</div></div>
+    <p class="tenue piccolo" style="margin:0">Prima scarico una copia nei Download. Se sbagli, subito dopo puoi toccare «Annulla».</p></div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="togli-ordini-si">Sì, togli ${n === 1 ? 'l\'ordine' : `i ${n} ordini`}</button><button type="button" class="btn chiaro pieno" data-a="chiudi">No, lascia così</button></div>`;
 }
 function foglioTuttiProva() {
   const oo = S.ordini.filter(o => !diProva(o)).sort((x, y) => x.n - y.n), n = oo.length;
@@ -1747,7 +1766,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'togli-ordini' ? foglioTogliOrdini() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -1800,6 +1819,7 @@ function cambiaQta(r, d) {
   return Math.max(min, q);
 }
 function notificaMonica() {
+  if (P.visti >= S.prossimoNumero) P.visti = 0;   // (C101) numeri ripartiti da 1: gli ordini nuovi si avvisano lo stesso
   const nuovi = S.ordini.filter(o => o.n > P.visti && (o.stato === 'nuovo' || o.stato === 'daApprovare'));
   P.visti = S.prossimoNumero - 1; salvaP();
   if (!nuovi.length) return;
@@ -2167,6 +2187,23 @@ const A = {
     vai(UI.devCliente ? 'menu' : 'home');
   },
   'tutti-prova-apri'() { UI.foglio = { tipo: 'tutti-prova' }; render(); },
+  'togli-ordini-apri'() { UI.foglio = { tipo: 'togli-ordini' }; render(); },
+  'togli-ordini-si'() {
+    if (!puoSviluppare()) return;
+    const oo = ordiniDaTogliere(); UI.foglio = null;
+    if (!oo.length) { render(); return; }
+    try {   // copia nei Download prima di togliere (dati veri)
+      const u = URL.createObjectURL(new Blob([JSON.stringify({ quando: new Date().toISOString(), clienti: S.clienti, ordini: oo }, null, 1)], { type: 'application/json' }));
+      const a = document.createElement('a'); a.href = u; a.download = `ordini-tolti-${oggi()}.json`; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(u), 60000);
+    } catch (e) { /* senza copia si va avanti: c'è comunque «Annulla» */ }
+    const via = new Set(oo.map(o => o.id));
+    cambia(`${oo.length} ${oo.length === 1 ? 'ordine tolto' : 'ordini tolti'}: lo storico riparte da zero`, () => {
+      S.ordini = S.ordini.filter(o => !via.has(o.id));
+      S.prossimoNumero = S.ordini.reduce((m, o) => Math.max(m, o.n || 0), 0) + 1;
+      P.visti = S.prossimoNumero - 1; salvaP();
+    });
+  },
   'dev-novita'() { UI.foglio = { tipo: 'novita' }; render(); },
   'tutti-prova-si'() {
     if (!puoSviluppare()) return;
