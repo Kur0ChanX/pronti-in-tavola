@@ -1,6 +1,6 @@
 /* Prova dell'«ascolto preciso» del server (ascolta.mjs, C105) con Whisper e Groq FINTI: niente rete, niente chiavi.
    Uso: node tools/prova-ascolta.mjs   (esce con 1 se una prova fallisce) */
-import { ascolta, correggiAscolto, pulisciCorretto, pulisciAscolto, promptAscolto } from '../ascolta.mjs';
+import { ascolta, correggiAscolto, pulisciCorretto, pulisciAscolto, promptAscolto, paroleChiave } from '../ascolta.mjs';
 
 let ok = 0, ko = 0;
 const prova = (nome, vero, dettaglio = '') => { if (vero) { ok++; console.log('OK  ' + nome); } else { ko++; console.log('NO  ' + nome + (dettaglio ? ' → ' + dettaglio : '')); } };
@@ -9,13 +9,17 @@ const AUDIO = Buffer.from('audio finto di prova').toString('base64');
 const json = (o, status = 200) => ({ ok: status < 300, status, json: async () => o });
 
 /* un «Groq» finto: whisper v3, whisper turbo e correttore rispondono come gli si dice; registra cosa riceve */
-function finti({ v3 = 'Due teglie di lasagne persa a Mato.', turbo = 'turbo', cf = 'Dette di lasagne per sabato.', corretto = 'Due teglie di lasagne per sabato.', erroreV3 = false, erroreCorr = false, lento = false } = {}) {
+function finti({ v3 = 'Due teglie di lasagne persa a Mato.', turbo = 'turbo', cf = 'Dette di lasagne per sabato.', corretto = 'Due teglie di lasagne per sabato.', erroreV3 = false, erroreCorr = false, lento = false, dg = 'Due teglie di lasagne per sabato.', erroreDg = false, erroreTurbo = false } = {}) {
   const chiamate = [];
   const f = async (url, o) => {
+    if (/deepgram/.test(url)) {
+      const q = new URL(url).searchParams; chiamate.push({ tipo: 'deepgram', modello: q.get('model'), lingua: q.get('language'), chiavi: q.getAll('keyterm'), auth: o.headers.authorization, ct: o.headers['content-type'] });
+      return erroreDg ? json({ err_msg: 'credito finito' }, 402) : json({ results: { channels: [{ alternatives: [{ transcript: dg, confidence: 0.93 }] }] } });
+    }
     if (/transcriptions/.test(url)) {
       const modello = o.body.get('model'); chiamate.push({ tipo: 'whisper', modello, prompt: o.body.get('prompt'), lingua: o.body.get('language'), file: o.body.get('file') });
       if (modello === 'whisper-large-v3') return erroreV3 ? json({ error: { message: 'rate limit' } }, 429) : json({ text: v3 });
-      return json({ text: turbo });
+      return erroreTurbo ? json({ error: { message: 'rate limit' } }, 429) : json({ text: turbo });
     }
     const corpo = JSON.parse(o.body); chiamate.push({ tipo: 'correttore', corpo });
     if (lento) await new Promise((res, rej) => { const t = setTimeout(res, 3000); o.signal.addEventListener('abort', () => { clearTimeout(t); rej(new Error('abort')); }); });
@@ -79,6 +83,39 @@ function finti({ v3 = 'Due teglie di lasagne persa a Mato.', turbo = 'turbo', cf
   const { f, env } = finti(); delete env.GROQ_API_KEY;
   const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f);
   prova('senza chiave Groq → Cloudflare da solo', r.testo === 'Dette di lasagne per sabato.' && r.corretto === false && r.motore === 'cloudflare', JSON.stringify(r));
+}
+// 7. C108 «1»: CLIENTE con la chiave Deepgram → Groq v3 + Deepgram in parallelo, Cloudflare (salvadanaio di chi gestisce) non toccato
+{
+  const { f, env, chiamate } = finti(); env.DEEPGRAM_API_KEY = 'finta';
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f, { cliente: true });
+  const d = chiamate.find(c => c.tipo === 'deepgram') || {};
+  prova('cliente: v3 + Deepgram, niente Cloudflare', r.motore.startsWith('groq:whisper-large-v3+deepgram') && !chiamate.some(c => c.tipo === 'cf'), r.motore);
+  prova('Deepgram: nova-3, italiano, «Token», tipo dell\'audio', d.modello === 'nova-3' && d.lingua === 'it' && d.auth === 'Token finta' && d.ct === 'audio/mp4', JSON.stringify(d));
+  prova('Deepgram: parole chiave con misure e piatti', d.chiavi && d.chiavi.includes('teglie') && d.chiavi.includes('Lasagne al ragù'), JSON.stringify(d.chiavi));
+  prova('correttore riceve le due trascrizioni', r.alternative.length === 2 && r.corretto === true, JSON.stringify(r));
+}
+// 8. Deepgram giù (credito finito) → riserva Groq turbo, così le trascrizioni restano due
+{
+  const { f, env, chiamate } = finti({ erroreDg: true }); env.DEEPGRAM_API_KEY = 'finta';
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f);
+  prova('Deepgram giù → v3 + turbo, Cloudflare non serve', /groq:whisper-large-v3\+groq:whisper-large-v3-turbo/.test(r.motore) && !chiamate.some(c => c.tipo === 'cf'), r.motore);
+}
+// 9. tutto Groq e Deepgram giù → Cloudflare per ultimo: il cliente non resta mai senza ascolto
+{
+  const { f, env, chiamate } = finti({ erroreV3: true, erroreDg: true, erroreTurbo: true }); env.DEEPGRAM_API_KEY = 'finta';
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f);
+  prova('tutto giù tranne Cloudflare → Cloudflare', r.testo !== '' && /cloudflare/.test(r.motore) && chiamate.some(c => c.tipo === 'cf'), JSON.stringify(r));
+}
+// 10. CHI GESTISCE (Monica, Mario) con la chiave Deepgram → resta su Groq v3 + Cloudflare: Deepgram è dei clienti
+{
+  const { f, env, chiamate } = finti(); env.DEEPGRAM_API_KEY = 'finta';
+  const r = await ascolta(env, AUDIO, 'audio/mp4', PIATTI, f, { cliente: false });
+  prova('gestore: niente Deepgram', !chiamate.some(c => c.tipo === 'deepgram') && /groq:whisper-large-v3\+cloudflare/.test(r.motore), r.motore);
+}
+// 11. parole chiave: tetto (menù enorme) e pulizia
+{
+  const k = paroleChiave(Array.from({ length: 200 }, (_, i) => 'Piatto numero ' + i + ' (vegano)'));
+  prova('parole chiave: massimo 80, misure sempre dentro, niente parentesi', k.length <= 80 && k.join(' ').length <= 1000 && k[0] === 'teglia' && !/[()]/.test(k.join('')), k.length + ' ' + k.slice(0, 8).join('|'));
 }
 console.log(`\n${ok} OK, ${ko} NO`);
 process.exit(ko ? 1 : 0);
