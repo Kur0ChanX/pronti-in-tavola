@@ -42,6 +42,7 @@ const server = http.createServer((req, res) => {
     });
     await ctx.route(/fonts\.(googleapis|gstatic)\.com/, r => r.abort());
     if (opz.cookie) await ctx.addCookies([{ name: 'pit_nome', value: encodeURIComponent(opz.cookie), url: `http://127.0.0.1:${PORTA}/` }]);
+    if (opz.cookies) await ctx.addCookies(opz.cookies);   // (C113) come iPhone quando metti l'app sulla Home: solo i cookie di Safari
     const page = await ctx.newPage();
     if (opz.impronta) {
       const cdp = await ctx.newCDPSession(page);
@@ -334,6 +335,20 @@ const server = http.createServer((req, res) => {
     const gB = (await admin(d => getDoc(doc(d, 'utenti/gio-browser')))).data(), gA = (await admin(d => getDoc(doc(d, 'utenti/gio-app')))).data();
     const clientiGio = (await admin(d => getDocs(collection(d, 'clienti')))).docs.filter(x => x.data().chiave === 'gio-sanna');
     controlla('(C93) due Sì di fila: stesso cliente, nessun doppione', gB.cliente && gB.cliente === gA.cliente && clientiGio.length === 1, [gB, gA, clientiGio.length]);
+
+    // b2c) (C113, Mario 09/11 «un disastro» con un iPhone) l'app sulla Home prende da Safari SOLO i cookie: con l'accesso nel cookie
+    //      è la STESSA persona (stesso uid, già accettata), niente «Dice che ha cambiato telefono» per Monica
+    const biscotti = (await cliente.context().cookies()).filter(c => c.name === 'pit_acc');
+    const statoC = await cliente.evaluate(() => Dati.io.utente && Dati.io.utente.stato);
+    const attesePrima = await monica.evaluate(() => S.utenti.filter(u => ['nuovo', 'ricollega'].includes(u.stato)).length);
+    const icona = await apri({ cookies: biscotti });
+    const stessa = await aspetta(icona, u => Dati.io.uid === u && !!Dati.io.utente, uidC);
+    await new Promise(r => setTimeout(r, 1500));
+    const dopoIcona = await icona.evaluate(() => [Dati.io.uid, Dati.io.utente && Dati.io.utente.stato, !!document.querySelector('[data-a="benv-ricordato"]')]);
+    const atteseDopo = await monica.evaluate(() => S.utenti.filter(u => ['nuovo', 'ricollega'].includes(u.stato)).length);
+    controlla('(C113) iPhone, app dall\'icona con i soli cookie: stessa persona già accettata, nessuna richiesta nuova a Monica',
+      biscotti.length === 1 && stessa && dopoIcona[1] === statoC && !dopoIcona[2] && atteseDopo === attesePrima, [biscotti.length, uidC, statoC, dopoIcona, attesePrima, atteseDopo]);
+    await icona.context().close();
 
     // b3) (C93) app installata su iPhone: il cookie col nome è passato (iOS 17.2+) → «Sei Sabrina Rossi? Sì, sono io» con un tocco
     const sabApp = await apri({ cookie: 'Sabrina Rossi' });
