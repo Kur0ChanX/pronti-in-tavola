@@ -2,10 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:38 · 01QTFEqRMnzm
-Allora, tutte le scritte sono un po' attaccate. Lasagne, la teglia, poco cacao sopra, è tutto un po' appiccicato. Poi i rombetti che hai fatto attorno, boh, sono strani, puoi fare di meglio secondo me. A tema cucina, a tema sardo.
-E forse il loghetto, il logo che c'è nelle etichette in alto a destra, forse è un pochettino troppo nell'angolo. Forse. E fallo poco poco poco più grande. Staccalo dagli angoli e fallo poco poco più grande.
-
 ## 2026-11-06 19:42 · 01QTFEqRMnzm
 Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigzag, i fiorellini toglili, al posto del zigzag metti tipo una cucitura da sarta, fatta bene. Fai con cura tutti gli spazi, sposta il loghetto in base a quello che ti serve, insomma. Deve essere tutto ordinato, fatto bene, senza che nulla si sovrapponga. Quello uno di due secondo me la può aiutare, perché almeno gli dice quanti prodotti sono. Secondo me può aiutarli in piccolino a metterlo.
 
@@ -132,3 +128,6 @@ nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me met
 
 ## 2026-11-09 10:56 · 01WTjqUwCuTd
 Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
+
+## 2026-11-09 19:38 · 01WTjqUxhhMW
+principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
