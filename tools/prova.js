@@ -589,7 +589,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (d.n > 40000) throw new Error('dati per l\'AI dei clienti troppo grandi: ' + d.n);
     if (!d.altri) throw new Error('nei dati ci sono ordini di altri clienti');
     if (d.ind) throw new Error('nei dati c\'è l\'indirizzo di Monica');
-    await clic('[data-a="ac-chiedi"]'); await page.waitForTimeout(400);
+    await clic('[data-a="ac-chiedi"]'); await page.waitForTimeout(400);   // «Cosa c'è di pronto oggi?» ora risponde sul telefono (C105)
+    if (!(await page.locator('.ai-fum.lei').count()) || await page.locator('.ai-fum.lei', { hasText: 'anteprima' }).count()) throw new Error('la domanda sui pronti non ha avuto la risposta locale');
+    await page.fill('#ac-testo', 'blu vermiglio quattordici'); await page.press('#ac-testo', 'Enter'); await page.waitForTimeout(400);   // frase senza senso → server
     if (!(await page.locator('.ai-fum.lei', { hasText: 'anteprima' }).count())) throw new Error('nell\'anteprima non spiega che risponde solo nell\'app vera');
     const pid = await page.evaluate(() => { const p = visibili().find(x => x.disponibile && !x.varianti.length) || visibili().find(x => x.disponibile); return p.id; });
     await page.evaluate(id => { window.chiediAiutoCliente = async () => ({ testo: 'Ecco!', azioni: [{ azione: 'carrello', id, qta: 2 }, { azione: 'carrello', id: 'inventato' }] }); }, pid);

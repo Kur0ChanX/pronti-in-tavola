@@ -47,7 +47,7 @@ const paroleMenu = (n, sin) => applicaSinonimi(vcS(n), sin).split(' ').filter(w 
 
 /* ---------- numeri, formati e quantità nella frase ---------- */
 const numeroDetto = w => /^\d+([.,]\d+)?$/.test(w) ? Number(w.replace(',', '.')) : w in NUM_VOCE ? NUM_VOCE[w] : /^(qualche|alcune|alcuni)$/.test(w) ? 2 : null;
-const UNITA = /^(teglia|teglie|tegliette|vassoi\w*|chilo|chili|kg|chilogramm\w*|etto|etti|pezzo|pezzi|pezzetti|porzion\w*|person\w*)$/;
+const UNITA_VOCE = /^(teglia|teglie|tegliette|vassoi\w*|chilo|chili|kg|chilogramm\w*|etto|etti|pezzo|pezzi|pezzetti|porzion\w*|person\w*)$/;
 /* gruppi «numero + unità» con la posizione: «due teglie da 8», «un chilo e mezzo», «tre etti», «teglia grande», «sei pezzi», «per 8 persone» */
 function quantitaDette(tok, eMenu) {
   const out = [], usati = new Set();
@@ -56,7 +56,7 @@ function quantitaDette(tok, eMenu) {
     const soloUnita = q === null && /^(teglia|teglie|chilo|kg|etto|pezzo)$/.test(tok[i]) && !/^(al|a|il|la|lo|le|i|del|della|dello|allo|alla|per|ogni|quante|quanti|quanto|che|una|un|uno|mezza|mezzo)$/.test(tok[i - 1] || '');
     if (q === null && !soloUnita) continue;
     if (soloUnita) { q = /^etto$/.test(tok[i]) ? 0.1 : 1; fine = i - 1; }
-    if (q !== null && !soloUnita && /^(da|per|il|entro il|alle|ore)$/.test(tok[i - 1] || '') && !UNITA.test(tok[i + 1] || '')) continue;   // «teglia da 8», «per il 15», «alle 18»: non sono quantità
+    if (q !== null && !soloUnita && /^(da|per|il|entro il|alle|ore)$/.test(tok[i - 1] || '') && !UNITA_VOCE.test(tok[i + 1] || '')) continue;   // «teglia da 8», «per il 15», «alle 18»: non sono quantità
     let j = fine + 1;
     if (tok[j] === 'e' && /^(mezzo|mezza)$/.test(tok[j + 1] || '')) { q += 0.5; fine = j + 1; j = fine + 1; }
     const u = tok[j] || '';
