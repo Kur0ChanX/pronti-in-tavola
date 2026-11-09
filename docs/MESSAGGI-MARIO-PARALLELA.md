@@ -6,3 +6,13 @@ Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. N
 forse si è chiamato Francesco Sanciu nell'app
 gli da sempre lo stesso problema ma gli dice che Monica deve attivarlo ma non c'è nessuno da attivare comese si fosse persa
 cerca e vai avanti da solo
+
+## 2026-11-09 08:38 · 01WTjqUu72CC
+no franesco era quello delle 18 penso
+
+## 2026-11-09 08:40 · 01WTjqUu72CC
+però perché non c'è il nome nei clienti?
+
+2 · no, c'è «Nessuno in attesa»: gli faccio riaprire il link e riscrivere il nome
+
+ho chiesto ha Francesco se ieri gli ha chiesto il nome l'app
