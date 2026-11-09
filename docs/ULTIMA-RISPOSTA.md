@@ -1,11 +1,8 @@
-# Ultima risposta di Claude (09/11/2026 19:39 ora italiana)
+# Ultima risposta di Claude (09/11/2026 22:51 ora italiana)
 
+Ho capito: con l'iPhone Monica ha dovuto dire sì due volte alla stessa persona, e chiedi di risolverlo o togliere l'approvazione.
 
-
-## Domande a Mario
-
-❓ DOMANDA
-📌 Di cosa parliamo: `CLAUDE.md` è il file di regole che leggo a ogni avvio. Accorciarlo farebbe risparmiare circa lo 0,2% dei token. In cambio c'è un piccolo rischio di dimenticare le regole sulle prove.
-
-1. Accorcio: risparmio quasi nullo, piccolo rischio di provare l'app vecchia.
-2. Lascio così (consiglio): non cambia niente e tolgo la domanda dalla tua lista.
+───
+✅ FATTO
+- **Causa trovata.** Quando metti l'app sulla Home, iPhone le passa da Safari solo i **cookie** (piccoli dati che il sito salva sul telefono), non il resto. Lo dicono WebKit e una prova su iPhone del 20/10/2026. L'accesso del cliente non era nei cookie: aperta dall'icona, l'app vedeva una persona nuova. Per questo è arrivato «Dice che ha cambiato telefono».
+- **Corretto, v0.9.92 online** (il sito risponde 0.9.92). Ora l'accesso del cliente sta anche …
