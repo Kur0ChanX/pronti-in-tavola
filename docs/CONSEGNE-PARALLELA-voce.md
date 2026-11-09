@@ -17,6 +17,10 @@ Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 09/11 17:11, chius
 - **Aggancio a `window.render`** per ridisegnare il microfono fisso senza toccare app.js (fuori zona). Se Mario o la principale preferiscono una riga in `render()`, basta chiamare `disegnaVC()` con typeof.
 - **Prezzi letti bene** (`perVoceCliente`): «12,50 €» → «dodici euro e cinquanta», «1,5 kg» → «un chilo e mezzo».
 
+## Chiusura della catena (Voce 3, 09/11 ~19:20)
+- Giro completo in locale VERDE sull'ultimo commit di codice (71 passi OK, `tools/prova.js` + `tools/prova-impostazioni.js` 11 OK, «Nessun errore nella pagina»); push `57c80e9c` = origin; sito.yml pubblica v0.9.80 (controllo: `curl -s …/data.js | grep VERSIONE_APP`).
+- Niente Voce 4 (resta meno di mezza sessione di lavoro): la zona torna alla principale (`docs/CHI-FA-COSA.md`), che chiude la voce 👁 di C105 con la prova di Mario e fa il passo 2 qui sotto. Catena 3 di 8 chiusa.
+
 ## Stato (Voce 3, 09/11 sera; controlla, non fidarti)
 - Tutto collegato: index.html, anteprima.py, aiutante.js (zona clienti), style.css `.vc-*`, worker.js `/api/ascolta` + `contaAscolto` (Groq prima per webm/ogg: Cloudflare non decodifica bene l'opus, blog 06/2026; base64 confermato dal manuale Cloudflare 09/11), opzioni.js 6 voci + tipo `scelta`, prova.js 4 passi nuovi + C50. Versione 0.9.80 in data.js, NOVITA, C105 in Da fare.
 - Prove verdi in locale: 31 frasi, microfono finto, ascolto preciso finto, dettatura, C50 (`SOLO="benvenuto|voce dei clienti|C50"`). Giro completo + `prova-impostazioni.js`: vedi l'ultimo commit (se non è scritto «giro completo verde» qui, rifallo prima del push).
