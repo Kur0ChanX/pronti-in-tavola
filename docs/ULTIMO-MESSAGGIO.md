@@ -1,3 +1,5 @@
-# Ultimo messaggio di Mario (09/11/2026 19:38 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 23:51 ora italiana)
 
-principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
+Calcolati dagli ingredienti. La cucina è di casa: per allergie gravi chiedi a Monica.
+
+Da modificare con : Calcolati dagli ingredienti. Possono essere presenti contaminazioni, per allergie e/o intolleranze scrivimi!
