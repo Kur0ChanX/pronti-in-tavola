@@ -27,6 +27,10 @@ La storia dei lavori finiti (in `docs/DA-FARE.md` resta solo cosa manca).
 - Foto del menù ai clienti: Mario 08/11 «per ora non c'è bisogno, c'è l'app» → restano spente (`menuFotoClienti`).
 
 
+## Chiuse il 09/11/2026 (#33)
+| C105 | (Mario 09/11 ~10:20 «a me mettimi un procione… Monica un cuoricino rosso») v0.9.72: codice MARIO 🦝 e MONICA ❤️ al posto della ⭐. Mario l'ha visto (nessuna correzione). | Claude | ✅ |
+| C106 | (Mario 09/11 ~10:55 «mandami l'animazione YNOY in altissima qualità… per un altro progetto») `archivio/animazione-ynoy/`: pagina col codice esatto, video 4K e 1080p a 60 fps, griglia di fotogrammi, LEGGIMI; mandati a Mario in chat. | Claude | ✅ |
+
 ## Chiuse l'08/11/2026 (#23): Mario «ho visto che per ora funziona tutto», in blocco
 | C44 | (Mario 07/11 ~20:10) Ordini di prova archiviabili con due tocchi (uno o tutti) + «Archiviati» per ripristinare; cliente: «Area riservata» discreta al posto di «Sei Monica? Entra», via «(se vuoi)». 👁 Lo vedi: Ordini → Storico → «Ordini di prova» → «Archivia tutte le prove»; dal telefono di un cliente, in fondo al carrello · prova: tua foto o tuo ok · 👁 Visto da Mario: 08/11 · ok in blocco (commit 036cb9a24c) | Claude | ✅ |
 | C41 | (Mario 07/11 ~19:45) «Al forno da Monica» come sovrapprezzo per piatto, accanto al fritto: il cliente sceglie una cottura sola. Fatto dalla #19, online `851c056`. 👁 Lo vedi: Monica in I miei piatti → piatto → «Cotto da te» mette la cifra; il cliente la vede nella scheda del piatto · prova: tua foto o tuo ok · 👁 Visto da Mario: 08/11 · ok in blocco (commit 036cb9a24c) | Claude | 🟢 manca la foto |

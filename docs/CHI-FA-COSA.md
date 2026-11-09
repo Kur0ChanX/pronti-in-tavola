@@ -9,4 +9,3 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟢 Principale 33 | C104 clienti nuovi chiusi per sbaglio (conferma, avviso rosso, Riapri) | app.js (vHome, vClienti, salvaCampo, fogli), tools/prova.js | 09/11 14:40 |
