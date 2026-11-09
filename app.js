@@ -932,10 +932,15 @@ function foglioPiatto() {
   return h;
 }
 
-/* chi non è ancora stato accettato da Monica dice se ordina davvero o prova l'app (Mario 07/11) */
-/* scelta obbligatoria (Mario 07/11): senza, «Invia» non parte */
+/* il cliente dice se ordina davvero o prova l'app (Mario 07/11); scelta obbligatoria e mai già segnata: senza, «Invia» non parte.
+   Mario 09/11: a TUTTI a ogni ordine (opzione chiediProva; prima solo a chi non era ancora accettato, e ora si accetta prima del primo ordine) */
 const sceltaManca = () => puoProvare() && UI.prova === undefined;
-const puoProvare = () => !UI.modifica && (!Dati.attivo || (Dati.io.utente && Dati.io.utente.stato !== 'approvato'));
+const puoProvare = () => {
+  if (UI.modifica) return false;
+  const q = typeof opz === 'function' ? opz('chiediProva') : 'tutti';
+  if (q === 'mai') return false;
+  return q === 'tutti' || !Dati.attivo || !!(Dati.io.utente && Dati.io.utente.stato !== 'approvato');
+};
 function sceltaProva() {
   if (!puoProvare()) return '';
   return `<section class="scheda"><h2>Ordini davvero o provi l'app?</h2><div class="scelte">
