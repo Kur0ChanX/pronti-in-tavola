@@ -2,7 +2,7 @@
 
 La scrive la sessione che chiude, nello stesso commit delle consegne (skill `consegne`, fase 5; righe di fatto da `tools/consegne.py`). Di solito la apre Claude con `create_session`; Mario la apre da qui solo a 8 della catena o al cambio account (i suoi passi: `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
 
-Scritta da: #33 per la #34 · 09/11/2026 · la apre la #33 con `create_session` (catena 7 di 8), motore Fable 5.1, impegno Medio.
+Scritta da: #33 per la #34 · 09/11/2026 · la apre MARIO (catena 8 di 8: `lineage.depth` 8), motore Fable 5.1, impegno Alto (`high`).
 
 - Dove: https://claude.ai/code → repo `Kur0ChanX/pronti-in-tavola`, ramo `claude/pronti-ramo-definitivo`
 - Motore: Fable 5.1 (l'impegno lo prende da solo da `.claude/settings.json`: non si sceglie)

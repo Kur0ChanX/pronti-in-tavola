@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #34 (dopo la #33 `session_01WTjqUwCuTdUjXP6DJCbr8T`, chiusa alla soglia 09/11 15:02; la apre la #33 con `create_session` (catena 7 di 8)).
+Sessione attuale: #34 (dopo la #33 `session_01WTjqUwCuTdUjXP6DJCbr8T`, chiusa alla soglia 09/11 15:02; la apre Mario (catena 8 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
