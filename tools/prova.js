@@ -1023,7 +1023,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!r[4]) throw new Error('dopo il tocco non si chiede il nome');
     if (r[5]) throw new Error('il popup «Installa l\'app» esce anche senza nome');
   });
-  await passo('codice fisso e nome dei profili: codice, ⭐MARIO, «nome cambiato» con Visto, matita di Monica, aiutante (C99, Mario 09/11)', async () => {   // autonoma
+  await passo('codice fisso e nome dei profili: codice, MARIO 🦝 e MONICA ❤️, «nome cambiato» con Visto, matita di Monica, aiutante (C99, Mario 09/11)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const primaS = JSON.stringify(S), primaUI = [UI.vista, UI.foglio, P.ruolo];
       try {
@@ -1050,7 +1050,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!/K7P2M/.test(r.riga1) || !/Nome cambiato/.test(r.riga1) || !/Laura Rossi/.test(r.riga1) || !/Visto/.test(r.riga1)) throw new Error('riga del cliente senza codice o senza «nome cambiato»');
     if (/Nome cambiato/.test(r.riga2) || !/Si fa chiamare «Laura Rossi»/.test(r.riga2)) throw new Error('«Visto» non toglie l\'avviso');
     if (r.dopo[0] !== 'Laura del mercato' || r.dopo[1] !== 2 || r.dopo[2] !== 'K7P2M' || r.dopo[3]) throw new Error('matita di Monica: ' + JSON.stringify(r.dopo));
-    if (r.stella.join() !== '⭐MARIO,⭐MONICA,K7P2M') throw new Error('stelle sbagliate: ' + r.stella);
+    if (r.stella.join() !== 'MARIO 🦝,MONICA ❤️,K7P2M') throw new Error('stelle sbagliate: ' + r.stella);
     if (!r.ai || r.ai[0].voce !== 'clienti-nome') throw new Error('aiutante: il nome del cliente non porta in Clienti ' + JSON.stringify(r.ai));
     if (!r.ai2 || r.ai2[0].voce !== 'nome') throw new Error('aiutante: il nome del piatto non va più al piatto ' + JSON.stringify(r.ai2));
   });
