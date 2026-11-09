@@ -2,19 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:38 · 01QTFEqRMnzm
-Allora, tutte le scritte sono un po' attaccate. Lasagne, la teglia, poco cacao sopra, è tutto un po' appiccicato. Poi i rombetti che hai fatto attorno, boh, sono strani, puoi fare di meglio secondo me. A tema cucina, a tema sardo.
-E forse il loghetto, il logo che c'è nelle etichette in alto a destra, forse è un pochettino troppo nell'angolo. Forse. E fallo poco poco poco più grande. Staccalo dagli angoli e fallo poco poco più grande.
-
-## 2026-11-06 19:42 · 01QTFEqRMnzm
-Cerca che in nessun caso nulla si sovrapponga e dai, fai al massimo di quel zigzag, i fiorellini toglili, al posto del zigzag metti tipo una cucitura da sarta, fatta bene. Fai con cura tutti gli spazi, sposta il loghetto in base a quello che ti serve, insomma. Deve essere tutto ordinato, fatto bene, senza che nulla si sovrapponga. Quello uno di due secondo me la può aiutare, perché almeno gli dice quanti prodotti sono. Secondo me può aiutarli in piccolino a metterlo.
-
-## 2026-11-06 19:49 · 01QTFEqRMnzm
-Una volta che è fatto le etichette, continua con il progetto.
-
-## 2026-11-07 00:12 · 01QTFEqU1M1r
-come tutti gli altri progetti non inventarti nulla manuale tutto plug in play
-
 ## 2026-11-07 00:17 · 01QTFEqU1M1r
 mandami il link nel passaggio dove devo cliccare per andare avanti
 
@@ -132,3 +119,15 @@ nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me met
 
 ## 2026-11-09 10:56 · 01WTjqUwCuTd
 Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
+
+## 2026-11-09 11:04 · 01WTjqUwCuTd
+Risolvi che non salva l'impostazione velocità della voce ritorna a 1.20 io avevo scelto 0.75 salvala predefinita a 0.75 anche per Monica e se la cambio tienila salvata sempre amche dopo aggiornamento  ecc e se la cambia monica la salva solo per lei
+
+## 2026-11-09 14:13 · 01WTjqUwCuTd
+c89 come consiglio
+
+## 2026-11-09 14:16 · 01WTjqUwCuTd
+a cosa serve?
+
+## 2026-11-09 14:17 · 01WTjqUwCuTd
+regola per tutti i progetti ed account dimmi sempre a cosa serve quello che vuoi farmi fare
