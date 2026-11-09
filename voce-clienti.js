@@ -425,7 +425,8 @@ function scegliAlternativa(finali) {
   const combinazioni = [finali.map(a => a[0]).join(' ')];
   finali.forEach((alts, i) => alts.slice(1).forEach(alt => combinazioni.push(finali.map((a, j) => (j === i ? alt : a[0])).join(' '))));
   let best = null;
-  combinazioni.forEach(c => { const e = capisciCliente(c), punti = e.confidenza + (e.piatti.length ? 0.3 : 0) - (e.piatti.some(p => p.ambiguo) ? 0.1 : 0); if (!best || punti > best.punti) best = { testo: c.trim(), confidenza: e.confidenza, punti }; });
+  const sin = sinonimiVoce();
+  combinazioni.forEach(c => { const e = capisciCliente(c), punti = e.confidenza + (e.piatti.length ? 0.3 : 0) - (e.piatti.some(p => p.ambiguo) ? 0.1 : 0) + (applicaSinonimi(vcS(c), sin) === vcS(c) ? 0.05 : 0); /* a parità vince la frase già giusta («lasagne», non «la sagne») */ if (!best || punti > best.punti) best = { testo: c.trim(), confidenza: e.confidenza, punti }; });
   return best;
 }
 /* «ascolto preciso»: registra (si ferma da sola al silenzio), manda al server (Whisper), riceve il testo */
