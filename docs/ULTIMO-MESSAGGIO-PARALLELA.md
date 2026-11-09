@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 17:25 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 20:05 ora italiana)
 
-Continua con pensiero extra e se serve ripensa
+non si possono avere monica e me dei limiti e i clienti altri?
