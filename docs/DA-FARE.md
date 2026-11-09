@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 09/11 · 🟨 Voce 7 · 🛑 C108 ascolto fisso (`docs/lavori-in-corso/standard-ascolto.md`): 1 due motori forti sempre insieme, 0 €, serve un account Deepgram senza carta (consiglio) · 2 Groq a pagamento con carta · 3 lascio così e tolgo solo il blocco a 400 frasi. A cosa serve: un ascolto della stessa qualità ogni giorno, senza mai fermare i clienti.
+- 09/11 · 🟨 Voce 7 · 🛑 C108 ascolto fisso (`docs/lavori-in-corso/standard-ascolto.md`): 1 salvadanai separati (tu e Monica tutto Cloudflare; clienti su Groq + Deepgram) e due motori forti, 0 €, serve un account Deepgram senza carta (consiglio) · 2 Groq a pagamento con carta · 3 lascio così e tolgo solo il blocco a 400 frasi. A cosa serve: un ascolto della stessa qualità ogni giorno, senza mai fermare i clienti.
 - 09/11 · 🟨 Voce 4 · 🛑 C109 limiti per persona: va bene la proposta (`docs/lavori-in-corso/limiti-per-persona.md`: mai blocchi; avviso oltre un tetto ampio; telefono che esagera → modo senza AI; allarme all'80% del totale)? 1 sì · 2 cambia i numeri.
 - 09/11 · 🟨 Voce 5 · C105 su iPad (app dalla Home), v0.9.85 (capisce meglio: due motori + correttore col menù): chiudi e riapri l'app, Menù → microfono → «due teglie di lasagne per sabato» (parla normale): cosa scrive? Una foto. A cosa serve: vedere se ora capisce bene sul tuo iPad vero.
 - 09/11 · 🟢 Principale 35 · C106 iPad v0.9.83: in orizzontale apri l'app dall'icona, vai alla Home dell'iPad e rientra: la pagina resta della misura giusta? Una foto.

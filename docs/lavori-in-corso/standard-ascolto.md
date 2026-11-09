@@ -30,7 +30,7 @@ Cambio BCE 09/11/2026: 1 € = 1,1193 $ (https://www.ecb.europa.eu/stats/policy_
 | 1.000 | ~1 anno e mezzo | ~9,60 €/mese | ~8,26 €/mese |
 
 ## Strade proposte a Mario (🛑 soldi, 09/11 Voce 7)
-1. **Consiglio · due motori forti sempre insieme, 0 €**: Groq v3 + Deepgram Nova-3, il correttore sceglie; riserve Cloudflare e Groq turbo, in ordine. Mai «ho ascoltato tanto»: oltre l'80% di un limite, avviso a chi gestisce. Serve un account Deepgram (senza carta) e la chiave nei segreti di GitHub.
+1. **Consiglio · salvadanai separati + due motori forti, 0 €** (Mario ~21:10 «non si possono avere Monica e me dei limiti e i clienti altri?»): Monica e Mario tengono TUTTO Cloudflare (aiutante, 10.000 neuroni ≈ 25-40 domande; finito → ponte Groq come oggi). I clienti passano a Groq + Deepgram: ascolto Groq v3 + Deepgram Nova-3 insieme, il correttore sceglie (riserve Groq turbo, Cloudflare solo per ultima); aiutante dei clienti su Groq `qwen3.8-27b` → `gpt-oss-120b` → `gpt-oss-20b` (gratis: 1.000 richieste e 200.000 token al giorno PER MODELLO, 8.000 token al minuto; domanda di un cliente ~2.000-3.000 token → ~70-100 domande al giorno per modello, ~200-300 coi tre; https://console.groq.com/docs/rate-limits, 09/11/2026). L'aiutante dei clienti è zona della Principale (avvisata 09/11). Mai «ho ascoltato tanto»: oltre l'80% di un limite, avviso a chi gestisce. Serve un account Deepgram (senza carta) e la chiave nei segreti di GitHub.
 2. **Groq a pagamento con tetto di spesa** (carta), Cloudflare resta il secondo: stesso Groq sempre, nessun account nuovo; il secondo motore resta debole.
 3. **Lascio così** (Groq + Cloudflare) e tolgo solo il blocco a 400.
 Scartate: server su un PC di Mario (acceso sempre, più guasti); Voxtral gratis (non c'è più).
