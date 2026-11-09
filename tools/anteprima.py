@@ -15,7 +15,7 @@ def dato(percorso):
 
 html = (QUI / 'index.html').read_text(encoding='utf-8')
 html = html.replace('<link rel="stylesheet" href="style.css">', '<style>\n' + (QUI / 'style.css').read_text(encoding='utf-8') + '\n</style>')
-for nome in ('data.js', 'dati.js', 'opzioni.js', 'lucchetto.js', 'vapore.js', 'guida-iphone.js', 'app.js', 'spesa.js', 'aiutante.js', 'voce-piper.js', 'voce-kokoro.js', 'ricette.js', 'ricettario.js'):
+for nome in ('data.js', 'dati.js', 'opzioni.js', 'lucchetto.js', 'vapore.js', 'guida-iphone.js', 'app.js', 'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'ricette.js', 'ricettario.js'):
     if nome == 'ricette.js':  # online si scarica solo per chi gestisce; nell'anteprima di prova va dentro, prima di ricettario.js
         html = html.replace('<script src="ricettario.js"></script>', '<script src="ricette.js"></script>\n<script src="ricettario.js"></script>')
     codice = (QUI / nome).read_text(encoding='utf-8')
