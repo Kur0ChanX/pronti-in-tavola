@@ -50,3 +50,6 @@ guarda che bomba per android per ipad è completamente diverso...perché????
 
 ## 2026-11-09 20:58 · 01WTjqUuB1p3
 Poi nel mio ipad non posso neanche aprire la schermata dev
+
+## 2026-11-09 23:21 · 01WTjqUtYvuM
+parlami della chiave deepgram e a cosa ti serve

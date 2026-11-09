@@ -1,9 +1,7 @@
-# Ultima risposta di Claude (09/11/2026 21:38 ora italiana)
+# Ultima risposta di Claude (09/11/2026 22:51 ora italiana)
 
-La chat si era riavviata. Ho recuperato e salvato su GitHub il lavoro rimasto a metà: erano solo file di servizio, non codice.
+La chat si è riavviata di nuovo. Ho ripreso il lavoro rimasto a metà (solo file di servizio) ed è salvato su GitHub. Nessun tuo messaggio nuovo per il microfono.
 
-La Principale 37 ha messo online la v0.9.91 con quello che le avevo chiesto. Le ho controllate sul sito:
-- In Impostazioni → «Solo per te, Mario» c'è il nuovo numero **«Microfono dei clienti: segnalazione»**. Parte da 40 frasi al giorno e lo puoi cambiare tu tra 10 e 500.
-- C'è anche il testo per l'avviso «oltre 400 frasi di tutti i clienti».
+La Principale ha preso anche la v0.9.92. La mia prossima versione sarà la v0.9.93.
 
-Io resto ferma finché non arriva il tuo video dall'iPad (C110) o la chiave Deepgram (C108).
+Resto ferma finché non arriva il tuo video dall'iPad (C110) o la chiave Deepgram (C108).
