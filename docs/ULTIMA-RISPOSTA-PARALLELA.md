@@ -1,11 +1,9 @@
-# Ultima risposta di Claude (09/11/2026 11:09 ora italiana)
+# Ultima risposta di Claude (09/11/2026 19:29 ora italiana)
 
 
 
 ## Domande a Mario
 
-❓ DOMANDE
-📌 Di cosa parliamo: è il controllo automatico che ferma il push quando due versioni o due voci hanno lo stesso numero. Ora c'è solo in Pronti in Tavola.
-1. Lo mettiamo anche negli altri progetti?
-   **1** · sì, in tutti. Lì niente più numeri doppi, fra chat diverse (consiglio).
-   **2** · solo qui. Negli altri progetti i doppioni possono tornare.
+❓ **DOMANDA 1 · Motore vocale sul telefono**
+📌 **Di cosa parliamo:** mi hai chiesto se mettere sul telefono del cliente un motore per capire la voce, così non consumiamo i limiti gratuiti. Si vedrebbe come un file da scaricare la prima volta che il cliente usa il microfono.
+1 · Niente motore sul telefono per ora: restano i tre motori sul server, che reggono circa 2.000 frasi al giorno *(consiglio: capiscono l'italiano meglio di tutti)* · 2 · Un motore piccolo (40-70 MB da scaricare) solo di riserva, quando i server finiscono: capisce peggio · 3 · Un motore grande (240-540 MB) sempre: …
