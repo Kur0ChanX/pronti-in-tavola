@@ -353,14 +353,14 @@ function guidaInstalla() {
    3) le notifiche: su Android anche dal browser, su iPhone solo dall'app sulla schermata Home (Apple), quindi lì il foglio si riapre dall'icona e chiede solo quelle. */
 const notifPossibili = () => 'Notification' in window && 'serviceWorker' in navigator && Notification.permission !== 'denied' && !P.avvisiCliente && !P.vuoleAvvisi && !(Dati.attivo && Dati.io.gestore);
 function serveInvito() {
-  if (P.ruolo !== 'cliente' || UI.invitoFatto || UI.foglio || serveBenvenuto() || statoLucchetto()) return false;
+  if (P.ruolo !== 'cliente' || UI.invitoFatto || UI.foglio || serveBenvenuto() || statoLucchetto() || senzaNome()) return false;   // (C97) prima il nome, poi l'app
   if (!(sulSito() || UI.invitoProva)) return false;   // nelle prove si accende a mano (UI.invitoProva): sennò coprirebbe le altre prove
   return !suHome() || notifPossibili();
 }
 function controllaInvito() {
   if (!serveInvito()) return;
   UI.invitoFatto = true;   // una volta per apertura
-  setTimeout(() => { if (!UI.foglio && P.ruolo === 'cliente') { UI.foglio = { tipo: 'installa', os: null }; render(); } }, UI.invitoProva ? 50 : 2500);
+  setTimeout(() => { if (!UI.foglio && P.ruolo === 'cliente' && !senzaNome()) { UI.foglio = { tipo: 'installa', os: null }; render(); } }, UI.invitoProva ? 50 : 2500);
 }
 function foglioInstalla() {
   const f = UI.foglio, mio = telefono() === 'ios' ? 'ios' : 'android';
