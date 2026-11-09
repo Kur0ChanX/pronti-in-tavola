@@ -1,11 +1,10 @@
-# Ultima risposta di Claude (09/11/2026 11:09 ora italiana)
+# Ultima risposta di Claude (09/11/2026 18:36 ora italiana)
 
+✅ FATTO
+- **v0.9.82 online** sul sito vero (controllato: `data.js` dice 0.9.82, `voce-clienti.js` risponde 200 col codice nuovo). Giro completo verde in locale: 73 passi + 11 impostazioni, nessun errore in pagina. Tutto su GitHub.
+- Su iPhone e iPad il microfono dei clienti ora passa subito all'ascolto preciso (registra e capisce il server); il «sì» dopo la proposta resta col tocco su Conferma, e la voce lo dice.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: è il controllo automatico che ferma il push quando due versioni o due voci hanno lo stesso numero. Ora c'è solo in Pronti in Tavola.
-1. Lo mettiamo anche negli altri progetti?
-   **1** · sì, in tutti. Lì niente più numeri doppi, fra chat diverse (consiglio).
-   **2** · solo qui. Negli altri progetti i doppioni possono tornare.
+───
+👉 DA FARE TU (sull'iPad, dall'app sulla Home)
+1. Chiudi del tutto l'app e riaprila (deve dire v0.9.82 in alto).
+2. Menù → microfono in basso a sinistra → «due teglie di lasagne …
