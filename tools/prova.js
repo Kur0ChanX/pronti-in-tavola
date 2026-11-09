@@ -1392,6 +1392,20 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.setViewportSize({ width: 412, height: 915 });
     await page.evaluate(() => { delete navigator.userAgent; delete navigator.standalone; });
   });
+  await passo('voce dei clienti: frasi storpiate da Whisper → vince quella giusta, giorni spezzati riparati (C105, Mario 09/11 «non capisce bene»)', async () => {   // autonomo: solo funzioni
+    const r = await page.evaluate(() => ({
+      corretta: scegliTrascrizione({ testo: 'Due teglie di lasagne al ragù per sabato.', corretto: true, alternative: ['Due teglie di lasagne al ragù persa a Mato.', 'Dette di lasagne al ragù per sabato.'] }),
+      senzaCorrettore: scegliTrascrizione({ testo: '2 teglie di lasagne al ragù persa a Mato', corretto: false, alternative: ['2 teglie di lasagne al ragù persa a Mato', 'Dette di lasagne al ragù per sabato.'] }),
+      spezzato: scegliTrascrizione({ testo: 'un chilo di polpette di carne per sa bato' }),
+      dopo: capisciCliente(scegliTrascrizione({ testo: 'un chilo di polpette di carne per dopo domani' })).giornoDetto,
+      salato: giornoSimile('vorrei qualcosa di salato'), si: scegliTrascrizione({ testo: 'Sì.', alternative: ['Sì.'] })
+    }));
+    if (r.corretta !== 'Due teglie di lasagne al ragù per sabato.') throw new Error('la frase del correttore non vince: ' + r.corretta);
+    if (!/^2 teglie di lasagne al ragù per sabato$/.test(r.senzaCorrettore)) throw new Error('senza correttore «persa a Mato» non torna «per sabato» con la quantità: ' + r.senzaCorrettore);
+    if (r.spezzato !== 'un chilo di polpette di carne per sabato') throw new Error('«sa bato» non riparato: ' + r.spezzato);
+    if (r.dopo !== 'dopodomani') throw new Error('«dopo domani» capito come ' + r.dopo);
+    if (r.salato !== '' || r.si !== 'Sì.') throw new Error('ritocco dei giorni a caso: ' + JSON.stringify(r));
+  });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
 })();

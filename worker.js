@@ -23,6 +23,7 @@
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
 import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta } from './gz.mjs';
+import { ascolta } from './ascolta.mjs';   // «ascolto preciso» dei clienti (C105): due Whisper + correttore col menù
 /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
 const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi', secondi: 'ricette-cat/Secondi-piatti', contorni: 'ricette-cat/Contorni', dolci: 'ricette-cat/Dolci-e-Desserts',
   lievitati: 'ricette-cat/Lievitati', unici: 'ricette-cat/Piatti-Unici', sughi: 'ricette-cat/Salse-e-Sughi', bevande: 'ricette-cat/Bevande', sardegna: 'ricerca-ricette/sardegna' };   // la sezione regionale di GZ non esiste più (404, 08/11): si usa la loro ricerca, pagina dopo pagina
@@ -104,33 +105,10 @@ const testoDi = r => { const x = typeof r === 'string' ? r : (r && (r.response ?
    (1.000 richieste e 200.000 token al giorno, senza carta, non addestra sui dati; docs lette l'08/11/2026). Stesso modello Qwen 3.8.
    La chiave è il segreto GROQ_API_KEY del Worker (lo mette il giro sito.yml dai segreti di GitHub): senza, il ponte non c'è. */
 const PONTE = ['qwen/qwen3.8-27b', 'openai/gpt-oss-120b'];
-const TETTO_ASCOLTO = 400, TETTO_ASCOLTO_CLIENTE = 40;   // ascolti al giorno: in tutto e per cliente (Whisper: ~4 neuroni a frase)
-/* «ascolto preciso» dei clienti (C105): audio (base64) → Whisper su Cloudflare, se manca o sbaglia → Whisper su Groq → testo */
-async function ascolta(env, audioB64, tipo, piatti) {
-  const prompt = `Pronti in Tavola, cucina sarda di Monica a Olbia. Piatti: ${piatti.join(', ')}. Parole: teglia da sei, teglia da otto, al chilo, mezzo chilo, etti, pezzi, sabato, domenica, culurgiones, seadas, panade, malloreddus.`.slice(0, 800);
-  const pulisci = t => String(t || '').replace(/\s+/g, ' ').trim().slice(0, 300);
-  let errore = '';
-  const cf = async () => {   // Workers AI: audio in base64 (manuale Cloudflare, letto il 09/11/2026); con webm/opus a volte non decodifica: per quello prima Groq
-    if (!env.AI) return null;
-    try { const r = await env.AI.run('@cf/openai/whisper-large-v3-turbo', { audio: audioB64, language: 'it', initial_prompt: prompt }); const t = pulisci(r && r.text); if (t) return { testo: t, motore: 'cloudflare' }; errore += ' / cloudflare vuoto'; }
-    catch (e) { errore += ' / cloudflare ' + String(e.message || e); }
-    return null;
-  };
-  const groq = async () => {
-    if (!env.GROQ_API_KEY) return null;
-    try {
-      const bytes = Uint8Array.from(atob(audioB64), ch => ch.charCodeAt(0)), est = /mp4/.test(tipo) ? 'mp4' : /aac/.test(tipo) ? 'aac' : /ogg/.test(tipo) ? 'ogg' : /wav/.test(tipo) ? 'wav' : 'webm';
-      const fd = new FormData(); fd.append('file', new Blob([bytes], { type: tipo || 'audio/webm' }), 'voce.' + est); fd.append('model', 'whisper-large-v3-turbo'); fd.append('language', 'it'); fd.append('prompt', prompt.slice(0, 600)); fd.append('temperature', '0');
-      const r = await fetch('https://api.groq.com/openai/v1/audio/transcriptions', { method: 'POST', headers: { authorization: 'Bearer ' + env.GROQ_API_KEY }, body: fd });
-      const j = await r.json().catch(() => ({}));
-      if (r.ok && j.text) return { testo: pulisci(j.text), motore: 'groq' };
-      errore += ' / groq ' + (j.error ? j.error.message : r.status);
-    } catch (e) { errore += ' / groq ' + e.message; }
-    return null;
-  };
-  for (const motore of (/webm|ogg/.test(tipo) ? [groq, cf] : [cf, groq])) { const r = await motore(); if (r) return r; }
-  return { testo: '', errore: errore || 'nessun motore' };
-}
+const TETTO_ASCOLTO = 400;   // ascolti al giorno in tutto (legato ai limiti gratuiti: Groq whisper-large-v3 ~2.800 frasi, Cloudflare coi neuroni condivisi)
+/* (C109, PT E41, Mario 09/11 «niente interruzioni per il cliente»): nessun tetto per cliente. Chi supera SEGNALA_ASCOLTO_CLIENTE
+   ascolti in un giorno NON viene fermato: finisce in `oltre` (registrato, si legge in /api/conto-ai) per la segnalazione a chi gestisce. */
+const SEGNALA_ASCOLTO_CLIENTE = 60;
 async function ponteAI(env, messaggi) {
   if (!env.GROQ_API_KEY) return null;
   for (const m of PONTE) {
@@ -592,15 +570,15 @@ export class Avvisi extends DurableObject {
     const oggi = new Date().toISOString().slice(0, 10), c0 = (await this.ctx.storage.get('asc')) || {};
     const c = c0.giorno === oggi ? c0 : { giorno: oggi, n: 0, chi: {} };
     if (c.n >= TETTO_ASCOLTO) return 'tetto';
-    if (cliente && (c.chi[cliente] || 0) >= TETTO_ASCOLTO_CLIENTE) return 'tuo';
     c.n++; if (cliente) c.chi[cliente] = (c.chi[cliente] || 0) + 1;
+    if (cliente && c.chi[cliente] === SEGNALA_ASCOLTO_CLIENTE + 1) (c.oltre = c.oltre || []).push({ cliente, quando: Date.now() });
     await this.ctx.storage.put('asc', c);
     return '';
   }
   async contoAI() {
     const oggi = new Date().toISOString().slice(0, 10), a = (await this.ctx.storage.get('ai')) || {}, b = (await this.ctx.storage.get('aic')) || {}, s = (await this.ctx.storage.get('asc')) || {};
-    return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0, ascolti: s.giorno === oggi ? s.n : 0,
-      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiACliente: TETTO_ASCOLTO_CLIENTE } };
+    return { giorno: oggi, monica: a.giorno === oggi ? a.n : 0, clienti: b.giorno === oggi ? b.n : 0, persone: b.giorno === oggi ? Object.keys(b.chi || {}).length : 0, ascolti: s.giorno === oggi ? s.n : 0, ascoltiOltre: s.giorno === oggi ? (s.oltre || []).map(x => ({ cliente: x.cliente, n: (s.chi || {})[x.cliente] || 0, quando: x.quando })) : [],
+      tetti: { monica: TETTO_AI, clienti: TETTO_AIC, aCliente: TETTO_AIC_CLIENTE, ascolti: TETTO_ASCOLTO, ascoltiSegnalaA: SEGNALA_ASCOLTO_CLIENTE } };
   }
 
   /* «ordine nuovo»: chiunque può chiederlo (il cliente non ha Google), quindi tetto al giorno e pausa */
@@ -850,7 +828,7 @@ export default {
         if (fermo) return json({ fermo, testo: fermo === 'tuo' ? 'Per oggi abbiamo parlato tanto! Riprova domani, o scrivi a Monica.' : 'Per oggi l\'aiutante ha finito le risposte: riprova domani, o scrivi a Monica.', azioni: [] });
         return json(await chiediAI(env, testo, dati, b.storia, null, true));
       }
-      if (url.pathname === '/api/ascolta') {   // «ascolto preciso» dei clienti (C105): audio → Whisper (Cloudflare, poi Groq) → testo
+      if (url.pathname === '/api/ascolta') {   // «ascolto preciso» dei clienti (C105): audio → Whisper Groq v3 + Cloudflare → correttore → { testo, alternative }
         const c = await clienteDa(req), g = c ? null : await gestoreDa(req);
         if (!c && !g) return json({ errore: 'prima Monica deve approvarti' }, 403);
         if (c && !(await aiClientiAcceso(req))) return json({ errore: 'spento' }, 403);
