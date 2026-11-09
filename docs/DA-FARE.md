@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 09/11 · 🟨 Voce 4 · 🛑 C109 limiti per persona: 1 tre livelli (consiglio: nessun blocco, avviso a chi gestisce oltre un tetto ampio, oltre un tetto altissimo l'app passa da sola al modo senza AI e avvisa, allarme quando il totale gratuito è all'80%) · 2 solo avviso, nessun tetto per persona · 3 come oggi (blocchi).
+- 09/11 · 🟨 Voce 4 · 🛑 C109 limiti per persona: va bene la proposta (`docs/lavori-in-corso/limiti-per-persona.md`: mai blocchi; avviso oltre un tetto ampio; telefono che esagera → modo senza AI; allarme all'80% del totale)? 1 sì · 2 cambia i numeri.
 - 09/11 · 🟨 Voce 5 · C105 su iPad (app dalla Home), v0.9.85 (capisce meglio: due motori + correttore col menù): chiudi e riapri l'app, Menù → microfono → «due teglie di lasagne per sabato» (parla normale): cosa scrive? Una foto. A cosa serve: vedere se ora capisce bene sul tuo iPad vero.
 - 09/11 · 🟨 Voce 5 · C108 motore vocale locale: 1) niente per ora, tre motori sul server (consiglio) · 2) piccolo come riserva · 3) grande sempre. A cosa serve: decidere cosa scaricano i clienti.
 - 09/11 · 🟢 Principale 35 · C106 iPad v0.9.83: in orizzontale apri l'app dall'icona, vai alla Home dell'iPad e rientra: la pagina resta della misura giusta? Una foto.
