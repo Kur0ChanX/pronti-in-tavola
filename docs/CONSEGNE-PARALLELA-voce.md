@@ -19,6 +19,7 @@ Voce 2 = `session_01WTjqUx7JeVdDBrvgVgjfXx` (aperta da Voce 1 09/11 17:11, chius
 
 ## Chiusura della catena (Voce 3, 09/11 ~19:20)
 - Giro completo in locale VERDE sull'ultimo commit di codice (71 passi OK, `tools/prova.js` + `tools/prova-impostazioni.js` 11 OK, «Nessun errore nella pagina»); push `57c80e9c` = origin; sito.yml pubblica v0.9.80 (controllo: `curl -s …/data.js | grep VERSIONE_APP`).
+- Secondo push `90ab5278`: `voce-clienti.js` mancava in `FILE_APP` (tools/sito.py) e nel `GUSCIO` (sw.js) → online 404 (PT E38); ora c'è. Controllo: `curl -o /dev/null -w %{http_code} https://pronti-in-tavola.pronti-in-tavola.workers.dev/voce-clienti.js` → 200.
 - Niente Voce 4 (resta meno di mezza sessione di lavoro): la zona torna alla principale (`docs/CHI-FA-COSA.md`), che chiude la voce 👁 di C105 con la prova di Mario e fa il passo 2 qui sotto. Catena 3 di 8 chiusa.
 
 ## Stato (Voce 3, 09/11 sera; controlla, non fidarti)
