@@ -638,7 +638,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await passo('sviluppatore: tocco sul numerino della versione → tutti gli aggiornamenti con data e ora (Mario 08/11)', async () => {
     // la barra sviluppatore esiste solo col server vero (Dati.attivo): qui lo si finge per il tempo del passo, poi si rimette com'era
     await page.evaluate(() => { window._prima = { attivo: Dati.attivo, gestore: Dati.io.gestore, nome: Dati.io.nomeGestore, aperto: L.aperto }; Dati.attivo = true; Dati.io.gestore = true; Dati.io.nomeGestore = 'Mario'; L.aperto = true;
-      P.ruolo = 'monica'; P.sviluppatore = true; UI.barraDev = true; UI.devCliente = false; UI.vista = 'impostazioni'; UI.foglio = null; render(); });
+      P.ruolo = 'monica'; P.sviluppatore = true; UI.barraDev = true; UI.devCliente = false; UI.vista = 'impostazioni'; UI.foglio = null; UI.richViste = (S.richieste || []).map(r => r.id); render(); });
     if (!(await page.locator('.prova.dev .dev-v').count())) throw new Error('numerino della versione non visibile nella barra sviluppatore');
     await clic('.prova.dev .dev-v');
     const quante = await page.locator('.foglio .dev-nov').count();
@@ -658,6 +658,24 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { delete PUBBLICATE[VERSIONE_APP]; P.ruolo = 'cliente'; render(); });
     if (await page.locator('.versione-mini').count()) throw new Error('la versione piccola si vede anche al cliente');
     await page.evaluate(() => { Dati.attivo = _prima.attivo; Dati.io.gestore = _prima.gestore; Dati.io.nomeGestore = _prima.nome; L.aperto = _prima.aperto; P.sviluppatore = false; UI.barraDev = false; render(); });
+  });
+  await passo('sviluppatore su iPad (C111): pulsante «Accendi» in «Solo per te, Mario», 7 tocchi che rispondono sempre, niente zoom col doppio tocco', async () => {   // autonoma
+    await page.evaluate(() => { window._prima = { attivo: Dati.attivo, gestore: Dati.io.gestore, nome: Dati.io.nomeGestore, aperto: L.aperto }; Dati.attivo = true; Dati.io.gestore = true; Dati.io.nomeGestore = 'Mario'; L.aperto = true;
+      P.ruolo = 'monica'; P.sviluppatore = false; UI.barraDev = false; UI.devCliente = false; UI.vista = 'impostazioni'; UI.foglio = null; UI.firmaTocchi = []; UI.richViste = (S.richieste || []).map(r => r.id); render(); });
+    const stile = await page.evaluate(() => { const f = getComputedStyle(document.querySelector('footer.firma')), b = getComputedStyle(document.querySelector('button')); return [f.touchAction, f.cursor, b.touchAction].join('|'); });
+    if (stile !== 'manipulation|pointer|manipulation') throw new Error('firma o pulsanti senza «touch-action: manipulation» / cursor (zoom col doppio tocco su iPad): ' + stile);
+    await clic('[data-a="dev-attiva"]');
+    if (!(await page.evaluate(() => P.sviluppatore && UI.barraDev)) || !(await page.locator('.prova.dev').count())) throw new Error('«Accendi la modalità sviluppatore» non accende la modalità o non apre la barra');
+    if (await page.locator('[data-a="dev-attiva"]').count()) throw new Error('il pulsante «Accendi» resta anche quando è già accesa');
+    const sette = async () => { await page.evaluate(() => { UI.firmaTocchi = []; }); for (let i = 0; i < 7; i++) await page.locator('footer.firma').click({ position: { x: 20, y: 10 } }); return (await page.locator('#toast').innerText().catch(() => '')).trim(); };
+    let t = await sette();
+    if (await page.evaluate(() => UI.barraDev) || !/chiusa/.test(t)) throw new Error('da sviluppatore i 7 tocchi non chiudono la barra: «' + t + '»');
+    t = await sette();
+    if (!(await page.evaluate(() => UI.barraDev)) || !/aperta/.test(t)) throw new Error('da sviluppatore i 7 tocchi non riaprono la barra: «' + t + '»');
+    await page.evaluate(() => { P.sviluppatore = false; UI.barraDev = false; Dati.io.gestore = false; Dati.io.nomeGestore = ''; P.ruolo = 'cliente'; UI.vista = 'menu'; render(); });
+    t = await sette();
+    if (!/Area riservata/.test(t) || await page.evaluate(() => P.sviluppatore)) throw new Error('entrato come cliente, i 7 tocchi non dicono di entrare da «Area riservata»: «' + t + '»');
+    await page.evaluate(() => { Dati.attivo = _prima.attivo; Dati.io.gestore = _prima.gestore; Dati.io.nomeGestore = _prima.nome; L.aperto = _prima.aperto; P.sviluppatore = false; UI.barraDev = false; UI.firmaTocchi = []; $('#toast').innerHTML = ''; render(); });
   });
   await passo('ricettario (C55): GialloZafferano dentro l\'app (finto server), preferite, porzioni, spesa, cucina guidata, ricetta mia', async () => {
     await page.evaluate(() => {

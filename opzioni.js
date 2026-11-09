@@ -70,7 +70,9 @@ const OPZIONI = [
   { k: 'aicAvviso', g: 'mario', nome: 'Aiutante dei clienti: segnalazione', tipo: 'numero', min: 10, max: 200, def: 30, unita: 'domande al giorno',
     aiuto: 'Quando un cliente supera questo numero di domande in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' },
   { k: 'aicRidotto', g: 'mario', nome: 'Aiutante dei clienti: risposte semplici', tipo: 'numero', min: 20, max: 1000, def: 100, unita: 'domande al giorno',
-    aiuto: 'Oltre questo numero (o con 10 domande in un minuto) a quel cliente risponde il telefono, senza AI: ordini, prezzi, allergie. Non viene fermato e ti arriva una segnalazione. Vale solo se è più alto della segnalazione.' }
+    aiuto: 'Oltre questo numero (o con 10 domande in un minuto) a quel cliente risponde il telefono, senza AI: ordini, prezzi, allergie. Non viene fermato e ti arriva una segnalazione. Vale solo se è più alto della segnalazione.' },
+  { k: 'ascoltoAvviso', g: 'mario', nome: 'Microfono dei clienti: segnalazione', tipo: 'numero', min: 10, max: 500, def: 40, unita: 'frasi al giorno',
+    aiuto: 'Quando un cliente supera questo numero di frasi dette al microfono in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' }
 ];
 const OPZ = Object.fromEntries(OPZIONI.map(o => [o.k, o]));
 const baseOpz = o => typeof o.def === 'function' ? o.def() : Array.isArray(o.def) ? o.def.slice() : o.def;
