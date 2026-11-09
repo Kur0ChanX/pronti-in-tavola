@@ -48,5 +48,5 @@ non parlaè corretto? poi a volte ci mette un pó specialmente pa prima volta e 
 
 guarda che bomba per android per ipad è completamente diverso...perché????
 
-## 2026-11-09 20:58 · 01WTjqUuB1p3
+## 2026-11-09 20:53 · 01WTjqUuB1p3
 Poi nel mio ipad non posso neanche aprire la schermata dev

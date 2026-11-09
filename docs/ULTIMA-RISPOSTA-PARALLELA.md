@@ -1,3 +1,12 @@
-# Ultima risposta di Claude (09/11/2026 20:26 ora italiana)
+# Ultima risposta di Claude (09/11/2026 20:53 ora italiana)
 
-Non è una promessa nuova: la voce che torna a parlare è già nella voce C110 di `docs/DA-FARE.md`, con il suo «👁 Lo vedi» (la risposta si sente, prova con un video dall'iPad).
+Ho capito: sul tuo iPad non riesci ad aprire nemmeno la schermata dev, quella con le cose solo per te.
+
+✅ **FATTO**
+- L'ho segnata in Da fare come **C111**, urgente.
+- L'ho passata alla **Principale 36**: la schermata dev è nella sua parte dell'app, non in quella del microfono. Gliel'ho già scritto, e ho avvisato anche Voce 10.
+- Questa chat è chiusa, non posso più lavorarci. Le consegne sono aggiornate e salvate su GitHub.
+
+───
+💡 **PARERE**
+Probabile causa: sull'iPad sei entrato come cliente e non col tuo Google, quindi l'app non ti riconosce come sviluppatore. Ma è solo un'**ipotesi** …
