@@ -1,20 +1,14 @@
-# Ultima risposta di Claude (09/11/2026 10:32 ora italiana)
+# Ultima risposta di Claude (09/11/2026 14:14 ora italiana)
 
-Ho capito: al posto della stellina vuoi un procione dopo il tuo nome e un cuore rosso dopo quello di Monica.
+Ho capito: C89 come consigliavo, cioè il controllo dei numeri doppi anche negli altri progetti, attraverso il kit.
 
 ───
 ✅ FATTO
-- **v0.9.72 è online.** Ora si legge **MARIO 🦝** e **MONICA ❤️** al posto di ⭐MARIO e ⭐MONICA.
-- Vale ovunque si vede il codice: Clienti, ordini, «Sei …» e la lista dei gestori.
-- Giro completo delle prove verde (64 OK), pubblicazione sul sito riuscita.
-- Cercando un ordine con «mario», gli ordini di Mario si trovano ancora.
+- Qui il controllo è già attivo: prima di ogni push ferma i numeri doppi (versione dell'app e voci C di Da fare).
+- Per gli altri progetti ho scritto le istruzioni in `docs/PER-IL-KIT.md`: quali file copiare, la riga da aggiungere alle impostazioni, e come renderlo valido per ogni progetto.
+- Nello stesso file ho messo anche C20 (la regola dei link), anche quella da portare nel kit.
+- Tolta la domanda da «Aspetta Mario». Salvato su GitHub.
 
 ───
-👉 DA FARE TU
-1. Chiudi e riapri l'app.
-2. Apri Clienti e guarda il tuo nome e quello di Monica.
-
-───
-⚠️ ATTENZIONE
-- **Aspettano te:**
-  - C89: …
+💡 PARERE
+- Il kit sta …
