@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-06 19:36 · 01QTFEqRMnzm
-Metti in coda che Powered by nell'ingresso di animazione, fallo più piccolo, è troppo grande, e sposta più sotto, sia Powered by che il mio logo,
-
 ## 2026-11-06 19:38 · 01QTFEqRMnzm
 Allora, tutte le scritte sono un po' attaccate. Lasagne, la teglia, poco cacao sopra, è tutto un po' appiccicato. Poi i rombetti che hai fatto attorno, boh, sono strani, puoi fare di meglio secondo me. A tema cucina, a tema sardo.
 E forse il loghetto, il logo che c'è nelle etichette in alto a destra, forse è un pochettino troppo nell'angolo. Forse. E fallo poco poco poco più grande. Staccalo dagli angoli e fallo poco poco più grande.
@@ -132,3 +129,6 @@ non mi piacciono come tono e pause e accenti sembrano stranieri ai altre alterna
 
 ## 2026-11-09 10:23 · 01WTjqUwCuTd
 nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me mettimi un procione nel mio nome, dopo il mio nome, nel mio utente, Monica mettili dopo il suo nome e metti un cuoricino rosso.
+
+## 2026-11-09 10:56 · 01WTjqUwCuTd
+Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
