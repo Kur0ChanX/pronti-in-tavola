@@ -1198,6 +1198,21 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.toast', { hasText: 'Per uscire' }).count())) throw new Error('nella Home manca l\'avviso «Per uscire…»');
     if (page.url() !== url) throw new Error('il primo gesto nella Home ha chiuso l\'app');
   });
+  await passo('C109 nessun cliente fermato: la segnalazione «esagera» apre le Impostazioni, elenco con nome e numeri, l\'aiutante porta alle Notifiche', async () => {
+    const r = await page.evaluate(() => {
+      P.ruolo = 'monica'; UI.foglio = null; UI.vista = 'home'; render();
+      const k = S.clienti[0];
+      const h = segnalazioniHtml([{ quando: new Date().toISOString(), cosa: 'aiutante', cliente: k.id, n: 21, soglia: 20 }]);
+      UI.vaiDopo = 'esagera'; vaiDaNotifica(); render();
+      const voce = typeof VOCI !== 'undefined' && VOCI['imp-notifiche'] ? VOCI['imp-notifiche'].parole.test('chi usa molto l\'aiutante?') : null;
+      return { h, nome: k.nome, vista: UI.vista, avviso: UI.avvisoTesto, nomeAvviso: NOMI_AVVISO.esagera, voce };
+    });
+    if (!r.h.includes(r.nome) || !/21 domande/.test(r.h) || !/soglia 20/.test(r.h)) throw new Error('elenco delle segnalazioni sbagliato: ' + r.h);
+    if (r.vista !== 'impostazioni' || !/Nessuno è stato fermato/.test(r.avviso)) throw new Error('il tocco su «esagera» non apre le Impostazioni con l\'avviso: ' + r.vista + ' · ' + r.avviso);
+    if (!r.nomeAvviso) throw new Error('manca il nome dell\'avviso «esagera» negli ultimi avvisi');
+    if (r.voce === false) throw new Error('l\'aiutante non porta alle Notifiche con «chi usa molto l\'aiutante?»');
+    await page.evaluate(() => { UI.avvisoTesto = ''; UI.vista = 'home'; render(); });
+  });
   await passo('C106 iPad in orizzontale: al rientro nell\'app lo zoom torna a 1 (regola «mai più grande di 1» per un attimo, poi quella normale)', async () => {
     const c2 = await browser.newContext({ ...devices['iPad Pro 11 landscape'], deviceScaleFactor: 1 });
     const p2 = await c2.newPage(); const errori = [];

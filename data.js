@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.84';
+const VERSIONE_APP = '0.9.85';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.85', data: '09/11/2026',
+    migliorato: ['L\'aiutante dei clienti non ferma più nessuno (prima: 10 domande al giorno a testa). Se un cliente ne fa più di 20, a chi gestisce arriva una segnalazione, che resta anche negli ultimi avvisi delle Notifiche'] },
   { v: '0.9.84', data: '09/11/2026',
     corretto: ['Il riquadro «Ti ascolto…» non lampeggia più mentre parli', 'Nell\'aiutante, su schermi bassi (iPad in orizzontale), la risposta si vede dall\'inizio senza dover scorrere in alto'] },
   { v: '0.9.83', data: '09/11/2026',
