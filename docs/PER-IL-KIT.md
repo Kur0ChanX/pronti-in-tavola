@@ -17,3 +17,9 @@ Questo progetto non può toccare il repo del kit (`add_repo` di un altro repo sp
 - Nel blocco `👉 DA FARE TU`: prima dei passi una riga «A cosa serve: …»; nelle domande è già nel «📌 Di cosa parliamo» (skill `domande`): aggiungere «a cosa serve la risposta».
 - Preferenze: `PREFERENZE-CHAT.txt` è a ~2.400 caratteri su 2.500: accorciare un'altra riga senza cambiarne il senso.
 - Imporla con un hook (consiglio): allo Stop, se l'ultimo messaggio ha «👉 DA FARE TU» senza «A cosa serve», una riga di richiamo.
+
+## C109 · Niente blocchi per persona (Mario 09/11 ~20:35: «aggiungi la regola come ti avevo già detto per tutto l'account»)
+- Cercata nel kit e nel repo del kit (09/11): non c'è. Le parole di Mario: `docs/CONSEGNE-PARALLELA-voce.md` «Ultimo messaggio di Mario»; lezione PT E41 in `docs/ERRORI.md`.
+- Testo per `REGOLE.md`, sezione «Parere e occhio critico», sotto «App indipendenti da Claude»: «**Niente blocchi per persona**: mai un limite che interrompe un cliente, un amico o un collega (sembra un'app amatoriale); un limite per persona si chiede prima a Mario. Al suo posto un tetto AMPIO che, superato, non blocca: manda a chi gestisce una segnalazione nell'app e la registra (molto oltre = c'è un problema; poco oltre = si alza il tetto).»
+- Nella skill `nuova-funzione`, fra i controlli dell'occhio critico: «limiti per persona? → niente blocchi, tetto ampio + segnalazione (regola Niente blocchi per persona)».
+- Esempio fatto qui (v0.9.85): `segnala()` in `worker.js` (registro + notifica a chi gestisce), soglia `SOGLIA_AIC_CLIENTE` 20 al posto del blocco a 10.

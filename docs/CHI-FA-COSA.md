@@ -10,5 +10,5 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟢 Principale 35 | C106 zoom iPad in orizzontale al rientro nell'app | `index.html` (meta viewport), `style.css` (non `.vc-*`), `app.js` (eventi di ritorno) | 09/11 |
+| 🟢 Principale 35 | C109 niente blocchi per cliente: aiutante dei clienti + `segnala()` nell'oggetto Avvisi di `worker.js` (UNA funzione: la usa anche l'ascolto di Voce 5, `this.segnala('ascolto', cliente, n, soglia)`) | `worker.js` (contaAIC, segnala, contoAI, TIPI_SERVER), `sw.js` (testo «esagera»), `app.js` (avvisi, «Solo per te, Mario»), `aiutante.js` (`DOVE_AI['imp-notifiche']`) | 09/11 |
 | 🟩 Voce 5 | Comando vocale dei CLIENTI potenziato (C105, Mario 09/11 ~17:00): riconoscimento (telefono + ascolto preciso sul server), capire senza rete, risposta e conferma a voce, ordine dettato | NUOVO `voce-clienti.js` · `aiutante.js` solo la zona «AIUTANTE DEI CLIENTI» (`inviaAC`, `barraAIC`, `ac-detta`) · `worker.js` solo `/api/ascolta` (nuovo) · `index.html` (script) · `style.css` solo classi `.vc-*` · `tools/prova.js` passi nuovi in fondo · `docs/CONSEGNE-PARALLELA-voce.md` | 09/11 |
