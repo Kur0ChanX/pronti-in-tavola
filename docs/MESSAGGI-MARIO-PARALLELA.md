@@ -33,3 +33,6 @@ parlami dei numeri doppi non ho capito bene
 
 ## 2026-11-09 14:15 · 01WTjqUwG7wN
 lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
+
+## 2026-11-09 17:25 · 01WTjqUx7JeV
+Continua con pensiero extra e se serve ripensa
