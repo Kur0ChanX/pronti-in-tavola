@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 11:08 ora italiana)
+# Ultimo messaggio di Mario (09/11/2026 14:15 ora italiana)
 
-parlami dei numeri doppi non ho capito bene
+lo storico è risolto vai avanti ho detto di si per i numeri doppio in un altra chat quindi vai avanti
