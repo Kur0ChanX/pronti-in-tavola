@@ -984,6 +984,37 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!fs.existsSync(img)) throw new Error('manca il file ' + path.relative(radice, img));
     if (fs.statSync(img).size >= 300 * 1024) throw new Error('immagine oltre 300 KB');
   });
+  await passo('C119 migliora con l\'AI le foto a strisce ingrandite', async () => {   // autonoma: AI finta (quella vera si prova dal sito pubblicato)
+    const r = await page.evaluate(async () => {
+      const vera = window.FotoAI, chiamate = [], aspetta = ms => new Promise(f => setTimeout(f, ms));
+      const grande = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="880" height="680"><rect width="880" height="680" fill="orange"/></svg>');
+      let auto = false, rompi = '';
+      window.FotoAI = { gia: async () => null, auto: () => auto, migliora: async (u, n, j, passo) => { chiamate.push(j); passo('✨ Miglioro la foto… (pochi secondi)'); await aspetta(150); if (rompi) throw new Error(rompi); return grande; } };
+      const svg = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80"><rect width="300" height="80" fill="gray"/></svg>');
+      const d = document.createElement('div'); d.id = 'prova-ai'; d.style.width = '330px';
+      d.innerHTML = fotoPasso({ t: 'Uno [[1]], due [[2]], tre [[3]].', foto: [svg] }) + fotoPasso({ t: 'Sola.', foto: [svg + '#a_9.jpg'] });
+      document.body.appendChild(d);
+      const out = {};
+      try {
+        d.querySelectorAll('img')[1].click();
+        const tasto = () => document.querySelector('.ric-zoom-ai');
+        out.tasto = tasto() && tasto().textContent;
+        tasto().click(); await aspetta(20); out.lavora = tasto() && tasto().textContent;
+        await aspetta(250);
+        out.fatta = !!document.querySelector('.ric-zoom img.ric-zoom-grande') && !document.querySelector('.ric-zoom-taglio') && (document.querySelector('.ric-zoom-ai-ok') || {}).textContent;
+        document.querySelector('.ric-zoom-s').click(); out.dopo = tasto() && tasto().textContent;   // la foto dopo: non ancora migliorata
+        rompi = 'manca la rete'; tasto().click(); await aspetta(250); out.errore = tasto() && tasto().textContent;
+        rompi = ''; auto = true; document.querySelector('.ric-zoom-p').click(); document.querySelector('.ric-zoom-p').click(); await aspetta(250);   // dopo il primo uso: da sola
+        out.auto = chiamate.join() + '|' + !!document.querySelector('.ric-zoom img.ric-zoom-grande');
+        document.querySelector('.ric-zoom-s').click(); document.querySelector('.ric-zoom-s').click(); document.querySelector('.ric-zoom-s').click();
+        out.singola = document.querySelector('.ric-zoom-n').textContent + '|' + !!tasto();   // foto normale: niente tasto
+        document.querySelector('.ric-zoom-x').click();
+      } finally { window.FotoAI = vera; d.remove(); }
+      return out;
+    });
+    const atteso = { tasto: '✨ Migliora con l\'AI', lavora: '✨ Miglioro la foto… (pochi secondi)', fatta: '✨ Migliorata con l\'AI', dopo: '✨ Migliora con l\'AI', errore: '✨ Non è riuscito: manca la rete. Tocca per riprovare', auto: '1,2,0|true', singola: '4 / 4|false' };
+    for (const k of Object.keys(atteso)) if (r[k] !== atteso[k]) throw new Error(k + ': ' + JSON.stringify(r[k]) + ' invece di ' + JSON.stringify(atteso[k]));
+  });
   await passo('foto a strisce delle ricette vecchie: tagliate una per numerino', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const svg = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="300" height="80"><rect width="100" height="80" fill="red"/><rect x="100" width="100" height="80" fill="lime"/><rect x="200" width="100" height="80" fill="blue"/></svg>');

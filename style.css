@@ -770,6 +770,10 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-zoom-p { left: 10px; top: 50%; transform: translateY(-50%); }
 .ric-zoom-s { right: 10px; top: 50%; transform: translateY(-50%); }
 .ric-zoom-n { position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); color: #fff; font-weight: 600; }
+/* (C119) «✨ Migliora con l'AI» sotto la foto a strisce ingrandita, e la foto grande al suo posto */
+.ric-zoom .ric-zoom-ai { bottom: 60px; left: 50%; transform: translateX(-50%); width: auto; height: auto; min-height: 48px; max-width: calc(100% - 32px); padding: 10px 20px; border-radius: 24px; background: var(--foglio); color: var(--vino); font: 700 1rem/1.3 var(--testo); box-shadow: 0 4px 16px rgba(0, 0, 0, .35); }
+.ric-zoom-ai-ok { position: absolute; bottom: 64px; left: 50%; transform: translateX(-50%); color: #fff; font-weight: 600; font-size: .95rem; white-space: nowrap; opacity: .9; }
+.ric-zoom img.ric-zoom-grande { width: 100%; height: auto; max-height: calc(100% - 140px); }
 .ric-scorri { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
 .ric-scorri .ric-carta { scroll-snap-align: start; }
 .ric-cerca input { flex: 1; min-width: 0; }

@@ -10,6 +10,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 40 | C119 «✨ Migliora con l'AI» nello zoom delle foto a strisce (v0.10.0) | NUOVO `foto-ai.js` · `media/realesr-x4v3.onnx` · `ricettario.js` zona `ric-zoom` · `worker.js` `fotoGz` · `style.css` `.ric-zoom-ai` | 10/11 |
 | 🔴 Principale 39 | chiusa alla soglia 10/11 ~02:00: v0.9.98 (C120 errori d'accesso col motivo) e v0.9.99 (C119 foto grandi prima) online; AI delle foto alla Principale 40 | — | 10/11 |
 | 🔴 Principale 38 | chiusa alla soglia 10/11 ~01:20: v0.9.94-0.9.97 (C115-C119, allergeni); C120 accesso Google alla Principale 39 | — | 10/11 |
 | 🟩 Voce 11 | Comando vocale dei CLIENTI potenziato (C105, Mario 09/11 ~17:00): riconoscimento (telefono + ascolto preciso sul server), capire senza rete, risposta e conferma a voce, ordine dettato | NUOVO `voce-clienti.js` · `aiutante.js` solo la zona «AIUTANTE DEI CLIENTI» (`inviaAC`, `barraAIC`, `ac-detta`) e `ascoltaAI` + i 2 pulsanti microfono dell'aiutante di Monica (dettatura su iPad/iPhone dalla Home, Voce 6) · `worker.js` solo `/api/ascolta` · NUOVO `ascolta.mjs` (Whisper + correttore, solo server) e `tools/prova-ascolta.mjs` · `.github/workflows/sito.yml` una riga (`'*.mjs'` nei percorsi: anche `gz.mjs` ora pubblica) · `index.html` (script) · `style.css` solo classi `.vc-*` · `tools/prova.js` passi nuovi in fondo · `docs/CONSEGNE-PARALLELA-voce.md` | 09/11 |

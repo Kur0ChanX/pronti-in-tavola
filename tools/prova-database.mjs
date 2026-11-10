@@ -257,5 +257,19 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   const c2 = await ponte.controlla(), rilette = await ponte.vecchie(50), st = await ponte.statoDb();
   prova('C83: controlla tutte le ricette, una rovinata contata e rimessa da rileggere', c2.totale === c1.totale && c2.nMale >= 1 && c2.ok + c2.nMale === c2.totale && c2.male.some(m => m.id === una.id && m.prob.includes('0 passi')) && rilette.length > 0 && st.controllo && st.controllo.quando === c2.quando);
 }
+// C119: passaggio delle foto di GZ per «✨ Migliora con l'AI»: solo foto di www.giallozafferano.it/images, mai altri siti
+{ const prima = globalThis.fetch, chieste = [];
+  globalThis.fetch = async u => { u = String(u); if (/firestore\.googleapis\.com/.test(u)) return new Response('{}'); chieste.push(u); return /\.jpg$/.test(u) ? new Response(new Uint8Array([255, 216, 255, 1, 2]), { headers: { 'content-type': 'image/jpeg' } }) : new Response('<html>', { headers: { 'content-type': 'text/html' } }); };
+  const tok = { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' };
+  const fg = async (u, h = tok) => W.default.fetch(new Request('https://x/api/foto-gz', { method: 'POST', headers: h, body: JSON.stringify({ u }) }), cfg, contesto);
+  const buona = await fg('https://www.giallozafferano.it/images/ricette/6/648/asticeok_seq3.jpg');
+  prova('C119: foto di GZ passata (200, è una foto, tenuta 30 giorni)', buona.status === 200 && buona.headers.get('content-type') === 'image/jpeg' && /max-age=2592000/.test(buona.headers.get('cache-control')) && (await buona.arrayBuffer()).byteLength === 5);
+  const no = [await fg('https://example.com/a.jpg'), await fg('https://www.giallozafferano.it/images/../ricette.html'), await fg('https://www.giallozafferano.it/ricette/x.jpg'), await fg('http://www.giallozafferano.it/images/a.jpg'), await fg('https://www.giallozafferano.it/images/a.jpg?x=1')];
+  prova('C119: altri siti, cartelle fuori da /images, http e indirizzi strani → 400', no.every(r => r.status === 400) && chieste.length === 1);
+  prova('C119: senza accesso da gestore niente foto (403)', (await fg('https://www.giallozafferano.it/images/a.jpg', {})).status === 403 && chieste.length === 1);
+  const html = await fg('https://www.giallozafferano.it/images/finta.png');
+  prova('C119: se GZ non dà una foto → 502 col motivo', html.status === 502 && /non è una foto/.test((await html.json()).errore));
+  globalThis.fetch = prima; await finisci();
+}
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);

@@ -18,3 +18,6 @@ Mario 10/11 01:56: «ia delle foto sembra ok implementala nell'app» (= scelta 1
 6. Aiutante (regola del prodotto): voce in `aiutante.js` (`VOCI`) e GUIDA in `worker.js` («foto sgranate / migliora foto» → spiega dove si tocca).
 7. Prove: `tools/prova-database.mjs` (endpoint: GZ sì, altro sito 400); `tools/prova.js` (lo zoom di una striscia mostra il tasto); dopo il push, prova VERA dal sito pubblicato (Playwright: Astice passo 3 → tasto → foto 880×680) e foto prima/dopo a Mario.
 8. Novità: versione nuova (dopo 0.9.99 → `0.10.0`), «Nuovo: ✨ Migliora con l'AI…».
+
+## Fatto (Principale 40, 10/11)
+v0.10.0: tutti i punti 1-8. Differenze dal piano: onnxruntime-web **1.18.0** (lo stesso di Paola, stessa memoria `voci-modelli`: niente doppio scarico) al posto della 1.31.1; Web Worker creato da un Blob dentro `foto-ai.js` (niente file in più); `/api/foto-gz` è **POST** con l'accesso di chi gestisce (tutte le rotte sono POST; niente passaggio aperto al mondo); modello in `media/realesr-x4v3.onnx`; `sw.js` non tiene il `.onnx` (ci pensa `foto-ai.js`). Provato nel contenitore: 880×680 in ~3,6 s la prima volta, subito la seconda.

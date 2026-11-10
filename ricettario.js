@@ -783,10 +783,28 @@ Object.assign(A, {
     const foto = x => x.n ? `<div class="ric-zoom-taglio"><img src="${esc(x.f)}" alt="" referrerpolicy="no-referrer" style="width:${x.n * 100}%;transform:translateX(-${(x.j * 100 / x.n).toFixed(4)}%)"></div>` : `<img src="${esc(x.f)}" alt="" referrerpolicy="no-referrer">`;
     const v = document.createElement('div'); v.className = 'ric-zoom'; v.setAttribute('role', 'dialog'); v.setAttribute('aria-label', 'Foto ingrandita');
     let i = i0;
-    const mostra = () => { v.innerHTML = `${foto(tutte[i])}<span class="ric-zoom-n">${i + 1} / ${tutte.length}</span>
-      <button type="button" class="ric-zoom-x" aria-label="Chiudi">✕</button>${i > 0 ? '<button type="button" class="ric-zoom-p" aria-label="Foto prima">‹</button>' : ''}${i < tutte.length - 1 ? '<button type="button" class="ric-zoom-s" aria-label="Foto dopo">›</button>' : ''}`; };
+    /* (C119, Mario 10/11 «ia delle foto… implementala») foto a strisce: «✨ Migliora con l'AI» (foto-ai.js) la ingrandisce 4 volte
+       sul telefono; dopo il primo uso lo fa da sola. Il risultato vale solo per la SUA foto (si può scorrere mentre lavora). */
+    const AIF = window.FotoAI || null, stato = new Map();   // foto → testo del tasto mentre lavora
+    const tastoAI = x => x.n && AIF ? `<button type="button" class="ric-zoom-ai">${esc(stato.get(x) || '✨ Migliora con l\'AI')}</button>` : '';
+    const scriviAI = (x, testo, tieni) => { if (tieni) stato.set(x, testo); const b = tutte[i] === x && v.querySelector('.ric-zoom-ai'); if (b) b.textContent = testo; };
+    const mettiAI = (x, u) => {
+      if (tutte[i] !== x || !v.isConnected) return;
+      const c = v.querySelector('.ric-zoom-taglio'); if (c) c.outerHTML = `<img class="ric-zoom-grande" src="${esc(u)}" alt="">`;
+      const b = v.querySelector('.ric-zoom-ai'); if (b) b.outerHTML = '<span class="ric-zoom-ai-ok">✨ Migliorata con l\'AI</span>';
+    };
+    const miglioraAI = x => {
+      if (!AIF || !x.n || stato.has(x)) return;
+      scriviAI(x, '✨ Miglioro la foto…', true);
+      AIF.migliora(x.f, x.n, x.j, testo => scriviAI(x, testo, true))
+        .then(u => { stato.delete(x); mettiAI(x, u); })
+        .catch(e => { stato.delete(x); scriviAI(x, '✨ Non è riuscito: ' + ((e && e.message) || 'errore') + '. Tocca per riprovare'); });
+    };
+    const mostra = () => { v.innerHTML = `${foto(tutte[i])}${tastoAI(tutte[i])}<span class="ric-zoom-n">${i + 1} / ${tutte.length}</span>
+      <button type="button" class="ric-zoom-x" aria-label="Chiudi">✕</button>${i > 0 ? '<button type="button" class="ric-zoom-p" aria-label="Foto prima">‹</button>' : ''}${i < tutte.length - 1 ? '<button type="button" class="ric-zoom-s" aria-label="Foto dopo">›</button>' : ''}`;
+      const x = tutte[i]; if (x.n && AIF) AIF.gia(x.f, x.n, x.j).then(u => { if (u) mettiAI(x, u); else if (AIF.auto() && tutte[i] === x && v.isConnected) miglioraAI(x); }).catch(() => null); };   // già migliorata: subito; dopo il primo uso: da sola (solo la foto che si guarda)
     let x0 = null;
-    v.addEventListener('click', e => { e.stopPropagation(); const t = e.target.className; if (t === 'ric-zoom-p') { i--; mostra(); } else if (t === 'ric-zoom-s') { i++; mostra(); } else if (t === 'ric-zoom-x' || t === 'ric-zoom') v.remove(); });
+    v.addEventListener('click', e => { e.stopPropagation(); const t = e.target.className; if (t === 'ric-zoom-p') { i--; mostra(); } else if (t === 'ric-zoom-s') { i++; mostra(); } else if (t === 'ric-zoom-ai') miglioraAI(tutte[i]); else if (t === 'ric-zoom-x' || t === 'ric-zoom') v.remove(); });
     v.addEventListener('touchstart', e => { x0 = e.touches.length === 1 ? e.touches[0].clientX : null; }, { passive: true });
     v.addEventListener('touchend', e => { if (x0 == null || (window.visualViewport && visualViewport.scale > 1.05)) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 60) { const n = i + (dx < 0 ? 1 : -1); if (n >= 0 && n < tutte.length) { i = n; mostra(); } } });
     mostra(); document.body.appendChild(v);
