@@ -1,12 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #49 (dopo la #48 `session_01WTjqUtGdNdfJFPzdQkQu77`, chiusa alla soglia 10/11 15:21; la apre la #48 con `create_session` (catena 5 di 8)).
+Sessione attuale: #50 (dopo la #49 `session_01WTjqUwbG8fmnQyBe1vh3er`, chiusa alla soglia 10/11 15:53; la apre la #49 con `create_session` (catena 6 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
 - **Cosa preme a Mario adesso (10/11 15:25):** PRIMA il kit (C129): aggiornarlo qui all'ultimo («prendilo pure») e dirgli se nel suo account è rimasto qualcosa di sospeso per aggiornare il kit (solo per capire). Poi C127 pezzi 2-3 (patch pronta) e la sua foto di Proteiche.
 
-## Stato (10/11 15:21 ora italiana)
+## Stato (10/11 15:53 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261110-01WTjqUwbG8f/claude/pronti-ramo-definitivo.
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (qui il push di file `*.js`, `*.css`, `*.html` del ramo pubblica il sito vero da solo: `sito.yml`; i soli documenti no). Scorte #44-#48: solo documenti, NON unirle se `ricettario.js` contiene `function riquadroFit`.
 - v0.10.13 ONLINE (controllata dalla #48 alle 15:20, push 8a107c3f): verifica `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.13 e `…/ricettario.js` contiene `function riquadroFit`.
 - v0.10.13 (C127 pezzo 1): zone «Tutte · 🏋️ Proteiche · ⭐ Preferite · Altre ▾» (`zoneRic`, tasto `ric-zone-altre`); momenti e fonti a scelta multipla (`f.fit`/`f.prot` = 'colazione,spuntino'; `fitSel`, `protSel`, `passaFit`, `giraSel`, `selFit`, `chiaveFit`); «⚙️ Portata, difficoltà, tempo e ordine (n)» (`piuFiltriRic`, aperto solo con `f.piu`) in tutte le zone; riquadro verde (`riquadroFit`: `letturaFit` → {t, p} con barra, «Oggi +N entrate» dal telefono, «🔍 Cerca altre», esito, «ℹ️ Le regole» = `notaFit`); scorrimento di lato ritrovato per nome (`app.js`, `righeLato`).
@@ -52,7 +53,7 @@ Prima, 10/11 15:25: «Aggiorna il kit, verifica se, fammi questa cortesia, verif
 Prima, 10/11 ~15:05: «Vai di consiglio 1 e 3» (C127).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C130; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C131; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
