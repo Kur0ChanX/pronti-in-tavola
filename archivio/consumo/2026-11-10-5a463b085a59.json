@@ -1,0 +1,39 @@
+{
+"account": "108763",
+"sessione": "5a463b085a59",
+"giorno": "2026-11-10",
+"turni": 1,
+"peso": 2380302,
+"uscita": 65385,
+"contesto_max": 259450,
+"anomalie": [
+"avvio pesante: 140k token dopo le letture d'avvio (tetto 130k)",
+"65k token scritti in un turno"
+],
+"remota": "01WTjqUuJHcT",
+"aiutanti": 0,
+"strumenti": 98,
+"motori": {
+"opus": 2380302
+},
+"blocchi": {
+"Stop 13 · There are uncommitted changes in": 1,
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 6 · Segno delle domande nel titolo": 1
+},
+"esempi_blocchi": {
+"Stop 13 · There are uncommitted changes in": [
+"17:31 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"17:31 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «È in corso la prova completa: la pubblico appena finisce (stima: 10 minuti).». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la ved"
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"17:31 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso). Riscrivi SOLO la domanda, col contesto in 1-2 righe e cosa cambia con ogni sce"
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"17:31 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟢 🍝 Principale 52 ❓10 · kit 38» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avviso di q"
+]
+}
+}
