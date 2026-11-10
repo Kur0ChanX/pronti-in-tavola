@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.14';
+const VERSIONE_APP = '0.10.15';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.15', data: '10/11/2026',
+    nuovo: ['Ricettario «🏋️ Proteiche»: «📅 Il mio giorno proteico» in alto propone colazione, pranzo, spuntino e cena con i grammi di proteine e il totale; restano uguali per tutto il giorno, «🔄» cambia un piatto (con Annulla), l\'obiettivo in grammi si cambia con «✏️ Cambia»', 'Giorno proteico: «🛒 Lista della spesa» mette gli ingredienti delle 4 ricette per 1 porzione nella tua lista (sale, pepe e acqua no; Annulla toglie tutto) e «📤 Manda» lo condivide su WhatsApp', 'Ricetta proteica: in fondo «🔁 Simili a questa», fino a 4 proteiche con la stessa fonte o per lo stesso momento', 'Aiutante: «fammi un piano proteico» ti porta al giorno proteico'] },
   { v: '0.10.14', data: '10/11/2026',
     corretto: ['Server: il motore delle ricette rileggeva tutto l\'archivio ogni 30 secondi solo per contarlo e ha quasi finito le letture gratuite di oggi di Cloudflare (email delle 15:29). Ora legge solo quello che serve; se le letture del giorno superano 2 milioni (metà del gratis) il motore riposa fino alle 01:00 e lo dice nel riquadro verde, così ordini e avvisi restano sempre al sicuro. «🔍 Cerca altre» funziona sempre'] },
   { v: '0.10.13', data: '10/11/2026',
