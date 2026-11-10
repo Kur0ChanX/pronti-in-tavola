@@ -329,13 +329,17 @@ async function rfCerca(db, q) {
     return rr.map(x => { const v = n[idRf(x.url)]; return v ? Object.assign(x, { nome: v.nome || x.nome, foto: v.foto || x.foto }) : x; });
   } catch (e) { return rr; }
 }
+/* C130 bis (PT E46): l'errore di Cloudflare in inglese diventa il perché vero, col codice per capirlo da una foto */
+const perche = e => { const m = String(e && e.message || e); return /Exceeded allowed rows (read|written)/i.test(m) ? 'Il server di Cloudflare ha finito le letture gratuite di oggi: riparte da solo stanotte (codice: ' + m + ')' : m; };
+const TROPPE = 'Il database delle ricette riposa fino alle 01:00: Cloudflare ha quasi finito le letture gratuite di oggi. Le ricette sul telefono e la ricerca su GialloZafferano funzionano.';
 async function ricettaGz(b, cfg, ctx) {
   const db = ricDb(cfg), poi = p => { if (p && ctx) ctx.waitUntil(p.catch(() => null)); };
   if (b && b.db) {   // { db: 'stato' } numeri · { db: 'pausa'|'riprendi' } ferma o riprende la crescita
     if (!db) return { errore: 'database non collegato' };
+    if (!['stato', 'pausa', 'riprendi', 'mie', 'mieScritte'].includes(b.db) && await db.troppe()) return { errore: TROPPE };   // C130 bis
     if (b.db === 'pausa' || b.db === 'riprendi') await db.metti1('pausa', b.db === 'pausa' ? '1' : '');
     if (b.db === 'mie') return { scelte: await db.scelte() };
-    if (b.db === 'cerca') { const prima = (await db.statoDb()).ricette; await motoreRicette(cfg, true); const d = await db.statoDb(); return { db: d, nuove: d.ricette - prima }; }   // 🔄 «Cerca adesso»
+    if (b.db === 'cerca') { const prima = (await db.statoDb(true)).ricette; await motoreRicette(cfg, true); const d = await db.statoDb(true); return { db: d, nuove: d.ricette - prima }; }   // 🔄 «Cerca adesso»
     if (b.db === 'aggiungi') {   // ➕ con l'ok di chi gestisce: nel ricettario per tutti i telefoni, e la ricetta intera salvata per sempre
       if (!(await db.aggiungi(b.r))) return { errore: 'ricetta non valida' };
       const u = urlDaId(b.r.id);
@@ -403,12 +407,14 @@ async function ricettaGz(b, cfg, ctx) {
   }
   if (b && b.cat === 'db') {   // sfoglia o cerca nel database, 30 per volta («Carica altre» = pagina 'db:<da>')
     if (!db) return { errore: 'database non collegato' };
+    if (await db.troppe()) return { errore: TROPPE };   // C130 bis
     const da = typeof b.pagina === 'string' && /^db:\d{1,6}$/.test(b.pagina) ? +b.pagina.slice(3) : 0;
     const q = typeof b.q === 'string' ? b.q : '', ricette = await db.elenco(q, da, 31);
     return { ricette: ricette.slice(0, 30), prossima: ricette.length > 30 ? 'db:' + (da + 30) : '' };
   }
   if (b && b.cat === 'nuove') {   // 🔎 il motore propone (dall'archivio che cresce da solo), tu scegli
     if (!db) return { errore: 'database non collegato' };
+    if (await db.troppe()) return { errore: TROPPE };   // C130 bis
     const da = typeof b.pagina === 'string' && /^nuove:\d{1,6}$/.test(b.pagina) ? +b.pagina.slice(6) : 0;
     const ricette = await db.proposte(Array.isArray(b.fuori) ? b.fuori.slice(0, 500) : [], da);
     return { ricette: ricette.slice(0, 30), prossima: ricette.length > 30 ? 'nuove:' + (da + 30) : '' };
@@ -470,6 +476,10 @@ const NUTR_TURBO = 10, AUTO_OBIETTIVO = 200, AUTO_PAUSA = 3600000, AUTO_FERMO = 
 /* C130 (email di Cloudflare 10/11 15:29: «90% del limite giornaliero di 5.000.000 rows_read», per TUTTO l'account: avvisi e app compresi):
    oltre questo numero di righe lette in un giorno (UTC, come Cloudflare) il lavoro di fondo del ricettario riposa fino a domani */
 const LETTURE_FONDO = 2000000;
+/* C130 bis (blocco di Cloudflare del 10/11 alle 15:35, PT E53): oltre LETTURE_TETTO anche le ricerche chieste dalle persone nel database
+   riposano fino alle 01:00 (restano le ricette sul telefono e quelle lette dal sito): il resto (avvisi degli ordini) ha sempre la sua parte.
+   I conteggi che leggono tutte le righe (pagina Database, riquadro verde) si rifanno al massimo ogni CONTI_MS, quello della coda ogni CODA_MS */
+const LETTURE_TETTO = 3500000, CONTI_MS = 1800000, CODA_MS = 900000;
 const RICETTE_GIRO = 2, TURBO_GIRO = 5, TURBO_PAUSA = 30000, TURBO_SVEGLIE = 400, TURBO_VUOTE = 20, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
 /* ricetta completa = nome, almeno 3 ingredienti, almeno 2 passi e una foto (Mario 08/11 «con cura») */
 const ricettaCompleta = r => !!(r && r.nome && Array.isArray(r.ingredienti) && r.ingredienti.length >= 3 && Array.isArray(r.passi) && r.passi.length >= 2 && r.foto);
@@ -827,7 +837,8 @@ export class Ricettario extends DurableObject {
   constructor(ctx, cfg) {
     super(ctx, cfg);
     const vero = this.sqlVero = ctx.storage.sql;   // C130: ogni lettura contata (righe lette del giorno, vedi LETTURE_FONDO)
-    this.sql = { exec: (q, ...a) => { this.contaLetture(); const c = vero.exec(q, ...a); this._cur = c; return c; } };
+    this.sql = { exec: (q, ...a) => { this.contaLetture(); if (/^\s*INSERT (?:OR \w+ )?INTO coda\b/i.test(q)) this._codaNuova = true; const c = vero.exec(q, ...a); this._cur = c; return c; } };
+    this.contiMs = CONTI_MS; this.codaMs = CODA_MS;   // C130 bis (le prove li mettono a 0: numeri sempre freschi)
     ['CREATE TABLE IF NOT EXISTS ricette (id TEXT PRIMARY KEY, url TEXT, nome TEXT, categoria TEXT, foto TEXT, descr TEXT, cerca TEXT, json TEXT, creata INTEGER, aggiornata INTEGER)',
       'CREATE INDEX IF NOT EXISTS ricette_creata ON ricette (creata)',
       'CREATE INDEX IF NOT EXISTS ricette_url ON ricette (url)',
@@ -846,6 +857,7 @@ export class Ricettario extends DurableObject {
     // C130: indici per non rileggere tutto l'archivio a ogni giro (valori da leggere, ricette da rileggere)
     this.sql.exec('CREATE INDEX IF NOT EXISTS ricette_nutr ON ricette (nutr, nprove, creata DESC)');
     this.sql.exec("CREATE INDEX IF NOT EXISTS ricette_v ON ricette (IFNULL(json_extract(json, '$.v'), 0))");
+    this.sql.exec('CREATE INDEX IF NOT EXISTS coda_ordine ON coda (tentativi, aggiunta)');   // C130 bis: prendere dalla coda senza leggerla tutta
     /* (C119) ricette vecchie di GZ: foto dei passi a strisce piccole (ogni foto 220×170, si sgranano); una volta sola per quelle già salvate */
     if (!this.leggi1('strisceOk')) {
       this.sql.exec("UPDATE ricette SET strisce = CASE WHEN instr(json, '_strip_') > 0 OR lower(json) GLOB '*seq[0-9]*' THEN 1 ELSE 0 END");
@@ -917,7 +929,9 @@ export class Ricettario extends DurableObject {
   prendi(n) {
     this.sql.exec("INSERT OR IGNORE INTO scartate (url, quando) SELECT url, ? FROM coda WHERE tentativi >= 3 AND url LIKE 'https://www.ricettefit.it/%'", Date.now());   // C124: RicetteFit illeggibile 3 volte: mai più riprovata
     this.sql.exec('DELETE FROM coda WHERE tentativi >= 3');
-    const tt = this.sql.exec("SELECT url FROM coda ORDER BY (url LIKE 'https://www.ricettefit.it/%') DESC, tentativi, aggiunta LIMIT ?", n).toArray().map(x => x.url);   // RicetteFit (una alla volta) per prima
+    // C130 bis: prima RicetteFit (intervallo dell'indirizzo, sull'indice), poi le altre in ordine (indice coda_ordine): niente lettura di tutta la coda
+    const rf = this.sql.exec("SELECT url FROM coda WHERE url >= 'https://www.ricettefit.it/' AND url < 'https://www.ricettefit.it0' ORDER BY tentativi, aggiunta LIMIT ?", n).toArray().map(x => x.url);
+    const tt = rf.length >= n ? rf : rf.concat(this.sql.exec('SELECT url FROM coda ORDER BY tentativi, aggiunta LIMIT ?', n + rf.length).toArray().map(x => x.url).filter(u => !rf.includes(u)).slice(0, n - rf.length));   // RicetteFit (una alla volta) per prima
     tt.forEach(u => this.sql.exec('UPDATE coda SET tentativi = tentativi + 1 WHERE url = ?', u));
     return tt;
   }
@@ -1111,29 +1125,55 @@ export class Ricettario extends DurableObject {
     let gia = 0; if (!(s && s.g === g) && g === '2026-11-10') try { gia = (this.sqlVero.exec('SELECT COUNT(*) AS n FROM ricette').toArray()[0] || {}).n > 200 ? 4600000 : 0; } catch (e) { /* archivio nuovo */ }
     return (this._lg = s && s.g === g ? s : { g, n: gia });
   }
-  salvaLetture() { this.contaLetture(); const l = this.giornoLetture(); if (l.salvate === l.n) return; l.salvate = l.n; this.sqlVero.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', 'letture', JSON.stringify({ g: l.g, n: l.n })); }
-  freno() { this.salvaLetture(); return this._lg.n > LETTURE_FONDO; }
+  salvaLetture() { this.contaLetture(); const l = this.giornoLetture(); if (l.salvate === l.n) return; l.salvate = l.n; this.sqlVero.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', 'letture', JSON.stringify({ g: l.g, n: l.n, avvisato: l.avvisato || 0 })); }
+  freno() {
+    this.salvaLetture(); const l = this._lg, su = l.n > LETTURE_FONDO;
+    if (su && !l.avvisato) {   // C130 bis: la prima volta nel giorno, un avviso sul telefono di Mario (solo a lui)
+      l.avvisato = 1; this.sqlVero.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', 'letture', JSON.stringify({ g: l.g, n: l.n, avvisato: 1 }));
+      try { const av = this.env && this.env.AVVISI; if (av) Promise.resolve(av.get(av.idFromName('cucina')).segnala('letture', '', l.n, LETTURE_FONDO)).catch(() => null); } catch (e) { /* l'avviso non ferma il freno */ }
+    }
+    return su;
+  }
+  troppe() { this.salvaLetture(); return this._lg.n > LETTURE_TETTO; }   // C130 bis: anche le ricerche delle persone riposano
+  contaCoda() {
+    const ora = Date.now(); let c = null;
+    if (!this._codaNuova) try { c = JSON.parse(this.leggi1('contaCoda') || 'null'); } catch (e) { c = null; }
+    if (c && ora - c.t < this.codaMs) return c;
+    const x = this.sql.exec("SELECT COUNT(*) AS n, SUM(url LIKE 'https://www.ricettefit.it/%') AS rf FROM coda").toArray()[0] || {};
+    c = { t: ora, n: x.n || 0, rf: x.rf || 0 }; this._codaNuova = false; this.metti1('contaCoda', JSON.stringify(c)); return c;
+  }
+  /* C130 bis: i conteggi che leggono tutte le righe, salvati (fresco = chiesto da un tasto, es. «Cerca adesso») */
+  contiDb(fresco) {
+    const ora = Date.now(); let c = null;
+    if (!fresco) try { c = JSON.parse(this.leggi1('contiDb') || 'null'); } catch (e) { c = null; }
+    if (c && ora - c.t < this.contiMs) return c;
+    const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {};
+    c = { t: ora, v: uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci'),
+      r: uno("SELECT COUNT(*) AS n, SUM(nutr = 1) AS cv, SUM(nutr IS NULL) AS sv, SUM(nutr IS NULL AND url != '') AS dl, SUM(id LIKE 'rf:%') AS rf, SUM(creata > ?) AS oggi FROM ricette", ora - 86400000),
+      sc: uno('SELECT COUNT(*) AS n FROM scelte').n || 0, scart: uno("SELECT COUNT(*) AS n, SUM(url LIKE 'https://www.ricettefit.it/%') AS rf FROM scartate"),
+      mie: uno('SELECT COUNT(*) AS n FROM mie WHERE tolta = 0').n || 0 };
+    this.metti1('contiDb', JSON.stringify(c)); return c;
+  }
   /* C130: lo stato che serve al motore, al carico veloce e al cron, SENZA contare le ricette (prima statoDb a ogni sveglia ogni 30 s:
      5-6 letture di tutto l'archivio ogni volta) */
   statoMotore() {
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
-    const coda = uno("SELECT COUNT(*) AS n, SUM(url LIKE 'https://www.ricettefit.it/%') AS rf FROM coda");
+    const coda = this.contaCoda();   // C130 bis: contata al massimo ogni CODA_MS (o quando entra qualcosa di nuovo)
     return { pausa: !!this.leggi1('pausa'), freno: this.freno(), turbo: this.turboStato(), controllo: j('controllo'), coda: coda.n || 0, daLeggere: this.daLeggere(),
       paroleFit: this.paroleFit(), fitI: Number(this.leggi1('fitI')) || 0, paginaFit: this.leggi1('paginaFit') || '',
       rf: { inCoda: coda.rf || 0, i: Number(this.leggi1('rfI')) || 0, tot: Number(this.leggi1('rfTot')) || 0, fine: this.leggi1('rfFine') || '', spento: !!this.leggi1('rfSpento') },
       fonte: Number(this.leggi1('fonte')) || 0, paginaSarda: this.leggi1('paginaSarda') || '', pagina: this.leggi1('pagina'), pagine: Number(this.leggi1('pagine')) || 0 };
   }   // valori che il lettore può ancora leggere
-  statoDb() {
+  statoDb(fresco) {
     this.riempiScelte();
-    const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, v = uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci');
+    const k = this.contiDb(fresco), v = k.v;
     const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
     // C130: UNA lettura per tabella (prima 5 di tutte le ricette): totale, valori, da leggere, RicetteFit, di oggi
-    const r = uno("SELECT COUNT(*) AS n, SUM(nutr = 1) AS cv, SUM(nutr IS NULL) AS sv, SUM(nutr IS NULL AND url != '') AS dl, SUM(id LIKE 'rf:%') AS rf, SUM(creata > ?) AS oggi FROM ricette", Date.now() - 86400000);
-    const sc = uno('SELECT COUNT(*) AS n FROM scelte').n, scart = uno("SELECT COUNT(*) AS n, SUM(url LIKE 'https://www.ricettefit.it/%') AS rf FROM scartate");
+    const r = k.r, sc = k.sc, scart = k.scart;
     const m = this.statoMotore(), l = this.giornoLetture();
     return { scelte: sc, nelRicettario: sc, scartate: scart.n || 0,
-      turbo: m.turbo, controllo: m.controllo, mieServer: uno('SELECT COUNT(*) AS n FROM mie WHERE tolta = 0').n, ricette: r.n || 0, coda: m.coda, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
-      oggi: r.oggi || 0, pausa: m.pausa, letture: { oggi: l.n, tetto: LETTURE_FONDO, freno: m.freno },   // C130
+      turbo: m.turbo, controllo: m.controllo, mieServer: k.mie, contati: k.t, ricette: r.n || 0, coda: m.coda, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
+      oggi: r.oggi || 0, pausa: m.pausa, letture: { oggi: l.n, tetto: LETTURE_FONDO, freno: m.freno, tettoPersone: LETTURE_TETTO },   // C130
       conValori: r.cv || 0, senzaValori: r.sv || 0, daLeggere: r.dl || 0,   // C124
       paroleFit: m.paroleFit, fitI: m.fitI, paginaFit: m.paginaFit,
       rf: Object.assign({}, m.rf, { lette: r.rf || 0, scartate: scart.rf || 0 }),   // C124 passo 8
@@ -1174,7 +1214,7 @@ export default {
         if (!testo) return json({ errore: 'frase vuota' }, 400);
         if (dati.length > 40000) return json({ errore: 'dati troppo grandi' }, 413);
         if (!env.AI && !env.GROQ_API_KEY) return json({ errore: 'AI non collegata' }, 503);
-        const fermo = await av.contaAIC(c, limitiAIC(f));
+        const fermo = await Promise.resolve(av.contaAIC(c, limitiAIC(f))).catch(() => null);   // C130 bis: contatore guasto = si risponde lo stesso
         if (fermo) return json({ fermo, testo: RISPOSTA_RIDOTTA, azioni: [] });   // (C109) mai «hai finito»: il telefono risponde da solo
         return json(await chiediAI(env, testo, dati, b.storia, null, true));
       }
@@ -1186,7 +1226,7 @@ export default {
         const b = await req.json().catch(() => null), audio = b && typeof b.audio === 'string' ? b.audio : '';
         if (!audio) return json({ errore: 'audio vuoto' }, 400);
         if (audio.length > 1700000) return json({ errore: 'audio troppo lungo' }, 413);
-        const modo = await av.contaAscolto(c, numeroApp(f, 'ascoltoAvviso', 10, 500, TETTO_ASCOLTO_CLIENTE));   // (C108b) mai fermo
+        const modo = await Promise.resolve(av.contaAscolto(c, numeroApp(f, 'ascoltoAvviso', 10, 500, TETTO_ASCOLTO_CLIENTE))).catch(() => '');   // (C108b) mai fermo
         const piatti = Array.isArray(b.piatti) ? b.piatti.filter(x => typeof x === 'string').slice(0, 60).map(x => x.slice(0, 40)) : [];
         return json(await ascolta(env, audio, String(b.tipo || ''), piatti, undefined, { cliente: !!c || (!!g && b.comeCliente === true), ridotto: modo === 'ridotto' }));   // (C108) chi gestisce che «guarda come cliente» prova la strada vera dei clienti (Deepgram)
       }
@@ -1194,7 +1234,7 @@ export default {
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
       if (url.pathname === '/api/voce') { const b = await req.json().catch(() => null); return await voce(b, env, ctx).catch(e => json({ errore: String(e.message || e) }, 502)); }
       if (url.pathname === '/api/foto-gz') { const b = await req.json().catch(() => null); return await fotoGz(b && b.u, ctx); }
-      if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b, env, ctx).catch(e => ({ errore: String(e.message || e) })); return json(r, r.errore ? 502 : 200); }
+      if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b, env, ctx).catch(e => ({ errore: perche(e) })); return json(r, r.errore ? 502 : 200); }
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/prova-ai') return json(await provaAI(env));
       if (url.pathname === '/api/visto-qui') return json(await av.vistoQui());
@@ -1215,14 +1255,14 @@ export default {
         if (!testo && !foto) return json({ errore: 'frase vuota' }, 400);
         if (dati.length > 60000 || (foto && foto.length > 900000)) return json({ errore: 'dati troppo grandi' }, 413);
         if (!env.AI) return json({ errore: 'AI non collegata' }, 503);
-        if (!(await av.contaAI())) return json({ fermo: 'tetto', testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] });
+        if (!(await Promise.resolve(av.contaAI()).catch(() => true))) return json({ fermo: 'tetto', testo: 'Per oggi ho finito le risposte gratuite: riprova domani.', azioni: [] });
         return json(await chiediAI(env, testo || 'Guarda la foto.', dati, b.storia, foto));
       }
       if (url.pathname === '/api/agenda') return (await av.agenda(await req.json().catch(() => null))) ? json({ ok: true }) : json({ errore: 'agenda non valida' }, 400);
       if (url.pathname === '/api/originali') return await originali(req, env);
       return json({ errore: 'non trovato' }, 404);
     } catch (e) {
-      return json({ errore: String(e && e.message || e) }, 500);
+      return json({ errore: perche(e) }, 500);
     }
   },
   /* ogni 10 minuti: il motore del database delle ricette · ogni sera: promemoria per domani */

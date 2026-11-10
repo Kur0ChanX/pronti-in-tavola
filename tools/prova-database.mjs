@@ -22,10 +22,22 @@ const W = await import(pathToFileURL(join(cartella, 'worker.mjs')).href);
 
 /* SQLite come quello di Cloudflare: exec(q, ...valori) → { toArray() } */
 function sqlFinto() {
-  const d = new DatabaseSync(':memory:');
-  return { exec(q, ...a) { a = a.map(x => x instanceof ArrayBuffer ? new Uint8Array(x) : x); const st = d.prepare(q); const righe = /^\s*SELECT/i.test(q) ? st.all(...a) : (st.run(...a), []); return { toArray: () => righe.map(r => ({ ...r })) }; }, get databaseSize() { return 4096; } };
+  const d = new DatabaseSync(':memory:'), tot = t => { try { return d.prepare(`SELECT COUNT(*) AS n FROM ${t}`).get().n; } catch (e) { return 0; } };
+  /* C130 bis: righe lette stimate come «rows_read» di Cloudflare: SCAN di una tabella = tutte le sue righe (con LIMIT su un indice e
+     senza WHERE: solo quelle date), SEARCH = le righe trovate (almeno 1) */
+  const stima = (q, a, righe) => {
+    if (!/^\s*(SELECT|UPDATE|DELETE|INSERT\b[^;]*\bSELECT)\b/i.test(q)) return 0;   // anche UPDATE, DELETE e INSERT … SELECT leggono righe
+    let n = 0;
+    for (const { detail: p } of d.prepare('EXPLAIN QUERY PLAN ' + q).all(...a)) {
+      const m = /^(SCAN|SEARCH) (\w+)/.exec(p); if (!m) continue;
+      n += m[1] === 'SEARCH' ? Math.max(1, righe.length) : / USING (?:COVERING )?INDEX /.test(p) && /\bLIMIT\b/i.test(q) && !/\bWHERE\b/i.test(q) ? righe.length : tot(m[2]);
+    }
+    return n;
+  };
+  return { exec(q, ...a) { a = a.map(x => x instanceof ArrayBuffer ? new Uint8Array(x) : x); const st = d.prepare(q); const righe = /^\s*SELECT/i.test(q) ? st.all(...a) : (st.run(...a), []); return { toArray: () => righe.map(r => ({ ...r })), rowsRead: stima(q, a, righe) }; }, get databaseSize() { return 4096; } };
 }
 const oggetto = new W.Ricettario({ storage: { sql: sqlFinto() } }, {});
+oggetto.contiMs = 0; oggetto.codaMs = 0;   // C130 bis: nelle prove i numeri sempre freschi (la giornata intera in fondo usa quelli veri)
 /* come la chiamata vera fra Worker e oggetto: risposte asincrone */
 const ponte = new Proxy({}, { get: (_, k) => (...a) => Promise.resolve().then(() => oggetto[k](...a)) });
 const contesto = { attese: [], waitUntil(p) { this.attese.push(p); } };
@@ -594,6 +606,36 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   prova('C130 il contatore resta salvato (riparte dallo stesso numero dopo un riavvio)', salvato && salvato.g === g && salvato.n >= 2000001);
   oggetto.metti1('letture', JSON.stringify({ g: '2000-01-01', n: 9e9 })); oggetto._cur = null; oggetto._lg = { g: '2000-01-01', n: 9e9 };   // come un oggetto rimasto acceso da ieri
   const fr = await ponte.freno(); prova(`C130 giorno nuovo = contatore da zero, niente freno (${fr} ${JSON.stringify(oggetto._lg)})`, fr === false && oggetto._lg.g === g && oggetto._lg.n < 1000);
+}
+/* C130 bis (blocco di Cloudflare del 10/11 alle 15:35, PT E53): una GIORNATA INTERA con un archivio grande (3.000 ricette, 2.000 in coda,
+   2.000 scartate, 500 voci): 144 giri del cron, 400 sveglie del carico veloce, il riquadro verde aperto TUTTO il giorno (una domanda al minuto),
+   48 riconteggi, 100 ricerche e 20 «nuove» nel database (una famiglia; oltre, il tetto delle persone a 3,5 milioni). Deve restare sotto 1 milione di righe lette (il gratis di Cloudflare è 5). */
+{
+  const sim = new W.Ricettario({ storage: { sql: sqlFinto(), setAlarm: async () => null, deleteAlarm: async () => null, getAlarm: async () => null } }, {});
+  const ora = Date.now(), v = sim.sqlVero, g = new Date().toISOString().slice(0, 10);
+  for (let i = 0; i < 3000; i++) v.exec('INSERT INTO ricette (id, url, nome, categoria, foto, descr, cerca, json, creata, aggiornata) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 'gz:R' + i, 'https://ricette.giallozafferano.it/R' + i + '.html', 'Ricetta ' + i, 'Primi piatti', 'f.jpg', '', 'ricetta ' + i + (i % 7 ? ' pasta' : ' pollo'), '{}', ora - i * 60000, ora);
+  v.exec('UPDATE ricette SET nutr = 1');
+  for (let i = 0; i < 2000; i++) v.exec('INSERT INTO coda (url, aggiunta) VALUES (?, ?)', 'https://ricette.giallozafferano.it/Coda-' + i + '.html', ora);
+  for (let i = 0; i < 2000; i++) v.exec('INSERT INTO scartate (url, quando) VALUES (?, ?)', 'https://ricette.giallozafferano.it/Via-' + i + '.html', ora);
+  for (let i = 0; i < 500; i++) v.exec('INSERT INTO voci (k, mp3, byte, creata) VALUES (?, ?, ?, ?)', 'v' + i, new Uint8Array(4), 4, ora);
+  v.exec("INSERT INTO stato (k, v) VALUES ('scelteRiempite', '1')");
+  sim._lg = { g, n: 0 }; sim._cur = null;
+  const ponteSim = new Proxy({}, { get: (_, k) => (...a) => Promise.resolve().then(() => sim[k](...a)) });
+  const cfgSim = { RICETTARIO: { idFromName: () => 'x', get: () => ponteSim }, AVVISI: { idFromName: () => 'c', get: () => ({}) } };
+  const media = async (volte, f) => { sim.salvaLetture(); const a = sim._lg.n; for (let i = 0; i < volte; i++) await f(); sim.salvaLetture(); return Math.round((sim._lg.n - a) / volte); };
+  const primo = await media(1, () => sim.statoDb());   // il primo conteggio (poi salvato)
+  const stato = await media(60, () => sim.statoDb());
+  const giro = async () => { await W.default.scheduled({ cron: '*/10 * * * *' }, cfgSim, contesto); await finisci(); };
+  const controllo = await media(2, giro) * 2;   // i primi giri fanno anche il controllo di tutte le ricette (una volta al giorno)
+  const cron = await media(6, giro);
+  const sveglia = await media(20, async () => { sim.metti1('turbo', JSON.stringify({ attivo: true, auto: true, obiettivo: 200, fatte: 0, scartate: 0, sveglie: 0, vuote: 0, da: Date.now(), ora: Date.now() })); await sim.alarm(); });
+  const cerca = await media(20, () => sim.elenco('pollo', 0)), nuove = await media(5, () => sim.proposte([], 0));
+  const giorno = controllo + 144 * cron + 400 * sveglia + 1440 * stato + 48 * primo + 100 * cerca + 20 * nuove;
+  console.log(`MISURA C130 giornata intera: ${giorno} righe lette (controllo ${controllo}, cron ${cron}, sveglia ${sveglia}, riquadro ${stato}, riconteggio ${primo}, ricerca ${cerca}, nuove ${nuove})`);
+  prova(`C130 giornata intera sotto 1 milione di righe lette: ${giorno} (controllo ${controllo}, cron ${cron}, sveglia ${sveglia}, riquadro ${stato}, riconteggio ${primo}, ricerca ${cerca}, nuove ${nuove})`, giorno < 1000000 && stato < 100);
+  sim._lg = { g, n: 3500001 };
+  const fermo = await W.default.fetch(new Request('https://x/api/gz', { method: 'POST', headers: { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' }, body: JSON.stringify({ cat: 'db', q: 'pollo' }) }), cfgSim, contesto).then(x => x.json()).catch(e => ({ e: String(e) }));
+  prova('C130 oltre il tetto delle persone il database riposa e lo dice (' + JSON.stringify(fermo).slice(0, 80) + ')', /riposa fino alle 01:00/.test(fermo.errore || ''));
 }
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);
