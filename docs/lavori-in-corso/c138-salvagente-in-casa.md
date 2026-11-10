@@ -1,6 +1,6 @@
 # C138 · Salvagente in casa (i PC di Mario come riserva di Cloudflare e Firebase)
 
-Stato (Salvagente 1, 10/11 ~19:20): ricerca e proposta fatte, **niente codice**. Aspetta la scelta di Mario (riga 🛑 in «## 0. Aspetta Mario» di `docs/DA-FARE.md`). Dopo la scelta: specifica qui sotto e piano a pezzi (skill `fable-opus`).
+Stato (Salvagente 1, 10/11 18:43): ricerca e proposta fatte, **niente codice**. Aspetta la scelta di Mario (riga 🛑 in «## 0. Aspetta Mario» di `docs/DA-FARE.md`). Dopo la scelta: specifica qui sotto e piano a pezzi (skill `fable-opus`).
 
 ## Parole di Mario (10/11 18:30, intere)
 > avvia plane mode pensiero profondo brain storming
@@ -60,3 +60,13 @@ Riscrivere `dati.js`, rifare la copia senza rete, e casa diventa il punto unico 
 - Senza Claude: accendere, spegnere e vedere i lavori dal telefono.
 - Sicurezza: utente Windows a parte senza poteri di amministratore (meglio un PC solo per questo), aggiornamenti automatici, UPS con spegnimento ordinato e riaccensione da sola.
 - Tailscale gratis è «solo uso non commerciale»: per un'app che vende è un rischio sui termini (detto una volta).
+
+## Domanda fatta a Mario (Salvagente 1, 10/11 ~18:45) · 🛑, aspetta la risposta
+Di cosa parliamo: usare il suo PC di casa come aiuto per l'app di Monica, per non restare fermi quando finiscono i limiti gratis; nell'app l'aspetto non cambia, cambia chi fa i lavori dietro.
+1 · Officina: il PC fa i lavori pesanti, avvisa dei consumi e tiene la copia dei dati. Per Monica e i clienti non cambia niente.
+2 · Officina più gemello silenzioso: in più, a Cloudflare fermo, Monica riceve lo stesso gli avvisi degli ordini.
+3 · Anche il server gemello: a Cloudflare fermo l'app continua intera; serve un dominio (circa 11 € l'anno) o il tunnel gratis coi suoi limiti.
+4 · Niente per ora: resta la corsia d'emergenza della Principale.
+Consiglio dato: 1; dopo due settimane di numeri della sentinella si decide la 2; la 3 solo come progetto da appassionato.
+Detto anche: sul motore di GitHub in casa (gratis oggi, solo repository privati, meglio in WSL2, fa anche da orologio dei lavori); 5 regole per il PC (niente porte sul router, utente a parte senza poteri di amministratore, chiavi coi permessi minimi, aggiornamenti automatici, UPS con spegnimento ordinato e riaccensione dal BIOS).
+
