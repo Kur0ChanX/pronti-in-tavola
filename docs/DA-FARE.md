@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 10/11 · 🟢 Principale 40 · C122 Preferenze v37 (testo nel messaggio, anche in `docs/PREFERENZE-PROPOSTA-v37.txt`): incollale in claude.ai → Impostazioni → Preferenze; poi scegli: 1 apro io la sessione del kit · 2 la apri tu · 3 dopo. A cosa serve: le 5 regole nate qui valgono in tutte le chat e in tutti i progetti.
 - 10/11 · 🟢 Principale 40 · C119 v0.10.0: chiudi e riapri l'app, Ricettario → Astice alla Catalana → tocca la foto del passo 3 → «✨ Migliora con l'AI» (la prima volta scarica ~16 MB). Una foto del risultato. A cosa serve: vedere che l'AI funziona sul tuo telefono vero (io l'ho provata solo nel browser del computer).
 - 09/11 · 🟡 Principale 38 · C118 e C115 v0.9.95: chiudi e riapri l'app, Ricettario → Astice alla Catalana → passi 3 e 4: 3 foto separate e numerate? Poi «guarda come cliente»: dopo il logo il vapore. Una foto. A cosa serve: chiudere le strisce unite e il vapore dei clienti.
 - 09/11 · 🟢 Principale 37 · C113 iPhone v0.9.92: un invito NUOVO a un iPhone → nome → Monica dice sì → l'amico mette l'app sulla Home e la apre dall'icona. Monica riceve una seconda richiesta? Una foto. A cosa serve: sapere se il «sì due volte» è risolto o se togliamo l'approvazione.

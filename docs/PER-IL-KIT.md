@@ -2,6 +2,8 @@
 
 Questo progetto non può toccare il repo del kit (`add_repo` di un altro repo spegne gli hook). Una sessione del kit (repo `RVC-Operation-by-YNOY-CORP/RVC`, `docs/kit-progetto`) legge qui e porta le voci nel kit; finita una voce, scrive qui «portata in kit X.Y».
 
+**Preferenze v37 pronte** (Principale 40, 10/11): `docs/PREFERENZE-PROPOSTA-v37.txt` = v36 di claude.ai + C103 («A cosa serve»), C20 (link), C109 (niente blocchi per persona), C122 (impara dagli errori); 2.482 caratteri. La sessione del kit la copia in `docs/kit-progetto/PREFERENZE-CHAT.txt` e alza la versione.
+
 **Kit vecchio qui** (10/11): questo progetto ha kit 35.0 · Preferenze v35; Mario usa già le Preferenze v36 (09/11/2026). La sessione del kit manda qui il pacchetto nuovo (da qui non si legge il repo del kit).
 
 ## C89 · Controllo dei numeri doppi (Mario 09/11: «come consiglio» = sì, in tutti i progetti)
