@@ -723,6 +723,20 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 
 /* ricettario (C55) */
 .ric-home { min-height: 0; flex-direction: row; align-items: center; justify-content: flex-start; width: 100%; }
+.ric-home-due .riquadro { min-height: 118px; }   /* C124: Ricettario e Proteiche sotto i 4 riquadri, uguali a loro (un po' più bassi) */
+.ric-home-due .ric-home { flex-direction: column; align-items: stretch; justify-content: space-between; width: auto; }
+.ric-home-emoji { font-size: 32px; line-height: 40px; height: 40px; }
+.ric-home-fit { background: #EEF3E8; border-color: #C9D8BC; }
+.ric-home-fit b { color: var(--basilico); }
+.ric-fonte { font-weight: 800; color: #8A5A00; }   /* C124: da dove viene la ricetta (GialloZafferano, RicetteFit, tua) */
+.ric-fonte.mia { color: var(--vino); }
+.ric-valori-riga { display: block; color: var(--basilico); font-weight: 800; margin-top: 2px; }
+.ric-nota-fit { background: #EEF3E8; border-radius: 12px; padding: 8px 10px; }
+.ric-valori-griglia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.ric-valori-griglia div { background: #F7F1E6; border-radius: 10px; padding: 6px 2px; display: grid; text-align: center; }
+.ric-valori-griglia b { font-size: 1.02rem; line-height: 1.2; }
+.ric-valori-griglia span { font-size: .78rem; color: var(--tenue); }
+.ric-fit-si { color: var(--basilico); }
 .ric-elenco { display: grid; gap: 10px; }
 .ric-carta { display: flex; gap: 12px; align-items: center; text-align: left; border: 1px solid var(--riga); border-radius: 16px; background: #fff; padding: 8px; font: inherit; color: inherit; }
 .ric-carta img, .ric-senzafoto { width: 76px; height: 76px; border-radius: 12px; object-fit: cover; flex: none; background: var(--crema, #FBF4E8); display: grid; place-items: center; color: var(--vino, #7B2318); }
