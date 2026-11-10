@@ -9,7 +9,7 @@ Richiesta di Mario (10/11 ~11:20), parola per parola in `docs/DA-FARE.md` voce C
   - **RicetteFit.it** (`/ricetta/<slug>/`, «La Cuoca Fit», non nutrizionista): JSON-LD `Recipe` con `nutrition` completo (calorie, proteine, grassi, saturi, zuccheri, sodio, fibre, `servingSize`) e 11 `HowToStep` ognuno con `image`. Consiglio di Claude.
   - **A Tavola col Nutrizionista** (`/ricette/<slug>/`, Dott. Giuseppe Scopelliti, biologo nutrizionista): JSON-LD `Recipe` con solo calorie, carboidrati, proteine, grassi; nessun `HowToStep` strutturato, niente foto dei passi.
   - GymBeam blog: ricette con proteine in polvere del negozio: scartato.
-- Scelta della fonte: 🛑 domanda in «## 0. Aspetta Mario» (1 RicetteFit · 2 A Tavola col Nutrizionista · 3 tutte e due · 4 solo GZ). Finché Mario non risponde: solo GialloZafferano.
+- **Scelta della fonte: RicetteFit.it** (Mario 10/11 ~11:40 «1 consiglio»). Si aggiunge al passo 8, dopo GialloZafferano.
 
 ## Regola «🏋️ Proteiche» (valori per porzione; soglie regolabili in Impostazioni → Sviluppatore)
 | Valore | Soglia di base | Fonte (letta il 10/11/2026) |
@@ -30,5 +30,5 @@ Ordine nella sezione: grammi di proteine per 100 kcal (più alto prima). Su ogni
 5. Tasto «🗄 Database» (`ric-salta`, `ricettario.js` ~882): `behavior: 'smooth'` → salto diretto (`'instant'`), Mario: «non scorrere, deve andare direttamente».
 6. Home di Monica (`app.js` `vHome`, ~1181): il riquadro «Ricettario» oggi è in fondo dopo «Da preparare»; spostarlo subito sotto i 4 riquadri, largo, coi numeri (ricette, proteiche). Foto a Mario (cambia l'aspetto).
 7. Fonte su ogni ricetta: segno «GialloZafferano» sulle schede e «Fonte: GialloZafferano» nella ricetta; per le altre fonti il loro nome; quelle di Monica «Ricetta di Monica».
-8. Fonte in più (solo dopo la scelta di Mario): stesso motore, sezione per sito, fonte scritta.
+8. Fonte in più RicetteFit.it (scelta da Mario): stesso motore, legge il JSON-LD `Recipe` (passi con foto, valori completi), segno «RicetteFit» su ogni ricetta, link all'originale.
 Soglie e interruttori in `opzioni.js` (gruppo dev), mai numeri fissi nel codice (regola «Senza Claude»).

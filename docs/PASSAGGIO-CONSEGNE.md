@@ -42,15 +42,16 @@ Sessione attuale: #43 (dopo la #42 `session_01WTjqUuQygq4fvuUYytiCQV`, chiusa al
 
 ## Prossimi passi
 1. A Mario (v0.10.2 è online) i passi Deepgram su Android: chiudi e riapri l'app, «guarda come cliente», Aiutante → microfono → «due teglie di lasagne per sabato»; in cima, nella barra sviluppatore, deve comparire «🎧 Groq + Deepgram». Una foto. (Riga C108 in «Aspetta Mario».)
-2. C124 ricettario: segui `docs/lavori-in-corso/c124-ricettario-proteico.md` dal passo 1 (valori di GZ in `gz.mjs`), solo GialloZafferano finché Mario non sceglie la fonte. Soglie: quelle del piano se Mario non dice altro. Passi 4-7 (difficoltà, Database diretto, riquadro in Home, fonte) sono piccoli: falli insieme in una versione con la foto della Home.
+2. C124 ricettario: segui `docs/lavori-in-corso/c124-ricettario-proteico.md` dal passo 1 (valori di GZ in `gz.mjs`), prima GialloZafferano, poi RicetteFit.it (scelta di Mario, passo 8). Soglie: quelle del piano. Passi 4-7 (difficoltà, Database diretto, riquadro in Home, fonte) sono piccoli: falli insieme in una versione con la foto della Home.
 3. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` con host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»; poi prova a leggere `docs/kit-progetto/VERSIONE` del repo `RVC-Operation-by-YNOY-CORP/RVC` (ramo `claude/rvc-ramo-definitivo`).
 4. «Scrivimi!» sotto gli allergeni: proposto dalla #40, nessuna risposta (non farlo senza sì).
 5. Le altre righe di «Aspetta Mario»: aspettare Mario; iPad e iPhone solo quando ne ha uno.
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (C124 fonte 🛑; chiave del kit da creare).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (chiave del kit da creare; fonte fit già scelta: RicetteFit.it).
 
 ## Ultimo messaggio di Mario
+10/11 ~11:40 (in questa chat, dopo l'handoff), parola per parola: «1 consiglio» → fonte fit = RicetteFit.it (riga 🛑 tolta da «Aspetta Mario», piano C124 aggiornato).
 10/11 11:32 (scritto nella chat chiusa della #41, girato qui), parola per parola: «non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android».
 Prima, 11:25 in questa chat: «controlla tutte / ok github chiave / devo verificare vapore ma per ora ok / devo verificare dopoia richiesta ma per ora ok / proverò ipad ma per ora ok / ok poi dimmi i passi / ipad ok orizzontale / Francesco compare tra i nomi» (con la foto del controllo).
 11:20 in questa chat: «Aggiungi al ricettario una voce proteica e cerchi in automatico le ricette per fitness sala pesi con poche calorie e grassi cattivi e con attenzione a sale zucchero ecc ecc insomma ricette gym per aiutare ad asciugarsi ma per migliorare l'ipertrofia / Metti anche filtro per difficoltà e il tasto database quando lo clicco con fare scorrere l'app velocemente giú ma deve andare direttamente, ricettario mettilo un pò piú in vista sembra trascurato sotto poi le ricette di giallo zafferano le segni che sono di giallo e se ne trovi altre ricette esempio per fitness in altre fonti migliori mettile caricate al meglio tutti i passaggi info foto fatte bene ecc ecc e segnami la fonte dove l'hai presa. / migliora ricettario in generale».
