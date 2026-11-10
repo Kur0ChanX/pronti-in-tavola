@@ -38,6 +38,7 @@ Sessione attuale: #39 (dopo la #38 `session_01WTjqUx6Bw42npV5PZSzDj2`, chiusa al
 
 ## Prossimi passi
 0. 🔴 C120 URGENTE (foto `archivio/foto/2026-11-10-0112-android-*.jpg`): Android di Mario, app in modo cliente («Benvenuti da Monica!», carrello 2), 7 tocchi → «prima entra da Area riservata col tuo Google», poi «Accesso non riuscito. Riprova.». Nella barra del telefono il segnale ha una ✕ (forse senza rete: IPOTESI, PT E10). Da capire leggendo: `Dati.entraGoogle` (dati.js ~650, `signInWithPopup`) e i 3 punti con quel testo (app.js 2136, 2162, 2925) che NON mostrano `e.code`; `riprendiAccesso` (dati.js ~268, C113 v0.9.92) mette l'accesso anonimo del cookie `pit_acc` in localStorage se lì non c'è nulla: controllare che non possa mai sostituire un accesso Google che sta in IndexedDB (l'SDK sceglie la prima persistenza con un utente: IndexedDB prima). Subito: messaggio d'errore col motivo vero (senza rete → «Manca la rete»; `auth/popup-blocked`, `auth/network-request-failed`…) e una prova Firebase «Google già entrato + cookie pit_acc vecchio → resta Google». Chiedere a Mario: era in rete? prima su questo telefono era entrato col Google?
+0b. C122 (dopo C120): skill `nuova-regola` per la regola di Mario «impara dagli errori: non solo risolvere, cercare la causa vera e fare in modo che non ricapiti nulla di simile», per TUTTO l'account: controllo conflitti con le regole che già ci sono (diario `docs/ERRORI.md`, «Dopo 2 tentativi», occhio critico), riga nelle Preferenze della chat (testo pronto per Mario) e nel kit (fonte nel repo RVC: da qui non si tocca, mai `add_repo`; voce per la sessione del kit come C103 e C20). Rispondere a Mario con SÌ/NO e numeri: quali regole nate qui sono già nel kit generale e quali no (es. PT E36 «A cosa serve», PT E41 limiti, C20 link): ancora aperte C103 e C20.
 1. C119: motore e elenco «nuove» prima le ricette con foto 600×450 (worker.js `proposte`, oggi `ORDER BY video DESC`); poi «✨ Migliora con l'AI» nello zoom delle strisce: ricerca aggiornata (skill `ricerca-aggiornata`) di un ingranditore gratis nel browser (es. UpscalerJS/ESRGAN leggero: peso, tempo su telefono), prova sull'Astice e foto prima/dopo a Mario PRIMA di metterlo a tutti.
 2. «Scrivimi!» sotto gli allergeni come tocco che apre WhatsApp con Monica: proposto, Mario non ha risposto (non farlo senza sì).
 3. C113, C118/C115, C111, C106, C108, C110: aspettare le prove di Mario (righe in «Aspetta Mario»).
@@ -46,6 +47,11 @@ Sessione attuale: #39 (dopo la #38 `session_01WTjqUx6Bw42npV5PZSzDj2`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`. La 🛑 C119 ha avuto risposta (tolta). C120: da chiedere a Mario se era in rete.
 
 ## Ultimo messaggio di Mario
+10/11 ~01:25, dopo l'handoff (nella #38), parola per parola: «impara dagli errori sempre  in Generale, mettila come regola integrata bene alle mie senza conflitti e ottimizzata 
+Non risolvere il problema e basta. Cerca la causa, trovala e fai in modo che non ricapitino più situazioni del genere o simili.
+non solo in questo progetto ma in tutto l'account, e anche la regola impara dagli errori in questo senso in tutto l'account, non solo in questo progetto.
+Io spero che molte regole che abbiamo messo qui siano state messe nell'account generale, non solo in questo progetto.» → C122 (Prossimi passi 0b).
+Prima:
 10/11 ~01:15 (in questa chat), con 2 foto (Android, modo cliente: «Modalità sviluppatore: prima entra da «Area riservata»…» e «Accesso non riuscito. Riprova.»), parola per parola: «perché rompi sempre il codice  quando funziona?» → C120, Prossimi passi 0 (non ancora risposto nel merito: la #39 risponde).
 Prima, 10/11 01:10: «b + migliora con ia» (= scelta 2 di C119). 09/11 23:58: «quelle che separi sono sgranatissime controllale tutte se sono in hd di tutte le rivette e evita questo problema in futuro e risolvi tutte le foto in bassa qualità e riscaricale in tutte le ricette». 09/11 23:51: testo allergeni → v0.9.96.
 
