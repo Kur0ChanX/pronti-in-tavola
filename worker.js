@@ -637,6 +637,90 @@ async function clienteDa(req) {
   return f.stato && f.stato.stringValue === 'approvato' && f.cliente && f.cliente.stringValue ? f.cliente.stringValue : null;
 }
 
+const subValida = sub => !!sub && typeof sub.endpoint === 'string' && /^https:\/\//.test(sub.endpoint) && sub.endpoint.length <= 1000;
+/* Web Push senza contenuto (sw.js chiede a /api/ultimo cosa scrivere): k = chiavi VAPID, dest = [{ endpoint }] */
+async function spingi(k, dest) {
+  const priv = await crypto.subtle.importKey('jwk', k.priv, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+  const morti = [], esiti = [];
+  let ok = 0;
+  for (const s of dest) {
+    const aud = new URL(s.endpoint).origin;
+    const testa = b64u(new TextEncoder().encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
+    const corpo = b64u(new TextEncoder().encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: CONTATTO })));
+    const firma = b64u(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, priv, new TextEncoder().encode(testa + '.' + corpo)));
+    try {
+      const r = await fetch(s.endpoint, { method: 'POST', headers: { authorization: `vapid t=${testa}.${corpo}.${firma}, k=${k.pub}`, ttl: '86400', urgency: 'high', 'content-length': '0' } });
+      esiti.push(r.status + (r.ok ? '' : ' ' + (await r.text()).slice(0, 120)));
+      if (r.status === 404 || r.status === 410) morti.push(s.endpoint); else if (r.ok) ok++;
+    } catch (e) { esiti.push('errore ' + String(e && e.message || e).slice(0, 120)); }
+  }
+  return { ok, morti, esiti };
+}
+const extraQui = b => ({ nome: String((b && b.nome) || 'Un cliente').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 40) || 'Un cliente',
+  n: Number.isInteger(b && b.n) && b.n > 0 && b.n < 1e6 ? b.n : 0, prova: !!(b && b.prova) });
+
+/* C135 CORSIA D'EMERGENZA (Mario 10/11 17:50 «1 anche per i clienti… non far riscriversi»; PT E53: il 10/11 Cloudflare ha fermato
+   la memoria per le letture gratuite finite e i telefoni non suonavano più). L'oggetto AVVISI copia chiavi VAPID e telefoni in
+   Workers KV (RISERVA) quando cambiano. Se l'oggetto non risponde, gli avvisi partono dalla copia, senza diario né conti salvati;
+   un telefono iscritto in quel momento entra nella copia e torna nell'oggetto da solo (cron ogni 10 minuti, riserva()).
+   KV gratis: 100.000 letture e 1.000 scritture al giorno; qui: 1 lettura ogni 10 minuti + 1 scrittura per telefono nuovo o avviso d'emergenza. */
+const RIS_AVVISI = 'avvisi', RIS_ULTIMO = 'ultimo';
+const riservaKv = env => env && env.RISERVA ? env.RISERVA : null;
+const mem = { ris: null, risT: 0, avvisi: [], qui: {} };   // memoria del Worker: copia letta da poco (1 minuto) e avvisi d'emergenza recenti
+async function leggiRiserva(env, fresca) {
+  const kv = riservaKv(env); if (!kv) return null;
+  if (!fresca && mem.ris && Date.now() - mem.risT < 60000) return mem.ris;
+  const d = await kv.get(RIS_AVVISI, 'json').catch(() => null);
+  if (!(d && d.pub && d.priv)) return null;
+  mem.ris = d; mem.risT = Date.now(); return d;
+}
+/* prima l'oggetto AVVISI; se dà errore, la corsia d'emergenza (che ridà null se non ha la copia: allora resta l'errore vero) */
+async function oRiserva(fai, riserva) {
+  try { return await fai(); } catch (e) { const r = await Promise.resolve().then(riserva).catch(() => null); if (r != null) return r; throw e; }
+}
+/* tetto e pausa come l'oggetto (avvisa), ma nella memoria del Worker: durante il blocco non ci sono conti salvati */
+function frenoRiserva(t) {
+  const ora = Date.now(); mem.avvisi = mem.avvisi.filter(x => ora - x < 86400000);
+  if (mem.avvisi.length >= TETTO_GIORNO) return 'tetto';
+  if (mem.avvisi.length && ora - mem.avvisi[mem.avvisi.length - 1] < PAUSA_MS && t !== 'primo' && t !== 'richiesta') return 'pausa';
+  mem.avvisi.push(ora); return '';
+}
+/* manda dalla copia: ai telefoni di chi gestisce (tutti, o solo uid) o a quelli di un cliente; prima scrive cosa dirà /api/ultimo */
+async function mandaRiserva(env, { uid, cliente, tipo, extra }) {
+  const d = await leggiRiserva(env), kv = riservaKv(env); if (!d) return null;
+  const dest = cliente ? (d.clienti || []).filter(x => x.cliente === cliente) : (d.iscritti || []).filter(x => !uid || x.uid === uid);
+  if (dest.length) {
+    const u = (await kv.get(RIS_ULTIMO, 'json').catch(() => null)) || {}, ora = Date.now();
+    if (cliente) { const per = Object.assign({}, u.per); dest.forEach(x => { per[x.endpoint] = { tipo, quando: ora }; }); u.per = Object.fromEntries(Object.entries(per).sort((a, b) => b[1].quando - a[1].quando).slice(0, 50)); }
+    else u.g = Object.assign({}, extra, { tipo, quando: ora });
+    await kv.put(RIS_ULTIMO, JSON.stringify(u), { expirationTtl: 86400 }).catch(() => null);
+  }
+  const r = await spingi(d, dest);
+  return { mandati: r.ok, telefoni: dest.length, riserva: true };
+}
+async function ultimoRiserva(env, e) {
+  const kv = riservaKv(env); if (!kv) return null;
+  const u = await kv.get(RIS_ULTIMO, 'json').catch(() => null); if (!u) return null;
+  const pu = e && u.per ? u.per[e] : null, g = u.g || { tipo: 'ordine', quando: 0 };
+  return pu && pu.quando > (g.quando || 0) ? pu : g;
+}
+/* telefono iscritto durante il blocco: nella copia (e in «nuovi», che riserva() rimette nell'oggetto); già uguale = niente scrittura */
+async function iscriviRiserva(env, voce) {
+  const kv = riservaKv(env), d = await leggiRiserva(env, true); if (!kv || !d) return null;
+  const lista = voce.cliente ? 'clienti' : 'iscritti', vecchie = d[lista] || [];
+  const uguale = x => x.endpoint === voce.endpoint && (voce.cliente ? x.cliente === voce.cliente : x.uid === voce.uid && !!x.dev === !!voce.dev);
+  if (vecchie.some(uguale)) return true;
+  d[lista] = vecchie.filter(x => x.endpoint !== voce.endpoint).concat(voce).slice(voce.cliente ? -300 : -20);
+  d.nuovi = (d.nuovi || []).filter(x => x.endpoint !== voce.endpoint).concat(voce).slice(-50);
+  await kv.put(RIS_AVVISI, JSON.stringify(d)); mem.ris = d; mem.risT = Date.now();
+  return true;
+}
+async function statoRiserva(env, e) {
+  const d = await leggiRiserva(env); if (!d) return null;
+  return { telefoni: (d.iscritti || []).map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(d.quando).toISOString() })), questo: e ? (d.iscritti || []).some(x => x.endpoint === e) : null,
+    conto: null, ultimi: [], riserva: { attiva: true, quando: d.quando } };
+}
+
 export class Avvisi extends DurableObject {
   async chiavi() {
     let k = await this.ctx.storage.get('vapid');
@@ -653,7 +737,8 @@ export class Avvisi extends DurableObject {
   async stato(e) {
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
     return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), questo: e ? tutti.some(x => x.endpoint === e) : null,
-      conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [] };
+      conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [],
+      riserva: await this.ctx.storage.get('riserva').then(r => r ? { quando: r.quando, telefoni: r.telefoni, clienti: r.clienti } : null) };   // C135
   }
   async scriviDiario(voce) {
     const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
@@ -661,12 +746,13 @@ export class Avvisi extends DurableObject {
     await this.ctx.storage.put('diario', diario);
   }
 
-  async iscrivi(uid, sub, dev) {
-    if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint) || sub.endpoint.length > 1000) return false;
+  async iscrivi(uid, sub, dev, senzaCopia) {
+    if (!subValida(sub)) return false;
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
     const altri = tutti.filter(x => x.endpoint !== sub.endpoint);
     altri.push({ uid, endpoint: sub.endpoint, da: Date.now(), ...(dev ? { dev: true } : {}) });   // dev: telefono di Mario (C109)
     await this.ctx.storage.put('iscritti', altri.slice(-20));   // al massimo 20 telefoni
+    if (!senzaCopia) await this.copiaRiserva().catch(() => null);   // C135
     return true;
   }
 
@@ -681,23 +767,11 @@ export class Avvisi extends DurableObject {
       const tieni = Object.entries(pu).sort((a, b) => b[1].quando - a[1].quando).slice(0, 200);
       await this.ctx.storage.put('ultimoPer', Object.fromEntries(tieni));
     }
-    const k = await this.chiavi();
-    const priv = await crypto.subtle.importKey('jwk', k.priv, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
-    const morti = [], esiti = [];
-    let ok = 0;
-    for (const s of dest) {
-      const aud = new URL(s.endpoint).origin;
-      const testa = b64u(new TextEncoder().encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
-      const corpo = b64u(new TextEncoder().encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: CONTATTO })));
-      const firma = b64u(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, priv, new TextEncoder().encode(testa + '.' + corpo)));
-      try {
-        const r = await fetch(s.endpoint, { method: 'POST', headers: { authorization: `vapid t=${testa}.${corpo}.${firma}, k=${k.pub}`, ttl: '86400', urgency: 'high', 'content-length': '0' } });
-        esiti.push(r.status + (r.ok ? '' : ' ' + (await r.text()).slice(0, 120)));
-        if (r.status === 404 || r.status === 410) morti.push(s.endpoint); else if (r.ok) ok++;
-      } catch (e) { esiti.push('errore ' + String(e && e.message || e).slice(0, 120)); }
-    }
-    if (morti.length) await this.ctx.storage.put(chiave, tutti.filter(x => !morti.includes(x.endpoint)));
-    await this.scriviDiario(Object.assign({ per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti }, chi ? { chi } : {}));
+    const k = await this.chiavi(), { ok, morti, esiti } = await spingi(k, dest);
+    try {   // C135: già mandati; se adesso la memoria dà errore, la corsia d'emergenza NON deve rimandarli (doppioni)
+      if (morti.length) { await this.ctx.storage.put(chiave, tutti.filter(x => !morti.includes(x.endpoint))); await this.copiaRiserva().catch(() => null); }
+      await this.scriviDiario(Object.assign({ per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti }, chi ? { chi } : {}));
+    } catch (e) { /* diario perso, avvisi partiti */ }
     return { mandati: ok, telefoni: dest.length };
   }
 
@@ -713,12 +787,34 @@ export class Avvisi extends DurableObject {
     const pu = e ? ((await this.ctx.storage.get('ultimoPer')) || {})[e] : null, g = (await this.ctx.storage.get('ultimo')) || { tipo: 'ordine', quando: 0 };
     return pu && pu.quando > (g.quando || 0) ? pu : g;   // stesso telefono gestore e cliente: vale la più recente
   }
-  async iscriviCliente(cliente, sub) {
-    if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint) || sub.endpoint.length > 1000) return false;
+  async iscriviCliente(cliente, sub, senzaCopia) {
+    if (!subValida(sub)) return false;
     const tutti = ((await this.ctx.storage.get('clienti')) || []).filter(x => x.endpoint !== sub.endpoint);
     tutti.push({ cliente, endpoint: sub.endpoint, da: Date.now() });
     await this.ctx.storage.put('clienti', tutti.slice(-300));   // al massimo 300 telefoni di clienti
+    if (!senzaCopia) await this.copiaRiserva().catch(() => null);   // C135
     return true;
+  }
+  /* C135: copia in KV di chiavi e telefoni, solo quando cambiano (firma: il rinnovo a ogni apertura non scrive niente); forza = sempre */
+  async copiaRiserva(forza) {
+    const kv = riservaKv(this.env); if (!kv) return { copia: 'KV non collegato' };
+    const g = this.ctx.storage, k = await this.chiavi();
+    const iscritti = ((await g.get('iscritti')) || []).map(x => Object.assign({ uid: x.uid, endpoint: x.endpoint }, x.dev ? { dev: true } : {}));
+    const clienti = ((await g.get('clienti')) || []).map(x => ({ cliente: x.cliente, endpoint: x.endpoint }));
+    const firma = await hexSha(JSON.stringify([k.pub, iscritti, clienti])), r = (await g.get('riserva')) || {};
+    if (!forza && r.firma === firma) return { copia: 'uguale', quando: r.quando };
+    const quando = Date.now();
+    await kv.put(RIS_AVVISI, JSON.stringify({ v: 1, quando, pub: k.pub, priv: k.priv, iscritti, clienti }));
+    await g.put('riserva', { firma, quando, telefoni: iscritti.length, clienti: clienti.length });
+    return { copia: 'fatta', quando };
+  }
+  /* C135 (cron ogni 10 minuti, 1 lettura KV): i telefoni iscritti durante il blocco tornano qui; copia mancante = rifatta */
+  async riserva() {
+    const kv = riservaKv(this.env); if (!kv) return { copia: 'KV non collegato' };
+    const d = await kv.get(RIS_AVVISI, 'json').catch(() => null);
+    let rimessi = 0;
+    for (const x of (d && d.nuovi) || []) if (x.cliente ? await this.iscriviCliente(x.cliente, x, true) : await this.iscrivi(x.uid, x, !!x.dev, true)) rimessi++;
+    return Object.assign(await this.copiaRiserva(rimessi > 0 || !(d && d.pub)), { rimessi });
   }
   /* promemoria della sera: domani (ora di Roma) ha ordini? */
   async promemoria() {
@@ -735,9 +831,7 @@ export class Avvisi extends DurableObject {
     if (arr[cliente] && Date.now() - arr[cliente] < 60000) return { fermo: 'pausa' };
     arr[cliente] = Date.now();
     await this.ctx.storage.put('arrivi', Object.fromEntries(Object.entries(arr).sort((x, y) => y[1] - x[1]).slice(0, 100)));
-    const nome = String((b && b.nome) || 'Un cliente').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 40) || 'Un cliente';
-    const n = Number.isInteger(b && b.n) && b.n > 0 && b.n < 1e6 ? b.n : 0;
-    const extra = { nome, n, prova: !!(b && b.prova) };
+    const extra = extraQui(b);
     /* suoneria (Mario 08/11 «tipo suoneria», poi «ogni 5 secondi… vibrazione lunghissima»): la notifica torna ogni 5 secondi
        per 1 minuto (12 squilli), finché chi gestisce non la apre o tocca «Ho visto» (/api/visto-qui) */
     await this.ctx.storage.put('squillo', { extra, volte: 1 });
