@@ -1,15 +1,12 @@
-# Ultima risposta di Claude (10/11/2026 10:22 ora italiana)
+# Ultima risposta di Claude (10/11/2026 11:31 ora italiana)
 
-Ho capito: hai risposto nella chat #40, ormai chiusa. Rispondo qui a ogni punto.
 
-───
-✅ **FATTO**
-- Chiusi: foto con l'AI (C119), Astice (C118) e iPad (C111). Grazie per le prove.
-- Regole del progetto: le lascio come sono, nessuna riga tolta. Era anche il mio consiglio: si risparmiava pochissimo.
-- Resta aperto solo il vapore per i clienti (C115): l'Astice era un'altra cosa.
 
-───
-💡 **C113 spiegato con un esempio**
-- Monica manda l'invito a Elena, che ha un iPhone. Elena lo apre, scrive il nome, Monica tocca «Sì».
-- Poi Elena mette l'app sulla schermata Home e la apre dall'icona.
-- …
+## Domande a Mario
+
+❓ **DOMANDA 1 🛑**
+📌 Di cosa parliamo: oltre a GialloZafferano, voglio prendere le ricette da palestra anche da un sito fatto apposta. Le vedrete solo tu e Monica, nel Ricettario, con il nome del sito scritto sopra.
+1 · RicetteFit.it: ogni passo ha la sua foto e ci sono tutti i valori (sale, zuccheri, grassi saturi). È il mio consiglio.
+2 · A Tavola col Nutrizionista: ricette scritte da un nutrizionista, però senza le foto dei passi e senza sale, zuccheri e grassi saturi. Per queste l'app potrebbe controllare solo le proteine e le calorie.
+3 · Tutti e due i siti.
+4 · Per ora solo …
