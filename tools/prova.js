@@ -1633,7 +1633,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (fit.riga !== '💪 38 g proteine · 380 kcal · sale 1 g' || !fit.nota || fit.fonte !== 'GialloZafferano') throw new Error('Proteiche: riga dei valori, nota o fonte sbagliate: ' + JSON.stringify(fit));
     await foto('47-c124-proteiche');
     /* difficoltà in vista (Facili comprende «Molto facile», Difficili «Molto difficile») */
-    await clic('[data-a="ric-zona"][data-v="tutte"]'); await clic('[data-a="ric-diff"][data-v="facile"]');
+    await clic('[data-a="ric-zona"][data-v="tutte"]'); await clic('[data-a="ric-piu"]'); await clic('[data-a="ric-diff"][data-v="facile"]');   // C127: dentro «⚙️»
     let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$/.test(n)).sort());
     if (JSON.stringify(nomi) !== '["Merluzzo fit prova","Pollo fit prova"]') throw new Error('«Facili» sbagliato: ' + JSON.stringify(nomi));
     await clic('[data-a="ric-diff"][data-v="difficile"]');
@@ -1642,7 +1642,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-diff"][data-v="difficile"]');   // ritocco = tolto
     if (await page.evaluate(() => UI.ric.diff)) throw new Error('ritoccare «Difficili» non toglie il filtro');
     /* ordina «🔥 Meno calorie» */
-    await clic('[data-a="ric-piu"]'); await clic('[data-a="ric-ordine"][data-v="kcal"]');
+    await clic('[data-a="ric-ordine"][data-v="kcal"]');   // «⚙️» già aperto
     nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$/.test(n)));
     if (nomi[0] !== 'Merluzzo fit prova' || nomi[nomi.length - 1] !== 'Senza valori prova') throw new Error('«Meno calorie» non ordina (senza valori in fondo): ' + JSON.stringify(nomi));
     await page.evaluate(() => { UI.ric = null; localStorage.removeItem('pit-ric-filtri'); render(); });
@@ -1685,6 +1685,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     });
     await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
     const nomi = () => page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$/.test(n)));
+    const st0 = await page.evaluate(() => ({ nota: !!document.querySelector('.ric-nota-fit'), oggi: (document.querySelector('.ric-carica-oggi') || {}).innerText || '' }));
+    if (st0.nota || !/Oggi \+3 entrate in Proteiche ✅ · 1 letta che non passa le regole/.test(st0.oggi)) throw new Error('Proteiche (C127): regole aperte da sole o «Oggi» sbagliato: ' + JSON.stringify(st0));
+    await clic('[data-a="ric-regole"]');
     const st = await page.evaluate(() => ({ scelte: [...document.querySelectorAll('.ric-fit-scelte .scelta')].map(b => b.textContent), nota: (document.querySelector('.ric-nota-fit') || {}).innerText || '' }));
     if (JSON.stringify(st.scelte) !== '["🌅 Colazione","🍎 Spuntino","🧃 Merenda","🍝 Pranzo","🍽 Cena","🌙 Dopo cena","🍰 Dolci","💪 Dopo l\'allenamento","⚡ Pronte in 10 minuti"]') throw new Error('Proteiche: momenti e ⚡ mancanti (C126): ' + JSON.stringify(st.scelte));
     if (!/Pasti: almeno 25 g di proteine/.test(st.nota) || !/Snack e dolci: fino a 300 kcal/.test(st.nota) || !/RicetteFit/.test(st.nota)) throw new Error('Proteiche: nota senza le due regole: ' + st.nota);
@@ -1692,35 +1695,47 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova","Pollo fit prova"]') throw new Error('Proteiche: elenco o ordine sbagliati (carbonara fuori, prima più proteine per caloria): ' + JSON.stringify(n));
     const conta = await page.evaluate(() => (document.querySelector('.ric-conta') || {}).innerText || '');
     if (!/3 ricette: GialloZafferano 2 · RicetteFit 1/.test(conta)) throw new Error('Proteiche: numero per fonte mancante: ' + conta);
+    await page.evaluate(() => { window.__cf125 = 0; const c0 = RIC.chiedi; RIC.chiedi = c => { if (c.db === 'cercaFit') window.__cf125++; return c0(c); }; });
     await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); n = await nomi();
     const cerca = await page.evaluate(() => RIC.fitCerca && { mom: RIC.fitCerca.mom, testo: RIC.fitCerca.testo });
-    if (JSON.stringify(n) !== '["Frittata albumi prova","Pollo fit prova"]' || !cerca || cerca.mom !== 'cena' || cerca.testo !== 'Cena') throw new Error('«🍽 Cena» sbagliato (elenco o ricerca del momento): ' + JSON.stringify({ n, cerca }));
-    await clic('[data-a="ric-fit-tipo"][data-v="pranzo"]'); n = await nomi();
-    if (n.length) throw new Error('«🍝 Pranzo»: secondi e dolci non sono pranzo: ' + JSON.stringify(n));
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Pollo fit prova"]' || !cerca || cerca.mom !== 's:cena|' || cerca.testo !== 'Cena') throw new Error('«🍽 Cena» sbagliato (elenco o ricerca del momento): ' + JSON.stringify({ n, cerca }));
+    /* C127 scelta MULTIPLA (Mario 10/11 «multi scelta»): Cena + Dolci = l'una O l'altra, ricordata; spegnere = solo filtra, niente ricerca */
     await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); n = await nomi();
+    const multi = await page.evaluate(() => ({ fit: UI.ric.fit, salvato: JSON.parse(localStorage.getItem('pit-ric-filtri')).fit, accesi: [...document.querySelectorAll('.ric-fit-scelte [aria-pressed="true"]')].map(b => b.dataset.v), cerche: window.__cf125 }));
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova","Pollo fit prova"]' || multi.fit !== 'cena,dolci' || multi.salvato !== 'cena,dolci' || JSON.stringify(multi.accesi) !== '["cena","dolci"]' || multi.cerche !== 2) throw new Error('«🍽 Cena» + «🍰 Dolci» (scelta multipla) sbagliato: ' + JSON.stringify({ n, multi }));
+    await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); n = await nomi();
+    const spento = await page.evaluate(() => ({ fit: UI.ric.fit, cerche: window.__cf125 }));
+    if (JSON.stringify(n) !== '["Budino proteico prova"]' || spento.fit !== 'dolci' || spento.cerche !== 2) throw new Error('spegnere «🍽 Cena» non toglie solo lei o cerca ancora: ' + JSON.stringify({ n, spento }));
     const riga = await page.evaluate(() => (document.querySelector('main .ric-elenco .ric-carta .ric-valori-riga') || {}).textContent || '');
-    if (JSON.stringify(n) !== '["Budino proteico prova"]' || !/snack o dolce/.test(riga)) throw new Error('«🍰 Dolci» sbagliato: ' + JSON.stringify({ n, riga }));
-    await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]'); n = await nomi();
+    if (!/snack o dolce/.test(riga)) throw new Error('«🍰 Dolci»: riga senza «snack o dolce»: ' + riga);
+    await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); await clic('[data-a="ric-fit-tipo"][data-v="pranzo"]'); n = await nomi();
+    if (n.length) throw new Error('«🍝 Pranzo»: secondi e dolci non sono pranzo: ' + JSON.stringify(n));
+    await clic('[data-a="ric-fit-tipo"][data-v="pranzo"]'); await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]'); n = await nomi();
     if (JSON.stringify(n) !== '["Budino proteico prova"]') throw new Error('«🌙 Dopo cena» sbagliato: ' + JSON.stringify(n));
     await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]');   // ritocco = tolto
-    /* C126 fonte proteica FACOLTATIVA (Mario 13:57 «se voglio scelgo la fonte proteica, mettine tante»): tocco = filtra e cerca; con un momento valgono tutti e due; chiudere la toglie */
-    await clic('[data-a="ric-prot-apri"]');
-    const np = await page.evaluate(() => document.querySelectorAll('.ric-prot-scelte .scelta').length);
+    /* fonti proteiche sempre in vista, anche più di una (O fra loro), E coi momenti */
+    const np = await page.evaluate(() => ({ n: document.querySelectorAll('.ric-prot-scelte .scelta').length, apri: !!document.querySelector('[data-a="ric-prot-apri"]') }));
     await clic('[data-a="ric-prot"][data-v="pollo"]'); n = await nomi();
     const cp = await page.evaluate(() => RIC.fitCerca && RIC.fitCerca.mom);
-    if (np < 15 || JSON.stringify(n) !== '["Pollo fit prova"]' || cp !== 'p:pollo') throw new Error('fonte proteica «🍗 Pollo» sbagliata: ' + JSON.stringify({ np, n, cp }));
-    await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); n = await nomi();
-    if (JSON.stringify(n) !== '["Pollo fit prova"]') throw new Error('«🍽 Cena» + «🍗 Pollo» sbagliato: ' + JSON.stringify(n));
-    await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); await clic('[data-a="ric-prot-apri"]');
-    const vp = await page.evaluate(() => ({ prot: UI.ric.prot, righe: !!document.querySelector('.ric-prot-scelte') }));
-    if (vp.prot || vp.righe) throw new Error('chiudendo «Fonte proteica» la scelta resta: ' + JSON.stringify(vp));
+    if (np.n < 15 || np.apri || JSON.stringify(n) !== '["Pollo fit prova"]' || cp !== 's:|pollo') throw new Error('fonte proteica «🍗 Pollo» sbagliata: ' + JSON.stringify({ np, n, cp }));
+    await clic('[data-a="ric-prot"][data-v="albumi"]'); n = await nomi();
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Pollo fit prova"]') throw new Error('«🍗 Pollo» + «🥚 Albumi» (l\'una o l\'altra) sbagliato: ' + JSON.stringify(n));
+    await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); n = await nomi();
+    if (n.length) throw new Error('«🍰 Dolci» con pollo o albumi: nessuna (i due gruppi valgono insieme): ' + JSON.stringify(n));
+    await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); await clic('[data-a="ric-prot"][data-v="pollo"]'); await clic('[data-a="ric-prot"][data-v="albumi"]');
+    if (await page.evaluate(() => UI.ric.prot || UI.ric.fit)) throw new Error('ritoccare le fonti non le toglie');
+    /* «Altre ▾»: Sarde, Italiane, Le mie dentro; scelta una, il tasto dice quale */
+    await clic('[data-a="ric-altre"]'); await clic('[data-a="ric-zona"][data-v="mie"]');
+    const al = await page.evaluate(() => ({ zona: UI.ric.zona, t: (document.querySelector('[data-a="ric-altre"]') || {}).textContent, p: (document.querySelector('[data-a="ric-altre"]') || {}).getAttribute('aria-pressed'), riga: !!document.querySelector('[aria-label="Altre"]') }));
+    if (al.zona !== 'mie' || al.t !== 'Le mie ▾' || al.p !== 'true' || al.riga) throw new Error('«Altre ▾» sbagliato: ' + JSON.stringify(al));
+    await clic('[data-a="ric-zona"][data-v="fit"]');
     await clic('.ric-fit-scelte [data-a="ric-tempo"]'); n = await nomi();
     if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova"]') throw new Error('«⚡ Pronte in 10 minuti» sbagliato: ' + JSON.stringify(n));
     await foto('48b-c125-proteiche-scelte');
-    await clic('[data-a="ric-fit-tipo"][data-v="cena"]');
+    await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); await clic('[data-a="ric-prot"][data-v="pollo"]');
     await clic('[data-a="ric-zona"][data-v="tutte"]');
-    const via = await page.evaluate(() => ({ fit: UI.ric.fit, tempo: UI.ric.tempo, scelte: !!document.querySelector('.ric-fit-scelte') }));
-    if (via.fit || via.tempo || via.scelte) throw new Error('uscendo da Proteiche restano Pasti o ⚡: ' + JSON.stringify(via));
+    const via = await page.evaluate(() => ({ fit: UI.ric.fit, prot: UI.ric.prot, tempo: UI.ric.tempo, scelte: !!document.querySelector('.ric-fit-scelte') }));
+    if (via.fit || via.prot || via.tempo || via.scelte) throw new Error('uscendo da Proteiche restano Pasti o ⚡: ' + JSON.stringify(via));
     /* Database: numeri per fonte del motore e delle proteiche */
     await page.evaluate(() => { RIC.dbOra = 0; vai('ricdb'); }); await page.waitForTimeout(400); await page.evaluate(() => render());
     const dbf = await page.evaluate(() => ({ m: (document.querySelector('#ricdb-archivio .ricdb-fonti') || {}).innerText, f: (document.querySelector('#ricdb-fit') || {}).innerText || '' }));
@@ -1738,7 +1753,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     });
     await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
     const box = await page.evaluate(() => ({ vecchie: document.querySelectorAll('.ric-cerca-fit [data-a="ric-cerca-fit"][data-v]').length, testo: (document.querySelector('.ric-cerca-fit') || {}).innerText || '', ph: document.getElementById('ric-cerca').placeholder }));
-    if (box.vecchie || !/Puoi anche toccare un momento qui sopra/.test(box.testo) || !/Cerca nuove ricette fit su tutti i siti/.test(box.testo) || !/Cerca ricette fit/.test(box.ph)) throw new Error('Proteiche: riquadro «🔍 Cerca ricette fit» senza i momenti (C126): ' + JSON.stringify(box));
+    if (box.vecchie || !/Cerca altre/.test(box.testo) || !/Tocca e cerco ricette fit nuove su GialloZafferano e RicetteFit/.test(box.testo) || !/Cerca ricette fit/.test(box.ph)) throw new Error('Proteiche: riquadro verde senza «🔍 Cerca altre» (C127): ' + JSON.stringify(box));
     /* C126 (Mario 14:10 «senza selezionare… mi cerca tutto nei siti»): niente momento né parola = cerca tutto */
     await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
     const tutto = await page.evaluate(() => ({ chiesto: window.__cf.slice(-1)[0], esito: (document.querySelector('.ric-cerca-fit') || {}).innerText || '' }));
@@ -1748,6 +1763,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!st.chiesto || st.chiesto.q !== 'Dopo cena' || !Array.isArray(st.chiesto.qq) || st.chiesto.qq.length !== 4 || !st.chiesto.qq.includes('budino proteico') || !/Trovate 3 ricette nuove con «Dopo cena» \(un'altra l'avevo già letta\)/.test(st.esito) || !st.timer) throw new Error('«🌙 Dopo cena»: ricerca del momento o esito sbagliati: ' + JSON.stringify(st));
     if (JSON.stringify(st.nomi.filter(n => /prova$/.test(n))) !== '["Budino proteico prova"]') throw new Error('«🌙 Dopo cena»: elenco qui sotto non filtrato: ' + JSON.stringify(st.nomi));
     await foto('48c-c125-cerca-fit');
+    /* C127 «🔍 Cerca altre» con più scelte: nomi nell'esito, 4 parole a turno (una per scelta); spegnere una scelta non cerca */
+    await clic('[data-a="ric-prot"][data-v="pollo"]'); await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
+    st = await page.evaluate(() => ({ chiesto: window.__cf.slice(-1)[0], esito: (document.querySelector('.ric-cerca-fit') || {}).innerText || '', n: window.__cf.length }));
+    if (!st.chiesto || st.chiesto.q !== 'Dopo cena, Pollo' || JSON.stringify(st.chiesto.qq) !== '["dessert proteico","pollo","budino proteico","mousse proteica"]' || !/Trovate 3 ricette nuove con «Dopo cena, Pollo»/.test(st.esito)) throw new Error('«Cerca altre» con Dopo cena e Pollo sbagliato: ' + JSON.stringify(st));
+    await clic('[data-a="ric-prot"][data-v="pollo"]'); await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]');
+    const n1 = await page.evaluate(() => ({ n: window.__cf.length, testo: (document.querySelector('.ric-cerca-fit') || {}).innerText || '' }));
+    if (n1.n !== st.n || !/Tocca e cerco ricette fit nuove/.test(n1.testo)) throw new Error('spegnere le scelte ha cercato o lasciato l\'esito vecchio: ' + JSON.stringify(n1));
     /* scritta a mano e invio (anche dalla tastiera): niente ricerca generica di GialloZafferano dentro Proteiche */
     await page.evaluate(() => { window.__cfRisp = { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' }; });
     await page.locator('#ric-cerca').fill('salmone'); await page.locator('#ric-cerca').press('Enter'); await page.waitForTimeout(250);
@@ -1778,16 +1800,20 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       clearTimeout(RIC.turboTimer); RIC.turboTimer = null; UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
     });
     await page.waitForFunction(() => RIC.stato === 'pronto' && RIC.db && RIC.db.rf, null, { timeout: 30000 }); await page.evaluate(() => render());
-    let nota = await page.evaluate(() => (document.querySelector('.ric-nota-fit') || {}).innerText || '');
-    if (!/Sto leggendo adesso: RicetteFit 230 di 905 · valori ancora 400\. Finisco fra circa un'ora \(stima\); le nuove proteiche compaiono qui da sole/.test(nota) || /10 ogni 10 minuti/.test(nota)) throw new Error('Proteiche: lettura delle fonti non detta: ' + nota);
+    const carica = () => page.evaluate(() => { const b = document.querySelector('.ric-carica .ric-barra'); return { t: (document.querySelector('.ric-carica') || {}).innerText || '', barra: b ? b.getAttribute('aria-valuenow') : null }; });
+    let nota = await carica();
+    if (!/⏳ Sto caricando ricette nuove: RicetteFit 230 di 905 · valori ancora 400\. Finisco fra circa un'ora \(stima\)/.test(nota.t) || nota.barra !== '26' || !/Oggi \+1 entrata in Proteiche ✅/.test(nota.t) || /10 ogni 10 minuti/.test(nota.t)) throw new Error('Proteiche: lettura delle fonti non detta (C127 riquadro verde): ' + JSON.stringify(nota));
     await foto('48d-c128-lettura');
-    /* fermo ma con cose da leggere: «parto da sola»; tutto letto: «Letto tutto» */
+    /* fermo ma con cose da leggere: «parto da sola»; tutto letto: «Letto tutto», niente barra; senza rete: detto */
     await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null }); render(); });
-    nota = await page.evaluate(() => (document.querySelector('.ric-nota-fit') || {}).innerText || '');
-    if (!/Da leggere \(parto da sola entro 10 minuti\): RicetteFit 230 di 905/.test(nota)) throw new Error('Proteiche: «da leggere» non detto: ' + nota);
+    nota = await carica();
+    if (!/⏳ Da leggere \(parto da sola entro 10 minuti\): RicetteFit 230 di 905/.test(nota.t)) throw new Error('Proteiche: «da leggere» non detto: ' + nota.t);
     await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null, daLeggere: 0, senzaValori: 0, rf: { lette: 880, tot: 905, scartate: 25, fine: new Date(Date.now() + 3600000).toISOString().slice(0, 10) } }); render(); });
-    nota = await page.evaluate(() => (document.querySelector('.ric-nota-fit') || {}).innerText || '');
-    if (!/Letto tutto: RicetteFit 880 di 905 ✅ · valori tutti letti ✅/.test(nota)) throw new Error('Proteiche: «letto tutto» non detto: ' + nota);
+    nota = await carica();
+    if (!/✅ Letto tutto: RicetteFit 880 di 905 · valori tutti letti\./.test(nota.t) || nota.barra !== null) throw new Error('Proteiche: «letto tutto» non detto: ' + JSON.stringify(nota));
+    await page.context().setOffline(true); await page.evaluate(() => { RIC.db = null; RIC.dbOra = Date.now(); render(); }); nota = await carica(); await page.context().setOffline(false);
+    if (!/📵 Senza rete non so a che punto è il server/.test(nota.t)) throw new Error('Proteiche: senza rete non detto: ' + nota.t);
+    await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null, daLeggere: 0, senzaValori: 0, rf: { lette: 880, tot: 905, scartate: 25, fine: new Date(Date.now() + 3600000).toISOString().slice(0, 10) } }); render(); });
     /* «Niente di nuovo» dice quante pagine ho guardato e che la prossima volta vado avanti */
     await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
     const esito = await page.evaluate(() => (document.querySelector('.ric-cerca-fit') || {}).innerText || '');
