@@ -17,11 +17,15 @@
 "opus": 1423296
 },
 "blocchi": {
-"Stop 5 · Domanda a Mario poco chiara": 1
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": [
 "19:15 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"19:20 · Ti fermi ad aspettare Mario con il contesto a 231k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
 ]
 }
 }
