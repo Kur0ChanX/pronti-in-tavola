@@ -11,8 +11,8 @@ import json
 import subprocess
 import sys
 
-# Durata di un giro completo, minuti (misure del 23-24/10: Blacksmith 16-17, GitHub 32-33, contenitore ~35).
-DURATA = {'blacksmith': 17, 'github': 33, 'locale': 35}
+# Durata di un giro completo, minuti (23-24/10: Blacksmith 16-17, contenitore ~35; GitHub 87 il 10/11, C471: 476 prove).
+DURATA = {'blacksmith': 17, 'github': 87, 'locale': 35}
 GIRI_DI_SCORTA = 2  # un giro fuori parte solo se ne restano almeno 2 (il primo può venire rosso)
 GIRI_AL_GIORNO = 2  # stima per le versioni, giri rossi compresi: il giro del lunedì non deve toglierli
 

@@ -17,6 +17,7 @@ CHI = """# Chi fa cosa
 | Dov'è | quadrati | 🟩 🟨 🟥 ⬛ | 8 | y |
 | Scorte | cuori | 💚 💛 ❤️ 🖤 | 68 | z |
 | Atlante | stelle | ✳️ ✴️ ❌ ✖️ | 56 | w |
+| Risparmio | libri (riserva) | 📗 📒 📕 📓 | 11 | r |
 
 ## Zone fisse
 """
@@ -63,11 +64,17 @@ with tempfile.TemporaryDirectory() as d:
     prova('nome di due parole', '🟢 🧪 Chat principale 466 · kit', False, cartella=d)
     prova('vecchio ✅', '✅ 🧪 Principale 465 · fatto', False, cartella=d)
     prova('senza icona', '🟢 Principale 466 · kit', False, cartella=d)
-    prova('❔ col verde (domande aperte, C423)', '🟢 🧪 Principale 466 ❔ · colori Planner', True, cartella=d)
-    prova('❓ col giallo (ferma, C423)', '🟨 🧪 Dov\'è 8 ❓ · foto da ridare', True, cartella=d)
-    prova('❓ col verde', '🟢 🧪 Principale 466 ❓ · colori', False, cartella=d)
-    prova('❔ col giallo', '🟡 🧪 Principale 466 ❔ · colori', False, cartella=d)
-    prova('❔ sul rosso', '🔴 🧪 Principale 466 ❔ · fatto', False, cartella=d)
+    prova('❓N col verde (domande aperte, C454)', '🟢 🧪 Principale 535 ❓5 · colori Planner', True, cartella=d)
+    prova('❓N col giallo (ferma, C454)', '🟨 🧪 Dov\'è 8 ❓1 · foto da ridare', True, cartella=d)
+    prova('❓N → NN sul rosso (chiusa: dove rispondere)', '🔴 🧪 Principale 534 ❓5 → 535 · consegne', True, cartella=d)
+    prova('❓N → NN sul verde', '🟢 🧪 Principale 535 ❓5 → 536 · colori', False, cartella=d)
+    prova('❓ senza numero (vecchio C423)', '🟡 🧪 Principale 466 ❓ · colori', False, cartella=d)
+    prova('❔ (vecchio C423)', '🟢 🧪 Principale 466 ❔ · colori', False, cartella=d)
+    prova('❓0', '🟢 🧪 Principale 466 ❓0 · colori', False, cartella=d)
+    # C469 rapporto 15 voce 5: Forma «libri (riserva)» (le catene coi libri): il controllo vale anche per loro
+    prova('Risparmio coi libri (riserva)', '📗 🧪 Risparmio 11 · rapporto 12', True, cartella=d)
+    prova('Risparmio coi cerchi', '🟢 🧪 Risparmio 11 · rapporto 12', False, cartella=d)
+    prova('Risparmio con le stelle', '✳️ 🧪 Risparmio 11 · rapporto 12', False, cartella=d)
     vuota = os.path.join(d, 'vuota')
     os.makedirs(vuota)
     prova('senza tabella, catena nuova coi libri', '📒 🧪 Cantina 1 · scegli vini', True, cartella=vuota)

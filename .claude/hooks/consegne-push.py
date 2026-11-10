@@ -3,7 +3,7 @@
 non ricapiti più… pensi che li hai inviati e invece non li hai inviati»).
 
   consegne-push.py tool (PostToolUse di Edit/Write): se il file toccato è uno dei DOCUMENTI, ricorda subito
-        commit + push e il controllo HEAD = origin/<ramo>.
+        commit + push e il controllo HEAD = origin/<ramo>; una volta per commit (HEAD) della sessione (C469).
   consegne-push.py stop (Stop): blocca la fine del turno (uscita 2, una riga su stderr) se
      1. un DOCUMENTO è cambiato e non è su origin/<ramo> (fuori dal commit, o nel commit ma non pushato).
         Si ripete finché non è pushato (anche al secondo giro): passa solo se il messaggio finale dice chiaro
@@ -17,12 +17,15 @@ Prova: python3 -I tools/test-consegne-push.py
 """
 import json
 import os
+import fnmatch
 import re
 import subprocess
 import sys
 import tempfile
 
-DOCUMENTI = ('docs/PASSAGGIO-CONSEGNE.md', 'docs/ERRORI.md', 'docs/ERRORI-STORIA.md')
+# C469 fase 1 (rapporto 12 voce 5): anche le consegne delle parallele (prima una parallela poteva chiudere il turno
+# con le consegne non inviate); i nomi valgono come pathspec di git e con fnmatch
+DOCUMENTI = ('docs/PASSAGGIO-CONSEGNE.md', 'docs/CONSEGNE-PARALLELA-*.md', 'docs/ERRORI.md', 'docs/ERRORI-STORIA.md')
 MAX_BLOCCHI = 3
 DICE_PUSH = re.compile(r'\bpushat[oaie]\b|\bpush\s+(fatto|riuscito|confermato)\b'
                        r'|\bconsegne\s+(scritte|salvate|pushate|fatte|pronte|aggiornate)\b'
@@ -79,12 +82,25 @@ def dopo_strumento(dati, progetto):
     percorso = entrata.get('file_path') or ''
     pieno = os.path.realpath(percorso if os.path.isabs(percorso) else os.path.join(progetto, percorso))
     rel = os.path.relpath(pieno, os.path.realpath(progetto))
-    if rel not in DOCUMENTI:
+    if not any(fnmatch.fnmatch(rel, d) for d in DOCUMENTI):
         return 0
+    # C469 fase 2 (rapporto 14 voce 18): una volta per commit (HEAD) della sessione, non a ogni Edit dei documenti
+    testa = git(progetto, 'rev-parse', 'HEAD') or ''
+    segno = file_stato(dati.get('session_id') or '') + '.avviso'
+    try:
+        with open(segno, encoding='utf-8') as f:
+            if testa and f.read().strip() == testa:
+                return 0
+    except OSError:
+        pass
+    try:
+        with open(segno, 'w', encoding='utf-8') as f:
+            f.write(testa)
+    except OSError:
+        pass
     ramo = git(progetto, 'rev-parse', '--abbrev-ref', 'HEAD') or '<ramo>'
-    testo = (f'C226 (E131): hai cambiato {rel}. Commit + push SUBITO, da solo (documenti: vale anche con prove in corso '
-             f'o PR in bozza), poi `git rev-parse HEAD origin/{ramo}` devono essere uguali. Prima non dire a Mario '
-             '«scritte», «salvate» o «fatto»: la scorta non conta, la sessione nuova legge il ramo.')
+    testo = (f'C226 (E131): {rel} cambiato: commit + push subito (anche con prove in corso); «scritte» o «fatto» a Mario solo '
+             f'con `git rev-parse HEAD origin/{ramo}` uguali (la scorta non conta).')
     print(json.dumps({'hookSpecificOutput': {'hookEventName': 'PostToolUse', 'additionalContext': testo}}))
     return 0
 
@@ -107,7 +123,7 @@ def a_fine_turno(dati, progetto):
         if non_pushati:
             cosa += ('; ' if sporchi else '') + f'{", ".join(non_pushati)} nel commit ma non pushati'
         print(f'Consegne non su GitHub (C226, blocco {n}/{MAX_BLOCCHI}): {cosa}. Fai commit e push adesso '
-              f'(`git push -u origin {ramo}`), controlla `git rev-parse HEAD origin/{ramo}` uguali, poi chiudi il turno. '
+              f'(`git push -u origin {ramo}`), controlla `git rev-parse HEAD origin/{ramo}` uguali, poi chiudi il turno con una riga (non riscrivere il messaggio). '
               'Se il push non riesce, scrivi a Mario «consegne NON su GitHub» e il motivo.', file=sys.stderr)
         return 2
     blocchi(sessione, 0)

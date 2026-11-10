@@ -24,10 +24,11 @@ dopo il blocco MAI riscrivere il messaggio (Mario l'ha già letto): rinomina e c
 C422 (Mario 02/11 «domande decisive: fermati e aspetta, o un sistema salva token per non dimenticarle»): messaggio
 finale con una domanda decisiva («🛑» fuori dai blocchi di codice) → la riga di oggi in «## 0. Aspetta Mario» deve avere
 anche lei «🛑» (così l'avvio la ricorda per prima e nessuna sessione ci lavora sopra a caso).
-C423 (Mario 02/11 «nel nome sessione ❔ se c'è una domanda, ❓ se è ferma e mi aspetta; se ho risposto toglilo»):
-segno delle domande subito dopo il numero del titolo, deciso dalle righe della catena in «## 0. Aspetta Mario»
-(«<segno> <Nome> <numero>»): righe aperte → verde con « ❔», giallo con « ❓»; nessuna riga → nessun segno. Ultimo titolo
-diverso → blocca UNA volta: rinomina (un solo strumento, zero letture). Titolo senza catena o rosso/nero: silenzio.
+C454 (Mario 04/11 16:5x «io nelle sessioni non vedo nessun punto di domanda … mi dovresti mettere qualcosa in sospeso»;
+prima C423): segno delle domande subito dopo il numero del titolo, deciso dalle righe della catena in «## 0. Aspetta Mario»
+(«<segno> <Nome> <numero>»): « ❓N», N = risposte attese (una riga con «3 domande» conta 3), sul verde e sul giallo;
+nessuna riga → nessun segno. Ultimo titolo diverso → blocca UNA volta: rinomina (un solo strumento, zero letture).
+Titolo senza catena o rosso/nero: silenzio (il «❓N → NN» delle chiuse lo mette la skill consegne alla chiusura).
 Prova: python3 -I tools/test-titolo-giallo.py
 """
 import datetime
@@ -35,6 +36,9 @@ import json
 import os
 import re
 import sys
+
+# C469 fase 2 (rapporto 14 voce 4): gli avvisi dello stesso Stop arrivano insieme; niente ordini opposti
+ALTRI = ' (se un altro avviso di questo Stop chiede di riscrivere una parte, riscrivi solo quella)'
 
 BLOCCHI_CODICE = re.compile(r'```.*?```', re.S)
 TOCCA_A_MARIO = re.compile(r'^[\s>*#_]*(?:❓|👉\s*DA FARE TU)', re.M)
@@ -124,7 +128,8 @@ def righe_aspetta(progetto):
     return righe
 
 
-CATENA = re.compile(r"^\S+ \S+ ([^\W\d_][\w'’]*) (\d+)( [❔❓])? · ")
+CATENA = re.compile(r"^\S+ \S+ ([^\W\d_][\w'’]*) (\d+)( ❓\d+(?: → \d+)?| [❔❓])? · ")
+DOMANDE_NELLA_RIGA = re.compile(r'(\d+) domande')
 VERDI = ('🟢', '🟩', '💚', '✳️', '📗')
 
 
@@ -135,17 +140,16 @@ def segno_domande(titolo, righe):
     if not m or righe is None:
         return ''
     segno = t.split(' ', 1)[0]
-    if segno in VERDI:
-        voluto = ' ❔'
-    elif segno in GIALLI:
-        voluto = ' ❓'
-    else:
+    if segno not in VERDI and segno not in GIALLI:
         return ''
     nome = m.group(1)
     giro = rf"(?:^|[\s·]){re.escape(nome)} \d+\b" + (r"|(?:^|[\s·])[#⭐]\d+\b" if nome.lower() == 'principale' else '')
-    aperte = sum(1 for r in righe if re.search(giro, r))
-    if not aperte:
-        voluto = ''
+    aperte = 0
+    for r in righe:
+        if re.search(giro, r):
+            q = DOMANDE_NELLA_RIGA.search(r)
+            aperte += int(q.group(1)) if q else 1
+    voluto = f' ❓{aperte}' if aperte else ''
     if (m.group(3) or '') == voluto:
         return ''
     return t[:m.start(3)] + voluto + t[m.end(3):] if m.group(3) else t[:m.end(2)] + voluto + t[m.end(2):]
@@ -157,8 +161,8 @@ def inizio(dati):
     if not titoli or not titoli[-1].lstrip().startswith(GIALLI):
         return 0
     print(json.dumps({'hookSpecificOutput': {'hookEventName': 'UserPromptSubmit', 'additionalContext': (
-        f'TITOLO GIALLO (E245): «{titoli[-1][:80]}». Se in questo turno lavori, rinomina SUBITO la sessione col verde '
-        'della tua catena (set_session_title; « ❔» dopo il numero se restano domande tue in «Aspetta Mario», C423); giallo con « ❓» solo se resti ferma ad aspettare Mario.')}}, ensure_ascii=False))
+        f'TITOLO GIALLO (E245): «{titoli[-1][:80]}». Se lavori in questo turno: subito il verde della tua catena '
+        '(set_session_title, « ❓N» come prima, C454); giallo solo ferma ad aspettare Mario.')}}, ensure_ascii=False))
     return 0
 
 
@@ -185,9 +189,9 @@ def main():
     if not domanda and not giallo:
         giusto = segno_domande(ultimo[-1], righe)
         if giusto:
-            print(f'Segno delle domande nel titolo (C423: ❔ verde con domande della tua catena in «{SEZIONE_0}», ❓ giallo '
-                  f'ferma ad aspettare Mario, niente se non ce ne sono): rinomina SOLO col titolo «{giusto}» '
-                  '(set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole.', file=sys.stderr)
+            print(f'Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «{SEZIONE_0}», '
+                  f'niente se non ce ne sono): rinomina SOLO col titolo «{giusto}» '
+                  '(set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole' + ALTRI + '.', file=sys.stderr)
             return 2
         return 0
     giorno = oggi()
@@ -198,14 +202,14 @@ def main():
     if not manca_titolo and not manca_riga and not manca_stop:
         giusto = segno_domande((titoli or ultimo)[-1], righe)
         if giusto:
-            print(f'Segno delle domande nel titolo (C423): rinomina SOLO col titolo «{giusto}» (set_session_title). NON '
-                  'riscrivere il messaggio; chiudi con 3-5 parole.', file=sys.stderr)
+            print(f'Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «{giusto}» (set_session_title). NON '
+                  'riscrivere il messaggio; chiudi con 3-5 parole' + ALTRI + '.', file=sys.stderr)
             return 2
         return 0
     cosa = []
     if manca_titolo:
         cosa.append('rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi '
-                    'ad aspettare Mario («<🟡|🟨|💛|✴️|📒> <icona> <Nome> <numero> · <cosa fa>», es. «🟡 <icona> Principale 466 ❓ · '
+                    'ad aspettare Mario («<🟡|🟨|💛|✴️|📒> <icona> <Nome> <numero> · <cosa fa>», es. «🟡 <icona> Principale 466 ❓1 · '
                     'scegli foto», più la notifica sul telefono con PushNotification, se lo strumento c\'è), col verde se continui '
                     'a lavorare da sola (E245: il colore dice cosa fai adesso)')
     if manca_riga:
@@ -216,7 +220,7 @@ def main():
         cosa.append(f'il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «{SEZIONE_0}» '
                     '(«- gg/mm · 🛑 · <segno giallo> <Nome> <numero> · …»), poi commit e push (C422)')
     print(('Il turno finisce con una domanda o un passo a mano per Mario: ' if domanda else 'Titolo giallo in questo turno: ') + '; poi '.join(cosa) + '. NON riscrivere il '
-          'messaggio: Mario l\'ha già letto (E255, «3 messaggi di fila uguali»); chiudi con una riga di 3-5 parole. La '
+          'messaggio: Mario l\'ha già letto (E255, «3 messaggi di fila uguali»); chiudi con una riga di 3-5 parole' + ALTRI + '. La '
           'prossima volta: PRIMA del messaggio finale.', file=sys.stderr)
     return 2
 

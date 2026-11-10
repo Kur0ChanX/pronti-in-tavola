@@ -51,21 +51,72 @@ def testo(o):
     return o["hookSpecificOutput"]["additionalContext"] if o else ""
 
 
+# C455: sessione chiusa (ultimo titolo rosso) → il messaggio di Mario va passato alla nuova, non «rifai le consegne».
+def chiusa_t(titolo, nuova=True):
+    p = os.path.join(casa, "chiusa.jsonl")
+    v = [{"message": {"content": [{"type": "tool_use", "id": "c1", "name": "mcp__claude-code-remote__create_session", "input": {}}]}},
+         {"message": {"content": [{"type": "tool_result", "tool_use_id": "c1", "content": '{"id":"session_01NUOVANUOVANUOVANUOVA"}'}]}}] if nuova else []
+    v += [{"message": {"content": [{"type": "tool_use", "id": "t1", "name": "mcp__claude-code-remote__set_session_title", "input": {"title": titolo}}]}},
+          {"message": {"usage": {"input_tokens": 10, "cache_read_input_tokens": 370_000}}}]
+    with open(p, "w", encoding="utf-8") as f:
+        f.write("\n".join(json.dumps(x, ensure_ascii=False) for x in v) + "\n")
+    return p
+def lancia_t(p, arg=None, sid="ch"):
+    amb = {k: v for k, v in os.environ.items() if k not in ("CLAUDE_CODE_REMOTE_SESSION_ID", "CTX_SOGLIA")}
+    amb.update(HOME=casa, CLAUDE_PROJECT_DIR=progetto)
+    r = subprocess.run([sys.executable, "-I", HOOK] + ([arg] if arg else []), input=json.dumps({"session_id": sid, "transcript_path": p}),
+                       capture_output=True, text=True, env=amb)
+    return r.stdout
+o = lancia_t(chiusa_t("🔴 Principale 9 · fatto"))
+prova("C455: chiusa → passa il messaggio alla nuova", "MESSAGGIO DOPO L'HANDOFF" in o and "session_01NUOVANUOVANUOVANUOVA" in o and "OBBLIGATORIO" not in o)
+o = lancia_t(chiusa_t("📕 Magazzini 6 · fatto", nuova=False))
+prova("C455: chiusa senza create_session → la apre Mario", "MESSAGGIO DOPO L'HANDOFF" in o and "la apre Mario" in o)
+o = lancia_t(chiusa_t("🟢 Principale 9 · lavora"))
+prova("C455: titolo verde oltre soglia → avviso normale", "OBBLIGATORIO" in o and "DOPO L'HANDOFF" not in o)
+prova("C455: strumento in una chiusa: avviso della soglia come prima", "OBBLIGATORIO" in lancia_t(chiusa_t("🔴 x"), "tool", sid="ch2"))
+
+# C455: preavviso a soglia-30k (una volta) e consegne prima di fermarsi in giallo oltre 180k (Stop, una volta).
+o = lancia("pv", 325_000, "tool")
+prova("C455: preavviso a 325k (soglia 350k − 30k)", "PREAVVISO" in testo(o))
+prova("C455: preavviso una volta sola", lancia("pv", 326_000, "tool") is None)
+def stop_t(titolo, token, sid, attivo=False):
+    p = os.path.join(casa, f"s{sid}.jsonl")
+    v = [{"message": {"content": [{"type": "tool_use", "id": "t1", "name": "mcp__claude-code-remote__set_session_title", "input": {"title": titolo}}]}},
+         {"message": {"usage": {"input_tokens": 10, "cache_read_input_tokens": token}}}]
+    with open(p, "w", encoding="utf-8") as f:
+        f.write("\n".join(json.dumps(x, ensure_ascii=False) for x in v) + "\n")
+    amb = {k: v for k, v in os.environ.items() if k not in ("CLAUDE_CODE_REMOTE_SESSION_ID", "CTX_SOGLIA")}
+    amb.update(HOME=casa, CLAUDE_PROJECT_DIR=progetto)
+    return subprocess.run([sys.executable, "-I", HOOK, "stop"], input=json.dumps({"session_id": sid, "transcript_path": p,
+                                                                                   "stop_hook_active": attivo}),
+                          capture_output=True, text=True, env=amb)
+r = stop_t("🟡 Principale 9 ❓1 · scegli", 190_000, "st1")
+prova("C455: giallo a 190k → consegne prima di fermarsi", r.returncode == 2 and "consegne" in r.stderr)
+prova("C455: giallo, seconda volta → muto", stop_t("🟡 Principale 9 ❓1 · scegli", 191_000, "st1").returncode == 0)
+prova("C455: verde a 190k → muto", stop_t("🟢 Principale 9 · lavora", 190_000, "st2").returncode == 0)
+prova("C455: giallo a 150k → muto", stop_t("🟡 Principale 9 · scegli", 150_000, "st3").returncode == 0)
+# C469 fase 2 (rapporto 14 voce 3): giallo messo dopo il blocco di un altro hook (secondo giro dello Stop) → consegne lo stesso
+r = stop_t("🟡 Principale 9 ❓1 · scegli", 190_000, "st4", attivo=True)
+prova("C469: giallo al secondo giro dello Stop → consegne prima di fermarsi", r.returncode == 2 and "consegne" in r.stderr)
+prova("C469: e poi una volta sola", stop_t("🟡 Principale 9 ❓1 · scegli", 191_000, "st4", attivo=True).returncode == 0)
+
 prova("sotto soglia: messaggio muto", lancia("a", 50_000) is None)
 prova("sotto soglia: strumento muto", lancia("a", 50_000, "tool") is None)
-o = lancia("a", 260_000, "tool")
+o = lancia("a", 360_000, "tool")
 prova("oltre soglia dopo uno strumento: avviso completo", "OBBLIGATORIO" in testo(o)
-      and o["hookSpecificOutput"]["hookEventName"] == "PostToolUse" and o["systemMessage"].startswith("Soglia 250k"))
-prova("secondo strumento oltre soglia: muto", lancia("a", 261_000, "tool") is None)
-prova("messaggio dopo l'avviso: riga corta", "ancora da fare" in testo(lancia("a", 262_000)))
-prova("dentro un aiutante: muto", lancia("b", 260_000, "tool", agent_id="x") is None)
-prova("messaggio oltre soglia la prima volta: avviso completo", "OBBLIGATORIO" in testo(lancia("c", 255_000)))
+      and o["hookSpecificOutput"]["hookEventName"] == "PostToolUse" and o["systemMessage"].startswith("Soglia 350k"))
+prova("secondo strumento oltre soglia: muto", lancia("a", 361_000, "tool") is None)
+prova("messaggio dopo l'avviso: riga corta", "ancora da fare" in testo(lancia("a", 362_000)))
+prova("dentro un aiutante: muto", lancia("b", 360_000, "tool", agent_id="x") is None)
+prova("messaggio oltre soglia la prima volta: avviso completo", "OBBLIGATORIO" in testo(lancia("c", 355_000)))
 prova("dopo una compressione: avviso completo", "OBBLIGATORIO" in testo(lancia("d", 10_000, "compact")))
 prova("messaggio dopo la compressione: di nuovo completo", "OBBLIGATORIO" in testo(lancia("d", 10_000)))
+prova("dopo una compressione: rileggere i messaggi di Mario interi (C469 rapporto 12 voce 11)",
+      "tools/consegne.py miei" in testo(lancia("d9", 10_000, "compact")))
 for _ in range(60):
     ultimo = lancia("e", 1_000)
 prova("60 messaggi sotto soglia: muto (niente regola dei 40)", ultimo is None)
-prova("messaggio oltre soglia: avviso col numero dei messaggi", "61 messaggi" in testo(lancia("e", 251_000)))
+prova("messaggio oltre soglia: avviso col numero dei messaggi", "61 messaggi" in testo(lancia("e", 351_000)))
 prova("gli strumenti non contano come messaggi", lancia("f", 1_000, "tool") is None
       and not os.path.exists(os.path.join(casa, ".claude", "handoff-check", "f.json")))
 
@@ -76,14 +127,17 @@ scrivi_prova({"catena": "Principale", "soglia": 350000, "fino_al": DOMANI})
 prova("C396: la sessione Principale a 300k lavora ancora", lancia("p1", 300_000, remota="cse_01ABCDEFGHIJKL") is None)
 o = lancia("p2", 351_000, remota="cse_01ABCDEFGHIJKL")
 prova("C396: la sessione Principale a 351k ha l'avviso «soglia 350k»", "soglia 350k" in testo(o))
-prova("C396: un'altra chat resta a 250k", "OBBLIGATORIO" in testo(lancia("p3", 260_000, remota="cse_01ALTRASESSIONE")))
-prova("C396: senza numero della sessione resta a 250k", "OBBLIGATORIO" in testo(lancia("p4", 260_000)))
+prova("C469 C1: un'altra chat alla soglia di base 350k", "OBBLIGATORIO" in testo(lancia("p3", 360_000, remota="cse_01ALTRASESSIONE")))
+prova("C469 C1: senza numero della sessione: 350k", "OBBLIGATORIO" in testo(lancia("p4", 360_000)))
 scrivi_prova({"catena": "Principale", "soglia": 900000, "fino_al": DOMANI})
 prova("C396: soglia oltre il tetto → 350k", "soglia 350k" in testo(lancia("p5", 351_000, remota="cse_01ABCDEFGHIJKL")))
 scrivi_prova({"catena": "Principale", "soglia": 350000, "fino_al": IERI})
-prova("C396: prova finita (data passata) → 250k", "OBBLIGATORIO" in testo(lancia("p6", 260_000, remota="cse_01ABCDEFGHIJKL")))
+prova("C396: prova finita (data passata) → 350k di base", "OBBLIGATORIO" in testo(lancia("p6", 360_000, remota="cse_01ABCDEFGHIJKL")))
+scrivi_prova({"catena": "Principale", "soglia": 300000, "fino_al": DOMANI})
+prova("catena con soglia sua più bassa (300k): avviso a 310k", "soglia 300k" in testo(lancia("p8", 310_000, remota="cse_01ABCDEFGHIJKL")))
+prova("C469 C1: a 310k una chat qualunque lavora ancora", lancia("p9", 310_000, remota="cse_01ALTRASESSIONE") is None)
 scrivi_prova(None)
-prova("C396: senza il file della prova → 250k", "OBBLIGATORIO" in testo(lancia("p7", 260_000, remota="cse_01ABCDEFGHIJKL")))
+prova("C396: senza il file della prova → 350k di base", "OBBLIGATORIO" in testo(lancia("p7", 360_000, remota="cse_01ABCDEFGHIJKL")))
 
 print(f"{sum(esiti)}/{len(esiti)} prove dell'hook della soglia verdi")
 sys.exit(0 if all(esiti) else 1)
