@@ -732,6 +732,21 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-fonte.mia { color: var(--vino); }
 .ric-valori-riga { display: block; color: var(--basilico); font-weight: 800; margin-top: 2px; }
 .ric-nota-fit { background: #EEF3E8; border-radius: 12px; padding: 8px 10px; }
+/* C127 (foto approvata da Mario 10/11 15:05): zone in una riga, momenti e fonti a scelta multipla che scorrono di lato, riquadro «Sto caricando» */
+.ric-zone { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.ric-zone .scelta { align-items: center; text-align: center; padding: 6px 4px; min-height: 60px; line-height: 1.15; }
+.ric-zone .scelta span { display: block; font-size: 1.15em; }
+.ric-sel-tit { margin: 0 0 -10px; }
+.scelte.scorri { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 -16px; padding: 2px 16px; scroll-padding: 0 16px; }
+.scelte.scorri::-webkit-scrollbar { display: none; }
+.scelte.scorri .scelta { flex: 0 0 auto; flex-direction: row; align-items: center; white-space: nowrap; }
+.scelte.scorri .scelta[aria-pressed="true"]::after { content: '✓'; margin-left: 8px; font-weight: 900; }
+.btn.ric-piu { width: 100%; border-radius: 999px; }
+.ric-carica { background: #EEF3E8; border-color: #C9D8BC; gap: 10px; }
+.ric-carica-stato, .ric-carica-oggi { margin: 0; }
+.ric-barra { height: 10px; border-radius: 6px; background: #fff; overflow: hidden; }
+.ric-barra span { display: block; height: 100%; background: var(--vino); border-radius: 6px; transition: width .6s ease; }
+.ric-carica .ric-regole { align-self: flex-start; }
 .ric-valori-griglia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .ric-valori-griglia div { background: #F7F1E6; border-radius: 10px; padding: 6px 2px; display: grid; text-align: center; }
 .ric-valori-griglia b { font-size: 1.02rem; line-height: 1.2; }
