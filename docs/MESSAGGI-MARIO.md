@@ -133,3 +133,8 @@ deepgram fatto come valido un anno che senso ha?!?
 
 ## 2026-11-10 11:32 · 01WTjqUxmJ9k
 non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+
+## 2026-11-10 12:50 · 01WTjqUtxqaC
+Vai di consiglio e ti chiedo metti solo le ricette un pò piú severe per il fitness e mettimi tasto cerca per per ricerche fitness che mi cerca in automatico guarda in tante fonti  gold standard molto attendibili per le ricette fitness gym senza ingrassare e ipertrofia anche ricette dolci proteiche Snack primi secondi sfizio proteico light ricette rivisitate in chiave proteica light Ne vedo moltissime su anche instagram e YouTube influenzer e canali Fit
+Cerco anche ricette immediate un esempio stupido tipo la cioccolata la fà con le proteine in polvere al cioccolato con poca acqua ecc ecc ma è un esempio 
+al momento sembra che carichi solo ricette di GialloZafferano valutate per calorie e proteine  riverifica tutto
