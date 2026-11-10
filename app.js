@@ -488,7 +488,8 @@ function diarioAvvisi() {
   // C135 corsia d'emergenza (copia in Cloudflare KV): «attiva» = server fermo ma gli avvisi partono lo stesso (senza diario)
   if (d.riserva && d.riserva.attiva) return `<div class="tenue piccolo" style="margin:0">${questo ? `<p style="margin:0 0 6px">${questo}</p>` : ''}<div class="avviso" style="margin:0"><div><b>🛟 Corsia d'emergenza attiva:</b> il server è fermo fino a stanotte, ma gli avvisi degli ordini partono lo stesso dalla copia d'emergenza. L'elenco degli ultimi avvisi riparte quando il server torna.</div></div></div>`;
   const ultimi = (d.ultimi || []).slice(-5).reverse();
-  const copia = d.riserva ? `🛟 Corsia d'emergenza pronta (copia del ${new Date(d.riserva.quando).toLocaleString('it-IT', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}): se il server si ferma, gli avvisi partono lo stesso.`
+  const copia = d.riserva && d.riserva.spenta ? '🛟 Corsia d\'emergenza: pronta nel codice, ma non ancora collegata (manca un passo di Mario su Cloudflare). Per ora, se il server si ferma, gli avvisi non partono.'
+    : d.riserva ? `🛟 Corsia d'emergenza pronta (copia del ${new Date(d.riserva.quando).toLocaleString('it-IT', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}): se il server si ferma, gli avvisi partono lo stesso.`
     : '🛟 Corsia d\'emergenza: la copia non c\'è ancora, si fa da sola entro 10 minuti.';
   return `<div class="tenue piccolo" style="margin:0">${questo ? `<p style="margin:0 0 6px">${questo}</p>` : ''}<b>Ultimi avvisi mandati</b>
     ${ultimi.length ? `<ul style="margin:4px 0 0;padding-left:18px">${ultimi.map(voceDiario).join('')}</ul>` : '<p style="margin:4px 0 0">Ancora nessuno.</p>'}
