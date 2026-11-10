@@ -141,3 +141,6 @@ al momento sembra che carichi solo ricette di GialloZafferano valutate per calor
 
 ### 10/11 ~13:40 (Principale 45, C125)
 intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale
+
+### 10/11 ~13:57 (Principale 46, C125-C126, foto `archivio/foto/2026-11-10-1356-proteiche-albumi.jpg`: Proteiche dopo «Albumi», «3 ricette: RicetteFit 2 · GialloZafferano 1», «Niente di nuovo con «albumi»: le 23 trovate le avevo già lette»)
+si ma perché ricerca solo in questo modo ricette fit è il meglio non aggiungiamo altre fonti? e poi 6 selezioni cosí sono troppo vincolato dividile al massimo per spuntino merenda pranzo cena dolce colazione post cena ecc no poi se voglio scelgo la fonte proteica ma mettine tante di fonti non cosí e altre funzioni e cerca e le aggiunge al meglio nelle mie ricette scritte bene chiare complete con foto video passo per passo ecc ecc
