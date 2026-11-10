@@ -483,5 +483,39 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   prova('C125 cerca fit: siti giù = errore detto; parola di 1 lettera rifiutata; senza accesso niente', /non rispondono/.test(j.errore || '') && !!corta.errore && (await chiedi({ db: 'cercaFit', q: 'pollo' }, false)).status === 403);
   globalThis.fetch = prima; oggetto.metti1('turbo', ''); oggetto.sql.exec('DELETE FROM coda');
 }
+// C125 (Mario 10/11 13:40 «fonti alternative anche a giallozafferano»): la ricerca normale guarda anche RicetteFit, in cima
+{ const { rfTrova, nomeRf } = await import(pathToFileURL(join(radice, 'rf.mjs')).href);
+  const prima = globalThis.fetch, chieste = []; let gzGiu2 = false;
+  const FF = 'https://www.ricettefit.it/wp-content/uploads/2026/04/';
+  const cartaF = n => `<article class="gz-card"><a href="https://ricette.giallozafferano.it/${n}.html" title="${n}"></a><h2 class="gz-title"><a>${n}</a></h2></article>`;
+  const xml = `<urlset>${['budino-proteico-al-cacao', 'budini-fit-alla-vaniglia', 'pollo-al-limone', 'pasta-zucchine-e-ricotta', 'crema-al-caffe-fit-2'].map((x, i) => `<url><loc>https://www.ricettefit.it/ricetta/${x}/</loc>${i === 2 ? '' : `<image:image><image:loc>${FF}${x}.webp</image:loc></image:image>`}</url>`).join('')}</urlset>`;
+  prova('C125 ricerca: radici, parole vuote («con», «all\'»), accenti e nomi dall\'indirizzo', rfTrova(xml, 'Budino').length === 2 && rfTrova(xml, 'pasta con zucchine').length === 1 && rfTrova(xml, 'caffè').length === 1
+    && nomeRf('https://www.ricettefit.it/ricetta/crema-al-caffe-fit-2/') === 'Crema al caffe fit' && rfTrova(xml, 'pollo')[0].foto === '' && rfTrova(xml, 'budino')[0].foto === FF + 'budino-proteico-al-cacao.webp' && !rfTrova(xml, 'al di').length && rfTrova(xml, 'budino', 1).length === 1);
+  globalThis.fetch = async (u, o) => { u = String(u);
+    if (!/giallozafferano\.it|ricettefit\.it/.test(u)) return prima(u, o);
+    chieste.push(u);
+    if (/giallozafferano/.test(u) && gzGiu2) return new Response('giù', { status: 503 });
+    if (/ricerca-ricette\/budino\/$/.test(u)) return new Response(cartaF('Budino-al-cioccolato') + cartaF('Budino-alla-vaniglia'));
+    if (/ricerca-ricette\/page2\/budino\/$/.test(u)) return new Response(cartaF('Budino-3'));
+    if (u === 'https://www.ricettefit.it/recipe-sitemap.xml') return new Response(xml);
+    return new Response('no', { status: 404 }); };
+  oggetto.metti1('rfSpento', '');
+  oggetto.salva({ id: 'rf:budini-fit-alla-vaniglia', url: 'https://www.ricettefit.it/ricetta/budini-fit-alla-vaniglia/', nome: 'Budini fit all\'arancia e vaniglia', foto: FF + 'scelta-1200.webp', nutr: null });
+  let j = await (await chiedi({ cerca: 'budino' })).json();
+  const ids = (j.ricette || []).map(r => r.url), v = (j.ricette || [])[1] || {};
+  prova('C125 ricerca: RicetteFit in cima, poi GialloZafferano; nome e foto dall\'elenco', j.rf === 2 && ids.length === 4 && /ricettefit/.test(ids[0]) && /ricettefit/.test(ids[1]) && /giallozafferano/.test(ids[2])
+    && j.ricette[0].nome === 'Budino proteico al cacao' && j.ricette[0].foto === FF + 'budino-proteico-al-cacao.webp');
+  prova('C125 ricerca: già letta = nome vero e foto scelta dal database', v.nome === 'Budini fit all\'arancia e vaniglia' && v.foto === FF + 'scelta-1200.webp');
+  const nM = chieste.filter(u => u.endsWith('sitemap.xml')).length;
+  j = await (await chiedi({ cerca: 'budino', pagina: 'https://www.giallozafferano.it/ricerca-ricette/page2/budino/' })).json();
+  prova('C125 ricerca: «Carica altre» solo GialloZafferano (RicetteFit non ripetuta)', j.ricette.length === 1 && !j.rf && chieste.filter(u => u.endsWith('sitemap.xml')).length === nM);
+  oggetto.metti1('rfSpento', '1');
+  j = await (await chiedi({ cerca: 'budino' })).json();
+  prova('C125 ricerca: RicetteFit spenta dall\'app = mai chiesta', j.rf === 0 && j.ricette.length === 2 && chieste.filter(u => u.endsWith('sitemap.xml')).length === nM);
+  oggetto.metti1('rfSpento', ''); gzGiu2 = true;
+  j = await (await chiedi({ cerca: 'pollo al limone' })).json();
+  prova('C125 ricerca: GialloZafferano giù = le ricette di RicetteFit, senza errore', j.rf === 1 && j.ricette.length >= 1 && /pollo-al-limone/.test(j.ricette[0].url) && !j.errore);
+  gzGiu2 = false; globalThis.fetch = prima;
+}
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);
