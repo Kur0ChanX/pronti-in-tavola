@@ -57,7 +57,7 @@ Sessione attuale: #50 (dopo la #49 `session_01WTjqUwbG8fmnQyBe1vh3er`, chiusa al
 Prima, 10/11 15:26 (chat della #48): «Le foto vanno bene, pubblica pure se vuoi.» (v0.10.13 approvata). 15:25: «Aggiorna il kit, verifica se, fammi questa cortesia, verifica se è rimasto in tutto il mio account, se è rimasto qualcosa di sospeso per aggiornare al kit. Ma è giusto una cosa mia, per capire un po'. Il kit dovrebbe essere aggiornato, prendilo pure.»
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C133; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C134; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
