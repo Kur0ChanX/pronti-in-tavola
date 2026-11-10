@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "5a463b085a59",
 "giorno": "2026-11-10",
-"turni": 5,
-"peso": 3321379,
-"uscita": 83214,
-"contesto_max": 314650,
+"turni": 6,
+"peso": 4232583,
+"uscita": 96239,
+"contesto_max": 349494,
 "anomalie": [
 "avvio pesante: 140k token dopo le letture d'avvio (tetto 130k)",
 "65k token scritti in un turno",
@@ -13,9 +13,9 @@
 ],
 "remota": "01WTjqUuJHcT",
 "aiutanti": 0,
-"strumenti": 128,
+"strumenti": 153,
 "motori": {
-"opus": 3321379
+"opus": 4232583
 },
 "blocchi": {
 "Stop 13 · There are uncommitted changes in": 5,
