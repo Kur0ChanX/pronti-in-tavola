@@ -1453,6 +1453,20 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!Array.isArray(r.piatti) || !r.piatti.some(n => /polpette di carne/i.test(n)) || !r.audio) throw new Error('al server non arrivano audio e nomi dei piatti: ' + JSON.stringify(r).slice(0, 200));
     if (r.msgs[0] !== 'un chilo di polpette di carne per domani' || !r.az[0] || r.az[0].id !== 'polpette-carne' || Number(r.az[0].qta) !== 1 || r.vista !== 'aiuto') throw new Error('proposta sbagliata: ' + JSON.stringify(r).slice(0, 300));
     if (r.giorno !== await page.evaluate(() => piuGiorni(oggi(), 1))) throw new Error('«per domani» non capito: ' + r.giorno);
+    if (await page.evaluate(() => (window.__mandato || {}).comeCliente) !== false) throw new Error('cliente vero: «comeCliente» deve essere false');
+    // (C108) Mario che guarda come cliente: il server deve usare la strada dei clienti (Deepgram) e la barra sviluppatore dice chi ha sentito
+    await page.evaluate(() => { if (ascoltoInCorso()) fermaAscoltoCliente(); });   // il «sì» a voce della proposta di prima riapre il microfono: lo chiudo
+    await page.waitForTimeout(300);
+    await page.evaluate(() => { window.__primaDev = [UI.devCliente, P.sviluppatore, S.impostazioni.voceClientiConferma]; UI.devCliente = true; P.sviluppatore = true; S.impostazioni.voceClientiConferma = false;
+      UI.ultimoAscolto = ''; UI.vista = 'menu'; AIC.msgs = []; VC.rec = null; VC.media = null; statoVC('', '');
+      window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'un chilo di polpette di carne per domani', motore: 'groq:whisper-large-v3+deepgram → qwen/qwen3.8-27b' }; }; render(); });
+    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
+    const st2 = await page.evaluate(() => [VC.stato, !!VC.media]);
+    if (st2[0] !== 'registro' || !st2[1]) throw new Error('guarda come cliente: ascolto preciso non partito: ' + JSON.stringify(st2));
+    await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(900);
+    const d = await page.evaluate(() => { const x = { come: (window.__mandato || {}).comeCliente, asc: UI.ultimoAscolto, barra: barraDev() };   // la barra sta in pagina solo sul sito vero (Dati.attivo)
+      [UI.devCliente, P.sviluppatore, S.impostazioni.voceClientiConferma] = window.__primaDev; UI.ultimoAscolto = ''; render(); return x; });
+    if (d.come !== true || d.asc !== 'Groq + Deepgram · corretto' || !d.barra.includes('<span class="dev-asc">🎧 Groq + Deepgram · corretto</span>')) throw new Error('guarda come cliente: strada o 🎧 sbagliati: ' + JSON.stringify(d).slice(0, 300));
     await page.evaluate(() => { S.impostazioni.voceClientiMotore = 'telefono'; window.__frasi = [['quanto costa il tiramisù']]; UI.vista = 'menu'; AIC.msgs = []; render(); });
     await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
     const r2 = await page.evaluate(() => ({ media: !!VC.media, msgs: AIC.msgs.map(m => m.t) }));

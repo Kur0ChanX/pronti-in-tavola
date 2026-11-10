@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.1';
+const VERSIONE_APP = '0.10.2';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.2', data: '10/11/2026',
+    corretto: ['Solo per Mario: quando guardi come cliente e parli al microfono, l\'ascolto ora passa dalla stessa strada dei clienti veri (Groq + Deepgram), non da quella di chi gestisce. Nella barra sviluppatore compare 🎧 con chi ha sentito la frase (es. «Groq + Deepgram · corretto»): così la tua prova vale anche per i clienti'] },
   { v: '0.10.1', data: '10/11/2026',
     corretto: ['Ricettario → «🔍 Controlla tutte»: prima diceva «5 da sistemare: ci penso io» ma non cambiava mai nulla. Ora le rilegge subito da GialloZafferano e per ognuna scrive il perché: «uguale all\'originale» se su GialloZafferano è proprio così (es. una foto citata che lì non c\'è, un frullato con 1 passo solo), oppure «pagina tolta». Una foto che GialloZafferano mette nel passo dopo non conta più come mancante'] },
   { v: '0.10.0', data: '10/11/2026',
