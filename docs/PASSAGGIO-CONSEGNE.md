@@ -1,13 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #38 (dopo la #37 `session_01WTjqUwYZ9ro8F9Ku7rJMWq`, chiusa alla soglia 09/11 23:01; la apre la #37 con `create_session` (catena 4 di 8)).
+Sessione attuale: #39 (dopo la #38 `session_01WTjqUx6Bw42npV5PZSzDj2`, chiusa alla soglia 10/11 01:20; la apre la #38 con `create_session` (catena 5 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (09/11 ~22:50):** 1) C113: con un iPhone la stessa persona chiedeva due volte il sì di Monica («un disastro… se non riesci togliamo l'approvazione»): corretto in v0.9.92, aspetta la prova di Mario con un iPhone NUOVO; 2) le 4 richieste delle 22:47: C114 foto a strisce (fatto v0.9.93), C115 vapore anche per i clienti, C116 video delle ricette (normale o dimenticanza?), C117 niente PIN/impronta per i clienti.
+- **Cosa preme a Mario adesso (10/11 ~01:15):** 1) 🔴 C120: sul suo Android l'app è in modo cliente e «Entra con Google» dice «Accesso non riuscito. Riprova.» (Mario: «perché rompi sempre il codice quando funziona?»); 2) C119 foto piccole delle ricette vecchie: scelta 2 = zoom piccolo (fatto v0.9.97) + motore che mette prima le foto grandi + «✨ Migliora con l'AI».
 
-## Stato (09/11 23:01 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261109-01WTjqUwYZ9r/claude/pronti-ramo-definitivo.
+## Stato (10/11 01:20 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?.
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Sito vero: v0.9.90 online (C112), giro «Pubblica sito» success sul commit e356f431 (09/11 ~21:10); `grep -m1 VERSIONE_APP data.js` → 0.9.90. App: 78 OK, 0 NO sul codice unito con Voce 10.
 - App: `python3 -I tools/anteprima.py && node tools/prova.js` → 77 OK, 0 NO (09/11 ~20:40, v0.9.87). `SOLO=carrello` NON va da solo (il carrello dipende dai passi prima): giro completo, ~3 minuti.
 - Server: `node tools/prova-limiti.mjs` → 22 OK (limiti C109 + catena Groq C108, memoria finta); `node tools/prova-ascolta.mjs` → 27 OK (di Voce).
@@ -18,12 +18,13 @@ Sessione attuale: #38 (dopo la #37 `session_01WTjqUwYZ9ro8F9Ku7rJMWq`, chiusa al
 ## Riferimenti
 - Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C3, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#37)
-- v0.9.91 (C111): firma «Powered by» con `touch-action: manipulation` + `cursor: pointer` (iPad: i 7 tocchi veloci erano zoom col doppio tocco, ipotesi non provata), `accendiDev()` + pulsante «🛠 Accendi la modalità sviluppatore» in `schedaMario`, 7 tocchi che rispondono sempre; `button, summary, label, [data-a]` senza zoom col doppio tocco. C109: `ascoltoQuota` in `segnalazioniHtml` e `sw.js`, opzione `ascoltoAvviso` (gruppo 'mario'), Voce 10 avvisata.
-- v0.9.92 (C113): accesso anonimo del cliente anche nel cookie `pit_acc` (dati.js `ricordaAccesso` dopo l'accesso, `riprendiAccesso` prima di `getAuth`, `cancellaAccesso` in `esci` e per Google). iPhone copia nell'app sulla Home solo i cookie (WebKit 17.2; OpenPWA 20/10/2026 su iOS 18.6.2); l'SDK trova l'accesso in localStorage e lo sposta in IndexedDB. Prova Firebase «C113» (contesto coi soli cookie): 99 OK, 0 NO. Lezione PT E44.
-- v0.9.93 (C114): `ric-zoom` in ricettario.js ingrandisce UNA foto della striscia (`data-n`/`data-j`, `.ric-zoom-taglio`), prova nel passo «foto a strisce». App 79 OK, 0 NO.
-- Foto di Mario in `archivio/foto/2026-11-09-2231-iphone-doppia-richiesta.jpg` e `2026-11-09-2247-ricetta-*.jpg`. Per far girare `npm run prova-firebase` in un contenitore nuovo: prima `npm ci`.
-- Controllo Da fare: 5 voci aggiunte (C113-C117).
+## Sessione appena chiusa (#38)
+- v0.9.94: C115 vapore anche per i clienti (`apertura()` → `Vapore.parti(…, null, true)` se `!statoLucchetto()`; `vapore.js` param `dolce`); C116 copia col video perso si rilegge (`vRicetta`); C117 già così (lucchetto solo `P.ruolo === 'monica'`), prova Firebase nuova.
+- v0.9.95: C118 `fotoRicetta(r)` + `riquadri(p, dopo)` in ricettario.js: strisce «…seq3.jpg» con un numerino continuano dal passo prima. Controllo 92 ricette: 684 foto delle strisce numerate, 0 senza numero.
+- v0.9.96: frase sotto gli allergeni di Mario (app.js ~918). v0.9.97: `.ric-zoom-taglio` max 340 px (C119).
+- C116 numeri: 92 ricette, 75 col video (tutti trovati), 17 «solo foto» su GZ (`gz-type-photo`). C119: 34/92 solo strisce 660×170 (ogni foto 220×170), 57 da 600×450; versioni grandi su GZ: 403.
+- Prove: app 81 OK, Firebase 100 OK (prima serve `npm ci`). Script di controllo nello scratchpad (non nel repo): se servono, rifarli da `tools/controlla-ricette.mjs`.
+- Lezione PT E45 (foto ingrandite senza guardare i pixel). Controllo Da fare: 2 voci aggiunte (C120, C121).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - Voci (#30): Supertonic 3 (F1, M1) e Kokoro italiano (Sara, Nicola): Mario «tono, pause e accenti sembrano stranieri». Chatterbox/OmniVoice: >1 GB, GPU. Kitten: solo inglese.
@@ -36,27 +37,20 @@ Sessione attuale: #38 (dopo la #37 `session_01WTjqUwYZ9ro8F9Ku7rJMWq`, chiusa al
 - C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
-0. C118 (Mario 09/11 ~23:05, dopo l'handoff): ricette col «sistema vecchio» (foto a strisce di GZ) anche fra quelle nuove. Prima capire con 2-3 esempi veri cosa vede Mario (da v0.9.93 le strisce si tagliano anche ingrandite: forse basta); poi motore del ricettario migliorato e un controllo nell'app/server che riguarda TUTTE le ricette e le sistema col lettore nuovo (c'è già `tools/controlla-ricette.mjs` e «🔍 Controlla tutte», C83: partire da lì, niente doppioni). Risposta a Mario con numeri (PT E34).
-1. C115: vapore (`vapore.js`, stile scelto da Mario «A Pentola», `P.vapore`) anche per i clienti: oggi parte solo dopo lo sblocco di chi gestisce (cercare `Vapore.parti`). Proposta: all'apertura dell'app del cliente, una volta, breve; occhio a non coprire «Come ti chiami?» e il foglio «Installa l'app».
-2. C116: contare le ricette col video (campo video nei dati del ricettario e sul server) e controllare 3-5 ricette senza video sulla pagina vera di GialloZafferano: se GZ il video ce l'ha, il lettore lo perde → correggerlo. Risposta a Mario con SÌ/NO e numeri (PT E34).
-3. C117: cercare il lucchetto (`L.`, `Lucchetto`, PIN, impronta) nei percorsi del cliente; Mario dice che ai clienti non lo chiede già: togliere ogni resto (opzioni, fogli, testi) e lasciarlo solo a chi gestisce. Prova: da cliente nessun PIN/impronta.
-4. C113: aspettare la prova di Mario con un iPhone NUOVO. Se ancora due richieste: Mario propone di togliere l'approvazione (🛑, chiedere prima). Idea dopo: iscrizione alle notifiche anche prima del sì (il server già accetta, il blocco è `P.cliente` in app.js ~510).
-5. C111, C106, C108, C109, C110: aspettare le prove di Mario (foto). C104/C97: Francesco in Clienti. C112: foto di Mario.
+0. 🔴 C120 URGENTE (foto `archivio/foto/2026-11-10-0112-android-*.jpg`): Android di Mario, app in modo cliente («Benvenuti da Monica!», carrello 2), 7 tocchi → «prima entra da Area riservata col tuo Google», poi «Accesso non riuscito. Riprova.». Nella barra del telefono il segnale ha una ✕ (forse senza rete: IPOTESI, PT E10). Da capire leggendo: `Dati.entraGoogle` (dati.js ~650, `signInWithPopup`) e i 3 punti con quel testo (app.js 2136, 2162, 2925) che NON mostrano `e.code`; `riprendiAccesso` (dati.js ~268, C113 v0.9.92) mette l'accesso anonimo del cookie `pit_acc` in localStorage se lì non c'è nulla: controllare che non possa mai sostituire un accesso Google che sta in IndexedDB (l'SDK sceglie la prima persistenza con un utente: IndexedDB prima). Subito: messaggio d'errore col motivo vero (senza rete → «Manca la rete»; `auth/popup-blocked`, `auth/network-request-failed`…) e una prova Firebase «Google già entrato + cookie pit_acc vecchio → resta Google». Chiedere a Mario: era in rete? prima su questo telefono era entrato col Google?
+1. C119: motore e elenco «nuove» prima le ricette con foto 600×450 (worker.js `proposte`, oggi `ORDER BY video DESC`); poi «✨ Migliora con l'AI» nello zoom delle strisce: ricerca aggiornata (skill `ricerca-aggiornata`) di un ingranditore gratis nel browser (es. UpscalerJS/ESRGAN leggero: peso, tempo su telefono), prova sull'Astice e foto prima/dopo a Mario PRIMA di metterlo a tutti.
+2. «Scrivimi!» sotto gli allergeni come tocco che apre WhatsApp con Monica: proposto, Mario non ha risposto (non farlo senza sì).
+3. C113, C118/C115, C111, C106, C108, C110: aspettare le prove di Mario (righe in «Aspetta Mario»).
 
 ## Domande aperte
-- In «## 0. Aspetta Mario» di `docs/DA-FARE.md` (8 righe: 5 della principale, fra cui C113 iPhone e C111 iPad di questa sessione). Nessuna 🛑 nuova.
+- In «## 0. Aspetta Mario» di `docs/DA-FARE.md`. La 🛑 C119 ha avuto risposta (tolta). C120: da chiedere a Mario se era in rete.
 
 ## Ultimo messaggio di Mario
-Dopo l'handoff, nella #37 (09/11 ~23:05), parola per parola: «sembra che alcune ricerte hanno il sistema vecchio alcune il sistema nuovo anche aggiunte da poco come nuove ricette migliora il motore del ricettario che prende le ricette e metti un motore nell'app che le controllantitte e le aggiusta al meglio con la nuova versione» → C118 (Prossimi passi 0).
-09/11 ~22:47 (in questa chat), con 4 foto (Culurgiones e Astice alla Catalana, la foto ingrandita con 1-2-3 unite), parola per parola: «poi correggi il ricettario molte ricette sembrano ancora con il sistema vecchio le foto se clichi sono unite e non va bene
-
-poi l'animazione del fumo ci deve essere anche nell'app dei clienti 
-poi nel ricettario non tutte le ricette hanno il video è normale o dimenticanza o entrambe? poi
-togliamo il PIN e impronta nei clienti tanto ho visto che non la chiede manteniamola spenta per accesso piú rapido» → C114 fatto (v0.9.93), C115-C117 nei Prossimi passi.
-Prima, 09/11 ~22:31, con foto «Elena Fancello · Dice che ha cambiato telefono»: «ho fatto un test con un invito ad un iphone un  disastro allora le notifiche non puoi abilitarle perché vanno approvate da monica dopo  che abbiamo approvato gli ha fatto uscire e rientrare con un altra richiesta di approvazione che monica ha dovuto avvertare non ha cambiato telefono se non riesci a risolvere togliamo l'approvazione sembra quello il problema di tutto» → C113, v0.9.92.
+10/11 ~01:15 (in questa chat), con 2 foto (Android, modo cliente: «Modalità sviluppatore: prima entra da «Area riservata»…» e «Accesso non riuscito. Riprova.»), parola per parola: «perché rompi sempre il codice  quando funziona?» → C120, Prossimi passi 0 (non ancora risposto nel merito: la #39 risponde).
+Prima, 10/11 01:10: «b + migliora con ia» (= scelta 2 di C119). 09/11 23:58: «quelle che separi sono sgranatissime controllale tutte se sono in hd di tutte le rivette e evita questo problema in futuro e risolvi tutte le foto in bassa qualità e riscaricale in tutte le ricette». 09/11 23:51: testo allergeni → v0.9.96.
 
 ## Numeri liberi
-Prossimo E libero: PT E45; prossimo C libero: C119; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C120; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
