@@ -1745,6 +1745,23 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (st.box || st.nuovi.some(c => c.q) || !st.nuovi.some(c => c.gz === 'lasagne')) throw new Error('fuori da Proteiche la ricerca non è quella di sempre: ' + JSON.stringify(st));
     await page.evaluate(() => { clearTimeout(RIC.fitTimer); RIC.fitTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC125c; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C125 ricerca con RicetteFit: tasto e titolo dicono le due fonti, RicetteFit in cima con la sua etichetta', async () => {   // autonomo
+    await page.evaluate(() => {
+      window.__primaC125r = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+      window.__rc = [];
+      RIC.chiedi = async c => { if (c.cerca && !c.cat) { window.__rc.push(c); return { ricette: [{ url: 'https://www.ricettefit.it/ricetta/budino-proteico-al-cacao/', nome: 'Budino proteico al cacao', foto: '' }, { url: 'https://ricette.giallozafferano.it/Budino-al-cioccolato.html', nome: 'Budino al cioccolato', foto: '' }], rf: 1, prossima: '' }; }
+        return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0, scelte: 0, conValori: 0, senzaValori: 0, paroleFit: [], giri: 1, fonte: 1, fonti: 10 } } : { ricette: [], prossima: '' }; };
+      salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.fitCerca = null; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      UI.ricZona = 'tutte'; UI.vista = 'ricettario'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    await page.locator('#ric-cerca').fill('budino'); await page.locator('#ric-cerca').press('Enter'); await page.waitForTimeout(300);
+    const st = await page.evaluate(() => ({ tasto: (document.querySelector('[data-a="ric-cerca-gz"]') || {}).textContent || '', titolo: (document.querySelector('#ric-risultati h2') || {}).textContent || '',
+      carte: [...document.querySelectorAll('#ric-risultati .ric-carta')].map(b => b.innerText.replace(/\s+/g, ' ')), chiesto: window.__rc.slice(-1)[0] }));
+    if (!/Cerca «budino» su GialloZafferano e RicetteFit/.test(st.tasto) || !/Da GialloZafferano e RicetteFit: «budino»/.test(st.titolo) || st.carte.length !== 2 || !/Budino proteico al cacao.*RicetteFit/.test(st.carte[0])
+      || !/Budino al cioccolato.*GialloZafferano/.test(st.carte[1]) || !st.chiesto || st.chiesto.cerca !== 'budino') throw new Error('ricerca con RicetteFit sbagliata: ' + JSON.stringify(st));
+    await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC125r; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario RicetteFit (C124 passo 8): ricetta aperta dal suo sito con fonte e valori, portate del motore nei filtri, interruttore nel Database, link incollato', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaRf = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
