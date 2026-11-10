@@ -20,8 +20,8 @@ const ORDINI_RIC = [['', 'Consigliate'], ['nuove', '🆕 Nuove'], ['az', 'A-Z'],
 /* C124 (Mario 10/11 «metti anche filtro per difficoltà»): Facili comprende «Molto facile», Difficili «Molto difficile» */
 const DIFF_RIC = [['', 'Tutte'], ['facile', 'Facili'], ['media', 'Medie'], ['difficile', 'Difficili']];
 const diffRic = d => { const t = String(d || '').toLowerCase(); return /facil/.test(t) ? 'facile' : /medi/.test(t) ? 'media' : /diffic/.test(t) ? 'difficile' : ''; };
-const filtriVuoti = () => ({ q: '', zona: 'tutte', cat: '', tempo: 0, diff: '', ordine: '', piu: false, fit: '' });
-const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.tempo || f.diff || f.fit);
+const filtriVuoti = () => ({ q: '', zona: 'tutte', cat: '', tempo: 0, diff: '', ordine: '', piu: false, fit: '', prot: '' });
+const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.tempo || f.diff || f.fit || f.prot);
 /* C124 (Mario 10/11 «ricette gym… poche calorie e grassi cattivi… attenzione a sale e zuccheri… asciugarsi ma migliorare l'ipertrofia»):
    regola «🏋️ Proteiche» sui valori PER PORZIONE di GialloZafferano. Soglie in Impostazioni → «Solo per te, Mario» (opzioni.js, fit*);
    fonti delle soglie in docs/lavori-in-corso/c124-ricettario-proteico.md. Senza tutti i valori una ricetta non entra (meglio una in meno). */
@@ -52,7 +52,7 @@ function contaRicHome() {
   return { tutte: tt.length + mieRic().length, fit: fit.length, fonti: perFonte(fit) };
 }
 const minutiRic = r => Number(r.totale) || Number(r.minuti) || (Number(r.prep) || 0) + (Number(r.cottura) || 0) || 0;
-function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!f.piu, zona: f.zona, cat: f.cat, tempo: f.tempo, diff: f.diff, ordine: f.ordine, fit: f.fit || '' }); }
+function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!f.piu, zona: f.zona, cat: f.cat, tempo: f.tempo, diff: f.diff, ordine: f.ordine, fit: f.fit || '', prot: f.prot || '' }); }
 const ZONE_RIC = [['tutte', 'Tutte'], ['fit', '🏋️ Proteiche'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/', URL_RF = 'https://www.ricettefit.it/ricetta/';
@@ -349,7 +349,7 @@ function notaFit() {
    Entrano in «🏋️ Proteiche» solo se passano le regole (valori per porzione). Instagram e YouTube no: condizioni d'uso e niente valori. */
 function cercaFitBox(f) {
   const q = f.q.trim(), k = q.toLowerCase(), m = momentoFit(f.fit), x = RIC.fitCerca;
-  const c = x && (x.mom === '*' ? !m && !k : x.mom ? !!m && x.mom === m[0] : !!k && x.q === k) ? x : null, Q = `«${esc(c ? c.testo : q)}»`, conQ = c && c.mom === '*' ? 'su tutti i siti' : 'con ' + Q;   // C126: esito del momento scelto o della parola scritta
+  const c = x && (x.mom === '*' ? !m && !k : /^p:/.test(x.mom) ? f.prot === x.mom.slice(2) : x.mom ? !!m && x.mom === m[0] : !!k && x.q === k) ? x : null, Q = `«${esc(c ? c.testo : q)}»`, conQ = c && c.mom === '*' ? 'su tutti i siti' : 'con ' + Q;   // C126: esito del momento scelto o della parola scritta
   const esito = !c ? '' : c.stato === 'carico' ? `<p class="piccolo" style="margin:0">🔎 Cerco ${c.mom === '*' ? 'ricette fit' : Q} su GialloZafferano e RicetteFit…</p>`
     : c.stato === 'errore' ? `<p class="piccolo" style="margin:0">${esc(c.errore)}</p>`
     : c.nuove ? `<p class="piccolo" style="margin:0">🔎 Trovate <b>${c.nuove}</b> ricette nuove ${conQ}${c.gia === 1 ? ' (un\'altra l\'avevo già letta)' : c.gia ? ` (altre ${c.gia} le avevo già lette)` : ''}. Le leggo una per una, 5 ogni 30 secondi: quelle che passano le regole compaiono qui da sole.</p>`
@@ -360,8 +360,8 @@ function cercaFitBox(f) {
       <p class="piccolo tenue" style="margin:0">Puoi anche toccare un momento qui sopra (Colazione, Pranzo, Cena…) o scrivere un piatto o un ingrediente nella ricerca in alto.</p>`}
     ${esito}</section>`;
 }
-function cercaFit(q, qq, tutto) {   // qq: le parole di un momento; tutto: «Cerca nuove ricette fit su tutti i siti» (C126)
-  q = String(q || '').trim(); const k = q.toLowerCase(), mom = tutto ? '*' : Array.isArray(qq) ? UI.ric.fit : '', testo = q;
+function cercaFit(q, qq, tutto, chiave) {   // qq: le parole di un momento o di una fonte proteica (chiave 'p:…'); tutto: «… su tutti i siti» (C126)
+  q = String(q || '').trim(); const k = q.toLowerCase(), mom = chiave || (tutto ? '*' : Array.isArray(qq) ? UI.ric.fit : ''), testo = q;
   if (q.length < 2 || (RIC.fitCerca && RIC.fitCerca.q === k && RIC.fitCerca.stato === 'carico')) return;   // niente doppio tocco
   if (!navigator.onLine) { RIC.fitCerca = { q: k, mom, testo, stato: 'errore', errore: 'Senza rete non posso cercare: le proteiche già lette sono qui sotto.' }; render(); return; }
   RIC.fitCerca = { q: k, mom, testo, stato: 'carico' }; render();
@@ -411,9 +411,27 @@ function momentoRic(r, m) {
   return true;
 }
 const momentoFit = k => MOMENTI_FIT.find(x => x[0] === k);
+/* C126 (Mario 10/11 13:57 «poi se voglio scelgo la fonte proteica, ma mettine tante»; 14:10 «senza selezionare… devo poterla fare»):
+   fonte proteica FACOLTATIVA, una alla volta, cercata nel nome e negli ingredienti. [chiave, testo, parole, parola da cercare sui siti] */
+const FONTI_PROT = [
+  ['pollo', '🍗 Pollo', /pollo/, 'pollo'], ['tacchino', '🦃 Tacchino', /tacchin/, 'tacchino'],
+  ['manzo', '🥩 Manzo', /manzo|vitell|bresaola|tagliata|bovin|hamburger/, 'manzo'], ['maiale', '🐖 Maiale magro', /maiale|lonza|lonzino|prosciutto cotto/, 'lonza'],
+  ['uova', '🍳 Uova', /\buov|frittat|omelette/, 'uova'], ['albumi', '🥚 Albumi', /album/, 'albumi'],
+  ['tonno', '🐟 Tonno', /tonno/, 'tonno'], ['salmone', '🍣 Salmone', /salmon/, 'salmone'],
+  ['merluzzo', '🐟 Merluzzo e baccalà', /merluzz|baccal|nasello|platessa/, 'merluzzo'], ['pesce', '🐠 Altro pesce', /orata|branzin|spigola|pesce spada|sgombr|sogliol|trota|dentice|cernia/, 'pesce'],
+  ['gamberi', '🦐 Gamberi', /gamber|mazzancoll|scamp/, 'gamberi'], ['polpo', '🐙 Polpo e calamari', /polpo|calamar|seppi|totan/, 'polpo'],
+  ['ricotta', '🧀 Ricotta', /ricotta/, 'ricotta'], ['fiocchi', '🥛 Fiocchi di latte', /fiocchi di latte|cottage/, 'fiocchi di latte'],
+  ['yogurt', '🥣 Yogurt greco e skyr', /yogurt|skyr/, 'yogurt greco'], ['legumi', '🫘 Legumi', /ceci|lenticch|fagiol|pisell|fave|edamame|legum|cicerch/, 'legumi'],
+  ['tofu', '🌱 Tofu e tempeh', /tofu|tempeh/, 'tofu'], ['seitan', '🌾 Seitan', /seitan/, 'seitan'],
+  ['polvere', '💪 Proteine in polvere', /proteine in polvere|whey|proteica in polvere|isolate/, 'proteine in polvere']];
+const fonteProt = k => FONTI_PROT.find(x => x[0] === k);
+const haFonteProt = (r, k) => { const x = fonteProt(k); return !x || x[2].test(senzaAccenti((r.nome || '') + ' ' + (r.cerca || '') + ' ' + (r.ingredienti || []).map(i => i.nome).join(' '))); };
 function sceltaFit(f) {
   const n = sogliaFit('fitVeloci', 10), b = (a, v, t, si) => `<button type="button" class="scelta" data-a="${a}" data-v="${v}" aria-pressed="${si}">${t}</button>`;
-  return `<div class="scelte ric-fit-scelte" role="group" aria-label="Quando">${MOMENTI_FIT.map(([k, t]) => b('ric-fit-tipo', k, t, f.fit === k)).join('')}${b('ric-tempo', n, `⚡ Pronte in ${n} minuti`, f.tempo === n)}</div>`;
+  const fp = fonteProt(f.prot), apri = !!(UI.ricProtApri || fp);
+  return `<div class="scelte ric-fit-scelte" role="group" aria-label="Quando">${MOMENTI_FIT.map(([k, t]) => b('ric-fit-tipo', k, t, f.fit === k)).join('')}${b('ric-tempo', n, `⚡ Pronte in ${n} minuti`, f.tempo === n)}</div>
+    <button type="button" class="btn chiaro piccolo" data-a="ric-prot-apri" aria-expanded="${apri}">🥩 Fonte proteica (facoltativo)${fp ? ': ' + esc(fp[1]) : ''}</button>
+    ${apri ? `<div class="scelte ric-prot-scelte" role="group" aria-label="Fonte proteica">${FONTI_PROT.map(([k, t]) => b('ric-prot', k, t, f.prot === k)).join('')}</div>` : ''}`;
 }
 
 /* 🗄 DATABASE RICETTE (C60, C61; Mario 08/11 «quante ricette ho, quante nuove, quali, quali con la voce, dati offline»):
@@ -547,7 +565,8 @@ function vRicettario() {
   if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
   leggiScelte(); chiediStatoDb();
   const f = UI.ric || (UI.ric = Object.assign(filtriVuoti(), leggiRic('pit-ric-filtri', {}), { q: '' }));   // C69: filtri ricordati (non la ricerca scritta)
-  if (f.fit && !momentoFit(f.fit)) f.fit = '';   // C126: «pasto»/«snack» salvati dalla v0.10.7-0.10.9 non sono più scelte
+  if (f.fit && !momentoFit(f.fit)) f.fit = '';
+  if (f.prot && !fonteProt(f.prot)) f.prot = '';   // C126: «pasto»/«snack» salvati dalla v0.10.7-0.10.9 non sono più scelte
   if (f.facile) { f.diff = f.diff || 'facile'; delete f.facile; }   // C124: il vecchio «Solo facili» diventa «Facili»
   if (UI.ricZona) { f.zona = UI.ricZona; f.cat = ''; delete UI.ricZona; salvaFiltri(); }   // dall'aiutante o dalla Home («🏋️ Proteiche»)
   const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
@@ -555,7 +574,7 @@ function vRicettario() {
   const scar = RIC.scaricate, extra = Object.assign({}, scar, cache);
   const elenco = elencoRic();
   const tutte = mie.concat(elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti, nutr: r.nutr || x.nutr || null }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
-  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && (momentoFit(f.fit) ? momentoRic(r, f.fit) : fitRic(r.nutr)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
+  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && (momentoFit(f.fit) ? momentoRic(r, f.fit) : fitRic(r.nutr)) && haFonteProt(r, f.prot) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
     && (!f.tempo || (minutiRic(r) > 0 && minutiRic(r) <= f.tempo)) && (!f.diff || diffRic(r.difficolta) === f.diff)
@@ -936,6 +955,8 @@ Object.assign(A, {
   'ric-riapri'(el) { delete RIC.errore[el.dataset.v]; render(); },
   'ric-zona'(el) { const f = UI.ric; f.zona = el.dataset.v; if (f.zona !== 'fit') { f.fit = ''; if (f.tempo === sogliaFit('fitVeloci', 10)) f.tempo = 0; } salvaFiltri(); render(); },   // C125: Pasti/Snack e «⚡» valgono solo dentro Proteiche
   'ric-cat'(el) { UI.ric.cat = el.dataset.v; salvaFiltri(); render(); },
+  'ric-prot-apri'() { UI.ricProtApri = !(UI.ricProtApri || UI.ric.prot); if (!UI.ricProtApri) UI.ric.prot = ''; salvaFiltri(); render(); },   // C126: chiudere toglie anche la scelta
+  'ric-prot'(el) { const f = UI.ric; f.prot = f.prot === el.dataset.v ? '' : el.dataset.v; salvaFiltri(); const x = fonteProt(f.prot); if (x) cercaFit(x[1].replace(/^\S+\s/, ''), [x[3]], false, 'p:' + x[0]); else render(); },   // C126: tocco = filtra e cerca; ritocco = tolta
   'ric-cerca-fit-tutto'() { const m = momentoFit(UI.ric.fit); if (m) cercaFit(m[1].replace(/^\S+\s/, ''), m[2]); else cercaFit('tutti i siti', null, true); },   // C126 (Mario 14:10 «mi cerca tutto nei siti»)
   'ric-cerca-fit'(el) { const v = el.dataset.v || (UI.ric.q || '').trim(); if (v.length < 2) return; UI.ric.q = v; cercaFit(v); },   // C125
   'ric-fit-tipo'(el) { const f = UI.ric; f.fit = f.fit === el.dataset.v ? '' : el.dataset.v; salvaFiltri(); const m = momentoFit(f.fit); if (m) cercaFit(m[1].replace(/^\S+\s/, ''), m[2]); else render(); },   // C126: ritocco = tolto; un momento cerca anche le sue parole

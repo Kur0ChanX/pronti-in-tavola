@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 11:32 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 14:05 ora italiana)
 
-non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+se voglio fare una ricerca senza selezionare la proteina devo poterla fare e mi cerca tutto o anche senza aggiungere esempio pranzo cena dopo allenamento ecc ecc mi cerca tutto nei siti e le carica nell'app
