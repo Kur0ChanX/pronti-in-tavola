@@ -1,3 +1,5 @@
-# Ultima risposta di Claude (10/11/2026 11:33 ora italiana)
+# Ultima risposta di Claude (10/11/2026 15:11 ora italiana)
 
-Grazie: Android ok, ho salvato la foto e l'ho passata alla chat nuova insieme al tuo messaggio. Le prove su iPad e iPhone aspettano finché non ne avrai uno. D'ora in poi scrivi nella **Principale 42**: https://claude.ai/code/[segreto tolto dalla scorta]
+Pezzo 1 di C127 scritto e provato. Il giro completo delle prove è in corso; quando finisce pubblico la v0.10.13 e ti mando le foto prima e dopo.
+
+Ho trovato e corretto un mio errore. Il tasto «Altre ▾» aveva lo stesso nome di «Carica altre ricette» e non apriva nulla. Ora un controllo automatico impedisce che ricapiti (PT E51).
