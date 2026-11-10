@@ -41,7 +41,7 @@ export function ingrediente(riga) {
   return { nome: t, q: null, u: '', nota: '' };
 }
 
-function recipeLd(html) {
+export function recipeLd(html) {
   for (const b of String(html).matchAll(/<script[^>]*application\/ld\+json[^>]*>([\s\S]*?)<\/script>/gi)) {
     let d; try { d = JSON.parse(b[1]); } catch (e) { continue; }
     const tutti = [].concat(d, d && d['@graph'] || []);
