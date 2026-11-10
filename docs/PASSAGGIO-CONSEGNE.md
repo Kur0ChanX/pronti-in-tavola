@@ -46,6 +46,8 @@ Sessione attuale: #39 (dopo la #38 `session_01WTjqUx6Bw42npV5PZSzDj2`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`. La 🛑 C119 ha avuto risposta (tolta). C120: da chiedere a Mario se era in rete.
 
 ## Ultimo messaggio di Mario
+10/11 ~01:27, dopo l'handoff (nella #38): «Aspetta, aspetta, cancella l'ultimo messaggio che ti ho mandato perché si potrebbero creare dei conflitti.» → il messaggio delle ~01:25 (regola «impara dagli errori» per tutto l'account) è ANNULLATO da Mario: non farlo, niente voce in Da fare (era C122, tolta). Se lo trovi in `docs/MESSAGGI-MARIO.md`, ignoralo.
+Prima:
 10/11 ~01:15 (in questa chat), con 2 foto (Android, modo cliente: «Modalità sviluppatore: prima entra da «Area riservata»…» e «Accesso non riuscito. Riprova.»), parola per parola: «perché rompi sempre il codice  quando funziona?» → C120, Prossimi passi 0 (non ancora risposto nel merito: la #39 risponde).
 Prima, 10/11 01:10: «b + migliora con ia» (= scelta 2 di C119). 09/11 23:58: «quelle che separi sono sgranatissime controllale tutte se sono in hd di tutte le rivette e evita questo problema in futuro e risolvi tutte le foto in bassa qualità e riscaricale in tutte le ricette». 09/11 23:51: testo allergeni → v0.9.96.
 
