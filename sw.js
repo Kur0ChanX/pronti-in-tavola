@@ -6,7 +6,7 @@
 const VERSIONE_FB = '13.2.0';
 const CACHE = 'pit-' + VERSIONE_FB;
 const FB = 'https://www.gstatic.com/firebasejs/' + VERSIONE_FB + '/';
-const GUSCIO = ['./', 'style.css', 'data.js', 'dati.js', 'opzioni.js', 'lucchetto.js', 'vapore.js', 'guida-iphone.js', 'app.js', 'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'ricettario.js', 'manifest.webmanifest',
+const GUSCIO = ['./', 'style.css', 'data.js', 'dati.js', 'opzioni.js', 'lucchetto.js', 'vapore.js', 'guida-iphone.js', 'app.js', 'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'foto-ai.js', 'ricettario.js', 'manifest.webmanifest',
   'media/icon-192.png', 'media/icon-512.png', 'media/badge-96.png', 'media/logo-480.webp', 'media/logo-firma.webp', 'media/logo-medaglione.webp', 'media/logo-titolo.webp',
   'media/ynoy-firma.png', 'media/ynoy-scritta.png', 'media/ynoy-luna-1.png', 'media/ynoy-luna-2.png', 'media/ynoy-luna-3.png', 'media/ynoy-luna-4.png'];
 const LIBRERIA = ['firebase-app.js', 'firebase-firestore.js', 'firebase-auth.js'].map(f => FB + f);
@@ -94,5 +94,6 @@ self.addEventListener('fetch', e => {
   // foto delle ricette scaricate (ricettario «📥 Scarica»): dalla copia sul telefono, così si vedono senza rete
   if (/^https:\/\/www\.giallozafferano\.it\/images\//.test(r.url)) { e.respondWith(caches.open('gz-foto').then(c => c.match(r.url)).then(m => m || fetch(r))); return; }
   if (new URL(r.url).origin !== location.origin) return;
+  if (/\.onnx$/.test(new URL(r.url).pathname)) return;   // (C119) il modello dell'AI delle foto (5 MB) lo tiene foto-ai.js nella sua memoria: niente seconda copia
   e.respondWith(primaRete(r));
 });
