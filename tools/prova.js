@@ -725,7 +725,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // 🗄 pagina Database ricette (C60): numeri del telefono e del server, «Sfoglia» apre l'archivio nel Ricettario
     await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, mb: 3, oggi: 12, pausa: false, fonte: 3, fonti: 10, sezione: 'dolci', giri: 20, pagine: 9, passate: 0, ultimoGiro: { quando: Date.now() - 120000 } }; RIC.dbOra = Date.now(); vai('ricdb'); });
     await page.locator('#ricdb-archivio h2', { hasText: '42 trovate' }).waitFor({ timeout: 3000 });
-    if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count()) || !(await page.locator('#ricdb-archivio', { hasText: 'sarde: pagina 1 · altre: sezione 3 di 9 (Dolci) · 22%' }).count())) throw new Error('il motore non dice stato e avanzamento');
+    // C136: di base il motore lavora solo a mano (stato e ultimo giro detti); acceso da Mario torna «Lavora sul server»
+    if (!(await page.locator('#ricdb-archivio', { hasText: 'A mano: lavora solo quando lo chiedi tu · ultimo giro 2 min fa' }).count()) || !(await page.locator('#ricdb-archivio', { hasText: 'sarde: pagina 1 · altre: sezione 3 di 9 (Dolci) · 22%' }).count())) throw new Error('il motore non dice stato e avanzamento');
+    await page.evaluate(() => { RIC.db.auto = true; render(); });
+    if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count())) throw new Error('C136: col motore automatico acceso non dice «Lavora sul server»');
+    await page.evaluate(() => { RIC.db.auto = false; render(); });
     await page.evaluate(() => { RIC._c3 = RIC.chiedi; RIC.chiedi = async c => c.db === 'cerca' ? { db: Object.assign({}, RIC.db, { ricette: 44 }), nuove: 2 } : RIC._c3(c); });
     await clic('[data-a="ric-db-cerca"]'); await page.waitForTimeout(300);
     if (!(await page.locator('#ricdb-archivio h2', { hasText: '44 trovate' }).count())) throw new Error('«Cerca adesso» non aggiorna i numeri');
@@ -736,13 +740,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
     // 🗄 Il mio database in vista nel Ricettario (Mario 08/11 «sembra nascosta»): numeri e motore senza cambiare pagina
     const box = await page.locator('.ric-db-box').innerText();
-    if (!/nel ricettario/.test(box) || !/le vede anche Monica/.test(box) || !/in arrivo/.test(box) || !/Tutto salvato sul server/.test(box)) throw new Error('il riquadro del database non dice chiaro totale, arrivo e salvataggio: ' + box.slice(0, 300));
-    // ⚡ Carica 100 (Mario 08/11): parte sul server e la barra lo mostra
-    await page.evaluate(() => { RIC._c4 = RIC.chiedi; RIC.chiedi = async c => c.db === 'turbo' ? { turbo: { obiettivo: c.n, fatte: 0, scartate: 0, attivo: true } } : c.db === 'stato' ? { db: RIC.db } : RIC._c4(c); });
+    if (!/nel ricettario/.test(box) || !/le vede anche Monica/.test(box) || !/in coda/.test(box) || !/Tutto salvato sul server/.test(box)) throw new Error('il riquadro del database non dice chiaro totale, arrivo e salvataggio: ' + box.slice(0, 300));
+    // ⚡ Carica (Mario 08/11); C136 «a manuale poco alla volta»: N ricette (base 20, «Solo per te, Mario»), «⏹ Ferma» mentre carica
+    if (!/⚡ Carica altre 20 ricette/.test(box) || !/🖐 Ricette nuove solo quando le chiedi tu/.test(box) || /entro 10 minuti|Motore al lavoro/.test(box)) throw new Error('C136: il riquadro del database non dice che si carica a mano: ' + box.slice(0, 400));
+    await page.evaluate(() => { window.__c136 = []; RIC._c4 = RIC.chiedi; RIC.chiedi = async c => { window.__c136.push(c); return c.db === 'turbo' ? { turbo: { obiettivo: c.n, fatte: 0, scartate: 0, attivo: true } } : c.db === 'ferma' ? { db: Object.assign({}, RIC.db, { turbo: { obiettivo: 20, fatte: 3, scartate: 0, attivo: false, fermato: true, finito: Date.now() } }) } : c.db === 'stato' ? { db: RIC.db } : RIC._c4(c); }; });
     await clic('[data-a="ric-db-turbo"]'); await page.waitForTimeout(400);
-    if (!(await page.locator('.ric-db-box', { hasText: 'Carico 100 ricette: 0 fatte' }).count())) throw new Error('«⚡ Carica 100» non mostra il carico in corso');
+    if (!(await page.locator('.ric-db-box', { hasText: 'Carico 20 ricette: 0 fatte' }).count()) || (await page.evaluate(() => window.__c136.find(c => c.db === 'turbo').n)) !== 20) throw new Error('C136: «⚡ Carica altre 20» non chiede 20 ricette o non mostra il carico in corso');
+    await clic('.ric-db-box [data-a="ric-db-ferma"]'); await page.waitForTimeout(400);
+    if (!(await page.locator('.ric-db-box', { hasText: 'Ultimo carico (fermato da te): 3 ricette nuove' }).count())) throw new Error('C136: «⏹ Ferma» non ferma il carico');
     await page.evaluate(() => { RIC.chiedi = RIC._c4; RIC.db.turbo = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; render(); });
-    if (!(await page.locator('.ric-db-box', { hasText: 'Motore' }).count())) throw new Error('nel Ricettario manca lo stato del motore');
+    if (!(await page.locator('.ric-db-box', { hasText: 'solo quando le chiedi tu' }).count())) throw new Error('nel Ricettario manca lo stato del motore');
     // C83: «🔍 Controlla tutte» → esito di tutte le ricette in vista, con quelle da sistemare
     await page.evaluate(() => { RIC._c5 = RIC.chiedi; RIC.chiedi = async c => c.db === 'controlla' ? { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 }, db: Object.assign({}, RIC.db, { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 } }) } : RIC._c5(c); });
     await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
@@ -1819,10 +1826,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     let nota = await carica();
     if (!/⏳ Sto caricando ricette nuove: RicetteFit 230 di 905 · valori ancora 400\. Finisco fra circa un'ora \(stima\)/.test(nota.t) || nota.barra !== '26' || !/Oggi \+1 entrata in Proteiche ✅/.test(nota.t) || /10 ogni 10 minuti/.test(nota.t)) throw new Error('Proteiche: lettura delle fonti non detta (C127 riquadro verde): ' + JSON.stringify(nota));
     await foto('48d-c128-lettura');
-    /* fermo ma con cose da leggere: «parto da sola»; tutto letto: «Letto tutto», niente barra; senza rete: detto */
+    /* fermo ma con cose da leggere: C136 col motore spento (di base) «a mano, N per volta», acceso «parto da sola»; tutto letto: «Letto tutto», niente barra; senza rete: detto */
     await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null }); render(); });
     nota = await carica();
-    if (!/⏳ Da leggere \(parto da sola entro 10 minuti\): RicetteFit 230 di 905/.test(nota.t)) throw new Error('Proteiche: «da leggere» non detto: ' + nota.t);
+    if (!/⏳ Da leggere: RicetteFit 230 di 905 · valori ancora 400\. Le leggo a mano, 20 ricette per volta: tocca «⚡ Carica altre» nel riquadro «🗄 Il mio database»\./.test(nota.t) || /parto da sola|Finisco fra/.test(nota.t)) throw new Error('C136 Proteiche: «da leggere» a mano non detto: ' + nota.t);
+    await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null, auto: true }); render(); });
+    nota = await carica();
+    if (!/⏳ Da leggere \(parto da sola entro 10 minuti\): RicetteFit 230 di 905/.test(nota.t)) throw new Error('Proteiche: «da leggere» col motore automatico non detto: ' + nota.t);
     await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null, daLeggere: 0, senzaValori: 0, rf: { lette: 880, tot: 905, scartate: 25, fine: new Date(Date.now() + 3600000).toISOString().slice(0, 10) } }); render(); });
     nota = await carica();
     if (!/✅ Letto tutto: RicetteFit 880 di 905 · valori tutti letti\./.test(nota.t) || nota.barra !== null) throw new Error('Proteiche: «letto tutto» non detto: ' + JSON.stringify(nota));
@@ -1897,7 +1907,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     /* Database: riga RicetteFit con l'interruttore (senza Claude) */
     await page.evaluate(() => { RIC.dbOra = 0; vai('ricdb'); }); await page.waitForTimeout(400); await page.evaluate(() => render());
     const t = await page.evaluate(() => (document.querySelector('#ricdb-fit') || {}).innerText || '');
-    if (!/RicetteFit.*12 di 905 prese\. Una nuova ogni 10 minuti\./s.test(t)) throw new Error('Database: riga RicetteFit sbagliata: ' + JSON.stringify(t));
+    if (!/RicetteFit.*12 di 905 prese\. Le prendo mentre carico ricette nuove, 5 per volta\./s.test(t) || /ogni 10 minuti/.test(t)) throw new Error('Database: riga RicetteFit sbagliata (C136: a mano): ' + JSON.stringify(t));
+    /* C136: nel dettaglio l'interruttore del motore automatico (solo per chi sviluppa), acceso solo con la conferma */
+    const dett = await page.evaluate(() => (document.querySelector('#ricdb-archivio') || {}).innerText || '');
+    if (!/🖐 A mano: lavora solo quando lo chiedi tu/.test(dett) || !/Motore automatico, ogni 10 minuti/.test(dett) || /Riprendi|⏸ Ferma/.test(dett)) throw new Error('C136: dettaglio del motore sbagliato: ' + dett.slice(0, 400));
+    await page.evaluate(() => { window.__c136a = []; RIC._c6 = RIC.chiedi; RIC.chiedi = async c => { if (c.db === 'auto') { window.__c136a.push(c); return { db: Object.assign({}, RIC.db, { auto: c.acceso }) }; } return RIC._c6(c); }; });
+    page.once('dialog', d => d.dismiss()); await clic('[data-a="ric-db-auto"]'); await page.waitForTimeout(300);
+    const noConf = await page.evaluate(() => ({ n: window.__c136a.length, c: document.querySelector('[data-a="ric-db-auto"]').checked }));
+    page.once('dialog', d => d.accept()); await clic('[data-a="ric-db-auto"]'); await page.waitForTimeout(400);
+    const conf = await page.evaluate(() => ({ n: window.__c136a.length, a: window.__c136a[0], t: (document.querySelector('#ricdb-archivio') || {}).innerText || '' }));
+    if (noConf.n !== 0 || noConf.c || conf.n !== 1 || conf.a.acceso !== true || !/Ogni 10 minuti legge/.test(conf.t)) throw new Error('C136: interruttore del motore automatico sbagliato: ' + JSON.stringify({ noConf, conf: { n: conf.n, a: conf.a, t: conf.t.slice(0, 200) } }));
+    await page.evaluate(() => { RIC.chiedi = RIC._c6; RIC.db = Object.assign({}, RIC.db, { auto: false }); render(); });
     await clic('[data-a="ric-rf"]'); await page.waitForTimeout(300);
     const sp = await page.evaluate(() => ({ c: window.__rf.filter(c => c.db === 'rf').slice(-1)[0], t: (document.querySelector('#ricdb-fit') || {}).innerText, toast: (document.querySelector('.toast') || {}).textContent }));
     if (!sp.c || sp.c.acceso !== false || !/Spenta\./.test(sp.t || '') || !/Riaccendi/.test(sp.t) || !/RicetteFit spenta/.test(sp.toast || '')) throw new Error('Database: «Spegni» RicetteFit non va: ' + JSON.stringify(sp));
