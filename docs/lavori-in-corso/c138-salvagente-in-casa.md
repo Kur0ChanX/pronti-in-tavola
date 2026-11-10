@@ -1,6 +1,6 @@
 # C138 · Salvagente in casa (i PC di Mario come riserva di Cloudflare e Firebase)
 
-Stato (Salvagente 1, 10/11 18:43): ricerca e proposta fatte, **niente codice**. Aspetta la scelta di Mario (riga 🛑 in «## 0. Aspetta Mario» di `docs/DA-FARE.md`). Dopo la scelta: specifica qui sotto e piano a pezzi (skill `fable-opus`).
+Stato (Salvagente 2, 10/11 19:02): ricerca, proposta e confronto fra la 1 e la 2 con gli schemi mandati, **niente codice**. Aspetta la scelta di Mario (riga 🛑 in «## 0. Aspetta Mario» di `docs/DA-FARE.md`). Dopo la scelta: specifica qui sotto e piano a pezzi (skill `fable-opus`).
 
 ## Parole di Mario (10/11 18:30, intere)
 > avvia plane mode pensiero profondo brain storming
@@ -75,3 +75,10 @@ Detto anche: sul motore di GitHub in casa (gratis oggi, solo repository privati,
 
 Lettura (Salvagente 1): non è ancora la scelta. Vuole il confronto fra la 1 e la 2 con gli schemi; propende per la 2; il PC solo come alternativa o supporto, per paura che salti la luce. Punti per la risposta: in 1 e in 2 il server vero resta Cloudflare (luce saltata = si ferma solo l'aiuto, l'app va); la 2 contiene la 1; il consiglio «1 adesso» riguardava solo l'ordine dei lavori (prima i numeri della sentinella; la 2 è in parte doppione della corsia d'emergenza C135). Se conferma la 2: in due tempi, prima l'officina e poi il gemello.
 
+## Risposta al messaggio delle 18:51 (Salvagente 2, 10/11 19:02) · mandata, NON rimandarla
+- Schemi, uno per scelta, misura da telefono: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png`, `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`; sorgente `docs/lavori-in-corso/c138-schemi.html` (come rifarli: commento in testa). A ogni promemoria della domanda si rimandano (E247).
+- Detto a Mario: non ha capito male, la 2 è la 1 più il gemello; in tutte e due i server veri restano Cloudflare e Firebase; il PC è supporto (1) o supporto più alternativa (2); se salta la luce l'app va come oggi; il consiglio «1» riguardava solo l'ordine dei lavori.
+- Tabella «cosa succede se»: luce saltata (uguali) · limiti finiti come il 10/11 (uguali: avvisi dalla corsia d'emergenza C135 quando sarà online; la 2 ha in più la riserva del PC) · Cloudflare tutto fermo (1: ordine salvo ma niente avviso a Monica; 2: avviso dal PC) · Cloudflare fermo e luce saltata insieme (avviso fermo in tutte e due) · 0 € e nessuna porta aperta in tutte e due · la 2 vuole più lavoro (codice, prove, una chiave in più sul PC) e non copre un blocco di Firebase.
+- Consiglio nuovo, dopo il suo messaggio: **2 in due tempi** (prima l'officina, identica alla 1; poi il gemello, dopo aver guardato cosa copre già C135; prima del secondo tempo gli mostro i numeri e può fermarsi alla 1).
+- Consiglio pratico detto: sotto l'UPS anche il router e la scatola della fibra.
+- Controllato alle 18:59 (lettura del sito vero): online c'è la v0.10.17. Dalle consegne della Principale 54 (~19:10): la v0.10.18 è nel ramo ma il deploy è fallito (PT E57); C135 è nel codice ma **spenta** finché Mario collega il cassetto KV. A Mario detto così: «corsia d'emergenza nel codice ma ancora spenta, manca un passo a mano suo, lo segue la chat principale».
