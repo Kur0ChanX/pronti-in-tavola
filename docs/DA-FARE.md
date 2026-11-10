@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 10/11 · 🛑 · 🟡 Principale 45 · Doppione: aperta da Mario 12:42 col testo della #43 mentre la Principale 44 lavora (v0.10.5). Scelta: 1 chiudo questa · 2 resto su un lavoro diverso · 3 la 44 è bloccata, la controllo. Tolta quando Mario risponde.
 - 10/11 · 🟢 Principale 44 · C124 v0.10.5: chiudi e riapri l'app, nella Home sotto i 4 riquadri tocca «Proteiche», poi apri una ricetta (in alto «Valori per porzione» e «Fonte»). Una foto della Home e una della sezione. A cosa serve: dirmi se aspetto e posizione ti vanno bene; le ricette «RicetteFit» arrivano da sole, una ogni 10 minuti.
 - 10/11 · 🟢 Principale 42 · Kit 37.2: Mario «ok github chiave». Guida data 10/11 (link già compilato, sola lettura su RVC). Aspetto «chiave pronta», poi apro il modulo sicuro (host raw.githubusercontent.com). A cosa serve: portare qui il kit 37.2 e i prossimi da solo.
 - 09/11 · 🟡 Principale 38 · C115 (Mario 10/11 ~11:25 «per ora ok», lo prova più avanti) v0.9.94 (l'Astice è ok, Mario 10/11): «guarda come cliente», chiudi e riapri: dopo il logo c'è il vapore? Un video. A cosa serve: chiudere il vapore anche per i clienti.
