@@ -10,6 +10,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 50 | C127 pezzi 2-3 (giorno proteico) v0.10.15: patch applicata, pulizia del passo di prova, giro completo; si pubblica col «1» di Mario | `ricettario.js` · `spesa.js` · `aiutante.js` · `worker.js` (riga ~73) · `style.css` · `data.js` · `tools/prova.js` | 10/11 |
 | 🔴 Principale 49 | chiusa alla soglia 10/11 ~15:53: v0.10.14 C130 urgenza Cloudflare (letture del server, freno); C127 pezzi 2-3 provati, in patch alla 50; kit: risposta a Mario, aspetta la chiave | `worker.js` (`Ricettario`: `contaLetture`, `freno`, `statoMotore`, `statoDb`, indici) · `ricettario.js` (`letturaFit`) · `data.js` · `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 48 | chiusa alla soglia 10/11 ~15:21: v0.10.13 C127 pezzo 1 (Proteiche ordinata, scelta multipla, riquadro verde); pezzi 2-3 in patch alla 49 | `ricettario.js` (zone, `sceltaFit`, `piuFiltriRic`, `riquadroFit`, `letturaFit`) · `style.css` · `app.js` (scorrimento di lato) · `data.js` · `tools/prova.js` | 10/11 |
 | 🔴 Principale 47 | chiusa alla soglia 10/11 ~15:00: v0.10.12 C128 (carico veloce, «Cerca ancora» alle pagine dopo); C127 scelto da Mario, codice alla 48 | `worker.js` (motore, `cercaFit`, `nuoveTra`, `caricoAuto`, turbo) · `ricettario.js` (`letturaFit`, testi) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
