@@ -72,7 +72,20 @@ const OPZIONI = [
   { k: 'aicRidotto', g: 'mario', nome: 'Aiutante dei clienti: risposte semplici', tipo: 'numero', min: 20, max: 1000, def: 100, unita: 'domande al giorno',
     aiuto: 'Oltre questo numero (o con 10 domande in un minuto) a quel cliente risponde il telefono, senza AI: ordini, prezzi, allergie. Non viene fermato e ti arriva una segnalazione. Vale solo se è più alto della segnalazione.' },
   { k: 'ascoltoAvviso', g: 'mario', nome: 'Microfono dei clienti: segnalazione', tipo: 'numero', min: 10, max: 500, def: 40, unita: 'frasi al giorno',
-    aiuto: 'Quando un cliente supera questo numero di frasi dette al microfono in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' }
+    aiuto: 'Quando un cliente supera questo numero di frasi dette al microfono in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' },
+  /* C124 soglie di «🏋️ Proteiche» nel Ricettario (valori per porzione; fonti in docs/lavori-in-corso/c124-ricettario-proteico.md) */
+  { k: 'fitProt', g: 'mario', nome: 'Proteiche: proteine minime', tipo: 'numero', min: 10, max: 60, def: 20, unita: 'g a porzione', parole: /protei|palestr|\bfit/,
+    aiuto: 'Una ricetta entra in «🏋️ Proteiche» solo con almeno queste proteine a porzione. 20 g: ISSN 2017, 20-40 g a pasto anche in definizione.' },
+  { k: 'fitProtPerc', g: 'mario', nome: 'Proteiche: quota di proteine', tipo: 'numero', min: 10, max: 60, def: 20, unita: '% delle calorie', parole: /protei|palestr|\bfit/,
+    aiuto: 'Almeno questa parte delle calorie deve venire dalle proteine. 20%: regola UE per «ad alto contenuto di proteine».' },
+  { k: 'fitKcal', g: 'mario', nome: 'Proteiche: calorie massime', tipo: 'numero', min: 200, max: 1200, def: 550, unita: 'kcal a porzione', parole: /protei|palestr|\bfit|calori/,
+    aiuto: 'Oltre queste calorie a porzione la ricetta non entra in «🏋️ Proteiche» (un pasto in definizione).' },
+  { k: 'fitSaturi', g: 'mario', nome: 'Proteiche: grassi saturi massimi', tipo: 'numero', min: 3, max: 30, def: 10, unita: '% delle calorie', parole: /protei|palestr|\bfit|grass/,
+    aiuto: 'I grassi «cattivi», in parte delle calorie. 10%: Organizzazione Mondiale della Sanità.' },
+  { k: 'fitZuc', g: 'mario', nome: 'Proteiche: zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 10, unita: '% delle calorie', parole: /protei|palestr|\bfit|zucche/,
+    aiuto: 'Tutti gli zuccheri della ricetta, in parte delle calorie. 10%: Organizzazione Mondiale della Sanità (qui più severo: conta anche quelli naturali).' },
+  { k: 'fitSodio', g: 'mario', nome: 'Proteiche: sodio massimo', tipo: 'numero', min: 200, max: 2000, def: 700, unita: 'mg a porzione', parole: /protei|palestr|\bfit|\bsale\b|sodio/,
+    aiuto: 'Il sale: 700 mg di sodio = 1,75 g di sale a porzione. Organizzazione Mondiale della Sanità: 2 g di sodio al giorno, diviso 3 pasti.' }
 ];
 const OPZ = Object.fromEntries(OPZIONI.map(o => [o.k, o]));
 const baseOpz = o => typeof o.def === 'function' ? o.def() : Array.isArray(o.def) ? o.def.slice() : o.def;
@@ -191,7 +204,7 @@ function filtraImp() {
   voci.forEach(d => {
     const o = OPZ[(d.dataset.sez || '').replace(/^opz-/, '')];
     const testo = semplOpz(d.querySelector('summary').textContent + ' ' + (o ? o.aiuto : ''));
-    const si = !q || q.split(/\s+/).every(w => testo.includes(w)) || (o && o.parole.test(q));
+    const si = !q || q.split(/\s+/).every(w => testo.includes(w)) || (o && o.parole && o.parole.test(q));
     d.hidden = !si; if (si) viste++;
   });
   document.querySelectorAll('main.corpo h3.tenue, main.corpo .etichetta').forEach(x => { if (!x.closest('details')) x.hidden = !!q; });
