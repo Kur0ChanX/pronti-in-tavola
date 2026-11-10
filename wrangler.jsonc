@@ -7,9 +7,9 @@
   "durable_objects": { "bindings": [{ "name": "AVVISI", "class_name": "Avvisi" }, { "name": "RICETTARIO", "class_name": "Ricettario" }] },
   // aiutante di Monica (C48): Workers AI gratuito sullo stesso account dell'app
   "ai": { "binding": "AI" },
-  // C135 corsia d'emergenza degli avvisi: copia di chiavi e telefoni in Workers KV (gratis: 100.000 letture e 1.000 scritture al giorno).
-  // Senza "id": wrangler (dalla 4.45) lo crea da solo al primo deploy e lo tiene collegato ai deploy dopo (token di Workers Builds: KV Storage Edit)
-  "kv_namespaces": [{ "binding": "RISERVA" }],
+  // C135 corsia d'emergenza degli avvisi (Workers KV «RISERVA»): il codice c'è ma il cassetto NON è collegato. Il 10/11 il deploy che lo
+  // creava da solo è fallito: il token dell'account non ha «Workers KV Storage: Edit» (PT E57). Quando Mario crea il cassetto (o dà il
+  // permesso): "kv_namespaces": [{ "binding": "RISERVA", "id": "<ID del cassetto>" }]
   // v2: il database delle ricette e delle voci (C60)
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Avvisi"] }, { "tag": "v2", "new_sqlite_classes": ["Ricettario"] }],
   // promemoria della sera (worker.js scheduled): 18:00 UTC = 19:00 d'inverno, 20:00 d'estate in Italia

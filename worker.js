@@ -749,7 +749,7 @@ export class Avvisi extends DurableObject {
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
     return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), questo: e ? tutti.some(x => x.endpoint === e) : null,
       conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [],
-      riserva: await this.ctx.storage.get('riserva').then(r => r ? { quando: r.quando, telefoni: r.telefoni, clienti: r.clienti } : null) };   // C135
+      riserva: !riservaKv(this.env) ? { spenta: true } : await this.ctx.storage.get('riserva').then(r => r ? { quando: r.quando, telefoni: r.telefoni, clienti: r.clienti } : null) };   // C135 (spenta = cassetto KV non collegato)
   }
   async scriviDiario(voce) {
     const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);

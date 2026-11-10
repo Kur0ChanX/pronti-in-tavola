@@ -2,15 +2,17 @@
 "account": "108763",
 "sessione": "b0ee7ac921bc",
 "giorno": "2026-11-10",
-"turni": 1,
+"turni": 2,
 "peso": 0,
 "uscita": 0,
-"contesto_max": 305568,
+"contesto_max": 352404,
 "anomalie": [],
 "blocchi": {
 "Stop 3 · Consegne non su GitHub (C226,": 1,
 "Stop 5 · «👉 DA FARE TU» senza": 1,
-"Stop 13 · There are uncommitted changes in": 1
+"Stop 13 · There are uncommitted changes in": 2,
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 6 · Il turno finisce con una": 1
 },
 "esempi_blocchi": {
 "Stop 3 · Consegne non su GitHub (C226,": [
@@ -20,7 +22,14 @@
 "18:42 · «👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del blocco «A cosa serve: …» (cosa ottiene Mario, l'app o il lavoro). Riscrivi solo quel blocco."
 ],
 "Stop 13 · There are uncommitted changes in": [
-"18:42 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+"18:42 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"19:01 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"19:01 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Il codice corretto aspetta il giro completo delle prove (circa 4 minuti), poi lo pubblico e apro la sessione nuova.». Nella sua voce (o in una"
+],
+"Stop 6 · Il turno finisce con una": [
+"19:01 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
 ]
 },
 "remota": "01WTjqUv32ce",
