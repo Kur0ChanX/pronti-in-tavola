@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 01:09 · 01QTFEqU1M1r
-link e passaggi chiari
-
-## 2026-11-07 01:28 · 01QTFEqU1M1r
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
-
 ## 2026-11-07 13:08 · 01QTFEqTYwXG
 invito di WhatsApp che invii dall'app non funziona se cliccano non funziona il link e oltre al link di whatsapp volevo un bel biglietto di invito in foto da allegare in automatico su WhatsApp
 
@@ -156,3 +150,6 @@ fammi multi scelta e fammi capire chiare se sono state caricate e fai ordine cè
 
 ### 10/11 ~14:23 (Principale 46, C126, foto `archivio/foto/2026-11-10-1422-dopo-allenamento-niente-nuovo.jpg` e `…-1422-dopo-allenamento-cerco.jpg`: «15 ricette: RicetteFit 8 · GialloZafferano 7», «Ancora 1114 ricette da leggere: 10 ogni 10 minuti», «Niente di nuovo con «Dopo l'allenamento»: le 40 trovate le avevo già lette»)
 non c'è niente di nuovo ne ho pochissime come è possibile
+
+## 2026-11-10 15:25 · 01WTjqUtGdNd
+Aggiorna il kit, verifica se, fammi questa cortesia, verifica se è rimasto in tutto il mio account, se è rimasto qualcosa di sospeso per aggiornare al kit. Ma è giusto una cosa mia, per capire un po'. Il kit dovrebbe essere aggiornato, prendilo pure.

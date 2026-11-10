@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 11:32 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 15:25 ora italiana)
 
-non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+Aggiorna il kit, verifica se, fammi questa cortesia, verifica se è rimasto in tutto il mio account, se è rimasto qualcosa di sospeso per aggiornare al kit. Ma è giusto una cosa mia, per capire un po'. Il kit dovrebbe essere aggiornato, prendilo pure.
