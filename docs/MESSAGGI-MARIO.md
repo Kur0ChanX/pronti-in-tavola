@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 01:09 · 01QTFEqU1M1r
-link e passaggi chiari
-
-## 2026-11-07 01:28 · 01QTFEqU1M1r
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
-
 ## 2026-11-07 13:08 · 01QTFEqTYwXG
 invito di WhatsApp che invii dall'app non funziona se cliccano non funziona il link e oltre al link di whatsapp volevo un bel biglietto di invito in foto da allegare in automatico su WhatsApp
 
@@ -141,3 +135,6 @@ al momento sembra che carichi solo ricette di GialloZafferano valutate per calor
 
 ### 10/11 ~13:40 (Principale 45, C125)
 intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale
+
+## 2026-11-10 13:59 · 01WTjqUvA9kN
+si ma perché ricerca solo in questo modo ricette fit è il meglio non aggiungiamo altre fonti? e poi 6 selezioni cosí sono troppo vincolato dividile al massimo per spuntino merenda pranzo cena dolce colazione post cena ecc no poi se voglio scelgo la fonte proteica ma mettine tante di fonti non cosí e altre funzioni e cerca e le aggiunge al meglio nelle mie ricette scritte bene chiare complete con foto video passo per passo ecc ecc
