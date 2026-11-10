@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 00:17 · 01QTFEqU1M1r
-mandami il link nel passaggio dove devo cliccare per andare avanti
-
-## 2026-11-07 00:25 · 01QTFEqU1M1r
-mi sono rotto siamo un ora che problemi hai oggi????
-
-## 2026-11-07 00:28 · 01QTFEqU1M1r
-manda il link
-
 ## 2026-11-07 00:34 · 01QTFEqU1M1r
 risolvi per piacere siamo 2 ore cerca bene
 
@@ -133,3 +124,15 @@ quelle che separi sono sgranatissime controllale tutte se sono in hd di tutte le
 
 ## 2026-11-10 01:10 · 01WTjqUx6Bw4
 b + migliora con ia
+
+## 2026-11-10 01:19 · 01WTjqUx6Bw4
+perché rompi sempre il codice  quando funziona?
+
+## 2026-11-10 01:22 · 01WTjqUx6Bw4
+impara dagli errori sempre  in Generale, mettila come regola integrata bene alle mie senza conflitti e ottimizzata 
+Non risolvere il problema e basta. Cerca la causa, trovala e fai in modo che non ricapitino più situazioni del genere o simili.
+non solo in questo progetto ma in tutto l'account, e anche la regola impara dagli errori in questo senso in tutto l'account, non solo in questo progetto.
+Io spero che molte regole che abbiamo messo qui siano state messe nell'account generale, non solo in questo progetto.
+
+## 2026-11-10 01:22 · 01WTjqUx6Bw4
+Aspetta, aspetta, cancella l'ultimo messaggio che ti ho mandato perché si potrebbero creare dei conflitti.
