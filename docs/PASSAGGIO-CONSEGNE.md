@@ -1,29 +1,28 @@
 # Passaggio di consegne
 
-Sessione attuale: #40 (dopo la #39 `session_01WTjqUwXqzf1yXN3r3aJ8nd`, chiusa alla soglia 10/11 01:59; la apre la #39 con `create_session` (catena 6 di 8)).
+Sessione attuale: #41 (dopo la #40 `session_01WTjqUumYwYKzwSjzjYGFEV`, chiusa alla soglia 10/11 08:35; la apre la #40 con `create_session` (catena 7 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (10/11 01:56):** 1) C119 «✨ Migliora con l'AI» nello zoom delle foto piccole (Mario: «sembra ok implementala»); 2) le 5 regole nate qui per tutto l'account (C122: testo delle Preferenze da incollare + sessione del kit).
+- **Cosa preme a Mario adesso (10/11 08:35):** 1) le 5 regole nate qui in tutti i progetti (Mario «si consiglio»): sessione del kit aperta, `session_01WTjqUtqQ6xthRd3TmBp2WC`; Mario incolla le Preferenze v37; 2) la sua prova di C119 «✨ Migliora con l'AI» (v0.10.0) sul telefono vero.
 
-## Stato (10/11 01:59 ora italiana)
+## Stato (10/11 08:35 ora italiana)
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso, nessuna PR aperta.
 - Sito vero: v0.10.0 online (C119 «✨ Migliora con l'AI»), giro «Pubblica sito» success su 0403cc42 (10/11 ~02:21); verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.0. Prova vera dal sito (Playwright, solo `/api/foto-gz` finto perché serve l'accesso Google): motore da jsdelivr + modello dal sito → foto 880×680 in 4,8 s.
 - Prove (10/11, Principale 40): app `python3 -I tools/anteprima.py && node tools/prova.js` → 82 OK; `node tools/prova-database.mjs` → 77 OK; `node tools/prova-limiti.mjs` 22 OK; `node tools/prova-ascolta.mjs` 40 OK; `npm run prova-firebase` 103 OK (#39, non toccata).
-- Sito: `python3 -I tools/sito.py` → «OK sito: 18 file». Esito del giro: `gh api "repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/runs?per_page=1" --jq ".workflow_runs[0].conclusion"` (NON `mcp__github__actions_list`).
-- Kit RVC 35.0 · Preferenze v35 qui, ma Mario usa già le Preferenze v36 (09/11): scritto in `docs/PER-IL-KIT.md`.
+- Sito: `python3 -I tools/sito.py` → «OK sito: 19 file dell'app + 17 immagini» (il modello `media/realesr-x4v3.onnx` compreso). Esito del giro: `gh api "repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/runs?per_page=1" --jq ".workflow_runs[0].conclusion"` (NON `mcp__github__actions_list`).
+- Kit RVC 35.0 · Preferenze v35 qui; Mario usa le v36 e ha in mano la v37 (`docs/PREFERENZE-PROPOSTA-v37.txt`, 2.482 caratteri). Sessione del kit `session_01WTjqUtqQ6xthRd3TmBp2WC` (repo RVC, titolo «📗 🧰 Kit 1 · 5 regole nuove», aperta 10/11 ~08:35 col prompt intero: 5 regole + v37 + file dell'hook dei numeri doppi): risponderà con `send_message`. Verifica: `get_session` con quell'id.
 
 ## Riferimenti
 - Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md` (C1, C3, C11). Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#39)
-- v0.9.98 (C120): `msgAccesso(e, chiusa)` in app.js (dopo `mostraToast`) per «Area riservata», «Entra con Google» (invito) e lucchetto: rete, finestra bloccata/chiusa, codice dell'errore; senza rete niente finestra. Il cookie `pit_acc` (C113) NON può battere un accesso Google: Firebase 13.2.0 sceglie la prima memoria con un utente (IndexedDB prima) — letto nel codice dell'SDK e provato (prova Firebase nuova). Difetto Firebase «Database is closing/hidden» (agosto 2026) non presente nella 13.2.0. Mario 01:35: «adesso funziona, potrebbe essere la rete».
-- v0.9.99 (C119): colonna `strisce` nell'archivio (worker.js, `STRISCIA` = stessa regola di `fotoRicetta`), riempita una volta (`strisceOk`) e a ogni `salva`; `proposte` ordina `strisce ASC, video DESC…`. Provata solo in locale, non sui dati veri.
-- C119 AI: Real-ESRGAN provato nel browser sull'Astice; piano completo e fatti in `docs/lavori-in-corso/c119-ai-foto.md`.
-- C122: regola «impara dagli errori» in testa a `docs/ERRORI.md`; testo per il kit in `docs/PER-IL-KIT.md` (con C20, C89, C103, C109). Lezione PT E46.
-- Controllo Da fare: 0 voci aggiunte (C119 e C122 aggiornate col messaggio delle 01:56).
+## Sessione appena chiusa (#40)
+- v0.10.0 (C119) online: «✨ Migliora con l'AI» nello zoom delle foto a strisce. File: NUOVO `foto-ai.js` (Real-ESRGAN x4v3, onnxruntime-web 1.18.0 dalla stessa memoria di Paola `voci-modelli`, Web Worker da Blob, risultati in Cache `foto-ai` max 200, `localStorage pit-foto-ai` = da sola dopo il primo uso), `media/realesr-x4v3.onnx` (4.866.417 byte, SHA-256 1940a93e…), `ricettario.js` `'ric-zoom'` (tasto, `stato` per foto, solo la foto guardata), `worker.js` `fotoGz` + rotta POST `/api/foto-gz` (dopo `gestoreDa`), `style.css` `.ric-zoom-ai`, `sw.js` (GUSCIO + niente cache del `.onnx`), `tools/sito.py` (FILE_APP + `.onnx` in MEDIA), `tools/anteprima.py`, `index.html`, `aiutante.js` voce `ricettario-foto`, GUIDA del server, `data.js` 0.10.0. Prove nuove: `tools/prova-database.mjs` (4 C119), `tools/prova.js` passo «C119 migliora con l'AI…» (AI finta). Piano chiuso in `docs/piani-finiti/c119-ai-foto.md`. Foto prima/dopo: `archivio/foto/2026-11-10-c119-migliora-con-ai-prima-dopo.png` (mandata a Mario).
+- C122: Preferenze v37 date a Mario in un riquadro; Mario «si consiglio» alle 5 regole per tutti → sessione del kit aperta (vedi Stato).
+- Controllo Da fare: 0 voci aggiunte (C119 e la riga C122 di «Aspetta Mario» aggiornate).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
+- #40 (C119): onnxruntime 1.31.1 del piano → NO, 1.18.0 come Paola (niente doppio scarico). `/api/foto-gz` in GET → NO: tutte le rotte sono POST (405), e solo chi gestisce (niente passaggio aperto). `window.Dati` → undefined (`const` di dati.js): si usa `typeof Dati`. Cache chiamata `pit-…` → NO, `sw.js` la cancellerebbe all'attivazione: si chiama `foto-ai`. Migliorare da sola ogni foto scorsa → NO, solo quella guardata (batteria e dati).
 - #39: accesso Google con `signInWithRedirect` di riserva → NO (authDomain firebaseapp.com ≠ sito: con la memoria divisa di Chrome il ritorno si perde). AI foto: Swin2SR (~150 MB) e Real-ESRGAN x4plus (~67 MB) → troppo grandi; modello caricato da Hugging Face → NO (rifiuta *.workers.dev, PT E25); build WebGPU di onnxruntime (wasm 29 MB) → per ora no, solo wasm (14,8 MB).
 - Voci (#30): Supertonic 3 (F1, M1) e Kokoro italiano (Sara, Nicola): Mario «tono, pause e accenti sembrano stranieri». Chatterbox/OmniVoice: >1 GB, GPU. Kitten: solo inglese.
 - Passi (#30): dosi dentro i passi e «una frase per riga»: Mario «falle come GialloZafferano uguali paro paro» (PT E30). Filtro dieta: GZ non lo dà, dedurlo è rischioso.
@@ -35,8 +34,8 @@ Sessione attuale: #40 (dopo la #39 `session_01WTjqUwXqzf1yXN3r3aJ8nd`, chiusa al
 - C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
-0. C119 FATTO (v0.10.0): aspettare la prova di Mario sul telefono vero (riga in «Aspetta Mario»). Non provato su iPhone/iPad veri.
-1. C122: testo NUOVO delle Preferenze (parti dalla v36 che Mario ha in claude.ai: chiedi a Mario di incollarla se non c'è nel repo) con le 5 regole di `docs/PER-IL-KIT.md`, sotto i 2.500 caratteri, in UN riquadro; e dire a Mario che il kit lo cambia solo una sessione del progetto del kit (da qui mai `add_repo`): proporre a Mario di aprirla lui o con `create_session` sul repo del kit, col suo ok.
+0. Kit: quando arriva il `send_message` della sessione del kit (`session_01WTjqUtqQ6xthRd3TmBp2WC`), scrivi in `docs/PER-IL-KIT.md` «portata in kit X.Y» per ogni voce e porta qui il kit nuovo come dice lei (da qui mai `add_repo`); poi togli da Da fare C89, C20, C103, C109, C122 se il kit le ha. Se tace: `get_session` con l'id, niente `list_events`.
+1. C119: aspettare la prova di Mario sul telefono vero (riga in «Aspetta Mario»). Non provato su iPhone/iPad veri. Idea non fatta (da proporre solo se Mario la chiede): l'AI anche sulle foto piccole singole, non a strisce.
 2. «Scrivimi!» sotto gli allergeni come tocco per WhatsApp: proposto, Mario non ha risposto (non farlo senza sì).
 3. Righe in «Aspetta Mario»: aspettare le prove di Mario.
 
@@ -44,8 +43,8 @@ Sessione attuale: #40 (dopo la #39 `session_01WTjqUwXqzf1yXN3r3aJ8nd`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`. La 🛑 C119 ha avuto risposta (tolta).
 
 ## Ultimo messaggio di Mario
-10/11 01:56 (in questa chat), parola per parola: «ia delle foto sembra ok implemetala nell'app e dimmi se 5 regole non aggiungi all account» → Prossimi passi 0 e 1 (la #39 gli ha risposto in breve: le 5 regole qui valgono già; per l'account servono Preferenze e kit).
-Prima, 10/11 01:35 (nella #38): «adesso funziona, potrebbe essere la rete… Impara sempre dagli errori, come regola, con logica, intelligenza e con ragionamento» → C120 fatto (v0.9.98), C122.
+10/11 ~08:34 (in questa chat), parola per parola: «si consiglio» → risposta a «Le porto in tutti i progetti? 1 · Sì, tutte e 5 (consiglio)»: sessione del kit aperta.
+Prima, 10/11 08:30: «dimmi le regole che vuoi mettere per tutti» → la #40 ha elencato le 5 regole (C103, C20, C109, C122, C89) con un esempio ciascuna.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C123; prossimo M libero: M1.
