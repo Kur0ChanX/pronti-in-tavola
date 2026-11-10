@@ -1,0 +1,89 @@
+diff --git a/data.js b/data.js
+index 1f6c3142..592cce99 100644
+--- a/data.js
++++ b/data.js
+@@ -183,9 +183,11 @@ function statoIniziale() {
+ }
+ 
+ /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
+-const VERSIONE_APP = '0.10.14';
++const VERSIONE_APP = '0.10.15';
+ /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
+ const NOVITA = [
++  { v: '0.10.15', data: '10/11/2026',
++    migliorato: ['Ricettario «🏋️ Proteiche»: regole meno severe su grassi saturi, zuccheri e sale, misurate su 250 ricette vere: entrano piatti come salmone al forno, arrosto di manzo e pollo al curry; restano fuori quelli grassi o salati. Se avevi cambiato tu le soglie nelle Impostazioni, restano le tue'] },
+   { v: '0.10.14', data: '10/11/2026',
+     corretto: ['Server: il motore delle ricette rileggeva tutto l\'archivio ogni 30 secondi solo per contarlo e ha quasi finito le letture gratuite di oggi di Cloudflare (email delle 15:29). Ora legge solo quello che serve; se le letture del giorno superano 2 milioni (metà del gratis) il motore riposa fino alle 01:00 e lo dice nel riquadro verde, così ordini e avvisi restano sempre al sicuro. «🔍 Cerca altre» funziona sempre'] },
+   { v: '0.10.13', data: '10/11/2026',
+diff --git a/opzioni.js b/opzioni.js
+index 4cac9b0e..2be430f4 100644
+--- a/opzioni.js
++++ b/opzioni.js
+@@ -80,12 +80,12 @@ const OPZIONI = [
+     aiuto: 'Pasto: almeno questa parte delle calorie deve venire dalle proteine. 25%: più severo della regola UE per «ad alto contenuto di proteine» (20%).' },
+   { k: 'fitKcal', g: 'mario', nome: 'Proteiche: calorie massime', tipo: 'numero', min: 200, max: 1200, def: 550, unita: 'kcal a porzione', parole: /protei|palestr|\bfit|calori/,
+     aiuto: 'Oltre queste calorie a porzione la ricetta non entra in «🏋️ Proteiche» (un pasto in definizione).' },
+-  { k: 'fitSaturi', g: 'mario', nome: 'Proteiche: grassi saturi massimi', tipo: 'numero', min: 3, max: 30, def: 10, unita: '% delle calorie', parole: /protei|palestr|\bfit|grass/,
+-    aiuto: 'I grassi «cattivi», in parte delle calorie. 10%: Organizzazione Mondiale della Sanità.' },
+-  { k: 'fitZuc', g: 'mario', nome: 'Proteiche: zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 10, unita: '% delle calorie', parole: /protei|palestr|\bfit|zucche/,
+-    aiuto: 'Tutti gli zuccheri della ricetta, in parte delle calorie. 10%: Organizzazione Mondiale della Sanità (qui più severo: conta anche quelli naturali).' },
+-  { k: 'fitSodio', g: 'mario', nome: 'Proteiche: sodio massimo', tipo: 'numero', min: 200, max: 2000, def: 700, unita: 'mg a porzione', parole: /protei|palestr|\bfit|\bsale\b|sodio/,
+-    aiuto: 'Il sale: 700 mg di sodio = 1,75 g di sale a porzione. Organizzazione Mondiale della Sanità: 2 g di sodio al giorno, diviso 3 pasti.' },
++  { k: 'fitSaturi', g: 'mario', nome: 'Proteiche: grassi saturi massimi', tipo: 'numero', min: 3, max: 30, def: 13, unita: '% delle calorie', parole: /protei|palestr|\bfit|grass/,
++    aiuto: 'I grassi «cattivi», in parte delle calorie. 13%: scelta di Mario, misurata su 250 ricette vere (l\'Organizzazione Mondiale della Sanità dice 10% sulla giornata intera).' },
++  { k: 'fitZuc', g: 'mario', nome: 'Proteiche: zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 15, unita: '% delle calorie', parole: /protei|palestr|\bfit|zucche/,
++    aiuto: 'Tutti gli zuccheri della ricetta, in parte delle calorie. 15%: scelta di Mario, misurata su 250 ricette vere (l\'Organizzazione Mondiale della Sanità dice 10% per quelli aggiunti; qui contano anche quelli naturali).' },
++  { k: 'fitSodio', g: 'mario', nome: 'Proteiche: sodio massimo', tipo: 'numero', min: 200, max: 2000, def: 800, unita: 'mg a porzione', parole: /protei|palestr|\bfit|\bsale\b|sodio/,
++    aiuto: 'Il sale: 800 mg di sodio = 2 g di sale a porzione: scelta di Mario, misurata su 250 ricette vere. Organizzazione Mondiale della Sanità: 2 g di sodio al giorno.' },
+   /* C125 (Mario 10/11 «un po' più severe… anche ricette dolci proteiche, snack»): chi non passa come pasto può entrare come snack o dolce */
+   { k: 'fitSnackKcal', g: 'mario', nome: 'Proteiche: snack e dolci fino a', tipo: 'numero', min: 100, max: 600, def: 300, unita: 'kcal a porzione', parole: /protei|palestr|\bfit|snack|dolc/,
+     aiuto: 'Fino a queste calorie una ricetta che non passa come pasto può entrare come snack o dolce proteico, con le regole qui sotto. 300: stima di Claude.' },
+@@ -93,10 +93,10 @@ const OPZIONI = [
+     aiuto: 'Snack e dolci: almeno queste proteine a porzione. 10 g: stima di Claude.' },
+   { k: 'fitSnackPerc', g: 'mario', nome: 'Proteiche: snack e dolci, quota di proteine', tipo: 'numero', min: 10, max: 70, def: 30, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc/,
+     aiuto: 'Snack e dolci: almeno questa parte delle calorie dalle proteine (più severo del pasto: le porzioni sono piccole). 30%: stima di Claude; la regola UE «alto contenuto» è 20%.' },
+-  { k: 'fitSnackZuc', g: 'mario', nome: 'Proteiche: snack e dolci, zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 15, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc|zucche/,
+-    aiuto: 'Snack e dolci: zuccheri in parte delle calorie. 15%: stima di Claude (contano anche quelli della frutta; l\'OMS dice 10% al giorno per quelli aggiunti).' },
+-  { k: 'fitSnackSodio', g: 'mario', nome: 'Proteiche: snack e dolci, sodio massimo', tipo: 'numero', min: 100, max: 1500, def: 400, unita: 'mg a porzione', parole: /protei|palestr|\bfit|snack|dolc|\bsale\b|sodio/,
+-    aiuto: 'Snack e dolci: sodio massimo a porzione. 400 mg: stima di Claude.' },
++  { k: 'fitSnackZuc', g: 'mario', nome: 'Proteiche: snack e dolci, zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 20, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc|zucche/,
++    aiuto: 'Snack e dolci: zuccheri in parte delle calorie. 20%: scelta di Mario, misurata su 250 ricette vere (contano anche quelli della frutta).' },
++  { k: 'fitSnackSodio', g: 'mario', nome: 'Proteiche: snack e dolci, sodio massimo', tipo: 'numero', min: 100, max: 1500, def: 500, unita: 'mg a porzione', parole: /protei|palestr|\bfit|snack|dolc|\bsale\b|sodio/,
++    aiuto: 'Snack e dolci: sodio massimo a porzione. 500 mg: scelta di Mario, misurata su 250 ricette vere.' },
+   { k: 'fitVeloci', g: 'mario', nome: 'Proteiche: «⚡ Pronte in…»', tipo: 'numero', min: 5, max: 30, def: 10, unita: 'minuti', parole: /protei|palestr|\bfit|veloc|minut|immediat/,
+     aiuto: 'Il tasto «⚡ Pronte in 10 minuti» della sezione «🏋️ Proteiche» mostra le ricette pronte entro questi minuti (tempo totale della ricetta). Mario 10/11: «ricette immediate».' }
+ ];
+diff --git a/ricettario.js b/ricettario.js
+index 6c99b9d4..86f4ed2a 100644
+--- a/ricettario.js
++++ b/ricettario.js
+@@ -32,9 +32,9 @@ const valoriPieni = n => !!n && n.kcal > 0 && [n.prot, n.saturi, n.zuc, n.sodio]
+ function fitRic(n) {
+   if (!valoriPieni(n)) return false;
+   const quota = n.prot * 400 / n.kcal, zuc = n.zuc * 400 / n.kcal;
+-  if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 10)) return false;
+-  if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 10) && n.sodio <= sogliaFit('fitSodio', 700)) return 'pasto';
+-  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 10) && quota >= sogliaFit('fitSnackPerc', 30) && zuc <= sogliaFit('fitSnackZuc', 15) && n.sodio <= sogliaFit('fitSnackSodio', 400) ? 'snack' : false;
++  if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 13)) return false;
++  if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 15) && n.sodio <= sogliaFit('fitSodio', 800)) return 'pasto';
++  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 10) && quota >= sogliaFit('fitSnackPerc', 30) && zuc <= sogliaFit('fitSnackZuc', 20) && n.sodio <= sogliaFit('fitSnackSodio', 500) ? 'snack' : false;
+ }
+ const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
+ const numIt = x => String(Math.round(x * 10) / 10).replace('.', ',');
+diff --git a/tools/prova.js b/tools/prova.js
+index 9654f52e..ecf28ead 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -1870,8 +1870,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+     /* C125 soglie più severe a due profili: pasto o snack/dolce proteico */
+     const prof = await page.evaluate(() => [fitRic({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }), fitRic({ kcal: 458, prot: 24.4, saturi: 6.5, zuc: 2.8, sodio: 463 }),
+-      fitRic({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 }), fitRic({ kcal: 200, prot: 6.3, saturi: 0.3, zuc: 18.7, sodio: 176 }), rigaFit({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 })]);
+-    if (JSON.stringify(prof) !== '["pasto",false,"snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce"]') throw new Error('C125 soglie: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
++      fitRic({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 }), fitRic({ kcal: 200, prot: 6.3, saturi: 0.3, zuc: 18.7, sodio: 176 }), rigaFit({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 }),
++      /* C131 P1 (Mario 10/11): saturi 12,4% e sodio 780 entrano; saturi 13,5% o sodio 820 no */
++      fitRic({ kcal: 400, prot: 30, saturi: 5.5, zuc: 2, sodio: 780 }), fitRic({ kcal: 400, prot: 30, saturi: 6, zuc: 2, sodio: 780 }), fitRic({ kcal: 400, prot: 30, saturi: 5.5, zuc: 2, sodio: 820 })]);
++    if (JSON.stringify(prof) !== '["pasto",false,"snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto",false,false]') throw new Error('C125 soglie: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
+     /* portata del motore («Primi piatti») sotto il filtro «Primi»; la carta di RicetteFit col suo nome */
+     await page.evaluate(() => { UI.ric.cat = 'primi'; render(); });
+     let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$|rf$/.test(n)));

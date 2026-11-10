@@ -1,22 +1,21 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 16:51 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: Cloudflare ha bloccato il server perché abbiamo finito le letture gratuite di oggi. Vuoi che non succeda mai più.
 
 ───
-💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
 
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
+✅ **COSA HO VISTO (provato dal vivo alle 16:48)**
+- Il server risponde «limite di letture superato». Riparte da solo alle **01:00** di stanotte.
+- **Fino alle 01:00 non vanno:** le notifiche a Monica per i nuovi ordini, «Sono qui sotto», l'aiutante con l'AI e la ricerca di ricette nuove.
+- **Vanno:** ordini, menù e clienti. Stanno su Firebase, non su Cloudflare. Monica vede gli ordini nuovi solo aprendo l'app.
+
+───
+
+💡 **PARERE**
+- **Causa più probabile, non …
 
 ## Domande a Mario
 
-❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+❓ **DOMANDE** (rispondi coi numeri)
+1. **A che ora è arrivata l'email del blocco?** La vedi in alto, accanto a «Cloudflare». A cosa serve: prima delle 15:52 la causa è quella detta sopra; dopo, c'è un'altra fonte di letture da trovare.
+2. **Contatore vero di Cloudflare.** Crei tu una **chiave di sola lettura** (un codice che permette al server di leggere solo i numeri d'uso, niente altro). Il server così chiede ogni 10 minuti a Cloudflare quante letture ha fatto tutto l'account e si ferma da solo. A cosa serve: il freno vede anche letture che il mio contatore non conosce. 1 = sì, guidami · 2 …
