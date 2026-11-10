@@ -1,11 +1,14 @@
-# Ultima risposta di Claude (10/11/2026 11:03 ora italiana)
+# Ultima risposta di Claude (10/11/2026 11:35 ora italiana)
 
-Ho capito: hai messo la chiave di Deepgram e ti chiedi che senso abbia un credito valido un anno.
-
-**Ho sbagliato io: il credito non scade.** Avevo letto una pagina vecchia del loro manuale. Il listino ufficiale (deepgram.com/pricing, novembre 2026) dice: 200 $ gratis, **senza scadenza** e senza carta.
+✅ **FATTO**
+- La v0.10.2 è online. L'ho controllato sul sito: la versione dice 0.10.2.
+- Prove tutte verdi: 83 dell'app e 86 del database, nessun errore.
+- Ho segnato la tua risposta: per ora solo Android. iPad e iPhone si provano quando ne avrai uno, e fino ad allora non te li chiedo più.
+- Il piano del ricettario proteico è scritto (fonti già controllate, soglie, passi). Lo fa la sessione #43.
 
 ───
-✅ **FATTO**
-- **Quanto dura:** 200 $ sono circa 43.000 minuti di ascolto. Con i clienti di Monica, a pochi minuti al giorno, durano molti anni.
-- **Se un giorno finisce:** nessun cliente resta bloccato. Il server passa da solo all'altro servizio (Groq), come succede già oggi.
-- …
+👉 **DA FARE TU**
+
+**A) Prova Deepgram su Android** (sono i passi che mi avevi chiesto)
+A cosa serve: vedere che Deepgram sente davvero la frase.
+1. Chiudi e riapri l'app, così prende la v0.10.2. …
