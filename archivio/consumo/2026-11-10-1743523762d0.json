@@ -1,0 +1,16 @@
+{
+"account": "108763",
+"sessione": "1743523762d0",
+"giorno": "2026-11-10",
+"turni": 1,
+"peso": 209144,
+"uscita": 13166,
+"contesto_max": 122526,
+"anomalie": [],
+"remota": "01WTjqUwhQi5",
+"aiutanti": 0,
+"strumenti": 11,
+"motori": {
+"fable": 209144
+}
+}
