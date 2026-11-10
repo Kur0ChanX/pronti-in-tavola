@@ -3,13 +3,14 @@
 ## Catene
 | Catena | Forma | Segni | Numero | Sessione | Chiusa il |
 |---|---|---|---|---|---|
-| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 51 | `session_01WTjqUv8dDcEnw4cyAzmz4S` (#51, aperta dalla #50 10/11 ~16:43, catena 8 di 8: la prossima la apre Mario); #50 `session_01WTjqUud6hw3u8NS12Xw9V8` chiusa alla soglia 10/11 ~16:42 | |
+| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 52 | `session_01WTjqUuJHcTsnzrn3Zd6bAE` (#52, aperta da Mario 10/11 ~17:11, catena 1 di 8); #51 `session_01WTjqUv8dDcEnw4cyAzmz4S` chiusa alla soglia 10/11 ~17:10 | |
 | Voce | quadrati | 🟩 🟨 🟥 ⬛ | 11 | `session_01WTjqUvZPF81mjAeNr4Ladc` (Voce 11, catena 3 di 8, aperta da Voce 10 09/11 ~23:23); Voce 10 `session_01WTjqUtYvuMZ4rMC2iVwr4M` chiusa 09/11 ~23:23 alla soglia: C108b v0.9.89 ascolto mai fermo; Voce 9 `session_01WTjqUuB1p39aBRtu1G1T8K` chiusa 09/11 ~20:52 alla soglia: C110 v0.9.88 iPad come Android; Voce 8 `session_01WTjqUwiB7LRCHcan27dbLW` chiusa 09/11 ~21:30 alla soglia: C108 server Groq + Deepgram, C110 iPad scritto; aperta da Voce 7 09/11 ~21:08; Voce 7 `session_01WTjqUvspWDANp8hbLq7V7x` chiusa 09/11 ~21:08 alla soglia: domanda 🛑 C108; aperta da Voce 6 09/11 ~20:56; Voce 6 `session_01WTjqUwDxxa1bScHDSPReXe` chiusa 09/11 ~20:56 alla soglia: v0.9.86 dettatura di Monica su iPad, studio C108; Voce 5 `session_01WTjqUtKDPi7C12EuwhSQ1U` chiusa 09/11 ~20:45 alla soglia: v0.9.85 «capire meglio»; Voce 4 `session_01WTjqUvJr7mmfdSNihHR6LZ` chiusa 09/11 ~20:20 alla soglia: v0.9.82-84; Voce 3 `session_01WTjqUvuFacpinWPAvkMDYG` chiusa 09/11 ~19:20 alla soglia: v0.9.80 pubblicata; Voce 2 `session_01WTjqUx7JeVdDBrvgVgjfXx` chiusa 09/11 alla soglia; Voce 1 `session_01WTjqUuVyq5p6FhV1dVJtVC` chiusa 09/11) | |
 | Aiuto | libri | 📗 📒 📕 📓 | 10 | `session_01WTjqUwG7wNgyoWoXYNwdic` (Aiuto 10, catena 8 di 8; il resto alla principale) | 09/11 |
 
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 52 | kit 38.16 (fatto, 33/33); notifiche oneste col server fermo (C130); poi C133 | `.claude/` · `tools/` · `CLAUDE.md` · `app.js` (notifiche) | 10/11 |
 | 🔴 Principale 50 | chiusa alla soglia 10/11 ~16:42: C127 v0.10.15 pronta in patch (giro 91/0); C131 misura (Mario sceglie P1); kit: chiave, pacchetto v38 scaricato, promemoria scadenza; C132-C133 regole per il kit; alla 51 | `ricettario.js` · `spesa.js` · `aiutante.js` · `worker.js` (riga ~73) · `style.css` · `data.js` · `tools/prova.js` | 10/11 |
 | 🔴 Principale 49 | chiusa alla soglia 10/11 ~15:53: v0.10.14 C130 urgenza Cloudflare (letture del server, freno); C127 pezzi 2-3 provati, in patch alla 50; kit: risposta a Mario, aspetta la chiave | `worker.js` (`Ricettario`: `contaLetture`, `freno`, `statoMotore`, `statoDb`, indici) · `ricettario.js` (`letturaFit`) · `data.js` · `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 48 | chiusa alla soglia 10/11 ~15:21: v0.10.13 C127 pezzo 1 (Proteiche ordinata, scelta multipla, riquadro verde); pezzi 2-3 in patch alla 49 | `ricettario.js` (zone, `sceltaFit`, `piuFiltriRic`, `riquadroFit`, `letturaFit`) · `style.css` · `app.js` (scorrimento di lato) · `data.js` · `tools/prova.js` | 10/11 |

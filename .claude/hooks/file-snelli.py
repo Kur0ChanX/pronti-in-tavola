@@ -18,13 +18,26 @@ import sys
 import tempfile
 
 ELENCO = [
-    ('docs/DA-FARE.md', 40, 600),
+    ('docs/DA-FARE.md', 40, 400),  # C469 L10: voci oltre 400 caratteri (prima 600); 320 a fine migrazione
     ('docs/CHI-FA-COSA.md', 6, 400),
     ('docs/PASSAGGIO-CONSEGNE.md', 15, 0),
-    ('docs/ERRORI.md', 25, 300),  # C352: lezioni in una riga, storia in ERRORI-STORIA.md
+    ('docs/ERRORI.md', 10, 300),  # C352: lezioni in una riga, storia in ERRORI-STORIA.md; C469 A6: due livelli, tetto 10 KB
     ('CLAUDE.md', 30, 0),
 ]
 VOCE = re.compile(r'^(?:\|\s*([A-Z]{1,3}\d+[a-z]?)\s*\||-\s+\*\*([A-Z]{1,3}\d+)\b)')
+# C469 A6 e fase 2 (rapporto 13 M9, M8): le lezioni recenti del diario si leggono a ogni avvio, al massimo 10
+RECENTI = {'docs/ERRORI.md': ('## Ultimi 14 giorni', 10)}
+
+
+def conta_recenti(percorso, titolo):
+    n, dentro = 0, False
+    with open(percorso, encoding='utf-8') as f:
+        for r in f:
+            if r.startswith('## '):
+                dentro = r.strip() == titolo
+            elif dentro and r.startswith('- **'):
+                n += 1
+    return n
 
 
 def elenco(progetto):
@@ -72,10 +85,21 @@ def main():
         except OSError:
             continue
         prima = memoria.get(rel)
-        memoria[rel] = {'peso': peso, 'voci': voci}
+        # C469 fase 2 (rapporto 14 voce 10): sopra il tetto si ripete solo dopo 1 KB in più dall'ultimo avviso (prima a
+        # ogni byte, anche per un merge di un'altra chat); sotto il tetto si riparte da zero
+        detto = (prima or {}).get('detto', 0) if peso > tetto * 1024 else 0
+        memoria[rel] = {'peso': peso, 'voci': voci, 'detto': detto}
+        titolo, massimo = RECENTI.get(rel, ('', 0))
+        recenti = conta_recenti(os.path.join(progetto, rel), titolo) if titolo else 0
+        if titolo:
+            memoria[rel]['recenti'] = recenti
         if prima is None:
             continue
-        if peso > tetto * 1024 and peso > prima.get('peso', 0):
+        if titolo and recenti > massimo and recenti > prima.get('recenti', 0):
+            avvisi.append(f'{rel}: {recenti} lezioni in «{titolo[3:]}», tetto {massimo}: le doppie o già fatte '
+                          'rispettare da un hook vanno in docs/ERRORI-STORIA.md.')
+        if peso > tetto * 1024 and peso > prima.get('peso', 0) and peso >= detto + 1024:
+            memoria[rel]['detto'] = peso
             avvisi.append(f'{rel}: {round(peso / 1024)} KB, tetto {tetto} KB, ed è cresciuto.')
         lunghe = [(k, n) for k, n in voci.items() if n > riga_max and n > prima.get('voci', {}).get(k, 0)]
         if lunghe:

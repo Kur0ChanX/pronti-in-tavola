@@ -56,6 +56,8 @@ try:
     m = hook(prog, "Write", {"file_path": os.path.join(prog, "docs/PROMESSE.md"), "content": "x"})
     controlla("docs/PROMESSE.md" in m, "Write nuovo in docs/ fermato col nome del file")
     controlla("c'è già un file" in m, "il motivo chiede se c'è già un file")
+    controlla("docs/lavori-in-corso/<C>-<nome>.md" in m and "archivio/<C>/" in m,
+              "C469 L9: il motivo dice dove va un file nuovo (piano del lavoro, foto e rapporti)")
     controlla(hook(prog, "Write", {"file_path": os.path.join(prog, "docs/PROMESSE.md")}) == "",
               "secondo tentativo dello stesso file passa")
     controlla(hook(prog, "Write", {"file_path": "docs/ALTRO.md"}) != "", "percorso relativo: fermato")

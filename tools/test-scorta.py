@@ -124,6 +124,8 @@ with tempfile.TemporaryDirectory() as tmp:
     open(os.path.join(repo, "a.txt"), "w").write("due\n")
     open(os.path.join(repo, "nuovo.txt"), "w").write("nuovo\n")
     open(os.path.join(repo, "segreto.txt"), "w").write("chiave\n")
+    os.makedirs(os.path.join(repo, ".git", "consumo"), exist_ok=True)  # C434: totale del consumo dentro .git
+    open(os.path.join(repo, ".git", "consumo", "2026-11-03-s1.json"), "w").write('{"turni": 1}')
     hook(repo, "stop")
     s1 = remoto_scorta(repo)
     controlla(bool(s1), "scorta mandata su GitHub")
@@ -135,6 +137,8 @@ with tempfile.TemporaryDirectory() as tmp:
     controlla(git(repo, "show", f"{s1}:nuovo.txt") == "nuovo", "file nuovo nella scorta")
     controlla("segreto.txt" not in git(repo, "ls-tree", "-r", "--name-only", s1).split(), "file in .gitignore escluso")
     controlla("prova della scorta" in git(repo, "show", f"{s1}:docs/ULTIMO-MESSAGGIO.md"), "ultimo messaggio nella scorta")
+    controlla(git(repo, "show", f"{s1}:archivio/consumo/2026-11-03-s1.json") == '{"turni": 1}'
+              and not os.path.exists(os.path.join(repo, "archivio")), "C434: consumo di .git nella scorta, file veri intatti")
 
     # 2. niente cambiato = niente scorta nuova
     hook(repo, "stop")
@@ -329,7 +333,9 @@ with tempfile.TemporaryDirectory() as tmp:
 
     # 7b. E154 (avvio della #290): contenitore nuovo, la scorta di prima è su GitHub e non nel ramo → niente scorta
     nuovo_c = clona(tmp, "contenitore-nuovo")
-    hook(nuovo_c, "msg", {"prompt": "[AVVIO] Sei la sessione principale #2: git fetch"})
+    # C469 rapporto 12 voce 8: l'«[AVVIO]» ora va nell'archivio (è una modifica da salvare); qui serve un primo
+    # messaggio che non salva niente. Nel cloud ogni sessione ha la sua scorta (id nel nome): l'avvio non la trova ferma.
+    hook(nuovo_c, "msg", {"prompt": "<task-notification>\n<task-type>queued-remote-notifications</task-type>\n</task-notification>"})
     controlla(git(nuovo_c, "rev-parse", "-q", "--verify", "refs/scorta-principale/claude/prova-1") == ""
               and git(nuovo_c, "ls-remote", "origin", "refs/heads/scorta-principale/claude/prova-1").split("\t")[0] == s6,
               "contenitore nuovo: niente scorta finché quella di prima non è unita")
@@ -507,9 +513,17 @@ with tempfile.TemporaryDirectory() as tmp:
     out = avvio_b({"session_id": "session_01PPPPPPPPPPPPPP"})
     controlla(f"SCORTA della chat parallela: origin/{nome}" in out and "della tua sessione (01PPPPPPPPPP: riavvio)" in out,
               "C352: stessa sessione → riavvio, unirla")
+    # C469 fase 2 (rapporto 14 voce 6): al riavvio solo i dati di adesso, via le frasi fisse già dette al primo avvio
+    controlla("RIAVVIO" in out and "Leggi docs/ERRORI.md" not in out and "titolo VERDE" not in out
+              and "SVEGLIE (E248)" not in out, "C469: riavvio della stessa sessione → senza le frasi fisse")
+    controlla(os.path.isfile(os.path.join(b, ".git", "avvio-riavvio")), "C469: riavvio → segno per kit-check.py")
     out = avvio_b({"session_id": "session_01QQQQQQQQQQQQQQ"})
     controlla("della sessione 01PPPPPPPPPP, non della tua" in out and "NON unirla (E97)" in out,
               "C352: un'altra sessione → tua solo se chiusa, mai se la chat è attiva")
+    controlla("RIAVVIO" not in out and "Leggi docs/ERRORI.md" in out and not os.path.exists(os.path.join(b, ".git", "avvio-riavvio")),
+              "C469: sessione nuova → avvio intero, niente segno di riavvio")
+    out = avvio_b({"session_id": "session_01QQQQQQQQQQQQQQ", "source": "resume"})
+    controlla("RIAVVIO" in out and "Leggi docs/ERRORI.md" not in out, "C469: source «resume» → riavvio")
     out = avvio_b({})
     controlla(f"SCORTA della chat parallela: origin/{nome}" in out and "della sessione 01PPPPPPPPPP." in out
               and "non della tua" not in out, "C352: senza id nello stdin solo di chi è, niente giudizio")
@@ -648,6 +662,7 @@ with tempfile.TemporaryDirectory() as tmp:
               "C352: scorta più vecchia di 14 giorni → una riga col conto, niente fetch")
     # tools/consegne.py: le scorte non unite vedono i nomi nuovi (la propria, col lavoro ormai nel commit, non conta)
     git(c, "add", "-A")
+    git(c, "checkout", sq2, "--", "archivio")  # E331: avvio di b e di c = una voce solo nello stesso minuto
     git(c, "commit", "-qm", "lavoro Q nel ramo")
     out = sh(sys.executable, "-c", "import sys; sys.path.insert(0, 'tools'); import consegne; print(consegne.scorte_non_unite('claude/prova-1'))",
              cwd=QUI + "/..", env=dict(os.environ, CLAUDE_PROJECT_DIR=c))
@@ -693,5 +708,86 @@ with tempfile.TemporaryDirectory() as tmp:
     sz = remoto(f, nome_z)
     controlla(sz and git(f, "show", f"{sz}:z.txt") == "lavoro Z" and "sessione 01ZZZZZZZZZZ)" in git(f, "log", "-1", "--format=%s", sz),
               "C352: scorta senza id nello stdin → ramo per sessione dalla variabile del cloud")
+
+# 16. C469 A9: tempo dell'avvio finito → nessun comando git parte e il fetch del ramo non ritenta (prima fino a 99 s)
+import importlib.util
+spec = importlib.util.spec_from_file_location("avvio_a9", os.path.join(HOOKS, "avvio-check.py"))
+a9 = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(a9)
+a9.INIZIO = time.time() - 80
+t0 = time.time()
+controlla(a9.run("status") == (1, "") and time.time() - t0 < 1, "C469 A9: oltre il tetto duro nessun comando git")
+a9.INIZIO = time.time() - 38
+a9.ramo_di_lavoro = lambda: ("claude/prova-a9", False)
+t0 = time.time()
+esito = a9.ripara()
+controlla("fetch origin claude/prova-a9 fallito" in esito and time.time() - t0 < 3, "C469 A9: ripara senza tempo non ritenta il fetch")
+sys.path.insert(0, HOOKS)
+import scorta as sc9
+t0 = time.time()
+controlla(sc9.lavoro_della_scorta("origin/non-esiste", scadenza=time.time() - 5) == "nuovo" and time.time() - t0 < 5,
+          "C469 A9: merge simulato con la scadenza passata: risposta prudente e veloce")
+
+# 17. C469 B6: registri dei messaggi uniti voce per voce (prima vinceva la scorta intera e sparivano le voci dell'altra chat)
+def registro(*voci):
+    return sc9.scrivi_voci(list(voci))
+v1, v2 = ("2026-11-09 18:00", "01AAAAAAAAAA", "primo"), ("2026-11-09 18:30", "01AAAAAAAAAA", "secondo")
+v3, v4 = ("2026-11-09 19:11", "01BBBBBBBBBB", "dell'altra chat"), ("2026-11-09 19:05", "01CCCCCCCCCC", "della scorta")
+unito = sc9.leggi_voci(sc9.unisci_registri(registro(v1, v2, v3), registro(v1, v2, v4)))
+controlla(unito == [v1, v2, v4, v3], "B6: unione voce per voce, in ordine di ora, niente perso né doppio")
+with tempfile.TemporaryDirectory() as t17:
+    rb = os.path.join(t17, "b6")
+    os.makedirs(os.path.join(rb, "docs"))
+    git(rb, "init", "-q", "-b", "ramo")
+    for k, v in (("user.name", "P"), ("user.email", "p@example.com"), ("commit.gpgsign", "false"),
+                 ("merge.registro.driver", f"{sys.executable} -I {os.path.join(HOOKS, 'scorta.py')} unisci-registro %O %A %B")):
+        git(rb, "config", k, v)
+    open(os.path.join(rb, ".gitattributes"), "w").write("docs/MESSAGGI-MARIO-PARALLELA.md merge=registro\n")
+    reg = os.path.join(rb, "docs", "MESSAGGI-MARIO-PARALLELA.md")
+    open(reg, "w").write(registro(v1, v2))
+    git(rb, "add", "-A"); git(rb, "commit", "-q", "-m", "base")
+    git(rb, "checkout", "-q", "-b", "scorta")
+    open(reg, "w").write(registro(v1, v2, v4))
+    git(rb, "commit", "-q", "-am", "Scorta automatica")
+    git(rb, "checkout", "-q", "ramo")
+    open(reg, "w").write(registro(v1, v2, v3))
+    git(rb, "commit", "-q", "-am", "messaggio dell'altra chat")
+    git(rb, "merge", "-q", "--no-edit", "scorta")
+    controlla(sc9.leggi_voci(open(reg).read()) == [v1, v2, v4, v3] and "<<<<<<<" not in open(reg).read(),
+              "B6: git merge col driver «registro»: le voci dei due lati restano tutte")
+    # lavoro_della_scorta: una scorta che porta solo un messaggio di Mario è «nuovo»; una con sole voci uscite per il tetto, «niente»
+    git(rb, "checkout", "-q", "-b", "scorta2", "HEAD~2")
+    open(reg, "w").write(registro(v1, v2, ("2026-11-09 20:00", "01CCCCCCCCCC", "mai arrivato")))
+    git(rb, "commit", "-q", "-am", "Scorta automatica 2")
+    git(rb, "checkout", "-q", "-b", "scorta3", "HEAD~1")
+    open(reg, "w").write(registro(("2026-11-01 10:00", "01DDDDDDDDDD", "vecchia, uscita per il tetto"), v1, v2))
+    git(rb, "commit", "-q", "-am", "Scorta automatica 3")
+    git(rb, "checkout", "-q", "ramo")
+    cwd_prima, sc9.CWD = sc9.CWD, rb
+    try:
+        e2, e3 = sc9.lavoro_della_scorta("scorta2"), sc9.lavoro_della_scorta("scorta3")
+    finally:
+        sc9.CWD = cwd_prima
+    controlla(e2 == "nuovo", f"B6: scorta col solo messaggio di Mario non ancora nel ramo = da unire ({e2})")
+    controlla(e3 == "niente", f"B6: scorta con le sole voci vecchie uscite per il tetto = niente ({e3})")
+
+# 18. C469 rapporto 12 voce 10: la scorta fatta ma non arrivata su GitHub (invio fallito) riparte al giro dopo, anche
+# senza modifiche (prima restava solo nel contenitore finché non cambiava qualcosa)
+with tempfile.TemporaryDirectory() as t18:
+    sh("git", "init", "-q", "--bare", os.path.join(t18, "origin.git"), cwd=t18)
+    r18 = os.path.join(t18, "r")
+    sh("git", "clone", "-q", os.path.join(t18, "origin.git"), r18, cwd=t18)
+    for k, v in (("user.name", "P"), ("user.email", "p@example.com"), ("commit.gpgsign", "false")):
+        git(r18, "config", k, v)
+    git(r18, "checkout", "-q", "-b", "claude/prova-1")
+    open(os.path.join(r18, "a.txt"), "w").write("uno\n")
+    git(r18, "add", "-A"); git(r18, "commit", "-q", "-m", "base"); git(r18, "push", "-q", "-u", "origin", "claude/prova-1")
+    open(os.path.join(r18, "a.txt"), "w").write("due\n")
+    hook(r18, "stop", nopush=True)  # come un invio fallito: la scorta c'è solo nel contenitore
+    locale18 = git(r18, "rev-parse", "-q", "--verify", "refs/scorta-principale/claude/prova-1")
+    hook(r18, "stop")  # niente di nuovo: deve riprovare l'invio
+    controlla(bool(locale18) and remoto(r18, "scorta-principale/claude/prova-1") == locale18
+              and git(r18, "rev-parse", "-q", "--verify", "refs/scorta-principale/claude/prova-1") == locale18,
+              "voce 10: invio fallito → al giro dopo riparte, senza una scorta nuova")
 
 print(f"Scorta: {ok_n} controlli riusciti")

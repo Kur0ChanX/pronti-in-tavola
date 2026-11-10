@@ -63,14 +63,32 @@ try:
     c, out, _ = lancia("tool", {"tool_name": "Edit", "tool_input": {"file_path": os.path.join(progetto, "docs/PASSAGGIO-CONSEGNE.md")}})
     contesto = json.loads(out or "{}").get("hookSpecificOutput", {}).get("additionalContext", "")
     controlla(c == 0 and "C226" in contesto and f"origin/{RAMO}" in contesto, "avviso dopo la modifica delle consegne", out)
-    c, out, _ = lancia("tool", {"tool_name": "Write", "tool_input": {"file_path": "docs/ERRORI.md"}})
+    c, out, _ = lancia("tool", {"tool_name": "Write", "tool_input": {"file_path": "docs/ERRORI.md"}, "session_id": "s2"})
     controlla(c == 0 and "C226" in out, "percorso relativo del diario", out)
+    # C469 fase 2 (rapporto 14 voce 18): una volta per commit (HEAD), non a ogni Edit
+    c, out, _ = lancia("tool", {"tool_name": "Edit", "tool_input": {"file_path": "docs/ERRORI-STORIA.md"}, "session_id": "s2"})
+    controlla(c == 0 and out.strip() == "", "stesso commit, altro documento: muto", out)
+    git("commit", "-q", "--allow-empty", "-m", "nuovo commit")
+    c, out, _ = lancia("tool", {"tool_name": "Edit", "tool_input": {"file_path": "docs/ERRORI-STORIA.md"}, "session_id": "s2"})
+    controlla(c == 0 and "C226" in out, "dopo un commit nuovo: di nuovo l'avviso", out)
+    git("push", "-q", "origin", RAMO)
     c, out, _ = lancia("tool", {"tool_name": "Edit", "tool_input": {"file_path": os.path.join(progetto, "app/main.js")}})
     controlla(c == 0 and out.strip() == "", "nessun avviso per il codice", out)
 
     # 2. Tutto su origin: il turno finisce
     c, _, err = stop()
     controlla(c == 0 and err == "", "tutto pushato", err)
+
+    # 2b. C469 fase 1: anche le consegne di una parallela (prima il blocco guardava solo quelle della principale)
+    c, out, _ = lancia("tool", {"tool_name": "Write", "tool_input": {"file_path": "docs/CONSEGNE-PARALLELA-RISPARMIO.md"},
+                                "session_id": "s3"})
+    controlla(c == 0 and "C226" in out, "avviso dopo la modifica delle consegne di una parallela", out)
+    scrivi("docs/CONSEGNE-PARALLELA-RISPARMIO.md", "consegne della parallela")
+    c, _, err = stop("Consegne scritte.")
+    controlla(c == 2 and "fuori dal commit" in err and "non riscrivere" in err, "consegne della parallela non nel commit: blocco", err)
+    git("add", "-A"); git("commit", "-q", "-m", "consegne parallela"); git("push", "-q", "origin", RAMO)
+    c, _, err = stop()
+    controlla(c == 0 and err == "", "consegne della parallela pushate: il turno finisce", err)
 
     # 3. Consegne fuori dal commit: blocco, anche al secondo giro, fino a 3
     scrivi("docs/PASSAGGIO-CONSEGNE.md", "stato nuovo")

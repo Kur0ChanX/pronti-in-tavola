@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # Guardia (hook PreToolUse): blocca da sola gli errori già noti del diario, così non serve ricordarli.
 #   - Bash: comandi vietati anche dentro comandi composti (dopo ; && || | $( ), prove + commit nello
-#     stesso comando (E20), «-- …» dopo `npm run prove:e2e` (E58), «playwright install», variabile
+#     stesso comando (E20), prove + push nello stesso comando (E310), script + commit mentre un merge è a metà (E286),
+#     «-- …» dopo `npm run prove:e2e` (E58), «playwright install», variabile
 #     CLAUDE_CODE_EFFORT_LEVEL.
 #   - list_sessions senza limit o con limit oltre 4 (E23).
 #   - add_repo di un repo diverso da questo: chiede conferma a Mario (spegne gli hook, E28).
@@ -32,6 +33,8 @@ VIETATI = [
 PROVE = INIZIO + (r"(?:npm\s+(?:run\s+)?(?:prove|test)\b|npx\s+(?:vitest|playwright\s+test|firebase\s+emulators:exec)\b"
                   r"|vitest\b|playwright\s+test\b|firebase\s+emulators:exec\b)")
 COMMIT = INIZIO + r"git\s+commit\b"
+PUSH = INIZIO + r"git\s+push\b"
+SCRIPT = INIZIO + r"(?:python3?|node|bash|sh)\s"
 # 5stelle Pocket (C97 A, Mario #127): si parla con Pocket SOLO dal lettore guardato, mai a mano.
 LETTORE = r"^\s*node\s+tools/pocket/lettore\.mjs\s+(?!sblocca\b)[a-z]+\b[^;&|`$<>()\n]*$"
 SBLOCCA = r"^\s*node\s+tools/pocket/lettore\.mjs\s+sblocca\s*$"
@@ -95,6 +98,18 @@ def ultimo_commit_del_ramo(ingresso, ramo):
         return ""
 
 
+def merge_a_meta():
+    """True se c'è un merge a metà (MERGE_HEAD). MERGE_A_META_PROVA solo per le prove. Errore: False, la guardia lascia passare."""
+    if "MERGE_A_META_PROVA" in os.environ:
+        return os.environ["MERGE_A_META_PROVA"] == "1"
+    try:
+        r = subprocess.run(["git", "rev-parse", "-q", "--verify", "MERGE_HEAD"], capture_output=True, text=True, timeout=5,
+                           cwd=os.environ.get("CLAUDE_PROJECT_DIR") or None)
+        return r.returncode == 0
+    except Exception:
+        return False
+
+
 def repo_di_questo_progetto():
     try:
         url = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True, timeout=5,
@@ -131,6 +146,12 @@ def controlla_bash(cmd):
     controlla_cloudflare(cmd)
     if re.search(PROVE, cmd) and re.search(COMMIT, cmd):
         esito("deny", "prove e commit nello stesso comando (E20). Prima guarda l'esito delle prove, poi fai il commit in un comando a parte.")
+    if re.search(PROVE, cmd) and re.search(PUSH, cmd):
+        esito("deny", "prove e push nello stesso comando (E310: prova rossa, push partito lo stesso). Prima leggi l'esito delle prove, "
+                      "poi il push in un comando a parte.")
+    if re.search(COMMIT, cmd) and re.search(SCRIPT, cmd) and merge_a_meta():
+        esito("deny", "script e commit nello stesso comando con un merge a metà (E286: lo script è fallito e i segni «<<<<<<<» "
+                      "sono finiti su GitHub). Prima lo script, poi `git diff --check` o `grep -c '^<<<<<<<'` = 0, SOLO dopo il commit.")
     if re.search(COMMIT, cmd) and re.search(SALTA_CI, cmd, re.I):
         esito("deny", "«[skip ci]» nel messaggio del commit (F04): non serve (i workflow su push hanno già i percorsi, un commit di soli "
                       "documenti non fa partire niente) e fa danno (nello squash GitHub lo incolla e main non pubblica, E132). "

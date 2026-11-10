@@ -109,7 +109,7 @@ def main():
                     f'{giorno} <ora> · <3 parole>», poi «🧪 In prova» e «⏳ Dopo» spostate; commit e push')
     if manca_notifica:
         cosa.append('manda la notifica sul telefono (PushNotification): «🚀 v<N> online · <segno e catena> · <3 parole>»')
-    print('Versione unita in questo turno: ' + '; poi '.join(cosa) + '. NON riscrivere il messaggio: Mario l\'ha già letto (E255); chiudi con una riga di 3-5 parole.',
+    print('Versione unita in questo turno: ' + '; poi '.join(cosa) + '. NON riscrivere il messaggio: Mario l\'ha già letto (E255); chiudi con una riga di 3-5 parole (se un altro avviso di questo Stop chiede di riscrivere una parte, riscrivi solo quella).',
           file=sys.stderr)
     return 2
 

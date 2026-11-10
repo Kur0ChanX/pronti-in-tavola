@@ -46,3 +46,9 @@ Confronto fatto dalla Principale 50 sul pacchetto v38 indipendente + `CLAUDE.md`
 - **In parte**: proporre soluzioni smart senza che Mario lo chieda (PT E14; nel kit solo «💡 PARERE con idee») · indirizzi di siti esterni provati dal vivo prima di usarli (PT E29; RVC ha solo «contatore provato dal vivo») · una causa si dice solo con una prova, sennò «ipotesi» (PT E10; il kit chiede prove per i fatti, non per le cause).
 - **Già nel kit**: link cliccabili / riquadri (C20) · «A cosa serve» (C103) · niente limiti per persona (C109) · impara dagli errori (C122) · numeri doppi (C89) · fonti ufficiali con data (skill `ricerca-aggiornata`) · dopo 2 tentativi falliti fermarsi (PT E9).
 - **Solo qui, apposta** (Mario 08/11): regime leggero delle prove, niente artefatto dell'anteprima.
+
+## Kit 38.16 applicato qui (Principale 52, 10/11) · difetti del pacchetto da correggere nel kit
+- Manca ancora `tools/consegne.py` (C9): le prove `test-archivio-messaggi.py` e `test-consegne-push.py` e la skill `consegne` vogliono quello nuovo (`miei_messaggi`, `fatti --parallela`, `avvio`); qui copiato da RVC e adattato a mano (REPO, ICONA, «di Pronti in Tavola»). Proposta: metterlo nel pacchetto con `<REPO>`, `<ICONA>`, `<PROGETTO>`.
+- Mancano `tools/scarica-kit.py` e `tools/test-scarica-kit.py`, ma il punto 8 li chiede (33 prove → qui 32 + quella del progetto).
+- `tools/test-guardia.py` ha `<OWNER>` e `<NOME-REPO>`: giusto, ma il punto 3 «se è uguale saltalo» non avvisa che anche le prove hanno segnaposto (la guardia era rossa finché non li ho sostituiti).
+- Punto 3 «scrivi con Write, niente script»: per 75 file (~700 KB) costerebbe ~200 mila token; qui copiati con `cp` dai file estratti, dopo il controllo dei segnaposto e delle parti del progetto. Proposta: permettere la copia per i file senza parti del progetto.

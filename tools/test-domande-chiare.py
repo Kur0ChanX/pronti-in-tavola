@@ -124,13 +124,13 @@ def turno(*voci):
     return nome
 
 
-def stop_media(messaggio, voci, attivo=False):
+def stop_media(messaggio, voci, attivo=False, sessione="session_scorte", remoto=""):
     if os.path.exists(STATO):
         os.remove(STATO)
-    dati = json.dumps({"session_id": "session_scorte", "stop_hook_active": attivo, "last_assistant_message": messaggio,
+    dati = json.dumps({"session_id": sessione, "stop_hook_active": attivo, "last_assistant_message": messaggio,
                        "transcript_path": turno(*voci)})
     r = subprocess.run([sys.executable, "-I", HOOK], input=dati, capture_output=True, text=True, timeout=30,
-                       env=dict(os.environ, CLAUDE_PROJECT_DIR=TMP))
+                       env=dict(os.environ, CLAUDE_PROJECT_DIR=TMP, CLAUDE_CODE_REMOTE_SESSION_ID=remoto))
     return r.returncode, r.stderr
 
 
@@ -167,5 +167,37 @@ c, err = stop_media(RICORDO, [("mario", "[AVVIO]"), ("file", ["/home/x/archivio/
 controlla(c == 0 and not err, "foto rimandata (percorso intero): passa", f"{c} {err}")
 c, err = stop_media("✅ FATTO\n- Principale 471 ha finito.", [("mario", "ok")])
 controlla(c == 0 and not err, "riga senza foto vera: passa", f"{c} {err}")
+# C469 fase 2 (rapporto 14 voce 1): in cloud l'ingresso ha l'id locale; la catena si trova con l'id dell'ambiente
+# (cse_<id> → session_<id> della tabella).
+c, err = stop_media(RICORDO, [("mario", "[AVVIO]")], sessione="c9c6a68f-locale", remoto="cse_scorte")
+controlla(c == 2 and "archivio/c1/colori.png" in err, "cloud: catena dall'id dell'ambiente, foto da rimandare", f"{c} {err}")
+c, err = stop_media(RICORDO, [("mario", "[AVVIO]")], sessione="c9c6a68f-locale", remoto="cse_altra")
+controlla(c == 0 and not err, "cloud: sessione fuori dalla tabella = niente catena, passa", f"{c} {err}")
+# Rodato dal vivo (09/11, Risparmio 10): righe «Catena N → M» (dopo un handoff) e la riga corta «⚠️ Aspettano te».
+open(os.path.join(TMP, "archivio", "c1", "logo.png"), "w").write("x")
+with open(os.path.join(TMP, "docs", "DA-FARE.md"), "w") as f:
+    f.write("# Da fare\n## 0. Aspetta Mario\n- 09/11 · 💛 Scorte 70 → 71 · colori del logo (`archivio/c1/logo.png`): 1 · 2.\n\n## 1. Altro\n")
+c, err = stop_media("❓ DOMANDE\n📌 Di cosa parliamo: colori del logo (Scorte 71).\n1 · Va bene · 2 · No", [("mario", "?")])
+controlla(c == 2 and "archivio/c1/logo.png" in err, "riga «Scorte 70 → 71» richiesta di nuovo col numero nuovo: foto da rimandare", f"{c} {err}")
+c, err = stop_media("✅ FATTO\n- Avvio.\n───\n⚠️ Aspettano te: 1 · colori del logo (Scorte 70 → 71)", [("mario", "[AVVIO]")])
+controlla(c == 0 and not err, "solo la riga corta «⚠️ Aspettano te» in fondo: passa (la foto va con la domanda intera)", f"{c} {err}")
+# Rodato dal vivo (10/11, Risparmio 10 → 11): blocco «❓» seguito SENZA «───» dalla riga corta che nomina un video:
+# la riga corta non fa parte del blocco (niente «manda un video», niente sigle, niente foto da rimandare).
+FERMA_E_CORTA = ("❓ DOMANDE\n📌 Di cosa parliamo: la regola dei file vecchi, il controllo è pronto.\n"
+                 "1 · Accendi (consiglio) · 2 · Resta spento\n⚠️ Aspettano te: 1 · video del logo C464 (Principale 471)")
+c, err = stop_media(FERMA_E_CORTA, [("mario", "?")])
+controlla(c == 0 and not err, "domanda ferma + riga corta che dice «video» senza «───»: passa", f"{c} {err}")
+
+# kit 37.2 (Pronti in Tavola, Mario «regola per tutti i progetti»): «👉 DA FARE TU» parte da «A cosa serve»
+SENZA = "✅ FATTO\n- ok\n───\n👉 DA FARE TU\n1. Apri la pagina\n2. Tocca Salva\n───\n⚠️ ATTENZIONE\n- niente"
+CON = SENZA.replace("👉 DA FARE TU\n", "👉 DA FARE TU\nA cosa serve: così l'app vede la chiave.\n")
+c, err = stop(SENZA)
+controlla(c == 2 and "A cosa serve" in err, "«👉 DA FARE TU» senza «A cosa serve»: blocca una volta", f"{c} {err}")
+c, err = stop(SENZA, attivo=True)
+controlla(c == 0 and not err, "«👉 DA FARE TU» al secondo giro: passa", f"{c} {err}")
+c, err = stop(CON)
+controlla(c == 0 and not err, "«👉 DA FARE TU» con «A cosa serve»: passa", f"{c} {err}")
+c, err = stop("✅ FATTO\n- ok\n───\n👉 DA FARE TU\n1. passo\n───\nA cosa serve: in un altro blocco")
+controlla(c == 2, "«A cosa serve» fuori dal blocco non conta", f"{c} {err}")
 
 print(f"OK domande-chiare: {ok_n} controlli")

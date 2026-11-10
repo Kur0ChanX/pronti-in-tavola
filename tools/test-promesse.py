@@ -107,6 +107,20 @@ finally:
 # --aperte e --controlla
 rc, out = modo("--aperte", "--breve")
 controlla(rc == 0 and "PROMESSE APERTE a Mario: 1" in out and "C312" in out, "--aperte --breve", out)
+# Mario 03/11 «4 consiglio»: le 5 più vecchie e le 5 più nuove, senza doppioni
+molte = DA_FARE.replace("| C200 |", "".join(f"| C{n} | 🟠 **Voce {n}**. 👁 Lo vedi: qui · prova: foto | Claude | dopo |\n" for n in range(401, 412)) + "| C200 |")
+rc, out = modo("--aperte", "--breve", da_fare=molte)
+vecchie, _, nuove = out.partition("Le 5 più nuove:")
+controlla(rc == 0 and "C312" in vecchie and "C404" in vecchie and "C405" not in vecchie
+          and all(f"C{n}" in nuove for n in range(407, 412)) and "C406" not in nuove and nuove.index("C411") < nuove.index("C407"),
+          "--breve con 5 vecchie e 5 nuove", out)
+# C469 B5: --lotto N = le N più vecchie, numerate, con le scelte per Mario
+rc, out = modo("--lotto", "3", da_fare=molte)
+righe = [r for r in out.splitlines() if r[:2] in ("1.", "2.", "3.", "4.")]
+controlla(rc == 0 and "le 3 più vecchie di 12" in out and "1 va · 2 non va" in out and len(righe) == 3
+          and righe[0].startswith("1. C312") and righe[2].startswith("3. C402"), "--lotto 3", out)
+rc, out = modo("--lotto", da_fare=molte)
+controlla(rc == 0 and "le 10 più vecchie di 12" in out, "--lotto di base 10", out)
 rc, out = modo("--aperte")
 controlla("lo vedi: Inizio → 👥 Clienti, nomi interi" in out and "prova: lettura" in out, "--aperte", out)
 controlla(modo("--controlla")[0] == 0, "Da fare in ordine")

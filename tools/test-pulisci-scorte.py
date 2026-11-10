@@ -92,4 +92,74 @@ with tempfile.TemporaryDirectory() as tmp:
     controlla(rc == 0 and "Cancellate 1 di 1." in out and f"scorta-principale-{recente}-01BBBBBB/{ramo}" not in rami_remoti(repo)
               and f"scorta-parallela-{vecchia}-01DDDDDD/{ramo}" in rami_remoti(repo), "--giorni 1: via la recente, tenuta quella col lavoro")
 
+    # 4. C450 --unite: a ogni età, solo le scorte di sessioni CHIUSE (non aperte in docs/CHI-FA-COSA.md, non la mia)
+    #    già nel ramo; quella con lavoro non nel ramo resta anche se chiusa.
+    os.makedirs(os.path.join(repo, "docs"))
+    with open(os.path.join(repo, "docs", "CHI-FA-COSA.md"), "w") as f:
+        f.write("# Chi fa cosa\n\n## Catene\n| Catena | Forma | Segni | Numero | Sessione | Chiusa il |\n|---|---|---|---|---|---|\n"
+                "| Principale | cerchi | 🟢 🟡 🔴 ⚫ | 12 | `session_01EEEEEEEEEEaaaaaaaaaaaa` (aperta dalla 11); 11 = `session_01FFFFFFFFFFbbbbbbbbbbbb` | — |\n"
+                "| Dov'è | quadrati | 🟩 🟨 🟥 ⬛ | 3 | `session_01GGGGGGGGGGcccccccccccc` | 02/11 |\n\n## Altro\n")
+    git(repo, "push", "-q", "origin",
+        f"{base}:refs/heads/scorta-principale-{recente}-01EEEEEEEEEE/{ramo}",  # sessione aperta: resta
+        f"{base}:refs/heads/scorta-principale-{recente}-01FFFFFFFFFF/{ramo}",  # chiusa (precedente della catena): via
+        f"{base}:refs/heads/scorta-parallela-{recente}-01GGGGGGGGGG/{ramo}",  # catena chiusa: via
+        f"{base}:refs/heads/scorta-parallela-{recente}-01HHHHHHHHHH/{ramo}")  # questa sessione (--mia): resta
+    rc, out = pulisci(repo, "--unite", "--mia", "01HHHHHHHHHH")
+    if os.environ.get("PROVA_VERBOSA"):
+        print(rc, out)
+    controlla(rc == 0 and "già nel ramo (o col solo commit automatico): 2;" in out and "da guardare): 1." in out and "(1 aperte in docs/CHI-FA-COSA.md, più questa)" in out
+              and "01FFFFFFFFFF" in out and "01GGGGGGGGGG" in out and "01EEEEEEEEEE" not in out.split("Toglierebbe")[1]
+              and "01DDDDDD" not in out.split("Toglierebbe")[1], "--unite a secco: via le 2 di sessioni chiuse, tenuta quella col lavoro")
+    rc, out = pulisci(repo, "--unite", "--cancella", "--mia", "01HHHHHHHHHH")
+    dopo = rami_remoti(repo)
+    controlla(rc == 0 and "Cancellate 2 di 2." in out
+              and f"scorta-principale-{recente}-01FFFFFFFFFF/{ramo}" not in dopo and f"scorta-parallela-{recente}-01GGGGGGGGGG/{ramo}" not in dopo,
+              "--unite --cancella: via le 2 di sessioni chiuse")
+    controlla(f"scorta-principale-{recente}-01EEEEEEEEEE/{ramo}" in dopo and f"scorta-parallela-{recente}-01HHHHHHHHHH/{ramo}" in dopo
+              and f"scorta-parallela-{vecchia}-01DDDDDD/{ramo}" in dopo and f"scorta-principale/{ramo}" in dopo,
+              "--unite: restano la sessione aperta, la mia, quella col lavoro e il nome vecchio")
+    # 4b. C469 C2: scorte di sessioni chiuse col SOLO commit automatico (file della scorta) mai unito: via se ogni messaggio
+    #     di Mario della sua sessione è già arrivato nel ramo; tenuta se ne porta uno mai arrivato (E290).
+    reg = os.path.join(repo, "docs", "MESSAGGI-MARIO.md")
+    ultimo = os.path.join(repo, "docs", "ULTIMO-MESSAGGIO.md")
+    open(reg, "w").write("# Messaggi di Mario\n\n## 2026-11-01 10:00 · 01JJJJJJJJJJ\nciao\n")
+    git(repo, "add", reg)
+    git(repo, "commit", "-q", "-m", "registro nel ramo")
+    git(repo, "push", "-q", "origin", ramo)
+    for sess, extra in (("01JJJJJJJJJJ", ""), ("01KKKKKKKKKK", "\n## 2026-11-02 11:00 · 01KKKKKKKKKK\nmessaggio mai arrivato\n")):
+        git(repo, "checkout", "-q", "-b", "tmp")
+        open(ultimo, "w").write(f"# Ultimo messaggio ({sess})\n")
+        open(reg, "a").write(extra)
+        git(repo, "add", ultimo, reg)
+        git(repo, "commit", "-q", "-m", f"Scorta automatica {sess}")
+        git(repo, "push", "-q", "origin", f"HEAD:refs/heads/scorta-principale-{recente}-{sess}/{ramo}")
+        git(repo, "checkout", "-q", ramo)
+        git(repo, "checkout", "-q", "--", ".")
+        git(repo, "branch", "-q", "-D", "tmp")
+    rc, out = pulisci(repo, "--unite", "--cancella", "--mia", "01HHHHHHHHHH")
+    dopo = rami_remoti(repo)
+    if os.environ.get("PROVA_VERBOSA"):
+        print(rc, out)
+    controlla(rc == 0 and "Cancellate 1 di 1." in out and f"scorta-principale-{recente}-01JJJJJJJJJJ/{ramo}" not in dopo,
+              "C2: via la scorta chiusa col solo commit automatico e i messaggi già nel ramo")
+    controlla(f"scorta-principale-{recente}-01KKKKKKKKKK/{ramo}" in dopo and f"scorta-parallela-{vecchia}-01DDDDDD/{ramo}" in dopo,
+              "C2: restano quella con un messaggio di Mario mai arrivato e quella col lavoro")
+    # 4c. C469: cancellazione rifiutata dal remoto (come il contenitore in cloud, 09/11 «0 di 171»): dopo 3 rifiuti si ferma
+    for sess in ("01MMMMMMMMMM", "01NNNNNNNNNN", "01PPPPPPPPPP", "01QQQQQQQQQQ"):
+        git(repo, "push", "-q", "origin", f"{base}:refs/heads/scorta-principale-{recente}-{sess}/{ramo}")
+    subprocess.run(["git", "config", "receive.denyDeletes", "true"], cwd=nudo, check=True)
+    rc, out = pulisci(repo, "--unite", "--cancella", "--mia", "01HHHHHHHHHH")
+    subprocess.run(["git", "config", "--unset", "receive.denyDeletes"], cwd=nudo, check=True)
+    controlla(rc != 0 and "Cancellate 0 di 4." in out and "rifiutata da qui" in out
+              and f"scorta-principale-{recente}-01QQQQQQQQQQ/{ramo}" in rami_remoti(repo),
+              "C469: cancellazione rifiutata → si ferma dopo 3 e lo dice")
+    rc, out = pulisci(repo, "--unite", "--cancella", "--mia", "01HHHHHHHHHH")
+    dopo = rami_remoti(repo)
+    controlla(rc == 0 and "Cancellate 4 di 4." in out, "C469: col permesso tornato le 4 vanno via")
+    # 5. Sicura: senza docs/CHI-FA-COSA.md (checkout parziale, hook mancante) --unite si ferma, non cancella niente
+    os.rename(os.path.join(repo, "docs", "CHI-FA-COSA.md"), os.path.join(repo, "docs", "CHI-FA-COSA.via"))
+    rc, out = pulisci(repo, "--unite", "--cancella", "--mia", "01HHHHHHHHHH")
+    controlla(rc != 0 and "mi fermo" in out and "Cancellate" not in out and rami_remoti(repo) == dopo,
+              "--unite senza CHI-FA-COSA.md: si ferma e non tocca niente")
+
 print(f"Pulisci scorte: {ok_n} controlli riusciti")
