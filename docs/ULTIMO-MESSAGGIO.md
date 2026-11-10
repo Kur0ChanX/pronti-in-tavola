@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 16:15 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 16:52 ora italiana)
 
-vai di consiglio
+non sei stato per niente bravo in questo
