@@ -16,7 +16,7 @@ Viene dopo C125 (v0.10.6-0.10.9). Codice: `ricettario.js` (`cercaFitBox`, `FIT_C
 - Voci di momenti e fonti regolabili dalle Impostazioni (riga «Senza Claude»), come `FIT_BASE`.
 - «Pronte in N minuti» resta.
 
-## Fonti (Mario 10/11 ~14:25 «2 ma metti una sezione a parte quelli con valori calcolati o segnami semplicemente la fonte nella ricetta e capisco»)
+## Fonti (Mario 10/11 ~14:18 «2 ma metti una sezione a parte quelli con valori calcolati o segnami semplicemente la fonte nella ricetta e capisco»)
 - DECISO: A + B. Ricette coi valori calcolati: in ogni ricetta e carta la fonte (sito) e «valori calcolati» ben visibili (consiglio: etichetta sulla carta + riga nei valori; più semplice di una sezione a parte e Mario dice che gli basta). Specifica di B in questo file prima del codice.
 - A · siti CON i valori per porzione: da provare dal vivo uno per uno (PT E29, robots.txt, sito vero PT E25): FatSecret Italia (pagina 200 il 10/11, robots da leggere), Yazio (`/it/ricette` 404: cercare l'indirizzo giusto), MyProtein «The Zone» (robots con molte righe: leggere se vieta), Foodspring (non risponde dal contenitore il 10/11). Già scartati: Melarossa, Fondazione Veronesi, Starget (C125), GymBeam (#42, da rivedere: Mario 12:50 vuole anche ricette con proteine in polvere).
 - B · siti SENZA valori (molte più ricette): valori calcolati dall'app dagli ingredienti con le tabelle ufficiali CREA, scritti «circa, calcolati». Rischio errori (q.b., cucchiai): solo se Mario dice sì; specifica a parte prima del codice.

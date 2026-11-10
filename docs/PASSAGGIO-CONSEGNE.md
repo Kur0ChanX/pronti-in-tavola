@@ -1,32 +1,30 @@
 # Passaggio di consegne
 
-Sessione attuale: #46 (dopo la #45 `session_01WTjqUx8FCK2e7jG9SRdRCo`, chiusa alla soglia 10/11 13:38; la apre la #45 con `create_session` (catena 3 di 8)).
+Sessione attuale: #47 (dopo la #46 `session_01WTjqUvA9kNYEDeziYdojRk`, chiusa alla soglia 10/11 14:25; la apre la #46 con `create_session` (catena 4 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (10/11 13:40):** 1) la sua frase delle 13:40 sulle «fonti alternative… tasto manuale» (domanda 1/2/3 in «Aspetta Mario», consiglio 1 poi 2); 2) vedere la v0.10.8 (Proteiche: Pasti, Snack e dolci, ⚡, «🔍 Cerca ricette fit») e mandare 3 foto; 3) la chiave GitHub del kit; 4) Deepgram provato da lui su Android.
+- **Cosa preme a Mario adesso (10/11 14:23):** 1) C128 «non c'è niente di nuovo, ne ho pochissime, come è possibile» (Proteiche: 15 ricette, 1114 in coda a 10 ogni 10 minuti): causa vera coi numeri e rimedio; 2) C127 multi scelta, «chiaro se sono state caricate», ordine nella pagina (caos), funzioni smart; 3) C126 fonti B (Mario «2»: valori calcolati, fonte e «calcolati» segnati nella ricetta).
 
-## Stato (10/11 13:42 ora italiana)
-- Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta. Scorte della #45 (`scorta-principale-20261110-01WTjqUx8F…`): solo documenti, NON unirle se `ricettario.js` contiene `cercaFitBox`.
-- v0.10.10 ONLINE (Principale 46, 10/11 14:13, `VERSIONE_APP` letto dal sito vero): C126 pezzo 1, Proteiche per momenti (8) e «Cerca nuove ricette fit su tutti i siti». Prove: app 88 OK, database 145 OK. Prossimo: C126 pezzo 2 (fonte proteica facoltativa, tante voci, + Impostazioni), poi fonti (🛑 domanda a Mario).
-- v0.10.9 (Principale 46, 10/11 13:55: `VERSIONE_APP` 0.10.9 e `ricettario.js` nuovo sul sito vero): C125 strada 2, la ricerca normale anche su RicetteFit; provata dal contenitore con GZ e RicetteFit veri (budino: 4 RicetteFit con foto + 15 GZ). Prove: app 88 OK, database 143 OK.
-- v0.10.8 (controllata 13:34: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.8; `…/ricettario.js` contiene `cercaFitBox`). La parte del server (`{ db: 'cercaFit' }`) è nella stessa pubblicazione ma da qui NON è provabile (chiede l'accesso di chi gestisce): la prova è la foto di Mario dopo «🍮 Budino».
-- C125 FATTO (v0.10.6-0.10.8, piano `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md`, tutti i 5 pezzi ✅). Manca solo la prova di Mario (riga in «Aspetta Mario»).
-- Prove (10/11, Principale 45, sulla v0.10.8): app giro completo 87 OK, 0 NO; `node tools/prova-database.mjs` → 137 OK.
+## Stato (10/11 14:30 ora italiana)
+- Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (qui il push del ramo pubblica da solo: `sito.yml`). Scorte delle sessioni #44-#46: solo documenti, NON unirle se `ricettario.js` contiene `FONTI_PROT`.
+- v0.10.11 ONLINE (controllata dalla #46 alle ~14:30, push 7194b59f): verifica `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.11 e `…/ricettario.js` contiene `FONTI_PROT`. Se dice ancora 0.10.10: guardare il giro «Pubblica sito».
+- Versioni della #46: v0.10.9 ricerca normale anche su RicetteFit (in cima, con foto); v0.10.10 Proteiche per 8 momenti + «Cerca nuove ricette fit su tutti i siti» (`{ db: 'cercaFit', tutto: true }`); v0.10.11 «🥩 Fonte proteica (facoltativo)», 19 scelte.
+- Prove (Principale 46, sulla v0.10.11): app giro completo 88 OK, 0 NO; `node tools/prova-database.mjs` → 145 OK.
 - Kit qui 35.0; il 37.2 aspetta la chiave di Mario (riga in «Aspetta Mario»). Preferenze ricevute v38 (più nuove del kit): si aggiorna col kit 37.2. CLAUDE.md ~1459 token (tetto 1000).
 
 ## Riferimenti
 - Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md`. Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
-- **Piano C124**: `docs/lavori-in-corso/c124-ricettario-proteico.md` (8 passi, tutti fatti). **Piano C125**: `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md` (5 pezzi).
+- **Piano C124**: `docs/lavori-in-corso/c124-ricettario-proteico.md` (8 passi, tutti fatti). **Piano C125**: `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md` (5 pezzi). **Piano C126**: `docs/lavori-in-corso/c126-proteiche-momenti-e-fonti.md` (pezzi 1-2 fatti, 3-4 fonti).
 
-## Sessione appena chiusa (#45)
-- Avvio: v0.10.6 online controllata; scorta della #44 non unita (solo documenti, soglie già nel ramo).
-- v0.10.7 (C125 pezzo 2): `ricettario.js` `sceltaFit` (🍽 Pasti, 🍫 Snack e dolci, ⚡ Pronte in N minuti = filtro `tempo`), `f.fit` nei filtri, uscendo da Proteiche si tolgono; `notaFit` con le due regole; `opzioni.js` `fitVeloci` (5-30, base 10); `worker.js` `FIT_BASE` +7 parole (provate dal vivo), `FIT_BASE_1` = base vecchia → se salvata uguale vale la nuova.
-- v0.10.8 (pezzi 3-4): `worker.js` `{ db: 'cercaFit', q }` (GZ `urlCerca(q + ' light')`, RicetteFit dalla sitemap per radici delle parole, `inCodaPrima` con `aggiunta = 1`, turbo solo se fermo, max 40) · `ricettario.js` `cercaFitBox`, `cercaFit`, `aggiornaFit` (elenco riletto ogni 30 s per 5 minuti), invio e voce dentro Proteiche → `cercaFit`; `perFonte` (Proteiche, Database, motore). Prove: passi «C125» e «C125 cerca fit» in `tools/prova.js`, 7 prove «C125 cerca fit» in `tools/prova-database.mjs`.
-- Pezzo 5: Melarossa, Fondazione Veronesi, Starget provati dal vivo: nessuno ha i valori per porzione → restano GZ e RicetteFit (scritto nel piano).
-- Controllo Da fare: 1 voce aggiunta (riga in «Aspetta Mario» per il messaggio delle 13:40).
+## Sessione appena chiusa (#46)
+- Avvio: scorte #44 (01WTjqUtY9Gg) non unite (solo documenti). Nessuna sveglia della #45 da cancellare.
+- v0.10.9 (C125 strada 2): `rf.mjs` `rfTrova`/`radiciRf`/`nomeRf` (radici, parole vuote, nome dall'indirizzo, foto da `<image:loc>` della sitemap); `worker.js` `rfCerca`, `nomiDi` (nome vero delle già lette), ricerca `{ cerca }` = RicetteFit in cima + GZ. Provata dal contenitore coi siti veri (`scratchpad/vivo`).
+- v0.10.10-0.10.11 (C126): `ricettario.js` `MOMENTI_FIT` (parole da cercare), `PAROLE_MOM`, `momentoRic`, `FONTI_PROT`, `haFonteProt`, `f.prot`, tasto `ric-cerca-fit-tutto`; `worker.js` `cercaFit` con `qq` (max 4) e `tutto` (`FIT_TUTTO` + prossime 30 RicetteFit da `rf.i`). Le 6 parole fisse (`FIT_CERCA`) e la riga «Pasti / Snack e dolci» tolte.
+- Controllo Da fare: 3 voci aggiunte (C126, C127, C128).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
+- #46 (C126): Foodspring non risponde dal contenitore; Yazio `/it/ricette` 404; MyProtein robots.txt con molte regole (da leggere prima); FatSecret pagina 200 (da provare). Nessuna provata a fondo: è il pezzo 3 del piano C126. Push del codice prima del giro completo → NO: qui ogni push del ramo pubblica il sito vero.
 - #45 (C125): Melarossa → NO per Proteiche (JSON-LD `Recipe` senza `nutrition`, solo calorie nel testo); Fondazione Veronesi → NO (senza valori, passi in un testo unico, ~16 ricette); Starget → NO (ricette caricate dal browser, piccola, `Content-Signal use=reference`). Ricerca del sito RicetteFit → NO (robots): le parole si cercano negli indirizzi della sitemap. Prove del database con `fetch` finto che risponde 404 a tutto → l'accesso di chi gestisce fallisce («non sei tra chi gestisce»): far passare a `prima(u, o)` gli indirizzi non dei siti.
 - #44 (RicetteFit): foto dal JSON-LD → NO (ritagli da 500 px, PT E45): og:image + la sua serie srcset ≥ 1000 px. Ricerca del sito (`/?s=`) → NO (vietata nel loro robots.txt): l'elenco viene dalla sitemap. Il loro `transFatContent` è «Grassi insaturi» sul sito: non si usa. Ricette RicetteFit nella coda normale → NO (sarebbero rimaste dietro a GZ, e una fallita mai ripresa): una sola alla volta, in testa (`prendi` ordina RicetteFit prima).
 - #44 (prove): `SOLO=… node tools/prova.js` con `timeout 110` si ferma prima della fine (il passo da solo ci mette ~2-3 minuti): lanciarlo in sottofondo.
@@ -50,18 +48,19 @@ Sessione attuale: #46 (dopo la #45 `session_01WTjqUx8FCK2e7jG9SRdRCo`, chiusa al
 - Sessioni 1-22: `docs/lavori-in-corso/strade-scartate-sessioni-1-7.md` e `strade-scartate-sessioni-8-13.md`. Ricette scritte da Claude: NO (PT E25).
 
 ## Prossimi passi
-1. Mario 13:40 «fonti alternative… tasto manuale»: 1 c'era già (v0.10.8), 2 fatto col consiglio (v0.10.9, Principale 46). Resta solo la domanda «vuoi anche 3 (più siti senza valori)?» in «Aspetta Mario»: aspettare la risposta.
-2. Le 3 foto della v0.10.8 (riga in «Aspetta Mario»): se dopo «Budino» compare un errore, causa vera dalla foto (il messaggio dice il perché, PT E46).
-3. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` (host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»). Le altre righe di «Aspetta Mario»: aspettare Mario; iPad e iPhone solo quando ne ha uno.
+1. C128 (🔴, Mario 14:23 «ne ho pochissime, come è possibile»): numeri veri dal server (pagina Database / `statoDb`: lette coi valori, senza valori, in coda 1114, quante passano `fitRic` e perché no: soglie, sodio, zuccheri) e risposta a Mario con la causa in una riga; rimedio subito se è la coda (più veloce: turbo sulle ricette fit in coda) o le regole troppo strette per gli snack. Le foto 14:22: «le 40 trovate le avevo già lette» = le ricerche trovano ricette già lette che non passano le regole.
+2. C127 (Mario 14:21): proposta con foto prima del codice: momenti e fonti a scelta multipla; avanzamento chiaro («lette 12 di 40 · 3 entrate in Proteiche»); ordine nella pagina (zona, momenti, portate, difficoltà sono 4 righe di scelte: raggrupparle, es. Proteiche con solo momenti e fonte, il resto in «⚙️ Più filtri»); 2-3 funzioni smart proposte.
+3. C126 pezzo 3-4 (Mario «2»): fonti B con valori calcolati (tabelle CREA) e fonte + «calcolati» segnati nella ricetta; specifica nel piano prima del codice. Pezzo 2 resto: momenti e fonti regolabili dalle Impostazioni.
+4. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` (host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»). Le altre righe di «Aspetta Mario»: aspettare Mario; iPad e iPhone solo quando ne ha uno.
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (nuova: C125 fonti alternative 1/2/3, consiglio 1 poi 2).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (la 🛑 sulle fonti è chiusa: Mario «2»).
 
 ## Ultimo messaggio di Mario
-10/11 ~13:40, parola per parola: «intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale». Arrivato dopo il mio messaggio sulle fonti provate (Melarossa ecc. senza valori) e prima che provasse la v0.10.8.
+10/11 ~14:23, parola per parola (con 2 foto `archivio/foto/2026-11-10-1422-dopo-allenamento-*.jpg`): «non c'è niente di nuovo ne ho pochissime come è possibile». Prima, ~14:21 (foto `…-1420-proteiche-momenti.jpg`): «fammi multi scelta e fammi capire chiare se sono state caricate e fai ordine cè un pò di caos in tutta la pagina aggiungi funzioni utili e smart». ~14:18 (prima delle due foto): «2 ma metti una sezione a parte quelli con valori calcolati o segnami semplicemente la fonte nella ricetta e capisco». Arrivati durante la v0.10.11 (la fonte proteica non l'ha ancora vista): la #47 risponde per prima a questi.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C126; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C129; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
