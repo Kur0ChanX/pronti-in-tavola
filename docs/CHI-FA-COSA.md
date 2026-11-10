@@ -10,6 +10,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 42 | C108 Deepgram: chiave confermata nel server (giro 10/11 11:01); v0.10.2 «guarda come cliente» usa la strada dei clienti (Deepgram) + 🎧 nella barra sviluppatore. Tocca la zona di 🟨 Voce 11 (ferma dal 09/11 22:31 ad aspettare la chiave, che Mario ha messo il 10/11 ~11:00 nella Principale) | `voce-clienti.js` (solo la chiamata a `ascoltaServer` + `nomiMotori`) · `worker.js` (solo `/api/ascolta`: `comeCliente` per chi gestisce) · `app.js` `barraDev` · `style.css` `.prova.dev` · `data.js` · `tools/prova.js` passo «ascolto preciso» | 10/11 |
 | 🔴 Principale 41 | chiusa alla soglia 10/11 ~11:05: v0.10.1 (C123 controllo ricette con esito vero) online; chiusi C119, C118, C111; Deepgram: segreto messo da Mario, pubblicazione avviata | — | 10/11 |
 | 🔴 Principale 40 | chiusa alla soglia 10/11 ~08:35: v0.10.0 (C119 «✨ Migliora con l'AI») online; Preferenze v37; aperta la sessione del kit `session_01WTjqUtqQ6xthRd3TmBp2WC` (📗 🧰 Kit 1, repo RVC) per le 5 regole | — | 10/11 |
 | 🔴 Principale 39 | chiusa alla soglia 10/11 ~02:00: v0.9.98 (C120 errori d'accesso col motivo) e v0.9.99 (C119 foto grandi prima) online; AI delle foto alla Principale 40 | — | 10/11 |

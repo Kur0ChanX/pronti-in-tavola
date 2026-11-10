@@ -1,15 +1,10 @@
-# Ultima risposta di Claude (10/11/2026 10:22 ora italiana)
+# Ultima risposta di Claude (10/11/2026 11:24 ora italiana)
 
-Ho capito: hai risposto nella chat #40, ormai chiusa. Rispondo qui a ogni punto.
+🟢 Principale 42 al lavoro.
 
-───
 ✅ **FATTO**
-- Chiusi: foto con l'AI (C119), Astice (C118) e iPad (C111). Grazie per le prove.
-- Regole del progetto: le lascio come sono, nessuna riga tolta. Era anche il mio consiglio: si risparmiava pochissimo.
-- Resta aperto solo il vapore per i clienti (C115): l'Astice era un'altra cosa.
+- **Deepgram**: la chiave è arrivata al server. Prova: il registro della pubblicazione di oggi alle 11:01 dice «created secret for key: DEEPGRAM_API_KEY».
+- Ho trovato un buco: quando provi «guarda come cliente», il server ti riconosce come gestore e Deepgram non parte. La tua prova non avrebbe provato niente.
+- Correzione pronta (v0.10.2): da sviluppatore che guarda come cliente passi dalla stessa strada dei clienti veri. In cima, nella barra sviluppatore, compare «🎧 Groq + Deepgram» con i nomi dei servizi che hanno sentito la frase.
 
-───
-💡 **C113 spiegato con un esempio**
-- Monica manda l'invito a Elena, che ha un iPhone. Elena lo apre, scrive il nome, Monica tocca «Sì».
-- Poi Elena mette l'app sulla schermata Home e la apre dall'icona.
-- …
+⏳ Sto facendo …
