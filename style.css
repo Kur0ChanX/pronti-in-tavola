@@ -626,8 +626,9 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .bollino-prova { display: inline-block; background: #6B3FA0; color: #fff; font-size: .75rem; font-weight: 800; letter-spacing: .04em; border-radius: 999px; padding: 2px 8px; margin-right: 6px; vertical-align: middle; }
 .avviso-prova { background: #EFE6F8; color: #3D1F63; border: 2px solid #6B3FA0; }
 /* modalità sviluppatore (solo Mario) */
-.prova.dev { background: #1F2A44; }
+.prova.dev { background: #1F2A44; flex-wrap: wrap; }
 .prova.dev .dev-v { margin-left: auto; opacity: .9; font-size: .8rem; background: rgba(255, 255, 255, .14); text-decoration: underline dotted; min-height: 28px; }
+.prova.dev .dev-asc { flex-basis: 100%; font-size: .8rem; opacity: .9; }   /* (C108) chi ha sentito l'ultima frase, solo per Mario */
 .dev-nov .quando { opacity: .75; font-weight: 600; font-size: .85rem; }
 .vapore { position: fixed; inset: 0; z-index: 9999; }
 .vapore canvas { width: 100%; height: 100%; display: block; }
