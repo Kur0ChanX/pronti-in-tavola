@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 16:15 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 16:28 ora italiana)
 
-vai di consiglio
+figo questa cosa che hai aperta la finestra è io incollato inventati soluzioni simili cosí smart per tutti i miei progetti
