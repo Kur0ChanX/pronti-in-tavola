@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.11';
+const VERSIONE_APP = '0.10.12';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.12', data: '10/11/2026',
+    migliorato: ['Ricettario «🏋️ Proteiche»: il server legge da solo e veloce tutte le ricette di RicetteFit (circa 900, in un paio d\'ore invece di 6 giorni) e i valori per porzione che mancavano (in circa un\'ora): le proteiche nuove compaiono da sole', 'Ricettario «🏋️ Proteiche»: sotto le regole vedi a che punto è la lettura (es. «RicetteFit 230 di 905 · valori ancora 400») e quanto manca'],
+    corretto: ['Ricettario «🔍 Cerca ricette fit»: «Cerca ancora» e «Cerca su tutti i siti» trovavano sempre le stesse 40 ricette già lette. Ora vanno alle pagine dopo dei siti, saltano quelle già lette e RicetteFit non resta più fuori'] },
   { v: '0.10.11', data: '10/11/2026',
     nuovo: ['Ricettario «🏋️ Proteiche»: «🥩 Fonte proteica (facoltativo)» con 19 scelte (pollo, tacchino, manzo, uova, albumi, tonno, salmone, gamberi, ricotta, yogurt greco, legumi, tofu, proteine in polvere…). Un tocco mostra le ricette con quella fonte e ne cerca di nuove; si unisce al momento della giornata. Senza sceglierla la ricerca funziona come prima'] },
   { v: '0.10.10', data: '10/11/2026',

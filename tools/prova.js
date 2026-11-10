@@ -1765,6 +1765,35 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (st.box || st.nuovi.some(c => c.q) || !st.nuovi.some(c => c.gz === 'lasagne')) throw new Error('fuori da Proteiche la ricerca non è quella di sempre: ' + JSON.stringify(st));
     await page.evaluate(() => { clearTimeout(RIC.fitTimer); RIC.fitTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC125c; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C128 lettura delle fonti: a che punto è (RicetteFit e valori, stima), «niente di nuovo» con le pagine guardate', async () => {   // autonomo
+    await page.evaluate(() => {
+      window.__primaC128 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+      const ss = [{ id: 'rf:budino-proteico-prova', nome: 'Budino proteico prova', zona: 'italiana', categoria: 'Dolci', foto: '', aggiunta: Date.now(), totale: 5, difficolta: 'Facile', cerca: 'budino', nutr: { kcal: 180, prot: 18, carb: 15, grassi: 5, saturi: 1, zuc: 5, fibre: 2, sodio: 150 } }];
+      window.__db128 = { ricette: 900, coda: 3, scelte: 1, conValori: 500, senzaValori: 400, daLeggere: 400, paroleFit: [], giri: 1, fonte: 1, fonti: 10,
+        turbo: { attivo: true, auto: true, obiettivo: 200, fatte: 12, valori: 30, scartate: 0, da: Date.now() },
+        rf: { lette: 230, tot: 905, inCoda: 5, scartate: 5, i: 240, fine: '', spento: false } };
+      window.__cfRisp128 = { q: 'tutto', gz: 0, rf: 0, nuove: 0, gia: 23, pagine: 6 };
+      RIC.chiedi = async c => c.db === 'cercaFit' ? window.__cfRisp128 : c.db === 'mie' ? { scelte: ss } : c.db ? { db: window.__db128 } : { ricette: [], prossima: '' };
+      salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.fitCerca = null; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      clearTimeout(RIC.turboTimer); RIC.turboTimer = null; UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto' && RIC.db && RIC.db.rf, null, { timeout: 30000 }); await page.evaluate(() => render());
+    let nota = await page.evaluate(() => (document.querySelector('.ric-nota-fit') || {}).innerText || '');
+    if (!/Sto leggendo adesso: RicetteFit 230 di 905 · valori ancora 400\. Finisco fra circa un'ora \(stima\); le nuove proteiche compaiono qui da sole/.test(nota) || /10 ogni 10 minuti/.test(nota)) throw new Error('Proteiche: lettura delle fonti non detta: ' + nota);
+    await foto('48d-c128-lettura');
+    /* fermo ma con cose da leggere: «parto da sola»; tutto letto: «Letto tutto» */
+    await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null }); render(); });
+    nota = await page.evaluate(() => (document.querySelector('.ric-nota-fit') || {}).innerText || '');
+    if (!/Da leggere \(parto da sola entro 10 minuti\): RicetteFit 230 di 905/.test(nota)) throw new Error('Proteiche: «da leggere» non detto: ' + nota);
+    await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null, daLeggere: 0, senzaValori: 0, rf: { lette: 880, tot: 905, scartate: 25, fine: new Date(Date.now() + 3600000).toISOString().slice(0, 10) } }); render(); });
+    nota = await page.evaluate(() => (document.querySelector('.ric-nota-fit') || {}).innerText || '');
+    if (!/Letto tutto: RicetteFit 880 di 905 ✅ · valori tutti letti ✅/.test(nota)) throw new Error('Proteiche: «letto tutto» non detto: ' + nota);
+    /* «Niente di nuovo» dice quante pagine ho guardato e che la prossima volta vado avanti */
+    await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
+    const esito = await page.evaluate(() => (document.querySelector('.ric-cerca-fit') || {}).innerText || '');
+    if (!/Niente di nuovo su tutti i siti \(ho guardato 6 pagine dei siti\): le 23 trovate le avevo già lette\. Tocca ancora: la prossima volta vado alle pagine dopo/.test(esito)) throw new Error('«niente di nuovo» senza le pagine: ' + esito);
+    await page.evaluate(() => { clearTimeout(RIC.fitTimer); RIC.fitTimer = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC128; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.ricZona = null; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario C125 ricerca con RicetteFit: tasto e titolo dicono le due fonti, RicetteFit in cima con la sua etichetta', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaC125r = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
