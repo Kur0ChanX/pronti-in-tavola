@@ -1,11 +1,5 @@
-# Ultima risposta di Claude (10/11/2026 15:52 ora italiana)
+# Ultima risposta di Claude (10/11/2026 16:00 ora italiana)
 
+Promessa scritta in Da fare; il giro delle prove continua.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-1. 📌 Di cosa parliamo: il riquadro «📅 Il mio giorno proteico» della foto. Esce in alto in Ricettario → Proteiche. È l'ultimo passo prima di pubblicarlo come v0.10.15.
-   1 · va bene così: lo pubblico appena sistemate le 2 prove vecchie (consiglio) · 2 · cambia qualcosa: scrivimi cosa, lo cambio prima di pubblicarlo
-
-Intanto continuo da sola.
+(I file `.js` restano apposta fuori dal ramo: se li salvassi lì, il sito verrebbe pubblicato subito. Sono salvati nella patch.)
