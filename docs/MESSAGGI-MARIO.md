@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 13:08 · 01QTFEqTYwXG
-invito di WhatsApp che invii dall'app non funziona se cliccano non funziona il link e oltre al link di whatsapp volevo un bel biglietto di invito in foto da allegare in automatico su WhatsApp
-
-## 2026-11-07 13:11 · 01QTFEqTYwXG
-facciamo benvenuta o benvenuto?
-
 ## 2026-11-07 13:26 · 01QTFEqTYwXG
 una frase per tutti  per tutti e quella per monica benvenuta nella tua app ecc ecc 
 
@@ -153,3 +147,9 @@ non c'è niente di nuovo ne ho pochissime come è possibile
 
 ## 2026-11-10 15:37 · 01WTjqUwbG8f
 è adesso come risolviamo?
+
+## 2026-11-10 15:55 · 01WTjqUwbG8f
+Secondo te le regole per le ricette per la palestra sono valide o taglia tantissime ricette, oppure è giusto che sia così?
+
+## 2026-11-10 16:15 · 01WTjqUwbG8f
+vai di consiglio
