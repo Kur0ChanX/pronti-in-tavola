@@ -1,94 +1,90 @@
 # Diario degli errori (lezioni)
 
-Si legge a ogni avvio. Una riga per errore: la lezione da ricordare.
-**Impara dagli errori** (Mario 10/11, C122): ogni errore (correzione di Mario, prova rossa, difetto o guida sbagliata trovati da me) → causa vera, provata, e una difesa perché non ricapiti uguale né simile (lezione generale qui, e se si può una prova o un hook).
-Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, quelle del codice in `.claude/rules/codice.md`.
+Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (cosa è successo, date, parole di Mario) in `docs/ERRORI-STORIA.md`.
+**Impara dagli errori** (C122): ogni errore (correzione di Mario, prova rossa, difetto o guida sbagliata trovati da me) → causa vera provata e difesa: riga qui, testo lungo nella storia, e se si può una prova o un hook. Prove: `.claude/rules/prove.md`; codice: `.claude/rules/codice.md`.
 
 ## Pronti in Tavola
-- **PT E1** (05/11/2026) Il logo di Mario è YNOY Corp con le **4 lune** (lo stesso di Jona, `media/ynoy-firma.png`). In RVC `archivio/loghi/` ci sono versioni vecchie con la scia tratteggiata: mai usarle. La firma «Powered by YNOY» si copia così com'è dall'apertura di Jona.
-- **PT E2** (05/11/2026) L'apertura animata si vede a OGNI apertura dell'app (si salta con un tocco) e parte solo quando la pagina è visibile e le immagini sono pronte: «una volta al giorno» Mario non la vedeva mai. Il logo YNOY con le 4 lune deve essere grande e ben visibile.
-- **PT E3** (05/11/2026) «Se clicchi salta l'animazione» voleva dire: un tocco ovunque (anche sul logo) deve saltarla. Nel dubbio su una frase di Mario, chiedere in una riga prima di cambiare.
-- **PT E4** (05/11/2026) In Claude Code ho rifatto domande (cos'è l'app, chi la usa) già spiegate nella chat che non posso vedere. Se un'informazione non è nella sessione o nel repository, dirlo una volta chiaramente e chiedere tutto insieme, senza ripetere.
-- **PT E5** (05/11/2026) L'app non deve usare i limiti gratuiti condivisi con altre app di Mario (Firebase, Cloudflare) né pesare su di esse: servizi su account solo dell'app. Avevo proposto il Worker sull'account Cloudflare comune.
-- **PT E6** (05/11/2026) Guida a mano sbagliata («icona Web al centro» invece di «+ Aggiungi app»): ogni volta che vedo che una guida era sbagliata scrivo subito quella giusta in `docs/GUIDE-GIUSTE.md` (come l'ha vista Mario) e la leggo prima di rifare quella guida (Mario 05/11).
-- **PT E7** (05/11/2026) Ho chiesto a Mario della «lista Hai detto di no» senza spiegare cosa fosse: nome mio, nessun esempio. Mario: «in che senso? sei sicuro?». Ogni funzione nuova: prima un esempio con una persona vera («Laura tocca No per sbaglio…»), poi il nome nelle sue parole, poi le scelte numerate.
-- **PT E8** (05/11/2026) Mario: «il carrello che ti avevo detto» = la **lista della spesa** (Fase 2, C6: dosi per ricetta → spesa dagli ordini). Ho cercato solo «carrello» e ho chiesto a lui e alla #8. Prima di dire «non lo trovo»: cercare anche i sinonimi e le voci di Da fare (spesa, dosi, ingredienti), e proporre la più probabile.
-- **PT E9** (07/11/2026) Cloudflare↔GitHub: 2 ore di giri sul telefono (Mario: «siamo 2 ore, cerca bene», «non inventarti nulla»). Prima di guidare un collegamento fra servizi: cercare SUBITO bug noti e soluzioni nei forum, dare link diretti provati e passi chiari; dopo 2 giri uguali fermarsi e cambiare strada (es. PC invece del telefono).
-- **PT E10** (07/11/2026) Ho dato la colpa al browser del telefono (2 volte) senza prova: anche dal PC il giro è uguale (Mario: «mi stai prendendo in giro»). Una causa si dice solo quando un esperimento la conferma; altrimenti «ipotesi».
-- **PT E11** (07/11/2026) Ho proposto e fatto le etichette per la stampantina termica in bianco e nero: Mario «in bianco e nero no». Le etichette restano a colori; prima di proporre un modo di stampa, chiedere se il colore serve.
-- **PT E24** (08/11/2026) Ripubblicavo l'artefatto dell'anteprima a ogni avvio e push, ma Mario non lo usa più («perché fai partire sempre l'artefatto?»): prova solo sul sito vero. Prima di un'abitudine scritta nelle consegne, chiedersi se a Mario serve ancora.
-- **PT E25** (08/11/2026) Ho scritto io le ricette del ricettario: Mario «non inventarle, prendile ufficiali… sembra super amatoriale, Monica non si fiderà mai». Contenuti di cui ci si deve fidare (ricette, dosi, salute, leggi): prima chiedere la fonte ufficiale, mai scriverli io; e mostrare a Mario l'aspetto prima di costruire tutto.
+- **PT E1** Logo YNOY = 4 lune (`media/ynoy-firma.png`, come Jona); mai i loghi vecchi di `archivio/loghi/` di RVC.
+- **PT E2** L'apertura animata si vede a ogni apertura (un tocco la salta), parte a pagina visibile e immagini pronte; logo grande.
+- **PT E3** «Se clicchi salta» = un tocco ovunque. Frase di Mario dubbia → una riga di domanda prima di cambiare.
+- **PT E4** Un'informazione che non è nella sessione né nel repo: dirlo una volta e chiedere tutto insieme.
+- **PT E5** Servizi su account solo dell'app: mai i limiti gratuiti condivisi con altre app di Mario.
+- **PT E6** Guida a mano sbagliata → subito quella giusta in `docs/GUIDE-GIUSTE.md`; la leggo prima di rifarla.
+- **PT E7** Funzione nuova a Mario: prima un esempio con una persona vera, poi il nome nelle sue parole, poi le scelte.
+- **PT E8** Prima di «non lo trovo»: sinonimi e voci di Da fare («carrello» = lista della spesa); proporre la più probabile.
+- **PT E9** Collegare servizi: subito bug noti e forum, link provati; dopo 2 giri uguali cambiare strada.
+- **PT E10** Una causa si dice solo con un esperimento che la conferma; sennò «ipotesi».
+- **PT E11** Etichette a colori, mai bianco e nero; prima di un modo di stampa chiedere se il colore serve.
+- **PT E12** Errore in un passo a mano: dire subito dove va ogni cosa e quale casella è sbagliata.
+- **PT E13** Nomi di persona sempre dai dati (`gestori/<UID>.nome`), mai scritti nel codice.
+- **PT E14** A ogni lavoro proporre soluzioni smart e professionali, non il minimo; decide Mario. Regole scritte generali.
+- **PT E15** Indirizzo corretto nel codice: controllare anche i dati salvati; l'app usa sempre `SITO` di `data.js`.
+- **PT E16** Animazioni: provarle su Safari; niente `filter` animati su iPhone.
+- **PT E17** Mai scrivere nelle schermate una funzione che non c'è ancora: testi onesti.
+- **PT E18** Link da aprire = cliccabile; link da copiare = riquadro.
+- **PT E19** Samsung Internet scurisce ogni sito: pulsante «Apri in Chrome»; provare i browser dei telefoni veri.
+- **PT E20** Un comando che Mario usa subito va in vista, solo per lui, con conferma; i 7 tocchi solo per cose rare.
+- **PT E21** Testi col nome di chi scrive: un'alternativa sempre presente e la prova anche con «guarda come».
+- **PT E22** Proponendo un servizio: guida e testo pronto nello stesso messaggio; dopo ogni pubblicazione «chiudi e riapri l'app».
+- **PT E23** Funzioni di un altro file con `typeof … === 'function'`; la prova «sito vero» apre i file separati.
+- **PT E24** Abitudini scritte nelle consegne (es. artefatto dell'anteprima): chiedersi se a Mario servono ancora.
+- **PT E24** (bis) Un dato che Mario vuole «vedere chiaramente» va nella pagina principale, non in una sottopagina.
+- **PT E25** Contenuti di fiducia (ricette, dosi, salute, leggi): fonte ufficiale, mai scritti da me; prima l'aspetto a Mario.
+- **PT E25** (bis) Ogni scarico da un sito esterno si prova dal sito vero (Hugging Face rifiuta *.workers.dev).
+- **PT E26** Voce per persone vere: tono 1.0, frasi corte, sigle per intero; ascoltarla prima di consegnarla.
+- **PT E27** Pochi comandi raggruppati, prova del solo pezzo, giro completo una volta prima del push.
+- **PT E28** Richieste che si approvano solo dal computer: dirlo prima e dare la strada dalle impostazioni.
+- **PT E29** Ogni indirizzo esterno si prova dal vivo; un giro automatico non resta mai fermo sullo stesso errore.
+- **PT E30** «Migliora» una ricetta ufficiale = completare ciò che manca, mai aggiungere; nel dubbio un esempio prima.
+- **PT E31** Misure chieste come le usa chi cucina (teglie); i conti li fa l'app.
+- **PT E32** Prima di ricordare le righe di un'altra chat: rileggere Da fare dopo l'ultimo fetch.
+- **PT E33** Orari, date e numeri noti alla macchina li prende la macchina, mai scritti a mano.
+- **PT E34** Domanda di verifica: in cima SÌ/NO, quante, contro cosa, cosa resta fuori; se il controllo manca, lo faccio subito.
+- **PT E35** Controllo nuovo dentro una classe esistente: foto sul telefono prima di consegnarlo.
+- **PT E36** Ogni cosa che chiedo a Mario dice prima «A cosa serve».
+- **PT E37** Interruttore che chiude la porta ai clienti: conferma, avviso rosso con «Riapri», nome non perso; nel dubbio leggere il server.
+- **PT E38** File nuovo dell'app: in `FILE_APP` di `tools/sito.py`, `GUSCIO` di `sw.js` e anteprima; dopo il push `curl` del file.
+- **PT E39** Funzioni del telefono: cercare i bug WebKit noti e provarle nell'app installata su iPhone/iPad.
+- **PT E40** Riconoscimento vocale: provato con frasi vere e reso robusto; non basta che risponda.
+- **PT E41** Mai limiti che fermano una persona: tetto ampio che avvisa chi gestisce; limiti per persona solo col sì di Mario.
+- **PT E42** Ogni stato di attesa si prova sul percorso più lento (iPad dalla Home, server lento).
+- **PT E43** Cambia un passaggio (chi è accettato, quando) → ricontrollare ogni funzione che dipende da quello stato.
+- **PT E44** Identità che deve sopravvivere all'installazione su iPhone: anche in un cookie; prova con SOLO i cookie.
+- **PT E45** Prima di ingrandire una foto misurare i pixel veri; mai oltre ~2 volte; fonte piccola → dirlo coi numeri.
+- **PT E46** Ogni messaggio d'errore dice il perché vero e, se sconosciuto, il codice.
+- **PT E47** Ogni riprova automatica finisce con un esito scritto; prova che il giorno dopo non rimetta le stesse.
+- **PT E48** Prezzi, crediti e scadenze: il listino ufficiale con la data; mai la frase più allarmante senza controllo.
+- **PT E49** Un dato che arriva da più strade si traduce in un punto solo (`catRic`); le prove usano il dato vero del server.
+- **PT E50** «Cerca ancora» ricorda dove è arrivato; tetti dopo aver tolto le già lette; guardare il ritmo vero di ogni fonte.
+- **PT E51** Prima di dare un nome a un'azione (`data-a`) cercarlo in tutti i file (prova «nessun nome definito due volte»).
+- **PT E52** Lavoro che si ripete da solo: misurarlo PRIMA contro il limite gratuito; `node --input-type=module --check < worker.js`.
+- **PT E53** All'avviso di un limite PRIMA si ferma la fonte (interruttore), poi si corregge; il freno vale per tutto il server.
+- **PT E54** Per un mio errore la soluzione è gratis e nel codice, mai i soldi di Mario; consumo alto = avviso, mai una persona ferma.
+- **PT E55** Una seconda strada per una cosa che esiste: controllarla contro ogni lettore dello stato; «è cambiato?» su insiemi ordinati.
+- **PT E56** Prova di un avviso: registrare TUTTI gli avvisi (spia su `mostraToast`); «a volte» si indaga subito.
+- **PT E57** Permessi di un token: provati dal vivo; risorsa nuova su Cloudflare = passo chiaro di Mario, non a sorpresa nel deploy.
+- **PT E58** Foto fatte da me: controllo coi numeri nello script; se serve l'occhio, copia a 1x ≤400 px JPEG, mai l'originale 2x.
+- **PT E59** `git rev-parse --short` vuole UNA revisione: con due dà «Needed a single revision» e sembra un push fallito; usare `git rev-parse HEAD origin/<ramo>`.
+- **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse: il testo lungo di una voce aperta va come elenco, mai come riga `| C…`; dopo ogni ritocco di Da fare `promesse.py --controlla` prima del commit.
 
-- **PT E26** (08/11/2026) La voce della cucina guidata era «robotica, fa pietà» (Mario): tono alzato a 1.1 e frasi lunghe in un pezzo solo. Una voce che parla a persone vere: tono 1.0, frasi corte, sigle lette per intero, e provarla ascoltandola prima di consegnarla.
-- **PT E27** (08/11/2026) Mario: «anche tu non scherzi come lentezza… si rispecchia in tutte le sessioni». Vero: per un pulsante ho fatto ~45 comandi e 6 giri completi delle prove (3,5 min l'uno) in 40 minuti, con 228k token di contesto. La lentezza è del modo di lavorare del kit, non di una sessione: pochi comandi raggruppati, prova del solo pezzo cambiato mentre si lavora, giro completo una volta sola prima del push.
-- **PT E28** (08/11/2026) Ho scritto «il permesso l'hai rifiutato»: dal telefono la richiesta di cambiare l'ambiente non si può approvare, c'è solo «Nega» (foto di Mario). Richieste che si approvano solo dal computer: dirlo PRIMA e dare anche la strada dalle impostazioni.
-- **PT E29** (08/11/2026) Il motore delle ricette restava fermo su «Ricette sarde» (Mario: «non mi trova altre nuove ricette»): l'indirizzo della sezione era inventato (404) e il motore su una pagina rotta non andava avanti. Ogni indirizzo di un sito esterno si prova DAL VIVO prima di usarlo, e un giro automatico non deve mai poter restare fermo sullo stesso errore.
-- **PT E35** (09/11/2026) Il cursore della velocità della voce stava dentro `label.interr`: lo stile degli interruttori lo disegnava come un interruttore (pallino bianco finto, quello vero un puntino blu) e Mario non riusciva a tenere 0,75 («ritorna a 1,20»). Un controllo nuovo dentro una classe esistente: guardare la foto sul telefono prima di consegnarlo.
-- **PT E36** (09/11/2026) Ho chiesto a Mario di fare cose (la frase per la sessione del kit) senza dire a cosa servono: «a cosa serve?». Regola di Mario per tutti i progetti e account: ogni cosa che gli chiedo di fare (passi a mano, prove, foto, decisioni) dice in una riga «A cosa serve:», cioè cosa ottiene lui, l'app o il lavoro.
-- **PT E37** (09/11/2026) Francesco (telefono vero) bloccato per ore su «Monica non prende clienti nuovi»: l'interruttore «Accetta clienti nuovi» era spento sul server (dalle 11:01, probabilmente un tocco per sbaglio in Clienti) e nessuno lo vedeva; Mario «mi hai bloccato l'app?!?». Un interruttore che chiude la porta ai clienti: conferma prima di spegnerlo, avviso rosso con «Riapri» finché è spento, e il cliente bloccato non perde il nome. Nel dubbio sul server: una lettura vera del documento (REST con un accesso anonimo), non ipotesi.
-- **PT E38** (09/11/2026) v0.9.80 online senza `voce-clienti.js` (404): il sito pubblica solo i file elencati in `FILE_APP` di `tools/sito.py` e nel `GUSCIO` di `sw.js`; l'anteprima li elenca a parte. Ogni file nuovo dell'app va in tutti e tre, e dopo il push si prova l'indirizzo pubblicato del file (`curl -o /dev/null -w %{http_code}`), non solo la versione.
-
-- **PT E39** (09/11/2026) Su iPad (app installata sulla Home) il microfono dei clienti suonava e non capiva nulla (Mario, video): `webkitSpeechRecognition` su iOS esiste ma nell'app sulla Home non parte mai (WebKit 225298, dal 2021) e dopo un audio resta muto anche in Safari (WebKit 321436, 08/2026). «L'API c'è» non vuol dire «funziona»: per ogni funzione del telefono cercare i bug WebKit noti e provarla anche nell'app installata su iPhone/iPad, non solo in Safari e su Android.
-
-- **PT E40** (09/11/2026) Con l'ascolto preciso su iPad le parole uscivano storpiate («persa a Mato» per «per sabato»; Mario: «non capisce bene e parlo normale»): avevo provato che il testo ARRIVA, non che è GIUSTO. Un riconoscimento vocale si prova con frasi vere e si rende robusto (modello più preciso, più trascrizioni, correzione col menù), non basta che risponda.
-
-- **PT E41** (09/11/2026) Avevo messo limiti PER CLIENTE che bloccano la persona (aiutante 10 domande al giorno, ascolto 40): Mario «come ti avevo già detto… sembra un'app amatoriale». Regola di Mario per tutti i progetti e account: niente limiti che interrompono un cliente, amico o collega; un limite per persona si chiede prima a Mario; si mette un tetto AMPIO che, superato, NON blocca ma manda a chi gestisce una segnalazione nell'app (e si registra): molto oltre = c'è un problema; poco oltre = si alza il tetto.
-- **PT E43** (09/11/2026) La scelta «Ordino davvero / Sto solo provando» usciva solo a chi Monica non aveva ancora accettato; con C93-C97 le persone sono accettate PRIMA del primo ordine e la scelta è sparita senza che nessuno se ne accorgesse: un amico che provava ha mandato un ordine vero (Mario: «si è creato un po' di caos»). Quando cambia un passaggio (chi è accettato, quando, in che ordine), ricontrollare ogni funzione che dipende da quello stato.
-
-- **PT E42** (09/11/2026) Mario: «per Android è una bomba, per iPad fa schifo… perché????». Metà della differenza era mia: nella pagina Aiutante avevo nascosto apposta il pannello «Ti ascolto», e su Android non si notava perché il riconoscitore scrive subito. Ogni stato di attesa (accensione, ascolto, risposta del server, voce) si prova sul percorso più lento (iPad dalla Home, server lento), non su quello veloce.
-- **PT E44** (09/11/2026) iPhone: dopo il sì di Monica l'app messa sulla Home risultava una persona nuova («Dice che ha cambiato telefono») e Monica doveva dire sì di nuovo; Mario: «un disastro… se non riesci togliamo l'approvazione». L'app sulla Home di iPhone prende da Safari SOLO i cookie (WebKit 17.2): nel cookie c'era il nome, non l'accesso. Ogni identità che deve sopravvivere all'installazione su iPhone va anche in un cookie, e il passaggio Safari → icona si prova con un contesto che ha SOLO i cookie.
-- **PT E45** (09/11/2026) Ho tagliato le strisce di GZ e ingrandito ogni pezzo a tutto schermo senza guardarne la misura vera (220×170 px): Mario «sgranatissime». Prima di ingrandire o tagliare una foto, misurare i pixel veri e non mostrarla oltre ~2 volte la sua misura; se la fonte non ha una versione grande, dirlo subito con i numeri.
-- **PT E46** (10/11/2026) «Accesso non riuscito. Riprova.» senza motivo: Mario «perché rompi sempre il codice quando funziona?» e nessuno poteva dire se era il codice o la rete (nella foto il segnale aveva una ✕). Ogni messaggio d'errore dice il perché vero (manca la rete, finestra bloccata…) e, per un errore sconosciuto, il suo codice: così una foto basta a capire.
-- **PT E47** (10/11/2026) «🔍 Controlla tutte» diceva «5 da sistemare: ci penso io» e rimetteva le 5 da rileggere ogni giorno; GialloZafferano le ridava uguali (lì sono proprio così), quindi all'infinito. Mario: «secondo me non le sistema da solo». Causa: un giro automatico senza esito finale per ogni elemento e un testo scritto prima di provare che l'azione cambi davvero qualcosa. Difesa: ogni riprova finisce con un esito scritto (sistemata · uguale all'originale · sparita) e una prova controlla che il giro del giorno dopo NON rimetta le stesse.
-- **PT E48** (10/11/2026) Ho scritto a Mario che il credito gratis di Deepgram «scade dopo un anno» (Mario: «che senso ha?!?»): l'avevo preso da una pagina vecchia del manuale, mentre il listino ufficiale (deepgram.com/pricing, novembre 2026) dice «non scade» e la chat Voce l'aveva già letto. Prezzi, crediti e scadenze: la fonte è il listino ufficiale con la data; se due pagine dello stesso sito si contraddicono, lo dico e seguo il listino, mai la frase più allarmante senza controllo.
-- **PT E49** (10/11/2026) Le ricette prese dal motore non uscivano mai coi filtri delle portate (Primi, Dolci…): il motore salvava la portata col nome del sito («Primi piatti») e il filtro cercava la chiave («primi»); l'aggiunta a mano la traduceva, il motore no, e la prova C124 usava dati finti già puliti («secondi»). Trovato da me. Difesa: un dato che arriva da più strade si traduce in un punto solo, dove si legge (`catRic`), e le prove usano il dato com'è sul server (passo «ricettario RicetteFit»: «Primi piatti» sotto «Primi»).
-- **PT E50** (10/11/2026) «Cerca ancora» e «Cerca su tutti i siti» trovavano sempre le stesse 40 ricette già lette (Mario: «così generico non trova nulla, assurdo»): leggevano sempre la pagina 1 dei siti e il tetto di 40 si applicava PRIMA di togliere le già lette, così RicetteFit restava sempre fuori. In più RicetteFit era letto 1 ogni 10 minuti (6 giorni). Difesa: un tasto «cerca ancora» ricorda dove è arrivato e va avanti; i tetti si applicano dopo aver tolto le già lette; la prova parte da un database dove la pagina 1 è già tutta letta (passo C128 di `prova-database.mjs`); e prima di dire «poche» guardo il ritmo vero di ogni fonte.
-- **PT E51** (10/11/2026) Il tasto nuovo «Altre ▾» del ricettario non apriva nulla: l'avevo chiamato `ric-altre`, nome già usato da «Carica altre ricette» più in basso nello stesso file, e la seconda definizione cancellava la prima in silenzio. Trovato dalle prove. Difesa: prima di dare un nome a un'azione (`data-a`) cercarlo con `grep -n "'nome'"` in tutti i file; il passo «tasti: nessun nome di azione definito due volte» di `tools/prova.js` lo controlla da solo.
-- **PT E52** (10/11/2026) Email di Cloudflare alle 15:29: «90% di 5.000.000 righe lette al giorno» (Mario: «e adesso come risolviamo?»). Il carico veloce di C128 (mio) si svegliava ogni 30 s e a ogni sveglia contava TUTTO l'archivio 5-6 volte (`statoDb`), più il cron ogni 10 minuti: il limite è di tutto l'account, avvisi e app compresi. Difesa: un lavoro che si ripete da solo si misura PRIMA (righe lette × giri al giorno contro il limite gratuito); il server conta le sue letture (`contaLetture`) e oltre `LETTURE_FONDO` il fondo riposa (prova C130 in `prova-database.mjs`). E `node --check worker.js` non vede gli errori dei moduli: `node --input-type=module --check < worker.js`.
-- **PT E53** (10/11/2026) Cloudflare ha bloccato il server fino alle 01:00 (letture gratuite finite): notifiche degli ordini, aiutante e ricettario fermi. Mario: «quello che ho voluto sempre evitare… non sei stato per niente bravo». Causa provata (email delle 15:35, 17 minuti prima del freno della v0.10.14): il carico veloce (C128) non era misurato contro il limite (PT E52) e all'avviso del 90% (15:29) ho scritto codice per 20 minuti invece di fermare SUBITO il motore («⏸ Ferma» c'era già); il freno nuovo contava solo il lavoro di fondo. Difesa: a un avviso di limite, PRIMA si ferma la fonte (interruttore, in un minuto) e poi si corregge; il freno vale per tutto il server e scatta da solo presto (40%); la prova «giornata intera» diventa rossa oltre 1 milione di letture.
-- **PT E54** (10/11/2026) Per rimediare al blocco di Cloudflare (mio, PT E53) ho proposto a Mario il piano a pagamento e ho messo un blocco alle ricerche delle persone oltre 3,5 milioni di letture. Mario: «devo pagare io i tuoi sbagli?… ti avevo detto di non mettere blocchi ma se qualcosa segnava più del dovuto dovevi avvisarmi… io non ho soldi». Difesa: per un mio errore la soluzione è gratis e nel codice, mai i soldi di Mario; un consumo che sale = avviso a Mario e pausa SOLO del lavoro automatico, mai una persona ferma (PT E41); scritto in `gia-deciso-da-mario.md`.
-- **PT E55** (10/11/2026) Due prove rosse della corsia d'emergenza (C135), trovate da me prima della pubblicazione: la «firma» della copia cambiava a ogni rinnovo (il telefono va in fondo all'elenco: l'ordine contava) e la notifica partita dalla copia mostrava il testo sbagliato (sw.js chiede «cosa dire» a /api/ultimo, che leggeva solo l'oggetto). Difesa: una seconda strada per una cosa che esiste già si controlla contro OGNI lettore dello stato della prima (qui /api/ultimo: vale il più recente fra oggetto e copia); un «è cambiato?» confronta insiemi ordinati. Prove C135 in `tools/prova-database.mjs`.
-- **PT E56** (10/11/2026) La prova C55 cadeva «a volte» (anche nella #53, rilanciata a parte): l'avviso giusto di «🔍 Controlla tutte» c'era, ma 300 ms dopo l'avviso di fine scarico («📥 40 ricette») lo copriva. Difesa: una prova che controlla un avviso registra TUTTI gli avvisi mostrati (spia su `mostraToast`), non solo l'ultimo a schermo; e «a volte» si indaga subito (RVC E22).
-- **PT E57** (10/11/2026) Il deploy della v0.10.18 è fallito (online restava la 0.10.17, niente di rotto): wrangler doveva creare da solo il cassetto KV, ma il token è un «Account API Token» senza «Workers KV Storage: Edit» (Authentication error 10000). Avevo dedotto i permessi dal nome del pulsante («Crea token» di Compilazioni) e dalla pagina dei token di Workers Builds, senza provarli. Difesa: i permessi di un token si provano DAL VIVO prima di contarci (log del giro o una chiamata di sola lettura), e una risorsa nuova su Cloudflare si collega con un passo chiaro di Mario (guida in `docs/GUIDE-GIUSTE.md`), non a sorpresa nel deploy.
-- **PT E58** (10/11/2026) Per controllare 2 schemi fatti per Mario li ho aperti con `Read` a piena misura (780×1508, 2x): il contatore del kit li ha pesati ~147k token (avvisi C433: 235 KB e 257 KB) e la Salvagente 2, arrivata a 258k, ha dovuto fare le consegne dopo una sola risposta (attesa lunga oltre 180k). Trovato da me. Difesa: una foto fatta da me si controlla coi numeri, nello stesso script che la crea (misure, righe dei testi lette dalla pagina); se serve l'occhio, UNA copia piccola a 1x (larga al massimo 400 px, JPEG), mai l'originale a 2x. Controllo automatico proposto al kit in `docs/PER-IL-KIT.md`.
-
-## Lezioni ereditate da RVC (numeri «RVC E..»)
-- **RVC E1** Si lavora solo in Claude Code. Ogni file ricevuto va subito in `archivio/` con commit.
-- **RVC E7** Prima di chiedere a Mario (o di scrivere un prompt a un aiutante), `grep` in documenti e archivio.
-- **RVC E11** La sessione nuova la apre Claude con `create_session` (catena di 8); a 8 la apre Mario: nel testo per lui il repo esatto e il ramo.
-- **RVC E19** «unrelated histories» dopo uno squash: prima `git fetch --unshallow origin`, poi merge normale.
-- **RVC E20** Mai `prove … | grep … && git commit`: prima l'esito delle prove, poi il commit a parte.
-- **RVC E21** Mai inventare il nome di un pulsante. Nel selettore: medium = «Medio», high = «Alto», xhigh = «Extra».
-- **RVC E23 E32 E33 E36** Prima `grep -n`, poi solo le righe utili. All'avvio niente `list_sessions` completo, `actions_list`, `list_events`, `Artifact read` di controllo.
-- **RVC E24** Un solo ramo. Il ramo nuovo per sessione ha diviso il lavoro in due.
-- **RVC E28** Mai `add_repo` di un secondo repo: spegne in silenzio gli hook.
-- **RVC E29** Segreti mai in chat né nel repo: vanno nelle impostazioni dell'ambiente.
-- **RVC E30** Mai dire «non è successo» senza una prova che lo possa vedere.
-- **RVC E31** Dopo lo squash: unire `main` PRIMA di ogni altro commit.
-- **RVC E37 E48 E49** Foto: io guardo un'anteprima ≤1000 px; a Mario un telefono per foto, una schermata per foto, pezzi alti al massimo ~1100 px.
-- **RVC E59** File di `.claude/`: ok di Mario (scritto) nella chat di quella sessione.
+## Lezioni ereditate da RVC
+- **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.
+- **RVC E7** Prima di chiedere a Mario o scrivere a un aiutante: `grep` in documenti e archivio.
+- **RVC E11** La sessione nuova la apre Claude (`create_session`, catena di 8); a 8 Mario, con repo e ramo esatti.
+- **RVC E19** «unrelated histories» dopo uno squash: `git fetch --unshallow origin`, poi merge normale.
+- **RVC E20** Mai `prove … | grep … && git commit`: prima l'esito, poi il commit.
+- **RVC E21** Mai inventare un pulsante; selettore: medium «Medio», high «Alto», xhigh «Extra».
+- **RVC E23 E32 E33 E36** Prima `grep -n`, poi le righe utili; all'avvio niente `list_sessions` completo, `actions_list`, `list_events`, `Artifact read`.
+- **RVC E24** Un solo ramo di lavoro.
+- **RVC E28** Mai `add_repo` di un secondo repo: spegne gli hook.
+- **RVC E29** Segreti mai in chat né nel repo: nelle impostazioni dell'ambiente.
+- **RVC E30** Mai «non è successo» senza una prova che lo possa vedere.
+- **RVC E31** Dopo lo squash: unire `main` prima di ogni altro commit.
+- **RVC E37 E48 E49** Foto: io un'anteprima ≤1000 px; a Mario un telefono e una schermata per foto, pezzi alti ≤1100 px.
+- **RVC E59** File di `.claude/`: ok scritto di Mario nella chat di quella sessione.
 - **RVC E60** Dopo un riavvio: unire la scorta e leggere `docs/ULTIMO-MESSAGGIO.md`.
-- **RVC E64** Scheda delle domande persa: rifarla subito, scritta anche in chiaro con le scelte numerate. Foto e domanda nello stesso messaggio.
-- **RVC E61** Prima di ogni push `git fetch`: lavoro di un'altra chat si unisce con un merge normale, mai forzare.
-- **RVC E65** Dopo «worker process was restarted»: se il mio ultimo passo era uno strumento e non il resoconto a Mario, il turno NON è finito: continuo e scrivo il resoconto.
-- **RVC E66** `effort_level` assente in `get_session` = Mario non l'ha scelto nel selettore: non prova «normale». `"effortLevel"` in `.claude/settings.json` vale anche nel cloud.
-- **RVC E67** File con righe lunghissime (tabelle): `grep -n -o '.\{0,80\}parola.\{0,80\}'`, mai `grep` semplice (una riga sola = migliaia di token).
-- **PT E12** (07/11/2026) Dicevo «no, sbagliato» a una foto senza dire PERCHÉ (UID in «ID raccolta» invece che in «ID documento»): 3 volte, Mario irritato. Davanti a un errore in un passo a mano: spiega subito dove va ogni cosa (metafora) e quale casella è quella sbagliata.
-- **PT E13** (07/11/2026) La Home del gestore diceva sempre «Ciao Monica»: Mario, entrato col suo Google, si è visto chiamare Monica («lo fai apposta?»). Ogni nome di persona nelle schermate viene dai dati (`gestori/<UID>.nome`), mai scritto nel codice.
-- **PT E14** (07/11/2026) Ho dato a Mario il link nudo per Monica, senza pensare a un invito curato: «fai le cose da robot, senza inventiva, poche strategie, idee geniali». Vale per TUTTO, non solo gli inviti: a ogni lavoro PROPONGO a Mario, senza che lo chieda, soluzioni smart, innovative, geniali e professionali; decide lui (mai decidere al posto suo); il minimo che funziona non basta. Una regola si scrive generale, mai legata al caso che l'ha fatta nascere.
-- **PT E15** (07/11/2026) L'invito su WhatsApp non si apriva (Mario: «se cliccano non funziona il link»): il link prendeva l'indirizzo salvato nei dati di Firebase (ancora `pages.dev`, mai esistito) e non quello corretto in `data.js`. Correggere un indirizzo nel codice non basta: controllare anche dove è salvato nei dati; ora l'app usa sempre `SITO` da `data.js`.
-- **PT E16** (07/11/2026) Su iPhone (ospite) l'apertura mostrava il medaglione come un riquadro bianco (foto di Mario): Safari sbaglia il `filter` animato da `blur` a `drop-shadow`. Animazioni nuove: provarle anche su Safari, o niente filtri animati su iPhone (`@supports (-webkit-touch-callout: none)`).
-- **PT E17** (07/11/2026) L'app diceva «A Monica è arrivata la notifica» ma le notifiche vere non esistono ancora (C3): Mario le ha aspettate invano. Mai scrivere nelle schermate una funzione che non c'è: testi onesti finché non è fatta.
-- **PT E18** (07/11/2026) Ho messo nel riquadro di codice un link che Mario doveva solo APRIRE (Firebase → Regole): «se mi dici apri questo link mi devi mandare il link cliccabile, se mi dici copia mi devi mandare il link copiabile». Link da aprire = cliccabile; link da copiare = riquadro.
-- **PT E19** (07/11/2026) «Solo tema chiaro» col `color-scheme: only light` non basta: Samsung Internet (browser dei Samsung, si apre dai link di WhatsApp) scurisce da solo ogni sito e lo ignora (Mario: «no no, è uscito sul telefono di Barbara»). Prima di dire «tolto» cercare come si comporta OGNI browser dei telefoni veri (Samsung Internet compreso); per Samsung: pulsante «Apri in Chrome».
-- **PT E20** (07/11/2026) Il pulsante «ordini → PROVA» stava dietro 7 tocchi sulla firma E dentro «Altre impostazioni»: Mario non lo trovava. Un comando che Mario deve usare subito va in vista (in cima, solo per lui), con conferma chiara; i 7 tocchi solo per cose di rado.
-- **PT E21** (08/11/2026) «Scrivi a Monica»: Mario non vedeva nome e cognome nel messaggio WhatsApp. Ipotesi (non provata): guardava come cliente col suo accesso da gestore, e lì il nome del cliente non c'è. Ogni testo con il nome di chi scrive: un'alternativa sempre presente, e la prova anche con «guarda come».
-- **PT E22** (08/11/2026) Mario: «hai diverse cose che ti ho chiesto non fatte… guida account api groq». Avevo proposto il ponte con un servizio nuovo senza dare SUBITO la guida per crearlo, e non avevo detto che le novità si vedono solo dopo aver riaperto l'app. Quando propongo un servizio, nello stesso messaggio: guida passo passo e testo pronto; dopo ogni pubblicazione: «chiudi e riapri l'app per vederla».
-- **PT E23** (08/11/2026) v0.9.8-0.9.11: online l'app si bloccava all'apertura (`barraAIC is not defined`) e Mario restava cliente senza poter entrare («risolvila subito e non deve succedere più»). app.js chiamava una funzione di aiutante.js, che si carica dopo; l'anteprima (tutto in un file) non lo mostrava. Ogni funzione di un altro file: con `typeof … === 'function'`; la prova «sito vero» apre i file separati come online.
-- **PT E24** (08/11/2026) Mario: «quante ricette… sembra una funzione nascosta… senza fare un reparto a parte». Avevo messo i numeri del database in una pagina a parte, dietro un link. Un dato che Mario chiede di «vedere chiaramente» va in vista nella pagina principale della funzione, non in una sottopagina.
-- **PT E25** (08/11/2026) Paola non si scaricava sul telefono di Mario («Failed to fetch»): l'avevo provata solo dalla copia di prova (file sul disco), mai dal sito vero. Hugging Face rifiuta le richieste con provenienza *.workers.dev. Ogni scarico da un sito esterno si prova anche dal sito vero (Playwright sull'indirizzo pubblicato).
-- **PT E30** (08/11/2026) «Migliora i passi» l'ho letto come «riscrivili a modo mio» (dosi dentro i passi, una frase per riga): Mario «falle come GialloZafferano, uguali paro paro». Sulle ricette ufficiali «migliorare» = completare ciò che manca rispetto all'originale, mai aggiungere cose che l'originale non ha; nel dubbio, mostrare prima un esempio.
-- **PT E31** (08/11/2026) Dosi dei piatti a teglia chieste «per 1 porzione»: Monica pensa a teglie. Mario: per la teglia da 6, la da 8 la calcola l'app; al kg restano al kg. Le misure si chiedono come le usa chi cucina, i conti li fa l'app.
-- **PT E32** (08/11/2026) Chat Aiuto 2: ho ricordato a Mario «ascolta le 4 voci di prova» leggendo Aspetta Mario all'avvio, ma intanto la principale l'aveva già cambiata (le aveva sentite). Prima di ricordare le righe di un'altra chat: rileggere DA-FARE dopo l'ultimo fetch.
-- **PT E33** (08/11/2026) Scrivevo a mano l'ora delle versioni nelle novità (`ora: '15:50'`) e l'ho messa nel futuro: Mario alle 15:00 vedeva «ore 15:50». Orari, date e numeri che una macchina conosce (pubblicazione, commit) li prende la macchina, mai scritti a mano (Mario: «risolvilo dalla base»).
-- **PT E34** (08/11/2026) Mario ha chiesto 5 volte «hai controllato tutte le ricette, una per una, con tutti i passi di GialloZafferano?»: io rispondevo con controlli su altro (foto, numerini, solo le 69/253) e non gli dicevo mai sì o no. Una domanda di verifica: si risponde in cima con SÌ/NO, quante ne ho controllate, contro cosa (la pagina vera, passo per passo) e cosa resta fuori; se il controllo non c'è ancora, lo faccio subito e lo dico.
+- **RVC E61** Prima di ogni push `git fetch`: il lavoro di un'altra chat si unisce con un merge normale.
+- **RVC E64** Scheda delle domande persa: rifarla subito, in chiaro con le scelte; foto e domanda nello stesso messaggio.
+- **RVC E65** Dopo «worker process was restarted» senza resoconto a Mario il turno non è finito.
+- **RVC E66** `effort_level` assente = Mario non l'ha scelto; `"effortLevel"` in `.claude/settings.json` vale anche nel cloud.
+- **RVC E67** File con righe lunghissime: `grep -n -o '.\{0,80\}parola.\{0,80\}'`.
