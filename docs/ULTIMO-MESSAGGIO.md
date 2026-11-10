@@ -1,3 +1,6 @@
-# Ultimo messaggio di Mario (10/11/2026 17:44 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 18:30 ora italiana)
 
-Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?
+avvia plane mode pensiero profondo brain storming
+
+
+Volevo farti una domanda, siccome sto creando, cioè non è che sto creando, sto mettendo il motore di GitHub sul computer per fare le verifiche delle applicazioni senza che mi consumano minuti, cioè quindi lo sto facendo solo in locale, volevo chiederti se è possibile di se posso creare una sorta di, nel mio computer fisso sempre acceso, una sorta di Claude Flare per quando finisco i limiti. Volevo chiederti per quello, per Claude Flare e poi per Firebase. Volevo capire se è possibile creare dei server nel mio PC sicuri, non hackerabili o difficilmente hackerabili, che posso utilizzare sulle mie applicazioni in caso, come salvagente, in caso ho un problema, rimangono attive sul progetto. Magari, cosa ne so, si possono copiare quello che c'è su Cloudflare e quello che c'è su Firebase, si portano sui miei programmi e si attivano solo quando oltrepasso i limiti come salvagente di emergenza. Volevo sapere se si poteva fare delle cose del genere sui miei computer, girano su Windows. I miei computer sono abbastanza performanti, se non sono performanti. Volevo chiederti se potevo creare dei server del genere, magari li attacco sotto un UPS in caso manca la corrente e niente, internet o la fibra, quindi 2.5 gigabit. Quindi volevo chiederti questo consiglio qua, se puoi cercare approfonditamente delle soluzioni super moderne, smart e intelligenti.

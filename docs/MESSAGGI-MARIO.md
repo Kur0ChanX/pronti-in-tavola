@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 01:35 · 01QTFEqQ5ALf
-avrei approfondito tantissimo questa intelligenza artificiale della 20 e avrei messo delle risposte bot però fatte bene se un cliente vuole scriverle e monica che dici ma deve essere qualcosa di super figo come fanno nei siti fatti bene
-
 ## 2026-11-08 02:30 · 01QTFEqQ5ALf
 cerca la miglior ia gratuita per Queste cose
 iniziaml assistente per monica non clienti
@@ -151,3 +148,9 @@ volevo scrivere un blocco al ricettario
 
 ## 2026-11-10 17:44 · 01WTjqUuJHcT
 Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?
+
+## 2026-11-10 18:30 · 01WTjqUtRJWx
+avvia plane mode pensiero profondo brain storming
+
+
+Volevo farti una domanda, siccome sto creando, cioè non è che sto creando, sto mettendo il motore di GitHub sul computer per fare le verifiche delle applicazioni senza che mi consumano minuti, cioè quindi lo sto facendo solo in locale, volevo chiederti se è possibile di se posso creare una sorta di, nel mio computer fisso sempre acceso, una sorta di Claude Flare per quando finisco i limiti. Volevo chiederti per quello, per Claude Flare e poi per Firebase. Volevo capire se è possibile creare dei server nel mio PC sicuri, non hackerabili o difficilmente hackerabili, che posso utilizzare sulle mie applicazioni in caso, come salvagente, in caso ho un problema, rimangono attive sul progetto. Magari, cosa ne so, si possono copiare quello che c'è su Cloudflare e quello che c'è su Firebase, si portano sui miei programmi e si attivano solo quando oltrepasso i limiti come salvagente di emergenza. Volevo sapere se si poteva fare delle cose del genere sui miei computer, girano su Windows. I miei computer sono abbastanza performanti, se non sono performanti. Volevo chiederti se potevo creare dei server del genere, magari li attacco sotto un UPS in caso manca la corrente e niente, internet o la fibra, quindi 2.5 gigabit. Quindi volevo chiederti questo consiglio qua, se puoi cercare approfonditamente delle soluzioni super moderne, smart e intelligenti.
