@@ -574,26 +574,26 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   prova('C125 ricerca: GialloZafferano giù = le ricette di RicetteFit, senza errore', j.rf === 1 && j.ricette.length >= 1 && /pollo-al-limone/.test(j.ricette[0].url) && !j.errore);
   gzGiu2 = false; globalThis.fetch = prima;
 }
-/* C129 (email di Cloudflare 10/11: «90% di 5.000.000 rows_read»): il motore non rilegge l'archivio a ogni sveglia; oltre LETTURE_FONDO
+/* C130 (email di Cloudflare 10/11: «90% di 5.000.000 rows_read»): il motore non rilegge l'archivio a ogni sveglia; oltre LETTURE_FONDO
    righe lette in un giorno il fondo (cron, carico veloce, valori) riposa, quello chiesto da una persona no */
 {
   let scan = 0; const vero = oggetto.sqlVero, conta = q => { if (/\bFROM ricette\b/i.test(q) && !/\bWHERE\b/i.test(q)) scan++; };
   oggetto.sqlVero = { exec: (q, ...a) => { conta(q); return vero.exec(q, ...a); }, get databaseSize() { return vero.databaseSize; } };
   const sql0 = oggetto.sql; oggetto.sql = { exec: (q, ...a) => { conta(q); return sql0.exec(q, ...a); } };
   await ponte.statoMotore(); const s1 = scan; await ponte.statoDb();
-  prova('C129 stato del motore senza leggere tutto l\'archivio; statoDb lo legge UNA volta', s1 === 0 && scan === 1);
+  prova('C130 stato del motore senza leggere tutto l\'archivio; statoDb lo legge UNA volta', s1 === 0 && scan === 1);
   oggetto.sql = sql0; oggetto.sqlVero = vero;
   const g = new Date().toISOString().slice(0, 10), prima = richieste.length;
   oggetto._lg = { g, n: 2000001 };
   await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
   const st = await ponte.statoDb();
-  prova('C129 oltre il tetto il cron non legge niente e l\'app lo sa', richieste.length === prima && st.letture && st.letture.freno === true && st.letture.oggi > 2000000 && st.letture.tetto === 2000000);
+  prova('C130 oltre il tetto il cron non legge niente e l\'app lo sa', richieste.length === prima && st.letture && st.letture.freno === true && st.letture.oggi > 2000000 && st.letture.tetto === 2000000);
   await ponte.turboAvvia(5); await oggetto.alarm(); const t = (await ponte.statoDb()).turbo;
-  prova('C129 oltre il tetto il carico veloce si ferma da solo, segnato', richieste.length === prima && t.attivo === false && t.freno === true);
+  prova('C130 oltre il tetto il carico veloce si ferma da solo, segnato', richieste.length === prima && t.attivo === false && t.freno === true);
   const salvato = JSON.parse(oggetto.leggi1('letture') || 'null');
-  prova('C129 il contatore resta salvato (riparte dallo stesso numero dopo un riavvio)', salvato && salvato.g === g && salvato.n >= 2000001);
+  prova('C130 il contatore resta salvato (riparte dallo stesso numero dopo un riavvio)', salvato && salvato.g === g && salvato.n >= 2000001);
   oggetto.metti1('letture', JSON.stringify({ g: '2000-01-01', n: 9e9 })); oggetto._cur = null; oggetto._lg = { g: '2000-01-01', n: 9e9 };   // come un oggetto rimasto acceso da ieri
-  const fr = await ponte.freno(); prova(`C129 giorno nuovo = contatore da zero, niente freno (${fr} ${JSON.stringify(oggetto._lg)})`, fr === false && oggetto._lg.g === g && oggetto._lg.n < 1000);
+  const fr = await ponte.freno(); prova(`C130 giorno nuovo = contatore da zero, niente freno (${fr} ${JSON.stringify(oggetto._lg)})`, fr === false && oggetto._lg.g === g && oggetto._lg.n < 1000);
 }
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);

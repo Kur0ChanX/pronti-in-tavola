@@ -467,7 +467,7 @@ const NUTR_GIRO = 10;   // C124: ricette già salvate senza valori, rilette 10 o
    il «carico veloce» (sveglie ogni 30 s): 5 RicetteFit per sveglia (905 in ~1,5 ore invece di 6 giorni, 1 pagina ogni 6 s) e 10 valori
    (1100 in ~1 ora invece di 19). Si ferma da solo quando non c'è più niente da leggere. */
 const NUTR_TURBO = 10, AUTO_OBIETTIVO = 200, AUTO_PAUSA = 3600000, AUTO_FERMO = 600000;
-/* C129 (email di Cloudflare 10/11 15:29: «90% del limite giornaliero di 5.000.000 rows_read», per TUTTO l'account: avvisi e app compresi):
+/* C130 (email di Cloudflare 10/11 15:29: «90% del limite giornaliero di 5.000.000 rows_read», per TUTTO l'account: avvisi e app compresi):
    oltre questo numero di righe lette in un giorno (UTC, come Cloudflare) il lavoro di fondo del ricettario riposa fino a domani */
 const LETTURE_FONDO = 2000000;
 const RICETTE_GIRO = 2, TURBO_GIRO = 5, TURBO_PAUSA = 30000, TURBO_SVEGLIE = 400, TURBO_VUOTE = 20, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
@@ -476,7 +476,7 @@ const ricettaCompleta = r => !!(r && r.nome && Array.isArray(r.ingredienti) && r
 /* UN passo del motore. «db» è l'oggetto Ricettario stesso (turbo, dentro il Durable Object) oppure il suo stub (cron): con await vanno bene tutti e due.
    Ritorna { fatte, scartate, nuoveCoda }: ricette complete salvate, incomplete scartate, indirizzi messi in coda. */
 async function passoMotore(db, quante, aMano) {
-  const s = await db.statoMotore(); if ((s.pausa || s.freno) && !aMano) return null;   // C129: stato senza contare le ricette; col freno solo chi lo chiede a mano
+  const s = await db.statoMotore(); if ((s.pausa || s.freno) && !aMano) return null;   // C130: stato senza contare le ricette; col freno solo chi lo chiede a mano
   const rfMax = aMano ? TURBO_GIRO : 1;   // C128: nel carico veloce (e con «Cerca adesso») 5 RicetteFit per volta, col cron 1
   let nuoveCoda = 0, rf = Math.min(rfMax, (s.rf && s.rf.inCoda) || 0);
   if (s.rf && !s.rf.spento && rf < rfMax && s.rf.fine !== oggiRf()) {   // C124: RicetteFit, una nuova per giro
@@ -530,7 +530,7 @@ async function caricoAuto(db) {
 }
 async function motoreRicette(cfg, aMano) {
   const db = ricDb(cfg); if (!db) return;
-  if (!aMano && await db.freno()) return;   // C129: letture di oggi finite, si riparte domani
+  if (!aMano && await db.freno()) return;   // C130: letture di oggi finite, si riparte domani
   const p = await passoMotore(db, RICETTE_GIRO, aMano);
   /* C72: le ricette salvate col lettore vecchio, o segnate dal controllo, si rileggono da GialloZafferano, 5 ogni giro */
   await rileggiSegnate(db, 5);
@@ -826,7 +826,7 @@ const minuscolo = t => String(t || '').toLowerCase().normalize('NFD').replace(/[
 export class Ricettario extends DurableObject {
   constructor(ctx, cfg) {
     super(ctx, cfg);
-    const vero = this.sqlVero = ctx.storage.sql;   // C129: ogni lettura contata (righe lette del giorno, vedi LETTURE_FONDO)
+    const vero = this.sqlVero = ctx.storage.sql;   // C130: ogni lettura contata (righe lette del giorno, vedi LETTURE_FONDO)
     this.sql = { exec: (q, ...a) => { this.contaLetture(); const c = vero.exec(q, ...a); this._cur = c; return c; } };
     ['CREATE TABLE IF NOT EXISTS ricette (id TEXT PRIMARY KEY, url TEXT, nome TEXT, categoria TEXT, foto TEXT, descr TEXT, cerca TEXT, json TEXT, creata INTEGER, aggiornata INTEGER)',
       'CREATE INDEX IF NOT EXISTS ricette_creata ON ricette (creata)',
@@ -843,7 +843,7 @@ export class Ricettario extends DurableObject {
       'CREATE TABLE IF NOT EXISTS mie (id TEXT PRIMARY KEY, json TEXT, aggiornata INTEGER, tolta INTEGER DEFAULT 0)'].forEach(q => this.sql.exec(q));
     try { this.sql.exec('ALTER TABLE coda ADD COLUMN sarda INTEGER DEFAULT 0'); } catch (e) { /* c'è già */ }
     for (const c of ['voto REAL DEFAULT 0', 'video INTEGER DEFAULT 0', 'strisce INTEGER DEFAULT 0', 'nutr INTEGER', 'nprove INTEGER DEFAULT 0']) { try { this.sql.exec('ALTER TABLE ricette ADD COLUMN ' + c); } catch (e) { /* c'è già */ } }
-    // C129: indici per non rileggere tutto l'archivio a ogni giro (valori da leggere, ricette da rileggere)
+    // C130: indici per non rileggere tutto l'archivio a ogni giro (valori da leggere, ricette da rileggere)
     this.sql.exec('CREATE INDEX IF NOT EXISTS ricette_nutr ON ricette (nutr, nprove, creata DESC)');
     this.sql.exec("CREATE INDEX IF NOT EXISTS ricette_v ON ricette (IFNULL(json_extract(json, '$.v'), 0))");
     /* (C119) ricette vecchie di GZ: foto dei passi a strisce piccole (ogni foto 220×170, si sgranano); una volta sola per quelle già salvate */
@@ -873,7 +873,7 @@ export class Ricettario extends DurableObject {
     this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 4, '$.esito', 'illeggibile') WHERE url = ? AND json_extract(json, '$.prove') >= 3", String(url));
   }
   /* C124: valori per porzione */
-  senzaNutr(n) { return this.sql.exec("SELECT url FROM ricette WHERE nutr IS NULL AND url != '' ORDER BY nprove, creata DESC LIMIT ?", Math.min(20, Number(n) || 10)).toArray().map(x => x.url); }   // C129: con l'indice, solo le righe che servono
+  senzaNutr(n) { return this.sql.exec("SELECT url FROM ricette WHERE nutr IS NULL AND url != '' ORDER BY nprove, creata DESC LIMIT ?", Math.min(20, Number(n) || 10)).toArray().map(x => x.url); }   // C130: con l'indice, solo le righe che servono
   mettiNutr(url, v) { this.sql.exec("UPDATE ricette SET json = json_set(json, '$.nutr', json(?)), nutr = ? WHERE url = ?", JSON.stringify(v && typeof v === 'object' ? v : null), v && typeof v === 'object' ? 1 : 0, String(url)); }
   nutrRiprova(url) {
     this.sql.exec("UPDATE ricette SET json = json_set(json, '$.nutrProve', IFNULL(json_extract(json, '$.nutrProve'), 0) + 1), nprove = IFNULL(nprove, 0) + 1 WHERE url = ?", String(url));
@@ -992,7 +992,7 @@ export class Ricettario extends DurableObject {
   }
   async alarm() {
     const t = this.turboStato(); if (!t || !t.attivo) return;
-    if (this.freno()) { Object.assign(t, { attivo: false, finito: Date.now(), freno: true }); this.metti1('turbo', JSON.stringify(t)); return; }   // C129: riposa fino a domani
+    if (this.freno()) { Object.assign(t, { attivo: false, finito: Date.now(), freno: true }); this.metti1('turbo', JSON.stringify(t)); return; }   // C130: riposa fino a domani
     let p = null;
     try { p = await passoMotore(this, Math.min(TURBO_GIRO, t.obiettivo - t.fatte), true); } catch (e) { /* sveglia sprecata: conta come vuota */ }
     let v = 0;   // C128: intanto i valori per porzione che mancano, 10 per sveglia
@@ -1100,8 +1100,8 @@ export class Ricettario extends DurableObject {
     const tt = this.sql.exec('SELECT id, url, nome, foto, categoria, descr, voto, video FROM ricette ORDER BY strisce ASC, video DESC, voto DESC, creata DESC LIMIT 400').toArray().filter(x => !no.has(x.id));
     return tt.slice(Math.max(0, Number(da) || 0), (Number(da) || 0) + 31).map(x => ({ url: x.url, nome: x.nome, foto: x.foto, categoria: x.categoria, desc: x.descr, voto: x.voto, video: !!x.video }));
   }
-  daLeggere() { return this.sql.exec("SELECT 1 FROM ricette WHERE nutr IS NULL AND url != '' LIMIT 1").toArray().length; }   // C129: c'è almeno un valore da leggere? (il numero lo dà statoDb)
-  /* C129: righe lette oggi (UTC). Il cursore di prima si conta alla chiamata dopo (allora è già letto tutto). */
+  daLeggere() { return this.sql.exec("SELECT 1 FROM ricette WHERE nutr IS NULL AND url != '' LIMIT 1").toArray().length; }   // C130: c'è almeno un valore da leggere? (il numero lo dà statoDb)
+  /* C130: righe lette oggi (UTC). Il cursore di prima si conta alla chiamata dopo (allora è già letto tutto). */
   contaLetture() { const c = this._cur; this._cur = null; if (!c) return; this.giornoLetture(); this._lg.n += Number(c.rowsRead) || 0; }
   giornoLetture() {
     const g = new Date().toISOString().slice(0, 10); if (this._lg && this._lg.g === g) return this._lg;
@@ -1113,7 +1113,7 @@ export class Ricettario extends DurableObject {
   }
   salvaLetture() { this.contaLetture(); const l = this.giornoLetture(); if (l.salvate === l.n) return; l.salvate = l.n; this.sqlVero.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', 'letture', JSON.stringify({ g: l.g, n: l.n })); }
   freno() { this.salvaLetture(); return this._lg.n > LETTURE_FONDO; }
-  /* C129: lo stato che serve al motore, al carico veloce e al cron, SENZA contare le ricette (prima statoDb a ogni sveglia ogni 30 s:
+  /* C130: lo stato che serve al motore, al carico veloce e al cron, SENZA contare le ricette (prima statoDb a ogni sveglia ogni 30 s:
      5-6 letture di tutto l'archivio ogni volta) */
   statoMotore() {
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
@@ -1127,13 +1127,13 @@ export class Ricettario extends DurableObject {
     this.riempiScelte();
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, v = uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci');
     const j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
-    // C129: UNA lettura per tabella (prima 5 di tutte le ricette): totale, valori, da leggere, RicetteFit, di oggi
+    // C130: UNA lettura per tabella (prima 5 di tutte le ricette): totale, valori, da leggere, RicetteFit, di oggi
     const r = uno("SELECT COUNT(*) AS n, SUM(nutr = 1) AS cv, SUM(nutr IS NULL) AS sv, SUM(nutr IS NULL AND url != '') AS dl, SUM(id LIKE 'rf:%') AS rf, SUM(creata > ?) AS oggi FROM ricette", Date.now() - 86400000);
     const sc = uno('SELECT COUNT(*) AS n FROM scelte').n, scart = uno("SELECT COUNT(*) AS n, SUM(url LIKE 'https://www.ricettefit.it/%') AS rf FROM scartate");
     const m = this.statoMotore(), l = this.giornoLetture();
     return { scelte: sc, nelRicettario: sc, scartate: scart.n || 0,
       turbo: m.turbo, controllo: m.controllo, mieServer: uno('SELECT COUNT(*) AS n FROM mie WHERE tolta = 0').n, ricette: r.n || 0, coda: m.coda, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
-      oggi: r.oggi || 0, pausa: m.pausa, letture: { oggi: l.n, tetto: LETTURE_FONDO, freno: m.freno },   // C129
+      oggi: r.oggi || 0, pausa: m.pausa, letture: { oggi: l.n, tetto: LETTURE_FONDO, freno: m.freno },   // C130
       conValori: r.cv || 0, senzaValori: r.sv || 0, daLeggere: r.dl || 0,   // C124
       paroleFit: m.paroleFit, fitI: m.fitI, paginaFit: m.paginaFit,
       rf: Object.assign({}, m.rf, { lette: r.rf || 0, scartate: scart.rf || 0 }),   // C124 passo 8
