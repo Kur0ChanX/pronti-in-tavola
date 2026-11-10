@@ -44,6 +44,7 @@ Sessione attuale: #41 (dopo la #40 `session_01WTjqUumYwYKzwSjzjYGFEV`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`. La 🛑 C119 ha avuto risposta (tolta).
 
 ## Ultimo messaggio di Mario
+10/11 (nella chat CHIUSA della #40, dopo l'handoff), parola per parola: «ia foto è un miracolo / adesso incollo / astice ok / c113 non ho capito bene / c111 è ok / deepgram a cosa serve e facciamolo ora / per le regole accorciate ho paura che perda di comprensione e luccidità» → per la #41: C119 confermato (togli la riga di «Aspetta Mario», chiudi la promessa); Preferenze v37: le incolla; C118/C115 Astice ok (riga Principale 38); C113 da rispiegare con un esempio; C111 ok; C108 Deepgram: spiegare a cosa serve e guidarlo ADESSO; regole corte (Principale 34): Mario teme che si perda chiarezza → risposta = 2 «lascia così» (o spiegare che nulla si toglie, si sposta).
 10/11 ~08:36 (in questa chat, durante l'handoff), parola per parola: «come ti ho già detto 5 da sistemare ma secondo me non le sistema da solo» + foto `archivio/foto/2026-11-10-0835-ricettario-5-da-sistemare.jpg` → C123, Prossimo passo 00.
 Prima, 10/11 ~08:34: «si consiglio» (5 regole in tutti i progetti → sessione del kit aperta); 08:30: «dimmi le regole che vuoi mettere per tutti».
 
