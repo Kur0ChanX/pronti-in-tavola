@@ -1,3 +1,5 @@
-# Ultima risposta di Claude (10/11/2026 11:33 ora italiana)
+# Ultima risposta di Claude (10/11/2026 12:40 ora italiana)
 
-Grazie: Android ok, ho salvato la foto e l'ho passata alla chat nuova insieme al tuo messaggio. Le prove su iPad e iPhone aspettano finché non ne avrai uno. D'ora in poi scrivi nella **Principale 42**: https://claude.ai/code/[segreto tolto dalla scorta]
+Ho capito: riparto dai «Prossimi passi» delle consegne, quindi RicetteFit.it nel motore delle ricette.
+
+Il codice della v0.10.5 è pronto. Le prove del server sono verdi (128 OK, 0 NO). Il giro completo delle prove del telefono sta finendo. Appena è verde faccio commit e push, poi controllo che la versione sia online.
