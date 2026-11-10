@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 01:09 · 01QTFEqU1M1r
-link e passaggi chiari
-
 ## 2026-11-07 01:28 · 01QTFEqU1M1r
 @"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
 
@@ -133,3 +130,6 @@ deepgram fatto come valido un anno che senso ha?!?
 
 ## 2026-11-10 11:32 · 01WTjqUxmJ9k
 non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+
+## 2026-11-10 12:20 · 01WTjqUxpFkS
+Possiamo farlo piano piano come per il ricettario non tutto in una volta no? basta che lo fà in automatico le ricette fitness piano piano no? che dici?
