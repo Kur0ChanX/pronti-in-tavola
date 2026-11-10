@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 17:44 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 18:13 ora italiana)
 
-Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?
+quando è in modalità emergenza mettinche non si possono fare cose quasi inutili come aggiornate ricettario al solo cose base per far funzionare il programma al 100%
