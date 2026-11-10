@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 00:34 · 01QTFEqU1M1r
-risolvi per piacere siamo 2 ore cerca bene
-
 ## 2026-11-07 01:09 · 01QTFEqU1M1r
 link e passaggi chiari
 
@@ -133,3 +130,6 @@ dimmi le regole che vuoi mettere per tutti
 
 ## 2026-11-10 11:00 · 01WTjqUxmJ9k
 deepgram fatto come valido un anno che senso ha?!?
+
+## 2026-11-10 11:32 · 01WTjqUxmJ9k
+non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android

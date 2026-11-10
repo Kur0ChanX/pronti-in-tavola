@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 11:00 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 11:32 ora italiana)
 
-deepgram fatto come valido un anno che senso ha?!?
+non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
