@@ -103,3 +103,9 @@ La storia dei lavori finiti (in `docs/DA-FARE.md` resta solo cosa manca).
 - C82: v0.9.48: ore vere prese da sole a ogni pubblicazione (tools/sito.py: versione online = ora della pubblicazione, le altre = ora del commit); per Mario «v0.9.48 hh:mm» sempre in alto a destra, tocco → Aggiornamenti.
 - C76: Causa: la voce sul telefono (Piper/Kokoro) occupa il telefono e l'animazione d'entrata restava ferma a pagina invisibile. v0.9.44: in Cucina guidata niente animazione d'entrata, la voce parte dopo il disegno. Idea per dopo: la voce in un «lavoratore» a parte (Web Worker) così l'app non si blocca mai.
 - C90: v0.9.53: Indietro (anche il gesto) torna allo stesso punto della pagina; nel Ricettario tasto fisso «🗄 Database» in basso a destra, lì diventa «⬆ Ricette».
+- C129: (scaricarlo: `curl` delle 17 parti `docs/kit-progetto/pacchetto/PACCHETTO-v38-indipendente-<i>di17.md` di RVC; `scarica-kit.py` della fonte cerca solo fino a 12 parti: difetto da dire alla sessione del kit)
+- C129: (sessione nuova, notifica sul telefono)
+- C107: v0.9.81: riquadro verde «Notifiche attive!» e foglio che si chiude da solo; la stessa persona si riconosce anche col nome corretto (una richiesta, un cliente).
+- C110: v0.9.88 (Voce 9): pannello subito anche in Aiutante, barrette che seguono la voce, attesa che parla, voce sbloccata nel tocco, «Ascolta la risposta» se resta muta.
+- C112: v0.9.90: «Ordino davvero / Sto solo provando l'app» a TUTTI i clienti a ogni ordine, nessuna già segnata; regola «Chiedi "Ordini davvero o provi l'app?"» (tutti, solo nuovi, mai).
+- C113: v0.9.92: l'accesso del cliente sta anche in un cookie, che iPhone copia nell'app sulla Home: dall'icona è la stessa persona già accettata, niente seconda richiesta.
