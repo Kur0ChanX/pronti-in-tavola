@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 11:32 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 14:24 ora italiana)
 
-non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+non c'è niente di nuovo ne ho pochissime come è possibile

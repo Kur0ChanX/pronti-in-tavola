@@ -7,3 +7,5 @@ Spostato dalle consegne il 08/11 (#27). Si aggiorna qui.
 - 08/11 ~13:00 · Salvataggio mensile degli ordini in Excel: «per ora no». Non riproporlo da solo.
 - 08/11 ~14:00 · Ricette di GialloZafferano: «uguali paro paro» all'originale (testo, foto, numerini frase↔foto). Niente aggiunte nostre nei passi. Ogni ricetta nuova passa dal lettore `gz.mjs` (prova: `node tools/prova-gz.mjs`).
 - 08/11 ~15:10 · Voci Supertonic 3 e Kokoro (Sara, Nicola): NO, «tono, pause e accenti sembrano stranieri».
+- 10/11 ~13:57 · Proteiche: niente parole fisse; momenti della giornata (colazione, spuntino, merenda, pranzo, cena, dopo cena, dolci…) e fonte proteica FACOLTATIVA con tante voci; ricerca sempre possibile anche senza scegliere niente («cerca tutto», 14:10).
+- 10/11 ~14:25 · Fonti: «2» = anche siti senza valori, valori calcolati dagli ingredienti; basta segnare fonte e «calcolati» nella ricetta (o sezione a parte).
