@@ -23,7 +23,7 @@
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
 import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta, gzSoloNutr } from './gz.mjs';
-import { rfRicetta, rfElenco, urlRf, idRf, urlDaIdRf, MAPPA_RF } from './rf.mjs';
+import { rfRicetta, rfElenco, rfTrova, radiciRf, urlRf, idRf, urlDaIdRf, MAPPA_RF } from './rf.mjs';
 import { ascolta } from './ascolta.mjs';   // «ascolto preciso» dei clienti (C105): due Whisper + correttore col menù
 /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
 const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi', secondi: 'ricette-cat/Secondi-piatti', contorni: 'ricette-cat/Contorni', dolci: 'ricette-cat/Dolci-e-Desserts',
@@ -318,6 +318,12 @@ async function leggiGz(u) {
 async function leggiRf(u) { return rfRicetta(await paginaGz(u, 'RicetteFit'), u); }
 const leggiWeb = u => urlRf(u) ? leggiRf(urlRf(u)) : leggiGz(u);
 const urlDaId = id => /^rf:/.test(String(id || '')) ? urlDaIdRf(id) : urlGz('https://ricette.giallozafferano.it/' + String(id || '').slice(3) + '.html');
+/* C125 (Mario 10/11 13:40 «la ricerca… nelle fonti alternative anche a giallozafferano»): ricette di RicetteFit con le parole
+   cercate, dal loro elenco (1 richiesta al giorno, poi la cache). Spenta dalla pagina Database o RicetteFit giù = nessuna, senza errori. */
+async function rfCerca(db, q) {
+  try { if (db && await db.leggi1('rfSpento')) return []; return rfTrova(await paginaGz(MAPPA_RF, 'RicetteFit'), q, 12); }
+  catch (e) { return []; }
+}
 async function ricettaGz(b, cfg, ctx) {
   const db = ricDb(cfg), poi = p => { if (p && ctx) ctx.waitUntil(p.catch(() => null)); };
   if (b && b.db) {   // { db: 'stato' } numeri · { db: 'pausa'|'riprendi' } ferma o riprende la crescita
@@ -347,11 +353,11 @@ async function ricettaGz(b, cfg, ctx) {
     if (b.db === 'cercaFit') {   // C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca… in automatico… tante fonti»): GZ (ricerca + «light») e RicetteFit (dal suo elenco: la ricerca del sito è vietata dal robots.txt)
       const q = minuscolo(b.q).replace(/[^\p{L}\p{N} '-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
       if (q.length < 2) return { errore: 'scrivi almeno 2 lettere' };
-      const s0 = await db.statoDb(), radici = q.split(' ').filter(p => p.length >= 3).map(p => p.length >= 5 ? p.slice(0, Math.max(4, p.length - 2)) : p);
+      const s0 = await db.statoDb(), radici = radiciRf(q);
       let gz = [], rf = [], rete = 0;
       try { gz = gzCerca(await paginaGz(urlCerca(/light|protei|\bfit\b/.test(q) ? q : q + ' light'))).map(x => x.url); } catch (e) { rete++; }
       if (!(s0.rf && s0.rf.spento) && radici.length) {
-        try { rf = rfElenco(await paginaGz(MAPPA_RF, 'RicetteFit')).filter(u => { const t = minuscolo(String(u).split('/ricetta/')[1] || ''); return radici.every(p => t.includes(p)); }).slice(0, 20); }
+        try { rf = rfTrova(await paginaGz(MAPPA_RF, 'RicetteFit'), q, 20).map(x => x.url); }
         catch (e) { rete++; }
       }
       if (rete && !gz.length && !rf.length) return { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' };
@@ -390,16 +396,17 @@ async function ricettaGz(b, cfg, ctx) {
       if (q.length < 2) return { ricette: [] };
       u = `https://www.giallozafferano.it/ricerca-ricette/${encodeURIComponent(q).replace(/%20/g, "+")}/`;
     }
-    const html = await paginaGz(u).catch(() => ''), ricette = gzCerca(html);
+    const aParole = !b.cat && !b.pagina;   // C125: la prima pagina di una ricerca a parole guarda anche RicetteFit (in cima)
+    const [html, rf] = await Promise.all([paginaGz(u).catch(() => ''), aParole ? rfCerca(db, b.cerca) : []]), ricette = gzCerca(html);
     // pagina della sezione vuota o cambiata: si cerca la stessa cosa a parole (così il catalogo non resta mai vuoto)
     if (!ricette.length && b.cat && !b.pagina && typeof b.cerca === 'string' && b.cerca.trim().length >= 2) return ricettaGz({ cerca: b.cerca }, cfg, ctx);
-    if (!html && !ricette.length) {   // GialloZafferano non risponde: si cerca nel tuo database
-      const mie = db && !b.cat && !b.pagina ? await db.elenco(b.cerca, 0).catch(() => []) : [];
-      if (mie.length) return { ricette: mie, prossima: '', dalDb: true };
+    if (!html && !ricette.length) {   // GialloZafferano non risponde: RicetteFit e il tuo database
+      const mie = db && aParole ? await db.elenco(b.cerca, 0).catch(() => []) : [];
+      if (mie.length || rf.length) return { ricette: rf.concat(mie.filter(m => !rf.some(x => x.url === m.url))), rf: rf.length, prossima: '', dalDb: !!mie.length };
       throw new Error('GialloZafferano non risponde');
     }
     if (db && ricette.length) poi(db.inCoda(ricette.map(x => x.url)));   // quello che si scorre entra in coda per il database
-    return { ricette, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
+    return { ricette: rf.concat(ricette), rf: rf.length, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
   }
   const u = urlGz(b && b.u) || urlRf(b && b.u);
   if (!u) return { errore: 'indirizzo non valido' };
