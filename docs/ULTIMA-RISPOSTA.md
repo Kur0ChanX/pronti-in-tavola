@@ -1,13 +1,8 @@
-# Ultima risposta di Claude (10/11/2026 02:26 ora italiana)
+# Ultima risposta di Claude (10/11/2026 08:37 ora italiana)
 
+Ho capito: le 5 ricette «da sistemare» restano sempre lì, anche se l'app scrive «ci penso io». Hai ragione a sospettarlo, e prima nessuno l'aveva segnato.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-📌 Di cosa parliamo: il kit è il pacchetto di regole uguale in tutti i tuoi progetti. Le 5 regole nuove ci arrivano solo da una sessione aperta sul repo del kit, perché da qui non posso toccarlo.
-
-1. Chi apre la sessione del kit?
-   · 1 · La apro io adesso (consiglio): unisce le 5 regole e la v37 da sola, tu non fai niente.
-   · 2 · La apri tu: ti scrivo il testo da incollare per farla partire.
-   · 3 · Più tardi: le regole restano solo in questo progetto finché non si fa.
+✅ FATTO
+- Ho aperto la voce **C123** in Da fare: trovare quali sono le 5 ricette e perché non si sistemano da sole. Poi correggere la causa, oppure scrivere il motivo vero accanto a ognuna, senza promesse finte.
+- Ho salvato la tua foto in `archivio/` e l'ho data alla sessione nuova come primo lavoro.
+- Sono arrivata alla soglia: ho passato le consegne alla **Principale 41**, che è già partita (stesso repo, stesso ramo, stesso motore). …
