@@ -1,3 +1,8 @@
-# Ultima risposta di Claude (10/11/2026 11:33 ora italiana)
+# Ultima risposta di Claude (10/11/2026 15:24 ora italiana)
 
-Grazie: Android ok, ho salvato la foto e l'ho passata alla chat nuova insieme al tuo messaggio. Le prove su iPad e iPhone aspettano finché non ne avrai uno. D'ora in poi scrivi nella **Principale 42**: https://claude.ai/code/[segreto tolto dalla scorta]
+✅ **FATTO**
+- La pagina Proteiche ora è come la foto che hai scelto ed è online (versione 0.10.13).
+- In alto restano solo Tutte, Proteiche e Preferite. Sarde, Italiane e Le mie stanno dentro «Altre ▾».
+- In «Quando» e in «Fonte proteica» puoi scegliere più voci insieme (es. Colazione e Spuntino). Le scelte hanno la ✓ e le righe scorrono di lato.
+- Portata, difficoltà, tempo e ordine stanno in un solo tasto «⚙️», che dice quanti filtri sono accesi.
+- Il riquadro verde mostra cosa sto caricando, con una barra, e quante proteiche sono entrate oggi. Dentro ci sono «🔍 Cerca altre» e «ℹ️ Le …
