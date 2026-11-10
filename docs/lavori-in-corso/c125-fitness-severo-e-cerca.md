@@ -7,7 +7,7 @@ Testo di Mario in `docs/MESSAGGI-MARIO.md`. Decisioni prese da Claude col consig
 - **«Sembra solo GialloZafferano»**: RicetteFit è entrata con la v0.10.5 (12:45), dopo il controllo di Mario; il motore ne prende 1 ogni 10 minuti. Pezzo 4 rende il numero per fonte visibile.
 
 ## Pezzi (in quest'ordine)
-1. **Soglie più severe, due profili** (`ricettario.js` `fitRic`, soglie in `opzioni.js` gruppo 'mario', mai numeri fissi):
+1. ✅ v0.10.6 (Principale 44) **Soglie più severe, due profili** (`ricettario.js` `fitRic`, soglie in `opzioni.js` gruppo 'mario', mai numeri fissi):
    - Pasto (sopra `fitSnackKcal` = 300 kcal): proteine ≥ 25 g (era 20; ISSN 2017: 20-40 g a pasto) e ≥ 25% delle kcal (era 20; Reg. UE 1924/2006 «alto contenuto» = 20%), kcal ≤ 550, saturi ≤ 10% kcal, zuccheri ≤ 10% kcal (OMS), sodio ≤ 700 mg.
    - Snack e dolci proteici (fino a 300 kcal): proteine ≥ 10 g e ≥ 30% delle kcal, zuccheri ≤ 15% kcal, sodio ≤ 400 mg, saturi ≤ 10% kcal. Numeri 10 g, 30%, 15%, 400 mg = **stime di Claude** (dirlo a Mario).
    - Riga «perché è qui» con «Pasto» o «Snack»; ordine: proteine per 100 kcal. Prova in `tools/prova.js` passo C124 (aggiornare le attese).
