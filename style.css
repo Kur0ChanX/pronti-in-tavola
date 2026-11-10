@@ -747,6 +747,22 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-barra { height: 10px; border-radius: 6px; background: #fff; overflow: hidden; }
 .ric-barra span { display: block; height: 100%; background: var(--vino); border-radius: 6px; transition: width .6s ease; }
 .ric-carica .ric-regole { align-self: flex-start; }
+/* C127 «📅 Il mio giorno proteico» e «🔁 Simili a questa» */
+.ric-giorno { gap: 10px; }
+.ric-giorno-testa { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ric-giorno-testa h2 { margin: 0; }
+.ric-giorno-righe { display: grid; }
+.ric-giorno-riga { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--riga); padding: 6px 0; min-height: 52px; }
+.ric-giorno-riga:last-child { border-bottom: 1px solid var(--riga); }
+.ric-giorno-ric { flex: 1; min-width: 0; border: 0; background: none; padding: 4px 0; font: inherit; color: inherit; text-align: left; display: flex; flex-direction: column; gap: 2px; }
+.ric-giorno-ric b { font-size: .85rem; color: var(--tenue); font-weight: 700; }
+.ric-giorno-ric span { font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
+button.ric-giorno-ric span { color: var(--vino); }
+.ric-giorno-g { flex: none; color: var(--basilico); font-size: 1.05rem; }
+.ric-giorno-ob { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: .95rem; }
+.ric-giorno-ob input { width: 5.5em; min-height: 42px; text-align: center; }
+.ric-giorno-apri { width: 100%; border-radius: 999px; }
+.ric-simili .ric-elenco { margin-top: 2px; }
 .ric-valori-griglia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 .ric-valori-griglia div { background: #F7F1E6; border-radius: 10px; padding: 6px 2px; display: grid; text-align: center; }
 .ric-valori-griglia b { font-size: 1.02rem; line-height: 1.2; }

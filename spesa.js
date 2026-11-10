@@ -363,6 +363,20 @@ function aggiungiVoce(testo) {
   salvaSpesa(); render();
   return true;
 }
+/* C127 (giorno proteico): più cose insieme in «La mia lista», un solo «Annulla». Righe: testo («2 kg patate») o { n, q } già divisi
+   (le unità delle ricette, «cucchiai», «spicchi», leggiVoce non le conosce). Già nella lista: torna «da prendere» (la quantità
+   scritta prima resta). → { n: quante nuove o tornate da prendere, annulla } */
+function aggiungiVociSpesa(righe) {
+  const prima = JSON.stringify(SPESA.mia); let n = 0;
+  (righe || []).forEach((t, i) => {
+    const { n: n0, q: q0 } = t && typeof t === 'object' ? t : leggiVoce(t), nome = String(n0 || '').replace(/\s+/g, ' ').trim().slice(0, 60), q = String(q0 || '').trim().slice(0, 30); if (!nome) return;
+    const k = chiaveVoce(nome), gia = SPESA.mia.find(v => chiaveVoce(v.n) === k);
+    if (gia) { if (gia.preso) { gia.preso = false; n++; } if (q && !gia.q) gia.q = q; return; }
+    SPESA.mia.push({ id: 'v' + Date.now().toString(36) + i.toString(36) + Math.random().toString(36).slice(2, 5), n: maiuscola(nome), q, rep: repartoDi(nome), preso: false }); n++;
+  });
+  salvaSpesa();
+  return { n, annulla: () => { SPESA.mia = JSON.parse(prima); salvaSpesa(); } };
+}
 function vSpesaMia(so) {
   const ordine = new Map(so.compra.map(([id, d]) => [chiaveVoce(ING(id).n), d.testo]));
   const nella = new Set(SPESA.mia.map(v => chiaveVoce(v.n)));
