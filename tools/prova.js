@@ -1703,6 +1703,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]'); n = await nomi();
     if (JSON.stringify(n) !== '["Budino proteico prova"]') throw new Error('«🌙 Dopo cena» sbagliato: ' + JSON.stringify(n));
     await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]');   // ritocco = tolto
+    /* C126 fonte proteica FACOLTATIVA (Mario 13:57 «se voglio scelgo la fonte proteica, mettine tante»): tocco = filtra e cerca; con un momento valgono tutti e due; chiudere la toglie */
+    await clic('[data-a="ric-prot-apri"]');
+    const np = await page.evaluate(() => document.querySelectorAll('.ric-prot-scelte .scelta').length);
+    await clic('[data-a="ric-prot"][data-v="pollo"]'); n = await nomi();
+    const cp = await page.evaluate(() => RIC.fitCerca && RIC.fitCerca.mom);
+    if (np < 15 || JSON.stringify(n) !== '["Pollo fit prova"]' || cp !== 'p:pollo') throw new Error('fonte proteica «🍗 Pollo» sbagliata: ' + JSON.stringify({ np, n, cp }));
+    await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); n = await nomi();
+    if (JSON.stringify(n) !== '["Pollo fit prova"]') throw new Error('«🍽 Cena» + «🍗 Pollo» sbagliato: ' + JSON.stringify(n));
+    await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); await clic('[data-a="ric-prot-apri"]');
+    const vp = await page.evaluate(() => ({ prot: UI.ric.prot, righe: !!document.querySelector('.ric-prot-scelte') }));
+    if (vp.prot || vp.righe) throw new Error('chiudendo «Fonte proteica» la scelta resta: ' + JSON.stringify(vp));
     await clic('.ric-fit-scelte [data-a="ric-tempo"]'); n = await nomi();
     if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova"]') throw new Error('«⚡ Pronte in 10 minuti» sbagliato: ' + JSON.stringify(n));
     await foto('48b-c125-proteiche-scelte');

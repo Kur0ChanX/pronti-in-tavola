@@ -147,3 +147,12 @@ si ma perché ricerca solo in questo modo ricette fit è il meglio non aggiungia
 
 ### 10/11 ~14:10 (Principale 46, C126)
 se voglio fare una ricerca senza selezionare la proteina devo poterla fare e mi cerca tutto o anche senza aggiungere esempio pranzo cena dopo allenamento ecc ecc mi cerca tutto nei siti e le carica nell'app
+
+### 10/11 ~14:25 (Principale 46, C126, risposta alla 🛑 sulle fonti)
+2 ma metti una sezione a parte quelli con valori calcolati o segnami semplicemente la fonte nella ricetta e capisco
+
+### 10/11 ~14:21 (Principale 46, C126, foto `archivio/foto/2026-11-10-1420-proteiche-momenti.jpg`: Proteiche con le righe Tutte/Proteiche/Preferite/Sarde/Italiane/Le mie, 8 momenti, ⚡, portate)
+fammi multi scelta e fammi capire chiare se sono state caricate e fai ordine cè un pò di caos in tutta la pagina aggiungi funzioni utili e smart
+
+### 10/11 ~14:23 (Principale 46, C126, foto `archivio/foto/2026-11-10-1422-dopo-allenamento-niente-nuovo.jpg` e `…-1422-dopo-allenamento-cerco.jpg`: «15 ricette: RicetteFit 8 · GialloZafferano 7», «Ancora 1114 ricette da leggere: 10 ogni 10 minuti», «Niente di nuovo con «Dopo l'allenamento»: le 40 trovate le avevo già lette»)
+non c'è niente di nuovo ne ho pochissime come è possibile
