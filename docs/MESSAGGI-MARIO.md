@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 01:09 · 01QTFEqU1M1r
-link e passaggi chiari
-
-## 2026-11-07 01:28 · 01QTFEqU1M1r
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
-
 ## 2026-11-07 13:08 · 01QTFEqTYwXG
 invito di WhatsApp che invii dall'app non funziona se cliccano non funziona il link e oltre al link di whatsapp volevo un bel biglietto di invito in foto da allegare in automatico su WhatsApp
 
@@ -139,5 +133,5 @@ Vai di consiglio e ti chiedo metti solo le ricette un pò piú severe per il fit
 Cerco anche ricette immediate un esempio stupido tipo la cioccolata la fà con le proteine in polvere al cioccolato con poca acqua ecc ecc ma è un esempio 
 al momento sembra che carichi solo ricette di GialloZafferano valutate per calorie e proteine  riverifica tutto
 
-### 10/11 ~13:40 (Principale 45, C125)
+## 2026-11-10 13:38 · 01WTjqUx8FCK
 intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale
