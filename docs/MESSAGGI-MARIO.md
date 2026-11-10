@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 16:48 · 01QTFEqReKuk
-Ok, però al momento l'applicazione è funzionante al 100%, giusto?
-
-## 2026-11-07 17:00 · 01QTFEqReKuk
-a monica manca proposta se non va bene la giornata del cliente fallo ora
-
 ## 2026-11-07 23:43 · 01QTFEqQ5ALf
 mettimi anche il tempo di Monica
 
@@ -151,3 +145,9 @@ Aggiungiamo un account inventato qualcosa ho l'app fermaaaaaaaaaaa
 
 ## 2026-11-10 17:10 · 01WTjqUv8dDc
 Kit si le regole attiva su rvc quelle selezionate da me con i controlli richiesti
+
+## 2026-11-10 17:15 · 01WTjqUuJHcT
+è normale che funziona?
+
+## 2026-11-10 17:34 · 01WTjqUuJHcT
+mandami una foto prima e dopo

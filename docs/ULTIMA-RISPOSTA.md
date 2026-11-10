@@ -1,7 +1,13 @@
-# Ultima risposta di Claude (10/11/2026 17:11 ora italiana)
+# Ultima risposta di Claude (10/11/2026 17:32 ora italiana)
 
-✅ **FATTO.** Le tue due risposte sono scritte nelle consegne e salvate su GitHub.
-- **Kit 38:** «sì». La sessione nuova lo installa per primo: è un lavoro lungo e questa chat è piena.
-- **Le 7 regole:** la sessione nuova fa prima i controlli che hai chiesto (doppioni, conflitti, regole migliori). Poi ti mostra la tabella e passa il testo alla sessione del kit, che le attiva su RVC. Da qui non posso scrivere su RVC: collegarlo spegnerebbe i controlli automatici di questo progetto.
 
-Per la chat nuova vale il testo da incollare che ti ho dato prima.
+
+## Domande a Mario
+
+❓ **DOMANDE**
+1. 📌 **Di cosa parliamo:** stasera il server degli avvisi è fermo fino alle 01:00, quindi il telefono di Monica non suona per gli ordini nuovi. Oggi l'unico posto che lo dice è la pagina Notifiche, dove Monica non va mai.
+   Metto una riga in cima alla sua Home, solo quando il server è fermo: «🔕 Avvisi degli ordini fermi fino a stanotte: guarda gli ordini qui»?
+   - 1 · Sì (consiglio): Monica sa che deve guardare l'app da sola e non perde ordini.
+   - 2 · No: la Home resta com'è e se ne accorge solo se apre Notifiche.
+
+   A cosa serve: Monica non aspetta un suono che non …
