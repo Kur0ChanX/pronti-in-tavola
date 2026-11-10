@@ -61,7 +61,7 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
 - 2026-11-10 17:48 · [AVVIO] Sessione #53 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto, C136 v0.10.17
 - 2026-11-10 18:10 · come integriamo il server emergenza e quando? → risposto; C135 in `docs/DA-FARE.md`
-- 2026-11-10 18:13 · quando è in modalità emergenza mettinche non si possono fare cose quasi inutili … → C137
+- 2026-11-10 18:13 · quando è in modalità emergenza mettinche non si possono fare cose quasi inutili … → C137 modalità risparmio (piano in `docs/lavori-in-corso/c137-modalita-risparmio.md`)
 
 Ultimo, intero:
 > quando è in modalità emergenza mettinche non si possono fare cose quasi inutili come aggiornate ricettario al solo cose base per far funzionare il programma al 100%
