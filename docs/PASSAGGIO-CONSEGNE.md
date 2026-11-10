@@ -37,6 +37,7 @@ Sessione attuale: #52 (dopo la #51 `session_01WTjqUv8dDcEnw4cyAzmz4S`, chiusa al
 
 ## Prossimi passi
 0. Risposta di Mario a «cosa vedi fermo?»: 2 = guasto vero, correggilo subito (foto in `archivio/foto/`); 1 o 3 = spiega che le notifiche tornano alle 01:00 e che aiutante e microfono vanno dalla v0.10.15 (chiedi una prova). Controllo online: `data.js` 0.10.15 e `sw.js` col testo `letture:`.
+1b. Mario 17:12: kit 38.14 «sì» → applica il pacchetto (passo 4, lavoro lungo: da fare per primo dopo il passo 0). C133 «attiva su rvc quelle selezionate da me con i controlli richiesti»: controlli (doppioni, conflitti, regole migliori, col kit 38.14 e fra loro), testo finale in `docs/PER-IL-KIT.md` «C133» e passalo alla sessione del kit di RVC (qui NIENTE `add_repo` di RVC: spegne gli hook); a Mario la tabella dei controlli e cosa è cambiato.
 1. Dopo le 01:00 italiane (11/11): `curl -s …/api/chiave` deve dare la chiave. Poi a Mario, in una riga: server ripartito, notifiche di nuovo attive; chiedi la foto della pagina Durable Objects di Cloudflare (utilizzo di oggi) per vedere le righe lette vere. Promessa C130: 7 giorni senza email di Cloudflare.
 2. Avviso onesto nell'app quando il server non risponde per il limite (PT E17): una riga per Monica «notifiche ferme fino a stanotte: guarda gli ordini nell'app». Non fatto: proponilo a Mario (idea, non ancora chiesta).
 3. Contatore vero (chiave gratuita «Account Analytics», Aspetta Mario): al «1» guida passo passo (pulsanti controllati sul sito) e `request_credential`; il server legge `durableObjectsPeriodicGroups` (campi da controllare con l'introspezione GraphQL) e manda l'avviso a Mario al 40%.
@@ -46,7 +47,8 @@ Sessione attuale: #52 (dopo la #51 `session_01WTjqUv8dDcEnw4cyAzmz4S`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md`. Nuova della #51: C130 contatore vero gratuito (1 sì · 2 no). Il piano a pagamento NON si richiede più (Mario NO). Restano: kit 38.14 (🛑), C132 proposte 1-3, C127 «1/2», foto Proteiche.
 
 ## Ultimo messaggio di Mario
-10/11 ~17:06 (in questa chat, #51), parola per parola: «Aggiungiamo un account inventato qualcosa ho l'app fermaaaaaaaaaaa» → sconsigliato, domanda «cosa vedi fermo?» (passo 0).
+10/11 ~17:12 (in questa chat, #51), parola per parola: «Kit si le regole attiva su rvc quelle selezionate da me con i controlli richiesti» → kit 38.14: SÌ (passo 4); C133: le 7 regole vanno attivate nel kit di RVC dopo i controlli (passo 1b).
+Prima, ~17:06: «Aggiungiamo un account inventato qualcosa ho l'app fermaaaaaaaaaaa» → sconsigliato, domanda «cosa vedi fermo?» (passo 0).
 Prima, ~17:05: «Devo pagare io i tuoi sbagli? ti sei matto
 ti avevo detto di non mettere blocchi ma se qualcosa segnava piú del dovuto dovevi avvisarmi ora metti i blocchi cosí è facile oppure che devo pagare.... non va bene cosí
 L'app deve funzionare risolvi ora io non ho soldi ti avviso» → blocco alle persone tolto, piano a pagamento ritirato (PT E54).
