@@ -355,15 +355,20 @@ async function ricettaGz(b, cfg, ctx) {
       return { db: await db.statoDb() };
     }
     if (b.db === 'cercaFit') {   // C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca… in automatico… tante fonti»): GZ (ricerca + «light») e RicetteFit (dal suo elenco: la ricerca del sito è vietata dal robots.txt)
-      const q = minuscolo(b.q).replace(/[^\p{L}\p{N} '-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
+      // C126: un momento (es. «🌅 Colazione») manda più parole insieme (qq, al massimo 4): si cercano tutte, senza doppioni
+      const pulisci = x => minuscolo(x).replace(/[^\p{L}\p{N} '-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
+      const qq = [...new Set((Array.isArray(b.qq) && b.qq.length ? b.qq : [b.q]).map(pulisci).filter(x => x.length >= 2))].slice(0, 4), q = qq[0] || '';
       if (q.length < 2) return { errore: 'scrivi almeno 2 lettere' };
-      const s0 = await db.statoDb(), radici = radiciRf(q);
-      let gz = [], rf = [], rete = 0;
-      try { gz = gzCerca(await paginaGz(urlCerca(/light|protei|\bfit\b/.test(q) ? q : q + ' light'))).map(x => x.url); } catch (e) { rete++; }
-      if (!(s0.rf && s0.rf.spento) && radici.length) {
-        try { rf = rfTrova(await paginaGz(MAPPA_RF, 'RicetteFit'), q, 20).map(x => x.url); }
-        catch (e) { rete++; }
+      const s0 = await db.statoDb(), conRf = !(s0.rf && s0.rf.spento);
+      let gz = [], rf = [], rete = 0, mappa = null;
+      for (const x of qq) {
+        try { gz = gz.concat(gzCerca(await paginaGz(urlCerca(/light|protei|\bfit\b/.test(x) ? x : x + ' light'))).map(y => y.url)); } catch (e) { rete++; }
+        if (conRf && radiciRf(x).length) {
+          try { mappa = mappa || await paginaGz(MAPPA_RF, 'RicetteFit'); rf = rf.concat(rfTrova(mappa, x, 20).map(y => y.url)); }
+          catch (e) { rete++; }
+        }
       }
+      gz = [...new Set(gz)]; rf = [...new Set(rf)].slice(0, 30);
       if (rete && !gz.length && !rf.length) return { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' };
       const n = await db.inCodaPrima(gz.concat(rf)), t = await db.turboStato();
       if (n.nuove && !(t && t.attivo)) await db.turboAvvia(Math.min(40, n.nuove));   // le legge subito (5 ogni 30 s); un carico già in corso non si tocca
