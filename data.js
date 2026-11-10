@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.17';
+const VERSIONE_APP = '0.10.18';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.18', data: '10/11/2026',
+    nuovo: ['Avvisi degli ordini: corsia d\'emergenza 🛟. Il server tiene una copia di riserva dei telefoni iscritti (Monica, Mario e clienti): se Cloudflare ferma la memoria del server, gli avvisi degli ordini, «è pronto» e «sono qui» partono lo stesso e nessuno deve iscriversi di nuovo. In Impostazioni → Notifiche si vede se la copia è pronta; Mario ha «🧪 Prova la corsia d\'emergenza»',
+      'Ricettario: modalità risparmio 🛟. Se il server ha usato quasi metà delle letture gratuite del giorno, o Cloudflare lo ferma, fino all\'01:00 il ricettario non cerca e non carica ricette nuove e in alto lo dice col perché. Il tuo ricettario, le ricette salvate, ordini, menù, clienti e avvisi funzionano come sempre'] },
   { v: '0.10.17', data: '10/11/2026',
     migliorato: ['Ricettario: il motore delle ricette non lavora più da solo ogni 10 minuti, così le letture gratuite del server restano per ordini e avvisi. Le ricette nuove arrivano solo quando le chiedi: «⚡ Carica altre 20 ricette» nel riquadro «🗄 Il mio database» (o «🔍 Cerca altre» in Proteiche). Il carico finisce da solo in pochi minuti e si può fermare con «⏹ Ferma». Mario sceglie quante ricette per volta (da 5 a 50) in «Solo per te, Mario» e può riaccendere il motore automatico dal dettaglio del database, con conferma'] },
   { v: '0.10.16', data: '10/11/2026',
