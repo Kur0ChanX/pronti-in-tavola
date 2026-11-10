@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 10/11 · 🟢 Principale 45 · C125 (Mario 13:40 «la ricerca che cerca nelle fonti alternative anche a giallozafferano… tasto manuale»): 1 è «🔍 Cerca ricette fit» della v0.10.8 (GZ + RicetteFit, le carica subito) · 2 lo stesso anche nella ricerca normale del Ricettario · 3 più siti (senza valori, fuori da Proteiche). Consiglio 1, poi 2. A cosa serve: fare il tasto che intendi tu.
 - 10/11 · 🟢 Principale 45 · C124-C125 v0.10.8: chiudi e riapri l'app, Home → «Proteiche» (in alto «🍽 Pasti», «🍫 Snack e dolci», «⚡ Pronte in 10 minuti», sotto «🔍 Cerca ricette fit»: tocca «🍮 Budino»), poi pagina Database (riga «GialloZafferano N · RicetteFit N»). Tre foto: Home, Proteiche dopo «Budino», Database. A cosa serve: vedere coi dati veri che arrivano ricette da più fonti e che la ricerca le porta.
 - 10/11 · 🟢 Principale 42 · Kit 37.2: Mario «ok github chiave». Guida data 10/11 (link già compilato, sola lettura su RVC). Aspetto «chiave pronta», poi apro il modulo sicuro (host raw.githubusercontent.com). A cosa serve: portare qui il kit 37.2 e i prossimi da solo.
 - 09/11 · 🟡 Principale 38 · C115 (Mario 10/11 ~11:25 «per ora ok», lo prova più avanti) v0.9.94 (l'Astice è ok, Mario 10/11): «guarda come cliente», chiudi e riapri: dopo il logo c'è il vapore? Un video. A cosa serve: chiudere il vapore anche per i clienti.
