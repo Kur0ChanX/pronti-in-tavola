@@ -32,9 +32,9 @@ const valoriPieni = n => !!n && n.kcal > 0 && [n.prot, n.saturi, n.zuc, n.sodio]
 function fitRic(n) {
   if (!valoriPieni(n)) return false;
   const quota = n.prot * 400 / n.kcal, zuc = n.zuc * 400 / n.kcal;
-  if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 10)) return false;
-  if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 10) && n.sodio <= sogliaFit('fitSodio', 700)) return 'pasto';
-  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 10) && quota >= sogliaFit('fitSnackPerc', 30) && zuc <= sogliaFit('fitSnackZuc', 15) && n.sodio <= sogliaFit('fitSnackSodio', 400) ? 'snack' : false;
+  if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 13)) return false;
+  if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 15) && n.sodio <= sogliaFit('fitSodio', 800)) return 'pasto';
+  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 10) && quota >= sogliaFit('fitSnackPerc', 30) && zuc <= sogliaFit('fitSnackZuc', 20) && n.sodio <= sogliaFit('fitSnackSodio', 500) ? 'snack' : false;
 }
 const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
 const numIt = x => String(Math.round(x * 10) / 10).replace('.', ',');

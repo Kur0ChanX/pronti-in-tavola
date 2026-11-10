@@ -1,22 +1,9 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 17:04 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: non paghi niente, nessun blocco alle persone, e l'app deve funzionare.
 
-───
-💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
-
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
-
-## Domande a Mario
-
-❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+✅ **FATTO**
+- **Piano a pagamento ritirato.** Hai ragione: è un mio errore e lo sistemo gratis, nel codice.
+- **Blocco alle ricerche delle persone tolto.** Se le letture salgono troppo, si ferma solo il motore automatico delle ricette e a te arriva un avviso sul telefono. Nessuna persona viene fermata. L'ho scritto nelle decisioni e nel diario degli errori.
+- **Il server legge circa 40 volte meno.** In una giornata intera simulata fa circa 800 mila letture su 5 milioni gratis.
+- **Aiutante e microfono** non …
