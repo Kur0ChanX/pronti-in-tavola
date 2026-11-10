@@ -1,12 +1,12 @@
 # Passaggio di consegne
 
-Sessione attuale: #39 (dopo la #38 `session_01WTjqUx6Bw42npV5PZSzDj2`, chiusa alla soglia 10/11 01:20; la apre la #38 con `create_session` (catena 5 di 8)).
+Sessione attuale: #40 (dopo la #39 `session_01WTjqUwXqzf1yXN3r3aJ8nd`, chiusa alla soglia 10/11 01:59; la apre la #39 con `create_session` (catena 6 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
 - **Cosa preme a Mario adesso (10/11 ~01:15):** 1) 🔴 C120: sul suo Android l'app è in modo cliente e «Entra con Google» dice «Accesso non riuscito. Riprova.» (Mario: «perché rompi sempre il codice quando funziona?»); 2) C119 foto piccole delle ricette vecchie: scelta 2 = zoom piccolo (fatto v0.9.97) + motore che mette prima le foto grandi + «✨ Migliora con l'AI».
 
-## Stato (10/11 01:20 ora italiana)
+## Stato (10/11 01:59 ora italiana)
 - Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?.
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Sito vero: v0.9.90 online (C112), giro «Pubblica sito» success sul commit e356f431 (09/11 ~21:10); `grep -m1 VERSIONE_APP data.js` → 0.9.90. App: 78 OK, 0 NO sul codice unito con Voce 10.
 - App: `python3 -I tools/anteprima.py && node tools/prova.js` → 77 OK, 0 NO (09/11 ~20:40, v0.9.87). `SOLO=carrello` NON va da solo (il carrello dipende dai passi prima): giro completo, ~3 minuti.
@@ -54,7 +54,7 @@ Prima:
 Prima, 10/11 01:10: «b + migliora con ia» (= scelta 2 di C119). 09/11 23:58: «quelle che separi sono sgranatissime controllale tutte se sono in hd di tutte le rivette e evita questo problema in futuro e risolvi tutte le foto in bassa qualità e riscaricale in tutte le ricette». 09/11 23:51: testo allergeni → v0.9.96.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C120; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C123; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
