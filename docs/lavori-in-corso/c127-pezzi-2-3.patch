@@ -1,5 +1,35 @@
+diff --git a/aiutante.js b/aiutante.js
+index ccff9fa2..ce07c13a 100644
+--- a/aiutante.js
++++ b/aiutante.js
+@@ -531,6 +531,8 @@ const DOVE_AI = {
+   spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
+   'ricettario-foto': { vista: 'ricettario', nome: 'Foto piccole: Migliora con l\'AI', come: 'Apri una ricetta e tocca la foto di un passo: si ingrandisce. Sotto c\'è «✨ Migliora con l\'AI»: in pochi secondi la foto diventa grande e nitida. Dopo la prima volta lo fa da sola.', parole: /(foto|immagin)\w*.*(sgranat|sfocat|piccol|brutt|nitid|miglior|ingrand|pixel)|(sgranat|sfocat|miglior|ingrand)\w*.*(foto|immagin)/ },
+   // C124: sezione proteica, difficoltà e Database (prima di «ricettario»: vince sulle parole più precise)
++  // C127: «📅 Il mio giorno proteico» (prima di «ricettario-fit»: vince sulle parole più precise)
++  'giorno-proteico': { vista: 'ricettario', nome: 'Il mio giorno proteico', come: 'In «🏋️ Proteiche», in alto, «📅 Il mio giorno proteico»: colazione, pranzo, spuntino e cena con i grammi di proteine e il totale. «🔄» cambia un piatto, «🛒 Lista della spesa» mette gli ingredienti nella tua lista, «📤 Manda» lo condivide su WhatsApp.', parole: /giorn\w* protei|pian\w* (alimentar|protei)|men[uù] protei|dieta|cosa mangio oggi/, ui: { ricZona: 'fit', ricGiorno: true } },
+   'ricettario-fit': { vista: 'ricettario', nome: 'Ricette proteiche', come: 'Sei in «🏋️ Proteiche»: tante proteine, poche calorie, grassi saturi, zuccheri e sale. Scegli uno o più momenti (Colazione, Cena…) e, se vuoi, una o più fonti (pollo, albumi…); il riquadro verde dice cosa sto caricando e «🔍 Cerca altre» ne cerca di nuove. Su ogni ricetta trovi i valori per porzione.', parole: /protei|palestr|fitness|\bgym\b|ipertrofi|definizion|asciugar|massa muscol|poche calorie|ricett\w* (light|legger|fit)/, ui: { ricZona: 'fit' } },
+   'ricettario-diff': { vista: 'ricettario', nome: 'Difficoltà delle ricette', come: 'Sotto le portate c\'è «Difficoltà»: tocca Facili, Medie o Difficili.', parole: /ricett\w* (facil|semplic|difficil)|difficolt/ },
+   'ricettario-db': { vista: 'ricdb', nome: 'Database ricette', come: 'Qui vedi quante ricette ci sono, il motore che le cerca da solo e le parole per le ricette proteiche.', parole: /database|archivio (delle )?ricett|motore (delle )?ricett/ },
+diff --git a/data.js b/data.js
+index 9176dde2..5e1dc184 100644
+--- a/data.js
++++ b/data.js
+@@ -183,9 +183,11 @@ function statoIniziale() {
+ }
+ 
+ /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
+-const VERSIONE_APP = '0.10.13';
++const VERSIONE_APP = '0.10.14';
+ /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
+ const NOVITA = [
++  { v: '0.10.14', data: '10/11/2026',
++    nuovo: ['Ricettario «🏋️ Proteiche»: «📅 Il mio giorno proteico» in alto propone colazione, pranzo, spuntino e cena con i grammi di proteine e il totale; restano uguali per tutto il giorno, «🔄» cambia un piatto (con Annulla), l\'obiettivo in grammi si cambia con «✏️ Cambia»', 'Giorno proteico: «🛒 Lista della spesa» mette gli ingredienti delle 4 ricette per 1 porzione nella tua lista (sale, pepe e acqua no; Annulla toglie tutto) e «📤 Manda» lo condivide su WhatsApp', 'Ricetta proteica: in fondo «🔁 Simili a questa», fino a 4 proteiche con la stessa fonte o per lo stesso momento', 'Aiutante: «fammi un piano proteico» ti porta al giorno proteico'] },
+   { v: '0.10.13', data: '10/11/2026',
+     migliorato: ['Ricettario «🏋️ Proteiche» più ordinato: in alto solo Tutte, Proteiche, Preferite e «Altre ▾» (dentro Sarde, Italiane, Le mie)', 'Ricettario «🏋️ Proteiche»: momenti e fonti proteiche a scelta multipla (es. Colazione e Spuntino, Pollo e Albumi), in righe che scorrono di lato, col ✓ su quelle scelte', 'Ricettario: portata, difficoltà, tempo e ordine raccolti in «⚙️ Portata, difficoltà, tempo e ordine», col numero dei filtri accesi', 'Ricettario «🏋️ Proteiche»: riquadro verde con la lettura in corso (barra), «Oggi +N entrate in Proteiche», «🔍 Cerca altre» e «ℹ️ Le regole»'] },
+   { v: '0.10.12', data: '10/11/2026',
 diff --git a/ricettario.js b/ricettario.js
-index 17530991..2135ee93 100644
+index 17530991..3400f6d8 100644
 --- a/ricettario.js
 +++ b/ricettario.js
 @@ -262,6 +262,7 @@ function ispira() {
@@ -53,7 +83,7 @@ index 17530991..2135ee93 100644
 +    ${ok.length ? `<div class="ric-giorno-righe">${righe}</div>
 +    <p style="margin:0"><b>Totale ${Math.round(prot)} g di ${ob}</b> · ${Math.round(kcal).toLocaleString('it-IT')} kcal ${manca > 0 ? `<span class="tenue">(mancano ${manca} g: aggiungi uno spuntino o fai porzioni più grandi)</span>` : '✅ obiettivo raggiunto'}</p>
 +    <div class="fila"><button type="button" class="btn chiaro" data-a="ric-giorno-spesa" ${sp && sp.stato === 'carico' ? 'disabled' : ''}>🛒 ${sp && sp.stato === 'carico' ? 'Preparo la lista…' : 'Lista della spesa'}</button><a class="btn chiaro" href="${wa('', testoGiorno(pp, prot, kcal, ob))}" target="_blank" rel="noopener">📤 Manda</a></div>
-+    ${sp && sp.stato === 'ok' ? `<p class="piccolo" style="margin:0">🛒 ${sp.n ? `Messe <b>${sp.n}</b> cose in «La mia lista», per 1 porzione` : 'Erano già tutte in «La mia lista»'}${sp.mancano.length ? `. Senza rete non ho gli ingredienti di: ${esc(sp.mancano.join(', '))}` : ''} · <button type="button" class="link" data-a="ric-giorno-vai-spesa">Apri la lista</button></p>` : ''}`
++    ${sp && sp.stato === 'ok' ? `<p class="piccolo" style="margin:0">🛒 ${sp.n ? `Messe <b>${sp.n}</b> cose in «La mia lista», per 1 porzione` : 'Erano già tutte in «La mia lista»'}${typeof Dati !== 'undefined' && Dati.attivo && Dati.io && Dati.io.gestore ? ' (la lista è in comune con chi gestisce l\'app)' : ''}${sp.mancano.length ? `. Senza rete non ho gli ingredienti di: ${esc(sp.mancano.join(', '))}` : ''} · <button type="button" class="link" data-a="ric-giorno-vai-spesa">Apri la lista</button></p>` : ''}`
 +    : '<p style="margin:0">Quando arrivano le ricette proteiche ti propongo qui una giornata intera: colazione, pranzo, spuntino e cena.</p>'}</section>`;
 +}
 +/* C127 pezzo 3 «🔁 Simili a questa»: in fondo a una ricetta proteica, fino a 4 proteiche con la stessa fonte proteica o lo stesso momento
@@ -81,7 +111,12 @@ index 17530991..2135ee93 100644
  function vRicettario() {
    if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
    if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
-@@ -630,7 +688,7 @@ function vRicettario() {
+@@ -626,11 +684,12 @@ function vRicettario() {
+   if (f.prot) f.prot = protSel(f).join(',');   // C126-C127: «pasto»/«snack» salvati dalla v0.10.7-0.10.9 non sono più scelte
+   if (f.facile) { f.diff = f.diff || 'facile'; delete f.facile; }   // C124: il vecchio «Solo facili» diventa «Facili»
+   if (UI.ricZona) { f.zona = UI.ricZona; f.cat = ''; delete UI.ricZona; salvaFiltri(); }   // dall'aiutante o dalla Home («🏋️ Proteiche»)
++  if (UI.ricGiorno) { f.fit = ''; f.prot = ''; f.q = ''; scriviRic('pit-giorno-fit-no', false); delete UI.ricGiorno; salvaFiltri(); }   // C127: dall'aiutante, «📅 Il mio giorno proteico» in vista
+   const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
    const mie = mieRic().map(daMia);
    const scar = RIC.scaricate, extra = Object.assign({}, scar, cache);
    const elenco = elencoRic();
@@ -90,7 +125,7 @@ index 17530991..2135ee93 100644
    let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && passaFit(r, f) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
        : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
      && (!f.cat || r.categoria === f.cat)
-@@ -652,6 +710,7 @@ function vRicettario() {
+@@ -652,6 +711,7 @@ function vRicettario() {
      ${zoneRic(f)}
      ${f.zona === 'fit' ? sceltaFit(f) : ''}
      ${piuFiltriRic(f)}
@@ -98,7 +133,7 @@ index 17530991..2135ee93 100644
      ${f.zona === 'fit' ? riquadroFit(f, tutte) : ''}
      <p class="piccolo ric-conta" style="margin:0"><b>${rr.length}</b> ${rr.length === 1 ? 'ricetta' : 'ricette'}${f.zona === 'fit' && rr.length ? `: ${perFonte(rr)}` : ''}${filtrato ? ` · <button type="button" class="link" data-a="ric-pulisci">✕ Azzera i filtri</button>` : ''}${f.tempo || f.diff ? '<br><span class="tenue">Tempo e difficoltà ci sono solo per le ricette già arrivate nell\'archivio: le altre compaiono dopo.</span>' : ''}</p>`;
    if (f.zona !== 'fit' && f.q.trim().length >= 2) h += `<button type="button" class="btn chiaro pieno" data-a="ric-cerca-gz">${ico('cerca')}Cerca «${esc(f.q.trim())}» su GialloZafferano e RicetteFit</button>`;
-@@ -742,6 +801,7 @@ function vRicetta(id) {
+@@ -742,6 +802,7 @@ function vRicetta(id) {
        <p class="piccolo tenue" style="margin:0">Si salvano da sole su questo telefono e le rivedi nella cucina guidata.</p></section>
      <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${(fr => r.passi.map((p, k) => `<li><div>${fotoPasso(p, false, fr[k])}<span>${passoHtml(p.t)}</span></div></li>`).join(''))(fotoRicetta(r))}</ol></section>`;
    if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
@@ -106,7 +141,7 @@ index 17530991..2135ee93 100644
    if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
    h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di ${esc(fonteRic(r))}${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
    return h + '</main>';
-@@ -922,6 +982,13 @@ function salvaParoleFit(t, base) {
+@@ -922,6 +983,13 @@ function salvaParoleFit(t, base) {
      .catch(e => mostraToast('Non salvato: ' + (e.message || e) + ' Riprova con la rete.'));
  }
  document.addEventListener('change', e => { if (e.target && e.target.dataset && e.target.dataset.ricfit) salvaParoleFit(e.target.value); });
@@ -120,7 +155,7 @@ index 17530991..2135ee93 100644
  document.addEventListener('input', e => {
    const el = e.target;
    if (el.dataset && el.dataset.ricerca) { UI.ric.q = el.value; ridisegnaElenco(); }
-@@ -1006,6 +1073,37 @@ function suonaTimer(testo) {
+@@ -1006,6 +1074,37 @@ function suonaTimer(testo) {
  Object.assign(A, {
    'ric-riprova'() { RIC.stato = 'no'; render(); },
    'ric-riapri'(el) { delete RIC.errore[el.dataset.v]; render(); },
@@ -145,13 +180,13 @@ index 17530991..2135ee93 100644
 +      const r = ricettaPiena(r0.id); if (!r) { mancano.push(r0.nome); return; }
 +      const p = Number(r.porzioni) > 0 ? Number(r.porzioni) : 4;
 +      r.ingredienti.forEach(i => {
-+        const nome = String(i.nome || '').trim(); if (!nome) return;
-+        if (i.q == null) { if (!/^(sale|pepe|acqua)\b/i.test(nome) && !somma.has(nome.toLowerCase())) somma.set(nome.toLowerCase(), { nome, q: null, u: '' }); return; }
++        const nome = String(i.nome || '').trim(); if (!nome || /^(sale|pepe|acqua)\b/i.test(nome)) return;   // sale, pepe e acqua ce li hai
++        if (i.q == null) { if (!somma.has(nome.toLowerCase())) somma.set(nome.toLowerCase(), { nome, q: null, u: '' }); return; }
 +        const k = nome.toLowerCase() + '|' + (i.u || ''), x = somma.get(k) || { nome, q: 0, u: i.u || '' }; x.q += Number(i.q) / p; somma.set(k, x);
 +      });
 +    });
 +    const qq = x => x >= 10 ? String(Math.round(x)) : String(Math.max(0.1, Math.round(x * 10) / 10)).replace('.', ',');
-+    const esito = aggiungiVociSpesa([...somma.values()].map(x => x.q == null ? x.nome : `${qq(x.q)}${x.u ? ' ' + x.u : ''} ${x.nome}`));
++    const esito = aggiungiVociSpesa([...somma.values()].map(x => ({ n: x.nome, q: x.q == null ? '' : qq(x.q) + (x.u ? ' ' + x.u : '') })));
 +    RIC.giornoSpesa = { stato: 'ok', n: esito.n, mancano }; render();
 +    if (esito.n) mostraToast(`Messe ${esito.n} cose nella tua lista della spesa.`, () => { esito.annulla(); RIC.giornoSpesa = null; render(); });
 +  },
@@ -159,19 +194,20 @@ index 17530991..2135ee93 100644
    'ric-regole'() { UI.ricRegole = !UI.ricRegole; render(); },   // C127: «ℹ️ Le regole» di Proteiche
    'ric-zona'(el) { const f = UI.ric; f.zona = el.dataset.v; UI.ricAltre = false; if (f.zona !== 'fit') { f.fit = ''; f.prot = ''; if (f.tempo === sogliaFit('fitVeloci', 10)) f.tempo = 0; } salvaFiltri(); render(); },   // C125: Pasti/Snack e «⚡» valgono solo dentro Proteiche
 diff --git a/spesa.js b/spesa.js
-index 76a9da9d..0bbc9456 100644
+index 76a9da9d..c2560cec 100644
 --- a/spesa.js
 +++ b/spesa.js
-@@ -363,6 +363,19 @@ function aggiungiVoce(testo) {
+@@ -363,6 +363,20 @@ function aggiungiVoce(testo) {
    salvaSpesa(); render();
    return true;
  }
-+/* C127 (giorno proteico): più cose insieme in «La mia lista», un solo «Annulla». Già nella lista: torna «da prendere» (la quantità
++/* C127 (giorno proteico): più cose insieme in «La mia lista», un solo «Annulla». Righe: testo («2 kg patate») o { n, q } già divisi
++   (le unità delle ricette, «cucchiai», «spicchi», leggiVoce non le conosce). Già nella lista: torna «da prendere» (la quantità
 +   scritta prima resta). → { n: quante nuove o tornate da prendere, annulla } */
 +function aggiungiVociSpesa(righe) {
 +  const prima = JSON.stringify(SPESA.mia); let n = 0;
 +  (righe || []).forEach((t, i) => {
-+    const { n: nome, q } = leggiVoce(t); if (!nome) return;
++    const { n: n0, q: q0 } = t && typeof t === 'object' ? t : leggiVoce(t), nome = String(n0 || '').replace(/\s+/g, ' ').trim().slice(0, 60), q = String(q0 || '').trim().slice(0, 30); if (!nome) return;
 +    const k = chiaveVoce(nome), gia = SPESA.mia.find(v => chiaveVoce(v.n) === k);
 +    if (gia) { if (gia.preso) { gia.preso = false; n++; } if (q && !gia.q) gia.q = q; return; }
 +    SPESA.mia.push({ id: 'v' + Date.now().toString(36) + i.toString(36) + Math.random().toString(36).slice(2, 5), n: maiuscola(nome), q, rep: repartoDi(nome), preso: false }); n++;
@@ -182,3 +218,127 @@ index 76a9da9d..0bbc9456 100644
  function vSpesaMia(so) {
    const ordine = new Map(so.compra.map(([id, d]) => [chiaveVoce(ING(id).n), d.testo]));
    const nella = new Set(SPESA.mia.map(v => chiaveVoce(v.n)));
+diff --git a/style.css b/style.css
+index c2a30b2f..bc77bf21 100644
+--- a/style.css
++++ b/style.css
+@@ -747,6 +747,22 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
+ .ric-barra { height: 10px; border-radius: 6px; background: #fff; overflow: hidden; }
+ .ric-barra span { display: block; height: 100%; background: var(--vino); border-radius: 6px; transition: width .6s ease; }
+ .ric-carica .ric-regole { align-self: flex-start; }
++/* C127 «📅 Il mio giorno proteico» e «🔁 Simili a questa» */
++.ric-giorno { gap: 10px; }
++.ric-giorno-testa { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
++.ric-giorno-testa h2 { margin: 0; }
++.ric-giorno-righe { display: grid; }
++.ric-giorno-riga { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--riga); padding: 6px 0; min-height: 52px; }
++.ric-giorno-riga:last-child { border-bottom: 1px solid var(--riga); }
++.ric-giorno-ric { flex: 1; min-width: 0; border: 0; background: none; padding: 4px 0; font: inherit; color: inherit; text-align: left; display: flex; flex-direction: column; gap: 2px; }
++.ric-giorno-ric b { font-size: .85rem; color: var(--tenue); font-weight: 700; }
++.ric-giorno-ric span { font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
++button.ric-giorno-ric span { color: var(--vino); }
++.ric-giorno-g { flex: none; color: var(--basilico); font-size: 1.05rem; }
++.ric-giorno-ob { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: .95rem; }
++.ric-giorno-ob input { width: 5.5em; min-height: 42px; text-align: center; }
++.ric-giorno-apri { width: 100%; border-radius: 999px; }
++.ric-simili .ric-elenco { margin-top: 2px; }
+ .ric-valori-griglia { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+ .ric-valori-griglia div { background: #F7F1E6; border-radius: 10px; padding: 6px 2px; display: grid; text-align: center; }
+ .ric-valori-griglia b { font-size: 1.02rem; line-height: 1.2; }
+diff --git a/tools/prova.js b/tools/prova.js
+index 9654f52e..d6274ab7 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -1752,6 +1752,79 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     if (dbf.m !== 'GialloZafferano 35 · RicetteFit 5' || !/Ricette proteiche: 3\s*GialloZafferano 2 · RicetteFit 1/.test(dbf.f)) throw new Error('Database: numeri per fonte sbagliati: ' + JSON.stringify(dbf));
+     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC125; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
+   });
++  await passo('ricettario C127 giorno proteico: 4 proposte uguali tutto il giorno, 🔄 con Annulla, obiettivo, Manda, 🛒 per 1 porzione con Annulla, Nascondi, aiutante; «🔁 Simili»', async () => {   // autonomo
++    await page.evaluate(() => {
++      window.__primaGiorno = [P.ruolo, UI.devCliente, JSON.stringify(SPESA.mia)]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
++      ['pit-giorno-fit', 'pit-giorno-ob', 'pit-giorno-fit-no', 'pit-ric-filtri', 'pit-ric-cache'].forEach(k => localStorage.removeItem(k)); SPESA.mia = []; RIC.giornoSpesa = null;
++      const ora = Date.now(), nu = (kcal, prot) => ({ kcal, prot, carb: 20, grassi: 5, saturi: 1, zuc: 2, fibre: 2, sodio: 200 }), r = (id, nome, categoria, n) => ({ id, nome, zona: 'italiana', categoria, foto: '', aggiunta: ora, totale: 20, difficolta: 'Facile', cerca: '', nutr: n });
++      const ss = [r('rf:pancake-proteici-prova', 'Pancake proteici prova', 'Dolci', nu(300, 30)), r('gz:Porridge-proteico-prova', 'Porridge proteico prova', 'Dolci', nu(320, 30)), r('rf:overnight-oats-prova', 'Overnight oats prova', 'Dolci', nu(350, 28)),
++        r('gz:Pasta-e-ceci-prova', 'Pasta e ceci prova', 'Primi piatti', nu(480, 32)), r('gz:Risotto-proteico-prova', 'Risotto proteico prova', 'primi', nu(450, 35)),
++        r('gz:Barretta-proteica-prova', 'Barretta proteica prova', 'Dolci', nu(200, 20)), r('rf:hummus-proteico-prova', 'Hummus proteico prova', 'Antipasti', nu(180, 15)),
++        r('gz:Pollo-al-limone-prova', 'Pollo al limone prova', 'Secondi piatti', nu(380, 40)), r('gz:Orata-al-forno-prova', 'Orata al forno prova', 'secondi', nu(300, 35)),
++        r('gz:Carbonara-giorno-prova', 'Carbonara giorno prova', 'primi', { kcal: 558.7, prot: 22.8, carb: 61, grassi: 24, saturi: 9, zuc: 2.5, fibre: 2.7, sodio: 475 })];
++      const perU = Object.fromEntries(ss.map(x => [urlRic(x.id), x])); window.__giornoChiesti = [];
++      RIC.chiedi = async c => {
++        if (c.u && perU[c.u]) { const x = perU[c.u]; window.__giornoChiesti.push(x.id); return { ricetta: Object.assign({}, x, { v: 4, fonte: x.id.slice(0, 2), url: c.u, porzioni: 4, prep: 10, cottura: 10, autore: 'Prova',
++          ingredienti: [{ nome: 'Petto di pollo', q: 600, u: 'g' }, { nome: 'Sale fino', q: null, u: '' }, { nome: 'Acqua', q: 200, u: 'ml' }, { nome: 'Olio', q: 2, u: 'cucchiai' }, { nome: 'Basilico', q: null, u: '' }, { nome: 'Extra ' + x.nome, q: 400, u: 'g' }],
++          passi: [{ t: 'Cuoci. Cuoci tutto in padella.', foto: [] }] }) }; }
++        if (c.db === 'mie') return { scelte: ss };
++        return c.db ? { db: { ricette: 40, coda: 0, scelte: ss.length, conValori: ss.length, senzaValori: 0, paroleFit: [], giri: 1, fonte: 1, fonti: 10, rf: { lette: 5, tot: 905, inCoda: 0, scartate: 0, i: 5, fine: '', spento: false } } } : { ricette: [], prossima: '' }; };
++      ss.forEach(x => { delete RIC.scaricate[x.id]; }); dbRic('readwrite', st => ss.forEach(x => st.delete(x.id))).catch(() => {});
++      salvaScelte(ss); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
++      UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
++    });
++    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
++    const leggi = () => page.evaluate(() => { const b = document.querySelector('main .ric-giorno'), g = JSON.parse(localStorage.getItem('pit-giorno-fit') || 'null');
++      return { c: !!b, righe: b ? [...b.querySelectorAll('.ric-giorno-riga')].map(x => ({ id: ((x.querySelector('[data-a="vai"]') || {}).dataset || {}).v || '', t: x.innerText.replace(/\s+/g, ' ') })) : [], testo: b ? b.innerText.replace(/\s+/g, ' ') : '',
++        manda: b ? decodeURIComponent((b.querySelector('a[href*="wa.me"]') || {}).href || '') : '', g, oggi: oggi(), ob: obGiorno(), apri: !!document.querySelector('main [data-a="ric-giorno-apri"]'),
++        prima: (() => { const t = document.querySelector('main .ric-giorno'), c = document.querySelector('main .ric-carica'); return !!(t && c && (t.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING)); })() }; });
++    const s0 = await leggi(), ids = s0.righe.map(x => x.id.replace(/^ricetta:/, ''));
++    const giusti = await page.evaluate(ii => { const m = ['colazione', 'pranzo', 'spuntino', 'cena'], tt = tutteRic(); return ii.map((id, k) => { const x = tt.find(y => y.id === id); return !!x && !!momentoRic(x, m[k]); }); }, ids);
++    if (!s0.c || !s0.prima || s0.righe.length !== 4 || new Set(ids).size !== 4 || giusti.includes(false) || !/🌅 Colazione/.test(s0.righe[0].t) || !/🍽 Cena/.test(s0.righe[3].t)) throw new Error('giorno proteico: 4 proposte diverse, giuste e sopra il riquadro verde? ' + JSON.stringify({ s0, giusti }));
++    const tot = await page.evaluate(ii => Math.round(ii.reduce((t, id) => t + tutteRic().find(y => y.id === id).nutr.prot, 0)), ids);
++    if (!s0.testo.includes(`Totale ${tot} g di 150`) || !/mancano \d+ g/.test(s0.testo) || !s0.g || s0.g.data !== s0.oggi || !s0.manda.includes('Il mio giorno proteico (obiettivo 150 g di proteine)') || !s0.manda.includes(`Totale ${tot} g di proteine`)) throw new Error('giorno proteico: totale, «mancano», data o «Manda» sbagliati: ' + JSON.stringify({ tot, s0 }));
++    /* uguale dopo un nuovo disegno; data vecchia → piano di oggi */
++    await page.evaluate(() => render()); const s1 = await leggi();
++    if (JSON.stringify(s1.righe) !== JSON.stringify(s0.righe)) throw new Error('giorno proteico: cambia a ogni disegno: ' + JSON.stringify([s0.righe, s1.righe]));
++    await page.evaluate(() => { const g = JSON.parse(localStorage.getItem('pit-giorno-fit')); g.data = '2000-01-01'; g.scelte = { colazione: 'gz:Carbonara-giorno-prova' }; localStorage.setItem('pit-giorno-fit', JSON.stringify(g)); render(); });
++    const s2 = await leggi(); if (s2.g.data !== s2.oggi || s2.righe.some(x => /Carbonara/.test(x.t))) throw new Error('giorno proteico: il piano di ieri è rimasto: ' + JSON.stringify(s2.g));
++    /* 🔄 cambia solo la colazione, «Annulla» la rimette */
++    const col = (await leggi()).righe.map(x => x.id);
++    await clic('main [data-a="ric-giorno-cambia"][data-v="colazione"]'); const s3 = await leggi();
++    if (s3.righe[0].id === col[0] || s3.righe.slice(1).map(x => x.id).join() !== col.slice(1).join() || !(await page.locator('#toast', { hasText: 'Cambiata: colazione' }).count())) throw new Error('giorno proteico: 🔄 non cambia solo la colazione: ' + JSON.stringify([col, s3.righe]));
++    await clic('#toast [data-a="annulla"]'); if ((await leggi()).righe.map(x => x.id).join() !== col.join()) throw new Error('giorno proteico: «Annulla» del 🔄 non rimette la colazione');
++    /* obiettivo: 400 rifiutato, 120 ok */
++    await clic('main [data-a="ric-giorno-ob"]'); await page.fill('#ric-giorno-ob', '400'); await page.dispatchEvent('#ric-giorno-ob', 'change'); await page.waitForTimeout(200);
++    if ((await leggi()).ob !== 150 || !(await page.locator('#toast', { hasText: 'da 50 a 300' }).count())) throw new Error('giorno proteico: obiettivo 400 accettato');
++    await page.fill('#ric-giorno-ob', '120'); await page.dispatchEvent('#ric-giorno-ob', 'change'); await page.waitForTimeout(200); const s4 = await leggi();
++    if (s4.ob !== 120 || !s4.testo.includes('Obiettivo 120 g') || !s4.testo.includes(`di 120`) || (tot < 120) !== /mancano/.test(s4.testo) || (tot >= 120) !== /obiettivo raggiunto/.test(s4.testo)) throw new Error('giorno proteico: obiettivo 120 non preso: ' + s4.testo);
++    /* 🛒 scarica le 4, per 1 porzione, unite, niente sale e acqua; «Annulla» toglie tutto */
++    await clic('main [data-a="ric-giorno-spesa"]'); await page.waitForFunction(() => RIC.giornoSpesa && RIC.giornoSpesa.stato === 'ok', null, { timeout: 20000 });
++    const sp = await page.evaluate(ii => ({ mia: SPESA.mia.map(v => [v.n, v.q]), chiesti: window.__giornoChiesti.slice(), extra: ii.map(id => { const x = tutteRic().find(y => y.id === id); const v = SPESA.mia.find(z => z.n === 'Extra ' + x.nome); return v && v.q; }),
++      riga: (document.querySelector('main .ric-giorno') || {}).innerText || '', toast: (document.querySelector('#toast') || {}).innerText || '' }), col.map(x => x.replace(/^ricetta:/, '')));
++    const mia = Object.fromEntries(sp.mia);
++    if (mia['Petto di pollo'] !== '600 g' || mia.Olio !== '2 cucchiai' || mia.Basilico !== '' || 'Sale fino' in mia || 'Acqua' in mia || sp.mia.length !== 7 || sp.extra.join() !== '100 g,100 g,100 g,100 g' || sp.chiesti.length < 4 || !/Messe 7 cose/.test(sp.toast) || !/Messe 7 cose in «La mia lista», per 1 porzione/.test(sp.riga)) throw new Error('giorno proteico: lista della spesa sbagliata: ' + JSON.stringify(sp));
++    await clic('#toast [data-a="annulla"]'); if (await page.evaluate(() => SPESA.mia.length || !!RIC.giornoSpesa)) throw new Error('giorno proteico: «Annulla» della spesa non toglie tutto');
++    /* con un momento scelto il riquadro sparisce; «Nascondi» e «📅» */
++    await clic('main [data-a="ric-fit-tipo"][data-v="cena"]'); const s5 = await leggi(); await clic('main [data-a="ric-fit-tipo"][data-v="cena"]');
++    if (s5.c || !(await leggi()).c) throw new Error('giorno proteico: con «Cena» scelta il riquadro resta (o non torna)');
++    await clic('main [data-a="ric-giorno-chiudi"]'); const s6 = await leggi(); await page.evaluate(() => render()); const s7 = await leggi();
++    if (s6.c || !s6.apri || s7.c) throw new Error('giorno proteico: «Nascondi» non chiude o non è ricordato');
++    await clic('main [data-a="ric-giorno-apri"]'); if (!(await leggi()).c) throw new Error('giorno proteico: «📅» non lo riapre');
++    /* aiutante: «voglio il mio giorno proteico» → dritto lì, anche da nascosto e con un momento scelto (senza «voglio», «dove»… decide l'AI del server) */
++    const ai = await page.evaluate(() => ['voglio il mio giorno proteico', 'dove trovo il piano proteico di oggi?'].map(f => { const c = capisciDove(f); return c && c[0] ? Object.assign({ f, voce: c[0].voce }, controllaAI(c[0])) : { f }; }));
++    if (ai.some(x => x.voce !== 'giorno-proteico' || !x.ui || !x.ui.ricGiorno || x.ui.ricZona !== 'fit')) throw new Error('aiutante: «giorno/piano proteico» non porta al giorno proteico: ' + JSON.stringify(ai));
++    await page.evaluate(() => { localStorage.setItem('pit-giorno-fit-no', 'true'); UI.ric.fit = 'cena'; UI.vista = 'home'; render(); Object.assign(UI, { ricZona: 'fit', ricGiorno: true }); vai('ricettario'); });
++    await page.waitForTimeout(300); if (!(await leggi()).c || (await page.evaluate(() => UI.ric.fit))) throw new Error('aiutante: arrivato in Proteiche senza il giorno proteico in vista');
++    /* «🔁 Simili» in una proteica (mai lei stessa), niente in una non proteica */
++    await page.evaluate(() => vai('ricetta:gz:Pollo-al-limone-prova')); await page.waitForSelector('main .ric-passi', { timeout: 15000 });
++    const sim = await page.evaluate(() => [...document.querySelectorAll('main .ric-simili .ric-carta')].map(b => b.dataset.v));
++    if (!sim.length || sim.length > 4 || sim.includes('ricetta:gz:Pollo-al-limone-prova') || sim.includes('ricetta:gz:Carbonara-giorno-prova')) throw new Error('«🔁 Simili» sbagliate: ' + JSON.stringify(sim));
++    await page.evaluate(() => vai('ricetta:gz:Carbonara-giorno-prova')); await page.waitForSelector('main .ric-passi', { timeout: 15000 });
++    if (await page.locator('main .ric-simili').count()) throw new Error('«🔁 Simili» in una ricetta non proteica');
++    await page.evaluate(() => { const [r, d, m] = window.__primaGiorno; P.ruolo = r; UI.devCliente = d; SPESA.mia = JSON.parse(m); salvaSpesa(); ['pit-giorno-fit', 'pit-giorno-ob', 'pit-giorno-fit-no', 'pit-ric-filtri'].forEach(k => localStorage.removeItem(k));
++      UI.ric = null; RIC.giornoSpesa = null; RIC.giornoOra = null; salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
++  });
+   await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
+     await page.evaluate(() => {
+       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+diff --git a/worker.js b/worker.js
+index 021f743c..969010eb 100644
+--- a/worker.js
++++ b/worker.js
+@@ -70,7 +70,7 @@ Azioni possibili (usa solo queste):
+ {"azione":"spesa","voci":["2 kg farina","ricotta"]}  aggiunge alla lista della spesa
+ {"azione":"whatsapp","n":<n>,"testo":"..."}  prepara un messaggio WhatsApp al cliente di quell'ordine (Monica lo manda lei)
+ {"azione":"apri","vista":"ordini|piatti|clienti|impostazioni|spesa"}  porta Monica a una pagina
+-{"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche (anche gli ultimi avvisi arrivati), imp-lucchetto, imp-anticipo, imp-limite, imp-natale, imp-voce (velocità della voce che legge). Pagine: ordini, ordini-storico (ordini finiti, prove, archiviati), piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), clienti-nuovi (interruttore «Accetta clienti nuovi»), clienti-rifiutati (persone a cui ha detto no, si possono riaccettare), clienti-attesa (chi aspetta il suo sì; chi non compare tocca «Ricorda a Monica»), spesa, ricettario, ricettario-fit (ricette proteiche per palestra e definizione), ricettario-diff (filtro difficoltà), ricettario-db (database e motore delle ricette). Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
++{"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche (anche gli ultimi avvisi arrivati), imp-lucchetto, imp-anticipo, imp-limite, imp-natale, imp-voce (velocità della voce che legge). Pagine: ordini, ordini-storico (ordini finiti, prove, archiviati), piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), clienti-nuovi (interruttore «Accetta clienti nuovi»), clienti-rifiutati (persone a cui ha detto no, si possono riaccettare), clienti-attesa (chi aspetta il suo sì; chi non compare tocca «Ricorda a Monica»), spesa, ricettario, ricettario-fit (ricette proteiche per palestra e definizione), giorno-proteico (il mio giorno proteico: colazione, pranzo, spuntino e cena proteici, totale, lista della spesa), ricettario-diff (filtro difficoltà), ricettario-db (database e motore delle ricette). Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
+ CAPIRE IL SENSO (Mario: «deve capire il contesto di quello che dico, non leggere la parola»): prima di scegliere un posto chiediti cosa vuole FARE Monica con la frase intera, non quale parola ha detto. Es. «la mia amica non riesce ad aprire il link» → clienti (inviti), non ordini; «non mi suona niente quando ordinano» → imp-notifiche; «leggo male le scritte» → imp-vista; «la Laura ora si chiama in un altro modo» → clienti-nome. DATI.indizi = posti trovati solo cercando le parole: un aiuto, spesso sbagliato. Sicura → UNA azione vai. Esiti fra 2-3 posti → 2-3 azioni vai e nel testo «Intendi…?». Non capisci → nessuna azione e chiedi cosa vuole fare.
+ {"azione":"idea","testo":"..."}  Monica vuole cambiare o aggiungere qualcosa che NON si può fare dall'app (una funzione nuova, un cambio del funzionamento): scrivi per Mario, che la programma, cosa vuole, dove nell'app e perché, con tutti i dettagli che ha detto
+ GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista. Ricettario = ricette di GialloZafferano, di RicetteFit (ricette fit, il motore ne prende una ogni 10 minuti) e sue (su ogni ricetta la fonte e i valori per porzione: calorie, proteine, carboidrati, grassi, zuccheri, sale); filtri per portata, «Difficoltà» (Facili, Medie, Difficili) e la sezione «🏋️ Proteiche» (almeno 20 g di proteine a porzione, poche calorie, grassi saturi, zuccheri e sale; prima quelle con più proteine); nella Home il riquadro «Proteiche» porta lì; «🗄 Database» porta dritto al database; foto di un passo piccola o sgranata: toccala per ingrandirla, poi «✨ Migliora con l'AI» (l'AI del telefono la rende grande e nitida; dopo la prima volta lo fa da sola).
