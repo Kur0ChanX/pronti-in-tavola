@@ -1,22 +1,22 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 16:25 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: hai scelto «1» per le regole delle ricette da palestra (C131). Le ho misurate su ricette vere.
 
 ───
-💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
+✅ FATTO
+Ho letto 250 ricette vere: 120 di RicetteFit e 130 di GialloZafferano.
+**Soglia** = il limite che una ricetta deve rispettare per entrare in «🏋️ Proteiche». Esempio: grassi saturi al massimo il 10% delle calorie.
 
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
+| | Oggi | P1 (consiglio) | P2 (più larga) |
+|---|---|---|---|
+| Grassi saturi | 10% | 13% | 15% |
+| Zuccheri pasto / snack | 10% / 15% | 15% / 20% | 15% / 20% |
+| Sale (sodio) pasto / snack | 700 / 400 mg | 800 / 500 mg | 900 / 500 mg |
+| Calorie massime del pasto …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+1. 🛑 Soglie di Proteiche: 1 = P1 (consiglio) · 2 = P2 · 3 = lascia così.
+2. Giorno proteico (foto di prima): 1 = lo pubblico · 2 = cambia qualcosa.
+3. Kit: quando la chiave GitHub è fatta, scrivi «chiave pronta» qui. A cosa serve: portare in questo progetto il kit aggiornato.
