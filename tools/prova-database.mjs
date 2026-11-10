@@ -372,7 +372,12 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   let j = await (await chiedi({ db: 'fit', parole: 'Pollo, tonno; Orata!, a, pollo' })).json();
   prova('C124 fit: parole cambiate dall\'app, pulite, senza doppioni né parole di 1 lettera', JSON.stringify(j.db.paroleFit) === '["pollo","tonno","orata"]' && j.db.paginaFit === '' && j.db.fitI === 0);
   j = await (await chiedi({ db: 'fit', base: true })).json();
-  prova('C124 fit: «rimetti quelle di base»', j.db.paroleFit.length === 18 && j.db.paroleFit[0] === 'proteiche');
+  prova('C124 fit: «rimetti quelle di base»', j.db.paroleFit.length === 25 && j.db.paroleFit[0] === 'proteiche' && j.db.paroleFit.includes('budino proteico'));
+  oggetto.mettiParoleFit(['proteiche', 'light', 'petto di pollo', 'fesa di tacchino', 'merluzzo', 'salmone', 'tonno', 'albumi', 'gamberi', 'polpo', 'pesce spada', 'orata', 'ceci', 'lenticchie', 'ricotta', 'yogurt greco', 'bresaola', 'uova']);
+  s = await ponte.statoDb();
+  prova('C125 fit: la base vecchia salvata uguale diventa la base nuova (con snack e dolci)', s.paroleFit.length === 25 && s.paroleFit.includes('proteine in polvere'));
+  oggetto.mettiParoleFit(['pollo', 'tonno']); s = await ponte.statoDb();
+  prova('C125 fit: le parole cambiate da Mario restano sue', JSON.stringify(s.paroleFit) === '["pollo","tonno"]');
   prova('C124 fit: senza accesso di chi gestisce niente', (await chiedi({ db: 'fit', parole: 'x' }, false)).status === 403);
   globalThis.fetch = prima; oggetto.mettiParoleFit(null);
 }

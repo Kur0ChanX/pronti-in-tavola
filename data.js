@@ -183,9 +183,13 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.6';
+const VERSIONE_APP = '0.10.7';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.7', data: '10/11/2026',
+    nuovo: ['Ricettario «🏋️ Proteiche»: tre tasti nuovi in alto, «🍽 Pasti», «🍫 Snack e dolci» e «⚡ Pronte in 10 minuti» per le ricette veloci (i minuti si cambiano in Impostazioni → Sviluppatore)'],
+    migliorato: ['Il motore cerca da solo anche pancake e budini proteici, mug cake, overnight oats, skyr e ricette con le proteine in polvere',
+      'Ricettario «🏋️ Proteiche»: la spiegazione in alto dice le due regole, per i pasti e per snack e dolci'] },
   { v: '0.10.6', data: '10/11/2026',
     migliorato: ['Ricettario «🏋️ Proteiche» più severo: un pasto ora entra con almeno 25 g di proteine a porzione e almeno il 25% delle calorie dalle proteine (prima 20 e 20%)',
       'Ricettario «🏋️ Proteiche»: entrano anche snack e dolci proteici fino a 300 kcal, se almeno il 30% delle calorie viene dalle proteine, con pochi zuccheri e poco sale; sulla ricetta c\'è scritto «snack o dolce». Le soglie si cambiano in Impostazioni → Sviluppatore'] },
