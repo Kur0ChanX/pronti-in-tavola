@@ -1,13 +1,17 @@
-# Ultima risposta di Claude (10/11/2026 02:26 ora italiana)
+# Ultima risposta di Claude (10/11/2026 09:01 ora italiana)
 
+Ho capito: sessione #41 avviata. La prima cosa era il tuo messaggio sulle «5 da sistemare».
 
+**Avevi ragione: NO, non le sistemava da sola.** Adesso sì: v0.10.1 online, il sito vero risponde 0.10.1.
+
+───
+✅ **FATTO**
+- **Causa:** il controllo segnava 5 ricette e le rimetteva da rileggere ogni giorno. GialloZafferano le ridava sempre uguali, perché lì sono proprio così. Quindi girava all'infinito, e «ci penso io» era una promessa finta.
+- **Ho controllato 997 ricette vere** di GialloZafferano con il **lettore** dell'app (il pezzo che legge le pagine di GialloZafferano). Ne escono 18 con …
 
 ## Domande a Mario
 
-❓ DOMANDE
-📌 Di cosa parliamo: il kit è il pacchetto di regole uguale in tutti i tuoi progetti. Le 5 regole nuove ci arrivano solo da una sessione aperta sul repo del kit, perché da qui non posso toccarlo.
-
-1. Chi apre la sessione del kit?
-   · 1 · La apro io adesso (consiglio): unisce le 5 regole e la v37 da sola, tu non fai niente.
-   · 2 · La apri tu: ti scrivo il testo da incollare per farla partire.
-   · 3 · Più tardi: le regole restano solo in questo progetto finché non si fa.
+❓ **DOMANDE**
+1. Porto qui il kit 37.0? Serve una **chiave di sola lettura** (un permesso che lascia solo leggere i file del kit) creata da te su GitHub, circa 5 minuti dal PC.
+   1 · Sì, ti preparo la guida controllata (consiglio) · 2 · Più avanti.
+   **A cosa serve:** avere le regole nuove anche nei file del progetto. I kit futuri poi li porto qui da solo.
