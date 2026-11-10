@@ -10,6 +10,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 47 | C128 Proteiche poche: v0.10.12 carico veloce (RicetteFit e valori), «Cerca ancora» alle pagine dopo; poi C127 | `worker.js` (motore, `cercaFit`, `nuoveTra`, `caricoAuto`, turbo) · `ricettario.js` (`letturaFit`, testi) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 46 | chiusa alla soglia 10/11 ~14:30: v0.10.9 ricerca normale anche su RicetteFit; v0.10.10-0.10.11 Proteiche per momenti, «cerca tutto», fonte proteica; C127-C128 alla 47 | `rf.mjs` (`rfTrova`) · `worker.js` (`ricettaGz` ricerca a parole, `rfCerca`, `nomiDi`) · `ricettario.js` (testi della ricerca) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 45 | chiusa alla soglia 10/11 ~13:45: C125 finita (v0.10.7 Pasti/Snack/⚡, v0.10.8 «🔍 Cerca ricette fit» e numeri per fonte; fonti nuove provate, nessuna coi valori); domanda «fonti alternative» alla 46 | — | 10/11 |
 | 🔴 Principale 44 | chiusa alla soglia 10/11 ~13:05: v0.10.5 RicetteFit dal motore, v0.10.6 soglie C125 a due profili; C125 pezzi 2-5 alla 45 | NUOVO `rf.mjs` · `worker.js` (motore, `/api/gz`, oggetto Ricettario) · `ricettario.js` · `sw.js` (foto) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
