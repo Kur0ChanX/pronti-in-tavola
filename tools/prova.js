@@ -1142,13 +1142,18 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       const ora = new Date().toISOString(), prima = [UI.diarioAvvisi, UI.diarioChiesto];
       UI.diarioChiesto = true;
       UI.diarioAvvisi = { questo: false, ultimi: [{ quando: ora, per: 'richiesta', telefoni: 2, esiti: ['201', '201'] }, { quando: ora, per: 'ordine', telefoni: 0, esiti: [], fermo: 'pausa' }, { quando: ora, per: 'primo', telefoni: 2, esiti: ['201', '410 '] }] };
-      const h = diarioAvvisi(); UI.diarioAvvisi = { errore: true }; const err = diarioAvvisi();
-      [UI.diarioAvvisi, UI.diarioChiesto] = prima; return [h, err];
+      const h = diarioAvvisi(); UI.diarioAvvisi = { errore: true, rete: true }; const err = diarioAvvisi();
+      UI.diarioAvvisi = { errore: 'Il server di Cloudflare ha finito le letture gratuite di oggi: riparte da solo stanotte' }; const fermo = diarioAvvisi();
+      UI.diarioAvvisi = { errore: true }; const muto = diarioAvvisi();
+      [UI.diarioAvvisi, UI.diarioChiesto] = prima; return [h, err, fermo, muto];
     });
     for (const t of ['NON conosce questo telefono', 'Persona nuova da accettare · ✅ 2 telefoni', 'non partito (appena dopo un altro)', '⚠️ 1 su 2 telefoni', 'oggi '])
       if (!r[0].includes(t)) throw new Error('manca «' + t + '» negli ultimi avvisi');
     if (r[0].indexOf('primo ordine') > r[0].indexOf('da accettare')) throw new Error('gli avvisi non sono dal più nuovo');
-    if (!/non riesco a leggerli/.test(r[1])) throw new Error('senza rete manca il messaggio');
+    if (!/non riesco a leggerli adesso \(manca la rete\)/.test(r[1])) throw new Error('senza rete manca il messaggio');
+    // (C130, PT E46) server fermo per il limite: in rosso col motivo vero, mai «manca la rete»
+    if (!/server degli avvisi è fermo/.test(r[2]) || !/letture gratuite/.test(r[2]) || /manca la rete/.test(r[2])) throw new Error('server fermo: manca l\'avviso col motivo vero');
+    if (!/il server non risponde/.test(r[3])) throw new Error('server muto: manca «il server non risponde»');
   });
   await passo('cliente in attesa: codice e «Ricorda a Monica»; Monica vede il codice o «Nessuno in attesa» (C97, Mario 08/11 «come se si fosse persa»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
