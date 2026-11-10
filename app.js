@@ -49,6 +49,7 @@ const PATH = {
   spunta: '<path d="M5 12.5l4.5 4.5L19 7"/>',
   cuore: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
   piatti: '<path d="M3 17h18M5 17a7 7 0 0 1 14 0M12 7V5M10 5h4"/>',
+  libro: '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v15H6.5A1.5 1.5 0 0 0 5 19.5z"/><path d="M5 19.5A1.5 1.5 0 0 0 6.5 21H19v-3M9 7h6M9 10.5h6"/>',   // C124 Ricettario nella Home
   clienti: '<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.5-5 6.5-5s5.5 1.5 6.5 5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7M18 15c2 .7 3.2 2.3 3.8 5"/>',
   impostazioni: '<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
   scarica: '<path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/>',
@@ -1173,18 +1174,28 @@ function vHome() {
       <button type="button" class="riquadro" data-a="vai" data-v="clienti">${ico('clienti')}${S.richieste.length ? `<span class="pallino">${S.richieste.length}</span>` : ''}<div><b>Clienti</b><br><small>Invita e approva</small></div></button>
       <button type="button" class="riquadro" data-a="vai" data-v="impostazioni">${ico('impostazioni')}<div><b>Impostazioni</b><br><small>Pausa e ferie</small></div></button>
     </div>
+    ${ricHome()}
     <section class="scheda"><header class="fila"><h2 style="flex:1">Pronti subito oggi</h2></header>
       ${pronti.length ? `<ul style="margin:0;padding-left:18px">${pronti.map(p => { const f = p.formati.find(x => x.id === p.pronto.formato) || p.formati[0]; return `<li><b>${esc(p.nome)}</b>: ${qtaTesto(f.tipo, p.pronto.qta, f.nome)}</li>`; }).join('')}</ul>` : '<p class="tenue" style="margin:0">Hai qualcosa già pronto? Segnalo: i clienti lo vedono in cima al menù.</p>'}
       <button type="button" class="btn ${pronti.length ? 'chiaro' : ''} pieno" data-a="apri-pronti">${ico('fiamma')}${pronti.length ? 'Cambia i pronti' : 'Segna cosa hai pronto'}</button></section>
     <section class="scheda"><h2>Da preparare</h2>${agenda()}
-      <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>
-    ${typeof vRicettario === 'function' && S.impostazioni.ricettario !== false ? `<button type="button" class="riquadro ric-home" data-a="vai" data-v="ricettario">${ico('piatti')}<div><b>Ricettario</b><br><small>GialloZafferano con video, più le tue ricette</small></div></button>` : ''}`;
+      <button type="button" class="btn chiaro pieno" data-a="vai" data-v="spesa">${ico('carrello')}Lista della spesa</button></section>`;
   h += incassi();
   /* inviti anche dalla Home (Mario 07/11: «mettili nella mia app gli inviti ora»); «Invita Monica» solo a chi non è lei */
   const nonLei = Dati.attivo && Dati.io.nomeGestore && Dati.io.nomeGestore !== cuoca();
   h += `<section class="scheda"><h2>Inviti</h2><p class="tenue" style="margin:0">Parte un biglietto in foto col link, pronto per WhatsApp.</p>
     ${bottoneBiglietto('a', 'Invita le amiche', 'pieno')}${nonLei ? bottoneBiglietto('m', 'Invita ' + cuoca(), 'chiaro pieno') : ''}</section>`;
   return h + '</main>';
+}
+/* C124 (Mario 10/11 «ricettario mettilo un po' più in vista, sembra trascurato sotto»): subito sotto i 4 riquadri, uguale a loro, coi numeri veri;
+   accanto «🏋️ Proteiche» porta dritto alla sezione. Si spegne da Impostazioni («Ricettario nella Home»). */
+function ricHome() {
+  if (typeof vRicettario !== 'function' || S.impostazioni.ricettario === false) return '';
+  const c = typeof contaRicHome === 'function' ? contaRicHome() : null;
+  return `<div class="riquadri ric-home-due">
+      <button type="button" class="riquadro ric-home" data-a="vai" data-v="ricettario">${ico('libro')}<div><b>Ricettario</b><br><small>${c ? `${c.tutte} ricette · ` : ''}video e voce</small></div></button>
+      <button type="button" class="riquadro ric-home-fit" data-a="ric-vai-fit"><span class="ric-home-emoji" aria-hidden="true">🏋️</span><div><b>Proteiche</b><br><small>${c ? `${c.fit} ricette · ` : ''}per la palestra</small></div></button>
+    </div>`;
 }
 /* incassi del mese (Fase 3, C7): per il giorno del ritiro; solo ordini accettati, pronti o ritirati */
 const VALIDI = ['accettato', 'pronto', 'ritirato'];
