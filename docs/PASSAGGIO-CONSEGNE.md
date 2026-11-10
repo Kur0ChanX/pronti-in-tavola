@@ -1,12 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #40 (dopo la #39 `session_01WTjqUwXqzf1yXN3r3aJ8nd`, chiusa alla soglia 10/11 01:59; la apre la #39 con `create_session` (catena 6 di 8)).
+Sessione attuale: #41 (dopo la #40 `session_01WTjqUumYwYKzwSjzjYGFEV`, chiusa alla soglia 10/11 08:35; la apre la #40 con `create_session` (catena 7 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
 - **Cosa preme a Mario adesso (10/11 01:56):** 1) C119 «✨ Migliora con l'AI» nello zoom delle foto piccole (Mario: «sembra ok implementala»); 2) le 5 regole nate qui per tutto l'account (C122: testo delle Preferenze da incollare + sessione del kit).
 
-## Stato (10/11 01:59 ora italiana)
+## Stato (10/11 08:35 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261110-01WTjqUumYwY/claude/pronti-ramo-definitivo.
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso, nessuna PR aperta.
 - Sito vero: v0.10.0 online (C119 «✨ Migliora con l'AI»), giro «Pubblica sito» success su 0403cc42 (10/11 ~02:21); verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.0. Prova vera dal sito (Playwright, solo `/api/foto-gz` finto perché serve l'accesso Google): motore da jsdelivr + modello dal sito → foto 880×680 in 4,8 s.
 - Prove (10/11, Principale 40): app `python3 -I tools/anteprima.py && node tools/prova.js` → 82 OK; `node tools/prova-database.mjs` → 77 OK; `node tools/prova-limiti.mjs` 22 OK; `node tools/prova-ascolta.mjs` 40 OK; `npm run prova-firebase` 103 OK (#39, non toccata).
