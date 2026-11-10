@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 11:32 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 14:24 ora italiana)
 
-non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+fammi multi scelta e fammi capire chiare se sono state caricate e fai ordine cè un pò di caos in tutta la pagina aggiungi funzioni utili e smart
