@@ -2,28 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 01:09 · 01QTFEqU1M1r
-link e passaggi chiari
-
-## 2026-11-07 01:28 · 01QTFEqU1M1r
-@"/root/.claude/uploads/[segreto tolto dalla scorta]/[segreto tolto dalla scorta].mp4"
-
-## 2026-11-07 13:08 · 01QTFEqTYwXG
-invito di WhatsApp che invii dall'app non funziona se cliccano non funziona il link e oltre al link di whatsapp volevo un bel biglietto di invito in foto da allegare in automatico su WhatsApp
-
-## 2026-11-07 13:11 · 01QTFEqTYwXG
-facciamo benvenuta o benvenuto?
-
-## 2026-11-07 13:26 · 01QTFEqTYwXG
-una frase per tutti  per tutti e quella per monica benvenuta nella tua app ecc ecc 
-
-fammi ora quello per i miei amici per farla vedere
-
-## 2026-11-07 13:30 · 01QTFEqTYwXG
-per i miei amici è monica che invita fallo cosi come se monica invitasse
-io gestisco e basta
-mettili nella mia app gli inviti ora
-
 ## 2026-11-07 13:33 · 01QTFEqTYwXG
 con link funzionante ovviamente da cliente e quello di monica da padrona admin
 
@@ -142,17 +120,17 @@ al momento sembra che carichi solo ricette di GialloZafferano valutate per calor
 ### 10/11 ~13:40 (Principale 45, C125)
 intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale
 
-### 10/11 ~13:57 (Principale 46, C125-C126, foto `archivio/foto/2026-11-10-1356-proteiche-albumi.jpg`: Proteiche dopo «Albumi», «3 ricette: RicetteFit 2 · GialloZafferano 1», «Niente di nuovo con «albumi»: le 23 trovate le avevo già lette»)
+## 2026-11-10 13:59 · 01WTjqUvA9kN
 si ma perché ricerca solo in questo modo ricette fit è il meglio non aggiungiamo altre fonti? e poi 6 selezioni cosí sono troppo vincolato dividile al massimo per spuntino merenda pranzo cena dolce colazione post cena ecc no poi se voglio scelgo la fonte proteica ma mettine tante di fonti non cosí e altre funzioni e cerca e le aggiunge al meglio nelle mie ricette scritte bene chiare complete con foto video passo per passo ecc ecc
 
-### 10/11 ~14:10 (Principale 46, C126)
+## 2026-11-10 14:05 · 01WTjqUvA9kN
 se voglio fare una ricerca senza selezionare la proteina devo poterla fare e mi cerca tutto o anche senza aggiungere esempio pranzo cena dopo allenamento ecc ecc mi cerca tutto nei siti e le carica nell'app
 
-### 10/11 ~14:18 (Principale 46, C126, risposta alla 🛑 sulle fonti)
+## 2026-11-10 14:17 · 01WTjqUvA9kN
 2 ma metti una sezione a parte quelli con valori calcolati o segnami semplicemente la fonte nella ricetta e capisco
 
-### 10/11 ~14:21 (Principale 46, C126, foto `archivio/foto/2026-11-10-1420-proteiche-momenti.jpg`: Proteiche con le righe Tutte/Proteiche/Preferite/Sarde/Italiane/Le mie, 8 momenti, ⚡, portate)
+## 2026-11-10 14:24 · 01WTjqUvA9kN
 fammi multi scelta e fammi capire chiare se sono state caricate e fai ordine cè un pò di caos in tutta la pagina aggiungi funzioni utili e smart
 
-### 10/11 ~14:23 (Principale 46, C126, foto `archivio/foto/2026-11-10-1422-dopo-allenamento-niente-nuovo.jpg` e `…-1422-dopo-allenamento-cerco.jpg`: «15 ricette: RicetteFit 8 · GialloZafferano 7», «Ancora 1114 ricette da leggere: 10 ogni 10 minuti», «Niente di nuovo con «Dopo l'allenamento»: le 40 trovate le avevo già lette»)
+## 2026-11-10 14:24 · 01WTjqUvA9kN
 non c'è niente di nuovo ne ho pochissime come è possibile
