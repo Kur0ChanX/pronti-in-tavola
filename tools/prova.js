@@ -1453,6 +1453,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!Array.isArray(r.piatti) || !r.piatti.some(n => /polpette di carne/i.test(n)) || !r.audio) throw new Error('al server non arrivano audio e nomi dei piatti: ' + JSON.stringify(r).slice(0, 200));
     if (r.msgs[0] !== 'un chilo di polpette di carne per domani' || !r.az[0] || r.az[0].id !== 'polpette-carne' || Number(r.az[0].qta) !== 1 || r.vista !== 'aiuto') throw new Error('proposta sbagliata: ' + JSON.stringify(r).slice(0, 300));
     if (r.giorno !== await page.evaluate(() => piuGiorni(oggi(), 1))) throw new Error('«per domani» non capito: ' + r.giorno);
+    if (await page.evaluate(() => (window.__mandato || {}).comeCliente) !== false) throw new Error('cliente vero: «comeCliente» deve essere false');
+    // (C108) Mario che guarda come cliente: il server deve usare la strada dei clienti (Deepgram) e la barra sviluppatore dice chi ha sentito
+    await page.evaluate(() => { window.__primaDev = [UI.devCliente, P.sviluppatore]; UI.devCliente = true; P.sviluppatore = true; UI.ultimoAscolto = ''; UI.vista = 'menu'; AIC.msgs = [];
+      window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'un chilo di polpette di carne per domani', motore: 'groq:whisper-large-v3+deepgram → qwen/qwen3.8-27b' }; }; render(); });
+    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
+    const st2 = await page.evaluate(() => [VC.stato, !!VC.media, UI.devCliente, S.impostazioni.voceClientiMotore, P.ruolo]);
+    if (st2[0] !== 'registro' || !st2[1]) throw new Error('guarda come cliente: ascolto preciso non partito: ' + JSON.stringify(st2));
+    await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(900);
+    const d = await page.evaluate(() => { const x = { come: (window.__mandato || {}).comeCliente, asc: UI.ultimoAscolto, barra: (document.querySelector('.prova.dev .dev-asc') || {}).textContent || '' };
+      [UI.devCliente, P.sviluppatore] = window.__primaDev; UI.ultimoAscolto = ''; render(); return x; });
+    if (d.come !== true || d.asc !== 'Groq + Deepgram · corretto' || !/Groq \+ Deepgram/.test(d.barra)) throw new Error('guarda come cliente: strada o 🎧 sbagliati: ' + JSON.stringify(d));
     await page.evaluate(() => { S.impostazioni.voceClientiMotore = 'telefono'; window.__frasi = [['quanto costa il tiramisù']]; UI.vista = 'menu'; AIC.msgs = []; render(); });
     await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
     const r2 = await page.evaluate(() => ({ media: !!VC.media, msgs: AIC.msgs.map(m => m.t) }));
