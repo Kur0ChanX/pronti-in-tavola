@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "b0ee7ac921bc",
 "giorno": "2026-11-10",
-"turni": 3,
-"peso": 186255,
-"uscita": 1175,
-"contesto_max": 355807,
+"turni": 4,
+"peso": 611123,
+"uscita": 5723,
+"contesto_max": 362275,
 "anomalie": [],
 "blocchi": {
 "Stop 3 · Consegne non su GitHub (C226,": 1,
@@ -34,8 +34,8 @@
 },
 "remota": "01WTjqUv32ce",
 "aiutanti": 0,
-"strumenti": 4,
+"strumenti": 14,
 "motori": {
-"opus": 186255
+"opus": 611123
 }
 }
