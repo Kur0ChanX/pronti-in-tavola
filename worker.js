@@ -16,7 +16,7 @@
    - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano (gz.mjs) o di RicetteFit (rf.mjs) letta dal vivo, { cerca } la ricerca (C55)
-   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) | 'turbo' (n) | 'mieScritte' | 'salvaMia' (r) | 'togliMia' (id) | 'cercaFit' (q) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
+   - /api/gz { db: 'stato' | 'auto' (acceso) | 'ferma' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) | 'turbo' (n) | 'mieScritte' | 'salvaMia' (r) | 'togliMia' (id) | 'cercaFit' (q) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -286,7 +286,8 @@ async function fotoGz(u, ctx) {
   return new Response(b, { headers: testa });
 }
 /* il TUO database delle ricette (C60): oggetto «Ricettario» con SQLite, sullo stesso account dell'app, gratis.
-   Cresce da solo (motoreRicette ogni 10 minuti) e con ogni ricetta che Monica o Mario aprono o scorrono. */
+   Cresce a mano (C136: «⚡ Carica altre N», «🔍 Cerca altre», «🔄 Cerca adesso») e con ogni ricetta che Monica o Mario aprono o scorrono;
+   da solo ogni 10 minuti solo se Mario accende il motore automatico (di base spento). */
 const ricDb = cfg => cfg && cfg.RICETTARIO ? cfg.RICETTARIO.get(cfg.RICETTARIO.idFromName('ricette')) : null;
 /* foto originali in un archivio a parte (stessa classe, altro nome: 1 GB tutto suo); tetto 25 MB a foto, 60 giorni */
 const fotoDb = cfg => cfg && cfg.RICETTARIO ? cfg.RICETTARIO.get(cfg.RICETTARIO.idFromName('originali')) : null;
@@ -336,6 +337,8 @@ async function ricettaGz(b, cfg, ctx) {
   if (b && b.db) {   // { db: 'stato' } numeri · { db: 'pausa'|'riprendi' } ferma o riprende la crescita
     if (!db) return { errore: 'database non collegato' };
     if (b.db === 'pausa' || b.db === 'riprendi') await db.metti1('pausa', b.db === 'pausa' ? '1' : '');
+    if (b.db === 'auto') { await db.mettiAuto(b.acceso === true); return { db: await db.statoDb() }; }   // C136: motore automatico (solo Mario lo vede)
+    if (b.db === 'ferma') { await db.turboFerma(); return { db: await db.statoDb() }; }   // C136: «⏹ Ferma» il carico in corso
     if (b.db === 'mie') return { scelte: await db.scelte() };
     if (b.db === 'cerca') { const prima = (await db.statoDb(true)).ricette; await motoreRicette(cfg, true); const d = await db.statoDb(true); return { db: d, nuove: d.ricette - prima }; }   // 🔄 «Cerca adesso»
     if (b.db === 'aggiungi') {   // ➕ con l'ok di chi gestisce: nel ricettario per tutti i telefoni, e la ricetta intera salvata per sempre
@@ -345,11 +348,10 @@ async function ricettaGz(b, cfg, ctx) {
       return { scelte: await db.scelte() };
     }
     if (b.db === 'togli') { await db.togli(b.id); return { scelte: await db.scelte() }; }
-    if (b.db === 'turbo') {   // «carica N»: il Durable Object lavora da solo a sveglie, n da 1 a 200 (senza n: solo lo stato)
+    if (b.db === 'turbo') {   // «⚡ Carica altre N»: il Durable Object lavora a sveglie e si ferma da solo; C136: n da 1 a CARICO_MAX (oltre: CARICO_MAX) · senza n: solo lo stato
       if (b.n === undefined) return { turbo: await db.turboStato() };
-      const n = Math.floor(Number(b.n));
-      if (!(n >= 1 && n <= 200)) return { errore: 'n da 1 a 200' };
-      return { turbo: await db.turboAvvia(n) };
+      const n = Math.floor(Number(b.n)); if (!(n >= 1)) return { errore: 'n almeno 1' };
+      return { turbo: await db.turboAvvia(Math.min(CARICO_MAX, n)) };
     }
     if (b.db === 'controlla') return { controllo: await controllaTutte(db), db: await db.statoDb() };   // C83 «🔍 Controlla tutte adesso» (C123: esito vero)
     if (b.db === 'fit') {   // C124: parole della corsia fit, dalla pagina Database; { base: true } = quelle di base
@@ -391,7 +393,7 @@ async function ricettaGz(b, cfg, ctx) {
       gz = [...new Set(gz)];
       if (rete && !gz.length && !rf.length && !gia) return { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' };
       const n = await db.inCodaPrima(rf.concat(gz)), t = await db.turboStato();
-      if (n.nuove && !(t && t.attivo)) await db.turboAvvia(Math.min(40, n.nuove));   // le legge subito (5 ogni 30 s); un carico già in corso non si tocca
+      if (n.nuove && !(t && t.attivo)) await db.turboAvvia(Math.min(caricoN(b.n), n.nuove));   // le legge subito (5 ogni 30 s), al massimo N (C136); un carico già in corso non si tocca
       return { q, gz: gz.length, rf: rf.length, nuove: n.nuove, gia: gia + n.gia, pagine, db: await db.statoDb() };
     }
     if (b.db === 'rf') { await db.metti1('rfSpento', b.acceso === false ? '1' : ''); return { db: await db.statoDb() }; }   // C124: RicetteFit acceso o spento dalla pagina Database
@@ -469,6 +471,11 @@ const NUTR_GIRO = 10;   // C124: ricette già salvate senza valori, rilette 10 o
    il «carico veloce» (sveglie ogni 30 s): 5 RicetteFit per sveglia (905 in ~1,5 ore invece di 6 giorni, 1 pagina ogni 6 s) e 10 valori
    (1100 in ~1 ora invece di 19). Si ferma da solo quando non c'è più niente da leggere. */
 const NUTR_TURBO = 10, AUTO_OBIETTIVO = 200, AUTO_PAUSA = 3600000, AUTO_FERMO = 600000;
+/* C136 (Mario 10/11 17:41 «un blocco al ricettario… che non vada sempre in automatico, a manuale poco alla volta»): il motore automatico
+   (cron, carico veloce da solo, controllo di tutte ogni giorno) parte SOLO con l'interruttore acceso da Mario (chiave «auto», di base spento).
+   A mano: un carico legge al massimo CARICO_MAX ricette (quante le sceglie Mario: «ricCarico», base CARICO_BASE) e finisce da solo. */
+const CARICO_BASE = 20, CARICO_MAX = 50, CARICO_SVEGLIE = 4;   // sveglie per ogni 5 ricette chieste (scartate e pagine vuote comprese)
+const caricoN = n => { const x = Math.floor(Number(n)); return x >= 1 ? Math.min(CARICO_MAX, x) : CARICO_BASE; };
 /* C130 (email di Cloudflare 10/11 15:29: «90% del limite giornaliero di 5.000.000 rows_read», per TUTTO l'account: avvisi e app compresi):
    oltre questo numero di righe lette in un giorno (UTC, come Cloudflare) il lavoro di fondo del ricettario riposa fino a domani */
 const LETTURE_FONDO = 2000000;
@@ -999,6 +1006,18 @@ export class Ricettario extends DurableObject {
     this.metti1('turbo', JSON.stringify(t));
     return t;
   }
+  /* C136: «⏹ Ferma» (anche a metà): il carico finisce qui, le ricette già lette restano */
+  async turboFerma() {
+    const t = this.turboStato(); await this.ctx.storage.deleteAlarm();
+    if (t && t.attivo) { Object.assign(t, { attivo: false, finito: Date.now(), fermato: true }); this.metti1('turbo', JSON.stringify(t)); }
+    return t;
+  }
+  autoAcceso() { return !!this.leggi1('auto'); }   // C136: UNA riga letta (il cron ogni 10 minuti guarda solo questa)
+  async mettiAuto(acceso) {
+    this.metti1('auto', acceso ? '1' : '');
+    if (acceso) this.metti1('pausa', '');   // acceso = lavora davvero (la vecchia pausa non resta nascosta)
+    else { const t = this.turboStato(); if (t && t.attivo && t.auto) await this.turboFerma(); }   // spento: si ferma anche il carico partito da solo
+  }
   async alarm() {
     const t = this.turboStato(); if (!t || !t.attivo) return;
     if (this.freno()) { Object.assign(t, { attivo: false, finito: Date.now(), freno: true }); this.metti1('turbo', JSON.stringify(t)); return; }   // C130: riposa fino a domani
@@ -1009,7 +1028,8 @@ export class Ricettario extends DurableObject {
     t.sveglie++; t.valori = (t.valori || 0) + v; t.ora = Date.now();
     if (p) { t.fatte += p.fatte; t.scartate += p.scartate; }
     t.vuote = (p && (p.fatte || p.scartate)) || v ? 0 : t.vuote + 1;
-    if (t.fatte >= t.obiettivo || t.sveglie >= TURBO_SVEGLIE || t.vuote >= TURBO_VUOTE) { t.attivo = false; t.finito = Date.now(); }
+    const maxSveglie = t.auto ? TURBO_SVEGLIE : Math.max(TURBO_VUOTE, Math.ceil(t.obiettivo / TURBO_GIRO) * CARICO_SVEGLIE);   // C136: a mano finisce presto
+    if (t.fatte >= t.obiettivo || t.sveglie >= maxSveglie || t.vuote >= TURBO_VUOTE) { t.attivo = false; t.finito = Date.now(); }
     this.metti1('turbo', JSON.stringify(t));
     this.salvaLetture();
     if (t.attivo) await this.ctx.storage.setAlarm(Date.now() + TURBO_PAUSA);
@@ -1153,7 +1173,7 @@ export class Ricettario extends DurableObject {
   statoMotore() {
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, j = k => { try { return JSON.parse(this.leggi1(k) || 'null'); } catch (e) { return null; } };
     const coda = this.contaCoda();   // C130 bis: contata al massimo ogni CODA_MS (o quando entra qualcosa di nuovo)
-    return { pausa: !!this.leggi1('pausa'), freno: this.freno(), turbo: this.turboStato(), controllo: j('controllo'), coda: coda.n || 0, daLeggere: this.daLeggere(),
+    return { pausa: !!this.leggi1('pausa'), auto: this.autoAcceso(), freno: this.freno(), turbo: this.turboStato(), controllo: j('controllo'), coda: coda.n || 0, daLeggere: this.daLeggere(),
       paroleFit: this.paroleFit(), fitI: Number(this.leggi1('fitI')) || 0, paginaFit: this.leggi1('paginaFit') || '',
       rf: { inCoda: coda.rf || 0, i: Number(this.leggi1('rfI')) || 0, tot: Number(this.leggi1('rfTot')) || 0, fine: this.leggi1('rfFine') || '', spento: !!this.leggi1('rfSpento') },
       fonte: Number(this.leggi1('fonte')) || 0, paginaSarda: this.leggi1('paginaSarda') || '', pagina: this.leggi1('pagina'), pagine: Number(this.leggi1('pagine')) || 0 };
@@ -1167,7 +1187,7 @@ export class Ricettario extends DurableObject {
     const m = this.statoMotore(), l = this.giornoLetture();
     return { scelte: sc, nelRicettario: sc, scartate: scart.n || 0,
       turbo: m.turbo, controllo: m.controllo, mieServer: k.mie, contati: k.t, ricette: r.n || 0, coda: m.coda, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
-      oggi: r.oggi || 0, pausa: m.pausa, letture: { oggi: l.n, tetto: LETTURE_FONDO, freno: m.freno },   // C130
+      oggi: r.oggi || 0, pausa: m.pausa, auto: m.auto, letture: { oggi: l.n, tetto: LETTURE_FONDO, freno: m.freno },   // C130
       conValori: r.cv || 0, senzaValori: r.sv || 0, daLeggere: r.dl || 0,   // C124
       paroleFit: m.paroleFit, fitI: m.fitI, paginaFit: m.paginaFit,
       rf: Object.assign({}, m.rf, { lette: r.rf || 0, scartate: scart.rf || 0 }),   // C124 passo 8
@@ -1259,12 +1279,15 @@ export default {
       return json({ errore: perche(e) }, 500);
     }
   },
-  /* ogni 10 minuti: il motore del database delle ricette · ogni sera: promemoria per domani */
+  /* ogni 10 minuti: il motore del database delle ricette, SOLO se Mario l'ha acceso (C136; spento = una riga letta e basta) · ogni sera: promemoria per domani */
   async scheduled(ev, env, ctx) {
     if (ev.cron === CRON_DB) {
-      ctx.waitUntil(motoreRicette(env).then(() => caricoAuto(ricDb(env))).catch(() => null));   // C128
-      const db = ricDb(env);   // C83: una volta al giorno il controllo di tutte le ricette, da solo
-      if (db) ctx.waitUntil(Promise.resolve(db.statoMotore()).then(s => !s.freno && (!s.controllo || Date.now() - s.controllo.quando > 86400000) ? controllaTutte(db) : null).catch(() => null));
+      const db = ricDb(env); if (!db) return;
+      ctx.waitUntil(Promise.resolve(db.autoAcceso()).then(acceso => acceso ? Promise.all([
+        motoreRicette(env).then(() => caricoAuto(db)),   // C128
+        // C83: una volta al giorno il controllo di tutte le ricette, da solo
+        Promise.resolve(db.statoMotore()).then(s => !s.freno && (!s.controllo || Date.now() - s.controllo.quando > 86400000) ? controllaTutte(db) : null)
+      ].map(p => p.catch(() => null))) : null).catch(() => null));
       return;
     }
     ctx.waitUntil(env.AVVISI.get(env.AVVISI.idFromName('cucina')).promemoria());
