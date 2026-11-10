@@ -333,7 +333,7 @@ async function ricettaGz(b, cfg, ctx) {
       if (!(n >= 1 && n <= 200)) return { errore: 'n da 1 a 200' };
       return { turbo: await db.turboAvvia(n) };
     }
-    if (b.db === 'controlla') return { controllo: await db.controlla(), db: await db.statoDb() };   // C83 «🔍 Controlla tutte adesso»
+    if (b.db === 'controlla') return { controllo: await controllaTutte(db), db: await db.statoDb() };   // C83 «🔍 Controlla tutte adesso» (C123: esito vero)
     if (b.db === 'mieScritte') return { mie: await db.mieScritte() };   // ricette scritte a mano, uguali su tutti i telefoni
     if (b.db === 'salvaMia') {
       if (!(await db.salvaMia(b.r))) return { errore: 'ricetta non valida' };
@@ -430,12 +430,40 @@ async function passoMotore(db, quante, aMano) {
 async function motoreRicette(cfg, aMano) {
   const db = ricDb(cfg); if (!db) return;
   await passoMotore(db, RICETTE_GIRO, aMano);
-  /* C72: le ricette salvate prima del lettore nuovo (senza numerini o con frasi perse) si rileggono da GialloZafferano, 5 ogni giro.
-     Pagina sparita o incompleta: si tiene la copia vecchia e non si riprova (niente giri infiniti). */
-  for (const u of await db.vecchie(5).catch(() => [])) {
-    const r = await leggiGz(u).catch(() => null);
-    if (r && ricettaCompleta(r)) await db.salva(r); else await db.tieni(u);
-  }
+  /* C72: le ricette salvate col lettore vecchio, o segnate dal controllo, si rileggono da GialloZafferano, 5 ogni giro */
+  await rileggiSegnate(db, 5);
+}
+/* C123 (Mario 10/11 «5 da sistemare… secondo me non le sistema da solo»): prima il controllo le rimetteva da rileggere ogni giorno e
+   GZ le ridava uguali, all'infinito («ci penso io» finto). Ora ognuna riletta ha un esito VERO e non si riprova più:
+   senza problemi = sistemata · stessi problemi = «uguale» (su GZ è proprio così: es. una foto citata che lì non c'è, un frullato
+   con 1 passo) · pagina tolta da GZ (404) = «sparita», si tiene la copia · rete o GZ giù = riprova, alla 3ª volta «illeggibile». */
+async function rileggiSegnate(db, n) {
+  const urls = await db.vecchie(n).catch(() => []);
+  await Promise.all(urls.map(async u => {
+    let r = null;
+    try { r = await leggiGz(u); } catch (e) { return /risponde 40[4]|risponde 410/.test(String(e.message)) ? db.tieni(u, 'sparita') : db.riprova(u); }
+    if (!r || !r.nome) return db.tieni(u, 'illeggibile');   // la pagina c'è ma non è più una ricetta: si tiene la copia
+    if (!esaminaRicetta(r).length) return db.salva(r);   // sistemata
+    if (ricettaCompleta(r)) { r.esito = 'uguale'; return db.salva(r); }   // com'è sull'originale
+    return db.tieni(u, 'uguale');   // GZ la dà più corta della copia salvata: si tiene la copia
+  }).map(p => p.catch(() => null)));
+  return urls.length;
+}
+/* C123: ricette del ricettario senza la ricetta intera nell'archivio: si leggono subito (anche se GZ le ha corte: sono state scelte) */
+async function leggiMancanti(db, n) {
+  const mm = await db.mancanti(n).catch(() => []);
+  await Promise.all(mm.map(async m => {
+    const r = await leggiGz(m.url).catch(() => null);
+    if (r && r.nome && r.id === m.id) { if (esaminaRicetta(r).length) r.esito = 'uguale'; await db.salva(r); }
+  }).map(p => p.catch(() => null)));
+}
+/* C83 + C123: controllo di tutte, poi le segnate rilette SUBITO (10 + 10) e controllo di nuovo: l'esito è quello vero, non una promessa */
+async function controllaTutte(db) {
+  const c = await db.controlla();
+  if (!c.nMale && !c.mancanti) return c;
+  await rileggiSegnate(db, 10);
+  await leggiMancanti(db, 10);
+  return db.controlla();
 }
 
 /* chi gestisce? Firestore legge gestori/<uid> col token di Google della persona: se risponde 200, è un gestore */
@@ -716,8 +744,14 @@ export class Ricettario extends DurableObject {
     this.sql.exec('DELETE FROM coda WHERE url = ?', r.url || '');
     return true;
   }
-  vecchie(n) { return this.sql.exec("SELECT url FROM ricette WHERE IFNULL(json_extract(json, '$.v'), 0) < 4 AND url != '' ORDER BY aggiornata LIMIT ?", Math.min(20, Number(n) || 5)).toArray().map(x => x.url); }
-  tieni(url) { this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 4) WHERE url = ?", String(url)); }
+  vecchie(n) { return this.sql.exec("SELECT url FROM ricette WHERE IFNULL(json_extract(json, '$.v'), 0) < 4 AND url != '' ORDER BY IFNULL(json_extract(json, '$.prove'), 0), aggiornata LIMIT ?", Math.min(20, Number(n) || 5)).toArray().map(x => x.url); }
+  /* C123: riletta col lettore di oggi, si tiene com'è con l'esito (uguale · sparita · illeggibile) e non si riprova */
+  tieni(url, esito = 'sparita') { this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 4, '$.esito', ?) WHERE url = ?", String(esito), String(url)); }
+  riprova(url) {   // rete o GZ giù: si riprova più tardi (in fondo alla fila), alla 3ª volta «illeggibile» (PT E29: mai fermi sullo stesso errore)
+    this.sql.exec("UPDATE ricette SET json = json_set(json, '$.prove', IFNULL(json_extract(json, '$.prove'), 0) + 1) WHERE url = ?", String(url));
+    this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 4, '$.esito', 'illeggibile') WHERE url = ? AND json_extract(json, '$.prove') >= 3", String(url));
+  }
+  mancanti(n) { return this.sql.exec("SELECT s.id, s.url FROM scelte s LEFT JOIN ricette r ON r.id = s.id WHERE r.id IS NULL AND s.url != '' LIMIT ?", Math.min(20, Number(n) || 5)).toArray(); }
   una(id) { const x = this.sql.exec('SELECT json FROM ricette WHERE id = ?', String(id)).toArray()[0]; return x ? JSON.parse(x.json) : null; }
   /* elenco per l'app (stessa forma della ricerca di GialloZafferano): le più nuove prima; tutte le parole presenti */
   elenco(q, da, n = 30) {
@@ -791,15 +825,21 @@ export class Ricettario extends DurableObject {
      ne rilegge 5 ogni 10 minuti); nel ricettario senza la ricetta intera = «mancanti», rimesse in coda. Esito salvato per il riquadro. */
   controlla() {
     const righe = this.sql.exec('SELECT id, url, nome, json FROM ricette').toArray();
-    const male = [];
+    const male = [], originali = [];
     for (const x of righe) {
       let r = null; try { r = JSON.parse(x.json); } catch (e) {}
       const prob = esaminaRicetta(r);
-      if (prob.length) { male.push({ id: x.id, nome: x.nome, prob: prob.slice(0, 3) }); if (x.url) this.sql.exec("UPDATE ricette SET json = json_set(json, '$.v', 0) WHERE id = ?", x.id); }
+      if (!prob.length) continue;
+      /* C123: già riletta col lettore di oggi e su GZ è così (o la pagina non c'è più): non è da sistemare, si dice il perché */
+      const esito = !x.url ? 'senza-pagina' : r && Number(r.v) >= 4 && (r.esito === 'uguale' || r.esito === 'sparita') ? r.esito : '';
+      if (esito) { originali.push({ id: x.id, nome: x.nome, prob: prob.slice(0, 3), esito }); continue; }
+      male.push({ id: x.id, nome: x.nome, prob: prob.slice(0, 3) });   // da rileggere (anche le «illeggibili»: un giorno dopo si riprova)
+      this.sql.exec("UPDATE ricette SET json = json_remove(json_set(json, '$.v', 0, '$.prove', 0), '$.esito') WHERE id = ?", x.id);
     }
     const mancanti = this.sql.exec('SELECT s.id, s.nome, s.url FROM scelte s LEFT JOIN ricette r ON r.id = s.id WHERE r.id IS NULL').toArray();
     for (const m of mancanti) if (m.url && urlGz(m.url)) this.sql.exec('INSERT INTO coda (url, aggiunta, tentativi) VALUES (?, ?, 0) ON CONFLICT(url) DO NOTHING', m.url, Date.now());
-    const esito = { quando: Date.now(), totale: righe.length, ok: righe.length - male.length, male: male.slice(0, 30), nMale: male.length,
+    const esito = { quando: Date.now(), totale: righe.length, ok: righe.length - male.length - originali.length, male: male.slice(0, 30), nMale: male.length,
+      originali: originali.slice(0, 30), nOriginali: originali.length,
       mancanti: mancanti.length, nomiMancanti: mancanti.slice(0, 10).map(m => m.nome) };
     this.metti1('controllo', JSON.stringify(esito));
     return esito;
@@ -970,7 +1010,7 @@ export default {
     if (ev.cron === CRON_DB) {
       ctx.waitUntil(motoreRicette(env).catch(() => null));
       const db = ricDb(env);   // C83: una volta al giorno il controllo di tutte le ricette, da solo
-      if (db) ctx.waitUntil(Promise.resolve(db.statoDb()).then(s => !s.controllo || Date.now() - s.controllo.quando > 86400000 ? db.controlla() : null).catch(() => null));
+      if (db) ctx.waitUntil(Promise.resolve(db.statoDb()).then(s => !s.controllo || Date.now() - s.controllo.quando > 86400000 ? controllaTutte(db) : null).catch(() => null));
       return;
     }
     ctx.waitUntil(env.AVVISI.get(env.AVVISI.idFromName('cucina')).promemoria());
