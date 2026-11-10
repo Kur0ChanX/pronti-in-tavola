@@ -968,7 +968,7 @@ export default {
         if (audio.length > 1700000) return json({ errore: 'audio troppo lungo' }, 413);
         const modo = await av.contaAscolto(c, numeroApp(f, 'ascoltoAvviso', 10, 500, TETTO_ASCOLTO_CLIENTE));   // (C108b) mai fermo
         const piatti = Array.isArray(b.piatti) ? b.piatti.filter(x => typeof x === 'string').slice(0, 60).map(x => x.slice(0, 40)) : [];
-        return json(await ascolta(env, audio, String(b.tipo || ''), piatti, undefined, { cliente: !!c, ridotto: modo === 'ridotto' }));
+        return json(await ascolta(env, audio, String(b.tipo || ''), piatti, undefined, { cliente: !!c || (!!g && b.comeCliente === true), ridotto: modo === 'ridotto' }));   // (C108) chi gestisce che «guarda come cliente» prova la strada vera dei clienti (Deepgram)
       }
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
