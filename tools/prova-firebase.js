@@ -509,6 +509,32 @@ const server = http.createServer((req, res) => {
     await mario.waitForFunction(() => Dati.io.uid, null, { timeout: 20000 });
     controlla('Esci: telefono di nuovo cliente, senza la copia dei dati di Monica', await aspetta(mario, u => Dati.io.uid !== u && !Dati.io.gestore && P.ruolo === 'cliente'
       && !/Via di prova|Sara Mura/.test(localStorage.getItem('pit-copia-v1') || '') && !Lucchetto.di(u), uidMa));
+
+    // g) (C120, Mario 10/11 «Accesso non riuscito. Riprova.» su Android) il messaggio dice il motivo vero
+    const msg = await mario.evaluate(() => [msgAccesso({ code: 'auth/network-request-failed' }), msgAccesso({ code: 'auth/popup-blocked' }),
+      msgAccesso({ code: 'auth/popup-closed-by-user' }), msgAccesso({ code: 'auth/popup-closed-by-user' }, 'chiusa'), msgAccesso({ code: 'auth/internal-error' }), msgAccesso(new Error('boh'))]);
+    controlla('(C120) accesso Google: rete, finestra bloccata, chiusa e codice dell\'errore nel messaggio', /Manca la rete/.test(msg[0]) && /bloccato la finestra/.test(msg[1])
+      && msg[2] === '' && msg[3] === 'chiusa' && /\(motivo: internal-error\)/.test(msg[4]) && /\(motivo: boh\)/.test(msg[5]), msg);
+    await mario.context().setOffline(true);
+    const riservata = await mario.evaluate(() => { const b = document.querySelector('[data-a="entra-monica"]'); if (b) b.click(); return !!b; });
+    controlla('(C120) «Area riservata» senza rete: «Manca la rete», niente finestra di Google', riservata && await aspetta(mario, () => /Manca la rete/.test(document.querySelector('#toast').textContent)), riservata);
+    await mario.context().setOffline(false);
+    // (C120) Google già entrato + cookie pit_acc vecchio di un cliente (C113): all'avvio resta Google, il cookie si cancella
+    const acc = (await mario.context().cookies()).filter(c => c.name === 'pit_acc');
+    const uidG = await mario.evaluate(async () => {
+      const au = await import('https://www.gstatic.com/firebasejs/' + FIREBASE_VERSIONE + '/firebase-auth.js');
+      const r = await au.signInWithCredential(au.getAuth(), au.GoogleAuthProvider.credential(JSON.stringify({ sub: 'mario-google', email: 'mario@prova.it', email_verified: true, name: 'Mario Prova' })));
+      return r.user.uid;
+    });
+    await aspetta(mario, u => Dati.io.uid === u && !/pit_acc=/.test(document.cookie), uidG);
+    await mario.context().addCookies(acc);
+    await mario.reload();
+    await aspetta(mario, u => Dati.io.uid === u, uidG);
+    const dopoG = await mario.evaluate(async () => {
+      const au = await import('https://www.gstatic.com/firebasejs/' + FIREBASE_VERSIONE + '/firebase-auth.js'), u = au.getAuth().currentUser;
+      return [Dati.io.uid, u && u.isAnonymous, /pit_acc=/.test(document.cookie)];
+    });
+    controlla('(C120) Google già entrato + cookie vecchio del cliente: dopo il riavvio resta Google', acc.length === 1 && dopoG[0] === uidG && dopoG[1] === false && dopoG[2] === false, [acc.length, uidG, dopoG]);
   } catch (e) {
     no++; console.log('NO   la prova si è fermata →', e.message.split('\n')[0]);
   }

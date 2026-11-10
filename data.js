@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.9.97';
+const VERSIONE_APP = '0.9.98';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.9.98', data: '10/11/2026',
+    corretto: ['Area riservata: se l\'accesso con Google non riesce, il messaggio dice il perché (manca la rete, finestra bloccata o chiusa, o il codice dell\'errore) invece del solo «Accesso non riuscito»; senza rete non apre nemmeno la finestra di Google'] },
   { v: '0.9.97', data: '10/11/2026',
     migliorato: ['Ricettario: le foto piccole delle ricette vecchie di GialloZafferano (strisce) ingrandite non riempiono più lo schermo: restano di una misura in cui non si sgranano'] },
   { v: '0.9.96', data: '09/11/2026',
