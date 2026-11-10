@@ -1,22 +1,22 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 16:30 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: la chiave del kit è pronta (l'ha salvata la sessione #42), quindi passo all'aggiornamento del kit.
+
+───
+✅ FATTO
+- La chiave funziona: dalla fonte leggo «kit 38.14 · 10/11/2026». Qui siamo ancora al 35.
+- Ho scaricato il **pacchetto** del kit 38 (l'insieme dei file da copiare): 85 file. 55 sono cambiati, 19 sono nuovi, 11 sono già uguali.
 
 ───
 💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
-
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
+- Il lavoro è grande: 74 file da copiare uno per uno, tra controlli automatici, istruzioni e impostazioni. Lo farei fare alla prossima sessione della catena: questa è quasi piena.
+- Cosa cambia per te: più controlli automatici e …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+📌 Di cosa parliamo: il kit sono le regole e i controlli automatici con cui lavoro. Va copiato in questo progetto e il pacchetto chiede il tuo ok scritto qui.
+1. 🛑 Applico il pacchetto del kit 38.14? Cambia i file di `.claude/` (controlli, impostazioni, istruzioni). 1 · Sì · 2 · No.
+2. Che scadenza hai scelto per la chiave? A cosa serve: ti avviso una settimana prima, così la rinnovi prima che smetta di funzionare.
+3. 🛑 Soglie di Proteiche: 1 · più morbide (consiglio, 29 ricette) · 2 · ancora più larghe (35) · 3 · lascia così (18).
+4. Giorno proteico (la foto di prima): 1 · lo …
