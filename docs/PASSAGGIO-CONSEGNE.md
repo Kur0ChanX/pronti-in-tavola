@@ -8,8 +8,8 @@ Sessione attuale: #40 (dopo la #39 `session_01WTjqUwXqzf1yXN3r3aJ8nd`, chiusa al
 
 ## Stato (10/11 01:59 ora italiana)
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso, nessuna PR aperta.
-- Sito vero: v0.9.99 online, giro «Pubblica sito» success su c964d4ae (10/11 ~01:45); verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.9.99.
-- Prove (10/11): app `python3 -I tools/anteprima.py && node tools/prova.js` → 81 OK; `npm run prova-firebase` → 103 OK (prima `npm ci`); `node tools/prova-database.mjs` → 73 OK (riparata: non trovava `ascolta.mjs`); `node tools/prova-limiti.mjs` 22 OK; `node tools/prova-ascolta.mjs` 40 OK.
+- Sito vero: v0.10.0 online (C119 «✨ Migliora con l'AI»), giro «Pubblica sito» success su 0403cc42 (10/11 ~02:21); verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.0. Prova vera dal sito (Playwright, solo `/api/foto-gz` finto perché serve l'accesso Google): motore da jsdelivr + modello dal sito → foto 880×680 in 4,8 s.
+- Prove (10/11, Principale 40): app `python3 -I tools/anteprima.py && node tools/prova.js` → 82 OK; `node tools/prova-database.mjs` → 77 OK; `node tools/prova-limiti.mjs` 22 OK; `node tools/prova-ascolta.mjs` 40 OK; `npm run prova-firebase` 103 OK (#39, non toccata).
 - Sito: `python3 -I tools/sito.py` → «OK sito: 18 file». Esito del giro: `gh api "repos/Kur0ChanX/pronti-in-tavola/actions/workflows/sito.yml/runs?per_page=1" --jq ".workflow_runs[0].conclusion"` (NON `mcp__github__actions_list`).
 - Kit RVC 35.0 · Preferenze v35 qui, ma Mario usa già le Preferenze v36 (09/11): scritto in `docs/PER-IL-KIT.md`.
 
@@ -35,7 +35,7 @@ Sessione attuale: #40 (dopo la #39 `session_01WTjqUwXqzf1yXN3r3aJ8nd`, chiusa al
 - C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
-0. C119 «✨ Migliora con l'AI»: seguire `docs/lavori-in-corso/c119-ai-foto.md` (endpoint `/api/foto-gz`, worker con onnxruntime-web, modello servito dal sito, tasto nello zoom, voce dell'aiutante, prove, prova VERA dal sito pubblicato e foto prima/dopo a Mario).
+0. C119 FATTO (v0.10.0): aspettare la prova di Mario sul telefono vero (riga in «Aspetta Mario»). Non provato su iPhone/iPad veri.
 1. C122: testo NUOVO delle Preferenze (parti dalla v36 che Mario ha in claude.ai: chiedi a Mario di incollarla se non c'è nel repo) con le 5 regole di `docs/PER-IL-KIT.md`, sotto i 2.500 caratteri, in UN riquadro; e dire a Mario che il kit lo cambia solo una sessione del progetto del kit (da qui mai `add_repo`): proporre a Mario di aprirla lui o con `create_session` sul repo del kit, col suo ok.
 2. «Scrivimi!» sotto gli allergeni come tocco per WhatsApp: proposto, Mario non ha risposto (non farlo senza sì).
 3. Righe in «Aspetta Mario»: aspettare le prove di Mario.
