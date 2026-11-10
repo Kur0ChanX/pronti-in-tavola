@@ -6,6 +6,10 @@
 
 Catena: Salvagente 1 `session_01WTjqUtRJWxKmp6nyeUvNrE` (aperta da Mario a mano 10/11 18:30, chiusa 18:52) → Salvagente 2 `session_01WTjqUtvmZCDENLTWcamJxv` (aperta dalla 1 alle 18:50, chiusa ~19:20 per l'attesa lunga: contatore a 258k per le 2 foto aperte, PT E58). Solo documenti e 2 foto: nessun file di codice toccato.
 
+## Stato (Salvagente 3 `session_01WTjqUv7MaJNtEXzKJFZKx7`, 10/11 19:23 ora italiana, chiusa alla soglia; la apre la Salvagente 3 con `create_session` (catena 3 di 8))
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-parallela-20261110-01WTjqUv7MaJ/claude/pronti-ramo-definitivo.
+- (qui le righe di giudizio della Salvagente 3: fatto, provato, dove si verifica)
+
 ## Stato (Salvagente 2 `session_01WTjqUtvmZCDENLTWcamJxv`, 10/11 19:08 ora italiana, chiusa alla soglia; la apre la Salvagente 2 con `create_session` (catena 2 di 8))
 - Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-parallela-20261110-01WTjqUtvmZC/claude/pronti-ramo-definitivo.
 - Fatto: avvio (Fable · Massimo come la 1, controllato con `get_session`); risposta a Mario delle ~19:05 al suo messaggio delle 18:51: 2 schemi (`archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png`, `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`; sorgente `docs/lavori-in-corso/c138-schemi.html`), tabella «cosa succede se», consiglio nuovo «2 in due tempi», DOMANDA 1 🛑 rifatta intera; titolo giallo e notifica sul telefono. Provato: foto guardate una volta; misure e titoli controllati dallo script (780 px, rapporto 1,93 e 1,84, titoli su una riga); sito vero letto alle 18:59 (v0.10.17) e alle 19:11 (v0.10.18). Si verifica: `git log --oneline -8 -- docs/lavori-in-corso/ archivio/foto/ docs/CONSEGNE-PARALLELA-SALVAGENTE.md`.
@@ -55,20 +59,20 @@ Esito: risposta delle ~19:05 col confronto (2 schemi, tabella, consiglio «2 in 
 ## Motore e forza di pensiero
 Motore: **claude-fable-5-2** (Fable 5.2) · impegno **Massimo** (`max`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
-## Testo per aprire la Salvagente 3
-la apre la Salvagente 2 con `create_session` (catena 2 di 8). Scritto da Salvagente 2 il 10/11/2026 (righe di fatto da `tools/consegne.py fatti --parallela`).
+## Testo per aprire la Salvagente 4
+la apre la Salvagente 3 con `create_session` (catena 3 di 8). Scritto da Salvagente 3 il 10/11/2026 (righe di fatto da `tools/consegne.py fatti --parallela`).
 
-Titolo: `💛 🍝 Salvagente 3 · metti Fable`
+Titolo: `💛 🍝 Salvagente 4 · metti Fable`
 
 Testo da incollare:
 ```
-[AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motore non è Fable non fare niente, nemmeno l'avvio: scrivi a Mario solo «⛔ La sessione di prima lavorava con Fable: metti Fable (menu del motore nell'app o /model), poi scrivimi "via". Per andare con Opus scrivimi "vai con Opus".» Se sei Fable, avvio normale: Sei la chat parallela Salvagente 3 di Pronti in Tavola, linea «Salvagente» (ramo claude/pronti-ramo-definitivo). git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached» prima git checkout claude/pronti-ramo-definitivo). Leggi CLAUDE.md, docs/ERRORI.md e le tue consegne docs/CONSEGNE-PARALLELA-SALVAGENTE.md (leggi i file solo a blocchi con grep -n e sed -n, mai interi); continua da sola dai «Prossimi passi».
+[AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motore non è Fable non fare niente, nemmeno l'avvio: scrivi a Mario solo «⛔ La sessione di prima lavorava con Fable: metti Fable (menu del motore nell'app o /model), poi scrivimi "via". Per andare con Opus scrivimi "vai con Opus".» Se sei Fable, avvio normale: Sei la chat parallela Salvagente 4 di Pronti in Tavola, linea «Salvagente» (ramo claude/pronti-ramo-definitivo). git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached» prima git checkout claude/pronti-ramo-definitivo). Leggi CLAUDE.md, docs/ERRORI.md e le tue consegne docs/CONSEGNE-PARALLELA-SALVAGENTE.md (leggi i file solo a blocchi con grep -n e sed -n, mai interi); continua da sola dai «Prossimi passi».
 ```
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-10 18:50 · [AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motor… → testo d'avvio scritto dalla Salvagente 1 (non è un messaggio di Mario): avvio fatto, motore Fable confermato con `get_session`
+- 2026-11-10 19:13 · [AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motor… → 
 
 Ultimo, intero:
-> [AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motore non è Fable non fare niente, nemmeno l'avvio: scrivi a Mario solo «⛔ La sessione di prima lavorava con Fable: metti Fable (menu del motore nell'app o /model), poi scrivimi "via". Per andare con Opus scrivimi "vai con Opus".» Se sei Fable, avvio normale: Sei la chat parallela Salvagente 2 di Pronti in Tavola, linea «Salvagente» (ramo claude/pronti-ramo-definitivo). git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached» prima git checkout claude/pronti-ramo-definitivo). Leggi CLAUDE.md, docs/ERRORI.md e le tue consegne docs/CONSEGNE-PARALLELA-SALVAGENTE.md (leggi i file solo a blocchi con grep -n e sed -n, mai interi); continua da sola dai «Prossimi passi».
+> [AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motore non è Fable non fare niente, nemmeno l'avvio: scrivi a Mario solo «⛔ La sessione di prima lavorava con Fable: metti Fable (menu del motore nell'app o /model), poi scrivimi "via". Per andare con Opus scrivimi "vai con Opus".» Se sei Fable, avvio normale: Sei la chat parallela Salvagente 3 di Pronti in Tavola, linea «Salvagente» (ramo claude/pronti-ramo-definitivo). git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached» prima git checkout claude/pronti-ramo-definitivo). Leggi CLAUDE.md, docs/ERRORI.md e le tue consegne docs/CONSEGNE-PARALLELA-SALVAGENTE.md (leggi i file solo a blocchi con grep -n e sed -n, mai interi); continua da sola dai «Prossimi passi».
 
