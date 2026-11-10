@@ -65,6 +65,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E57** Permessi di un token: provati dal vivo; risorsa nuova su Cloudflare = passo chiaro di Mario, non a sorpresa nel deploy.
 - **PT E58** Foto fatte da me: controllo coi numeri nello script; se serve l'occhio, copia a 1x ≤400 px JPEG, mai l'originale 2x.
 - **PT E59** `git rev-parse --short` vuole UNA revisione: con due dà «Needed a single revision» e sembra un push fallito; usare `git rev-parse HEAD origin/<ramo>`.
+- **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse: il testo lungo di una voce aperta va come elenco, mai come riga `| C…`; dopo ogni ritocco di Da fare `promesse.py --controlla` prima del commit.
 
 ## Lezioni ereditate da RVC
 - **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.
