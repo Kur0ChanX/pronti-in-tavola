@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 10/11 · 🛑 · 💛 Salvagente 2 · PC di casa come riserva di Cloudflare e Firebase: scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente. Schemi mandati 19:02: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png` `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`. A cosa serve: scrivere il piano.
+- 10/11 · 🛑 · 💛 Salvagente 3 · PC di casa come riserva di Cloudflare e Firebase: scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente. Schemi mandati 19:02: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png` `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`. A cosa serve: scrivere il piano.
 - 10/11 · 🟢 Principale 51 · C130 contatore vero di Cloudflare, gratis: crei una chiave di sola lettura «Account Analytics» (ti guido) e il server vede le letture di tutto l'account. 1 · sì · 2 · no. A cosa serve: l'avviso ti arriva anche per letture che il mio contatore non vede.
 - 10/11 · 🟢 Principale 50 · C132 regola nuova «soluzioni smart come il modulo sicuro, per tutti i progetti» (Mario 16:35 nella #42): scegli fra le proposte 1-3 della #42 (anche più numeri): 1 chiavi sempre col modulo sicuro · 2 link già compilati · 3 promemoria prima di ogni scadenza (la 4, guide giuste con le foto, va nel kit comunque). A cosa serve: la porto nel kit per tutti i progetti.
 - 10/11 · 🟢 Principale 48 · C127+C128 v0.10.13: chiudi e riapri l'app, Ricettario → «🏋️ Proteiche»: una foto della parte alta (zone, «Quando», «Fonte proteica», riquadro verde con «RicetteFit N di 905» e «Oggi +N entrate»). A cosa serve: vedere coi dati veri la pagina nuova e quante proteiche arrivano.
@@ -15,7 +15,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C138 | (Mario 10/11 18:30 «server nel mio PC… come salvagente») Salvagente in casa: 3 strade in `docs/lavori-in-corso/c138-salvagente-in-casa.md`, solo piano. 👁 Lo vedi: le 3 strade in chat, poi il piano scritto · prova: tua lettura | Claude (Salvagente 2) | 🟡 |
+| C138 | (Mario 10/11 18:30 «server nel mio PC… come salvagente») Salvagente in casa: 3 strade in `docs/lavori-in-corso/c138-salvagente-in-casa.md`, solo piano. 👁 Lo vedi: le 3 strade in chat, poi il piano scritto · prova: tua lettura | Claude (Salvagente 3) | 🟡 |
 | C137 | (Mario 10/11 18:13 «in modalità emergenza… niente cose quasi inutili come aggiornare ricettario») **v0.10.18 (#54): fatta, prove verdi.** Modalità risparmio (piano `docs/lavori-in-corso/c137-modalita-risparmio.md`), con C135. 👁 Lo vedi: «🛟 Modalità risparmio» nel Ricettario (freno finto) · prova: tua foto | Claude | 🔴 |
 | C136 | (Mario 10/11 17:41 «un blocco al ricettario… a manuale poco alla volta») v0.10.17: motore automatico spento (interruttore solo per Mario), carichi a mano di N (5-50, base 20), «⏹ Ferma». 👁 Lo vedi: chiudi e riapri l'app, Ricettario → «🗄 Il mio database»: «🖐 Ricette nuove solo quando le chiedi tu» e «⚡ Carica altre 20 ricette» · prova: tua foto | Claude | 🟡 |
 | C135 | (Mario 10/11 17:50 «1 anche per i clienti…») Corsia d'emergenza degli avvisi: codice nella v0.10.18 ma **spenta**: manca il cassetto KV (token senza permesso, PT E57) → passo a mano di Mario, poi ID in `wrangler.jsonc`. 👁 Lo vedi: Notifiche → «🛟 Corsia d'emergenza pronta» + «🧪 Prova» suona · prova: tua foto | Claude | 🔴 |
