@@ -2,22 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 13:26 · 01QTFEqTYwXG
-una frase per tutti  per tutti e quella per monica benvenuta nella tua app ecc ecc 
-
-fammi ora quello per i miei amici per farla vedere
-
-## 2026-11-07 13:30 · 01QTFEqTYwXG
-per i miei amici è monica che invita fallo cosi come se monica invitasse
-io gestisco e basta
-mettili nella mia app gli inviti ora
-
-## 2026-11-07 13:33 · 01QTFEqTYwXG
-con link funzionante ovviamente da cliente e quello di monica da padrona admin
-
-## 2026-11-07 13:43 · 01QTFEqTYwXG
-correggi questo da iphone ospite
-
 ## 2026-11-07 16:46 · 01QTFEqReKuk
 Hai fatto tutto quello che ti ho detto? Tutte le modifiche che ti ho detto alla fine, che ti ho detto vai ora, le hai fatte?
 
@@ -153,3 +137,17 @@ Secondo te le regole per le ricette per la palestra sono valide o taglia tantiss
 
 ## 2026-11-10 16:15 · 01WTjqUwbG8f
 vai di consiglio
+
+## 2026-11-10 16:47 · 01WTjqUv8dDc
+Quello che ho voluto sempre evitare dall'inizio di questo progetto, alla fine non siamo riusciti a renderlo inevitabile.
+
+## 2026-11-10 16:52 · 01WTjqUv8dDc
+non sei stato per niente bravo in questo
+
+## 2026-11-10 16:54 · 01WTjqUv8dDc
+trovami ler forza adesso soluzioni per far funzionare l'app al 100% me lo merito per i tuoi errori
+
+## 2026-11-10 17:02 · 01WTjqUv8dDc
+Devo pagare io i tuoi sbagli? ti sei matto
+ti avevo detto di non mettere blocchi ma se qualcosa segnava piú del dovuto dovevi avvisarmi ora metti i blocchi cosí è facile oppure che devo pagare.... non va bene cosí
+L'app deve funzionare risolvi ora io non ho soldi ti avviso
