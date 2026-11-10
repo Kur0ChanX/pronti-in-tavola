@@ -59,8 +59,8 @@ Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o
 - 2026-11-10 17:15 · è normale che funziona? → C134 v0.10.16
 - 2026-11-10 17:34 · mandami una foto prima e dopo → foto mandata (`archivio/foto/2026-11-10-c134-notifiche-confronto.png`)
 - 2026-11-10 17:39 · 2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordi… → «2» alla riga nella Home; C135
-- 2026-11-10 17:41 · cmq bisogna mettere un blocco al ritardo se tutto il consumo era quello che non … → C136
-- 2026-11-10 17:41 · volevo scrivere un blocco al ricettario → C136
+- 2026-11-10 17:41 · cmq bisogna mettere un blocco al ritardo se tutto il consumo era quello che non … → C136 blocco al ricettario (Prossimi passi 0)
+- 2026-11-10 17:41 · volevo scrivere un blocco al ricettario → C136 (era «ricettario», non «ritardo»)
 - 2026-11-10 17:44 · Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatt… → risposto; domanda C135
 
 Ultimo, intero:
