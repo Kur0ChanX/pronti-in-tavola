@@ -957,14 +957,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-piu"]'); await clic('[data-a="ric-tempo"][data-v="30"]');
     let t = await elenco(); if (!/Pasta veloce prova/.test(t) || /Arrosto lungo prova|Zuppa media prova/.test(t)) throw new Error('«Fino a 30 min» sbagliato');
     if ((await page.evaluate(() => JSON.parse(localStorage.getItem('pit-ric-filtri')).tempo)) !== 30) throw new Error('filtro non ricordato');
-    await clic('[data-a="ric-tempo"][data-v="60"]'); await clic('[data-a="ric-facile"]');
+    await clic('[data-a="ric-tempo"][data-v="60"]'); await clic('[data-a="ric-diff"][data-v="facile"]');
     t = await elenco(); if (!/Pasta veloce prova/.test(t) || !/Zuppa media prova/.test(t) || /Arrosto lungo prova/.test(t)) throw new Error('«1 ora» + «Facili» sbagliato');
     await clic('[data-a="ric-ordine"][data-v="veloci"]');
     const nomi = await page.locator('main .ric-elenco').last().innerText(); if (nomi.indexOf('Pasta veloce prova') > nomi.indexOf('Zuppa media prova')) throw new Error('«Più veloci» non ordina');
     if (!/^2 ricette/.test(await page.locator('.ric-conta').innerText())) throw new Error('numero dei risultati sbagliato: ' + await page.locator('.ric-conta').innerText());
     await foto('19-ricettario-filtri');
     await clic('.ric-conta [data-a="ric-pulisci"]');
-    const dopo = await page.evaluate(() => [UI.ric.tempo, UI.ric.facile, JSON.parse(localStorage.getItem('pit-ric-filtri')).tempo]);
+    const dopo = await page.evaluate(() => [UI.ric.tempo, UI.ric.diff, JSON.parse(localStorage.getItem('pit-ric-filtri')).tempo]);
     if (dopo[0] || dopo[1] || dopo[2]) throw new Error('«Azzera» non azzera: ' + JSON.stringify(dopo));
     await page.evaluate(() => { UI.ric.q = 'zucchine ceci'; render(); });
     t = await elenco(); if (!/Zuppa media prova/.test(t) || /Pasta veloce prova/.test(t)) throw new Error('ricerca per 2 ingredienti sbagliata');
@@ -1600,6 +1600,75 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const d = await page.evaluate(() => ({ come: (window.__mandato || {}).comeCliente, asc: UI.ultimoAscolto, barra: barraDev() }));   // la barra sta in pagina solo sul sito vero (Dati.attivo)
     await page.evaluate(() => { [UI.devCliente, P.sviluppatore, P.ruolo] = window.__primaDev; UI.ultimoAscolto = ''; delete S.impostazioni.voceClientiConferma; AIC.msgs = []; UI.vista = 'menu'; render(); });
     if (d.come !== true || d.asc !== 'Groq + Deepgram · corretto' || !d.barra.includes('<span class="dev-asc">🎧 Groq + Deepgram · corretto</span>')) throw new Error('guarda come cliente: strada o 🎧 sbagliati: ' + JSON.stringify(d).slice(0, 300));
+  });
+  await passo('ricettario C124: «🏋️ Proteiche», difficoltà, valori per porzione, fonte, tasto Database diretto, Ricettario in vista nella Home', async () => {   // autonomo
+    await page.evaluate(() => {
+      window.__primaC124 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+      const ora = Date.now(), nu = (kcal, prot, saturi, zuc, sodio) => ({ kcal, prot, carb: 30, grassi: 8, saturi, zuc, fibre: 3, sodio });
+      const ss = [
+        { id: 'gz:Pollo-fit-prova', nome: 'Pollo fit prova', zona: 'italiana', categoria: 'secondi', foto: '', aggiunta: ora, totale: 30, difficolta: 'Facile', cerca: 'pollo', nutr: nu(380, 38, 2, 3, 400) },
+        { id: 'gz:Merluzzo-fit-prova', nome: 'Merluzzo fit prova', zona: 'italiana', categoria: 'secondi', foto: '', aggiunta: ora - 1, totale: 25, difficolta: 'Molto facile', cerca: 'merluzzo', nutr: nu(300, 27, 1, 2, 350) },
+        { id: 'gz:Carbonara-prova', nome: 'Carbonara prova', zona: 'italiana', categoria: 'primi', foto: '', aggiunta: ora - 2, totale: 30, difficolta: 'Media', cerca: 'uova guanciale', nutr: nu(558.7, 22.8, 9, 2.5, 475) },
+        { id: 'gz:Salata-prova', nome: 'Salata prova', zona: 'italiana', categoria: 'secondi', foto: '', aggiunta: ora - 3, totale: 30, difficolta: 'Difficile', cerca: 'sale', nutr: nu(400, 35, 2, 2, 1500) },
+        { id: 'gz:Senza-valori-prova', nome: 'Senza valori prova', zona: 'italiana', categoria: 'secondi', foto: '', aggiunta: ora - 4, totale: 30, difficolta: 'Molto difficile', cerca: 'niente', nutr: null }];
+      const st = { ricette: 5, coda: 0, voci: 0, mbVoci: 0, oggi: 0, pausa: false, scelte: 5, nelRicettario: 5, conValori: 4, senzaValori: 1, paroleFit: ['proteiche', 'tonno'], fitI: 1, paginaFit: '', giri: 3, fonte: 1, fonti: 10 };
+      window.__fit = [];
+      RIC.chiedi = async c => c.db === 'mie' ? { scelte: ss } : c.db === 'fit' ? (window.__fit.push(c), { db: Object.assign({}, st, { paroleFit: c.base ? ['proteiche'] : String(c.parole).split(',').map(x => x.trim()).filter(Boolean) }) })
+        : c.db ? { db: st } : { ricette: [], prossima: '' };
+      salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      salvaCache({ id: 'gz:Pollo-fit-prova', v: 4, nome: 'Pollo fit prova', url: 'https://ricette.giallozafferano.it/Pollo-fit-prova.html', porzioni: 4, prep: 10, cottura: 20, difficolta: 'Facile',
+        ingredienti: [{ nome: 'Petto di pollo', q: 600, u: 'g' }, { nome: 'Limone', q: 1, u: '' }, { nome: 'Sale', q: null, u: '' }], passi: [{ t: 'Tagliate il pollo.', foto: [] }, { t: 'Cuocete 20 minuti.', foto: [] }], nutr: nu(380, 38, 2, 3, 400) });
+      UI.vista = 'home'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    /* Home: Ricettario e Proteiche subito sotto i 4 riquadri, coi numeri */
+    const home = await page.evaluate(() => { const r = document.querySelector('main .riquadri'), d = r && r.nextElementSibling; return { dopo: d ? d.className : '', testo: d ? d.innerText : '' }; });
+    if (!/ric-home-due/.test(home.dopo) || !/Ricettario/.test(home.testo) || !/Proteiche\s*\n?2 ricette/.test(home.testo)) throw new Error('Home: Ricettario non subito sotto i 4 riquadri o numeri sbagliati: ' + JSON.stringify(home));
+    await foto('46-c124-home');
+    /* «🏋️ Proteiche» dalla Home: solo quelle giuste, prima più proteine per caloria, riga «perché è qui» */
+    await clic('[data-a="ric-vai-fit"]');
+    const fit = await page.evaluate(() => ({ vista: UI.vista, zona: UI.ric.zona, premuto: (document.querySelector('[data-a="ric-zona"][aria-pressed="true"]') || {}).textContent, nomi: [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')), riga: (document.querySelector('.ric-valori-riga') || {}).textContent, nota: !!document.querySelector('.ric-nota-fit'), fonte: (document.querySelector('.ric-carta .ric-fonte') || {}).textContent }));
+    if (fit.vista !== 'ricettario' || fit.zona !== 'fit' || !/Proteiche/.test(fit.premuto || '')) throw new Error('«Proteiche» dalla Home non apre la sezione: ' + JSON.stringify(fit));
+    if (JSON.stringify(fit.nomi.filter(n => /prova$/.test(n))) !== '["Pollo fit prova","Merluzzo fit prova"]') throw new Error('Proteiche: ricette o ordine sbagliati (carbonara 559 kcal, sale alto, senza valori: fuori): ' + JSON.stringify(fit.nomi));
+    if (fit.riga !== '💪 38 g proteine · 380 kcal · sale 1 g' || !fit.nota || fit.fonte !== 'GialloZafferano') throw new Error('Proteiche: riga dei valori, nota o fonte sbagliate: ' + JSON.stringify(fit));
+    await foto('47-c124-proteiche');
+    /* difficoltà in vista (Facili comprende «Molto facile», Difficili «Molto difficile») */
+    await clic('[data-a="ric-zona"][data-v="tutte"]'); await clic('[data-a="ric-diff"][data-v="facile"]');
+    let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$/.test(n)).sort());
+    if (JSON.stringify(nomi) !== '["Merluzzo fit prova","Pollo fit prova"]') throw new Error('«Facili» sbagliato: ' + JSON.stringify(nomi));
+    await clic('[data-a="ric-diff"][data-v="difficile"]');
+    nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$/.test(n)).sort());
+    if (JSON.stringify(nomi) !== '["Salata prova","Senza valori prova"]') throw new Error('«Difficili» sbagliato: ' + JSON.stringify(nomi));
+    await clic('[data-a="ric-diff"][data-v="difficile"]');   // ritocco = tolto
+    if (await page.evaluate(() => UI.ric.diff)) throw new Error('ritoccare «Difficili» non toglie il filtro');
+    /* ordina «🔥 Meno calorie» */
+    await clic('[data-a="ric-piu"]'); await clic('[data-a="ric-ordine"][data-v="kcal"]');
+    nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$/.test(n)));
+    if (nomi[0] !== 'Merluzzo fit prova' || nomi[nomi.length - 1] !== 'Senza valori prova') throw new Error('«Meno calorie» non ordina (senza valori in fondo): ' + JSON.stringify(nomi));
+    await page.evaluate(() => { UI.ric = null; localStorage.removeItem('pit-ric-filtri'); render(); });
+    /* tasto «🗄 Database»: salto diretto, niente scorrimento lento (Mario 10/11) */
+    const salto = await page.evaluate(() => { const v = []; const a = Element.prototype.scrollIntoView, b = window.scrollTo;
+      Element.prototype.scrollIntoView = function (o) { v.push(o && o.behavior); }; window.scrollTo = o => v.push(o && o.behavior);
+      const t = document.querySelector('.ric-salta'); if (t) t.click(); Element.prototype.scrollIntoView = a; window.scrollTo = b; return { c: !!t, v }; });
+    if (!salto.c || salto.v[0] !== 'instant') throw new Error('«🗄 Database» non salta diretto: ' + JSON.stringify(salto));
+    /* ricetta: fonte col link all'originale e «Valori per porzione» */
+    await page.evaluate(() => vai('ricetta:gz:Pollo-fit-prova')); await page.waitForTimeout(300);
+    const ric = await page.evaluate(() => ({ fonte: (document.querySelector('.ric-fonte-riga') || {}).innerText, link: (document.querySelector('.ric-fonte-riga a') || {}).href, valori: (document.querySelector('.ric-valori') || {}).innerText }));
+    if (!/Fonte: GialloZafferano/.test(ric.fonte || '') || ric.link !== 'https://ricette.giallozafferano.it/Pollo-fit-prova.html') throw new Error('ricetta: fonte o link sbagliati: ' + JSON.stringify(ric));
+    if (!/Proteica/.test(ric.valori || '') || !/380\s*kcal/.test(ric.valori) || !/38 g\s*proteine/.test(ric.valori) || !/sale 1 g/.test(ric.valori) || !/per 1 porzione \(la ricetta è per 4\)/.test(ric.valori)) throw new Error('ricetta: valori per porzione sbagliati: ' + JSON.stringify(ric.valori));
+    await page.evaluate(() => { const v = document.querySelector('.ric-valori'); if (v) v.scrollIntoView({ block: 'start' }); });
+    await foto('48-c124-ricetta-valori');
+    /* Database: valori letti, parole della corsia fit cambiate dall'app («salvato» solo dopo la risposta) */
+    await page.evaluate(() => { RIC.dbOra = 0; vai('ricdb'); }); await page.waitForTimeout(400); await page.evaluate(() => render());
+    const db = await page.evaluate(() => ({ t: (document.querySelector('#ricdb-fit') || {}).innerText, p: (document.querySelector('#ric-fit-parole') || {}).value }));
+    if (!/Ricette proteiche: 2/.test(db.t || '') || !/letti: 4 ricette, 1 ancora da leggere/.test(db.t) || !/adesso «tonno»/.test(db.t) || db.p !== 'proteiche, tonno') throw new Error('Database: riquadro proteiche sbagliato: ' + JSON.stringify(db));
+    await page.locator('#ric-fit-parole').fill('pollo, orata'); await page.locator('#ric-fit-parole').dispatchEvent('change'); await page.waitForTimeout(300);
+    const dopo = await page.evaluate(() => ({ chiesto: window.__fit.slice(-1)[0], parole: RIC.db.paroleFit, toast: (document.querySelector('.toast') || {}).textContent }));
+    if (!dopo.chiesto || dopo.chiesto.parole !== 'pollo, orata' || JSON.stringify(dopo.parole) !== '["pollo","orata"]' || !/Salvato: 2 parole/.test(dopo.toast || '')) throw new Error('Database: parole fit non salvate: ' + JSON.stringify(dopo));
+    /* aiutante: «dove trovo le ricette proteiche?» → dritto alla sezione */
+    const ai = await page.evaluate(() => { const c = capisciDove('dove trovo le ricette proteiche per la palestra?'); return c && c[0] && Object.assign({ voce: c[0].voce }, controllaAI(c[0])); });
+    if (!ai || ai.voce !== 'ricettario-fit' || ai.vai !== 'ricettario' || !ai.ui || ai.ui.ricZona !== 'fit') throw new Error('aiutante: «ricette proteiche» non porta alla sezione: ' + JSON.stringify(ai));
+    await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC124; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
