@@ -4,7 +4,7 @@ Sessione attuale: #49 (dopo la #48 `session_01WTjqUtGdNdfJFPzdQkQu77`, chiusa al
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (10/11 15:21):** C127 («vai di consiglio 1 e 3»): pezzo 1 fatto e online (v0.10.13); da finire il pezzo 2 «📅 Il mio giorno proteico» e il 3 «🔁 Simili a questa», già scritti in una patch da provare. Poi la foto di Mario della pagina Proteiche (C127 + C128: quante proteiche arrivano).
+- **Cosa preme a Mario adesso (10/11 15:25):** PRIMA il kit (C129): aggiornarlo qui all'ultimo («prendilo pure») e dirgli se nel suo account è rimasto qualcosa di sospeso per aggiornare il kit (solo per capire). Poi C127 pezzi 2-3 (patch pronta) e la sua foto di Proteiche.
 
 ## Stato (10/11 15:21 ora italiana)
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (qui il push di file `*.js`, `*.css`, `*.html` del ramo pubblica il sito vero da solo: `sito.yml`; i soli documenti no). Scorte #44-#48: solo documenti, NON unirle se `ricettario.js` contiene `function riquadroFit`.
@@ -24,7 +24,7 @@ Sessione attuale: #49 (dopo la #48 `session_01WTjqUtGdNdfJFPzdQkQu77`, chiusa al
 - Errore mio trovato dalle prove: «Altre ▾» chiamato `ric-altre`, già usato da «Carica altre ricette» più in basso (la seconda definizione cancella la prima) → PT E51 + passo automatico in `tools/prova.js`.
 - Passo C69 di `tools/prova.js` reso autonomo (si lancia da solo con `SOLO=`).
 - Obiettivo del giorno proteico sul TELEFONO (`pit-giorno-ob`), non in Impostazioni: Impostazioni sono condivise col server e il gruppo «Solo per te, Mario» Monica non lo vede; un obiettivo a testa (occhio critico «due persone»).
-- Controllo Da fare: 0 voci aggiunte (nessun messaggio nuovo di Mario in questa sessione).
+- Controllo Da fare: 1 voce aggiunta (C129 kit, messaggio di Mario delle 15:25 arrivato dopo l'handoff).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - #48 (C127): codice del pezzo 2 salvato nel ramo prima delle prove → NO (il push di un `.js` pubblica il sito vero): patch in `docs/lavori-in-corso/`, il codice resta com'è online. Monitor con `tail -f` chiuso a forza → la guardia lo blocca (comando vietato), anche scritto dentro un testo: ciclo con `grep -c` e `sleep`. Nome di azione nuovo senza `grep` → doppione (PT E51).
@@ -38,6 +38,7 @@ Sessione attuale: #49 (dopo la #48 `session_01WTjqUtGdNdfJFPzdQkQu77`, chiusa al
 - Sessioni #28-#43 e 1-22: `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo, «Strade scartate #28-#43»).
 
 ## Prossimi passi
+0. C129 KIT (Mario 10/11 15:25, dopo l'handoff della #48; parola per parola in «Ultimo messaggio»): aggiorna il kit di questo progetto all'ultimo (qui 35.0; ultimo noto 37.2) e dì a Mario se nel suo account è rimasto qualcosa di sospeso per aggiornare il kit (risposta solo informativa, «giusto una cosa mia, per capire»). Il kit sta nel repo RVC (`docs/kit-progetto`), che questa sessione non legge: niente `add_repo` (spegne gli hook, RVC E28). Strade: la chiave in sola lettura già prevista (riga «Kit 37.2» in «Aspetta Mario»: se Mario non l'ha ancora fatta, «prendilo pure» NON è «chiave pronta»: chiedigli in una riga se la chiave è pronta o se preferisce un'altra strada), oppure `gh api -X GET search/code` (solo ricerca: dice dove sono i file del kit e in quali repo, non il contenuto). Per «sospeso nell'account»: `list_triggers` (sveglie del kit), `list_sessions` (limit 4) e la ricerca `gh api search/code` della riga di versione del kit nei repo dell'account; nel `CLAUDE.md` di questo progetto gli altri progetti non si nominano: a Mario dai i numeri (quanti progetti col kit vecchio, quale versione) solo perché li ha chiesti lui.
 1. C127 pezzi 2-3: `git apply docs/lavori-in-corso/c127-pezzi-2-3.patch` (poi togli il file della patch nello stesso commit). Rileggi il codice (occhio critico; specifica `c127-giorno-proteico.md`). Mancano: (a) stile in `style.css`: `.ric-giorno-testa` (titolo e «Nascondi» in riga), `.ric-giorno-riga` (riga con bordo sopra, nome a sinistra, grammi a destra, 🔄), `.ric-giorno-ric` (bottone senza bordo, testo a sinistra), `.ric-giorno-g`, `.ric-giorno-ob input` (stretto), `.ric-simili`; (b) aiutante: voce `giorno-proteico` in `aiutante.js` (vista ricettario, `ui: { ricZona: 'fit' }` e in `vRicettario` un `UI.ricGiorno` che toglie momenti, fonti e parola e riapre il riquadro) + elenco delle voci in `worker.js` riga ~73; (c) prova autonoma in `tools/prova.js` (`SOLO=giorno`): 4 righe coi nomi, totale e «mancano», piano uguale dopo un nuovo disegno e salvato con la data di oggi, data vecchia → piano nuovo, «🔄» cambia (e «Annulla» rimette), «Nascondi»/«📅», obiettivo 120 ok e 400 rifiutato, «📤 Manda» con il testo, «🛒» con `salvaCache` delle 4 ricette (es. pollo 600 g per 4 → «150 g Petto di pollo», niente sale; «Annulla» svuota), con un momento scelto il riquadro sparisce; «🔁 Simili» nella ricetta proteica (non lei stessa) e assente in una non proteica; (d) v0.10.14 + novità in `data.js`; (e) giro completo una volta, push, controllo online, foto a Mario (aspetto nuovo).
 2. C127/C128: quando Mario manda la foto della pagina Proteiche (riga in «Aspetta Mario»), confronta il numero con la stima (~150) e la riga verde; se il carico veloce non è partito, guarda `turbo` nella pagina Database.
 3. C126 pezzo 3-4 (Mario «2»): fonti con valori calcolati (tabelle CREA), fonte e «calcolati» segnati nella ricetta; specifica nel piano prima del codice. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` (host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»).
@@ -46,10 +47,11 @@ Sessione attuale: #49 (dopo la #48 `session_01WTjqUtGdNdfJFPzdQkQu77`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (nuova: foto della pagina Proteiche v0.10.13).
 
 ## Ultimo messaggio di Mario
-10/11 ~15:05, parola per parola: «Vai di consiglio 1 e 3» (risposta alle 2 domande C127: DOMANDA 1 → 1 pagina come la foto; DOMANDA 2 → 1 giorno proteico e 3 simili). Nessun messaggio nuovo nella #48.
+10/11 15:25 (nella chat della #48, dopo l'handoff), parola per parola: «Aggiorna il kit, verifica se, fammi questa cortesia, verifica se è rimasto in tutto il mio account, se è rimasto qualcosa di sospeso per aggiornare al kit. Ma è giusto una cosa mia, per capire un po'. Il kit dovrebbe essere aggiornato, prendilo pure.»
+Prima, 10/11 ~15:05: «Vai di consiglio 1 e 3» (C127).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C129; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C130; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
