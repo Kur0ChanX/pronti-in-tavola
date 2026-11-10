@@ -529,6 +529,7 @@ const DOVE_AI = {
   'ordini-storico': { vista: 'ordini', nome: 'Storico degli ordini', come: 'Qui ci sono gli ordini finiti, le prove e quelli archiviati.', parole: /storic|ordini (vecchi|passati|finiti|archiviat)|archiviat/, ui: { tab: 'storico' } },
   clienti: { vista: 'clienti', nome: 'Clienti', come: 'Qui inviti le amiche su WhatsApp e approvi le persone nuove.', parole: /client|invit|amich|approv|nuove persone/ },
   spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
+  'ricettario-foto': { vista: 'ricettario', nome: 'Foto piccole: Migliora con l\'AI', come: 'Apri una ricetta e tocca la foto di un passo: si ingrandisce. Sotto c\'è «✨ Migliora con l\'AI»: in pochi secondi la foto diventa grande e nitida. Dopo la prima volta lo fa da sola.', parole: /(foto|immagin)\w*.*(sgranat|sfocat|piccol|brutt|nitid|miglior|ingrand|pixel)|(sgranat|sfocat|miglior|ingrand)\w*.*(foto|immagin)/ },
   ricettario: { vista: 'ricettario', nome: 'Ricettario', come: 'Cerca una ricetta per nome o ingrediente, poi tocca «Cucina guidata».', parole: /ricett|ricettari|cucina guidata/ }
 };
 /* le impostazioni in più (opzioni.js): «Portami lì» per ognuna */

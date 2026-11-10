@@ -72,7 +72,7 @@ Azioni possibili (usa solo queste):
 {"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche (anche gli ultimi avvisi arrivati), imp-lucchetto, imp-anticipo, imp-limite, imp-natale, imp-voce (velocità della voce che legge). Pagine: ordini, ordini-storico (ordini finiti, prove, archiviati), piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), clienti-nuovi (interruttore «Accetta clienti nuovi»), clienti-rifiutati (persone a cui ha detto no, si possono riaccettare), clienti-attesa (chi aspetta il suo sì; chi non compare tocca «Ricorda a Monica»), spesa, ricettario. Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
 CAPIRE IL SENSO (Mario: «deve capire il contesto di quello che dico, non leggere la parola»): prima di scegliere un posto chiediti cosa vuole FARE Monica con la frase intera, non quale parola ha detto. Es. «la mia amica non riesce ad aprire il link» → clienti (inviti), non ordini; «non mi suona niente quando ordinano» → imp-notifiche; «leggo male le scritte» → imp-vista; «la Laura ora si chiama in un altro modo» → clienti-nome. DATI.indizi = posti trovati solo cercando le parole: un aiuto, spesso sbagliato. Sicura → UNA azione vai. Esiti fra 2-3 posti → 2-3 azioni vai e nel testo «Intendi…?». Non capisci → nessuna azione e chiedi cosa vuole fare.
 {"azione":"idea","testo":"..."}  Monica vuole cambiare o aggiungere qualcosa che NON si può fare dall'app (una funzione nuova, un cambio del funzionamento): scrivi per Mario, che la programma, cosa vuole, dove nell'app e perché, con tutti i dettagli che ha detto
-GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista.
+GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista. Ricettario = ricette di GialloZafferano e sue; foto di un passo piccola o sgranata: toccala per ingrandirla, poi «✨ Migliora con l'AI» (l'AI del telefono la rende grande e nitida; dopo la prima volta lo fa da sola).
 Regole: un ordine si riconosce dal numero o dal nome del cliente; se è ambiguo o manca un dato non mettere azioni e chiedi nel testo.
 Con più richieste insieme metti più azioni. Per le domande (cosa cucinare, chi ritira, chi deve pagare, incassi) rispondi nel testo usando SOLO i DATI, senza azioni.
 Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna → prezzi o piatti nuovi; foto di un piatto → descrizione o nuovo_piatto.
@@ -263,6 +263,26 @@ async function paginaGz(u) {
   const t = await r.text();
   await cache.put(chiave, new Response(t, { headers: { 'cache-control': 'max-age=86400' } }));
   return t;
+}
+/* (C119) foto di GialloZafferano passate dal NOSTRO server per «✨ Migliora con l'AI» (foto-ai.js): le loro foto non danno
+   il permesso (CORS) di leggere i pixel, che servono all'AI del telefono. SOLO foto di www.giallozafferano.it/images
+   (mai un passaggio aperto ad altri siti), al massimo 3 MB, tenute 30 giorni nella cache di Cloudflare. */
+const FOTO_GZ = /^https:\/\/www\.giallozafferano\.it\/images\/[\w./%-]+\.(?:jpe?g|png|webp)$/i, FOTO_GZ_MAX = 3 * 1024 * 1024;
+async function fotoGz(u, ctx) {
+  u = String(u || '');
+  if (!FOTO_GZ.test(u) || u.includes('..')) return json({ errore: 'foto non permessa' }, 400);
+  const cache = caches.default, chiave = new Request('https://cache.pronti/foto-gz?' + encodeURIComponent(u));
+  const c = await cache.match(chiave).catch(() => null); if (c) return c;
+  const r = await fetch(u, { headers: { 'user-agent': UA_GZ, accept: 'image/*' } });
+  if (!r.ok) return json({ errore: 'GialloZafferano risponde ' + r.status }, 502);
+  const tipo = r.headers.get('content-type') || '';
+  if (!/^image\//.test(tipo)) return json({ errore: 'non è una foto' }, 502);
+  const b = await r.arrayBuffer();
+  if (b.byteLength > FOTO_GZ_MAX) return json({ errore: 'foto troppo grande' }, 413);
+  const testa = { 'content-type': tipo, 'cache-control': 'public, max-age=2592000' };
+  const dopo = cache.put(chiave, new Response(b, { headers: testa })).catch(() => null);
+  if (ctx) ctx.waitUntil(dopo); else await dopo;
+  return new Response(b, { headers: testa });
 }
 /* il TUO database delle ricette (C60): oggetto «Ricettario» con SQLite, sullo stesso account dell'app, gratis.
    Cresce da solo (motoreRicette ogni 10 minuti) e con ogni ricetta che Monica o Mario aprono o scorrono. */
@@ -913,6 +933,7 @@ export default {
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
       if (url.pathname === '/api/voce') { const b = await req.json().catch(() => null); return await voce(b, env, ctx).catch(e => json({ errore: String(e.message || e) }, 502)); }
+      if (url.pathname === '/api/foto-gz') { const b = await req.json().catch(() => null); return await fotoGz(b && b.u, ctx); }
       if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b, env, ctx).catch(e => ({ errore: String(e.message || e) })); return json(r, r.errore ? 502 : 200); }
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/prova-ai') return json(await provaAI(env));
