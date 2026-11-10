@@ -37,7 +37,7 @@ Catena: Salvagente 1 `session_01WTjqUtRJWxKmp6nyeUvNrE` (aperta da Mario 10/11 1
 - Schemi: uno solo con le due scelte affiancate (testo troppo piccolo sul telefono), tabella in una terza foto (troppe colonne per 390 px), righe con le emoji (Mario non aveva capito) → una foto vera per scelta e tabella nel testo della chat.
 - Gemello su un secondo servizio gratis in un centro dati, al posto del PC: pensato e NON detto a Mario (non studiato: limiti gratis, chiavi, un servizio in più da curare). Se chiede «e se salta la luce mentre Cloudflare è fermo?» è la strada da studiare (skill `ricerca-aggiornata`); l'altra rete è l'ordine su WhatsApp.
 - Piano a pagamento di Cloudflare o secondo account gratis per raddoppiare i limiti: no (PT E54).
-- Unire la propria scorta con le consegne modificate e non salvate: git si ferma (la scorta ha la stessa copia) → prima il commit, poi il merge; mai script e commit nello stesso comando con un merge a metà (E286).
+- Unire la propria scorta dopo aver scritto le consegne: git si ferma, o dà un conflitto sul file delle consegne (la scorta ne ha una copia vecchia) → prima il commit, poi il merge, e nel conflitto `git checkout --ours` su quel file; mai script e commit nello stesso comando con un merge a metà (E286).
 - Restare ad aspettare nella 3 a 183k senza fare le consegne: scartato (l'attesa lunga è regola 🔒 e lo chiede l'hook). Il costo delle due strade è simile (stima): per questo la guardia è una proposta per il kit, la sceglie Mario.
 
 ## Riferimenti
