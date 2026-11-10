@@ -1,6 +1,8 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 10/11 · 🟢 Principale 41 · C123 v0.10.1: chiudi e riapri l'app, Ricettario → «🗄 Database» → «🔍 Controlla tutte». Una foto del riquadro con l'elenco. A cosa serve: vedere coi dati veri quali sono le 5 e il perché scritto (io le ho provate solo nelle prove, il tuo database lo vedo solo col tuo accesso).
+- 10/11 · 🟢 Principale 41 · Kit 37.0 qui (oggi 35.0): serve una chiave di sola lettura sul repo del kit creata da te su GitHub (~5 min dal PC). 1 sì, preparo la guida controllata (consiglio) · 2 più avanti. A cosa serve: le regole nuove anche nei file del progetto, e i kit futuri li porto da solo.
 - 10/11 · 🟢 Principale 40 · C119 v0.10.0: chiudi e riapri l'app, Ricettario → Astice alla Catalana → tocca la foto del passo 3 → «✨ Migliora con l'AI» (la prima volta scarica ~16 MB). Una foto del risultato. A cosa serve: vedere che l'AI funziona sul tuo telefono vero (io l'ho provata solo nel browser del computer).
 - 09/11 · 🟡 Principale 38 · C118 e C115 v0.9.95: chiudi e riapri l'app, Ricettario → Astice alla Catalana → passi 3 e 4: 3 foto separate e numerate? Poi «guarda come cliente»: dopo il logo il vapore. Una foto. A cosa serve: chiudere le strisce unite e il vapore dei clienti.
 - 09/11 · 🟢 Principale 37 · C113 iPhone v0.9.92: un invito NUOVO a un iPhone → nome → Monica dice sì → l'amico mette l'app sulla Home e la apre dall'icona. Monica riceve una seconda richiesta? Una foto. A cosa serve: sapere se il «sì due volte» è risolto o se togliamo l'approvazione.
