@@ -257,6 +257,42 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   const c2 = await ponte.controlla(), rilette = await ponte.vecchie(50), st = await ponte.statoDb();
   prova('C83: controlla tutte le ricette, una rovinata contata e rimessa da rileggere', c2.totale === c1.totale && c2.nMale >= 1 && c2.ok + c2.nMale === c2.totale && c2.male.some(m => m.id === una.id && m.prob.includes('0 passi')) && rilette.length > 0 && st.controllo && st.controllo.quando === c2.quando);
 }
+// C123 (Mario 10/11 «5 da sistemare… non le sistema da solo»): le segnate si rileggono SUBITO e hanno un esito vero, mai più in giro
+{ const prima = globalThis.fetch, sparite = new Set();
+  globalThis.fetch = async u => { u = String(u); if (/firestore\.googleapis\.com/.test(u)) return new Response('{}'); if (sparite.has(u)) return new Response('', { status: 404 }); return prima(u); };
+  const tok = { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' };
+  const ctl = async () => (await (await W.default.fetch(new Request('https://x/api/gz', { method: 'POST', headers: tok, body: JSON.stringify({ db: 'controlla' }) }), cfg, contesto)).json()).controllo;
+  oggetto.sql.exec("UPDATE ricette SET json = json_remove(json_set(json, '$.v', 4), '$.esito')");   // tutte come appena lette, senza esito
+  const c1 = await ctl(), tot = c1.totale;
+  prova('C123: le segnate si rileggono subito, 10 per volta: quelle uguali su GZ diventano «uguali all\'originale»', c1.nOriginali === 10 && c1.nMale === tot - 10 && c1.ok + c1.nMale + c1.nOriginali === tot && c1.originali.every(m => m.esito === 'uguale'));
+  await ctl(); const c3 = await ctl();
+  prova('C123: a ogni controllo diminuiscono, alla fine 0 ancora da rileggere', c3.nMale === 0 && c3.nOriginali === tot && (await ponte.vecchie(50)).length === 0);
+  const c4 = await ponte.controlla();
+  prova('C123: il controllo di ogni giorno NON le rimette da rileggere (niente giro infinito)', c4.nMale === 0 && c4.nOriginali === tot && (await ponte.vecchie(50)).length === 0);
+  const due = oggetto.sql.exec('SELECT id, url FROM ricette LIMIT 2').toArray();
+  oggetto.sql.exec("UPDATE ricette SET json = json_remove(json_set(json, '$.v', 0), '$.esito') WHERE id IN (?, ?)", due[0].id, due[1].id);
+  sparite.add(due[0].url);
+  const c5 = await ctl();
+  prova('C123: pagina tolta da GZ (404) = «sparita», si tiene la copia', c5.originali.some(m => m.id === due[0].id && m.esito === 'sparita') && !!(await ponte.una(due[0].id)) && c5.nMale === 0);
+  oggetto.sql.exec("UPDATE ricette SET json = json_remove(json_set(json, '$.v', 0), '$.esito') WHERE id = ?", due[1].id);
+  gzGiu = true;
+  for (let i = 0; i < 3; i++) { await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci(); }
+  gzGiu = false;
+  const j3 = JSON.parse(oggetto.sql.exec('SELECT json FROM ricette WHERE id = ?', due[1].id).toArray()[0].json);
+  prova('C123: GZ giù 3 volte = «illeggibile», non resta in testa alla fila (PT E29)', j3.esito === 'illeggibile' && j3.v === 4 && j3.prove === 3);
+  const c6 = await ctl();
+  prova('C123: un giorno dopo l\'«illeggibile» si riprova e, uguale su GZ, diventa «uguale all\'originale»', c6.nMale === 0 && c6.originali.some(m => m.id === due[1].id && m.esito === 'uguale'));
+  oggetto.sql.exec("INSERT INTO scelte (id, url, nome, zona, categoria, foto, aggiunta) VALUES ('gz:Culurgiones', 'https://ricette.giallozafferano.it/Culurgiones.html', 'Culurgiones', 'sarda', '', '', ?)", Date.now());
+  const c7 = await ctl();
+  prova('C123: ricetta del ricettario senza la ricetta intera → letta subito, 0 mancanti', c7.mancanti === 0 && !!(await ponte.una('gz:Culurgiones')));
+  const { esaminaRicetta } = await import(pathToFileURL(join(radice, 'gz.mjs')).href);
+  const ric = foto7 => ({ nome: 'Risotto', foto: 'x.jpg', ingredienti: [{ nome: 'riso' }, { nome: 'brodo' }], passi: [
+    { t: 'Versate il brodo [[4]] e il riso [[5]], poi un mestolo alla volta [[6]] [[7]] fino a cottura.', foto: ['r_4.jpg', 'r_5.jpg', 'r_6.jpg'] },
+    { t: 'Mantecate col burro [[8]] [[9]] e servite subito ben caldo.', foto: [foto7, 'r_8.jpg', 'r_9.jpg'] }] });
+  prova('C123: foto citata nel passo 2 ma messa da GZ nel passo 3 = non manca', !esaminaRicetta(ric('r_7.jpg')).some(p => /foto mancant/.test(p)));
+  prova('C123: foto citata che non c\'è in nessun passo = «1 foto mancante»', esaminaRicetta(ric('r_10.jpg')).includes('passo 1: 1 foto mancante'));
+  globalThis.fetch = prima; await finisci();
+}
 // C119: passaggio delle foto di GZ per «✨ Migliora con l'AI»: solo foto di www.giallozafferano.it/images, mai altri siti
 { const prima = globalThis.fetch, chieste = [];
   globalThis.fetch = async u => { u = String(u); if (/firestore\.googleapis\.com/.test(u)) return new Response('{}'); chieste.push(u); return /\.jpg$/.test(u) ? new Response(new Uint8Array([255, 216, 255, 1, 2]), { headers: { 'content-type': 'image/jpeg' } }) : new Response('<html>', { headers: { 'content-type': 'text/html' } }); };
