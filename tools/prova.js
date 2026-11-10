@@ -747,7 +747,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { RIC._c5 = RIC.chiedi; RIC.chiedi = async c => c.db === 'controlla' ? { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 }, db: Object.assign({}, RIC.db, { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 } }) } : RIC._c5(c); });
     await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
     if (!(await page.locator('.ric-db-box', { hasText: 'Controllate 120 ricette' }).count()) || !(await page.locator('.ric-db-box', { hasText: 'Pane cafone' }).count())) throw new Error('«🔍 Controlla tutte» non mostra l\'esito');
-    await page.locator('.ric-db-box').scrollIntoViewIfNeeded(); await foto('81-controllo');
+    // C123: le rilette uguali su GZ: «uguali all'originale» col perché, e mai più «ci penso io» finto
+    await page.evaluate(() => { const c = { quando: Date.now(), totale: 1161, ok: 1156, nMale: 0, male: [], nOriginali: 5, originali: [{ id: 'gz:P', nome: 'Peperonata', prob: ['passo 6: 1 foto mancante'], esito: 'uguale' }, { id: 'gz:F', nome: 'Frullato di frutta', prob: ['1 passo solo'], esito: 'uguale' }], mancanti: 0 };
+      RIC.chiedi = async q => q.db === 'controlla' ? { controllo: c, db: Object.assign({}, RIC.db, { controllo: c }) } : RIC._c5(q); });
+    await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
+    if (!(await page.locator('.ric-db-box', { hasText: "5 uguali all'originale" }).count()) || !(await page.locator('.ric-db-box li', { hasText: 'Frullato di frutta' }).filter({ hasText: 'su GialloZafferano è così' }).count())) throw new Error('C123: le «uguali all\'originale» non hanno il perché');
+    if (await page.locator('#toast', { hasText: 'ci penso io' }).count()) throw new Error('C123: l\'avviso promette ancora «ci penso io»');
+    if (!(await page.locator('#toast', { hasText: "uguali all'originale" }).count())) throw new Error('C123: l\'avviso non dice cosa è successo');
+    await page.locator('.ric-db-box').scrollIntoViewIfNeeded(); await foto('81b-controllo-originali');
     await page.evaluate(() => { RIC.chiedi = RIC._c5; });
     await page.fill('#ric-cerca', 'seadas'); await page.waitForTimeout(200);
     if (await page.locator('.ric-carta').count() !== 1) throw new Error('la ricerca «seadas» non trova solo le seadas');
