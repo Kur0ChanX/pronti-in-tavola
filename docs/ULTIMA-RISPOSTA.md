@@ -1,22 +1,18 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 17:07 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: vuoi un altro account Cloudflare per far ripartire l'app subito.
 
-───
-💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
-
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
+💡 **PARERE: un account nuovo stasera non risolve, e rischia di peggiorare.**
+- **Indirizzo nuovo:** il sito cambierebbe indirizzo. I link mandati su WhatsApp e le icone già sui telefoni (anche quella di Monica) non funzionerebbero più.
+- **Memoria vuota:** le notifiche andrebbero riattivate su ogni telefono, e l'archivio delle ricette ripartirebbe da zero.
+- **Rischio:** Cloudflare può trattare un secondo account per la stessa app come un modo per aggirare il limite gratuito, e fermarli tutti e due.
+- **Tempi:** …
 
 ## Domande a Mario
 
-❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+❓ **DOMANDE**
+📌 **Di cosa parliamo:** devo capire cosa vedi fermo tu. Se è diverso dalle notifiche, è un guasto da correggere subito.
+1. **Cosa non va?**
+   - 1 · non arrivano le notifiche degli ordini
+   - 2 · l'app non si apre o un tasto non risponde (mandami la foto)
+   - 3 · aiutante o microfono
