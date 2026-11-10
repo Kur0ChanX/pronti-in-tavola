@@ -1,3 +1,5 @@
-# Ultima risposta di Claude (10/11/2026 11:33 ora italiana)
+# Ultima risposta di Claude (10/11/2026 15:12 ora italiana)
 
-Grazie: Android ok, ho salvato la foto e l'ho passata alla chat nuova insieme al tuo messaggio. Le prove su iPad e iPhone aspettano finché non ne avrai uno. D'ora in poi scrivi nella **Principale 42**: https://claude.ai/code/[segreto tolto dalla scorta]
+I documenti sono su GitHub (commit `17bc126`, uguale al ramo remoto). Il codice della v0.10.13 aspetta di proposito l'esito del giro completo. Qui ogni push del codice pubblica il sito vero, e le prove vanno chiuse prima del commit (E20).
+
+Giro completo in corso; quando finisce faccio commit, push e controllo il sito.
