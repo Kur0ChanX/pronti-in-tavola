@@ -74,10 +74,10 @@ const OPZIONI = [
   { k: 'ascoltoAvviso', g: 'mario', nome: 'Microfono dei clienti: segnalazione', tipo: 'numero', min: 10, max: 500, def: 40, unita: 'frasi al giorno',
     aiuto: 'Quando un cliente supera questo numero di frasi dette al microfono in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' },
   /* C124 soglie di «🏋️ Proteiche» nel Ricettario (valori per porzione; fonti in docs/lavori-in-corso/c124-ricettario-proteico.md) */
-  { k: 'fitProt', g: 'mario', nome: 'Proteiche: proteine minime', tipo: 'numero', min: 10, max: 60, def: 20, unita: 'g a porzione', parole: /protei|palestr|\bfit/,
-    aiuto: 'Una ricetta entra in «🏋️ Proteiche» solo con almeno queste proteine a porzione. 20 g: ISSN 2017, 20-40 g a pasto anche in definizione.' },
-  { k: 'fitProtPerc', g: 'mario', nome: 'Proteiche: quota di proteine', tipo: 'numero', min: 10, max: 60, def: 20, unita: '% delle calorie', parole: /protei|palestr|\bfit/,
-    aiuto: 'Almeno questa parte delle calorie deve venire dalle proteine. 20%: regola UE per «ad alto contenuto di proteine».' },
+  { k: 'fitProt', g: 'mario', nome: 'Proteiche: proteine minime', tipo: 'numero', min: 10, max: 60, def: 25, unita: 'g a porzione', parole: /protei|palestr|\bfit/,
+    aiuto: 'Un pasto entra in «🏋️ Proteiche» solo con almeno queste proteine a porzione. 25 g: ISSN 2017 dice 20-40 g a pasto, anche in definizione; 25 è un po\' più severo (Mario 10/11).' },
+  { k: 'fitProtPerc', g: 'mario', nome: 'Proteiche: quota di proteine', tipo: 'numero', min: 10, max: 60, def: 25, unita: '% delle calorie', parole: /protei|palestr|\bfit/,
+    aiuto: 'Pasto: almeno questa parte delle calorie deve venire dalle proteine. 25%: più severo della regola UE per «ad alto contenuto di proteine» (20%).' },
   { k: 'fitKcal', g: 'mario', nome: 'Proteiche: calorie massime', tipo: 'numero', min: 200, max: 1200, def: 550, unita: 'kcal a porzione', parole: /protei|palestr|\bfit|calori/,
     aiuto: 'Oltre queste calorie a porzione la ricetta non entra in «🏋️ Proteiche» (un pasto in definizione).' },
   { k: 'fitSaturi', g: 'mario', nome: 'Proteiche: grassi saturi massimi', tipo: 'numero', min: 3, max: 30, def: 10, unita: '% delle calorie', parole: /protei|palestr|\bfit|grass/,
@@ -85,7 +85,18 @@ const OPZIONI = [
   { k: 'fitZuc', g: 'mario', nome: 'Proteiche: zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 10, unita: '% delle calorie', parole: /protei|palestr|\bfit|zucche/,
     aiuto: 'Tutti gli zuccheri della ricetta, in parte delle calorie. 10%: Organizzazione Mondiale della Sanità (qui più severo: conta anche quelli naturali).' },
   { k: 'fitSodio', g: 'mario', nome: 'Proteiche: sodio massimo', tipo: 'numero', min: 200, max: 2000, def: 700, unita: 'mg a porzione', parole: /protei|palestr|\bfit|\bsale\b|sodio/,
-    aiuto: 'Il sale: 700 mg di sodio = 1,75 g di sale a porzione. Organizzazione Mondiale della Sanità: 2 g di sodio al giorno, diviso 3 pasti.' }
+    aiuto: 'Il sale: 700 mg di sodio = 1,75 g di sale a porzione. Organizzazione Mondiale della Sanità: 2 g di sodio al giorno, diviso 3 pasti.' },
+  /* C125 (Mario 10/11 «un po' più severe… anche ricette dolci proteiche, snack»): chi non passa come pasto può entrare come snack o dolce */
+  { k: 'fitSnackKcal', g: 'mario', nome: 'Proteiche: snack e dolci fino a', tipo: 'numero', min: 100, max: 600, def: 300, unita: 'kcal a porzione', parole: /protei|palestr|\bfit|snack|dolc/,
+    aiuto: 'Fino a queste calorie una ricetta che non passa come pasto può entrare come snack o dolce proteico, con le regole qui sotto. 300: stima di Claude.' },
+  { k: 'fitSnackProt', g: 'mario', nome: 'Proteiche: snack e dolci, proteine minime', tipo: 'numero', min: 5, max: 40, def: 10, unita: 'g a porzione', parole: /protei|palestr|\bfit|snack|dolc/,
+    aiuto: 'Snack e dolci: almeno queste proteine a porzione. 10 g: stima di Claude.' },
+  { k: 'fitSnackPerc', g: 'mario', nome: 'Proteiche: snack e dolci, quota di proteine', tipo: 'numero', min: 10, max: 70, def: 30, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc/,
+    aiuto: 'Snack e dolci: almeno questa parte delle calorie dalle proteine (più severo del pasto: le porzioni sono piccole). 30%: stima di Claude; la regola UE «alto contenuto» è 20%.' },
+  { k: 'fitSnackZuc', g: 'mario', nome: 'Proteiche: snack e dolci, zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 15, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc|zucche/,
+    aiuto: 'Snack e dolci: zuccheri in parte delle calorie. 15%: stima di Claude (contano anche quelli della frutta; l\'OMS dice 10% al giorno per quelli aggiunti).' },
+  { k: 'fitSnackSodio', g: 'mario', nome: 'Proteiche: snack e dolci, sodio massimo', tipo: 'numero', min: 100, max: 1500, def: 400, unita: 'mg a porzione', parole: /protei|palestr|\bfit|snack|dolc|\bsale\b|sodio/,
+    aiuto: 'Snack e dolci: sodio massimo a porzione. 400 mg: stima di Claude.' }
 ];
 const OPZ = Object.fromEntries(OPZIONI.map(o => [o.k, o]));
 const baseOpz = o => typeof o.def === 'function' ? o.def() : Array.isArray(o.def) ? o.def.slice() : o.def;
