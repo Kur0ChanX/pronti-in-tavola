@@ -1,68 +1,67 @@
 # Passaggio di consegne
 
-Sessione attuale: #53 (dopo la #52 `session_01WTjqUuJHcTsnzrn3Zd6bAE`, chiusa alla soglia 10/11 17:46; la apre la #52 con `create_session` (catena 2 di 8)).
+Sessione attuale: #54 (dopo la #53 `session_01WTjqUwM2NNTWHtEAdVH6dq`, chiusa alla soglia 10/11 18:21; la apre la #53 con `create_session` (catena 3 di 8)).
 
-- **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.). NUOVO 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario.
-- **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #20 alla #26: stesso file, in fondo.
-- **Cosa preme a Mario adesso (10/11 17:46):** 1) C136 PRIMA delle 01:00: il ricettario non deve più lavorare da solo (a mano, poco alla volta), sennò alle 01:00 il cron lo riaccende. 2) C135 corsia d'emergenza degli avvisi (aspetta la scelta 1-3). 3) Alle 01:00 controllare che il server riparta. Mario era arrabbiato per il blocco di Cloudflare (PT E53, E54): niente soldi, niente blocchi alle persone.
+- **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); C137 = in emergenza il ricettario si ferma (richiesta sua, non è un blocco alle persone: ordini, menù, avvisi, clienti sempre).
+- **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 è FATTA e online (v0.10.17): non rifarla.
+- **Cosa preme a Mario adesso (10/11 18:21):** 1) C135 corsia d'emergenza degli avvisi + C137 modalità risparmio, insieme nella v0.10.18, pubblicate PRIMA dell'01:00 (promesso). 2) All'01:05 sveglia: il server deve ripartire. Mario era arrabbiato per il blocco di Cloudflare (PT E53, E54): niente soldi, niente blocchi alle persone.
 
-## Stato (10/11 17:46 ora italiana)
-- Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (il push di `*.js`, `*.css`, `*.html` del ramo pubblica il sito da solo: `sito.yml`). Scorta `scorta-principale-20261110-01WTjqUuJHcT…` = della #52 (questa): unirla solo se ha lavoro non nel ramo.
-- v0.10.16 online (C134, Notifiche oneste col server fermo; giro 90/90). Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.16; `app.js` contiene «server degli avvisi è fermo».
-- Server: memoria (Durable Objects) bloccata da Cloudflare fino alle 01:00 italiane; il Worker risponde (errore tradotto da `perche`). Verifica: `curl -s …/api/chiave` → oggi `{"errore":"…letture gratuite…"}`, dopo le 01:00 `{"chiave":"…"}`.
-- Kit 38.16 applicato (prove degli hook 33/33, commit 436a230e): `CLAUDE.md` corto, `.claude/numeri-doppi.json` (data.js + DA-FARE), `tools/consegne.py` = quello di RVC adattato (REPO, ICONA, «di Pronti in Tavola»), settings = kit + `comandi-piccoli.py` + `effortLevel` xhigh, `.mcp.json` senza parallel-search (c'è il connettore Parallel). Verifica: `cat docs/kit-progetto/VERSIONE`. Gli hook nuovi valgono da questa sessione nuova.
-- C127 pezzi 2-3 in `docs/lavori-in-corso/c127-pezzi-2-3.patch`: tocca `data.js` → ora va rifatta come v0.10.17 o dopo (`git apply --exclude=data.js` + novità a mano).
-- `docs/DA-FARE.md` ~40,8 KB (tetto 40.960 byte): prima di aggiungere, sposta storia in `docs/DA-FARE-FATTE.md`.
+## Stato (10/11 18:21 ora italiana)
+- Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (il push di `*.js`, `*.css`, `*.html`, `wrangler.jsonc`, `*.mjs` del ramo pubblica sito e server da solo: `sito.yml`). Scorta `scorta-principale-20261110-01WTjqUwM2NN…` = della #53 (questa): unirla solo se ha lavoro non nel ramo.
+- v0.10.17 online (C136). Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.17; `ricettario.js` contiene «Carica altre» (6 volte, provato 18:20).
+- C136 come funziona: chiave `auto` nel Ricettario (DO), di base spenta → il cron `*/10` legge 1 riga e basta (MISURA: 144 righe al giorno); `mettiAuto`, `turboFerma`, `autoAcceso`, `caricoN` (CARICO_BASE 20, CARICO_MAX 50), azioni `/api/gz` `auto` e `ferma`; opzione `ricCarico` in `opzioni.js` (gruppo mario); interruttore «Motore automatico» solo con `puoSviluppare()` nel dettaglio Database, con `confirm`. Prove: `tools/prova-database.mjs` 168/168 (blocco «C136»), app 90/90 (89 nel giro + C55 rifatta).
+- Server: memoria (Durable Objects) bloccata da Cloudflare fino alle 01:00 italiane. Verifica: `curl -s …/api/chiave` → oggi errore «letture gratuite», dopo le 01:00 `{"chiave":"…"}`.
+- Sveglia `trig_019AjEgskwCdnYiW9q8jirgp` (send_later, 11/11 01:05) legata alla #53: la #54 la rifà sua e cancella questa (E248).
+- C127 pezzi 2-3 in `docs/lavori-in-corso/c127-pezzi-2-3.patch`: tocca `data.js` → va rifatta come v0.10.19 o dopo (`git apply --exclude=data.js` + novità a mano).
+- `docs/DA-FARE.md` ~40,9 KB (tetto 40.960 byte): prima di aggiungere, sposta storia in `docs/DA-FARE-FATTE.md` (attenzione: C122 sembra finita ma è APERTA, promessa del kit).
+- Kit: RVC ha pronto il 38.18 (messaggio di Risparmio 20, 18:02): arriva col «KIT NUOVO» all'avvio, non urgente; Preferenze v38 uguali.
 
 ## Riferimenti
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
-- Piani: C127 `docs/lavori-in-corso/c127-giorno-proteico.md` + patch; C131 `docs/lavori-in-corso/c131-regole-proteiche.md`; C126 `docs/lavori-in-corso/c126-proteiche-momenti-e-fonti.md` (pezzi 3-4).
-- Foto dell'email di Cloudflare: `archivio/foto/2026-11-10-1645-email-cloudflare-blocco.jpg`, `…-1653-email-cloudflare-orari.jpg` (avviso 90% 15:29, blocco 15:35).
+- Piani: C137 `docs/lavori-in-corso/c137-modalita-risparmio.md`; C136 `docs/lavori-in-corso/c136-blocco-ricettario.md`; C127 `docs/lavori-in-corso/c127-giorno-proteico.md` + patch.
+- Foto dell'email di Cloudflare: `archivio/foto/2026-11-10-1645-email-cloudflare-blocco.jpg`, `…-1653-email-cloudflare-orari.jpg`.
 
-## Sessione appena chiusa (#52)
-- Kit 38.16 (Mario «Kit sì»): 72 file copiati con `cp` dai file estratti (non Write: ~200k token), segnaposto sostituiti, prove 33/33; difetti del pacchetto in `docs/PER-IL-KIT.md`.
-- C133: 7 regole → 5 (A lavori automatici, B causa con prova, C soluzioni smart, D guide giuste, E errori col perché), testo in `docs/PER-IL-KIT.md`, mandato a Risparmio 19 (RVC, `session_01WTjqUxBvxdEgUbiyhEijCA`) 17:30 con `send_message`. La vecchia sessione del kit (Kit 1) è chiusa.
-- C134 v0.10.16: Notifiche oneste (foto prima/dopo `archivio/foto/2026-11-10-c134-notifiche-confronto.png`, mandata). Mario: «2» = niente riga nella Home.
-- C135 spiegata (KV, 100 mila letture/giorno, copia dopo l'01:00 senza riiscrizioni, anche i clienti): aspetta 1/2/3. C136 scritta: da fare per prima.
+## Sessione appena chiusa (#53)
+- C136 v0.10.17 (online 18:20): motore automatico spento, carichi a mano di N, «⏹ Ferma», testi onesti senza «ogni 10 minuti» (con `d.auto` tornano quelli vecchi). Foto a Mario non ancora mandata (promessa C136 «👁»).
+- Risposto a Mario su C135 (come e quando: stasera prima dell'01:00, copia da sola nel KV) e su C137 (piano scritto).
+- `docs/CHI-FA-COSA.md` snellito (tolte le righe chiuse #38-#46).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
-- #52: copiare il pacchetto del kit con Write (punto 3) → ~200k token: copia con `cp` dopo il controllo dei segnaposto (anche `<OWNER>`/`<NOME-REPO>` in `test-guardia.py`). Eseguire un file scaricato nello scratchpad → rifiutato dal controllo automatico: prima nel progetto, poi le prove. `tools/unisci-json.py` a tre vie sulle impostazioni ha perso `PostModelSwitch`: impostazioni = kit + aggiunte del progetto a mano. Foto: nell'anteprima `sulSito()` è falso (niente pulsante né «Ultimi avvisi») → copia nello scratchpad con la condizione a `true`, solo per le foto; saltare l'apertura col tocco su «Salta» e scorrere fino al testo con `scrollBy` del contenitore.
-- #51: piano Workers Paid (5 $/mese, sblocca in pochi minuti) → NO di Mario (niente soldi). Blocco delle ricerche delle persone → NO di Mario (PT E41, E54). Rimettere stasera le notifiche senza Cloudflare (KV o un altro account) → scartato: chiave privata e iscrizioni dei telefoni stanno dentro la memoria bloccata, nuove chiavi = tutti i telefoni da riiscrivere. `send_later` e sveglie → rifiutati a catena 8 (lineage 8): per aspettare usare `run_in_background`. Misura delle righe lette nella prova: `EXPLAIN QUERY PLAN` (SCAN = tutta la tabella, SEARCH = righe trovate), non c'è miniflare qui.
-- #50: `tools/scarica-kit.py` NON c'è qui e quello della fonte cerca solo 12 parti → curl a mano (17 parti). Commit dei `.js` per «salvarli» → NO (pubblica il sito): patch in `docs/lavori-in-corso/`.
-- #49: `node --check worker.js` NON vede gli errori dei moduli: `node --input-type=module --check < worker.js`. `.find(x => !x || …) || {ok}` nasconde un `null`.
-- #48: Monitor con `tail -f` → la guardia lo blocca. Nome di azione nuovo senza `grep` → doppione (PT E51).
-- #47: `python3 - <<EOF` con la parola `env` dentro lo ferma la guardia: script in un file dello scratchpad + `python3 -I`.
+- #53: togliere il cron da `wrangler.jsonc` → scartato: senza cron Mario non può riaccendere il motore da solo (regola «Senza Claude»); il cron spento costa 1 riga ogni 10 minuti. `SOLO=` sulla prova C55 da sola fallisce (serve la Home di Monica): `SOLO='Monica: notifica|ricettario \(C55\)'`. Un avviso «📥 N ricette» dello scarico copre i toast controllati: la prova aspetta `!RIC.scarico`. Spostare C122 in FATTE → era aperta (rimessa). `turbo` con n non valido deve dare errore (non partire con 20): solo oltre 50 si taglia.
+- #52: copia del kit con Write (~200k token) → `cp`. Eseguire un file scaricato nello scratchpad → rifiutato. `tools/unisci-json.py` a tre vie ha perso `PostModelSwitch`.
+- #51: piano Workers Paid → NO di Mario. Blocco delle ricerche delle persone → NO di Mario (PT E41, E54). `send_later` a catena 8 → rifiutato.
+- #50: commit dei `.js` per «salvarli» → NO (pubblica il sito): patch in `docs/lavori-in-corso/`.
+- #49: `node --check worker.js` NON vede gli errori dei moduli: `node --input-type=module --check < worker.js`.
+- #47-#48: `python3 - <<EOF` con la parola `env` (anche dentro il testo) lo ferma la guardia: script in un file dello scratchpad + `python3 -I`. Monitor con `tail -f` bloccato.
 - Sessioni #28-#46 e 1-22: `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo).
 
 ## Prossimi passi
-0. C136 SUBITO (prima delle 01:00): nel cron `CRON_DB` di `worker.js` (`scheduled`, ~riga 1263) niente `motoreRicette` / `caricoAuto` / `controllaTutte` automatici; un tasto «Carica altre 20 ricette» nella pagina Database (usa `motoreRicette(cfg, true)` o `turboAvvia` con N piccolo), N nelle Impostazioni dev con tetto sicuro; anche «Cerca ancora» resta a mano. Occhio critico: cosa dipende dal motore automatico (RicetteFit, valori, controllo del giorno, «Oggi +N entrate» di C127/C128: testi da rendere onesti, PT E17). Prove: `tools/prova-database.mjs` (server) + giro dell'app; misura delle letture (riga «MISURA»). Pubblicare prima delle 01:00.
-1. Alle 01:00: `curl -s …/api/chiave` deve dare la chiave; a Mario una riga «server ripartito, notifiche di nuovo attive». Promessa C130: 7 giorni senza email di Cloudflare.
-2. C135 DECISO (Mario 17:50, dopo l'handoff: «1 anche per i clienti e non far riscriversi in clienti per carità se no diventa uno stress quest' app»): per tutti, NESSUNO deve iscriversi di nuovo, quindi dopo l'01:00 copia chiavi VAPID e iscrizioni dal DO a Workers KV (binding nuovo in `wrangler.toml`, scritture solo quando un telefono si iscrive), `avvisaGestori`/avviso ai clienti: se il DO dà errore → invio dal KV, senza diario. Controllare prima i limiti KV sul sito (fatto 10/11: 100 mila letture, mille scritture al giorno).
-3. C130 contatore vero (chiave «Account Analytics», Aspetta Mario) al «1».
-4. C127 (v0.10.17) al «1»; foto Proteiche quando il server è ripartito.
+0. C135 + C137 nella v0.10.18, pubblicate PRIMA dell'01:00 (promesso a Mario). Occhio critico prima del codice.
+   - C135: KV nuovo in `wrangler.jsonc` (`kv_namespaces`). PRIMA controlla sulla guida ufficiale (skill `ricerca-aggiornata`) se wrangler 4 nel deploy di `sito.yml` crea da solo il namespace; se no, guida a Mario coi pulsanti esatti, una riga in «Aspetta Mario». L'oggetto AVVISI, appena risponde (01:00), scrive da solo nel KV UNA chiave con chiavi VAPID e iscrizioni (una scrittura; poi una per ogni iscrizione nuova). `avvisaGestori` e avviso ai clienti: se il DO dà errore → invio dal KV, senza diario. Iscrizione durante il blocco → nel KV, rimessa nel DO dopo. Limiti KV: 100 mila letture, mille scritture al giorno (letti 10/11).
+   - C137: piano in `docs/lavori-in-corso/c137-modalita-risparmio.md` (freno C130 o memoria bloccata → ricettario solo con ciò che è salvato; riquadro «🛟 Modalità risparmio fino alle 01:00»). ATTENZIONE: la prova C130 «anche con tantissime letture le ricerche delle persone funzionano» va cambiata: ora Mario vuole il ricettario in pausa (solo ricettario).
+   - Prove: `tools/prova-database.mjs` + giro completo; poi push e `curl` della versione.
+1. Alle 01:05 (sveglia): `curl -s …/api/chiave` deve dare la chiave; a Mario una riga «server ripartito, notifiche di nuovo attive»; controlla `auto` spento e letture basse. Promessa C130: 7 giorni senza email di Cloudflare.
+2. Foto a Mario di C136 (riquadro «🗄 Il mio database» col motore a mano) quando il server risponde (skill `foto`).
+3. C130 contatore vero (chiave «Account Analytics», Aspetta Mario) al «1». C127 al «1».
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md`. Nuova della #52: C135 corsia d'emergenza (1 tutti · 2 solo Mario e Monica · 3 no). Chiusa: riga nella Home (Mario «2»). C132 proposte 1-3: ora esempi dentro la regola C mandata al kit, la scelta resta di Mario.
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (9 della principale). Nessuna nuova della #53. Controllo Da fare: 1 voce aggiunta (C137); C135 aggiornata.
 
 ## Ultimo messaggio di Mario
-10/11 17:44 (in questa chat, #52), parola per parola: «Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?» → risposto (KV, regge sempre, clienti sì se si sceglie 1; domanda C135 aperta).
-Prima: 17:41 «cmq bisogna mettere un blocco al ritardo se tutto il consumo era quello che non vada sempre in automatico a manuale poco alla volta» + «volevo scrivere un blocco al ricettario» → C136. 17:39 «2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordini» → «2» alla riga nella Home + C135. 17:34 «mandami una foto prima e dopo» → foto mandata. 17:15 «è normale che funziona?» (foto della prova notifiche) → sì, la prova la fa il telefono; C134.
+10/11 18:13 (in questa chat, #53), parola per parola: «quando è in modalità emergenza mettinche non si possono fare cose quasi inutili come aggiornate ricettario al solo cose base per far funzionare il programma al 100%» → C137 (piano detto a Mario: freno o memoria bloccata, ricettario in pausa fino alle 01:00, base sempre), con C135 nella v0.10.18.
+Prima: 18:10 «come integriamo il server emergenza e quando?» → risposto (KV, copia da sola, stasera prima dell'01:00).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C137; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C138; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-10 17:15 · è normale che funziona? → C134 v0.10.16
-- 2026-11-10 17:34 · mandami una foto prima e dopo → foto mandata (`archivio/foto/2026-11-10-c134-notifiche-confronto.png`)
-- 2026-11-10 17:39 · 2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordi… → «2» alla riga nella Home; C135
-- 2026-11-10 17:41 · cmq bisogna mettere un blocco al ritardo se tutto il consumo era quello che non … → C136 blocco al ricettario (Prossimi passi 0)
-- 2026-11-10 17:41 · volevo scrivere un blocco al ricettario → C136 (era «ricettario», non «ritardo»)
-- 2026-11-10 17:44 · Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatt… → risposto; domanda C135
+- 2026-11-10 17:48 · [AVVIO] Sessione #53 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto, C136 v0.10.17
+- 2026-11-10 18:10 · come integriamo il server emergenza e quando? → risposto; C135 in `docs/DA-FARE.md`
+- 2026-11-10 18:13 · quando è in modalità emergenza mettinche non si possono fare cose quasi inutili … → C137
 
 Ultimo, intero:
-> Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?
-
+> quando è in modalità emergenza mettinche non si possono fare cose quasi inutili come aggiornate ricettario al solo cose base per far funzionare il programma al 100%

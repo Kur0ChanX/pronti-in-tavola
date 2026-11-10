@@ -10,7 +10,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟢 Principale 53 | C136 blocco al ricettario (motore automatico spento, carichi a mano di N ricette), prima delle 01:00 | `worker.js` (cron, `ricettaGz` turbo/cercaFit, Ricettario) · `ricettario.js` (Database, Proteiche) · `opzioni.js` · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
+| 🔴 Principale 53 | chiusa alla soglia 10/11 ~18:21: C136 v0.10.17 online (ricettario a mano); C135 + C137 alla 54 | `worker.js` (cron, `ricettaGz` turbo/cercaFit, Ricettario) · `ricettario.js` (Database, Proteiche) · `opzioni.js` · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 52 | chiusa alla soglia 10/11 ~17:48: kit 38.16 (33/33), C133 al kit, v0.10.16 Notifiche oneste; C136 e C135 alla 53 | `.claude/` · `tools/` · `CLAUDE.md` · `app.js` (notifiche) | 10/11 |
 | 🔴 Principale 50 | chiusa alla soglia 10/11 ~16:42: C127 v0.10.15 pronta in patch (giro 91/0); C131 misura (Mario sceglie P1); kit: chiave, pacchetto v38 scaricato, promemoria scadenza; C132-C133 regole per il kit; alla 51 | `ricettario.js` · `spesa.js` · `aiutante.js` · `worker.js` (riga ~73) · `style.css` · `data.js` · `tools/prova.js` | 10/11 |
 | 🔴 Principale 49 | chiusa alla soglia 10/11 ~15:53: v0.10.14 C130 urgenza Cloudflare (letture del server, freno); C127 pezzi 2-3 provati, in patch alla 50; kit: risposta a Mario, aspetta la chiave | `worker.js` (`Ricettario`: `contaLetture`, `freno`, `statoMotore`, `statoDb`, indici) · `ricettario.js` (`letturaFit`) · `data.js` · `tools/prova-database.mjs` | 10/11 |
