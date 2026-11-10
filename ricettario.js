@@ -16,12 +16,37 @@ const RIC = { stato: typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'no', wake: 
     return j;
   } };
 /* C69 (Mario 08/11 «filtri come le app gold standard»): tempo, facili, ordina, numero, «Azzera», filtri ricordati sul telefono */
-const ORDINI_RIC = [['', 'Consigliate'], ['nuove', '🆕 Nuove'], ['az', 'A-Z'], ['veloci', '⏱ Più veloci']];
-const filtriVuoti = () => ({ q: '', zona: 'tutte', cat: '', tempo: 0, facile: false, ordine: '', piu: false });
-const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.tempo || f.facile);
+const ORDINI_RIC = [['', 'Consigliate'], ['nuove', '🆕 Nuove'], ['az', 'A-Z'], ['veloci', '⏱ Più veloci'], ['prot', '💪 Più proteine'], ['kcal', '🔥 Meno calorie']];
+/* C124 (Mario 10/11 «metti anche filtro per difficoltà»): Facili comprende «Molto facile», Difficili «Molto difficile» */
+const DIFF_RIC = [['', 'Tutte'], ['facile', 'Facili'], ['media', 'Medie'], ['difficile', 'Difficili']];
+const diffRic = d => { const t = String(d || '').toLowerCase(); return /facil/.test(t) ? 'facile' : /medi/.test(t) ? 'media' : /diffic/.test(t) ? 'difficile' : ''; };
+const filtriVuoti = () => ({ q: '', zona: 'tutte', cat: '', tempo: 0, diff: '', ordine: '', piu: false });
+const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.tempo || f.diff);
+/* C124 (Mario 10/11 «ricette gym… poche calorie e grassi cattivi… attenzione a sale e zuccheri… asciugarsi ma migliorare l'ipertrofia»):
+   regola «🏋️ Proteiche» sui valori PER PORZIONE di GialloZafferano. Soglie in Impostazioni → «Solo per te, Mario» (opzioni.js, fit*);
+   fonti delle soglie in docs/lavori-in-corso/c124-ricettario-proteico.md. Senza tutti i valori una ricetta non entra (meglio una in meno). */
+const sogliaFit = (k, d) => { const v = typeof opz === 'function' ? opz(k) : undefined; return Number.isFinite(v) ? v : d; };
+function fitRic(n) {
+  if (!n || !(n.kcal > 0) || [n.prot, n.saturi, n.zuc, n.sodio].some(x => x == null)) return false;
+  return n.prot >= sogliaFit('fitProt', 20) && n.prot * 400 / n.kcal >= sogliaFit('fitProtPerc', 20) && n.kcal <= sogliaFit('fitKcal', 550)
+    && n.saturi * 900 / n.kcal <= sogliaFit('fitSaturi', 10) && n.zuc * 400 / n.kcal <= sogliaFit('fitZuc', 10) && n.sodio <= sogliaFit('fitSodio', 700);
+}
+const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
+const numIt = x => String(Math.round(x * 10) / 10).replace('.', ',');
+const saleRic = n => n && n.sodio != null ? Math.round(n.sodio * 2.5 / 100) / 10 : null;   // sale (g) = sodio (mg) × 2,5 / 1000
+/* «perché è qui»: es. «💪 32 g proteine · 410 kcal · sale 0,9 g» */
+const rigaFit = n => n && n.kcal > 0 ? `💪 ${n.prot != null ? numIt(n.prot) + ' g proteine · ' : ''}${Math.round(n.kcal)} kcal${saleRic(n) != null ? ' · sale ' + numIt(saleRic(n)) + ' g' : ''}` : '';
+/* C124 (Mario 10/11 «le ricette di GialloZafferano segnale… e segnami la fonte»): da dove viene ogni ricetta */
+const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit' };
+const fonteRic = r => r.mia ? 'Ricetta tua' : FONTI_RIC[String(r.id || '').split(':')[0]] || 'GialloZafferano';
+/* numeri per la Home (app.js): ricette nel ricettario e quante proteiche */
+function contaRicHome() {
+  const tt = elencoRic(), extra = Object.assign({}, RIC.scaricate || {}, cacheRic());
+  return { tutte: tt.length + mieRic().length, fit: tt.filter(r => fitRic(r.nutr || (extra[r.id] && extra[r.id].nutr))).length };
+}
 const minutiRic = r => Number(r.totale) || Number(r.minuti) || (Number(r.prep) || 0) + (Number(r.cottura) || 0) || 0;
-function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!f.piu, zona: f.zona, cat: f.cat, tempo: f.tempo, facile: f.facile, ordine: f.ordine }); }
-const ZONE_RIC = [['tutte', 'Tutte'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
+function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!f.piu, zona: f.zona, cat: f.cat, tempo: f.tempo, diff: f.diff, ordine: f.ordine }); }
+const ZONE_RIC = [['tutte', 'Tutte'], ['fit', '🏋️ Proteiche'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/';
 /* motore: le sarde vanno una pagina sì e una no (Mario 08/11 «in priorità sarde ma cercale miste») */
@@ -143,8 +168,10 @@ function salvaCache(r) {
    salvate sul server (uguali sul telefono di Monica e di Mario) e copiate qui per usarle senza rete */
 RIC.scelte = (() => { try { return JSON.parse(localStorage.getItem('pit-ric-scelte') || '[]'); } catch (e) { return []; } })();
 function elencoRic() {
-  const base = typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : [], ids = new Set(base.map(r => r.id));
-  return base.concat(RIC.scelte.filter(x => !ids.has(x.id)).map(x => ({ id: x.id, pagina: x.id.slice(3), nome: x.nome, zona: x.zona || 'italiana', categoria: x.categoria || '', foto: x.foto || '', totale: Number(x.totale) || 0, difficolta: x.difficolta || '', cerca: x.cerca || '', aggiunta: x.aggiunta || 0, scelta: true, nuova: (x.aggiunta || 0) > Date.now() - 7 * 86400000 })));
+  const base0 = typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : [], ids = new Set(base0.map(r => r.id));
+  const nu = {}; RIC.scelte.forEach(x => { if (x.nutr) nu[x.id] = x.nutr; });   // C124: valori per porzione dal server, anche per quelle di partenza
+  const base = base0.map(r => nu[r.id] && !r.nutr ? Object.assign({}, r, { nutr: nu[r.id] }) : r);
+  return base.concat(RIC.scelte.filter(x => !ids.has(x.id)).map(x => ({ id: x.id, pagina: x.id.slice(3), nome: x.nome, zona: x.zona || 'italiana', categoria: x.categoria || '', foto: x.foto || '', totale: Number(x.totale) || 0, difficolta: x.difficolta || '', nutr: x.nutr || null, cerca: x.cerca || '', aggiunta: x.aggiunta || 0, scelta: true, nuova: (x.aggiunta || 0) > Date.now() - 7 * 86400000 })));
 }
 const nelRicettario = id => elencoRic().some(r => r.id === id);
 function salvaScelte(tt) { if (!Array.isArray(tt)) return; RIC.scelte = tt; scriviRic('pit-ric-scelte', tt); }
@@ -418,19 +445,23 @@ function vRicettario() {
   if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
   leggiScelte(); chiediStatoDb();
   const f = UI.ric || (UI.ric = Object.assign(filtriVuoti(), leggiRic('pit-ric-filtri', {}), { q: '' }));   // C69: filtri ricordati (non la ricerca scritta)
+  if (f.facile) { f.diff = f.diff || 'facile'; delete f.facile; }   // C124: il vecchio «Solo facili» diventa «Facili»
+  if (UI.ricZona) { f.zona = UI.ricZona; f.cat = ''; delete UI.ricZona; salvaFiltri(); }   // dall'aiutante o dalla Home («🏋️ Proteiche»)
   const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
   const mie = mieRic().map(daMia);
   const scar = RIC.scaricate, extra = Object.assign({}, scar, cache);
   const elenco = elencoRic();
-  const tutte = mie.concat(elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
-  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
+  const tutte = mie.concat(elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti, nutr: r.nutr || x.nutr || null }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
+  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && fitRic(r.nutr) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
-    && (!f.tempo || (minutiRic(r) > 0 && minutiRic(r) <= f.tempo)) && (!f.facile || /facil/i.test(r.difficolta || ''))
+    && (!f.tempo || (minutiRic(r) > 0 && minutiRic(r) <= f.tempo)) && (!f.diff || diffRic(r.difficolta) === f.diff)
     && (!q || q.split(/[\s,]+/).filter(Boolean).every(p => senzaAccenti(r.nome + ' ' + (r.cerca || '') + ' ' + (r.ingredienti || []).map(i => i.nome).join(' ')).includes(p))));
   const az = (a, b) => a.nome.localeCompare(b.nome, 'it');
   rr = rr.sort(f.ordine === 'nuove' ? (a, b) => (b.aggiunta || 0) - (a.aggiunta || 0) || az(a, b) : f.ordine === 'az' ? az
     : f.ordine === 'veloci' ? (a, b) => (minutiRic(a) || 1e4) - (minutiRic(b) || 1e4) || az(a, b)
+    : f.ordine === 'prot' || (!f.ordine && f.zona === 'fit') ? (a, b) => protPer100(b.nutr) - protPer100(a.nutr) || az(a, b)
+    : f.ordine === 'kcal' ? (a, b) => (a.nutr && a.nutr.kcal > 0 ? a.nutr.kcal : 1e5) - (b.nutr && b.nutr.kcal > 0 ? b.nutr.kcal : 1e5) || az(a, b)
     : (a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || az(a, b));
   const filtrato = filtriAttivi(f);
   const c = RIC.cerca, nScar = Object.keys(scar).length;

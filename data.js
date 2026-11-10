@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.2';
+const VERSIONE_APP = '0.10.3';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.3', data: '10/11/2026',
+    nuovo: ['Ricettario: il motore ora legge da GialloZafferano i valori per porzione di ogni ricetta (calorie, proteine, grassi, saturi, zuccheri, sale) e cerca da solo anche ricette leggere e proteiche (pollo, tacchino, pesce, legumi…). Per le ricette già salvate ci mette circa un giorno. Servono alla sezione «🏋️ Proteiche», che arriva nella prossima versione'] },
   { v: '0.10.2', data: '10/11/2026',
     corretto: ['Solo per Mario: quando guardi come cliente e parli al microfono, l\'ascolto ora passa dalla stessa strada dei clienti veri (Groq + Deepgram), non da quella di chi gestisce. Nella barra sviluppatore compare 🎧 con chi ha sentito la frase (es. «Groq + Deepgram · corretto»): così la tua prova vale anche per i clienti'] },
   { v: '0.10.1', data: '10/11/2026',
