@@ -10,7 +10,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟢 Principale 48 | C127 pezzo 1 (v0.10.13 Proteiche ordinata, scelta multipla, riquadro verde); poi pezzi 2-3 | `ricettario.js` (zone, `sceltaFit`, `piuFiltriRic`, `riquadroFit`, `letturaFit`) · `style.css` · `app.js` (scorrimento di lato) · `data.js` · `tools/prova.js` | 10/11 |
+| 🔴 Principale 48 | chiusa alla soglia 10/11 ~15:21: v0.10.13 C127 pezzo 1 (Proteiche ordinata, scelta multipla, riquadro verde); pezzi 2-3 in patch alla 49 | `ricettario.js` (zone, `sceltaFit`, `piuFiltriRic`, `riquadroFit`, `letturaFit`) · `style.css` · `app.js` (scorrimento di lato) · `data.js` · `tools/prova.js` | 10/11 |
 | 🔴 Principale 47 | chiusa alla soglia 10/11 ~15:00: v0.10.12 C128 (carico veloce, «Cerca ancora» alle pagine dopo); C127 scelto da Mario, codice alla 48 | `worker.js` (motore, `cercaFit`, `nuoveTra`, `caricoAuto`, turbo) · `ricettario.js` (`letturaFit`, testi) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 46 | chiusa alla soglia 10/11 ~14:30: v0.10.9 ricerca normale anche su RicetteFit; v0.10.10-0.10.11 Proteiche per momenti, «cerca tutto», fonte proteica; C127-C128 alla 47 | `rf.mjs` (`rfTrova`) · `worker.js` (`ricettaGz` ricerca a parole, `rfCerca`, `nomiDi`) · `ricettario.js` (testi della ricerca) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 45 | chiusa alla soglia 10/11 ~13:45: C125 finita (v0.10.7 Pasti/Snack/⚡, v0.10.8 «🔍 Cerca ricette fit» e numeri per fonte; fonti nuove provate, nessuna coi valori); domanda «fonti alternative» alla 46 | — | 10/11 |

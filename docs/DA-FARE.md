@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 10/11 · 🟢 Principale 48 · C127+C128 v0.10.13: chiudi e riapri l'app, Ricettario → «🏋️ Proteiche»: una foto della parte alta (zone, «Quando», «Fonte proteica», riquadro verde con «RicetteFit N di 905» e «Oggi +N entrate»). A cosa serve: vedere coi dati veri la pagina nuova e quante proteiche arrivano.
 - 10/11 · 🟢 Principale 46 · C124-C126 v0.10.10: chiudi e riapri l'app, Home → «Proteiche» → tocca «🌅 Colazione» (foto), poi «Cerca nuove ricette fit su tutti i siti» senza momento (foto); Ricettario «Tutte» → scrivi «budino» → «Cerca «budino» su GialloZafferano e RicetteFit» (foto); pagina Database, riga «GialloZafferano N · RicetteFit N» (foto). A cosa serve: vedere coi dati veri che arrivano ricette da più fonti e che la ricerca le porta.
 - 10/11 · 🟢 Principale 42 · Kit 37.2: Mario «ok github chiave». Guida data 10/11 (link già compilato, sola lettura su RVC). Aspetto «chiave pronta», poi apro il modulo sicuro (host raw.githubusercontent.com). A cosa serve: portare qui il kit 37.2 e i prossimi da solo.
 - 09/11 · 🟡 Principale 38 · C115 (Mario 10/11 ~11:25 «per ora ok», lo prova più avanti) v0.9.94 (l'Astice è ok, Mario 10/11): «guarda come cliente», chiudi e riapri: dopo il logo c'è il vapore? Un video. A cosa serve: chiudere il vapore anche per i clienti.
