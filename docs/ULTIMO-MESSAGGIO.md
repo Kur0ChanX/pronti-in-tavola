@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 01:10 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 01:19 ora italiana)
 
-b + migliora con ia
+perché rompi sempre il codice  quando funziona?
