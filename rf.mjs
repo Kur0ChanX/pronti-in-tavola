@@ -26,6 +26,34 @@ export function rfElenco(xml) {
   return [...new Set([...String(xml || '').matchAll(/<loc>\s*([^<\s]+)\s*<\/loc>/g)].map(m => urlRf(m[1])).filter(Boolean))];
 }
 
+/* C125 (Mario 10/11 13:40 «la ricerca… nelle fonti alternative anche a giallozafferano»): le ricette dell'elenco che hanno
+   nell'indirizzo TUTTE le parole cercate, per radice («budino» trova anche «budini»); «con», «alla»… non contano.
+   Nome dall'indirizzo, foto dall'elenco (ogni voce della sitemap ha la sua <image:loc>): nessuna richiesta in più a RicetteFit. */
+const senzaAccenti = t => String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const VUOTE_RF = new Set(['con', 'per', 'all', 'alla', 'alle', 'allo', 'agli', 'dal', 'dall', 'dalla', 'dei', 'del', 'dell', 'della', 'delle', 'dello', 'degli', 'nel', 'nell', 'nella', 'sul', 'sull', 'sulla', 'una', 'uno']);
+export const radiciRf = q => senzaAccenti(q).replace(/[^\p{L}\p{N}]+/gu, ' ').trim().split(' ')
+  .filter(p => p.length >= 3 && !VUOTE_RF.has(p)).map(p => p.length >= 5 ? p.slice(0, Math.max(4, p.length - 2)) : p);
+export function nomeRf(u) {
+  let s = (String(u || '').split('/ricetta/')[1] || '').replace(/\/$/, '');
+  try { s = decodeURIComponent(s); } catch (e) { /* indirizzo con % rotto: resta com'è */ }
+  s = s.replace(/-\d+$/, '').replace(/-+/g, ' ').trim();   // «pancake-proteici-2» → «pancake proteici»
+  return s ? s[0].toUpperCase() + s.slice(1) : '';
+}
+export function rfTrova(xml, q, max = 20) {
+  const radici = radiciRf(q), out = [];
+  if (!radici.length) return out;
+  for (const m of String(xml || '').matchAll(/<url>([\s\S]*?)<\/url>/g)) {
+    const loc = /<loc>\s*([^<\s]+)\s*<\/loc>/.exec(m[1]), url = loc ? urlRf(loc[1]) : '';
+    if (!url || out.some(x => x.url === url)) continue;
+    const t = senzaAccenti(url.slice(SITO_RF.length + 8));
+    if (!radici.every(p => t.includes(p))) continue;
+    const f = /<image:loc>\s*([^<\s]+)\s*<\/image:loc>/.exec(m[1]);
+    out.push({ url, nome: nomeRf(url), foto: f && FOTO_RF.test(f[1]) ? f[1] : '' });
+    if (out.length >= max) break;
+  }
+  return out;
+}
+
 /* «140 g Spaghetti integrali» → { nome: 'Spaghetti integrali', q: 140, u: 'g' }; «1 pz Uovo» → q 1, senza unità.
    Scritte al modo di GZ («Sale q.b.», «Farina 300 g»): il lettore di GZ */
 const RIGA_RF = /^(\d+(?:[.,]\d+)?)\s*(g|gr|kg|ml|cl|dl|l|pz|pezz[io]|cucchiai(?:ni|no|o)?|spicchi?|foglie|fette|fetta|pizzic[oh]i?|bustin[ae]|vasett[oi]|tazz[ae]|bicchier[ei])?\.?\s+(\D.*)$/i;

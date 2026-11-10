@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.8';
+const VERSIONE_APP = '0.10.9';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.9', data: '10/11/2026',
+    migliorato: ['Ricettario: la ricerca di sempre ora guarda anche su RicetteFit, non solo su GialloZafferano. Scrivi un piatto (es. budino, pollo al limone) e tocca «Cerca … su GialloZafferano e RicetteFit»: in cima quelle di RicetteFit con la foto, sotto quelle di GialloZafferano'] },
   { v: '0.10.8', data: '10/11/2026',
     nuovo: ['Ricettario «🏋️ Proteiche»: riquadro «🔍 Cerca ricette fit». Tocca una parola (pollo, tonno, budino…) o scrivila: l\'app cerca su GialloZafferano e RicetteFit e legge subito le ricette nuove. In «Proteiche» entrano solo quelle che passano le regole'],
     migliorato: ['Ricettario: in «🏋️ Proteiche» e nella pagina Database vedi quante ricette vengono da GialloZafferano e quante da RicetteFit'] },
