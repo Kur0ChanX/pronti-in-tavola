@@ -12,24 +12,24 @@ index ccff9fa2..ce07c13a 100644
    'ricettario-diff': { vista: 'ricettario', nome: 'Difficoltà delle ricette', come: 'Sotto le portate c\'è «Difficoltà»: tocca Facili, Medie o Difficili.', parole: /ricett\w* (facil|semplic|difficil)|difficolt/ },
    'ricettario-db': { vista: 'ricdb', nome: 'Database ricette', come: 'Qui vedi quante ricette ci sono, il motore che le cerca da solo e le parole per le ricette proteiche.', parole: /database|archivio (delle )?ricett|motore (delle )?ricett/ },
 diff --git a/data.js b/data.js
-index 9176dde2..5e1dc184 100644
+index 1f6c3142..c7617705 100644
 --- a/data.js
 +++ b/data.js
 @@ -183,9 +183,11 @@ function statoIniziale() {
  }
  
  /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
--const VERSIONE_APP = '0.10.13';
-+const VERSIONE_APP = '0.10.14';
+-const VERSIONE_APP = '0.10.14';
++const VERSIONE_APP = '0.10.15';
  /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
  const NOVITA = [
-+  { v: '0.10.14', data: '10/11/2026',
++  { v: '0.10.15', data: '10/11/2026',
 +    nuovo: ['Ricettario «🏋️ Proteiche»: «📅 Il mio giorno proteico» in alto propone colazione, pranzo, spuntino e cena con i grammi di proteine e il totale; restano uguali per tutto il giorno, «🔄» cambia un piatto (con Annulla), l\'obiettivo in grammi si cambia con «✏️ Cambia»', 'Giorno proteico: «🛒 Lista della spesa» mette gli ingredienti delle 4 ricette per 1 porzione nella tua lista (sale, pepe e acqua no; Annulla toglie tutto) e «📤 Manda» lo condivide su WhatsApp', 'Ricetta proteica: in fondo «🔁 Simili a questa», fino a 4 proteiche con la stessa fonte o per lo stesso momento', 'Aiutante: «fammi un piano proteico» ti porta al giorno proteico'] },
+   { v: '0.10.14', data: '10/11/2026',
+     corretto: ['Server: il motore delle ricette rileggeva tutto l\'archivio ogni 30 secondi solo per contarlo e ha quasi finito le letture gratuite di oggi di Cloudflare (email delle 15:29). Ora legge solo quello che serve; se le letture del giorno superano 2 milioni (metà del gratis) il motore riposa fino alle 01:00 e lo dice nel riquadro verde, così ordini e avvisi restano sempre al sicuro. «🔍 Cerca altre» funziona sempre'] },
    { v: '0.10.13', data: '10/11/2026',
-     migliorato: ['Ricettario «🏋️ Proteiche» più ordinato: in alto solo Tutte, Proteiche, Preferite e «Altre ▾» (dentro Sarde, Italiane, Le mie)', 'Ricettario «🏋️ Proteiche»: momenti e fonti proteiche a scelta multipla (es. Colazione e Spuntino, Pollo e Albumi), in righe che scorrono di lato, col ✓ su quelle scelte', 'Ricettario: portata, difficoltà, tempo e ordine raccolti in «⚙️ Portata, difficoltà, tempo e ordine», col numero dei filtri accesi', 'Ricettario «🏋️ Proteiche»: riquadro verde con la lettura in corso (barra), «Oggi +N entrate in Proteiche», «🔍 Cerca altre» e «ℹ️ Le regole»'] },
-   { v: '0.10.12', data: '10/11/2026',
 diff --git a/ricettario.js b/ricettario.js
-index 17530991..3400f6d8 100644
+index 6c99b9d4..8f047648 100644
 --- a/ricettario.js
 +++ b/ricettario.js
 @@ -262,6 +262,7 @@ function ispira() {
@@ -40,7 +40,7 @@ index 17530991..3400f6d8 100644
  function ricetta(id) {
    if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
    if (/^mia:/.test(id)) { const m = mieRic().find(x => x.id === id); return m ? daMia(m) : null; }
-@@ -400,6 +401,59 @@ function riquadroFit(f, tutte) {
+@@ -401,6 +402,59 @@ function riquadroFit(f, tutte) {
      <button type="button" class="btn chiaro piccolo ric-regole" data-a="ric-regole" aria-expanded="${!!UI.ricRegole}">ℹ️ Le regole</button>
      ${UI.ricRegole ? notaFit() : ''}</section>`;
  }
@@ -100,7 +100,7 @@ index 17530991..3400f6d8 100644
  function cercaFit(q, qq, tutto) {   // qq: le parole dei momenti o delle fonti proteiche; tutto: «… su tutti i siti» (C126)
    q = String(q || '').trim(); const k = q.toLowerCase(), mom = chiaveFit(UI.ric), testo = q;
    if (q.length < 2 || (RIC.fitCerca && RIC.fitCerca.q === k && RIC.fitCerca.stato === 'carico')) return;   // niente doppio tocco
-@@ -617,6 +671,10 @@ function vRicDb() {
+@@ -618,6 +672,10 @@ function vRicDb() {
      <div class="fila"><button type="button" class="btn chiaro" data-a="ric-copia-salva">💾 Salva una copia</button><label class="btn chiaro">📂 Riprendi da una copia<input type="file" id="ric-copia-file" accept=".json,application/json" hidden></label></div></details>`;
    return h + '</main>';
  }
@@ -111,7 +111,7 @@ index 17530991..3400f6d8 100644
  function vRicettario() {
    if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
    if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
-@@ -626,11 +684,12 @@ function vRicettario() {
+@@ -627,11 +685,12 @@ function vRicettario() {
    if (f.prot) f.prot = protSel(f).join(',');   // C126-C127: «pasto»/«snack» salvati dalla v0.10.7-0.10.9 non sono più scelte
    if (f.facile) { f.diff = f.diff || 'facile'; delete f.facile; }   // C124: il vecchio «Solo facili» diventa «Facili»
    if (UI.ricZona) { f.zona = UI.ricZona; f.cat = ''; delete UI.ricZona; salvaFiltri(); }   // dall'aiutante o dalla Home («🏋️ Proteiche»)
@@ -125,7 +125,7 @@ index 17530991..3400f6d8 100644
    let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && passaFit(r, f) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
        : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
      && (!f.cat || r.categoria === f.cat)
-@@ -652,6 +711,7 @@ function vRicettario() {
+@@ -653,6 +712,7 @@ function vRicettario() {
      ${zoneRic(f)}
      ${f.zona === 'fit' ? sceltaFit(f) : ''}
      ${piuFiltriRic(f)}
@@ -133,7 +133,7 @@ index 17530991..3400f6d8 100644
      ${f.zona === 'fit' ? riquadroFit(f, tutte) : ''}
      <p class="piccolo ric-conta" style="margin:0"><b>${rr.length}</b> ${rr.length === 1 ? 'ricetta' : 'ricette'}${f.zona === 'fit' && rr.length ? `: ${perFonte(rr)}` : ''}${filtrato ? ` · <button type="button" class="link" data-a="ric-pulisci">✕ Azzera i filtri</button>` : ''}${f.tempo || f.diff ? '<br><span class="tenue">Tempo e difficoltà ci sono solo per le ricette già arrivate nell\'archivio: le altre compaiono dopo.</span>' : ''}</p>`;
    if (f.zona !== 'fit' && f.q.trim().length >= 2) h += `<button type="button" class="btn chiaro pieno" data-a="ric-cerca-gz">${ico('cerca')}Cerca «${esc(f.q.trim())}» su GialloZafferano e RicetteFit</button>`;
-@@ -742,6 +802,7 @@ function vRicetta(id) {
+@@ -743,6 +803,7 @@ function vRicetta(id) {
        <p class="piccolo tenue" style="margin:0">Si salvano da sole su questo telefono e le rivedi nella cucina guidata.</p></section>
      <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${(fr => r.passi.map((p, k) => `<li><div>${fotoPasso(p, false, fr[k])}<span>${passoHtml(p.t)}</span></div></li>`).join(''))(fotoRicetta(r))}</ol></section>`;
    if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
@@ -141,7 +141,7 @@ index 17530991..3400f6d8 100644
    if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
    h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di ${esc(fonteRic(r))}${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
    return h + '</main>';
-@@ -922,6 +983,13 @@ function salvaParoleFit(t, base) {
+@@ -923,6 +984,13 @@ function salvaParoleFit(t, base) {
      .catch(e => mostraToast('Non salvato: ' + (e.message || e) + ' Riprova con la rete.'));
  }
  document.addEventListener('change', e => { if (e.target && e.target.dataset && e.target.dataset.ricfit) salvaParoleFit(e.target.value); });
@@ -155,7 +155,7 @@ index 17530991..3400f6d8 100644
  document.addEventListener('input', e => {
    const el = e.target;
    if (el.dataset && el.dataset.ricerca) { UI.ric.q = el.value; ridisegnaElenco(); }
-@@ -1006,6 +1074,37 @@ function suonaTimer(testo) {
+@@ -1007,6 +1075,37 @@ function suonaTimer(testo) {
  Object.assign(A, {
    'ric-riprova'() { RIC.stato = 'no'; render(); },
    'ric-riapri'(el) { delete RIC.errore[el.dataset.v]; render(); },
@@ -246,10 +246,10 @@ index c2a30b2f..bc77bf21 100644
  .ric-valori-griglia div { background: #F7F1E6; border-radius: 10px; padding: 6px 2px; display: grid; text-align: center; }
  .ric-valori-griglia b { font-size: 1.02rem; line-height: 1.2; }
 diff --git a/tools/prova.js b/tools/prova.js
-index 9654f52e..d6274ab7 100644
+index 9654f52e..02ed4c99 100644
 --- a/tools/prova.js
 +++ b/tools/prova.js
-@@ -1752,6 +1752,79 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+@@ -1752,6 +1752,82 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
      if (dbf.m !== 'GialloZafferano 35 · RicetteFit 5' || !/Ricette proteiche: 3\s*GialloZafferano 2 · RicetteFit 1/.test(dbf.f)) throw new Error('Database: numeri per fonte sbagliati: ' + JSON.stringify(dbf));
      await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC125; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
    });
@@ -263,7 +263,7 @@ index 9654f52e..d6274ab7 100644
 +        r('gz:Barretta-proteica-prova', 'Barretta proteica prova', 'Dolci', nu(200, 20)), r('rf:hummus-proteico-prova', 'Hummus proteico prova', 'Antipasti', nu(180, 15)),
 +        r('gz:Pollo-al-limone-prova', 'Pollo al limone prova', 'Secondi piatti', nu(380, 40)), r('gz:Orata-al-forno-prova', 'Orata al forno prova', 'secondi', nu(300, 35)),
 +        r('gz:Carbonara-giorno-prova', 'Carbonara giorno prova', 'primi', { kcal: 558.7, prot: 22.8, carb: 61, grassi: 24, saturi: 9, zuc: 2.5, fibre: 2.7, sodio: 475 })];
-+      const perU = Object.fromEntries(ss.map(x => [urlRic(x.id), x])); window.__giornoChiesti = [];
++      const perU = Object.fromEntries(ss.map(x => [urlRic(x.id), x])); window.__giornoChiesti = []; window.__giornoIds = ss.map(x => x.id);
 +      RIC.chiedi = async c => {
 +        if (c.u && perU[c.u]) { const x = perU[c.u]; window.__giornoChiesti.push(x.id); return { ricetta: Object.assign({}, x, { v: 4, fonte: x.id.slice(0, 2), url: c.u, porzioni: 4, prep: 10, cottura: 10, autore: 'Prova',
 +          ingredienti: [{ nome: 'Petto di pollo', q: 600, u: 'g' }, { nome: 'Sale fino', q: null, u: '' }, { nome: 'Acqua', q: 200, u: 'ml' }, { nome: 'Olio', q: 2, u: 'cucchiai' }, { nome: 'Basilico', q: null, u: '' }, { nome: 'Extra ' + x.nome, q: 400, u: 'g' }],
@@ -323,14 +323,17 @@ index 9654f52e..d6274ab7 100644
 +    if (!sim.length || sim.length > 4 || sim.includes('ricetta:gz:Pollo-al-limone-prova') || sim.includes('ricetta:gz:Carbonara-giorno-prova')) throw new Error('«🔁 Simili» sbagliate: ' + JSON.stringify(sim));
 +    await page.evaluate(() => vai('ricetta:gz:Carbonara-giorno-prova')); await page.waitForSelector('main .ric-passi', { timeout: 15000 });
 +    if (await page.locator('main .ric-simili').count()) throw new Error('«🔁 Simili» in una ricetta non proteica');
-+    await page.evaluate(() => { const [r, d, m] = window.__primaGiorno; P.ruolo = r; UI.devCliente = d; SPESA.mia = JSON.parse(m); salvaSpesa(); ['pit-giorno-fit', 'pit-giorno-ob', 'pit-giorno-fit-no', 'pit-ric-filtri'].forEach(k => localStorage.removeItem(k));
-+      UI.ric = null; RIC.giornoSpesa = null; RIC.giornoOra = null; salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
++    await page.evaluate(async () => { const [r, d, m] = window.__primaGiorno; P.ruolo = r; UI.devCliente = d; SPESA.mia = JSON.parse(m); salvaSpesa(); ['pit-giorno-fit', 'pit-giorno-ob', 'pit-giorno-fit-no', 'pit-ric-filtri'].forEach(k => localStorage.removeItem(k));
++      /* pulizia: le ricette di prova aperte qui restano nel telefono (scaricate, cache, IndexedDB) e contano come «Oggi +N entrate» nei passi dopo */
++      const ids = window.__giornoIds || [], c = cacheRic(); RIC.chiedi = async x => x.db === 'mie' ? { scelte: [] } : x.db ? { db: { ricette: 0, coda: 0, scelte: 0, conValori: 0, senzaValori: 0, paroleFit: [], giri: 0, fonte: 1, fonti: 10 } } : { ricette: [], prossima: '' };
++      ids.forEach(id => { delete RIC.scaricate[id]; delete c[id]; }); scriviRic('pit-ric-cache', c); await dbRic('readwrite', st => ids.forEach(id => st.delete(id))).catch(() => {});
++      UI.ric = null; RIC.giornoSpesa = null; RIC.giornoOra = null; salvaScelte([]); RIC.scelteOra = Date.now(); RIC.db = null; UI.vista = 'home'; render(); });
 +  });
    await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
      await page.evaluate(() => {
        window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
 diff --git a/worker.js b/worker.js
-index 021f743c..969010eb 100644
+index 30f961bb..020830e8 100644
 --- a/worker.js
 +++ b/worker.js
 @@ -70,7 +70,7 @@ Azioni possibili (usa solo queste):
