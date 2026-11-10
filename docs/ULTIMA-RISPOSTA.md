@@ -1,22 +1,22 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 16:34 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: vuoi l'elenco delle regole di lavoro nate in Pronti in Tavola e sapere quali ha anche RVC. Le ho confrontate con il kit nuovo (38.14) e con i file di RVC.
 
 ───
-💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
+✅ FATTO
 
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
+| Regola nata qui | In RVC? |
+|---|---|
+| Link: da aprire cliccabile, da copiare in un riquadro | ✅ sì |
+| «A cosa serve» in ogni cosa che ti chiedo | ✅ sì |
+| Niente limiti per persona, solo un tetto ampio che avvisa | ✅ sì |
+| Impara dagli errori: causa vera e difesa | ✅ sì |
+| Controllo dei numeri doppi | ✅ sì |
+| Prezzi e versioni da fonti ufficiali con la data | ✅ sì |
+| Dopo 2 tentativi falliti, fermarsi e …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+📌 Di cosa parliamo: portare nel kit, quindi in tutti i tuoi progetti, le regole che RVC non ha.
+6. 1 · tutte e 14 (consiglio) · 2 · solo le ❌ · 3 · scegli tu i numeri delle righe.
