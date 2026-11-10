@@ -28,6 +28,30 @@ const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.temp
 const sogliaFit = (k, d) => { const v = typeof opz === 'function' ? opz(k) : undefined; return Number.isFinite(v) ? v : d; };
 const nCarico = () => sogliaFit('ricCarico', 20);   // C136: ricette lette a ogni carico a mano («Solo per te, Mario»)
 const motoreAuto = () => !!(RIC.db && !RIC.db.errore && RIC.db.auto);   // C136: motore automatico acceso da Mario (di base spento)
+/* C137 MODALITÀ RISPARMIO (Mario 10/11 18:13 «in modalità emergenza… niente cose quasi inutili come aggiornare il ricettario, solo cose
+   base»): la dice il server (freno di C130 nei numeri, o «Modalità risparmio» nell'errore se Cloudflare ha fermato la memoria). Fino
+   all'azzeramento di Cloudflare (mezzanotte UTC: 01:00 d'inverno, 02:00 d'estate) il telefono non chiede ricette nuove; il ricettario,
+   le ricette salvate, aprire e cucinare sempre. Tutte le domande del ricettario passano da chiediRic (le prove sostituiscono RIC.chiedi). */
+const azzeraCf = () => { const d = new Date(); return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1); };
+const oraRisparmio = () => new Date(RIC.risparmio ? RIC.risparmio.fino : azzeraCf()).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' });
+const inRisparmio = () => !!(RIC.risparmio && Date.now() < RIC.risparmio.fino);
+function segnaRisparmio(perche) { RIC.risparmio = perche ? { perche, fino: azzeraCf() } : null; }
+const testoRisparmio = () => `🛟 Modalità risparmio fino alle ${oraRisparmio()}: il ricettario non cerca e non carica ricette nuove. Le tue ricette funzionano.`;
+const pausaRic = c => !!c && !c.u && (['cerca', 'controlla', 'cercaFit'].includes(c.db) || (c.db === 'turbo' && c.n !== undefined) || (!c.db && (typeof c.cerca === 'string' || typeof c.cat === 'string')));
+async function chiediRic(corpo) {
+  if (pausaRic(corpo) && inRisparmio()) throw new Error(testoRisparmio());
+  try {
+    const j = await RIC.chiedi(corpo);
+    if (j && j.db && j.db.letture) segnaRisparmio(j.db.letture.freno ? 'freno' : '');
+    return j;
+  } catch (e) {
+    const m = String(e && e.message || '');
+    if (/Modalità risparmio|letture gratuite di oggi: riparte/.test(m)) segnaRisparmio(/Modalità risparmio/.test(m) && !/fermato la memoria/.test(m) ? 'freno' : 'bloccato');
+    throw e;
+  }
+}
+const riquadroRisparmio = () => inRisparmio() ? `<div class="avviso" id="ric-risparmio"><div><b>🛟 Modalità risparmio fino alle ${oraRisparmio()}</b><br><span class="piccolo">${RIC.risparmio.perche === 'bloccato'
+  ? 'Cloudflare ha fermato la memoria del server per oggi' : 'Il server ha usato quasi metà delle letture gratuite di oggi'}: fino ad allora il ricettario non cerca e non carica ricette nuove, così le letture restano per le cose importanti. Funzionano come sempre: il tuo ricettario, le ricette salvate sul telefono, ordini, menù, clienti e avvisi.</span></div></div>` : '';
 /* C125 (Mario 10/11 «un po' più severe… anche dolci proteici e snack»): 'pasto' (regole piene) o 'snack' (poche calorie, più quota di proteine);
    false = non è proteica. Soglie in Impostazioni → Sviluppatore. */
 const valoriPieni = n => !!n && n.kcal > 0 && [n.prot, n.saturi, n.zuc, n.sodio].every(x => x != null);
@@ -126,7 +150,7 @@ function caricaScaricate() {
 const fotoDi = r => [r.foto, r.copertina, ...(r.passi || []).flatMap(p => p.foto || [])].filter(f => /^https:\/\/(?:www\.giallozafferano\.it\/images|www\.ricettefit\.it\/wp-content\/uploads)\//.test(f || ''));
 async function scaricaUna(id) {
   if (RIC.scaricate[id]) return false;
-  const j = await RIC.chiedi({ u: urlRic(id) });
+  const j = await chiediRic({ u: urlRic(id) });
   const r = Object.assign({}, j.ricetta, { scaricata: Date.now() });
   await dbRic('readwrite', st => st.put(r));
   RIC.scaricate[r.id] = r;
@@ -212,17 +236,17 @@ function salvaScelte(tt) { if (!Array.isArray(tt)) return; RIC.scelte = tt; scri
    Al giro: vince la più nuova; quelle mai arrivate partono; quelle tolte su un altro telefono spariscono anche qui. */
 const mieTolte = () => leggiRic('pit-ric-mie-tolte', []);
 function mandaMia(m) {
-  return RIC.chiedi({ db: 'salvaMia', r: m }).then(j => {
+  return chiediRic({ db: 'salvaMia', r: m }).then(j => {
     if (!j || j.errore) return;
     const tt = mieRic(), i = tt.findIndex(x => x.id === m.id); if (i >= 0 && (tt[i].agg || 0) === (m.agg || 0)) { tt[i].suServer = true; scriviRic('pit-ric-mie', tt); }
   }).catch(() => null);
 }
 function togliMiaServer(id) {
   scriviRic('pit-ric-mie-tolte', mieTolte().concat(id));
-  return RIC.chiedi({ db: 'togliMia', id }).then(j => { if (j && !j.errore) scriviRic('pit-ric-mie-tolte', mieTolte().filter(x => x !== id)); }).catch(() => null);
+  return chiediRic({ db: 'togliMia', id }).then(j => { if (j && !j.errore) scriviRic('pit-ric-mie-tolte', mieTolte().filter(x => x !== id)); }).catch(() => null);
 }
 function sincronizzaMie() {
-  RIC.chiedi({ db: 'mieScritte' }).then(j => {
+  chiediRic({ db: 'mieScritte' }).then(j => {
     if (!j || !Array.isArray(j.mie)) return;
     mieTolte().forEach(id => togliMiaServer(id));
     const tolte = new Set(mieTolte()), loc = mieRic(), srv = new Set(j.mie.map(x => x.id)), out = [];
@@ -241,7 +265,7 @@ function leggiScelte() {
   if (RIC.scelteChiede || Date.now() - (RIC.scelteOra || 0) < 60000) return;
   RIC.scelteChiede = true; RIC.scelteOra = Date.now();
   sincronizzaMie();
-  RIC.chiedi({ db: 'mie' }).then(j => { if (j && Array.isArray(j.scelte)) { salvaScelte(j.scelte); if (UI.vista === 'ricettario') render(); } }).catch(() => null).finally(() => { RIC.scelteChiede = false; });
+  chiediRic({ db: 'mie' }).then(j => { if (j && Array.isArray(j.scelte)) { salvaScelte(j.scelte); if (UI.vista === 'ricettario') render(); } }).catch(() => null).finally(() => { RIC.scelteChiede = false; });
 }
 /* corpo della domanda per un catalogo: per «nuove» dico al server quali ho già (niente doppioni) */
 const corpoCat = (cat, q, pagina) => Object.assign({ cat, cerca: q }, pagina ? { pagina } : {}, cat === 'nuove' ? { fuori: elencoRic().map(r => r.id) } : {});
@@ -255,7 +279,7 @@ function ispira() {
   const firma = nomi.join('|');
   if (RIC.ispiraVa || !nomi.length || (c.giorno === oggiRic && c.firma === firma) || navigator.onLine === false) return;
   RIC.ispiraVa = true;
-  Promise.all(nomi.map(n => RIC.chiedi({ cerca: n.replace(/\(.*?\)/g, '').trim() }).then(j => (j.ricette || []).slice(0, 3).map(x => Object.assign(daCerca(x), { per: n }))).catch(() => [])))
+  Promise.all(nomi.map(n => chiediRic({ cerca: n.replace(/\(.*?\)/g, '').trim() }).then(j => (j.ricette || []).slice(0, 3).map(x => Object.assign(daCerca(x), { per: n }))).catch(() => [])))
     .then(gruppi => {
       const lista = [], visti = new Set(elencoRic().map(r => r.id));
       for (let k = 0; k < 3; k++) gruppi.forEach(g => { const r = g[k]; if (r && !visti.has(r.id)) { visti.add(r.id); lista.push(r); } });
@@ -272,7 +296,7 @@ function ricetta(id) {
 function apriGz(id) {
   if (RIC.apre[id]) return;
   RIC.apre[id] = true; delete RIC.errore[id];
-  RIC.chiedi({ u: urlRic(id) })
+  chiediRic({ u: urlRic(id) })
     .then(j => { salvaCache(j.ricetta); })
     .catch(e => { RIC.errore[id] = e.message || String(e); })
     .finally(() => { delete RIC.apre[id]; if (UI.vista.split(':').slice(1).join(':') === id) render(); });
@@ -370,7 +394,7 @@ function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente b
   if (!rfResto && !va) return { t: `✅ Letto tutto: ${rfTxt ? rfTxt + ' · ' : ''}valori tutti letti.`, p: -1 };
   const min = Math.max(Math.ceil(rfResto / 5) * 0.5, Math.ceil(va / 10) * 0.5), stima = min < 2 ? 'pochi minuti' : min < 60 ? `circa ${Math.ceil(min / 5) * 5} minuti` : Math.round(min / 30) <= 2 ? 'circa un\'ora' : `circa ${String(Math.round(min / 30) / 2).replace('.', ',')} ore`;
   const p = rfResto ? (tot - rfResto) / tot : (d.conValori || 0) / Math.max(1, (d.conValori || 0) + va);
-  if (d.letture && d.letture.freno && !(t && t.attivo)) return { t: `⏸ In pausa fino alle 01:00: il server ha quasi finito le letture gratuite di oggi e le tiene per gli ordini e gli avvisi. ${[rfTxt, va ? `valori ancora ${va}` : ''].filter(Boolean).join(' · ')}${rfTxt || va ? '. ' : ''}«🔍 Cerca altre» funziona lo stesso.`, p };   // C130
+  if (d.letture && d.letture.freno && !(t && t.attivo)) return { t: `🛟 Modalità risparmio fino alle ${oraRisparmio()}: il server tiene le letture gratuite per ordini e avvisi e non cerca ricette nuove. ${[rfTxt, va ? `valori ancora ${va}` : ''].filter(Boolean).join(' · ')}${rfTxt || va ? '.' : ''}`, p };   // C130, C137
   const cosa = [rfTxt && rfTxt + (rfResto ? '' : ' ✅'), va ? `valori ancora ${va}` : 'valori tutti letti ✅'].filter(Boolean).join(' · ');
   if (!(t && t.attivo) && !d.auto) return { t: `⏳ Da leggere: ${cosa}. Le leggo a mano, ${nCarico()} ricette per volta: tocca «⚡ Carica altre» nel riquadro «🗄 Il mio database».`, p };   // C136
   return { t: `${t && t.attivo ? '⏳ Sto caricando ricette nuove' : '⏳ Da leggere (parto da sola entro 10 minuti)'}: ${cosa}. Finisco fra ${stima} (stima).`, p };
@@ -411,7 +435,7 @@ function cercaFit(q, qq, tutto) {   // qq: le parole dei momenti o delle fonti p
   if (q.length < 2 || (RIC.fitCerca && RIC.fitCerca.q === k && RIC.fitCerca.stato === 'carico')) return;   // niente doppio tocco
   if (!navigator.onLine) { RIC.fitCerca = { q: k, mom, testo, stato: 'errore', errore: 'Senza rete non posso cercare: le proteiche già lette sono qui sotto.' }; render(); return; }
   RIC.fitCerca = { q: k, mom, testo, stato: 'carico' }; render();
-  RIC.chiedi(Object.assign({ db: 'cercaFit', q, n: nCarico() }, tutto ? { tutto: true } : Array.isArray(qq) ? { qq } : {})).then(j => {
+  chiediRic(Object.assign({ db: 'cercaFit', q, n: nCarico() }, tutto ? { tutto: true } : Array.isArray(qq) ? { qq } : {})).then(j => {
     if (!j || j.errore) throw new Error(j && j.errore || 'il server non risponde');
     RIC.fitCerca = { q: k, mom, testo, stato: 'ok', nuove: j.nuove || 0, gia: j.gia || 0, pagine: j.pagine || 0 };
     if (j.db) RIC.db = j.db;
@@ -501,7 +525,7 @@ function sceltaFit(f) {
 function chiediStatoDb() {
   if (RIC.dbChiede || Date.now() - (RIC.dbOra || 0) < 60000) return;
   RIC.dbChiede = true; RIC.dbOra = Date.now();   // una domanda al minuto al massimo, anche se il server non risponde (niente giri infiniti)
-  Promise.all([RIC.chiedi({ db: 'stato' }), RIC.chiedi({ cat: 'db' }).catch(() => null)])
+  Promise.all([chiediRic({ db: 'stato' }), chiediRic({ cat: 'db' }).catch(() => null)])
     .then(([j, u]) => { RIC.db = j && j.db ? j.db : RIC.db || { errore: true }; if (u && u.ricette) RIC.dbUltime = u.ricette.slice(0, 8).map(daCerca); })
     .catch(() => { RIC.db = RIC.db || { errore: true }; })
     .finally(() => { RIC.dbChiede = false; if (UI.vista === 'ricdb' || UI.vista === 'ricettario') render(); });
@@ -575,7 +599,7 @@ function vRicDb() {
   const nVoci = scar.filter(r => RIC.vociFatte[r.id]).length, scelte = (RIC.scelte || []).slice().sort((a, b) => (b.aggiunta || 0) - (a.aggiunta || 0));
   const sett = Date.now() - 7 * 86400000, nuoveSett = scelte.filter(x => (x.aggiunta || 0) > sett).length, d = RIC.db && !RIC.db.errore ? RIC.db : null, dati = RIC.dati;
   const tutteScelte = UI.ricDbTutte === 'scelte', tutteScar = UI.ricDbTutte === 'scar';
-  let h = testataMonica('Database ricette', 'ricettario') + '<main class="corpo">';
+  let h = testataMonica('Database ricette', 'ricettario') + '<main class="corpo">' + riquadroRisparmio();   // C137
   h += `<section class="scheda"><h2>📖 Il tuo ricettario: ${elenco.length + mie.length} ricette</h2>
     <p class="piccolo tenue" style="margin:0">${elenco.length} di GialloZafferano (${scelte.length} aggiunte da te${nuoveSett ? `, ${nuoveSett} negli ultimi 7 giorni` : ''}) e ${mie.length} scritte da te. Uguali sul telefono di Monica e di Mario.</p>
     ${scelte.length ? `<h3 style="margin:8px 0 4px">➕ Aggiunte di recente</h3><ul class="ricdb-lista ricdb-scelte">${(tutteScelte ? scelte : scelte.slice(0, 5)).map(x => rigaDb(x, dataBreve(x.aggiunta))).join('')}</ul>
@@ -651,7 +675,7 @@ function vRicettario() {
     : (a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || az(a, b));
   const filtrato = filtriAttivi(f);
   const c = RIC.cerca, nScar = Object.keys(scar).length;
-  let h = testataMonica('Ricettario', 'home') + '<main class="corpo">';
+  let h = testataMonica('Ricettario', 'home') + '<main class="corpo">' + riquadroRisparmio();   // C137
   h += `<div><h1>Ricettario</h1>${f.zona === 'fit' ? '' : `<p class="tenue" style="margin:4px 0 0">${elenco.length + mie.length} ricette tue, di GialloZafferano e di RicetteFit, con video, foto dei passaggi e voce. Le vedete solo tu e Mario.</p>`}</div>
     <form class="ric-cerca" data-ric-cerca="1"><input id="ric-cerca" type="search" data-ricerca="1" value="${esc(f.q)}" placeholder="${f.zona === 'fit' ? 'Cerca ricette fit (es. pollo, budino, pancake)' : 'Cerca un piatto o 2-3 ingredienti (es. zucchine, uova)'}" autocomplete="off" enterkeyhint="search">
       ${typeof Riconosci !== 'undefined' && Riconosci && typeof ascoltaAI === 'function' ? `<button type="button" class="btn chiaro" data-a="ric-dico" aria-label="Cerca a voce">${AI.rec ? '⏹' : '🎙'}</button>` : ''}
@@ -924,7 +948,7 @@ function vRicMia(id) {
 }
 /* C124: parole della corsia «fit»: salvate sul server quando si esce dal riquadro; «salvato» solo dopo la risposta */
 function salvaParoleFit(t, base) {
-  RIC.chiedi(base ? { db: 'fit', base: true } : { db: 'fit', parole: String(t || '') })
+  chiediRic(base ? { db: 'fit', base: true } : { db: 'fit', parole: String(t || '') })
     .then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(base ? 'Rimesse le parole di base.' : `Salvato: ${j.db.paroleFit.length} parole.`); render(); })
     .catch(e => mostraToast('Non salvato: ' + (e.message || e) + ' Riprova con la rete.'));
 }
@@ -1027,7 +1051,7 @@ Object.assign(A, {
   'ric-fit-base'() { salvaParoleFit('', true); },
   'ric-rf'(el) {   // C124: RicetteFit acceso o spento (senza Claude)
     const acceso = el.dataset.v === '1';
-    RIC.chiedi({ db: 'rf', acceso }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(acceso ? (motoreAuto() ? 'RicetteFit riaccesa: una ricetta ogni 10 minuti.' : 'RicetteFit riaccesa: la leggo quando carichi ricette nuove.') : 'RicetteFit spenta: niente ricette nuove da lì.'); render(); })
+    chiediRic({ db: 'rf', acceso }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(acceso ? (motoreAuto() ? 'RicetteFit riaccesa: una ricetta ogni 10 minuti.' : 'RicetteFit riaccesa: la leggo quando carichi ricette nuove.') : 'RicetteFit spenta: niente ricette nuove da lì.'); render(); })
       .catch(e => mostraToast('Non riesco: ' + (e.message || e)));
   },
   'ric-vai-fit'() { UI.ricZona = 'fit'; vai('ricettario'); },   // C124: dalla Home dritto a «🏋️ Proteiche»
@@ -1110,7 +1134,7 @@ Object.assign(A, {
     const cat = catRic(r.categoria);
     const prima = RIC.scelte.slice(), nuova = { id, nome: r.nome, zona, categoria: cat, foto: r.foto || v.foto || '', aggiunta: Date.now() };
     salvaScelte([nuova].concat(RIC.scelte.filter(x => x.id !== id))); render();   // subito sul telefono, poi sul server
-    RIC.chiedi({ db: 'aggiungi', r: nuova })
+    chiediRic({ db: 'aggiungi', r: nuova })
       .then(j => { salvaScelte(j.scelte); mostraToast(`➕ «${r.nome}» è nel tuo ricettario. Preparo la voce dei passi…`); codaVoci(r); })
       .catch(e => { salvaScelte(prima); mostraToast('Non aggiunta: ' + (e.message || e)); })
       .finally(() => render());
@@ -1118,17 +1142,17 @@ Object.assign(A, {
   'ric-togli'(el) {
     const id = el.dataset.v, prima = RIC.scelte.slice();
     salvaScelte(RIC.scelte.filter(x => x.id !== id)); render();
-    RIC.chiedi({ db: 'togli', id }).then(j => { salvaScelte(j.scelte); mostraToast('Tolta dal tuo ricettario.', () => A['ric-aggiungi']({ dataset: { v: id } })); })
+    chiediRic({ db: 'togli', id }).then(j => { salvaScelte(j.scelte); mostraToast('Tolta dal tuo ricettario.', () => A['ric-aggiungi']({ dataset: { v: id } })); })
       .catch(e => { salvaScelte(prima); mostraToast('Non tolta: ' + (e.message || e)); }).finally(() => render());
   },
   'ric-db-turbo'() {   // Mario 08/11 «… caricale»; C136 «a manuale poco alla volta»: N ricette (Solo per te, Mario), il server le legge anche a telefono chiuso e si ferma da solo
     if (RIC.db && RIC.db.turbo && RIC.db.turbo.attivo) return;
-    RIC.chiedi({ db: 'turbo', n: nCarico() }).then(j => { if (j && j.turbo) { RIC.db = Object.assign({}, RIC.db, { turbo: j.turbo }); mostraToast(`⚡ Parto: carico ${j.turbo.obiettivo} ricette complete, sarde per prime. Ci vogliono pochi minuti; puoi chiudere l'app.`); } else mostraToast('Non riuscito: ' + ((j && j.errore) || 'riprova tra poco')); })
+    chiediRic({ db: 'turbo', n: nCarico() }).then(j => { if (j && j.turbo) { RIC.db = Object.assign({}, RIC.db, { turbo: j.turbo }); mostraToast(`⚡ Parto: carico ${j.turbo.obiettivo} ricette complete, sarde per prime. Ci vogliono pochi minuti; puoi chiudere l'app.`); } else mostraToast('Non riuscito: ' + ((j && j.errore) || 'riprova tra poco')); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e))).finally(() => { RIC.dbOra = 0; render(); });
   },
   'ric-db-cerca'() {
     if (RIC.dbCerco) return; RIC.dbCerco = true; render();
-    RIC.chiedi({ db: 'cerca' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); RIC.dbUltime = null; mostraToast(j.nuove ? `🔄 Trovate ${j.nuove} ricette nuove.` : '🔄 Giro fatto: niente di nuovo in questa pagina, riprova.'); })
+    chiediRic({ db: 'cerca' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); RIC.dbUltime = null; mostraToast(j.nuove ? `🔄 Trovate ${j.nuove} ricette nuove.` : '🔄 Giro fatto: niente di nuovo in questa pagina, riprova.'); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
       .finally(() => { RIC.dbCerco = false; RIC.dbOra = 0; render(); });
   },
@@ -1140,7 +1164,7 @@ Object.assign(A, {
   },
   'ric-db-controlla'() {
     if (RIC.dbControllo) return; RIC.dbControllo = true; render();
-    RIC.chiedi({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; const nO = c.nOriginali || 0, daFare = (c.nMale || 0) + (c.mancanti || 0);
+    chiediRic({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; const nO = c.nOriginali || 0, daFare = (c.nMale || 0) + (c.mancanti || 0);
       // C123: niente «ci penso io» finto (PT E17): l'avviso dice cosa è successo davvero, l'elenco col perché è nel riquadro
       mostraToast(daFare ? `🔍 ${c.ok} a posto${nO ? `, ${nO} uguali all'originale` : ''}, ${daFare} ancora da rileggere: ${RIC.db && RIC.db.auto ? 'lo faccio da solo' : 'tocca di nuovo per rileggerne altre 10'}. L'elenco col perché è nel riquadro del database.` : nO ? `✅ ${c.ok} a posto e ${nO} uguali all'originale: su GialloZafferano sono così. L'elenco col perché è nel riquadro del database.` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
@@ -1149,7 +1173,7 @@ Object.assign(A, {
   'ricdb-tutte'(el) { UI.ricDbTutte = el.dataset.v; render(); },
   'ricdb-voci'() { const da = Object.values(RIC.scaricate).filter(r => !RIC.vociFatte[r.id]); da.forEach(codaVoci); mostraToast(`🔊 Preparo la voce di ${da.length} ricette: ci vuole qualche minuto, intanto puoi fare altro.`); },
   'ric-db-ferma'() {   // C136: ferma il carico in corso (le ricette già lette restano)
-    RIC.chiedi({ db: 'ferma' })
+    chiediRic({ db: 'ferma' })
       .then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(`⏹ Carico fermato: ${(j.db.turbo && j.db.turbo.fatte) || 0} ricette nuove lette.`); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
       .finally(() => render());
@@ -1157,7 +1181,7 @@ Object.assign(A, {
   'ric-db-auto'(el) {   // C136: motore automatico, solo per Mario; acceso solo con la conferma
     const acceso = !!el.checked;
     if (acceso && !confirm('Accendo il motore automatico? Ogni 10 minuti cerca ricette da solo e consuma letture gratuite del server (il 10/11 sono finite e si sono fermati anche gli avvisi). Consigliato: lascialo spento e carica a mano.')) { el.checked = false; return; }
-    RIC.chiedi({ db: 'auto', acceso })
+    chiediRic({ db: 'auto', acceso })
       .then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(j.db.auto ? '▶️ Motore automatico acceso: ogni 10 minuti cerca da solo.' : '🖐 Motore automatico spento: le ricette nuove arrivano solo quando le chiedi tu.'); })
       .catch(e => { el.checked = !acceso; mostraToast('Non riuscito: ' + (e.message || e)); })
       .finally(() => render());
@@ -1165,7 +1189,7 @@ Object.assign(A, {
   'ric-altre'() {
     const c = RIC.cerca; if (!c.prossima || c.altre === 'carico') return;
     c.altre = 'carico'; render();
-    RIC.chiedi(c.cat ? corpoCat(c.cat, c.q, c.prossima) : { cerca: c.q, pagina: c.prossima })
+    chiediRic(c.cat ? corpoCat(c.cat, c.q, c.prossima) : { cerca: c.q, pagina: c.prossima })
       .then(j => {
         if (RIC.cerca !== c) return;
         const nuove = (j.ricette || []).map(daCerca).filter(x => !c.risultati.some(y => y.id === x.id));
@@ -1179,7 +1203,7 @@ Object.assign(A, {
     if (typeof cat !== 'string') cat = '';
     RIC.cerca = { q, cat, stato: 'carico', risultati: [], prossima: '' }; render();
     const ris = document.getElementById('ric-risultati'); if (ris) ris.scrollIntoView({ block: 'start' });
-    RIC.chiedi(cat ? corpoCat(cat, q) : { cerca: q })
+    chiediRic(cat ? corpoCat(cat, q) : { cerca: q })
       .then(j => { if (RIC.cerca.q !== q) return; RIC.cerca.stato = 'ok'; RIC.cerca.risultati = (j.ricette || []).map(daCerca); RIC.cerca.prossima = j.prossima || ''; })
       .catch(e => { RIC.cerca.stato = 'errore'; RIC.cerca.errore = navigator.onLine === false ? 'Senza rete non posso cercare: riprova quando torna.' : 'Ricerca non riuscita: ' + (e.message || e); })
       .finally(() => { if (UI.vista === 'ricettario') render(); });
