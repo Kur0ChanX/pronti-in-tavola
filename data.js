@@ -183,9 +183,14 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.4';
+const VERSIONE_APP = '0.10.5';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.5', data: '10/11/2026',
+    nuovo: ['Ricettario: nuova fonte RicetteFit.it, ricette fit con tutti i passi, le foto di ogni passo e i valori per porzione. Il motore ne prende una ogni 10 minuti (tutte in circa 6 giorni) e le mette nel ricettario; ogni ricetta dice «Fonte: RicetteFit» con «Apri l\'originale»',
+      'Ricettario: un link di RicetteFit incollato nella ricerca si apre dentro l\'app, come quelli di GialloZafferano',
+      'Database ricette: quante ricette di RicetteFit sono già prese, con «Spegni» e «Riaccendi»'],
+    corretto: ['Ricettario: le ricette trovate dal motore ora escono anche coi filtri delle portate (Primi, Secondi, Dolci…); prima comparivano solo con «Tutto»'] },
   { v: '0.10.4', data: '10/11/2026',
     nuovo: ['Ricettario: nuova sezione «🏋️ Proteiche» per palestra e definizione: ricette con almeno 20 g di proteine a porzione, poche calorie, pochi grassi saturi, zuccheri e sale; prima quelle con più proteine. Si apre anche dalla Home, col riquadro «Proteiche»',
       'Ricettario: su ogni ricetta i «Valori per porzione» (calorie, proteine, carboidrati, grassi, zuccheri, sale) e la fonte, con «Apri l\'originale»; nell\'elenco ogni ricetta dice da dove viene (GialloZafferano)',

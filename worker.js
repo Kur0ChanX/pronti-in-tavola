@@ -15,7 +15,7 @@
    - POST /api/visto-qui → chi gestisce ha visto «sono qui»: la notifica smette di risuonare (C51)
    - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
-   - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano letta dal vivo (gz.mjs), { cerca } la ricerca (C55)
+   - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano (gz.mjs) o di RicetteFit (rf.mjs) letta dal vivo, { cerca } la ricerca (C55)
    - /api/gz { db: 'stato' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) | 'turbo' (n) | 'mieScritte' | 'salvaMia' (r) | 'togliMia' (id) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
@@ -23,6 +23,7 @@
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
 import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta, gzSoloNutr } from './gz.mjs';
+import { rfRicetta, rfElenco, urlRf, idRf, urlDaIdRf, MAPPA_RF } from './rf.mjs';
 import { ascolta } from './ascolta.mjs';   // «ascolto preciso» dei clienti (C105): due Whisper + correttore col menù
 /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
 const CAT_GZ = { antipasti: 'ricette-cat/Antipasti', primi: 'ricette-cat/Primi', secondi: 'ricette-cat/Secondi-piatti', contorni: 'ricette-cat/Contorni', dolci: 'ricette-cat/Dolci-e-Desserts',
@@ -72,7 +73,7 @@ Azioni possibili (usa solo queste):
 {"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche (anche gli ultimi avvisi arrivati), imp-lucchetto, imp-anticipo, imp-limite, imp-natale, imp-voce (velocità della voce che legge). Pagine: ordini, ordini-storico (ordini finiti, prove, archiviati), piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), clienti-nuovi (interruttore «Accetta clienti nuovi»), clienti-rifiutati (persone a cui ha detto no, si possono riaccettare), clienti-attesa (chi aspetta il suo sì; chi non compare tocca «Ricorda a Monica»), spesa, ricettario, ricettario-fit (ricette proteiche per palestra e definizione), ricettario-diff (filtro difficoltà), ricettario-db (database e motore delle ricette). Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
 CAPIRE IL SENSO (Mario: «deve capire il contesto di quello che dico, non leggere la parola»): prima di scegliere un posto chiediti cosa vuole FARE Monica con la frase intera, non quale parola ha detto. Es. «la mia amica non riesce ad aprire il link» → clienti (inviti), non ordini; «non mi suona niente quando ordinano» → imp-notifiche; «leggo male le scritte» → imp-vista; «la Laura ora si chiama in un altro modo» → clienti-nome. DATI.indizi = posti trovati solo cercando le parole: un aiuto, spesso sbagliato. Sicura → UNA azione vai. Esiti fra 2-3 posti → 2-3 azioni vai e nel testo «Intendi…?». Non capisci → nessuna azione e chiedi cosa vuole fare.
 {"azione":"idea","testo":"..."}  Monica vuole cambiare o aggiungere qualcosa che NON si può fare dall'app (una funzione nuova, un cambio del funzionamento): scrivi per Mario, che la programma, cosa vuole, dove nell'app e perché, con tutti i dettagli che ha detto
-GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista. Ricettario = ricette di GialloZafferano e sue (su ogni ricetta la fonte e i valori per porzione: calorie, proteine, carboidrati, grassi, zuccheri, sale); filtri per portata, «Difficoltà» (Facili, Medie, Difficili) e la sezione «🏋️ Proteiche» (almeno 20 g di proteine a porzione, poche calorie, grassi saturi, zuccheri e sale; prima quelle con più proteine); nella Home il riquadro «Proteiche» porta lì; «🗄 Database» porta dritto al database; foto di un passo piccola o sgranata: toccala per ingrandirla, poi «✨ Migliora con l'AI» (l'AI del telefono la rende grande e nitida; dopo la prima volta lo fa da sola).
+GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista. Ricettario = ricette di GialloZafferano, di RicetteFit (ricette fit, il motore ne prende una ogni 10 minuti) e sue (su ogni ricetta la fonte e i valori per porzione: calorie, proteine, carboidrati, grassi, zuccheri, sale); filtri per portata, «Difficoltà» (Facili, Medie, Difficili) e la sezione «🏋️ Proteiche» (almeno 20 g di proteine a porzione, poche calorie, grassi saturi, zuccheri e sale; prima quelle con più proteine); nella Home il riquadro «Proteiche» porta lì; «🗄 Database» porta dritto al database; foto di un passo piccola o sgranata: toccala per ingrandirla, poi «✨ Migliora con l'AI» (l'AI del telefono la rende grande e nitida; dopo la prima volta lo fa da sola).
 Regole: un ordine si riconosce dal numero o dal nome del cliente; se è ambiguo o manca un dato non mettere azioni e chiedi nel testo.
 Con più richieste insieme metti più azioni. Per le domande (cosa cucinare, chi ritira, chi deve pagare, incassi) rispondi nel testo usando SOLO i DATI, senza azioni.
 Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna → prezzi o piatti nuovi; foto di un piatto → descrizione o nuovo_piatto.
@@ -254,12 +255,12 @@ async function voce(b, cfg, ctx) {
 }
 
 /* GialloZafferano dal vivo (C55): pagina letta al momento, tenuta 1 giorno nella cache di Cloudflare (meno richieste al loro sito) */
-async function paginaGz(u) {
+async function paginaGz(u, chi = 'GialloZafferano') {   // anche RicetteFit (C124): stessa cache di 1 giorno
   const cache = caches.default, chiave = new Request('https://cache.pronti/gz?' + encodeURIComponent(u));
   const c = await cache.match(chiave);
   if (c) return c.text();
   const r = await fetch(u, { headers: { 'user-agent': UA_GZ, 'accept-language': 'it-IT,it' } });
-  if (!r.ok) throw new Error('GialloZafferano risponde ' + r.status);
+  if (!r.ok) throw new Error(chi + ' risponde ' + r.status);
   const t = await r.text();
   await cache.put(chiave, new Response(t, { headers: { 'cache-control': 'max-age=86400' } }));
   return t;
@@ -313,6 +314,10 @@ async function leggiGz(u) {
   if (r.videoChiave) { try { Object.assign(r, gzVideo(await paginaGz('https://ptp.stbm.it/v/' + r.videoChiave))); } catch (e) { /* senza video: resta la ricetta */ } }
   return r;
 }
+/* C124 passo 8: RicetteFit (rf.mjs). leggiWeb = la ricetta dal sito giusto (GialloZafferano o RicetteFit) */
+async function leggiRf(u) { return rfRicetta(await paginaGz(u, 'RicetteFit'), u); }
+const leggiWeb = u => urlRf(u) ? leggiRf(urlRf(u)) : leggiGz(u);
+const urlDaId = id => /^rf:/.test(String(id || '')) ? urlDaIdRf(id) : urlGz('https://ricette.giallozafferano.it/' + String(id || '').slice(3) + '.html');
 async function ricettaGz(b, cfg, ctx) {
   const db = ricDb(cfg), poi = p => { if (p && ctx) ctx.waitUntil(p.catch(() => null)); };
   if (b && b.db) {   // { db: 'stato' } numeri · { db: 'pausa'|'riprendi' } ferma o riprende la crescita
@@ -322,8 +327,8 @@ async function ricettaGz(b, cfg, ctx) {
     if (b.db === 'cerca') { const prima = (await db.statoDb()).ricette; await motoreRicette(cfg, true); const d = await db.statoDb(); return { db: d, nuove: d.ricette - prima }; }   // 🔄 «Cerca adesso»
     if (b.db === 'aggiungi') {   // ➕ con l'ok di chi gestisce: nel ricettario per tutti i telefoni, e la ricetta intera salvata per sempre
       if (!(await db.aggiungi(b.r))) return { errore: 'ricetta non valida' };
-      const u = urlGz('https://ricette.giallozafferano.it/' + String(b.r.id).slice(3) + '.html');
-      if (u && !(await db.una(b.r.id))) poi(leggiGz(u).then(r => r && db.salva(r)));
+      const u = urlDaId(b.r.id);
+      if (u && !(await db.una(b.r.id))) poi(leggiWeb(u).then(r => r && db.salva(r)));
       return { scelte: await db.scelte() };
     }
     if (b.db === 'togli') { await db.togli(b.id); return { scelte: await db.scelte() }; }
@@ -339,6 +344,7 @@ async function ricettaGz(b, cfg, ctx) {
       await db.mettiParoleFit(b.base ? null : paroleFit(b.parole));
       return { db: await db.statoDb() };
     }
+    if (b.db === 'rf') { await db.metti1('rfSpento', b.acceso === false ? '1' : ''); return { db: await db.statoDb() }; }   // C124: RicetteFit acceso o spento dalla pagina Database
     if (b.db === 'mieScritte') return { mie: await db.mieScritte() };   // ricette scritte a mano, uguali su tutti i telefoni
     if (b.db === 'salvaMia') {
       if (!(await db.salvaMia(b.r))) return { errore: 'ricetta non valida' };
@@ -380,12 +386,12 @@ async function ricettaGz(b, cfg, ctx) {
     if (db && ricette.length) poi(db.inCoda(ricette.map(x => x.url)));   // quello che si scorre entra in coda per il database
     return { ricette, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
   }
-  const u = urlGz(b && b.u);
+  const u = urlGz(b && b.u) || urlRf(b && b.u);
   if (!u) return { errore: 'indirizzo non valido' };
   let r = null, err = null;
-  try { r = await leggiGz(u); } catch (e) { err = e; }
+  try { r = await leggiWeb(u); } catch (e) { err = e; }
   if (r) { if (db) poi(db.salva(r)); return { ricetta: r }; }   // ogni ricetta aperta: salvata per sempre
-  const salvata = db ? await db.una('gz:' + u.replace('https://ricette.giallozafferano.it/', '').replace(/\.html$/, '')).catch(() => null) : null;
+  const salvata = db ? await db.una(urlRf(u) ? idRf(u) : 'gz:' + u.replace('https://ricette.giallozafferano.it/', '').replace(/\.html$/, '')).catch(() => null) : null;
   if (salvata) return { ricetta: salvata, dalDb: true };   // GialloZafferano giù o cambiato: la copia del database
   if (err) throw err;
   return { errore: 'ricetta non trovata nella pagina' };
@@ -401,6 +407,10 @@ const FONTI_DB = ['sardegna', 'primi', 'secondi', 'dolci', 'antipasti', 'contorn
 const FIT_BASE = ['proteiche', 'light', 'petto di pollo', 'fesa di tacchino', 'merluzzo', 'salmone', 'tonno', 'albumi', 'gamberi', 'polpo', 'pesce spada', 'orata', 'ceci', 'lenticchie', 'ricotta', 'yogurt greco', 'bresaola', 'uova'];
 const urlCerca = q => `https://www.giallozafferano.it/ricerca-ricette/${encodeURIComponent(q).replace(/%20/g, '+')}/`;
 const paroleFit = t => [...new Set(String(t || '').toLowerCase().split(/[,;\n]+/).map(p => p.replace(/[^\p{L}\p{N} '-]/gu, '').replace(/\s+/g, ' ').trim()).filter(p => p.length >= 2 && p.length <= 40))].slice(0, 30);
+/* C124 passo 8 (Mario 10/11 «piano piano… in automatico»): RicetteFit, UNA ricetta nuova per giro (144 al giorno: le ~905 in circa 6 giorni),
+   presa dal suo elenco (sitemap, tenuta 1 giorno in cache) e messa in testa alla coda; finito l'elenco, si riguarda il giorno dopo
+   (solo le nuove). Una sola alla volta in coda: se la pagina non risponde si riprova, alla 3ª volta va fra le scartate (PT E29). */
+const RF_GIRO = 60;   // indirizzi dell'elenco guardati per giro per trovare quella nuova
 const NUTR_GIRO = 10;   // C124: ricette già salvate senza valori, rilette 10 ogni 10 minuti (~1300 in un giorno)
 const RICETTE_GIRO = 2, TURBO_GIRO = 5, TURBO_PAUSA = 30000, TURBO_SVEGLIE = 400, TURBO_VUOTE = 20, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
 /* ricetta completa = nome, almeno 3 ingredienti, almeno 2 passi e una foto (Mario 08/11 «con cura») */
@@ -409,7 +419,11 @@ const ricettaCompleta = r => !!(r && r.nome && Array.isArray(r.ingredienti) && r
    Ritorna { fatte, scartate, nuoveCoda }: ricette complete salvate, incomplete scartate, indirizzi messi in coda. */
 async function passoMotore(db, quante, aMano) {
   const s = await db.statoDb(); if (s.pausa && !aMano) return null;
-  let nuoveCoda = 0;
+  let nuoveCoda = 0, rf = s.rf && s.rf.inCoda ? 1 : 0;
+  if (s.rf && !s.rf.spento && !rf && s.rf.fine !== oggiRf()) {   // C124: RicetteFit, una nuova per giro
+    try { const tt = rfElenco(await paginaGz(MAPPA_RF, 'RicetteFit')); rf = await db.rfInCoda(tt.slice(s.rf.i || 0, (s.rf.i || 0) + RF_GIRO), s.rf.i || 0, tt.length, oggiRf()); }
+    catch (e) { /* elenco non raggiungibile: si riprova al prossimo giro, la coda di GZ va avanti */ }
+  }
   if (s.coda < CODA_MIN) {
     // sarde in priorità ma miste (Mario 08/11 «in priorità sarde ma cercale miste»): una pagina sì e una no è delle sarde,
     // le altre girano fra le sezioni; finite le sarde, solo le altre fino al giro completo, poi le sarde ripartono
@@ -429,10 +443,10 @@ async function passoMotore(db, quante, aMano) {
     else await db.posizione(dopo ? i : (i + 1) % FONTI_DB.length || 1, dopo, nuove, !dopo && i === FONTI_DB.length - 1);
   }
   let fatte = 0, scartate = 0;
-  for (const u of await db.prendi(quante)) {
-    const ok = urlGz(u); if (!ok) { await db.togliCoda(u); continue; }
+  for (const u of await db.prendi(quante + rf)) {
+    const ok = urlGz(u) || urlRf(u); if (!ok) { await db.togliCoda(u); continue; }
     try {
-      const r = await leggiGz(ok);
+      const r = await leggiWeb(ok);
       if (!r) await db.togliCoda(u);
       else if (!ricettaCompleta(r)) { await db.scarta(u); scartate++; }   // incompleta: via dalla coda, contata, mai più riprovata
       else if (await db.salvaMotore(r)) fatte++;   // archivio + ricettario
@@ -442,6 +456,7 @@ async function passoMotore(db, quante, aMano) {
   await db.giro({ fatte, scartate });
   return { fatte, scartate, nuoveCoda };
 }
+const oggiRf = () => new Date(Date.now() + 3600000).toISOString().slice(0, 10);   // giorno (ora italiana d'inverno, basta per «una volta al giorno»)
 async function motoreRicette(cfg, aMano) {
   const db = ricDb(cfg); if (!db) return;
   const p = await passoMotore(db, RICETTE_GIRO, aMano);
@@ -469,7 +484,7 @@ async function rileggiSegnate(db, n) {
   const urls = await db.vecchie(n).catch(() => []);
   await Promise.all(urls.map(async u => {
     let r = null;
-    try { r = await leggiGz(u); } catch (e) { return /risponde 40[4]|risponde 410/.test(String(e.message)) ? db.tieni(u, 'sparita') : db.riprova(u); }
+    try { r = await leggiWeb(u); } catch (e) { return /risponde 40[4]|risponde 410/.test(String(e.message)) ? db.tieni(u, 'sparita') : db.riprova(u); }
     if (!r || !r.nome) return db.tieni(u, 'illeggibile');   // la pagina c'è ma non è più una ricetta: si tiene la copia
     if (!esaminaRicetta(r).length) return db.salva(r);   // sistemata
     if (ricettaCompleta(r)) { r.esito = 'uguale'; return db.salva(r); }   // com'è sull'originale
@@ -481,7 +496,7 @@ async function rileggiSegnate(db, n) {
 async function leggiMancanti(db, n) {
   const mm = await db.mancanti(n).catch(() => []);
   await Promise.all(mm.map(async m => {
-    const r = await leggiGz(m.url).catch(() => null);
+    const r = await leggiWeb(m.url).catch(() => null);
     if (r && r.nome && r.id === m.id) { if (esaminaRicetta(r).length) r.esito = 'uguale'; await db.salva(r); }
   }).map(p => p.catch(() => null)));
 }
@@ -763,7 +778,7 @@ export class Ricettario extends DurableObject {
   leggi1(k) { const r = this.sql.exec('SELECT v FROM stato WHERE k = ?', k).toArray()[0]; return r ? r.v : ''; }
   metti1(k, v) { this.sql.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', k, String(v ?? '')); }
   salva(r) {
-    if (!r || !/^gz:[\w%-]+$/.test(r.id || '') || !r.nome) return false;
+    if (!r || !/^(?:gz|rf):[\w%-]+$/.test(r.id || '') || !r.nome) return false;
     const ora = Date.now(), cerca = minuscolo([r.nome, r.categoria, (r.ingredienti || []).map(i => i.nome).join(' ')].join(' '));
     const strisce = (r.passi || []).some(p => (p.foto || []).some(f => STRISCIA.test(String(f)))) ? 1 : 0;
     const nutr = r.nutr && typeof r.nutr === 'object' ? 1 : r.nutr === null ? 0 : null;   // C124: 1 valori · 0 GZ non li dà · null da leggere
@@ -818,12 +833,30 @@ export class Ricettario extends DurableObject {
     return n;
   }
   prendi(n) {
+    this.sql.exec("INSERT OR IGNORE INTO scartate (url, quando) SELECT url, ? FROM coda WHERE tentativi >= 3 AND url LIKE 'https://www.ricettefit.it/%'", Date.now());   // C124: RicetteFit illeggibile 3 volte: mai più riprovata
     this.sql.exec('DELETE FROM coda WHERE tentativi >= 3');
-    const tt = this.sql.exec('SELECT url FROM coda ORDER BY tentativi, aggiunta LIMIT ?', n).toArray().map(x => x.url);
+    const tt = this.sql.exec("SELECT url FROM coda ORDER BY (url LIKE 'https://www.ricettefit.it/%') DESC, tentativi, aggiunta LIMIT ?", n).toArray().map(x => x.url);   // RicetteFit (una alla volta) per prima
     tt.forEach(u => this.sql.exec('UPDATE coda SET tentativi = tentativi + 1 WHERE url = ?', u));
     return tt;
   }
   togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
+  /* C124: la prima ricetta di RicetteFit che il database non ha (né salvata, né in coda, né scartata), dagli indirizzi da «i» in poi.
+     Finito l'elenco senza nuove: «fine» per oggi e domani si riparte dall'inizio (così entrano le ricette nuove). 1 = una in coda. */
+  rfInCoda(urls, i, tot, oggi) {
+    let k = 0;
+    for (const u of (urls || []).slice(0, RF_GIRO)) {
+      k++;
+      if (typeof u !== 'string' || !/^https:\/\/www\.ricettefit\.it\/ricetta\/[\w%-]+\/$/.test(u)) continue;
+      if (this.sql.exec('SELECT 1 FROM ricette WHERE url = ? UNION SELECT 1 FROM coda WHERE url = ? UNION SELECT 1 FROM scartate WHERE url = ?', u, u, u).toArray().length) continue;
+      this.sql.exec('INSERT INTO coda (url, aggiunta, sarda) VALUES (?, ?, 0)', u, Date.now());
+      this.metti1('rfI', (Number(i) || 0) + k); this.metti1('rfTot', Number(tot) || 0);
+      return 1;
+    }
+    const dopo = (Number(i) || 0) + k, finito = !k || dopo >= (Number(tot) || 0);
+    this.metti1('rfI', finito ? 0 : dopo); this.metti1('rfTot', Number(tot) || 0);
+    if (finito) this.metti1('rfFine', String(oggi || ''));
+    return 0;
+  }
   scarta(u) { this.sql.exec('INSERT OR IGNORE INTO scartate (url, quando) VALUES (?, ?)', String(u), Date.now()); this.togliCoda(u); }
   /* ricetta del motore: archivio + ricettario insieme (zona «sarda» se l'indirizzo veniva dalle pagine sarde). Solo se completa. */
   salvaMotore(r) {
@@ -882,7 +915,7 @@ export class Ricettario extends DurableObject {
       this.sql.exec("UPDATE ricette SET json = json_remove(json_set(json, '$.v', 0, '$.prove', 0), '$.esito') WHERE id = ?", x.id);
     }
     const mancanti = this.sql.exec('SELECT s.id, s.nome, s.url FROM scelte s LEFT JOIN ricette r ON r.id = s.id WHERE r.id IS NULL').toArray();
-    for (const m of mancanti) if (m.url && urlGz(m.url)) this.sql.exec('INSERT INTO coda (url, aggiunta, tentativi) VALUES (?, ?, 0) ON CONFLICT(url) DO NOTHING', m.url, Date.now());
+    for (const m of mancanti) if (m.url && (urlGz(m.url) || urlRf(m.url))) this.sql.exec('INSERT INTO coda (url, aggiunta, tentativi) VALUES (?, ?, 0) ON CONFLICT(url) DO NOTHING', m.url, Date.now());
     const esito = { quando: Date.now(), totale: righe.length, ok: righe.length - male.length - originali.length, male: male.slice(0, 30), nMale: male.length,
       originali: originali.slice(0, 30), nOriginali: originali.length,
       mancanti: mancanti.length, nomiMancanti: mancanti.slice(0, 10).map(m => m.nome) };
@@ -946,10 +979,10 @@ export class Ricettario extends DurableObject {
       return x;
     }); }
   aggiungi(x) {
-    if (!x || !/^gz:[\w%-]+$/.test(x.id || '') || !x.nome) return false;
+    if (!x || !/^(?:gz|rf):[\w%-]+$/.test(x.id || '') || !x.nome) return false;
     const pulito = (v, n) => String(v || '').slice(0, n);
-    this.sql.exec('INSERT OR IGNORE INTO scelte (id, url, nome, zona, categoria, foto, aggiunta) VALUES (?, ?, ?, ?, ?, ?, ?)', x.id, 'https://ricette.giallozafferano.it/' + x.id.slice(3) + '.html',
-      pulito(x.nome, 120), ['sarda', 'gallura', 'italiana'].includes(x.zona) ? x.zona : 'italiana', pulito(x.categoria, 40), /^https:\/\/[\w.-]+\.giallozafferano\.it\//.test(x.foto || '') ? pulito(x.foto, 300) : '', Date.now());
+    this.sql.exec('INSERT OR IGNORE INTO scelte (id, url, nome, zona, categoria, foto, aggiunta) VALUES (?, ?, ?, ?, ?, ?, ?)', x.id, urlDaId(x.id),
+      pulito(x.nome, 120), ['sarda', 'gallura', 'italiana'].includes(x.zona) ? x.zona : 'italiana', pulito(x.categoria, 40), /^https:\/\/(?:[\w.-]+\.giallozafferano\.it|www\.ricettefit\.it\/wp-content\/uploads)\//.test(x.foto || '') ? pulito(x.foto, 300) : '', Date.now());
     return true;
   }
   togli(id) { this.sql.exec('DELETE FROM scelte WHERE id = ?', String(id)); }
@@ -969,6 +1002,9 @@ export class Ricettario extends DurableObject {
       oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
       conValori: uno('SELECT COUNT(*) AS n FROM ricette WHERE nutr = 1').n, senzaValori: uno('SELECT COUNT(*) AS n FROM ricette WHERE nutr IS NULL').n,   // C124
       paroleFit: this.paroleFit(), fitI: Number(this.leggi1('fitI')) || 0, paginaFit: this.leggi1('paginaFit') || '',
+      rf: { lette: uno("SELECT COUNT(*) AS n FROM ricette WHERE id LIKE 'rf:%'").n, inCoda: uno("SELECT COUNT(*) AS n FROM coda WHERE url LIKE 'https://www.ricettefit.it/%'").n,   // C124 passo 8
+        scartate: uno("SELECT COUNT(*) AS n FROM scartate WHERE url LIKE 'https://www.ricettefit.it/%'").n, i: Number(this.leggi1('rfI')) || 0, tot: Number(this.leggi1('rfTot')) || 0,
+        fine: this.leggi1('rfFine') || '', spento: !!this.leggi1('rfSpento') },
       fonte: Number(this.leggi1('fonte')) || 0, fonti: FONTI_DB.length, paginaSarda: this.leggi1('paginaSarda') || '', sezione: FONTI_DB[Math.max(1, Number(this.leggi1('fonte')) || 0)], pagina: this.leggi1('pagina'), ultimoGiro: j('ultimoGiro'),
       giri: Number(this.leggi1('giri')) || 0, pagine: Number(this.leggi1('pagine')) || 0, passate: Number(this.leggi1('passate')) || 0, mb: Math.round(this.ctx.storage.sql.databaseSize / 104857.6) / 10 };
   }
