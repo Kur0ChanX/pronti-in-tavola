@@ -64,6 +64,7 @@ const cfg = { RICETTARIO: { idFromName: () => 'x', get: () => ponte }, AVVISI: {
 
 oggetto.mettiParoleFit([]);   // la corsia «fit» (C124) ha le sue prove in fondo: qui spenta, così i conti di sotto restano quelli
 oggetto.metti1('rfSpento', '1');   // anche RicetteFit (C124 passo 8): prove in fondo
+oggetto.metti1('auto', '1');   // C136: le prove del motore automatico lo accendono (di base è spento: prove in fondo)
 /* 1. il motore: prima pagina in coda, 2 ricette scaricate per giro */
 await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
 let s = await ponte.statoDb();
@@ -230,7 +231,7 @@ richieste = [];
 /* la sezione Primi finta ha 12 ricette «miste» (le altre sezioni restano vuote) */
 const fetchPrima = globalThis.fetch;
 globalThis.fetch = async (u, o) => String(u) === 'https://www.giallozafferano.it/ricette-cat/Primi/' && !gzGiu ? new Response(Array.from({ length: 12 }, (_, i) => carta('Primo-misto-' + i)).join('')) : fetchPrima(u, o);
-prova('turbo: n fuori misura rifiutato', (await (await chiedi({ db: 'turbo', n: 0 })).json()).errore && (await (await chiedi({ db: 'turbo', n: 201 })).json()).errore);
+prova('turbo: n fuori misura rifiutato', (await (await chiedi({ db: 'turbo', n: 0 })).json()).errore && (await (await chiedi({ db: 'turbo', n: 'tanti' })).json()).errore);   // C136: oltre 50 si taglia (prove in fondo)
 prova('turbo: senza accesso di chi gestisce niente', (await chiedi({ db: 'turbo', n: 5 }, false)).status === 403);
 j = await (await chiedi({ db: 'turbo', n: 20 })).json();
 prova('turbo: avviato, risponde {turbo} attivo con obiettivo 20 e allarme impostato', j.turbo && j.turbo.attivo === true && j.turbo.obiettivo === 20 && j.turbo.fatte === 0 && allarmi.length === 1);
@@ -607,6 +608,44 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   oggetto.metti1('letture', JSON.stringify({ g: '2000-01-01', n: 9e9 })); oggetto._cur = null; oggetto._lg = { g: '2000-01-01', n: 9e9 };   // come un oggetto rimasto acceso da ieri
   const fr = await ponte.freno(); prova(`C130 giorno nuovo = contatore da zero, niente freno (${fr} ${JSON.stringify(oggetto._lg)})`, fr === false && oggetto._lg.g === g && oggetto._lg.n < 1000);
 }
+/* C136 (Mario 10/11 17:41 «un blocco al ricettario… che non vada sempre in automatico, a manuale poco alla volta»): motore automatico
+   spento di base (il cron legge UNA riga e basta), carichi a mano di N (al massimo 50) che finiscono da soli, «⏹ Ferma», interruttore di Mario */
+{
+  const al = []; let tolti = 0;
+  const o = new W.Ricettario({ storage: { sql: sqlFinto(), setAlarm: async t => { al.push(t); }, deleteAlarm: async () => { tolti++; }, getAlarm: async () => null } }, {});
+  o.contiMs = 0; o.codaMs = 0; o.mettiParoleFit([]); o.metti1('rfSpento', '1');
+  const p2 = new Proxy({}, { get: (_, k) => (...a) => Promise.resolve().then(() => o[k](...a)) });
+  const c2 = { RICETTARIO: { idFromName: () => 'x', get: () => p2 }, AVVISI: { idFromName: () => 'c', get: () => ({}) } };
+  const api = async b => { const r = await W.default.fetch(new Request('https://x/api/gz', { method: 'POST', headers: { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' }, body: JSON.stringify(b) }), c2, contesto); await finisci(); return r.json(); };
+  const g = new Date().toISOString().slice(0, 10);
+  o.salvaLetture(); o._lg = { g, n: 0 }; const r0 = richieste.length;
+  for (let i = 0; i < 3; i++) { await W.default.scheduled({ cron: '*/10 * * * *' }, c2, contesto); await finisci(); }
+  o.salvaLetture(); const lette = o._lg.n, st0 = await p2.statoDb();
+  console.log(`MISURA C136 cron col motore spento: ${Math.round(lette / 3)} righe lette a giro (${Math.round(lette / 3) * 144} al giorno)`);
+  prova(`C136 di base il motore automatico è spento: il cron non va su internet, non carica e legge al massimo 2 righe a giro (${lette / 3})`, st0.auto === false && richieste.length === r0 && !st0.turbo && st0.ricette === 0 && lette <= 6);
+  let j = await api({ db: 'turbo', n: 500 });
+  prova('C136 «Carica altre»: oltre 50 si taglia a 50 (niente errore per l\'app vecchia che chiede 100)', j.turbo && j.turbo.attivo && j.turbo.obiettivo === 50 && al.length === 1);
+  j = await api({ db: 'ferma' });
+  await o.alarm(); const dopoFerma = await p2.statoDb();
+  prova('C136 «⏹ Ferma»: il carico finisce subito, segnato, sveglia tolta e una sveglia rimasta non fa niente', j.db.turbo.attivo === false && j.db.turbo.fermato === true && tolti === 1 && dopoFerma.turbo.sveglie === 0);
+  const carico = (auto, sveglie) => o.metti1('turbo', JSON.stringify({ attivo: true, auto, obiettivo: 50, fatte: 0, scartate: 0, valori: 0, sveglie, vuote: 0, da: Date.now(), ora: Date.now() }));
+  gzGiu = true;
+  carico(false, 39); await o.alarm(); const aMano = o.turboStato();
+  carico(true, 39); await o.alarm(); const daSolo = o.turboStato();
+  gzGiu = false;
+  prova('C136 un carico a mano di 50 finisce da solo dopo 40 sveglie (4 ogni 5 ricette); quello automatico no', aMano.attivo === false && aMano.sveglie === 40 && daSolo.attivo === true);
+  await o.turboFerma();
+  o.metti1('pausa', '1');
+  j = await api({ db: 'auto', acceso: true });
+  const r1 = richieste.length; await W.default.scheduled({ cron: '*/10 * * * *' }, c2, contesto); await finisci();
+  prova('C136 Mario accende il motore automatico: la vecchia pausa si toglie e il cron torna a cercare', j.db.auto === true && j.db.pausa === false && richieste.length > r1);
+  carico(true, 3);
+  j = await api({ db: 'auto', acceso: false });
+  prova('C136 Mario lo spegne: si ferma anche il carico partito da solo', j.db.auto === false && j.db.turbo.attivo === false && j.db.turbo.fermato === true);
+  o.sql.exec('DELETE FROM coda'); al.length = 0;
+  j = await api({ db: 'cercaFit', q: 'sarde', n: 1 });
+  prova(`C136 «🔍 Cerca altre» legge al massimo N ricette (qui 1 su ${j.nuove} nuove)`, j.nuove >= 2 && j.db.turbo && j.db.turbo.attivo && j.db.turbo.obiettivo === 1);
+}
 /* C130 bis (blocco di Cloudflare del 10/11 alle 15:35, PT E53): una GIORNATA INTERA con un archivio grande (3.000 ricette, 2.000 in coda,
    2.000 scartate, 500 voci): 144 giri del cron, 400 sveglie del carico veloce, il riquadro verde aperto TUTTO il giorno (una domanda al minuto),
    48 riconteggi, 100 ricerche e 20 «nuove» nel database (una famiglia; le persone non si fermano mai). Deve restare sotto 1 milione di righe lette (il gratis di Cloudflare è 5). */
@@ -618,7 +657,7 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   for (let i = 0; i < 2000; i++) v.exec('INSERT INTO coda (url, aggiunta) VALUES (?, ?)', 'https://ricette.giallozafferano.it/Coda-' + i + '.html', ora);
   for (let i = 0; i < 2000; i++) v.exec('INSERT INTO scartate (url, quando) VALUES (?, ?)', 'https://ricette.giallozafferano.it/Via-' + i + '.html', ora);
   for (let i = 0; i < 500; i++) v.exec('INSERT INTO voci (k, mp3, byte, creata) VALUES (?, ?, ?, ?)', 'v' + i, new Uint8Array(4), 4, ora);
-  v.exec("INSERT INTO stato (k, v) VALUES ('scelteRiempite', '1')");
+  v.exec("INSERT INTO stato (k, v) VALUES ('scelteRiempite', '1')"); v.exec("INSERT INTO stato (k, v) VALUES ('auto', '1')");   // C136: il caso peggiore, motore automatico acceso
   sim._lg = { g, n: 0 }; sim._cur = null;
   const ponteSim = new Proxy({}, { get: (_, k) => (...a) => Promise.resolve().then(() => sim[k](...a)) });
   const cfgSim = { RICETTARIO: { idFromName: () => 'x', get: () => ponteSim }, AVVISI: { idFromName: () => 'c', get: () => ({}) } };
