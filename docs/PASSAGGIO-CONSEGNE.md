@@ -43,7 +43,7 @@ Sessione attuale: #55 (dopo la #54 `session_01WTjqUv32ceej8YoR2QzfQU`, chiusa al
 2. Alle 01:05 (sveglia): `…/api/chiave` dà la chiave; `…/api/stato` ha `riserva.quando` (copia fatta; se manca, aspetta il giro del cron delle 01:10); motore `auto` spento, letture basse. A Mario una riga «server ripartito, notifiche attive, corsia d'emergenza pronta: tocca «🧪 Prova la corsia d'emergenza»». Promessa C130: 7 giorni senza email di Cloudflare.
 3. Foto a Mario (skill `foto`) di C136 (riquadro «🗄 Il mio database») e di C135 (Notifiche con «🛟 Corsia d'emergenza pronta») quando il server risponde: chiudono le promesse 👁.
 4. C130 contatore vero (chiave «Account Analytics», Aspetta Mario) al «1». C127 al «1» (patch pezzi 2-3).
-5. Snellire `docs/DA-FARE.md` e `docs/ERRORI.md` (oltre il tetto).
+5. FATTO dalla #55: `ERRORI.md` 9 KB (storia in `ERRORI-STORIA.md`), `DA-FARE.md` 38,7 KB.
 
 ## Domande aperte
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (9 della principale). Nessuna nuova della #54. Controllo Da fare: 0 voci aggiunte (nessun messaggio di Mario in questa sessione); C135 e C137 aggiornate (fatte, v0.10.18).
@@ -53,7 +53,7 @@ Sessione attuale: #55 (dopo la #54 `session_01WTjqUv32ceej8YoR2QzfQU`, chiusa al
 Prima: 18:10 «come integriamo il server emergenza e quando?» → C135 (KV, copia da sola), fatta nella v0.10.18.
 
 ## Numeri liberi
-Prossimo E libero: PT E58; prossimo C libero: C139; prossimo M libero: M1.
+Prossimo E libero: PT E61; prossimo C libero: C139; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, da `get_session` della #54): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
