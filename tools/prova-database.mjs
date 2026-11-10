@@ -14,7 +14,8 @@ const prova = (nome, v) => { if (v) ok++; else { no++; console.log('NO  ' + nome
 const cartella = mkdtempSync(join(tmpdir(), 'pit-db-'));
 const codice = readFileSync(join(radice, 'worker.js'), 'utf8')
   .replace("import { DurableObject } from 'cloudflare:workers';", 'class DurableObject { constructor(ctx, cfg) { this.ctx = ctx; this.env = cfg; } }')
-  .replace("from './gz.mjs'", `from '${pathToFileURL(join(radice, 'gz.mjs')).href}'`);
+  .replace("from './gz.mjs'", `from '${pathToFileURL(join(radice, 'gz.mjs')).href}'`)
+  .replace("from './ascolta.mjs'", `from '${pathToFileURL(join(radice, 'ascolta.mjs')).href}'`);
 writeFileSync(join(cartella, 'worker.mjs'), codice);
 const W = await import(pathToFileURL(join(cartella, 'worker.mjs')).href);
 
@@ -144,6 +145,17 @@ j = await (await chiedi({ cat: 'nuove', fuori: ['gz:Ricetta-sarda-0'] })).json()
 prova('proposte: dall\'archivio, senza quelle che hai già', j.ricette && j.ricette.length === 29 && !j.ricette.some(x => /Ricetta-sarda-0\.html$/.test(x.url)) && j.prossima === '');   // 30 nell'archivio (29 + Culurgiones), 1 già tua
 j = await (await chiedi({ cat: 'nuove', pagina: 'nuove:10', fuori: ['gz:Ricetta-sarda-0'] })).json();
 prova('proposte: «Carica altre» porta le altre', j.ricette && j.ricette.length === 19 && j.prossima === '');
+/* (C119, Mario 10/11 «sgranatissime») prima le ricette con le foto grandi: una vecchia a strisce, anche col video e il voto più alto, va in fondo */
+oggetto.salva({ id: 'gz:Strisce-video', url: 'https://ricette.giallozafferano.it/Strisce-video.html', nome: 'Strisce video', categoria: 'Primi', voto: 5, mp4: 'https://x/v.mp4', passi: [{ t: '1', foto: ['https://www.giallozafferano.it/images/ricette/1/Strisce_strip_1-3.jpg'] }] });
+oggetto.salva({ id: 'gz:Foto-grandi', url: 'https://ricette.giallozafferano.it/Foto-grandi.html', nome: 'Foto grandi', categoria: 'Primi', voto: 1, passi: [{ t: '1', foto: ['https://www.giallozafferano.it/images/ricette/1/Foto-grandi_1.jpg'] }] });
+j = await (await chiedi({ cat: 'nuove', fuori: [] })).json();
+const tutte = [...j.ricette, ...(await (await chiedi({ cat: 'nuove', pagina: 'nuove:31', fuori: [] })).json()).ricette].map(x => x.url.split('/').pop());
+prova('(C119) proposte: le foto grandi prima, la vecchia a strisce in fondo anche col video', tutte.includes('Foto-grandi.html') && tutte[tutte.length - 1] === 'Strisce-video.html');
+oggetto.sql.exec("UPDATE ricette SET strisce = 0"); oggetto.metti1('strisceOk', '');
+new W.Ricettario({ storage: { sql: oggetto.sql } }, {});   // all'avvio dopo l'aggiornamento: le ricette già salvate si segnano una volta sola
+const segnate = oggetto.sql.exec("SELECT id FROM ricette WHERE strisce = 1").toArray().map(x => x.id);
+prova('(C119) ricette già nell\'archivio: le vecchie a strisce segnate all\'avvio', segnate.join() === 'gz:Strisce-video' && oggetto.leggi1('strisceOk') === '1');
+oggetto.sql.exec("DELETE FROM ricette WHERE id IN ('gz:Strisce-video', 'gz:Foto-grandi')");
 const nuova = { id: 'gz:Ricetta-sarda-5', nome: 'Ricetta sarda 5', zona: 'sarda', categoria: 'primi', foto: 'https://www.giallozafferano.it/images/x.jpg' };
 j = await (await chiedi({ db: 'aggiungi', r: nuova })).json();
 prova('➕ aggiungi: nel tuo ricettario', j.scelte && j.scelte.length === 1 && j.scelte[0].id === 'gz:Ricetta-sarda-5' && j.scelte[0].zona === 'sarda');
