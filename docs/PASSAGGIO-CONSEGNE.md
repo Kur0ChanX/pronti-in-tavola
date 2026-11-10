@@ -45,7 +45,7 @@ Sessione attuale: #44 (dopo la #43 `session_01WTjqUxpFkSSjXChsysjvPh`, chiusa al
 ## Prossimi passi
 1. Controlla che la v0.10.4 sia online (riga «Stato»). Se NON lo è (push del codice mancato): giro completo delle prove e push del codice già nel ramo.
 2. A Mario i passi della foto C124 (riga in «Aspetta Mario»): chiudi e riapri, Home → «Proteiche», apri una ricetta. Ricordagli che la sezione si riempie in circa un giorno.
-3. C124 passo 8: RicetteFit.it come seconda fonte (piano `docs/lavori-in-corso/c124-ricettario-proteico.md`): id `rf:<slug>`, lettore del JSON-LD `Recipe` (passi con foto, `nutrition` completo), segno «RicetteFit» (`FONTI_RIC` in `ricettario.js` c'è già), link all'originale; prima prova dal vivo l'indirizzo (PT E29) e dal sito vero (PT E25).
+3. C124 passo 8 (Mario 10/11 ~12:25 «piano piano… in automatico»: dal motore, poche per giro, mai tutte insieme): RicetteFit.it come seconda fonte (piano `docs/lavori-in-corso/c124-ricettario-proteico.md`): id `rf:<slug>`, lettore del JSON-LD `Recipe` (passi con foto, `nutrition` completo), segno «RicetteFit» (`FONTI_RIC` in `ricettario.js` c'è già), link all'originale; prima prova dal vivo l'indirizzo (PT E29) e dal sito vero (PT E25).
 4. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` con host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»; poi leggere `docs/kit-progetto/VERSIONE` del repo del kit (ramo `claude/rvc-ramo-definitivo`).
 5. «Scrivimi!» sotto gli allergeni: proposto dalla #40, nessuna risposta (non farlo senza sì). Le altre righe di «Aspetta Mario»: aspettare Mario; iPad e iPhone solo quando ne ha uno.
 
@@ -53,7 +53,7 @@ Sessione attuale: #44 (dopo la #43 `session_01WTjqUxpFkSSjXChsysjvPh`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (chiave del kit da creare; fonte fit già scelta: RicetteFit.it).
 
 ## Ultimo messaggio di Mario
-Nessun messaggio nuovo nella #43 (aperta da Mario col testo [AVVIO]). L'ultimo resta quello qui sotto.
+10/11 ~12:25 (nella #43), parola per parola: «Possiamo farlo piano piano come per il ricettario non tutto in una volta no? basta che lo fà in automatico le ricette fitness piano piano no? che dici?» → risposta: sì, è già così (corsia fit una pagina su 4, valori 10 ogni 10 minuti); anche RicetteFit.it entrerà così, dal motore, poche ricette per giro, mai un carico unico.
 10/11 ~11:40 (in questa chat, dopo l'handoff), parola per parola: «1 consiglio» → fonte fit = RicetteFit.it (riga 🛑 tolta da «Aspetta Mario», piano C124 aggiornato).
 10/11 11:32 (scritto nella chat chiusa della #41, girato qui), parola per parola: «non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android».
 Prima, 11:25 in questa chat: «controlla tutte / ok github chiave / devo verificare vapore ma per ora ok / devo verificare dopoia richiesta ma per ora ok / proverò ipad ma per ora ok / ok poi dimmi i passi / ipad ok orizzontale / Francesco compare tra i nomi» (con la foto del controllo).
