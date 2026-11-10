@@ -89,3 +89,8 @@ La storia dei lavori finiti (in `docs/DA-FARE.md` resta solo cosa manca).
 - 10/11 · C123 chiusa (Mario 10/11 ~11:25, foto `archivio/foto/2026-11-10-c123-mario-1295-a-posto-1-uguale.jpg`): «🔍 Controlla tutte» coi dati veri: «1295 a posto e 1 uguali all'originale: su GialloZafferano sono così», elenco col perché nel riquadro (v0.10.1, PT E47).
 - 10/11 · C106 chiusa (Mario 10/11 ~11:25 «ipad ok orizzontale»): iPad in orizzontale, uscire alla Home e rientrare lascia la pagina della misura giusta (v0.9.83).
 - 10/11 · C97 chiusa (Mario 10/11 ~11:25 «Francesco compare tra i nomi»): il nome scritto da Francesco compare in Clienti (v0.9.70).
+
+## Chi fa cosa: righe chiuse (tolte dalla #49, 10/11)
+| 🔴 Principale 43 | chiusa alla soglia 10/11 ~12:20: C124 v0.10.3 (server: valori per porzione, corsia fit) e v0.10.4 (🏋️ Proteiche, Difficoltà, valori e fonte, Database diretto, Ricettario nella Home); manca RicetteFit.it | — | 10/11 |
+| 🔴 Principale 42 | chiusa alla soglia 10/11 ~11:40: v0.10.2 online; C108 Deepgram: chiave confermata nel server (giro 10/11 11:01); v0.10.2 «guarda come cliente» usa la strada dei clienti (Deepgram) + 🎧 nella barra sviluppatore. Tocca la zona di 🟨 Voce 11 (ferma dal 09/11 22:31 ad aspettare la chiave, che Mario ha messo il 10/11 ~11:00 nella Principale) | `voce-clienti.js` (solo la chiamata a `ascoltaServer` + `nomiMotori`) · `worker.js` (solo `/api/ascolta`: `comeCliente` per chi gestisce) · `app.js` `barraDev` · `style.css` `.prova.dev` · `data.js` · `tools/prova.js` passo «ascolto preciso» | 10/11 |
+| 🔴 Principale 41 | chiusa alla soglia 10/11 ~11:05: v0.10.1 (C123 controllo ricette con esito vero) online; chiusi C119, C118, C111; Deepgram: segreto messo da Mario, pubblicazione avviata | — | 10/11 |
