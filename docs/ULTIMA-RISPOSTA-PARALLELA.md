@@ -1,13 +1,14 @@
-# Ultima risposta di Claude (10/11/2026 19:20 ora italiana)
+# Ultima risposta di Claude (10/11/2026 19:38 ora italiana)
 
-🧠 Continuo con Fable · Massimo, come la sessione precedente.
+Riscrivo la domanda per intero: prima era troppo corta. Errore mio, segnato nel diario degli errori e salvato su GitHub (commit `b554bf4c`).
 
-🛑 Aspetto la tua scelta sul PC di casa come riserva: 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente.
-A cosa serve: così scrivo il piano giusto. Schemi e confronto li hai avuti alle 19:05 nella Salvagente 2; il mio consiglio resta la 2, in due tempi. Rispondi qui col numero.
+## Domande a Mario
 
-───
+❓ DOMANDE
 
-✅ FATTO
-- Avvio della Salvagente 3: ramo allineato a GitHub (`f98c29ba`), consegne ed errori letti.
-- Nessun tuo messaggio nuovo dopo quello delle 18:51 (controllato nel registro).
-- Niente codice e niente piano finché scegli. …
+**🛑 DOMANDA 1 · il tuo PC di casa come riserva**
+
+📌 Di cosa parliamo: usare il tuo PC di casa come aiuto per l'app di Monica, per non restare fermi quando finiscono i limiti gratis (come il 10/11). Nell'app l'aspetto non cambia: cambia chi fa i lavori dietro. I server veri restano Cloudflare e Firebase.
+Perché adesso: la tua scelta mi dice cosa costruire. Finché non scegli, niente piano né codice.
+
+1 · Officina: il PC fa i lavori pesanti, ti avvisa dei consumi e tiene una copia dei dati. Per Monica e i clienti non cambia niente. Se Cloudflare si ferma del tutto, l'ordine è salvo …
