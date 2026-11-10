@@ -15,6 +15,11 @@
           },
           {
             "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/fermo-fable.py\" inizio 2>/dev/null || true",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/titolo-giallo.py\" inizio 2>/dev/null || true",
             "timeout": 10
           },
@@ -42,6 +47,11 @@
           },
           {
             "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/fermo-fable.py\" avvio 2>/dev/null || true",
+            "timeout": 10
+          },
+          {
+            "type": "command",
             "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/spreco-token.py\" avvio 2>/dev/null || true",
             "timeout": 10
           }
@@ -53,6 +63,17 @@
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/handoff-check.py\" compact 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostModelSwitch": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/fermo-fable.py\" cambio 2>/dev/null || true",
             "timeout": 10
           }
         ]
@@ -115,6 +136,10 @@
             "type": "command",
             "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/comandi-piccoli.py\" stop 2>/dev/null || true",
             "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/handoff-check.py\" stop"
           }
         ]
       }
@@ -131,12 +156,22 @@
         ]
       },
       {
-        "matcher": "Bash|WebFetch|mcp__claude-code-remote__add_repo|mcp__claude-code-remote__list_sessions|mcp__github__merge_pull_request",
+        "matcher": "mcp__claude-code-remote__create_session",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/controlla-nuova-sessione.py\"",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|WebFetch|mcp__claude-code-remote__add_repo|mcp__claude-code-remote__list_sessions|mcp__github__merge_pull_request|mcp__github__push_files|mcp__github__create_or_update_file|mcp__github__create_pull_request|mcp__github__update_pull_request",
         "hooks": [
           {
             "type": "command",
             "command": "python3 \"$CLAUDE_PROJECT_DIR/.claude/hooks/guardia.py\" 2>/dev/null || true",
-            "timeout": 10
+            "timeout": 20
           }
         ]
       },
@@ -146,6 +181,11 @@
           {
             "type": "command",
             "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/regole-prove.py\" 2>/dev/null || true",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/numeri-doppi.py\" 2>/dev/null || true",
             "timeout": 10
           }
         ]
@@ -161,11 +201,21 @@
         ]
       },
       {
-        "matcher": "Bash",
+        "matcher": "Edit|Write|Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/numeri-doppi.py\" 2>/dev/null || true"
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/file-vecchi.py\" 2>/dev/null || true",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "SendUserFile",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I \"$CLAUDE_PROJECT_DIR/.claude/hooks/foto-check.py\""
           }
         ]
       }
@@ -258,12 +308,60 @@
       "Bash(rm -r -f*)",
       "Bash(kill *)",
       "Bash(pkill *)",
-      "Bash(killall *)"
+      "Bash(killall *)",
+      "Workflow",
+      "SearchPlugins",
+      "SuggestPluginInstall",
+      "SuggestSkills",
+      "ShowOnboardingRolePicker",
+      "mcp__1a59c906-04da-521d-bda7-7f71b9f9e01c__*",
+      "mcp__claude-code-remote__archive_session",
+      "mcp__claude-code-remote__unarchive_session",
+      "mcp__claude-code-remote__list_computer_folders",
+      "mcp__claude-code-remote__request_computer_folder",
+      "mcp__claude-code-remote__report_preview_port",
+      "mcp__claude-code-remote__watch_url",
+      "mcp__claude-code-remote__unwatch_url",
+      "mcp__claude-code-remote__register_repo_root",
+      "mcp__claude-code-remote__interrupt_session",
+      "mcp__claude-code-remote__set_session_tags",
+      "mcp__claude-code-remote__list_environments",
+      "mcp__claude-code-remote__list_repos",
+      "mcp__claude-code-remote__get_event",
+      "mcp__claude-code-remote__list_events",
+      "mcp__claude-code-remote__fire_trigger",
+      "mcp__Claude_Docs__*"
     ]
   },
   "enabledMcpjsonServers": [
-    "context7",
+    "context7"
+  ],
+  "disabledMcpjsonServers": [
     "parallel-search"
   ],
+  "deniedMcpServers": [
+    {
+      "serverName": "claude.ai Claude Docs"
+    },
+    {
+      "serverName": "Claude_Docs"
+    },
+    {
+      "serverName": "1a59c906-04da-521d-bda7-7f71b9f9e01c"
+    }
+  ],
+  "skillOverrides": {
+    "consegne": "name-only",
+    "domande": "name-only",
+    "foto": "name-only",
+    "pr": "name-only",
+    "chat-parallela": "name-only",
+    "cambio-account": "name-only",
+    "nuova-regola": "name-only",
+    "nuova-funzione": "name-only",
+    "minuti-github": "name-only",
+    "ricerca-aggiornata": "name-only",
+    "fable-opus": "name-only"
+  },
   "effortLevel": "xhigh"
 }

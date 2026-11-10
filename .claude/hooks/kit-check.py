@@ -111,10 +111,22 @@ def controlla(base):
                           "sposta una procedura in una skill o accorcia (skill nuova-regola).")
     avvisi.append(controlla_fonte(base))
     avvisi.append(controlla_rvc(base, (int(m.group(1)), int(m.group(2)))))
-    avvisi.append(f"Kit {kit} ({data}), Preferenze v{pref}. Confrontala con la riga «v…» in testa alle Preferenze ricevute "
-                  f"da claude.ai: più vecchie o senza riga → NON adesso: il testo intero di {KIT}/PREFERENZE-CHAT.txt va a Mario "
-                  "una volta sola al giorno, a fine giornata, in un solo riquadro (skill nuova-regola §5); più nuove → il kit del progetto è vecchio: aggiornalo e dillo in una riga.")
+    avvisi.append(f"Kit {kit} ({data}), Preferenze v{pref}. Confrontala con la riga «v…» delle Preferenze di claude.ai: più "
+                  f"vecchie o senza riga → NON adesso, a fine giornata il testo di {KIT}/PREFERENZE-CHAT.txt a Mario (skill "
+                  "nuova-regola §5); più nuove → aggiorna il kit e dillo in una riga.")
     return " ".join(a for a in avvisi if a)
+
+
+def per_riavvio(base, testo, vecchio=300):
+    """C469 fase 2 (rapporto 14 voce 6): al riavvio del contenitore (segno fresco di avvio-check.py) solo gli avvisi veri
+    (ATTENZIONE, KIT NUOVO); la frase fissa sulla versione e le Preferenze è già nel primo avvio."""
+    try:
+        if time.time() - os.path.getmtime(os.path.join(base, ".git", "avvio-riavvio")) > vecchio:
+            return testo
+    except OSError:
+        return testo
+    return " ".join(p for p in re.split(r"(?<=\.)\s+(?=ATTENZIONE kit:|KIT NUOVO|Kit \d)", testo)
+                    if p.startswith(("ATTENZIONE", "KIT NUOVO")))
 
 
 def aspetta_avvio(base, attesa=25, vecchio=120):
@@ -137,7 +149,7 @@ if __name__ == "__main__":
         time.sleep(0.3)  # avvio-check.py crea il segno appena parte
         aspetta_avvio(base)
     try:
-        testo = controlla(base)
+        testo = per_riavvio(base, controlla(base))
     except Exception as e:  # un errore della prova non deve mai fermare l'avvio
         testo = f"ATTENZIONE kit: kit-check.py non è riuscito a leggere i file ({type(e).__name__})."
     if sys.argv[1:] == ["testo"]:  # solo per la prova tools/test-kit-check.py

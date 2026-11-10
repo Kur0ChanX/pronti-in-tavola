@@ -1,0 +1,7 @@
+[
+  {"file": "docs/DA-FARE.md", "modello": "^\\| (C\\d+) \\|", "cosa": "voci di docs/DA-FARE.md",
+   "rimedio": "dai a una il prossimo C libero (dopo git fetch e git grep) e scrivi «era Cxx doppio»"},
+  {"file": "data.js", "modello": "^\\s*\\{ v: '([\\d.]+)'", "cosa": "novità di data.js",
+   "rimedio": "dai alla tua novità il numero di versione seguente",
+   "presente": "const VERSIONE_APP = '([\\d.]+)'"}
+]

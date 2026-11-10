@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # Prova di .claude/hooks/kit-check.py (C250): versione del kit, import di REGOLE.md, tetti, Preferenze, su un progetto finto.
 # Uso: python3 -I tools/test-kit-check.py
-import functools, http.server, json, os, shutil, subprocess, sys, tempfile, threading
+import functools, http.server, json, os, shutil, subprocess, sys, tempfile, threading, time
 
 QUI = os.path.dirname(os.path.abspath(__file__))
 HOOK = os.path.join(QUI, "..", ".claude", "hooks", "kit-check.py")
@@ -71,6 +71,20 @@ try:
     d = json.loads(uscita)
     controlla(codice == 0 and d["hookSpecificOutput"]["hookEventName"] == "SessionStart"
               and d["hookSpecificOutput"]["additionalContext"] == u, "uscita JSON dell'hook SessionStart", uscita)
+
+    # C469 fase 2 (rapporto 14 voce 6): riavvio (segno fresco di avvio-check.py) → muto se il kit è a posto
+    os.makedirs(os.path.join(cartella, ".git"), exist_ok=True)
+    marca = os.path.join(cartella, ".git", "avvio-riavvio")
+    open(marca, "w").close()
+    controlla(riga(cartella) == "", "riavvio, kit a posto: muto", riga(cartella))
+    os.utime(marca, (time.time() - 3600, time.time() - 3600))
+    controlla(riga(cartella) == u, "segno di riavvio vecchio: avviso intero", riga(cartella))
+    open(marca, "w").close()
+    scrivi(cartella, "docs/kit-progetto/REGOLE.md", "# Regole di lavoro · kit 22.9 · 22/10/2026\n")
+    r_ = riga(cartella)
+    controlla(r_.startswith("ATTENZIONE kit: REGOLE.md") and "Preferenze v23." not in r_, "riavvio: solo l'ATTENZIONE", r_)
+    os.remove(marca)
+    progetto_buono(cartella)
 
     scrivi(cartella, "docs/kit-progetto/REGOLE.md", "# Regole di lavoro · kit 22.2 · 22/10/2026\n")
     u = riga(cartella)

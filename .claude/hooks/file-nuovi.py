@@ -79,7 +79,9 @@ def main():
     motivo = ('📄 File nuovo in docs/ (C333, E207): ' + ', '.join(nuovi) + '. Prima: c\'è già un file che fa questo '
               'lavoro? Guarda `ls docs/` e cerca l\'argomento (`grep -ril <parola> docs/ .claude/`, '
               '`python3 -I tools/cerca-regola.py <2-3 parole>`). C\'è → scrivi lì, una cosa in un posto solo. '
-              'Non c\'è → rifai lo stesso comando: passa.')
+              'Non c\'è → rifai lo stesso comando: passa. Dove (C469 L9): piano di un lavoro in '
+              '`docs/lavori-in-corso/<C>-<nome>.md`, uno per lavoro (senza numero, prima la voce in Da fare); '
+              'foto e rapporti in `archivio/<C>/`.')
     print(json.dumps({'hookSpecificOutput': {'hookEventName': 'PreToolUse', 'permissionDecision': 'deny',
                                              'permissionDecisionReason': motivo}}, ensure_ascii=False))
     return 0

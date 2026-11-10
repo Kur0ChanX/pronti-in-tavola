@@ -12,6 +12,7 @@ Tre modi:
       righe che finiscono con «?», scelte «1 · …», frasi negate («non lo metto») o legate a una risposta di Mario
       («se dici sì…»). La stessa frase blocca una volta sola (.git/promesse-viste.json).
   --aperte     le voci con 👁, una per riga (avvio, consegne, prima di ogni versione); --breve: una riga sola.
+  --lotto [N]  le N più vecchie (di base 10) pronte per il lotto a Mario (skill domande «Lavori aperti e chat», C469 B5).
   --controlla  ogni voce con 👁 ha «Lo vedi» e «prova»; ogni voce finita con 👁 ha «Visto da Mario» con la prova.
 Secondo giro (`stop_hook_active`), progetto senza Da fare, qualunque errore: silenzio, uscita 0.
 Prova: python3 -I tools/test-promesse.py
@@ -93,6 +94,12 @@ def aperte(progetto):
         voci.append({'n': c[0], 'titolo': (t.group(1) if t else cosa[:70]).strip(), 'dove': v.group('dove') if v else '',
                      'prova': v.group('prova').strip() if v else '', 'chi': c[2] if len(c) > 2 else ''})
     return voci
+
+
+def numero_voce(v):
+    """Numero della voce (C312 → 312) per l'ordine dalla più vecchia; senza numero in fondo."""
+    cifre = ''.join(ch for ch in v['n'] if ch.isdigit())
+    return int(cifre) if cifre else 10**9
 
 
 def controlla(progetto):
@@ -201,13 +208,31 @@ def main():
         if not difetti:
             print(f'PROMESSE: in ordine ({len(aperte(progetto))} voci con 👁 in {DA_FARE})')
         return 1 if difetti else 0
+    if '--lotto' in sys.argv:
+        dopo = sys.argv[sys.argv.index('--lotto') + 1:]
+        quante = int(dopo[0]) if dopo and dopo[0].isdigit() else 10
+        voci = aperte(progetto)
+        scelte = sorted(voci, key=numero_voce)[:quante]
+        print(f'LOTTO «👁» per Mario: le {len(scelte)} più vecchie di {len(voci)}. Per ognuna: foto o prova, poi '
+              '«1 va · 2 non va (cosa) · 3 non serve più»; 1 e 3 la chiudono, 2 la riapre col difetto.')
+        for i, v in enumerate(scelte, 1):
+            print(f'{i}. {v["n"]} · {v["titolo"]} · lo vedi: {v["dove"]} · prova: {v["prova"]} · {v["chi"]}')
+        return 0
     if '--aperte' in sys.argv:
         voci = aperte(progetto)
         if '--breve' in sys.argv:
             if voci:
-                print(f'PROMESSE APERTE a Mario: {len(voci)} (voci con 👁 in {DA_FARE}): '
-                      + '; '.join(f'{v["n"]} {v["titolo"][:60]} [{v["chi"]}]' for v in voci)
-                      + '. Chiudile con la prova come le vede Mario PRIMA di lavoro nuovo e diglielo nel primo messaggio.')
+                # C434: all'avvio solo il numero e le 5 più vecchie (l'elenco intero costava ~1.600 token a ogni avvio).
+                num = numero_voce
+                # Mario 03/11 «4 consiglio»: anche le 5 più nuove (numero C più alto), senza doppioni.
+                ordinate = sorted(voci, key=num)
+                vecchie = ordinate[:5]
+                nuove = [v for v in ordinate if num(v) < 10**9 and v not in vecchie][-5:][::-1]
+                riga = lambda vs: '; '.join(f'{v["n"]} {v["titolo"][:60]} [{v["chi"]}]' for v in vs)
+                print(f'PROMESSE APERTE a Mario: {len(voci)} (voci con 👁 in {DA_FARE}); le 5 più vecchie: '
+                      + riga(vecchie)
+                      + (f'. Le 5 più nuove: {riga(nuove)}' if nuove else '')
+                      + '. Elenco intero: python3 -I .claude/hooks/promesse.py --aperte. Chiudile con la prova come le vede Mario PRIMA di lavoro nuovo e diglielo nel primo messaggio.')
             return 0
         for v in voci:
             print(f'{v["n"]} · {v["titolo"]} · lo vedi: {v["dove"]} · prova: {v["prova"]} · {v["chi"]}')

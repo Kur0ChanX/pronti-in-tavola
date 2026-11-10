@@ -1,6 +1,6 @@
 ---
 name: nuova-regola
-description: Regola nuova di Mario sul modo di lavorare: prima il controllo conflitti obbligatorio (già coperta, contraddice, spreca token), poi dove va (hook, REGOLE.md, skill, Preferenze della chat, CLAUDE.md del progetto, regole per zona, diario), come alzare la versione del kit, rigenerare PREFERENZE-CHAT.txt, la pulizia a ogni versione (file orfani o doppi, /doctor prompt-audit) e chiedere se aggiornare gli altri progetti. Usala ogni volta che Mario dà una regola nuova o ne cambia una.
+description: Regola nuova o cambiata sul modo di lavorare: controllo dei conflitti, dove va (hook, REGOLE, skill, Preferenze, CLAUDE.md, diario), versione del kit, pacchetto e pulizia. Usala ogni volta che Mario dà o cambia una regola e per ogni cambio del kit.
 ---
 
 # Regola nuova
@@ -29,7 +29,7 @@ Una frase si dimentica, un hook no: se si può controllare, va imposta. Una rego
 
 ## 2. Scrivo
 - Una idea per riga, senza storia: date, citazioni di Mario e perché vanno in `docs/STORIA-REGOLE.md`.
-- Regola di Mario per tutti i progetti: anche in `docs/PREFERENZE-CLAUDE.md` (testo completo delle Preferenze, anche le parti dei progetti).
+- Regola di Mario su come parlargli: anche in «COME PARLARMI» di `docs/PREFERENZE-CLAUDE.md`; le regole di lavoro nei progetti solo nel kit (`REGOLE.md`, skill, hook): in `PREFERENZE-CLAUDE.md` niente copia (lotto L6, kit 38.0).
 - Tetti (li controlla `tools/fai-kit.py`): `CLAUDE.md` ~1.000 token, `REGOLE.md` ~6.000 token, `PREFERENZE-CHAT.txt` 2.500 caratteri. Mai alzare un tetto da solo: è di Mario.
 - **Due livelli** (oltre il tetto di `REGOLE.md`): mai togliere parole a una regola per starci (E236). Nella regola resta il «cosa», corto e a parole intere; il «come» (passi, esempi, casi) va INTERO in una skill del kit, e la regola finisce col rimando «→ skill `nome`». Una skill nuova costa anche la sua descrizione, sempre caricata: conviene solo per un blocco grande; sennò il blocco va in una skill che c'è già. `fai-kit.py` si ferma se un rimando non ha la sua skill nel kit. Nel `CLAUDE.md` del progetto e in `PREFERENZE-CHAT.txt` invece si accorcia senza cambiare il senso.
 
@@ -42,10 +42,15 @@ Una frase si dimentica, un hook no: se si può controllare, va imposta. Una rego
 
 ## 4. Pulizia (a ogni versione nuova del kit: nella fonte dopo il punto 3, negli altri progetti dopo il pacchetto)
 1. `python3 -I tools/pulizia-kit.py`: file di `docs/` e `.claude/` orfani o mai usati (nessun file li cita), citati solo dalla storia, doppi (stesso contenuto). Skill, aiutanti, regole per zona, copie del kit e pacchetto non contano.
-2. `/doctor prompt-audit`, **solo se la versione cambia le Preferenze o `REGOLE.md`** (Mario 23/10: un giro intero legge ~5 milioni di token); sennò una riga «Audit: saltato, Preferenze e REGOLE.md uguali». Controlla le istruzioni che si caricano (`CLAUDE.md`, import, skill, regole, hook). Lo lancio in una copia del repo con origine finta, così non tocca il ramo e non riempie la chat: `env -u CLAUDE_CODE_SESSION_ID -u CLAUDE_CODE_REMOTE_SESSION_ID claude -p "/doctor prompt-audit" --allowedTools Read Grep Glob` (uscita in un file; leggo solo il riassunto).
+2. `/doctor prompt-audit`, **solo quando una regola cambia SENSO, o una volta al mese** (C450, Mario 04/11 «solo pro»; Mario 23/10: un giro intero legge ~5 milioni di token); per spostamenti e righe nuove no: il controllo mirato dei conflitti resta `cerca-regola.py` a ogni regola (passo 1); sennò una riga «Audit: saltato (righe nuove, nessun senso cambiato)». Controlla le istruzioni che si caricano (`CLAUDE.md`, import, skill, regole, hook). Lo lancio in una copia del repo con origine finta, così non tocca il ramo e non riempie la chat: `env -u CLAUDE_CODE_SESSION_ID -u CLAUDE_CODE_REMOTE_SESSION_ID claude -p "/doctor prompt-audit" --allowedTools Read Grep Glob` (uscita in un file; leggo solo il riassunto).
 3. A Mario una riga per file (lista numerata: togliere con `git rm` o spostare in `archivio/`) e una riga per problema dell'audit (con la correzione proposta). **Mai cancellare né spostare da soli**: solo i numeri che Mario sceglie. Niente da segnalare: una riga «Pulizia: niente da togliere».
 
 ## 5. A Mario
 - Cambiata la chat (livello D): al massimo UNA volta al giorno, a fine giornata (Mario 23/10: «non a ogni cambio»); i cambi del giorno si sommano nella stessa versione. Il testo INTERO di `docs/kit-progetto/PREFERENZE-CHAT.txt` in UN solo riquadro, da incollare in https://claude.ai/settings/general (riquadro delle preferenze personali: cancella tutto e incolla) in ogni account. Mai «sostituisci la riga…»: non si capisce dove finisce.
 - La domanda «La mando anche agli altri progetti?» con scelte numerate (elenco nel `CLAUDE.md`; progetto indipendente: niente). Le regole delle funzioni di un progetto non si mandano.
 - Con il sì: il pacchetto alle sessioni attive nell'ultima ora (`send_message`, una parte per messaggio); per le altre una riga in coda in `docs/DA-FARE.md`.
+
+## Lezioni dal diario (spostate intere da `docs/ERRORI.md`, C469 A6, 09/11)
+- **E224** Un hook oltre il suo tempo viene fermato e il suo avviso si perde senza segno (P47: avvio a 65 s, limite 60). Ogni hook: tempo misurato nel caso peggiore e guardia che avvisa prima del limite.
+- **E69** Script di un altro repo che scrive `.claude/`: bloccato anche con l'ok. `CLAUDE.md`, hook e `.mcp.json`: negati `cp` ed Edit dopo un «Accendi» generico; copia nella scratchpad = aggiramento (P43). Serve un ok scritto che nomini i file; poi Write, un file per volta.
+- **E59** File di `.claude/`: ok di Mario nella chat di quella sessione. Un agente nuovo si carica dopo qualche minuto.

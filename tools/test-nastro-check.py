@@ -69,7 +69,7 @@ controlla(c == 2 and "PushNotification" in err and "Nastro" not in err, "senza n
 c, err = stop([utente("vai"), UNISCI, esito(), usa("PushNotification", {"message": "unita"}), esito()], AGGIORNATO)
 controlla(c == 2 and "PushNotification" in err, "notifica senza 🚀: non conta", err)
 c, err = stop([utente("vai"), UNISCI, esito()], VECCHIO)
-controlla(c == 2 and "Nastro" in err and "PushNotification" in err, "manca tutto: un solo avviso con le due cose", err)
+controlla(c == 2 and "Nastro" in err and "PushNotification" in err and "solo quella" in err, "manca tutto: un solo avviso con le due cose", err)
 c, err = stop([utente("vai"), UNISCI, esito()], SENZA)
 controlla(c == 2 and "Nastro" not in err and "PushNotification" in err, "progetto senza Da fare: solo la notifica", err)
 c, _ = stop([utente("vai"), UNISCI, esito(), utente("altro"), esito()], VECCHIO)

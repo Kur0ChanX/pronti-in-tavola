@@ -8,16 +8,23 @@
 #   - sessione partita su un altro ramo (es. quello creato dalla piattaforma) → passa al ramo
 #     scritto in .claude/ramo-di-lavoro.txt, solo se non si perde nessun commit (E12).
 # Non tocca niente se ci sono modifiche non salvate o se il commit attuale non è su GitHub.
-import datetime, json, os, re, subprocess, sys, time
+import datetime, json, os, re, subprocess, sys, time, unicodedata
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 try:  # C352: merge simulato; sessione; scorte per sessione (scorta-<ruolo>-<data>-<id>/<ramo>)
     from scorta import (lavoro_della_scorta, sessione_corta, sessione_di, sessione_della_scorta, scorte_vive,
-                        leggi_nome_scorta, scrivi_sessione, oggi, SCORTE_GIORNI)
+                        leggi_nome_scorta, scrivi_sessione, oggi, catena_di, SCORTE_GIORNI, VOCE, ora_voce)
 except Exception:  # noqa: BLE001
     SCORTE_GIORNI = 14
+    VOCE = re.compile(r"^## (\d{4}-\d{2}-\d{2} ~?\d{2}:\d[\dx]) · (\S.*)$")  # come scorta.py (C469 fase 1)
 
-    def lavoro_della_scorta(scorta, head="HEAD"):
+    def ora_voce(quando):
+        return str(quando).replace("~", "").replace("x", "0")
+
+    def catena_di(base, mia):
+        return None
+
+    def lavoro_della_scorta(scorta, head="HEAD", scadenza=None):
         return "nuovo"
 
     def sessione_corta(sessione):
@@ -46,13 +53,39 @@ except Exception:  # noqa: BLE001
 
 CWD = os.environ.get("CLAUDE_PROJECT_DIR") or None
 IN_CORSO = "avvio-in-corso"  # come kit-check.py
+RIAVVIO = "avvio-riavvio"  # C469 fase 2: segno per kit-check.py (stesso nome là)
+GIA_PARTITA = {"si": False}  # C469 fase 2: la scorta di questa sessione è già su GitHub = riavvio del contenitore
 INIZIO = time.time()
 # C352: l'hook ha 90 s (settings.json); se li supera viene fermato e tutto l'avviso di avvio si perde (P47: 112 fetch,
 # 65 s). Oltre TEMPO_MAX i controlli lenti si saltano e l'avviso lo dice.
 TEMPO_MAX = 45
+# C469 A9: tetto duro di ogni comando git dell'avvio (dopo restano messaggi, promesse e Aspetta Mario, ~5 s) e tetto del
+# fetch del ramo (prima 4 prove × 20 s + 19 s di attese = 99 s: l'hook veniva fermato e l'avviso si perdeva).
+TEMPO_DURO = 75
+TETTO_RIPARA = 40
+# Risparmio 13 (10/11): l'hook è stato fermato a 90 s lo stesso (contenitore con il ramo di 6 giorni prima, 513 scorte su
+# GitHub) e l'avviso intero si è perso: a TEMPO_HOOK secondi un allarme ferma il passo in corso e l'avviso esce con quello
+# che c'è, cosa manca e come rifarlo. AVVIO_TEMPO_HOOK solo per le prove (tools/test-scorta.py).
+TEMPO_HOOK = max(1, int(os.environ.get("AVVIO_TEMPO_HOOK") or 80))
+FASE = {"ora": ""}
+
+
+class Scaduto(BaseException):
+    """Tetto dell'hook raggiunto (BaseException: gli «except Exception» dei passi non la fermano)."""
+
+
+def _scaduto(*_):
+    raise Scaduto()
+
+
+def resto(tetto=TEMPO_DURO):
+    return tetto - (time.time() - INIZIO)
 
 
 def run(*args, timeout=20):
+    timeout = min(timeout, resto())  # C469 A9
+    if timeout < 1:
+        return 1, ""
     try:
         r = subprocess.run(["git", *args], capture_output=True, text=True, timeout=timeout, cwd=CWD)
         return r.returncode, r.stdout.strip()
@@ -100,11 +133,15 @@ def ripara():
     if not ramo:
         return "ATTENZIONE: HEAD staccato e ramo di lavoro non trovato. Avvisa Mario, non lavorare."
     remoto = f"origin/{ramo}"
+    scaricato = False
     for attesa in (0, 3, 6, 10):  # la rete può non essere pronta appena parte il contenitore
-        time.sleep(attesa)
-        if ok("fetch", "-q", "origin", ramo):
+        if resto(TETTO_RIPARA) - attesa < 5:  # C469 A9: tutte le prove dentro i 40 s
             break
-    else:
+        time.sleep(attesa)
+        if run("fetch", "-q", "origin", ramo, timeout=min(20, resto(TETTO_RIPARA)))[0] == 0:
+            scaricato = True
+            break
+    if not scaricato:
         return f"ATTENZIONE: git fetch origin {ramo} fallito. Riprova a mano prima di lavorare."
     if not ok("rev-parse", "--verify", "-q", remoto):
         return f"Ramo {ramo} non ancora su GitHub: nessuna riparazione necessaria."
@@ -161,7 +198,7 @@ A_PARTE_GIORNI = 7  # i rami a parte più vecchi non si guardano più: sarebbero
 def tutte_le_scorte(ramo):
     # C352: le scorte del ramo su GitHub (ls-remote, un solo giro di rete); se GitHub non risponde, almeno i due nomi
     # vecchi (scorta-<ruolo>/<ramo>) si provano col fetch, come prima
-    vive = scorte_vive(ramo)
+    vive = scorte_vive(ramo, timeout=max(1, min(30, resto())))  # C469 A9
     if vive is None:
         vive = [{"nome": f"scorta-{r}/{ramo}", "ruolo": r, "data": "", "id": "", "ramo": ramo, "ferma": ""} for r in FILE_MSG]
     return vive
@@ -219,6 +256,12 @@ def driver_scorta():
     # versione della scorta, che è sempre la più nuova: zero conflitti. L'attributo sta in .gitattributes; il driver
     # va detto a ogni contenitore (git config locale), e senza di esso git fa il merge normale.
     ok("config", "merge.scorta.driver", "cp %B %A")
+    # C469 B6: i registri dei messaggi di Mario si uniscono voce per voce (con «cp» si perdevano quelli dell'altra chat)
+    ok("config", "merge.registro.driver", 'python3 -I .claude/hooks/scorta.py unisci-registro %O %A %B')
+    # C469 fase 1: l'archivio dei messaggi di Mario (un file al mese, senza tetto)
+    ok("config", "merge.archivio.driver", 'python3 -I .claude/hooks/scorta.py unisci-archivio %O %A %B')
+    # E325: .claude/settings.json unito chiave per chiave, sempre valido (un conflitto lì spegneva i divieti)
+    ok("config", "merge.impostazioni.driver", 'python3 -I tools/unisci-json.py %O %A %B')
 
 
 def di_chi(remoto, mia, chi=""):
@@ -236,6 +279,17 @@ def di_chi(remoto, mia, chi=""):
             f"tua catena, o fermata di colpo); se è una chat ancora attiva (docs/CHI-FA-COSA.md) NON unirla (E97).")
 
 
+def scrivi_elenco(righe):
+    """C469 A1: elenco lungo in .git/avvio-scorte.txt (fuori dal contesto; si legge solo se serve)."""
+    try:
+        percorso = os.path.join(git("rev-parse", "--absolute-git-dir"), "avvio-scorte.txt")
+        with open(percorso, "w", encoding="utf-8") as f:
+            f.write("\n".join(righe) + "\n")
+        return percorso
+    except Exception:  # noqa: BLE001
+        return "non scritto"
+
+
 def controlla_scorta(mia=""):
     # Scorta automatica (scorta.py): se la sessione prima si è fermata di colpo, il lavoro più nuovo è lì.
     # C148: una scorta per chat; si unisce solo la propria (E97: il lavoro dell'altra chat attiva non si unisce).
@@ -245,6 +299,7 @@ def controlla_scorta(mia=""):
     if not ramo:
         return ""
     tutte = tutte_le_scorte(ramo)
+    GIA_PARTITA["si"] = bool(mia) and any(v["id"] == mia for v in tutte)
     if mia:  # C352: così la prima scorta di questa sessione ha già il nome nuovo (data: quella già su GitHub, o oggi)
         data = next((v["data"] for v in tutte if v["id"] == mia and not v["ferma"]), "") or oggi()
         gitdir = git("rev-parse", "--absolute-git-dir")
@@ -253,7 +308,15 @@ def controlla_scorta(mia=""):
     limite = limite_giorni(SCORTE_GIORNI)
     vecchie = 0
     da_guardare = []
+    # C450 (kit 35.4, proposta 8): se questa sessione è scritta in docs/CHI-FA-COSA.md, si guardano solo le scorte della
+    # sua catena (le altre non si uniscono comunque, E97): una riga le conta; le elenca la Bacheca del mattino.
+    catena = catena_di(CWD or os.getcwd(), mia)
+    mie = set(catena["ids"]) | {mia} if catena else None
+    altre_catene = 0  # C450: scorte di altre catene (nome diverso da «altre» di C455, che è l'elenco delle altre sessioni)
     for v in tutte:
+        if mie is not None and v["id"] and v["id"] not in mie:
+            altre_catene += 1
+            continue
         if v["ferma"]:
             if a_parte_recente(v):
                 da_guardare.append(v)
@@ -278,18 +341,39 @@ def controlla_scorta(mia=""):
         if tempo_finito():
             non_guardate.append(voce[1])
             continue
-        esito = lavoro_della_scorta(voce[1])
+        esito = lavoro_della_scorta(voce[1], scadenza=INIZIO + TEMPO_DURO)
+        if resto() < 1:  # C469 A9: tempo finito durante il merge simulato, l'esito non è sicuro
+            non_guardate.append(voce[1])
+            continue
         (vive if esito == "nuovo" else ignorate).append((voce, esito))
     if len(da_guardare) > len(scaricate) and tempo_finito():
         non_guardate.append(f"{len(da_guardare) - len(scaricate)} non scaricate")
     trovate = [v for v, _ in vive]
+    notizie = []  # C469 A1: scorte dell'altro ruolo in una riga sola
+    altre = []  # C455: scorte di altre sessioni in un solo avviso (prima ~600 caratteri ripetuti per ognuna: 8 = ~1,3k token)
     for ruolo, remoto, tipo, perche, chi in trovate:
         if mio and ruolo != mio:
-            avvisi.append(f"Notizia: anche {remoto} (chat {ruolo}) ha lavoro non nel ramo: non è tuo, non unirla (E97).")
+            notizie.append(f"{remoto} (chat {ruolo})")
+        elif mia and chi and chi != mia:
+            altre.append(f"{remoto} (chat {ruolo}, della sessione {chi}, non della tua)")
         else:
             avvisi.append(f"{tipo} della chat {ruolo}: {remoto} ha lavoro non presente nel ramo ({perche})"
                           + ("." if mio else f" Se sei la chat {ruolo}:") + f" git diff --stat HEAD {remoto}, poi "
                           f"git merge {remoto}, git push e leggi {FILE_MSG[ruolo]}." + di_chi(remoto, mia, chi))
+    if notizie:
+        elenco = ", ".join(notizie[:3]) + (f" e altre {len(notizie) - 3} (elenco intero: {scrivi_elenco(notizie)})" if len(notizie) > 3 else "")
+        avvisi.append(f"Notizia: anche {elenco} " + ("ha lavoro non nel ramo: non è tuo, non unirla (E97)." if len(notizie) == 1
+                      else "hanno lavoro non nel ramo: non sono tue, non unirle (E97)."))
+    if altre:  # C469 A1: oltre 3 (sessione non in docs/CHI-FA-COSA.md: fino a ~30 = ~8k token) le 3 più nuove + file
+        altre.sort(key=lambda s: (re.search(r"-(\d{8})-", s) or re.search("", s)).group(0), reverse=True)
+        mostrate = "; ".join(altre[:3])
+        if len(altre) > 3:
+            mostrate += f" e altre {len(altre) - 3} (elenco intero: {scrivi_elenco(altre)})"
+        avvisi.append(f"SCORTE con lavoro non presente nel ramo ({len(altre)}, prima le più nuove): " + mostrate + ". Una si unisce solo "
+                      "se è della tua chat (principale o parallela) e quella sessione è chiusa (la precedente della tua catena, o "
+                      "fermata di colpo): git diff --stat HEAD <scorta>, poi git merge <scorta>, git push e leggi "
+                      f"{FILE_MSG.get('principale', '')} (principale) o {FILE_MSG.get('parallela', '')} (parallela); se è una chat "
+                      "ancora attiva (docs/CHI-FA-COSA.md) NON unirla (E97).")
     if trovate and not mio:
         avvisi.append("Ruolo: parallela se il prompt di avvio dice «Sei la chat parallela», sennò principale. "
                       "La scorta dell'altra chat NON si unisce (E97): al massimo git show <scorta>:<suo file del messaggio>.")
@@ -297,8 +381,14 @@ def controlla_scorta(mia=""):
         nomi = [f"{v[1]} ({e})" for v, e in ignorate]
         elenco = ", ".join(nomi) if len(nomi) <= 4 else ", ".join(nomi[:3]) + f" e altre {len(nomi) - 3}"
         avvisi.append(f"Scorte senza lavoro nuovo (merge simulato: già nel ramo o superate), da NON unire: {elenco}.")
+    if altre_catene:
+        avvisi.append(f"Scorte di altre catene non guardate: {altre_catene} (la tua catena «{catena['nome']}» è in docs/CHI-FA-COSA.md; "
+                      "non si uniscono, E97; le elenca la Bacheca del mattino).")
     if vecchie:
         avvisi.append(f"Scorte di sessioni ferme da più di {SCORTE_GIORNI} giorni non guardate: {vecchie} (pulizia mensile).")
+    if altre_catene or vecchie or ignorate:  # C450 (kit 35.4, proposta 1): le scorte di sessioni chiuse già nel ramo non servono più
+        avvisi.append("Dopo l'unione della tua scorta: `python3 -I tools/pulisci-scorte.py --unite --cancella` (C450: toglie solo le "
+                      "etichette delle scorte di sessioni chiuse già tutte nel ramo; i commit restano; mai la tua né di una chat aperta).")
     if non_guardate:
         elenco = ", ".join(non_guardate[:3]) + (f" e altre {len(non_guardate) - 3}" if len(non_guardate) > 3 else "")
         avvisi.append(f"ATTENZIONE scorte: tempo dell'avvio finito, non controllate: {elenco}. Rifai il controllo a mano: "
@@ -307,25 +397,45 @@ def controlla_scorta(mia=""):
 
 
 FILE_REGISTRO = {"principale": "docs/MESSAGGI-MARIO.md", "parallela": "docs/MESSAGGI-MARIO-PARALLELA.md"}  # come scorta.py
-VOCE = re.compile(r"^## (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) · \S+$")
 
 
-def messaggi_dopo_handoff():
+def consegne_di(ruolo, mia):
+    """C469 fase 1 (rapporto 11 voce 1): (file delle consegne, id della catena o None) da cui contare i messaggi dopo
+    il passaggio. Principale: PASSAGGIO-CONSEGNE.md. Parallela: le consegne della SUA catena (CHI-FA-COSA.md); se la
+    catena non si trova, le consegne parallele più VECCHIE fra quelle salvate negli ultimi 14 giorni (meglio contare di
+    più). Prima per tutti si contava dal file della Principale: Mario scrive alla Fix chiusa, la Principale consegna
+    dopo, la Fix nuova non aveva l'avviso."""
+    if ruolo != "parallela":
+        return "docs/PASSAGGIO-CONSEGNE.md", None
+    c = catena_di(CWD or ".", mia)
+    if c:
+        nome = re.sub(r"[^A-Za-z0-9]", "", unicodedata.normalize("NFKD", c["nome"]).encode("ascii", "ignore").decode()).upper()
+        f = f"docs/CONSEGNE-PARALLELA-{nome}.md"
+        if git("log", "-1", "--format=%ct", "HEAD", "--", f):
+            return f, set(c["ids"]) - {mia}
+    file = sorted(set(git("log", "--since=14.days", "--format=", "--name-only", "HEAD", "--",
+                          "docs/CONSEGNE-PARALLELA-*.md").split()))
+    piu_vecchio = min(file, key=lambda f: int(git("log", "-1", "--format=%ct", "HEAD", "--", f) or 0), default="")
+    return piu_vecchio, None
+
+
+def messaggi_dopo_handoff(mia=""):
     # C291 (Mario 27/10 «1ok»): i messaggi di Mario arrivati dopo l'ultimo commit delle consegne (alla sessione chiusa,
     # o durante un riavvio) sono nel registro di scorta.py: li conto dal ramo e dalla scorta non ancora unita.
     ramo = git("symbolic-ref", "-q", "--short", "HEAD")
-    quando = git("log", "-1", "--format=%ct", "HEAD", "--", "docs/PASSAGGIO-CONSEGNE.md")
-    if not ramo or not quando:
-        return ""
-    try:
-        from zoneinfo import ZoneInfo
-        dal = datetime.datetime.fromtimestamp(int(quando), ZoneInfo("Europe/Rome")).strftime("%Y-%m-%d %H:%M")
-    except Exception:
+    if not ramo:
         return ""
     mio = ruolo_salvato()
     avvisi = []
     for ruolo, file in FILE_REGISTRO.items():
         if mio and ruolo != mio:
+            continue
+        consegne, ids = consegne_di(ruolo, mia)
+        quando = git("log", "-1", "--format=%ct", "HEAD", "--", consegne) if consegne else ""
+        try:
+            from zoneinfo import ZoneInfo
+            dal = datetime.datetime.fromtimestamp(int(quando), ZoneInfo("Europe/Rome")).strftime("%Y-%m-%d %H:%M")
+        except Exception:
             continue
         voci = 0  # la scorta contiene il registro del ramo più i messaggi nuovi: vale la fonte più lunga
         # C352: tutte le scorte di questo ruolo scaricate da controlla_scorta (per sessione e nome vecchio)
@@ -334,27 +444,31 @@ def messaggi_dopo_handoff():
         for rif in ("HEAD", *scorte):
             rc, testo = run("show", f"{rif}:{file}")
             if rc == 0:
-                voci = max(voci, sum(1 for riga in testo.splitlines() if (m := VOCE.match(riga)) and m.group(1) >= dal))
+                voci = max(voci, sum(1 for riga in testo.splitlines() if (m := VOCE.match(riga)) and ora_voce(m.group(1)) >= dal
+                                     and (not ids or (m.group(2).split() or [''])[0] in ids)))  # C469: della mia catena
         if voci:
-            avvisi.append(f"MESSAGGI DOPO L'HANDOFF della chat {ruolo}: {voci} dal {dal} (ultimo commit delle "
-                          f"consegne) in {file}, dopo il merge della propria scorta: leggili TUTTI prima di lavorare "
+            avvisi.append(f"MESSAGGI DOPO L'HANDOFF della chat {ruolo}: {voci} dal {dal} (ultimo commit di "
+                          f"{consegne}{', sessioni della mia catena' if ids else ''}) in {file}, dopo il merge della propria scorta: leggili TUTTI prima di lavorare "
                           f"e confrontali con docs/DA-FARE.md (C291).")
     return " ".join(avvisi)
 
 
-def promesse_aperte():
+def promesse_aperte(riavvio=False):
     # C331 (Mario 29/10 «perché fai le cose a metà»): le promesse a Mario non chiuse con la prova, dal registro.
     hook = os.path.join(os.path.dirname(os.path.abspath(__file__)), "promesse.py")
     if not os.path.isfile(hook):
         return ""
     try:
         r = subprocess.run([sys.executable, "-I", hook, "--aperte", "--breve"], capture_output=True, text=True, timeout=10)
-        return r.stdout.strip()
     except Exception:
         return ""
+    n = re.search(r"PROMESSE APERTE a Mario: (\d+)", r.stdout)
+    if riavvio and n:  # C469 fase 2: al riavvio solo il numero (l'elenco è già nel primo avvio)
+        return f"PROMESSE APERTE a Mario: {n.group(1)}."
+    return r.stdout.strip()
 
 
-def aspetta_mario():
+def aspetta_mario(riavvio=False):
     # C369 (Mario 31/10 ~23:10): le righe di «## 0. Aspetta Mario» restano all'handoff; la sessione nuova parte SEMPRE
     # verde (E245, Mario 1/11 01:45: il colore dice cosa fa adesso), le ricorda a Mario e cancella le sveglie della
     # vecchia (solo quelle legate alla vecchia, mai delle altre chat).
@@ -377,13 +491,15 @@ def aspetta_mario():
         vecchia = f" (principale: `{m.group(1)}`)" if m else ""
     except OSError:
         pass
-    testa = (f"ASPETTA MARIO (C369): {len(righe)} righe in «## 0. Aspetta Mario» di docs/DA-FARE.md (della principale "
-             f"«Principale NN»: {principale}; delle altre catene: {len(righe) - principale}): all'avvio titolo VERDE della tua "
-             "catena anche con righe tue, con « ❔» dopo il numero se ce ne sono della tua catena (E245, C423: verde finché lavori; giallo con « ❓» solo quando ti fermi ad aspettare Mario); "
-             "si tolgono solo quando Mario risponde; ricordale a Mario in fondo al primo messaggio, una riga "
-             "ciascuna (C347; la domanda intera solo quando Mario scrive, E179); le foto e i video delle righe della "
-             "tua catena li rimandi con lo strumento dei file nello stesso messaggio (E240, E247; quelli delle altre "
-             "catene li rimanda la loro chat): "
+    if riavvio:  # C469 fase 2: al riavvio le righe e basta (titolo e sveglie li hai già sistemati al primo avvio)
+        testa = (f"ASPETTA MARIO: {len(righe)} righe: " + " | ".join(r.strip()[2:][:160] for r in righe[:8]) + ". "
+                 if righe else "ASPETTA MARIO: nessuna riga. ")
+        stop = [r.strip()[2:][:120] for r in righe if "🛑" in r]
+        return (f"🛑 DECISIVE (C422): {len(stop)}: " + " | ".join(stop[:5]) + ". " if stop else "") + testa
+    testa = (f"ASPETTA MARIO (C369, skill `domande`): {len(righe)} righe in «## 0. Aspetta Mario» di docs/DA-FARE.md "
+             f"(Principale: {principale}; altre catene: {len(righe) - principale}): titolo VERDE della tua catena con « ❓N» "
+             "(N = risposte alle righe tue, C454, E245); in fondo al primo messaggio la sola riga «⚠️ Aspettano te: N · nomi corti» "
+             "(C347, E179, C469); la domanda intera quando Mario scrive, una per messaggio con foto e video (E240, E247): "
              + " | ".join(r.strip()[2:][:160] for r in righe[:8]) + ". " if righe else
              "ASPETTA MARIO (C369): nessuna riga in «## 0. Aspetta Mario» di docs/DA-FARE.md: titolo verde della tua catena. ")
     stop = [r.strip()[2:][:120] for r in righe if "🛑" in r]
@@ -392,9 +508,8 @@ def aspetta_mario():
         testa = (f"🛑 DECISIVE (C422): {len(stop)} domande decisive aspettano Mario: ricordale PER PRIME, una riga ciascuna; "
                  "niente codice che dipende dalla risposta, né sveglie che ci lavorano sopra (solo lavori indipendenti): "
                  + " | ".join(stop[:5]) + ". " + testa)
-    return (testa + "SVEGLIE: con list_triggers cancella (delete_trigger) solo quelle con persistent_session_id = la "
-            f"sessione vecchia della tua chat{vecchia}, mai quelle delle altre chat; rifai tue (send_later) quelle che "
-            "servono ancora, UNA per lavoro (kit 30.7).")
+    return (testa + f"SVEGLIE (E248): prima rifai tue (send_later, una per lavoro) quelle che servono ancora, poi cancella solo "
+            f"quelle con persistent_session_id = la sessione vecchia della tua chat{vecchia}; `send_later` bloccato (8 di 8) → non cancellarle.")
 
 
 # La versione del kit e delle Preferenze la controlla kit-check.py (C250, kit v23), che parte subito dopo.
@@ -411,13 +526,61 @@ if __name__ == "__main__":
         open(segno, "w").close()
     except OSError:
         segno = ""
+    riavvio = False
+    avvisi, tempi = [], []
+    passi = ["ramo", "scorte", "messaggi di Mario", "Aspetta Mario", "promesse"]
+
+    def fase(nome, funzione, *argomenti):
+        FASE["ora"], t0 = nome, time.time()
+        risultato = funzione(*argomenti)
+        tempi.append(f"{nome} {time.time() - t0:.0f} s")
+        return risultato
+
+    driver_scorta()  # prima di tutto: 3 righe di config locale; a fine avvio i comandi git possono essere già scaduti
     try:
-        avvisi = ["Leggi docs/ERRORI.md (diario degli errori) prima di lavorare. I «Prossimi passi» delle consegne sono "
-                  "un piano da ricontrollare, non un ordine: prima di ognuno l'occhio critico (già fatto? doppione? un file "
-                  "o una voce che fa già quel lavoro? C333).", ripara(), controlla_scorta(mia), messaggi_dopo_handoff(),
-                  promesse_aperte(), aspetta_mario()]
-        driver_scorta()
+        import signal
+        signal.signal(signal.SIGALRM, _scaduto)
+        signal.alarm(TEMPO_HOOK)
+    except (ImportError, AttributeError, ValueError):  # senza SIGALRM (Windows) resta il tetto dei comandi git
+        pass
+    try:
+        avvisi.append(fase("ramo", ripara))
+        avvisi.append(fase("scorte", controlla_scorta, mia))
+        # C469 fase 2 (rapporto 14 voce 6): riavvio del contenitore = scorta di questa sessione già su GitHub, o «resume».
+        # La conversazione c'è ancora: solo i dati di adesso, via le frasi fisse (~900 token a ogni riavvio).
+        riavvio = GIA_PARTITA["si"] or (isinstance(dati, dict) and dati.get("source") == "resume")
+        frase = ("RIAVVIO del contenitore, stessa sessione: le regole d'avvio le hai già; qui solo i dati di adesso."
+                 if riavvio else
+                 "Leggi docs/ERRORI.md (diario degli errori) prima di lavorare. I «Prossimi passi» delle consegne sono "
+                 "un piano da ricontrollare, non un ordine: prima di ognuno l'occhio critico (già fatto? doppione? un file "
+                 "o una voce che fa già quel lavoro? C333).")
+        # C469 fase 3 (rapporto 11 voce 6): oltre ~10.000 caratteri Claude Code mostra solo l'inizio dell'avviso: prima
+        # ATTENZIONE (ramo, scorta), poi messaggi di Mario e decisive, la frase fissa in fondo (al riavvio resta in testa)
+        avvisi += [fase("messaggi di Mario", messaggi_dopo_handoff, mia), fase("Aspetta Mario", aspetta_mario, riavvio),
+                   fase("promesse", promesse_aperte, riavvio)]
+        avvisi.insert(0, frase) if riavvio else avvisi.append(frase)
+        if time.time() - INIZIO > TEMPO_MAX:  # per il rodaggio: quale passo è lento
+            avvisi.append(f"Avvio lento ({time.time() - INIZIO:.0f} s): {', '.join(tempi)}.")
+    except Scaduto:
+        fatti = len(tempi)
+        mancano = ", ".join(passi[fatti + 1:])
+        avvisi.insert(0, f"ATTENZIONE avvio lento: oltre {TEMPO_HOOK} s ({', '.join(tempi + [FASE['ora'] + ' fermato'])})"
+                         f"{'; non controllati: ' + mancano if mancano else ''}. Prima di lavorare rilancia: "
+                         "python3 -I .claude/hooks/avvio-check.py < /dev/null (la seconda volta è veloce: i rami sono già "
+                         "scaricati); poi leggi docs/ERRORI.md e le consegne.")
     finally:
+        try:
+            signal.alarm(0)
+        except Exception:  # noqa: BLE001
+            pass
+        marca = os.path.join(CWD or ".", ".git", RIAVVIO)  # prima di togliere il segno: kit-check.py lo legge dopo
+        try:
+            if riavvio:
+                open(marca, "w").close()
+            elif os.path.exists(marca):
+                os.remove(marca)
+        except OSError:
+            pass
         if segno:
             try:
                 os.remove(segno)

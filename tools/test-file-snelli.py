@@ -57,6 +57,12 @@ try:
     controlla("docs/DA-FARE.md" in a and "tetto 2 KB" in a, "file oltre il tetto e cresciuto: avviso")
     controlla("C2 (" not in a, "voce lunga ma uguale: non citata")
     controlla(hook(prog, mem) == "", "subito dopo, niente cambiato: zitto")
+    with open(os.path.join(prog, "docs/DA-FARE.md"), "a", encoding="utf-8") as f:
+        f.write("z" * 50)
+    controlla(hook(prog, mem) == "", "C469: cresciuto di poco dopo l'avviso: zitto")
+    with open(os.path.join(prog, "docs/DA-FARE.md"), "a", encoding="utf-8") as f:
+        f.write("z" * 1100)
+    controlla("docs/DA-FARE.md" in hook(prog, mem), "C469: oltre 1 KB in più dall'ultimo avviso: di nuovo")
 
     # 3. File che si accorcia: zitto (sta migliorando).
     scrivi(prog, "docs/DA-FARE.md", "# Da fare\n" + corta + lunga + "y" * 2000)
@@ -76,6 +82,17 @@ try:
     a = hook(prog, mem)
     controlla("docs/ERRORI.md" in a and "E2 (" in a, "lezione lunga nuova: avviso")
 
+    # 6b. C469 fase 2 (rapporto 13 M9, M8): «Ultimi 14 giorni» oltre 10 lezioni = avviso quando crescono, poi zitto.
+    recenti = lambda n: "## Ultimi 14 giorni\n" + "".join(f"- **E{i}** corta\n" for i in range(n)) + "## Sempre\n- **E99** x\n"
+    scrivi(prog, "docs/ERRORI.md", recenti(10))
+    controlla("Ultimi 14 giorni" not in hook(prog, mem), "10 lezioni recenti: zitto")
+    scrivi(prog, "docs/ERRORI.md", recenti(11))
+    a = hook(prog, mem)
+    controlla("11 lezioni" in a and "ERRORI-STORIA" in a, "11 lezioni recenti: avviso")
+    controlla("Ultimi 14 giorni" not in hook(prog, mem), "11 lezioni, di nuovo: zitto")
+    scrivi(prog, "docs/ERRORI.md", recenti(12))
+    controlla("12 lezioni" in hook(prog, mem), "12 lezioni: avviso di nuovo")
+
     # 7. File che manca: nessun errore, zitto.
     os.remove(os.path.join(prog, "docs/ERRORI.md"))
     controlla(hook(prog, mem) == "", "file mancante: zitto")
@@ -91,4 +108,6 @@ try:
 finally:
     shutil.rmtree(base, ignore_errors=True)
 
+# 9. C469 L10: di base le voci di Da fare oltre 400 caratteri (prima 600)
+controlla("('docs/DA-FARE.md', 40, 400)" in open(HOOK, encoding="utf-8").read(), "L10: tetto delle voci di Da fare a 400")
 print(f"OK: {ok_n} controlli verdi (file-snelli)")
