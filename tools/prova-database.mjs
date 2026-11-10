@@ -672,9 +672,73 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   const giorno = controllo + 144 * cron + 400 * sveglia + 1440 * stato + 48 * primo + 100 * cerca + 20 * nuove;
   console.log(`MISURA C130 giornata intera: ${giorno} righe lette (controllo ${controllo}, cron ${cron}, sveglia ${sveglia}, riquadro ${stato}, riconteggio ${primo}, ricerca ${cerca}, nuove ${nuove})`);
   prova(`C130 giornata intera sotto 1 milione di righe lette: ${giorno} (controllo ${controllo}, cron ${cron}, sveglia ${sveglia}, riquadro ${stato}, riconteggio ${primo}, ricerca ${cerca}, nuove ${nuove})`, giorno < 1000000 && stato < 100);
+  /* C137 (Mario 10/11 18:13 «in modalità emergenza… niente cose quasi inutili come aggiornare il ricettario»; prima C130 diceva
+     «le ricerche delle persone non si fermano mai»): oltre il freno il ricettario NON cerca e NON carica ricette nuove, nemmeno a mano;
+     il ricettario di Monica, i numeri e aprire una ricetta sì. Memoria bloccata da Cloudflare: lo stesso, col perché giusto. */
   sim._lg = { g, n: 3500001 };
-  const fermo = await W.default.fetch(new Request('https://x/api/gz', { method: 'POST', headers: { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' }, body: JSON.stringify({ cat: 'db', q: 'pollo' }) }), cfgSim, contesto).then(x => x.json()).catch(e => ({ e: String(e) }));
-  prova('C130 anche con tantissime letture le ricerche delle persone funzionano (Mario: niente blocchi) (' + JSON.stringify(fermo).slice(0, 80) + ')', Array.isArray(fermo.ricette) && !fermo.errore);
+  const gz = (corpo, c = cfgSim) => W.default.fetch(new Request('https://x/api/gz', { method: 'POST', headers: { authorization: 'Bearer a.' + btoa(JSON.stringify({ user_id: 'u1' })) + '.c' }, body: JSON.stringify(corpo) }), c, contesto)
+    .then(async x => ({ s: x.status, j: await x.json() })).catch(e => ({ s: 0, j: { e: String(e) } }));
+  const prima137 = sim._lg.n, pausa = [await gz({ cat: 'db', q: 'pollo' }), await gz({ db: 'turbo', n: 5 }), await gz({ db: 'cercaFit', q: 'pollo' }), await gz({ cerca: 'pollo' }), await gz({ db: 'cerca' }), await gz({ db: 'controlla' }), await gz({ cat: 'nuove' })];
+  prova('C137 modalità risparmio: archivio, «Carica altre», «Cerca altre», «Cerca adesso», «Controlla tutte» e ricerche dal vivo in pausa, col perché (' + JSON.stringify(pausa[0].j).slice(0, 70) + ')',
+    pausa.every(x => x.s === 503 && x.j.risparmio && x.j.risparmio.perche === 'freno' && /Modalità risparmio/.test(x.j.errore)) && sim._lg.n - prima137 < 50);
+  const mie = await gz({ db: 'mie' }), st = await gz({ db: 'stato' }), tz = await gz({ db: 'turbo' }), una = await gz({ u: 'https://ricette.giallozafferano.it/Ricetta-sarda-3.html' });
+  prova('C137 in modalità risparmio funzionano il ricettario di Monica, i numeri, lo stato del carico e aprire una ricetta (' + JSON.stringify(una.j).slice(0, 60) + ')',
+    Array.isArray(mie.j.scelte) && st.j.db && st.j.db.letture.freno === true && tz.s === 200 && !!(una.j.ricetta && una.j.ricetta.nome));
+  const rotto = { RICETTARIO: { idFromName: () => 'x', get: () => new Proxy({}, { get: () => async () => { throw new Error('Exceeded allowed rows read in Durable Objects free tier.'); } }) }, AVVISI: cfgSim.AVVISI };
+  const bl = await gz({ db: 'stato' }, rotto);
+  prova('C137 memoria bloccata da Cloudflare: il ricettario dice «modalità risparmio» col perché giusto (' + JSON.stringify(bl.j).slice(0, 60) + ')', bl.s === 503 && bl.j.risparmio && bl.j.risparmio.perche === 'bloccato');
+}
+
+/* C135 corsia d'emergenza (Mario 10/11 17:50 «1 anche per i clienti… non far riscriversi»): l'oggetto AVVISI copia chiavi e telefoni in KV;
+   bloccato (letture finite, PT E53) → chiave, avvisi a Monica e ai clienti, «cosa dire» e iscrizioni dalla copia; poi i telefoni nuovi tornano */
+{
+  const kvMappa = new Map(); let kvScritte = 0;
+  const kv = { get: async (k, t) => { const v = kvMappa.get(k); return v == null ? null : t === 'json' ? JSON.parse(v) : v; }, put: async (k, v) => { kvScritte++; kvMappa.set(k, String(v)); } };
+  const mappa = new Map(), storage = { get: async k => mappa.has(k) ? structuredClone(mappa.get(k)) : undefined, put: async (k, v) => { mappa.set(k, structuredClone(v)); }, delete: async k => { mappa.delete(k); }, setAlarm: async () => null };
+  let fermo = false;
+  const ponteAv = new Proxy({}, { get: (_, k) => (...a) => Promise.resolve().then(() => { if (fermo) throw new Error('Exceeded allowed rows read in Durable Objects free tier.'); return av[k](...a); }) });
+  const cfgAv = { RISERVA: kv, AVVISI: { idFromName: () => 'c', get: () => ponteAv }, RICETTARIO: { idFromName: () => 'x', get: () => ({ autoAcceso: async () => false }) } };
+  const av = new W.Avvisi({ storage }, cfgAv);
+  const prima = globalThis.fetch, spinte = [];
+  globalThis.fetch = async (u, o) => { u = String(u);
+    if (u.startsWith('https://push.prova/')) { spinte.push(u.slice(19)); return new Response('', { status: 201 }); }
+    if (/firestore\.googleapis\.com\/.*\/utenti\//.test(u)) return new Response(JSON.stringify({ fields: { stato: { stringValue: 'approvato' }, cliente: { stringValue: 'C1' } } }));
+    if (/firestore\.googleapis\.com/.test(u)) return new Response('{}');
+    return prima(u, o); };
+  const tok = id => 'Bearer a.' + btoa(JSON.stringify({ user_id: id })) + '.c', sub = id => ({ endpoint: 'https://push.prova/' + id, keys: {} });
+  const api = (p, corpo, chi) => W.default.fetch(new Request('https://x' + p, corpo === undefined ? {} : { method: 'POST', headers: Object.assign({ 'content-type': 'application/json' }, chi ? { authorization: tok(chi) } : {}), body: JSON.stringify(corpo) }), cfgAv, contesto)
+    .then(async r => ({ s: r.status, j: await r.json() }));
+  const copia = () => JSON.parse(kvMappa.get('avvisi') || 'null');
+  await api('/api/iscrivi', { sub: sub('m1'), dev: true }, 'mario'); await api('/api/iscrivi', { sub: sub('mo1') }, 'monica'); await api('/api/cliente', { sub: sub('c1') }, 'k1');
+  const c0 = copia(), chiave = (await api('/api/chiave')).j.chiave, scritte0 = kvScritte;
+  prova('C135 server sano: la copia in KV ha chiavi e telefoni (2 di chi gestisce, 1 cliente)', !!(c0 && c0.pub === chiave && c0.priv && c0.iscritti.length === 2 && c0.clienti.length === 1 && c0.iscritti.find(x => x.uid === 'mario').dev));
+  await api('/api/iscrivi', { sub: sub('m1'), dev: true }, 'mario'); await api('/api/cliente', { sub: sub('c1') }, 'k1');
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfgAv, contesto); await finisci();
+  prova(`C135 il rinnovo a ogni apertura e il cron NON riscrivono la copia (${kvScritte - scritte0} scritture)`, kvScritte === scritte0);
+  fermo = true; spinte.length = 0;
+  const ch = await api('/api/chiave'), a1 = await api('/api/avvisa', { tipo: 'ordine' }), u1 = await api('/api/ultimo');
+  prova(`C135 memoria bloccata: chiave e «ordine nuovo» a Monica e Mario dalla copia (${JSON.stringify(a1.j)})`, ch.j.chiave === chiave && a1.j.riserva && a1.j.mandati === 2 && spinte.sort().join() === 'm1,mo1' && u1.j.tipo === 'ordine');
+  const a2 = await api('/api/avvisa', { tipo: 'ordine' }), a3 = await api('/api/avvisa', { tipo: 'primo' });
+  prova('C135 memoria bloccata: pausa di 15 secondi come sempre, la persona nuova passa lo stesso', a2.j.fermo === 'pausa' && a3.j.mandati === 2);
+  spinte.length = 0;
+  const p1 = await api('/api/pronto', { cliente: 'C1', tipo: 'pronto' }, 'monica'), up = await api('/api/ultimo?e=' + encodeURIComponent('https://push.prova/c1')), ug = await api('/api/ultimo?e=' + encodeURIComponent('https://push.prova/mo1'));
+  prova('C135 memoria bloccata: «il tuo ordine è pronto» al cliente, col testo giusto solo sul suo telefono', p1.j.mandati === 1 && spinte.join() === 'c1' && up.j.tipo === 'pronto' && ug.j.tipo === 'primo');
+  const q1 = await api('/api/qui', { nome: 'Laura <b>', n: 7 }, 'k1'), uq = await api('/api/ultimo'), q2 = await api('/api/qui', { nome: 'Laura', n: 7 }, 'k1');
+  prova('C135 memoria bloccata: «sono qui» suona a chi gestisce (uno al minuto)', q1.j.mandati === 2 && uq.j.tipo === 'qui' && uq.j.nome === 'Laura b' && uq.j.n === 7 && q2.j.fermo === 'pausa');
+  const i1 = await api('/api/cliente', { sub: sub('c2') }, 'k1'), i2 = await api('/api/iscrivi', { sub: sub('mo2') }, 'monica'), st = await api('/api/stato?e=' + encodeURIComponent('https://push.prova/m1'));
+  prova('C135 memoria bloccata: un telefono che si iscrive va nella copia; il diario dice «corsia d\'emergenza»', i1.j.ok && i2.j.ok && copia().clienti.length === 2 && copia().nuovi.length === 2 && st.j.riserva && st.j.riserva.attiva && st.j.questo === true);
+  fermo = false;
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfgAv, contesto); await finisci();
+  const sv = await api('/api/stato');
+  prova('C135 memoria tornata: i telefoni iscritti durante il blocco rientrano da soli (nessuno si riiscrive)', (mappa.get('clienti') || []).some(x => x.endpoint.endsWith('/c2')) && (mappa.get('iscritti') || []).some(x => x.endpoint.endsWith('/mo2')) && !copia().nuovi && sv.j.riserva && sv.j.riserva.clienti === 2 && sv.j.riserva.telefoni === 3);
+  spinte.length = 0;
+  const pr = await api('/api/prova', { riserva: true }, 'mario'), ur = await api('/api/ultimo');
+  prova('C135 «Prova la corsia d\'emergenza» (Mario): parte dalla copia, solo ai suoi telefoni', pr.j.riserva && pr.j.mandati === 1 && spinte.join() === 'm1' && ur.j.tipo === 'riserva');
+  const senza = await W.default.fetch(new Request('https://x/api/chiave'), { AVVISI: { idFromName: () => 'c', get: () => ponteAv } }, contesto); fermo = true;
+  const senza2 = await W.default.fetch(new Request('https://x/api/chiave'), { AVVISI: { idFromName: () => 'c', get: () => ponteAv } }, contesto).then(r => r.json()); fermo = false;
+  prova('C135 senza copia: resta l\'errore vero (letture gratuite), mai una chiave inventata', senza.status === 200 && /letture gratuite/.test(senza2.errore || ''));
+  console.log(`MISURA C135 scritture KV in tutta la prova: ${kvScritte} (limite gratuito 1.000 al giorno)`);
+  globalThis.fetch = prima;
 }
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);

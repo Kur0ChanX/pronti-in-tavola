@@ -485,10 +485,28 @@ function diarioAvvisi() {
     : `<p class="tenue piccolo" style="margin:0">Ultimi avvisi: non riesco a leggerli adesso (${d.rete ? 'manca la rete' : 'il server non risponde'}).</p>`;
   const questo = d.questo === true ? '✅ Il server conosce questo telefono: gli avvisi arrivano qui.'
     : d.questo === false ? '❌ Il server NON conosce questo telefono: tocca il pulsante qui sopra per iscriverlo.' : '';
+  // C135 corsia d'emergenza (copia in Cloudflare KV): «attiva» = server fermo ma gli avvisi partono lo stesso (senza diario)
+  if (d.riserva && d.riserva.attiva) return `<div class="tenue piccolo" style="margin:0">${questo ? `<p style="margin:0 0 6px">${questo}</p>` : ''}<div class="avviso" style="margin:0"><div><b>🛟 Corsia d'emergenza attiva:</b> il server è fermo fino a stanotte, ma gli avvisi degli ordini partono lo stesso dalla copia d'emergenza. L'elenco degli ultimi avvisi riparte quando il server torna.</div></div></div>`;
   const ultimi = (d.ultimi || []).slice(-5).reverse();
+  const copia = d.riserva ? `🛟 Corsia d'emergenza pronta (copia del ${new Date(d.riserva.quando).toLocaleString('it-IT', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' })}): se il server si ferma, gli avvisi partono lo stesso.`
+    : '🛟 Corsia d\'emergenza: la copia non c\'è ancora, si fa da sola entro 10 minuti.';
   return `<div class="tenue piccolo" style="margin:0">${questo ? `<p style="margin:0 0 6px">${questo}</p>` : ''}<b>Ultimi avvisi mandati</b>
     ${ultimi.length ? `<ul style="margin:4px 0 0;padding-left:18px">${ultimi.map(voceDiario).join('')}</ul>` : '<p style="margin:4px 0 0">Ancora nessuno.</p>'}
-    <p style="margin:6px 0 0">✅ = Google l'ha preso e l'ha mandato al telefono. Se c'è ✅ ma non hai visto niente: sul telefono controlla Impostazioni → App → Pronti in Tavola → Notifiche, e che il risparmio batteria non blocchi l'app.</p></div>`;
+    <p style="margin:6px 0 0">✅ = Google l'ha preso e l'ha mandato al telefono. Se c'è ✅ ma non hai visto niente: sul telefono controlla Impostazioni → App → Pronti in Tavola → Notifiche, e che il risparmio batteria non blocchi l'app.</p>
+    <p style="margin:6px 0 0" id="avvisi-copia">${copia}</p>${puoSviluppare() ? `<button type="button" class="btn chiaro piccolo" data-a="avvisi-riserva"${UI.notProva ? ' disabled' : ''}>🧪 Prova la corsia d'emergenza</button>` : ''}</div>`;
+}
+/* C135: Mario prova la corsia d'emergenza: la notifica parte dalla copia in KV (anche col server sano) e arriva solo ai suoi telefoni */
+async function provaRiserva() {
+  UI.notProva = true; UI.notEsito = null; render();
+  try {
+    const tok = await Dati.token(); if (!tok) throw new Error('entra prima con Google');
+    const r = await fetch('/api/prova', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ riserva: true }) });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok || j.errore) throw new Error(j.errore || 'il server risponde ' + r.status);
+    UI.notEsito = j.telefoni ? { ok: true, t: `🛟 Partita dalla corsia d'emergenza verso ${j.telefoni === 1 ? 'il tuo telefono' : j.telefoni + ' tuoi telefoni'}: deve arrivare «Prova della corsia d'emergenza».` }
+      : { ok: false, t: 'Nella copia d\'emergenza non c\'è ancora questo telefono: tocca «Iscrivi di nuovo questo telefono» e riprova fra un minuto.' };
+  } catch (e) { UI.notEsito = { ok: false, t: 'Prova non partita: ' + ((e && e.message) || 'errore sconosciuto') + '.' }; }
+  finally { UI.notProva = false; render(); }
 }
 async function caricaDiarioAvvisi() {
   UI.diarioChiesto = true;
