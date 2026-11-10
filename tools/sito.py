@@ -19,8 +19,8 @@ from zoneinfo import ZoneInfo
 RADICE = pathlib.Path(__file__).resolve().parent.parent
 USCITA = RADICE / 'sito'
 FILE_APP = ['index.html', 'style.css', 'data.js', 'dati.js', 'opzioni.js', 'lucchetto.js', 'vapore.js', 'guida-iphone.js', 'app.js',
-            'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'ricettario.js', 'ricette.js', 'sw.js', 'manifest.webmanifest']
-MEDIA = re.compile(r'media/[A-Za-z0-9._-]+\.(?:png|jpg|jpeg|webp|svg|ico)')
+            'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'foto-ai.js', 'ricettario.js', 'ricette.js', 'sw.js', 'manifest.webmanifest']
+MEDIA = re.compile(r'media/[A-Za-z0-9._-]+\.(?:png|jpg|jpeg|webp|svg|ico|onnx)')   # .onnx: il modello di «✨ Migliora con l'AI» (C119)
 
 
 def errore(testo):
