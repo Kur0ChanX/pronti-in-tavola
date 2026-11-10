@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 10/11 · 🛑 · 💛 Salvagente 3 · PC di casa come riserva di Cloudflare e Firebase: scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente. Schemi mandati 19:02: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png` `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`. A cosa serve: scrivere il piano.
+- 10/11 · 🛑 · 💛 Salvagente 4 · PC di casa come riserva di Cloudflare e Firebase: scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente. Schemi mandati 19:02: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png` `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`. A cosa serve: scrivere il piano.
 - 10/11 · 🟢 Principale 55 · C135 accendere la corsia d'emergenza: crei il «cassetto» su Cloudflare (2 minuti, anche dal telefono) e mi incolli il suo ID. A cosa serve: se Cloudflare blocca di nuovo la memoria, i telefoni di Monica e dei clienti suonano lo stesso. 1 · lo faccio ora · 2 · più tardi.
 - 10/11 · 🟢 Principale 51 · C130 contatore vero di Cloudflare, gratis: crei una chiave di sola lettura «Account Analytics» (ti guido) e il server vede le letture di tutto l'account. 1 · sì · 2 · no. A cosa serve: l'avviso ti arriva anche per letture che il mio contatore non vede.
 - 10/11 · 🟢 Principale 50 · C132 regola nuova «soluzioni smart come il modulo sicuro, per tutti i progetti» (Mario 16:35 nella #42): scegli fra le proposte 1-3 della #42 (anche più numeri): 1 chiavi sempre col modulo sicuro · 2 link già compilati · 3 promemoria prima di ogni scadenza (la 4, guide giuste con le foto, va nel kit comunque). A cosa serve: la porto nel kit per tutti i progetti.
