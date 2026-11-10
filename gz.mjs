@@ -140,15 +140,23 @@ export function esaminaRicetta(r) {
   if (!r || !r.nome) return ['ricetta vuota'];
   const passi = Array.isArray(r.passi) ? r.passi : [], ing = Array.isArray(r.ingredienti) ? r.ingredienti : [];
   if (passi.length < 2) prob.push(passi.length ? '1 passo solo' : '0 passi');
-  if (ing.length < 2) prob.push(`${ing.length} ingredienti`);
+  if (ing.length < 2) prob.push(ing.length ? '1 ingrediente solo' : '0 ingredienti');
   if (!r.foto) prob.push('senza foto');
+  /* C123: il numero della foto sta nel nome del file (…_7.jpg). Se GZ cita la foto 7 nel passo 2 ma la mette nel passo 3, la foto
+     NON manca (Risotto alla parmigiana): manca solo se non c'è in nessun passo. Foto senza numero (strisce): regola di prima. */
+  const numFoto = f => (String(f).match(/_(\d+)\.(?:jpe?g|png|webp)(?:[?#]|$)/i) || [])[1];
+  const tutte = passi.flatMap(p => Array.isArray(p && p.foto) ? p.foto : []);
+  const presenti = tutte.length && tutte.every(numFoto) ? new Set(tutte.map(numFoto)) : null;
   passi.forEach((p, k) => {
     const t = String(p && p.t || ''), foto = Array.isArray(p && p.foto) ? p.foto : [];
-    const nn = new Set([...t.matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1])).size;   // GZ a volte ripete lo stesso numerino
+    const nums = new Set([...t.matchAll(/\[\[(\d+)\]\]/g)].map(m => m[1])), nn = nums.size;   // GZ a volte ripete lo stesso numerino
     if (/<[a-z/][^>]*>|&[a-zA-Z]+;|&#\d+;/.test(t)) prob.push(`passo ${k + 1}: resti di HTML`);
     if (t.replace(/\[\[\d+\]\]/g, '').trim().length < 15) prob.push(`passo ${k + 1}: testo cortissimo`);
     if (/Scopri di più|Domande e risposte|Forno statico o ventilato\?|sono realizzat[ae] a mano/i.test(t)) prob.push(`passo ${k + 1}: testo estraneo (pubblicità o domande)`);
-    if (nn > 1 && foto.length > 1 && foto.length < nn) prob.push(`passo ${k + 1}: ${nn - foto.length} foto mancanti`);
+    if (nn > 1 && foto.length > 1 && foto.length < nn) {
+      const manca = presenti ? [...nums].filter(n => !presenti.has(n)).length : nn - foto.length;
+      if (manca) prob.push(`passo ${k + 1}: ${manca === 1 ? '1 foto mancante' : manca + ' foto mancanti'}`);
+    }
   });
   return prob;
 }

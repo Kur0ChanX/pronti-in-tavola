@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.0';
+const VERSIONE_APP = '0.10.1';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.1', data: '10/11/2026',
+    corretto: ['Ricettario → «🔍 Controlla tutte»: prima diceva «5 da sistemare: ci penso io» ma non cambiava mai nulla. Ora le rilegge subito da GialloZafferano e per ognuna scrive il perché: «uguale all\'originale» se su GialloZafferano è proprio così (es. una foto citata che lì non c\'è, un frullato con 1 passo solo), oppure «pagina tolta». Una foto che GialloZafferano mette nel passo dopo non conta più come mancante'] },
   { v: '0.10.0', data: '10/11/2026',
     nuovo: ['Ricettario, foto piccole delle ricette vecchie: tocca la foto di un passo e poi «✨ Migliora con l\'AI». In pochi secondi l\'AI del telefono la ingrandisce 4 volte e la rende nitida. La prima volta scarica l\'AI (circa 16 MB), poi lo fa da sola su tutte le foto piccole, anche le volte dopo'] },
   { v: '0.9.99', data: '10/11/2026',
