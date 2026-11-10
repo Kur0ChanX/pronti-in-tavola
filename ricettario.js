@@ -26,6 +26,8 @@ const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.temp
    regola «🏋️ Proteiche» sui valori PER PORZIONE di GialloZafferano. Soglie in Impostazioni → «Solo per te, Mario» (opzioni.js, fit*);
    fonti delle soglie in docs/lavori-in-corso/c124-ricettario-proteico.md. Senza tutti i valori una ricetta non entra (meglio una in meno). */
 const sogliaFit = (k, d) => { const v = typeof opz === 'function' ? opz(k) : undefined; return Number.isFinite(v) ? v : d; };
+const nCarico = () => sogliaFit('ricCarico', 20);   // C136: ricette lette a ogni carico a mano («Solo per te, Mario»)
+const motoreAuto = () => !!(RIC.db && !RIC.db.errore && RIC.db.auto);   // C136: motore automatico acceso da Mario (di base spento)
 /* C125 (Mario 10/11 «un po' più severe… anche dolci proteici e snack»): 'pasto' (regole piene) o 'snack' (poche calorie, più quota di proteine);
    false = non è proteica. Soglie in Impostazioni → Sviluppatore. */
 const valoriPieni = n => !!n && n.kcal > 0 && [n.prot, n.saturi, n.zuc, n.sodio].every(x => x != null);
@@ -357,7 +359,8 @@ const cartaRic = (r, pref, conValori) => `<button type="button" class="ric-carta
     ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
     <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${esc(rigaFit(r.nutr))}</small>` : ''}</span></button>`;
 /* C128 (Mario 10/11 «ne ho pochissime»; C127 «fammi capire chiaro se sono state caricate»): a che punto è la lettura delle fonti.
-   Il server legge da solo, veloce, RicetteFit (5 ogni 30 s) e i valori che mancano (10 ogni 30 s); qui i numeri e una stima del tempo. */
+   Mentre carica ricette il server legge RicetteFit (5 ogni 30 s) e i valori che mancano (10 ogni 30 s); qui i numeri e una stima del tempo.
+   C136: col motore automatico spento (di base) si legge solo a mano: il testo dice dove toccare, niente «parto da sola». */
 function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente barra) }
   if (!d || d.errore) return null;
   const t = d.turbo, va = d.daLeggere != null ? d.daLeggere : d.senzaValori || 0, rf = d.rf || {}, tot = rf.tot || 0;
@@ -368,7 +371,9 @@ function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente b
   const min = Math.max(Math.ceil(rfResto / 5) * 0.5, Math.ceil(va / 10) * 0.5), stima = min < 2 ? 'pochi minuti' : min < 60 ? `circa ${Math.ceil(min / 5) * 5} minuti` : Math.round(min / 30) <= 2 ? 'circa un\'ora' : `circa ${String(Math.round(min / 30) / 2).replace('.', ',')} ore`;
   const p = rfResto ? (tot - rfResto) / tot : (d.conValori || 0) / Math.max(1, (d.conValori || 0) + va);
   if (d.letture && d.letture.freno && !(t && t.attivo)) return { t: `⏸ In pausa fino alle 01:00: il server ha quasi finito le letture gratuite di oggi e le tiene per gli ordini e gli avvisi. ${[rfTxt, va ? `valori ancora ${va}` : ''].filter(Boolean).join(' · ')}${rfTxt || va ? '. ' : ''}«🔍 Cerca altre» funziona lo stesso.`, p };   // C130
-  return { t: `${t && t.attivo ? '⏳ Sto caricando ricette nuove' : '⏳ Da leggere (parto da sola entro 10 minuti)'}: ${[rfTxt && rfTxt + (rfResto ? '' : ' ✅'), va ? `valori ancora ${va}` : 'valori tutti letti ✅'].filter(Boolean).join(' · ')}. Finisco fra ${stima} (stima).`, p };
+  const cosa = [rfTxt && rfTxt + (rfResto ? '' : ' ✅'), va ? `valori ancora ${va}` : 'valori tutti letti ✅'].filter(Boolean).join(' · ');
+  if (!(t && t.attivo) && !d.auto) return { t: `⏳ Da leggere: ${cosa}. Le leggo a mano, ${nCarico()} ricette per volta: tocca «⚡ Carica altre» nel riquadro «🗄 Il mio database».`, p };   // C136
+  return { t: `${t && t.attivo ? '⏳ Sto caricando ricette nuove' : '⏳ Da leggere (parto da sola entro 10 minuti)'}: ${cosa}. Finisco fra ${stima} (stima).`, p };
 }
 /* C124: «🏋️ Proteiche» spiegata in una riga, con le soglie di adesso (cambiano da Impostazioni) e i valori ancora da leggere */
 function notaFit() {
@@ -406,7 +411,7 @@ function cercaFit(q, qq, tutto) {   // qq: le parole dei momenti o delle fonti p
   if (q.length < 2 || (RIC.fitCerca && RIC.fitCerca.q === k && RIC.fitCerca.stato === 'carico')) return;   // niente doppio tocco
   if (!navigator.onLine) { RIC.fitCerca = { q: k, mom, testo, stato: 'errore', errore: 'Senza rete non posso cercare: le proteiche già lette sono qui sotto.' }; render(); return; }
   RIC.fitCerca = { q: k, mom, testo, stato: 'carico' }; render();
-  RIC.chiedi(Object.assign({ db: 'cercaFit', q }, tutto ? { tutto: true } : Array.isArray(qq) ? { qq } : {})).then(j => {
+  RIC.chiedi(Object.assign({ db: 'cercaFit', q, n: nCarico() }, tutto ? { tutto: true } : Array.isArray(qq) ? { qq } : {})).then(j => {
     if (!j || j.errore) throw new Error(j && j.errore || 'il server non risponde');
     RIC.fitCerca = { q: k, mom, testo, stato: 'ok', nuove: j.nuove || 0, gia: j.gia || 0, pagine: j.pagine || 0 };
     if (j.db) RIC.db = j.db;
@@ -526,8 +531,8 @@ function riquadroDb() {
   if (d) {
     const ug = d.ultimoGiro && d.ultimoGiro.quando ? d.ultimoGiro.quando : 0, faMin = ug ? Math.round((Date.now() - ug) / 60000) : -1, perc = Math.min(100, Math.round(((Math.max(1, d.fonte || 0) - 1) / ((d.fonti || 10) - 1)) * 100));
     const nomeSez = (CATALOGO_RIC.find(x => x[0] === d.sezione) || [, d.sezione || ''])[1];
-    const stato = RIC.dbCerco ? '🔄 Sto cercando…' : d.pausa ? '⏸ Motore fermo' : faMin < 0 ? '🕐 Il motore parte entro 10 minuti' : faMin > 25 ? `⚠️ Motore fermo da ${faMin} minuti` : `🟢 Motore al lavoro (ultimo giro ${faMin} min fa)`;
-    motore = `<p style="margin:6px 0 0"><b>${stato}</b> · oggi <b>+${d.oggi}</b> nuove${d.coda ? `, ${d.coda} in arrivo` : ''}</p>
+    const stato = RIC.dbCerco ? '🔄 Sto cercando…' : !d.auto ? '🖐 Ricette nuove solo quando le chiedi tu' : d.pausa ? '⏸ Motore fermo' : faMin < 0 ? '🕐 Il motore parte entro 10 minuti' : faMin > 25 ? `⚠️ Motore fermo da ${faMin} minuti` : `🟢 Motore al lavoro (ultimo giro ${faMin} min fa)`;
+    motore = `<p style="margin:6px 0 0"><b>${stato}</b> · oggi <b>+${d.oggi}</b> nuove${d.coda ? `, ${d.coda} ${d.auto || (d.turbo && d.turbo.attivo) ? 'in arrivo' : 'in coda'}` : ''}</p>
       <div class="ricdb-barra" role="progressbar" aria-valuenow="${perc}"><i style="width:${perc}%"></i></div>
       <p class="piccolo tenue" style="margin:2px 0 0">${sardeTxt(d)} · altre: sezione ${Math.max(1, d.fonte || 0)} di ${(d.fonti || 10) - 1} (${esc(nomeSez)}) · ${d.giri} giri</p>
       ${RIC.dbUltime && RIC.dbUltime.length ? `<p class="piccolo" style="margin:6px 0 2px"><b>Ultime entrate nel ricettario:</b></p><ul class="ricdb-lista">${RIC.dbUltime.slice(0, 5).map(r => rigaDb(r, nelRicettario(r.id) ? '✅ nel ricettario' : '')).join('')}</ul>` : ''}`;
@@ -539,15 +544,15 @@ function riquadroDb() {
   const turbo = t && t.auto ? (t.attivo ? `<p style="margin:6px 0 0"><b>⚡ Sto leggendo da sola RicetteFit e i valori che mancano</b>: ${t.fatte} ricette nuove, ${t.valori || 0} valori letti${t.scartate ? `, ${t.scartate} scartate perché incomplete` : ''}.</p>`
     : t.finito ? `<p class="piccolo" style="margin:6px 0 0">⚡ Ultima lettura veloce: <b>${t.fatte}</b> ricette nuove, ${t.valori || 0} valori letti.</p>` : '')
     : t ? (t.attivo ? `<p style="margin:6px 0 0"><b>⚡ Carico ${t.obiettivo} ricette: ${t.fatte} fatte</b>${t.scartate ? ` · ${t.scartate} scartate perché incomplete` : ''}</p><div class="ricdb-barra"><i style="width:${Math.min(100, Math.round(t.fatte / (t.obiettivo || 1) * 100))}%"></i></div>`
-    : t.finito ? `<p class="piccolo" style="margin:6px 0 0">⚡ Ultimo carico: <b>${t.fatte}</b> ricette nuove${t.scartate ? `, ${t.scartate} scartate perché incomplete` : ''}.</p>` : '') : '';
+    : t.finito ? `<p class="piccolo" style="margin:6px 0 0">⚡ Ultimo carico${t.fermato ? ' (fermato da te)' : ''}: <b>${t.fatte}</b> ricette nuove${t.scartate ? `, ${t.scartate} scartate perché incomplete` : ''}${t.freno ? ' · in pausa fino alle 01:00: il server ha quasi finito le letture gratuite di oggi' : ''}.</p>` : '') : '';
   return `<section class="scheda ric-db-box"><h2>🗄 Il mio database</h2>
-    <div class="ric-db-griglia">${n(elenco.length + mie.length, '📖 nel ricettario', `le vede anche Monica · ${base} di partenza, ${trovate} trovate, ${mie.length} scritte da te`)}${n(nuove7, '🆕 nuove', `negli ultimi 7 giorni${nuoveOggi ? `, ${nuoveOggi} oggi` : ''}`)}${n(d ? d.coda : null, '⏳ in arrivo', 'il motore le sta leggendo')}${n(scar.length, '📥 sul telefono', `leggibili senza rete · ${nVoci} con la voce`)}</div>
+    <div class="ric-db-griglia">${n(elenco.length + mie.length, '📖 nel ricettario', `le vede anche Monica · ${base} di partenza, ${trovate} trovate, ${mie.length} scritte da te`)}${n(nuove7, '🆕 nuove', `negli ultimi 7 giorni${nuoveOggi ? `, ${nuoveOggi} oggi` : ''}`)}${d && !d.auto && !(t && t.attivo) ? n(d.coda, '⏳ in coda', 'le leggo quando tocchi «⚡ Carica altre»') : n(d ? d.coda : null, '⏳ in arrivo', 'il motore le sta leggendo')}${n(scar.length, '📥 sul telefono', `leggibili senza rete · ${nVoci} con la voce`)}</div>
     <p class="piccolo" style="margin:6px 0 0">${nonArrivate ? `⚠️ ${nonArrivate} ${nonArrivate === 1 ? 'ricetta scritta da te non è' : 'ricette scritte da te non sono'} ancora sul server: partono appena c'è rete.` : '✅ Tutto salvato sul server dell\'app: Mario e Monica vedono le stesse ricette.'}</p>
     ${turbo}${controlloRic(d)}${motore}
-    <div class="fila" style="margin-top:8px"><button type="button" class="btn pieno" data-a="ric-db-turbo" ${t && t.attivo ? 'disabled' : ''}>${t && t.attivo ? '⚡ Sto caricando…' : '⚡ Carica 100 ricette adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-controlla" ${RIC.dbControllo ? 'disabled' : ''}>${RIC.dbControllo ? 'Controllo…' : '🔍 Controlla tutte'}</button><button type="button" class="btn chiaro" data-a="vai" data-v="ricdb">Tutto il dettaglio</button></div></section>`;
+    <div class="fila" style="margin-top:8px"><button type="button" class="btn pieno" data-a="ric-db-turbo" ${t && t.attivo ? 'disabled' : ''}>${t && t.attivo ? '⚡ Sto caricando…' : `⚡ Carica altre ${nCarico()} ricette`}</button>${t && t.attivo ? '<button type="button" class="btn chiaro" data-a="ric-db-ferma">⏹ Ferma</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-controlla" ${RIC.dbControllo ? 'disabled' : ''}>${RIC.dbControllo ? 'Controllo…' : '🔍 Controlla tutte'}</button><button type="button" class="btn chiaro" data-a="vai" data-v="ricdb">Tutto il dettaglio</button></div></section>`;
 }
 /* C83 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): esito del controllo di TUTTE le ricette del database
-   (il server lo rifà da solo ogni giorno; «🔍 Controlla tutte» lo fa subito). C123: quelle con problemi le rilegge SUBITO da GZ e per
+   (col motore automatico acceso il server lo rifà ogni giorno; «🔍 Controlla tutte» lo fa subito, C136). C123: quelle con problemi le rilegge SUBITO da GZ e per
    ognuna dice il perché vero: «uguale all'originale» (su GZ è così) o «pagina sparita»; solo quelle non ancora rilette restano da fare. */
 function controlloRic(d) {
   const c = d && d.controllo;
@@ -559,8 +564,8 @@ function controlloRic(d) {
   const lista = (v, n) => v && v.length ? `<ul class="ricdb-lista">${v.slice(0, 8).map(voce).join('')}${n > 8 ? `<li class="tenue">… e altre ${n - 8}</li>` : ''}</ul>` : '';
   return `<p style="margin:6px 0 0"><b>${daFare ? '🔧' : '✅'} Controllate ${c.totale} ricette il ${quando}: ${c.ok} a posto</b>${nOrig ? `, ${nOrig} uguali all'originale` : ''}${daFare ? `, <b>${daFare} ancora da rileggere</b>` : ''}.</p>`
     + (nOrig ? `<p class="piccolo" style="margin:6px 0 0">📌 <b>Uguali all'originale</b>: le ho rilette da GialloZafferano e lì sono proprio così (es. una foto citata che non c'è, un frullato con 1 passo solo). Non è un errore dell'app: restano come l'originale.</p>${lista(c.originali, nOrig)}` : '')
-    + (c.nMale ? `<p class="piccolo" style="margin:6px 0 0">🔧 <b>${c.nMale} ancora da rileggere</b> da GialloZafferano: lo faccio da solo, 5 ogni 10 minuti; poi ognuna avrà qui il suo esito.</p>${lista(c.male, c.nMale)}` : '')
-    + (c.mancanti ? `<p class="piccolo" style="margin:6px 0 0">⚠️ <b>${c.mancanti} del ricettario senza la ricetta intera</b>: GialloZafferano adesso non me la dà, riprovo da solo.${(c.nomiMancanti || []).length ? ' ' + esc(c.nomiMancanti.slice(0, 5).join(', ')) + '.' : ''}</p>` : '');
+    + (c.nMale ? `<p class="piccolo" style="margin:6px 0 0">🔧 <b>${c.nMale} ancora da rileggere</b> da GialloZafferano: ${d.auto ? 'lo faccio da solo, 5 ogni 10 minuti' : 'tocca di nuovo «🔍 Controlla tutte», ne rileggo 10 per volta'}; poi ognuna avrà qui il suo esito.</p>${lista(c.male, c.nMale)}` : '')
+    + (c.mancanti ? `<p class="piccolo" style="margin:6px 0 0">⚠️ <b>${c.mancanti} del ricettario senza la ricetta intera</b>: GialloZafferano adesso non me la dà, ${d.auto ? 'riprovo da solo' : 'riprovo al prossimo «🔍 Controlla tutte» o carico'}.${(c.nomiMancanti || []).length ? ' ' + esc(c.nomiMancanti.slice(0, 5).join(', ')) + '.' : ''}</p>` : '');
 }
 function vRicDb() {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
@@ -588,14 +593,15 @@ function vRicDb() {
   if (d) {
     /* chiaro (Mario 08/11 «non si capisce se funziona»): stato, ultimo giro, avanzamento sulle 10 sezioni, «Cerca adesso» */
     const ug = d.ultimoGiro && d.ultimoGiro.quando ? d.ultimoGiro.quando : 0, faMin = ug ? Math.round((Date.now() - ug) / 60000) : -1;
-    const stato = RIC.dbCerco ? '🔄 Sto cercando…' : d.pausa ? '⏸ Fermo (tocca «Riprendi» o «Cerca adesso»)' : faMin < 0 ? '🕐 Non è ancora partito: il primo giro arriva entro 10 minuti' : faMin > 25 ? `⚠️ Ultimo giro ${faMin} minuti fa: dovrebbe girare ogni 10` : `🟢 Lavora sul server, anche con l'app chiusa · ultimo giro ${faMin < 1 ? 'adesso' : faMin + ' min fa'}`;
+    const stato = RIC.dbCerco ? '🔄 Sto cercando…' : d.turbo && d.turbo.attivo ? `⚡ Sto caricando ${d.turbo.obiettivo} ricette: ${d.turbo.fatte} fatte` : !d.auto ? `🖐 A mano: lavora solo quando lo chiedi tu${ug ? ` · ultimo giro ${faMin < 1 ? 'adesso' : faMin < 60 ? faMin + ' min fa' : 'il ' + dataBreve(ug)}` : ''}` : d.pausa ? '⏸ Fermo (tocca «Cerca adesso»)' : faMin < 0 ? '🕐 Non è ancora partito: il primo giro arriva entro 10 minuti' : faMin > 25 ? `⚠️ Ultimo giro ${faMin} minuti fa: dovrebbe girare ogni 10` : `🟢 Lavora sul server, anche con l'app chiusa · ultimo giro ${faMin < 1 ? 'adesso' : faMin + ' min fa'}`;
     const nomeSez = (CATALOGO_RIC.find(x => x[0] === d.sezione) || [, d.sezione || ''])[1], perc = Math.min(100, Math.round(((Math.max(1, d.fonte || 0) - 1) / ((d.fonti || 10) - 1)) * 100));
     h += `<p style="margin:0"><b>${stato}</b></p>
-      <p class="piccolo tenue" style="margin:4px 0 0">Ogni 10 minuti legge una pagina di GialloZafferano, mette in archivio le ricette che mancano e le propone in «🔎 Fammi vedere le ricette nuove». Oggi +${d.oggi}${d.coda ? `, ${d.coda} in arrivo` : ''} · ${d.giri} giri, ${d.pagine} pagine lette${d.passate ? `, ${d.passate} giri completi` : ''}.</p>
+      <p class="piccolo tenue" style="margin:4px 0 0">${d.auto ? 'Ogni 10 minuti legge' : `Quando tocchi «⚡ Carica altre ${nCarico()} ricette» (riquadro «🗄 Il mio database») o «🔄 Cerca adesso» legge`} una pagina di GialloZafferano, mette in archivio le ricette che mancano e le propone in «🔎 Fammi vedere le ricette nuove». Oggi +${d.oggi}${d.coda ? `, ${d.coda} in arrivo` : ''} · ${d.giri} giri, ${d.pagine} pagine lette${d.passate ? `, ${d.passate} giri completi` : ''}.</p>
       <div class="ricdb-barra" role="progressbar" aria-valuenow="${perc}" aria-valuemin="0" aria-valuemax="100"><i style="width:${perc}%"></i></div>
       <p class="piccolo tenue" style="margin:4px 0 0">Giro ${(d.passate || 0) + 1}: ${sardeTxt(d)} · altre: sezione ${Math.max(1, d.fonte || 0)} di ${(d.fonti || 10) - 1} (${esc(nomeSez)}) · ${perc}%${d.ultimoGiro && d.ultimoGiro.errore ? ` · ⚠️ ultimo errore: ${esc(d.ultimoGiro.errore)}` : ''}</p>
       ${RIC.dbUltime && RIC.dbUltime.length ? `<h3 style="margin:8px 0 4px">Ultime trovate</h3><ul class="ricdb-lista">${RIC.dbUltime.map(r => rigaDb(r, '')).join('')}</ul>` : ''}
-      <div class="fila"><button type="button" class="btn pieno" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button>${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia l\'archivio</button>' : ''}<button type="button" class="btn chiaro" data-a="ric-db-pausa">${d.pausa ? '▶️ Riprendi' : '⏸ Ferma'}</button></div>
+      <div class="fila"><button type="button" class="btn pieno" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button>${d.ricette ? '<button type="button" class="btn chiaro" data-a="ric-catalogo" data-v="db">🗄 Sfoglia l\'archivio</button>' : ''}${d.turbo && d.turbo.attivo ? '<button type="button" class="btn chiaro" data-a="ric-db-ferma">⏹ Ferma il carico</button>' : ''}</div>
+      ${typeof puoSviluppare === 'function' && puoSviluppare() ? `<label class="interr"><span>Motore automatico, ogni 10 minuti<small>Solo tu lo vedi. Spento (consigliato) = lavora solo quando lo chiedi: consuma meno letture gratuite del server.</small></span><input type="checkbox" data-a="ric-db-auto" ${d.auto ? 'checked' : ''}></label>` : ''}
       <p class="piccolo tenue" style="margin:4px 0 0">Archivio sul server dell'app: ${d.mb} MB di ricette e ${d.voci} letture della voce${d.mbVoci ? ` (${d.mbVoci} MB)` : ''}, salvate per sempre.</p>`;
   }
   else if (RIC.db) h += '<p class="piccolo" style="margin:0">Il server non risponde: riprova fra un minuto (serve la rete).</p>';
@@ -604,12 +610,12 @@ function vRicDb() {
     const parole = d.paroleFit || [], ora = parole[Math.min(d.fitI || 0, Math.max(0, parole.length - 1))] || '';
     const cf = contaRicHome();
     h += `<section class="scheda" id="ricdb-fit"><h2>🏋️ Ricette proteiche: ${cf.fit}</h2>${cf.fonti ? `<p class="piccolo" style="margin:0 0 4px">${esc(cf.fonti)}</p>` : ''}
-      <p class="piccolo" style="margin:0">Valori per porzione letti: <b>${d.conValori || 0}</b> ricette${d.senzaValori ? `, <b>${d.senzaValori}</b> ancora da leggere (${d.turbo && d.turbo.attivo ? 'le sto leggendo adesso, 10 ogni 30 secondi' : '10 ogni 10 minuti; con tante da leggere parto da sola più veloce'})` : ', tutte lette ✅'}.</p>
+      <p class="piccolo" style="margin:0">Valori per porzione letti: <b>${d.conValori || 0}</b> ricette${d.senzaValori ? `, <b>${d.senzaValori}</b> ancora da leggere (${d.turbo && d.turbo.attivo ? 'le sto leggendo adesso, 10 ogni 30 secondi' : d.auto ? '10 ogni 10 minuti; con tante da leggere parto da sola più veloce' : 'le leggo mentre carico ricette nuove, 10 ogni 30 secondi'})` : ', tutte lette ✅'}.</p>
       <p class="piccolo tenue" style="margin:4px 0 0">${parole.length ? `Il motore cerca anche ricette con queste parole su GialloZafferano, una pagina ogni 4: ${d.paginaFit === 'fine' ? '✅ tutte cercate in questo giro' : `adesso «${esc(ora)}»`}.` : 'Ricerca delle ricette fit spenta: nessuna parola.'}</p>
       <label class="etichetta" for="ric-fit-parole" style="margin-top:6px">Parole da cercare, separate da virgola</label>
       <textarea id="ric-fit-parole" data-ricfit="1" rows="3" maxlength="800">${esc(parole.join(', '))}</textarea>
       <p class="piccolo tenue" style="margin:0">Si salvano da sole quando tocchi fuori. <button type="button" class="link" data-a="ric-fit-base">Rimetti quelle di base</button></p>
-      ${d.rf ? `<p class="piccolo" style="margin:8px 0 0">📗 <b>RicetteFit</b> (ricette fit con tutti i valori): <b>${d.rf.lette || 0}</b>${d.rf.tot ? ` di ${d.rf.tot}` : ''} prese. ${d.rf.spento ? 'Spenta.' : d.rf.fine && d.rf.fine >= new Date(Date.now() + 3600000).toISOString().slice(0, 10) ? '✅ Tutte prese: domani guarda se ce ne sono di nuove.' : 'Una nuova ogni 10 minuti.'}
+      ${d.rf ? `<p class="piccolo" style="margin:8px 0 0">📗 <b>RicetteFit</b> (ricette fit con tutti i valori): <b>${d.rf.lette || 0}</b>${d.rf.tot ? ` di ${d.rf.tot}` : ''} prese. ${d.rf.spento ? 'Spenta.' : d.rf.fine && d.rf.fine >= new Date(Date.now() + 3600000).toISOString().slice(0, 10) ? '✅ Tutte prese: domani guarda se ce ne sono di nuove.' : d.auto ? 'Una nuova ogni 10 minuti.' : 'Le prendo mentre carico ricette nuove, 5 per volta.'}
         <button type="button" class="link" data-a="ric-rf" data-v="${d.rf.spento ? '1' : ''}">${d.rf.spento ? 'Riaccendi' : 'Spegni'}</button></p>` : ''}</section>`;
   }
   h += `<section class="scheda"><h2>📊 Dati senza rete su questo telefono</h2>${dati ? `<p class="piccolo tenue" style="margin:0">${scar.length} ricette, ${dati.foto} foto e ${dati.voci} letture della voce salvate. Spazio usato dall'app: ${dati.usatoMb} MB${dati.totMb ? ` su ${dati.totMb} MB disponibili` : ''}.</p>` : '<p class="piccolo tenue" style="margin:0">Misuro…</p>'}</section>`;
@@ -659,7 +665,7 @@ function vRicettario() {
   if (c.stato) {
     h += `<section class="scheda" id="ric-risultati"><h2>${c.cat === 'nuove' ? '🔎 Ricette nuove per te' : c.cat ? '📚 ' + esc(c.q) + ' · tutte' : `Da ${c.risultati.some(r => /^rf:/.test(r.id)) ? 'GialloZafferano e RicetteFit' : 'GialloZafferano'}: «${esc(c.q)}»`}${c.risultati.length ? ` <small class="tenue">(${c.risultati.length}${c.prossima ? '+' : ''})</small>` : ''}</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
       : c.stato === 'errore' ? `<p style="margin:0">${esc(c.errore)}</p><button type="button" class="btn chiaro" data-a="ric-cerca-gz">Riprova</button>`
-      : c.risultati.length ? `${RIC.scarico ? '' : `<button type="button" class="btn chiaro pieno" data-a="ric-scarica-cerca">📥 Scarica queste ${c.risultati.length} per usarle senza rete</button>`}<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : c.cat === 'nuove' ? '<p style="margin:0">Il motore sta ancora cercando: ogni 10 minuti trova ricette nuove. Riprova fra un\'ora, o cerca a parole qui sopra.</p>' : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
+      : c.risultati.length ? `${RIC.scarico ? '' : `<button type="button" class="btn chiaro pieno" data-a="ric-scarica-cerca">📥 Scarica queste ${c.risultati.length} per usarle senza rete</button>`}<div class="ric-elenco">${c.risultati.map(r => cartaRic(r, pref)).join('')}</div>${c.prossima ? `<button type="button" class="btn chiaro pieno" data-a="ric-altre" ${c.altre === 'carico' ? 'disabled' : ''}>${c.altre === 'carico' ? 'Carico…' : c.altre === 'errore' ? 'Non riuscito: riprova' : 'Carica altre ricette'}</button>` : ''}` : c.cat === 'nuove' ? (motoreAuto() ? '<p style="margin:0">Il motore sta ancora cercando: ogni 10 minuti trova ricette nuove. Riprova fra un\'ora, o cerca a parole qui sopra.</p>' : `<p style="margin:0">Per ora nessuna ricetta nuova: nel riquadro «🗄 Il mio database» tocca «⚡ Carica altre ${nCarico()} ricette», o cerca a parole qui sopra.</p>`) : '<p style="margin:0">Nessuna ricetta con queste parole. Prova con meno parole.</p>'}
       <button type="button" class="btn chiaro piccolo" data-a="ric-chiudi-cerca">Chiudi la ricerca</button></section>`;
   }
   if (!filtrato && !c.stato) {
@@ -682,7 +688,7 @@ function vRicettario() {
     voceAutomatica(); h += riquadroDb();
     h += `<section class="scheda"><h2>🔎 Scopri ricette nuove</h2>
       <button type="button" class="btn pieno" data-a="ric-catalogo" data-v="nuove">🔎 Fammi vedere le ricette nuove</button>
-      <p class="piccolo tenue" style="margin:0">Il motore cerca su GialloZafferano quelle che non hai ancora (prima col video e i voti alti): apri, e se ti piace «➕ Aggiungi».</p>
+      <p class="piccolo tenue" style="margin:0">${motoreAuto() ? 'Il motore cerca su GialloZafferano quelle che non hai ancora' : 'Ti propongo quelle del database che non hai ancora'} (prima col video e i voti alti): apri, e se ti piace «➕ Aggiungi».${motoreAuto() ? '' : ` Per averne altre: «⚡ Carica altre ${nCarico()} ricette» nel riquadro «🗄 Il mio database».`}</p>
       <details class="ric-intro ric-catalogo-box"><summary><b>📚 Catalogo per portata</b> <small class="tenue">tutte le ricette di GialloZafferano</small></summary>
         <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div>
         <details class="ric-intro ric-ingr"><summary><b>Per ingrediente</b> <small class="tenue">(${CATALOGO_ING.length})</small></summary><div class="scelte">${CATALOGO_ING.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="ricette-con-${k}">${t}</button>`).join('')}</div></details></details>
@@ -1021,7 +1027,7 @@ Object.assign(A, {
   'ric-fit-base'() { salvaParoleFit('', true); },
   'ric-rf'(el) {   // C124: RicetteFit acceso o spento (senza Claude)
     const acceso = el.dataset.v === '1';
-    RIC.chiedi({ db: 'rf', acceso }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(acceso ? 'RicetteFit riaccesa: una ricetta ogni 10 minuti.' : 'RicetteFit spenta: niente ricette nuove da lì.'); render(); })
+    RIC.chiedi({ db: 'rf', acceso }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(acceso ? (motoreAuto() ? 'RicetteFit riaccesa: una ricetta ogni 10 minuti.' : 'RicetteFit riaccesa: la leggo quando carichi ricette nuove.') : 'RicetteFit spenta: niente ricette nuove da lì.'); render(); })
       .catch(e => mostraToast('Non riesco: ' + (e.message || e)));
   },
   'ric-vai-fit'() { UI.ricZona = 'fit'; vai('ricettario'); },   // C124: dalla Home dritto a «🏋️ Proteiche»
@@ -1115,9 +1121,9 @@ Object.assign(A, {
     RIC.chiedi({ db: 'togli', id }).then(j => { salvaScelte(j.scelte); mostraToast('Tolta dal tuo ricettario.', () => A['ric-aggiungi']({ dataset: { v: id } })); })
       .catch(e => { salvaScelte(prima); mostraToast('Non tolta: ' + (e.message || e)); }).finally(() => render());
   },
-  'ric-db-turbo'() {   // Mario 08/11 «cercane 100 ricette miste con priorità sarde e caricale»: lo fa il server da solo, anche a telefono chiuso
+  'ric-db-turbo'() {   // Mario 08/11 «… caricale»; C136 «a manuale poco alla volta»: N ricette (Solo per te, Mario), il server le legge anche a telefono chiuso e si ferma da solo
     if (RIC.db && RIC.db.turbo && RIC.db.turbo.attivo) return;
-    RIC.chiedi({ db: 'turbo', n: 100 }).then(j => { if (j && j.turbo) { RIC.db = Object.assign({}, RIC.db, { turbo: j.turbo }); mostraToast('⚡ Parto: carico 100 ricette complete, sarde per prime. Ci vuole circa mezz\'ora; puoi chiudere l\'app.'); } else mostraToast('Non riuscito: ' + ((j && j.errore) || 'riprova tra poco')); })
+    RIC.chiedi({ db: 'turbo', n: nCarico() }).then(j => { if (j && j.turbo) { RIC.db = Object.assign({}, RIC.db, { turbo: j.turbo }); mostraToast(`⚡ Parto: carico ${j.turbo.obiettivo} ricette complete, sarde per prime. Ci vogliono pochi minuti; puoi chiudere l'app.`); } else mostraToast('Non riuscito: ' + ((j && j.errore) || 'riprova tra poco')); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e))).finally(() => { RIC.dbOra = 0; render(); });
   },
   'ric-db-cerca'() {
@@ -1136,18 +1142,25 @@ Object.assign(A, {
     if (RIC.dbControllo) return; RIC.dbControllo = true; render();
     RIC.chiedi({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; const nO = c.nOriginali || 0, daFare = (c.nMale || 0) + (c.mancanti || 0);
       // C123: niente «ci penso io» finto (PT E17): l'avviso dice cosa è successo davvero, l'elenco col perché è nel riquadro
-      mostraToast(daFare ? `🔍 ${c.ok} a posto${nO ? `, ${nO} uguali all'originale` : ''}, ${daFare} ancora da rileggere: lo faccio da solo. L'elenco col perché è nel riquadro del database.` : nO ? `✅ ${c.ok} a posto e ${nO} uguali all'originale: su GialloZafferano sono così. L'elenco col perché è nel riquadro del database.` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
+      mostraToast(daFare ? `🔍 ${c.ok} a posto${nO ? `, ${nO} uguali all'originale` : ''}, ${daFare} ancora da rileggere: ${RIC.db && RIC.db.auto ? 'lo faccio da solo' : 'tocca di nuovo per rileggerne altre 10'}. L'elenco col perché è nel riquadro del database.` : nO ? `✅ ${c.ok} a posto e ${nO} uguali all'originale: su GialloZafferano sono così. L'elenco col perché è nel riquadro del database.` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
       .finally(() => { RIC.dbControllo = false; render(); });
   },
   'ricdb-tutte'(el) { UI.ricDbTutte = el.dataset.v; render(); },
   'ricdb-voci'() { const da = Object.values(RIC.scaricate).filter(r => !RIC.vociFatte[r.id]); da.forEach(codaVoci); mostraToast(`🔊 Preparo la voce di ${da.length} ricette: ci vuole qualche minuto, intanto puoi fare altro.`); },
-  'ric-db-pausa'() {
-    const d = RIC.db; if (!d || d.errore) return;
-    RIC.chiedi({ db: d.pausa ? 'riprendi' : 'pausa' })
-      .then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(j.db.pausa ? '⏸ Il database non cresce più finché non tocchi «Riprendi».' : '▶️ Il database ricomincia a crescere da solo.'); })
+  'ric-db-ferma'() {   // C136: ferma il carico in corso (le ricette già lette restano)
+    RIC.chiedi({ db: 'ferma' })
+      .then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(`⏹ Carico fermato: ${(j.db.turbo && j.db.turbo.fatte) || 0} ricette nuove lette.`); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
-      .finally(() => { if (UI.vista === 'ricettario') render(); });
+      .finally(() => render());
+  },
+  'ric-db-auto'(el) {   // C136: motore automatico, solo per Mario; acceso solo con la conferma
+    const acceso = !!el.checked;
+    if (acceso && !confirm('Accendo il motore automatico? Ogni 10 minuti cerca ricette da solo e consuma letture gratuite del server (il 10/11 sono finite e si sono fermati anche gli avvisi). Consigliato: lascialo spento e carica a mano.')) { el.checked = false; return; }
+    RIC.chiedi({ db: 'auto', acceso })
+      .then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); mostraToast(j.db.auto ? '▶️ Motore automatico acceso: ogni 10 minuti cerca da solo.' : '🖐 Motore automatico spento: le ricette nuove arrivano solo quando le chiedi tu.'); })
+      .catch(e => { el.checked = !acceso; mostraToast('Non riuscito: ' + (e.message || e)); })
+      .finally(() => render());
   },
   'ric-altre'() {
     const c = RIC.cerca; if (!c.prossima || c.altre === 'carico') return;
