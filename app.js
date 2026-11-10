@@ -458,7 +458,7 @@ function cartaNotifica() {
   return `<section class="scheda"><h2>Notifiche</h2><p class="tenue" style="margin:0">${msg}</p>
     ${esito ? `<div class="avviso ${esito.ok ? 'verde' : ''}">${ico(esito.ok ? 'spunta' : 'x')}<div>${esc(esito.t)}</div></div>` : ''}
     ${(st === 'granted' || st === 'default') && sulSito() && Dati.io.gestore ? `<button type="button" class="btn pieno" data-a="avvisi-attiva"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : P.avvisiAttivi ? 'Iscrivi di nuovo questo telefono' : 'Tocca qui: ricevi gli ordini su questo telefono'}</button>
-    <p class="tenue piccolo" style="margin:0">${P.avvisiAttivi ? '✅ Questo telefono è iscritto: a ogni ordine nuovo suona.' : '❌ Questo telefono NON è ancora iscritto agli ordini.'}</p>${diarioAvvisi()}` : ''}
+    <p class="tenue piccolo" style="margin:0">${P.avvisiAttivi ? (UI.diarioAvvisi && typeof UI.diarioAvvisi.errore === 'string' ? '✅ Questo telefono è iscritto: suonerà di nuovo appena il server riparte.' : '✅ Questo telefono è iscritto: a ogni ordine nuovo suona.') :'❌ Questo telefono NON è ancora iscritto agli ordini.'}</p>${diarioAvvisi()}` : ''}
     ${(st === 'granted' || st === 'default') && sulSito() && !Dati.io.gestore && P.cliente ? `<button type="button" class="btn pieno" data-a="avvisi-cliente"${UI.notProva ? ' disabled' : ''}>${ico('invito')}${UI.notProva ? 'Un attimo…' : P.avvisiCliente ? 'Riattiva l\'avviso su questo telefono' : 'Avvisami quando il mio ordine è pronto'}</button>
     <p class="tenue piccolo" style="margin:0">${P.avvisiCliente ? '✅ Avviso attivo: quando Monica segna «pronto», ti suona il telefono.' : 'Se preferisci, Monica ti scrive anche su WhatsApp come sempre.'}</p>` : ''}
     ${st === 'granted' || st === 'default' ? `<button type="button" class="btn chiaro pieno" data-a="notifica-prova"${UI.notProva ? ' disabled' : ''}>${ico('chat')}${UI.notProva ? 'Un attimo…' : 'Prova le notifiche'}</button>` : ''}
@@ -479,7 +479,10 @@ function voceDiario(d) {
 function diarioAvvisi() {
   const d = UI.diarioAvvisi;
   if (!d) { if (!UI.diarioChiesto) caricaDiarioAvvisi(); return '<p class="tenue piccolo" style="margin:0">Controllo gli ultimi avvisi…</p>'; }
-  if (d.errore) return '<p class="tenue piccolo" style="margin:0">Ultimi avvisi: non riesco a leggerli adesso (manca la rete?).</p>';
+  // (C130, PT E17/E46) server fermo: lo diciamo chiaro, col motivo vero; mai «manca la rete?» se la rete c'è
+  if (d.errore) return typeof d.errore === 'string'
+    ? `<div class="avviso rosso" style="margin:0">${ico('x')}<div><b>Il server degli avvisi è fermo:</b> per ora il telefono NON suona agli ordini nuovi. Gli ordini arrivano lo stesso: guardali in Ordini.<br><span class="piccolo">${esc(d.errore)}</span></div></div>`
+    : `<p class="tenue piccolo" style="margin:0">Ultimi avvisi: non riesco a leggerli adesso (${d.rete ? 'manca la rete' : 'il server non risponde'}).</p>`;
   const questo = d.questo === true ? '✅ Il server conosce questo telefono: gli avvisi arrivano qui.'
     : d.questo === false ? '❌ Il server NON conosce questo telefono: tocca il pulsante qui sopra per iscriverlo.' : '';
   const ultimi = (d.ultimi || []).slice(-5).reverse();
@@ -494,8 +497,9 @@ async function caricaDiarioAvvisi() {
     try { const reg = await navigator.serviceWorker.ready, sub = await reg.pushManager.getSubscription(); e = sub ? sub.endpoint : ''; } catch (x) { /* niente iscrizione */ }
     const r = await fetch('/api/stato' + (e ? '?e=' + encodeURIComponent(e) : ''), { cache: 'no-store' });
     const j = await r.json();
+    if (!r.ok && !j.errore) j.errore = true;
     UI.diarioAvvisi = Object.assign(j, { questo: e ? j.questo : false });
-  } catch (x) { UI.diarioAvvisi = { errore: true }; }
+  } catch (x) { UI.diarioAvvisi = { errore: true, rete: navigator.onLine === false }; }
   render();
 }
 /* notifiche vere degli ordini (C3): solo sul sito vero, dove c'è worker.js */
@@ -606,8 +610,11 @@ async function provaNotifica() {
     const perm = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
     if (perm !== 'granted') { UI.notEsito = { ok: false, t: 'Permesso non dato: senza «Consenti» le notifiche non arrivano.' }; return; }
     const reg = await navigator.serviceWorker.ready;
-    await reg.showNotification('Pronti in Tavola', { body: 'Le notifiche funzionano! Così saprai subito degli ordini.', icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: 'prova', data: { url: location.pathname } });
-    UI.notEsito = { ok: true, t: 'Notifica mandata: guarda in alto sul telefono. Non c\'è? Controlla che il telefono non sia in «Non disturbare».' };
+    await reg.showNotification('Pronti in Tavola', { body: 'Prova riuscita: questo telefono sa mostrare le notifiche.', icon: 'media/icon-192.png', badge: 'media/badge-96.png', tag: 'prova', data: { url: location.pathname } });
+    // (C130) la prova la fa il telefono da solo: se il server degli avvisi è fermo, gli ordini NON suonano lo stesso
+    const fermo = UI.diarioAvvisi && typeof UI.diarioAvvisi.errore === 'string';
+    UI.notEsito = fermo ? { ok: false, t: 'Il telefono sa mostrare le notifiche. Ma il server degli avvisi adesso è fermo: gli ordini nuovi NON suonano finché non riparte (motivo qui sotto).' }
+      : { ok: true, t: 'Notifica mandata: guarda in alto sul telefono. Non c\'è? Controlla che il telefono non sia in «Non disturbare».' };
   } catch (e) {
     UI.notEsito = { ok: false, t: 'Non è partita: ' + ((e && e.message) || 'errore sconosciuto') + '.' };
   } finally { UI.notProva = false; render(); }
