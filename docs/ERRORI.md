@@ -1,6 +1,7 @@
 # Diario degli errori (lezioni)
 
 Si legge a ogni avvio. Una riga per errore: la lezione da ricordare.
+**Impara dagli errori** (Mario 10/11, C122): ogni errore (correzione di Mario, prova rossa, difetto o guida sbagliata trovati da me) → causa vera, provata, e una difesa perché non ricapiti uguale né simile (lezione generale qui, e se si può una prova o un hook).
 Le lezioni per scrivere e lanciare le prove sono in `.claude/rules/prove.md`, quelle del codice in `.claude/rules/codice.md`.
 
 ## Pronti in Tavola
