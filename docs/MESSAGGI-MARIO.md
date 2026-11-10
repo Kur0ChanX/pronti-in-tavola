@@ -2,11 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 13:26 · 01QTFEqTYwXG
-una frase per tutti  per tutti e quella per monica benvenuta nella tua app ecc ecc 
-
-fammi ora quello per i miei amici per farla vedere
-
 ## 2026-11-07 13:30 · 01QTFEqTYwXG
 per i miei amici è monica che invita fallo cosi come se monica invitasse
 io gestisco e basta
@@ -153,3 +148,6 @@ Secondo te le regole per le ricette per la palestra sono valide o taglia tantiss
 
 ## 2026-11-10 16:15 · 01WTjqUwbG8f
 vai di consiglio
+
+## 2026-11-10 16:47 · 01WTjqUv8dDc
+Quello che ho voluto sempre evitare dall'inizio di questo progetto, alla fine non siamo riusciti a renderlo inevitabile.
