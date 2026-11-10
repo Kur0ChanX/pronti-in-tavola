@@ -265,7 +265,7 @@ function barraDev() {
   return `<div class="prova dev" role="group" aria-label="Modalità sviluppatore">Sviluppatore · guarda come
     <button type="button" data-a="dev-come" data-v="cliente" aria-pressed="${!!UI.devCliente}">Cliente</button>
     <button type="button" data-a="dev-come" data-v="" aria-pressed="${!UI.devCliente}">Gestore</button>
-    <button type="button" class="dev-v" data-a="dev-novita" aria-label="Versione ${VERSIONE_APP}: tocca per vedere tutti gli aggiornamenti">v${VERSIONE_APP}</button></div>`;
+    <button type="button" class="dev-v" data-a="dev-novita" aria-label="Versione ${VERSIONE_APP}: tocca per vedere tutti gli aggiornamenti">v${VERSIONE_APP}</button>${UI.devCliente && UI.ultimoAscolto ? `<span class="dev-asc">🎧 ${esc(UI.ultimoAscolto)}</span>` : ''}</div>`;   // (C108) chi ha sentito l'ultima frase detta
 }
 /* barra sviluppatore: scorri il dito da sinistra a destra in cima allo schermo (Mario 07/11).
    È un gesto di lato: il «tira giù per ricaricare» è in verticale, quindi non si toccano. */
