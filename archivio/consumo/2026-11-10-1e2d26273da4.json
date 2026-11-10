@@ -2,20 +2,28 @@
 "account": "108763",
 "sessione": "1e2d26273da4",
 "giorno": "2026-11-10",
-"turni": 1,
-"peso": 1278114,
-"uscita": 84677,
-"contesto_max": 312257,
+"turni": 2,
+"peso": 1525867,
+"uscita": 93136,
+"contesto_max": 388670,
 "anomalie": [
 "avvio pesante: 266k token dopo le letture d'avvio (tetto 130k)",
 "84k token scritti in un turno"
 ],
 "remota": "01WTjqUtRJWx",
 "aiutanti": 0,
-"strumenti": 37,
+"strumenti": 41,
 "motori": {
-"fable": 1278114
+"fable": 1525867
 },
 "memoria_scaduta": 1,
-"ricreati": 65949
+"ricreati": 65949,
+"blocchi": {
+"Stop 12 · Ti fermi ad aspettare Mario": 1
+},
+"esempi_blocchi": {
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"18:45 · Ti fermi ad aspettare Mario con il contesto a 312k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+]
+}
 }
