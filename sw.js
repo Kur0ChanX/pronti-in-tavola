@@ -57,6 +57,7 @@ self.addEventListener('push', e => {
         ascoltoQuota: ['Microfono dei clienti molto usato oggi', 'Oltre 400 frasi: ora ascoltano solo Groq e Deepgram. Nessuno è fermato.']
       })[u && u.cosa] || ['Un cliente usa molto l\'aiutante', 'Nessuno è stato fermato. Tocca per vedere i dettagli.'],
       chiusi: ['Una persona nuova non riesce a entrare 🔒', '«Accetta clienti nuovi» è spento. Tocca per riaprire.'],   // (C104)
+      riserva: ['Prova della corsia d\'emergenza 🛟', 'Partita dalla copia d\'emergenza: se il server si ferma, gli avvisi degli ordini arrivano lo stesso.'],   // (C135) solo Mario
       qui: [`${(u && u.prova) ? 'PROVA · ' : ''}${(u && u.nome) || 'Un cliente'} è qui per il ritiro 🍝`, `${u && u.n ? 'Ordine n. ' + u.n + '. ' : ''}Tocca per vederlo.`],
       ordine: ['Pronti in Tavola', 'Hai un ordine nuovo da guardare 🍝']
     };

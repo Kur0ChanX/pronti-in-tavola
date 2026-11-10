@@ -1163,6 +1163,39 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!/server degli avvisi è fermo/.test(r[2]) || !/letture gratuite/.test(r[2]) || /manca la rete/.test(r[2])) throw new Error('server fermo: manca l\'avviso col motivo vero');
     if (!/il server non risponde/.test(r[3])) throw new Error('server muto: manca «il server non risponde»');
   });
+  await passo('gestore: corsia d\'emergenza degli avvisi in Notifiche (C135, Mario 10/11 «1 anche per i clienti»)', async () => {   // autonoma
+    const r = await page.evaluate(() => {
+      const prima = [UI.diarioAvvisi, UI.diarioChiesto], q = Date.now(); UI.diarioChiesto = true;
+      UI.diarioAvvisi = { questo: true, ultimi: [], conto: null, riserva: { attiva: true, quando: q } }; const attiva = diarioAvvisi();
+      UI.diarioAvvisi = { questo: true, ultimi: [], riserva: { quando: q, telefoni: 2, clienti: 1 } }; const pronta = diarioAvvisi();
+      UI.diarioAvvisi = { questo: true, ultimi: [], riserva: null }; const manca = diarioAvvisi();
+      [UI.diarioAvvisi, UI.diarioChiesto] = prima; return [attiva, pronta, manca, puoSviluppare()];
+    });
+    if (!/Corsia d'emergenza attiva/.test(r[0]) || /Ancora nessuno/.test(r[0]) || !/Il server conosce questo telefono/.test(r[0])) throw new Error('server fermo con la copia: manca «Corsia d\'emergenza attiva» o dice «Ancora nessuno»');
+    if (!/Corsia d'emergenza pronta \(copia del /.test(r[1])) throw new Error('server sano: manca «Corsia d\'emergenza pronta» con la data della copia');
+    if (!/la copia non c'è ancora, si fa da sola entro 10 minuti/.test(r[2])) throw new Error('copia non ancora fatta: manca il perché');
+    if (/data-a="avvisi-riserva"/.test(r[1]) !== r[3]) throw new Error('«🧪 Prova la corsia d\'emergenza» deve vederlo solo Mario');
+  });
+  await passo('Monica: modalità risparmio nel ricettario (C137, Mario 10/11 18:13 «in emergenza niente cose quasi inutili»)', async () => {   // autonoma
+    const r = await page.evaluate(async () => {
+      const c0 = RIC.chiedi, v0 = UI.vista, r0 = RIC.risparmio, chieste = []; let freno = true;
+      RIC.chiedi = async c => { chieste.push(c); return c.db === 'stato' ? { db: Object.assign({}, RIC.db || {}, { letture: { oggi: 2000001, tetto: 2000000, freno } }) } : c.db === 'mie' ? { scelte: RIC.scelte || [] } : c.cat ? { ricette: [] } : { ricetta: { id: 'gz:X', nome: 'X' } }; };
+      await chiediRic({ db: 'stato' }); const acceso = inRisparmio();
+      const carica = await chiediRic({ db: 'turbo', n: 5 }).then(() => 'partito', e => e.message), cerca = await chiediRic({ cerca: 'pollo' }).then(() => 'partito', e => e.message);
+      const apre = await chiediRic({ u: 'https://ricette.giallozafferano.it/X.html' }).then(j => !!j.ricetta, () => false), mie = await chiediRic({ db: 'mie' }).then(() => true, () => false);
+      UI.vista = 'ricettario'; render(); const riq = (document.getElementById('ric-risparmio') || {}).textContent || '';
+      freno = false; RIC.dbOra = 0; await chiediRic({ db: 'stato' }); const spento = !inRisparmio(); render(); const via = !document.getElementById('ric-risparmio');
+      RIC.chiedi = async () => { throw new Error('🛟 Modalità risparmio fino a stanotte: Cloudflare ha fermato la memoria del server per oggi. Il ricettario non cerca ricette nuove; ordini, avvisi e le tue ricette funzionano.'); };
+      await chiediRic({ db: 'stato' }).catch(() => null); const bloc = RIC.risparmio && RIC.risparmio.perche;
+      RIC.chiedi = c0; RIC.risparmio = r0; UI.vista = v0; render();
+      return { acceso, carica, cerca, apre, mie, riq, spento, via, bloc, ora: oraRisparmio(), turbo: chieste.some(c => c.db === 'turbo' || c.cerca) };
+    });
+    if (!r.acceso || r.turbo || !/Modalità risparmio fino alle 0[12]:00/.test(r.carica) || !/Modalità risparmio/.test(r.cerca)) throw new Error('C137: col freno «Carica altre» o la ricerca partono lo stesso: ' + JSON.stringify(r).slice(0, 300));
+    if (!r.apre || !r.mie) throw new Error('C137: in modalità risparmio aprire una ricetta o il ricettario non funziona');
+    if (!/🛟 Modalità risparmio fino alle 0[12]:00/.test(r.riq) || !/ordini, menù, clienti e avvisi/.test(r.riq)) throw new Error('C137: manca il riquadro «🛟 Modalità risparmio» col perché: ' + r.riq.slice(0, 200));
+    if (!r.spento || !r.via) throw new Error('C137: finito il freno il riquadro non sparisce');
+    if (r.bloc !== 'bloccato') throw new Error('C137: memoria bloccata da Cloudflare non riconosciuta (' + r.bloc + ')');
+  });
   await passo('cliente in attesa: codice e «Ricorda a Monica»; Monica vede il codice o «Nessuno in attesa» (C97, Mario 08/11 «come se si fosse persa»)', async () => {   // autonoma
     const r = await page.evaluate(() => {
       const prima = [P.ricordatoIl, UI.ricordoAuto]; P.ricordatoIl = Date.now(); UI.ricordoAuto = true;
