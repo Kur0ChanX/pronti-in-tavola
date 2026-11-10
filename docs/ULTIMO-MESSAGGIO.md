@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 16:15 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 17:05 ora italiana)
 
-vai di consiglio
+Aggiungiamo un account inventato qualcosa ho l'app fermaaaaaaaaaaa
