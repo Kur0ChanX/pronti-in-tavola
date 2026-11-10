@@ -34,6 +34,7 @@ Sessione attuale: #41 (dopo la #40 `session_01WTjqUumYwYKzwSjzjYGFEV`, chiusa al
 - C112 (#36): niente correzione automatica dei «pronti» presi da un ordine di prova: come prima, Monica tocca «È una prova» o annulla e i pronti tornano (`rimettiPronti`).
 
 ## Prossimi passi
+00. **C123 per primo** (Mario 10/11 08:35, arrivato durante l'handoff): «5 da sistemare» nel database del ricettario che non si sistemano da sole. In `ricettario.js` ~357/364/883 il testo «le rileggo da sola… ci penso io»; in `worker.js` `controlla()`/`vecchie()` del Ricettario. Trova le 5 (id e motivo), prova se il giro le rilegge davvero, correggi la causa (PT E17: niente promesse finte nei testi); prove; a Mario la risposta SÌ/NO in cima (PT E34).
 0. Kit: quando arriva il `send_message` della sessione del kit (`session_01WTjqUtqQ6xthRd3TmBp2WC`), scrivi in `docs/PER-IL-KIT.md` «portata in kit X.Y» per ogni voce e porta qui il kit nuovo come dice lei (da qui mai `add_repo`); poi togli da Da fare C89, C20, C103, C109, C122 se il kit le ha. Se tace: `get_session` con l'id, niente `list_events`.
 1. C119: aspettare la prova di Mario sul telefono vero (riga in «Aspetta Mario»). Non provato su iPhone/iPad veri. Idea non fatta (da proporre solo se Mario la chiede): l'AI anche sulle foto piccole singole, non a strisce.
 2. «Scrivimi!» sotto gli allergeni come tocco per WhatsApp: proposto, Mario non ha risposto (non farlo senza sì).
@@ -43,11 +44,11 @@ Sessione attuale: #41 (dopo la #40 `session_01WTjqUumYwYKzwSjzjYGFEV`, chiusa al
 - In «## 0. Aspetta Mario» di `docs/DA-FARE.md`. La 🛑 C119 ha avuto risposta (tolta).
 
 ## Ultimo messaggio di Mario
-10/11 ~08:34 (in questa chat), parola per parola: «si consiglio» → risposta a «Le porto in tutti i progetti? 1 · Sì, tutte e 5 (consiglio)»: sessione del kit aperta.
-Prima, 10/11 08:30: «dimmi le regole che vuoi mettere per tutti» → la #40 ha elencato le 5 regole (C103, C20, C109, C122, C89) con un esempio ciascuna.
+10/11 ~08:36 (in questa chat, durante l'handoff), parola per parola: «come ti ho già detto 5 da sistemare ma secondo me non le sistema da solo» + foto `archivio/foto/2026-11-10-0835-ricettario-5-da-sistemare.jpg` → C123, Prossimo passo 00.
+Prima, 10/11 ~08:34: «si consiglio» (5 regole in tutti i progetti → sessione del kit aperta); 08:30: «dimmi le regole che vuoi mettere per tutti».
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C123; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C124; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
