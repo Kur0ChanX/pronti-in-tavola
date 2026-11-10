@@ -1,0 +1,12 @@
+{
+"account": "108763",
+"sessione": "35549fda036c",
+"giorno": "2026-11-10",
+"turni": 2,
+"peso": 592168,
+"uscita": 14696,
+"contesto_max": 246250,
+"anomalie": [
+"1 uscite di strumento enormi (97 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+]
+}
