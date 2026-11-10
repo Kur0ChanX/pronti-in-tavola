@@ -264,6 +264,26 @@ async function paginaGz(u) {
   await cache.put(chiave, new Response(t, { headers: { 'cache-control': 'max-age=86400' } }));
   return t;
 }
+/* (C119) foto di GialloZafferano passate dal NOSTRO server per «✨ Migliora con l'AI» (foto-ai.js): le loro foto non danno
+   il permesso (CORS) di leggere i pixel, che servono all'AI del telefono. SOLO foto di www.giallozafferano.it/images
+   (mai un passaggio aperto ad altri siti), al massimo 3 MB, tenute 30 giorni nella cache di Cloudflare. */
+const FOTO_GZ = /^https:\/\/www\.giallozafferano\.it\/images\/[\w./%-]+\.(?:jpe?g|png|webp)$/i, FOTO_GZ_MAX = 3 * 1024 * 1024;
+async function fotoGz(u, ctx) {
+  u = String(u || '');
+  if (!FOTO_GZ.test(u) || u.includes('..')) return json({ errore: 'foto non permessa' }, 400);
+  const cache = caches.default, chiave = new Request('https://cache.pronti/foto-gz?' + encodeURIComponent(u));
+  const c = await cache.match(chiave).catch(() => null); if (c) return c;
+  const r = await fetch(u, { headers: { 'user-agent': UA_GZ, accept: 'image/*' } });
+  if (!r.ok) return json({ errore: 'GialloZafferano risponde ' + r.status }, 502);
+  const tipo = r.headers.get('content-type') || '';
+  if (!/^image\//.test(tipo)) return json({ errore: 'non è una foto' }, 502);
+  const b = await r.arrayBuffer();
+  if (b.byteLength > FOTO_GZ_MAX) return json({ errore: 'foto troppo grande' }, 413);
+  const testa = { 'content-type': tipo, 'cache-control': 'public, max-age=2592000' };
+  const dopo = cache.put(chiave, new Response(b, { headers: testa })).catch(() => null);
+  if (ctx) ctx.waitUntil(dopo); else await dopo;
+  return new Response(b, { headers: testa });
+}
 /* il TUO database delle ricette (C60): oggetto «Ricettario» con SQLite, sullo stesso account dell'app, gratis.
    Cresce da solo (motoreRicette ogni 10 minuti) e con ogni ricetta che Monica o Mario aprono o scorrono. */
 const ricDb = cfg => cfg && cfg.RICETTARIO ? cfg.RICETTARIO.get(cfg.RICETTARIO.idFromName('ricette')) : null;
@@ -913,6 +933,7 @@ export default {
       const uid = await gestoreDa(req);
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
       if (url.pathname === '/api/voce') { const b = await req.json().catch(() => null); return await voce(b, env, ctx).catch(e => json({ errore: String(e.message || e) }, 502)); }
+      if (url.pathname === '/api/foto-gz') { const b = await req.json().catch(() => null); return await fotoGz(b && b.u, ctx); }
       if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b, env, ctx).catch(e => ({ errore: String(e.message || e) })); return json(r, r.errore ? 502 : 200); }
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/prova-ai') return json(await provaAI(env));
