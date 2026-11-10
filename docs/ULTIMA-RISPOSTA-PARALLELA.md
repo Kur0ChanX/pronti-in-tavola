@@ -1,9 +1,27 @@
-# Ultima risposta di Claude (09/11/2026 21:38 ora italiana)
+# Ultima risposta di Claude (10/11/2026 18:45 ora italiana)
 
-La chat si era riavviata. Ho recuperato e salvato su GitHub il lavoro rimasto a metà: erano solo file di servizio, non codice.
+Ho capito: vuoi usare i tuoi PC di casa come salvagente quando Cloudflare o Firebase finiscono i limiti gratis, in modo sicuro. Si può, ma la mossa giusta non è «copiare tutto in casa».
 
-La Principale 37 ha messo online la v0.9.91 con quello che le avevo chiesto. Le ho controllate sul sito:
-- In Impostazioni → «Solo per te, Mario» c'è il nuovo numero **«Microfono dei clienti: segnalazione»**. Parte da 40 frasi al giorno e lo puoi cambiare tu tra 10 e 500.
-- C'è anche il testo per l'avviso «oltre 400 frasi di tutti i clienti».
+✅ FATTO
+- Ricerca sulle fonti ufficiali, aggiornata a oggi 10 novembre 2026. Solo piano, niente codice.
+- Salvato su GitHub: `docs/lavori-in-corso/c138-salvagente-in-casa.md` (commit `f621ea9e`, uguale su GitHub).
+- Questa è una chat a parte, «Salvagente». La Principale ha la corsia d'emergenza degli avvisi già in prova.
 
-Io resto ferma finché non arriva il tuo video dall'iPad (C110) o la chiave Deepgram (C108).
+───
+💡 PARERE
+
+**In breve**
+
+| Domanda | Risposta |
+|---|---|
+| Cloudflare in casa? | …
+
+## Domande a Mario
+
+❓ DOMANDE
+
+DOMANDA 1 🛑
+📌 Di cosa parliamo: usare il tuo PC di casa come aiuto per l'app di Monica, per non restare fermi quando finiscono i limiti gratis. Nell'app l'aspetto non cambia: cambia chi fa i lavori dietro. Te lo chiedo adesso perché il piano si scrive solo dopo la tua scelta. La scelta decide quanto lavoro si fa e quanto rischio entra in casa tua.
+
+1 · Officina: il PC fa i lavori pesanti, ti avvisa dei consumi e tiene la copia dei dati. Per Monica e i clienti non cambia niente.
+2 · Officina più gemello silenzioso: in più, a Cloudflare fermo, Monica riceve lo stesso gli avvisi …
