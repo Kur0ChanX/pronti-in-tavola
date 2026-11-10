@@ -26,16 +26,20 @@ const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.temp
    regola «🏋️ Proteiche» sui valori PER PORZIONE di GialloZafferano. Soglie in Impostazioni → «Solo per te, Mario» (opzioni.js, fit*);
    fonti delle soglie in docs/lavori-in-corso/c124-ricettario-proteico.md. Senza tutti i valori una ricetta non entra (meglio una in meno). */
 const sogliaFit = (k, d) => { const v = typeof opz === 'function' ? opz(k) : undefined; return Number.isFinite(v) ? v : d; };
+/* C125 (Mario 10/11 «un po' più severe… anche dolci proteici e snack»): 'pasto' (regole piene) o 'snack' (poche calorie, più quota di proteine);
+   false = non è proteica. Soglie in Impostazioni → Sviluppatore. */
 function fitRic(n) {
   if (!n || !(n.kcal > 0) || [n.prot, n.saturi, n.zuc, n.sodio].some(x => x == null)) return false;
-  return n.prot >= sogliaFit('fitProt', 20) && n.prot * 400 / n.kcal >= sogliaFit('fitProtPerc', 20) && n.kcal <= sogliaFit('fitKcal', 550)
-    && n.saturi * 900 / n.kcal <= sogliaFit('fitSaturi', 10) && n.zuc * 400 / n.kcal <= sogliaFit('fitZuc', 10) && n.sodio <= sogliaFit('fitSodio', 700);
+  const quota = n.prot * 400 / n.kcal, zuc = n.zuc * 400 / n.kcal;
+  if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 10)) return false;
+  if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 10) && n.sodio <= sogliaFit('fitSodio', 700)) return 'pasto';
+  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 10) && quota >= sogliaFit('fitSnackPerc', 30) && zuc <= sogliaFit('fitSnackZuc', 15) && n.sodio <= sogliaFit('fitSnackSodio', 400) ? 'snack' : false;
 }
 const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
 const numIt = x => String(Math.round(x * 10) / 10).replace('.', ',');
 const saleRic = n => n && n.sodio != null ? Math.round(n.sodio * 2.5 / 100) / 10 : null;   // sale (g) = sodio (mg) × 2,5 / 1000
 /* «perché è qui»: es. «💪 32 g proteine · 410 kcal · sale 0,9 g» */
-const rigaFit = n => n && n.kcal > 0 ? `💪 ${n.prot != null ? numIt(n.prot) + ' g proteine · ' : ''}${Math.round(n.kcal)} kcal${saleRic(n) != null ? ' · sale ' + numIt(saleRic(n)) + ' g' : ''}` : '';
+const rigaFit = n => n && n.kcal > 0 ? `💪 ${n.prot != null ? numIt(n.prot) + ' g proteine · ' : ''}${Math.round(n.kcal)} kcal${saleRic(n) != null ? ' · sale ' + numIt(saleRic(n)) + ' g' : ''}${fitRic(n) === 'snack' ? ' · snack o dolce' : ''}` : '';
 /* C124 (Mario 10/11 «le ricette di GialloZafferano segnale… e segnami la fonte»): da dove viene ogni ricetta */
 const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit' };
 const fonteRic = r => r.mia ? 'Ricetta tua' : FONTI_RIC[String(r.id || '').split(':')[0]] || 'GialloZafferano';
