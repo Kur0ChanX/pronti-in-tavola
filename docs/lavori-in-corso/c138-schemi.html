@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<title>C138 · schemi della scelta 1 e della scelta 2</title>
+<!-- Sorgente degli schemi mandati a Mario il 10/11/2026 (Salvagente 2, risposta al messaggio delle 18:51).
+     Per rifarli: Playwright, viewport largo 390, deviceScaleFactor 2, una foto per #s1 e una per #s2
+     (element.screenshot). Le foto stanno in archivio/foto/ (nomi in c138-salvagente-in-casa.md). -->
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#e5e7eb}
+body{font-family:Inter,"DejaVu Sans","Noto Color Emoji",sans-serif;color:#111827;width:390px}
+.foglio{width:390px;background:#fff;margin-bottom:30px;overflow:hidden}
+.testa{color:#fff;padding:13px 16px}
+.testa .su{font-size:12.5px;font-weight:700;letter-spacing:.09em}
+.testa .tit{font-size:25px;font-weight:800;line-height:1.15;margin-top:4px}
+.testa .sotto{font-size:14.5px;font-weight:500;line-height:1.3;margin-top:4px}
+.blu{background:#1d4ed8}
+.viola{background:#6d28d9}
+.corpo{padding:12px 16px 14px}
+.persone{display:flex;gap:10px}
+.pill{flex:1;border:1.5px solid #94a3b8;border-radius:12px;padding:7px 8px;text-align:center;background:#f8fafc}
+.pill b{display:block;font-size:15.5px}
+.pill span{display:block;font-size:13px;color:#374151;margin-top:1px}
+.striscia{display:block;margin:3px 0 0}
+.uscita{text-align:center;font-size:13px;font-weight:700;color:#9a3412;margin:1px 0 0}
+.riq{border:2px solid;border-radius:14px;padding:17px 9px 9px;position:relative;margin-top:14px}
+.riq .eti{position:absolute;top:-12px;left:12px;color:#fff;font-size:12.5px;font-weight:800;letter-spacing:.05em;padding:4px 10px;border-radius:8px}
+.verde{border-color:#059669;background:#ecfdf5}
+.verde .eti{background:#047857}
+.arancio{border-color:#ea580c;background:#fff7ed}
+.arancio .eti{background:#c2410c}
+.due{display:flex;gap:8px}
+.carta{flex:1;background:#fff;border:1.5px solid #cbd5e1;border-radius:11px;padding:8px 9px}
+.carta b{display:block;font-size:15.5px;line-height:1.25}
+.carta small{display:block;font-size:13px;line-height:1.3;color:#374151;margin-top:2px}
+.sotto-riq{font-size:13px;font-weight:600;color:#065f46;text-align:center;margin-top:7px}
+.lav{display:flex;gap:9px;align-items:flex-start;background:#fff;border:1.5px solid #fdba74;border-radius:11px;padding:7px 9px;margin-top:6px}
+.lav.primo{margin-top:0}
+.num{flex:0 0 24px;height:24px;border-radius:50%;background:#c2410c;color:#fff;font-size:13.5px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.lav b{display:block;font-size:15px;line-height:1.25}
+.lav small{display:block;font-size:13px;line-height:1.3;color:#374151;margin-top:1px}
+.luce{margin-top:11px;background:#fef9c3;border-left:6px solid #eab308;border-radius:10px;padding:9px 11px;font-size:14px;line-height:1.35}
+.luce b{display:block;font-size:15.5px;margin-bottom:2px}
+.esempio{background:#f5f3ff;border:1.5px dashed #7c3aed;border-radius:10px;padding:8px 11px;font-size:14.5px;line-height:1.3}
+.passi{position:relative;margin-top:11px}
+.passi:before{content:"";position:absolute;left:12.5px;top:16px;bottom:34px;width:3px;background:#c4b5fd;border-radius:2px}
+.passo{position:relative;display:flex;gap:10px;margin-bottom:8px}
+.passo .n{flex:0 0 28px;height:28px;border-radius:50%;background:#6d28d9;color:#fff;font-size:15px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:8px;position:relative;z-index:1}
+.passo .carta{padding:7px 10px}
+.fermo{background:#fef2f2;border-color:#ef4444}
+.fermo b{color:#991b1b}
+.fermo small{color:#991b1b;font-weight:600}
+.pc{background:#f5f3ff;border-color:#7c3aed}
+.ok{background:#ecfdf5;border-color:#059669}
+.nota{margin-top:8px;border:1.5px solid #cbd5e1;border-radius:10px;padding:7px 10px;font-size:13.5px;line-height:1.35;background:#f8fafc}
+</style>
+</head>
+<body>
+
+<div class="foglio" id="s1">
+  <div class="testa blu">
+    <div class="su">DOMANDA 1 · SCHEMA 1 DI 2</div>
+    <div class="tit">SCELTA 1 · Officina</div>
+    <div class="sotto">Il tuo PC aiuta dietro le quinte</div>
+  </div>
+  <div class="corpo">
+    <div class="persone">
+      <div class="pill"><b>📱 I clienti</b><span>ordinano</span></div>
+      <div class="pill"><b>📱 Monica</b><span>riceve gli avvisi</span></div>
+    </div>
+    <svg class="striscia" width="358" height="30" viewBox="0 0 358 30">
+      <g stroke="#475569" stroke-width="2.5" fill="#475569">
+        <line x1="84" y1="8" x2="84" y2="22"/><polygon points="78.500,9 89.500,9 84,1.500" stroke="none"/><polygon points="78.500,21 89.500,21 84,28.500" stroke="none"/>
+        <line x1="274" y1="8" x2="274" y2="22"/><polygon points="268.500,9 279.500,9 274,1.500" stroke="none"/><polygon points="268.500,21 279.500,21 274,28.500" stroke="none"/>
+      </g>
+      <text x="179" y="19.500" text-anchor="middle" font-size="13" font-weight="700" fill="#475569" font-family="Inter,'DejaVu Sans',sans-serif">come oggi</text>
+    </svg>
+    <div class="riq verde" style="margin-top:12px">
+      <div class="eti">I SERVER VERI · restano loro</div>
+      <div class="due">
+        <div class="carta"><b>☁️ Cloudflare</b><small>sito · avvisi · aiutante · ricettario</small></div>
+        <div class="carta"><b>🔥 Firebase</b><small>ordini · menù · clienti</small></div>
+      </div>
+      <div class="sotto-riq">Stanno nei centri dati: lì la luce non salta</div>
+    </div>
+    <svg class="striscia" width="358" height="26" viewBox="0 0 358 26">
+      <g stroke="#c2410c" stroke-width="2.5" fill="#c2410c">
+        <line x1="60" y1="9" x2="60" y2="25"/><polygon points="54.500,10 65.500,10 60,2" stroke="none"/>
+        <line x1="179" y1="9" x2="179" y2="25"/><polygon points="173.500,10 184.500,10 179,2" stroke="none"/>
+        <line x1="298" y1="9" x2="298" y2="25"/><polygon points="292.500,10 303.500,10 298,2" stroke="none"/>
+      </g>
+    </svg>
+    <div class="uscita">Solo in uscita: nessuna porta aperta verso casa</div>
+    <div class="riq arancio">
+      <div class="eti">🖥️ IL TUO PC · l'officina</div>
+      <div class="lav primo"><span class="num">1</span><div><b>🍳 Prepara le ricette nuove</b><small>il lavoro pesante che oggi ha finito i limiti</small></div></div>
+      <div class="lav"><span class="num">2</span><div><b>🚨 Sentinella dei consumi</b><small>ti avvisa al 50% e all'80% dei limiti gratis</small></div></div>
+      <div class="lav"><span class="num">3</span><div><b>💾 Copia dei dati di Firebase</b><small>sempre aggiornata, a casa tua</small></div></div>
+      <div class="lav"><span class="num">4</span><div><b>🧪 Prove dell'app</b><small>col motore di GitHub di casa</small></div></div>
+    </div>
+    <div class="luce"><b>⚡ Se salta la luce</b>L'app va come oggi. Si fermano solo i 4 lavori del PC, poi ripartono da soli.</div>
+  </div>
+</div>
+
+<div class="foglio" id="s2">
+  <div class="testa viola">
+    <div class="su">DOMANDA 1 · SCHEMA 2 DI 2</div>
+    <div class="tit">SCELTA 2 · Officina + gemello</div>
+    <div class="sotto">Tutta la scelta 1, più una riserva per gli avvisi</div>
+  </div>
+  <div class="corpo">
+    <div class="esempio">Esempio: arriva un ordine mentre il server di <b>Cloudflare è tutto fermo</b></div>
+    <div class="passi">
+      <div class="passo"><span class="n">1</span><div class="carta"><b>📱 Un cliente ordina</b><small>dall'app, come sempre</small></div></div>
+      <div class="passo"><span class="n">2</span><div class="carta"><b>🔥 Firebase salva l'ordine</b><small>è un altro server: non si ferma con Cloudflare</small></div></div>
+      <div class="passo"><span class="n">3</span><div class="carta fermo"><b>☁️ Cloudflare dovrebbe avvisare Monica</b><small>✕ ma è fermo: l'avviso non parte</small></div></div>
+      <div class="passo"><span class="n">4</span><div class="carta pc"><b>🖥️ Il tuo PC se ne accorge</b><small>dopo circa 20 secondi vede in Firebase che l'avviso manca</small></div></div>
+      <div class="passo"><span class="n">5</span><div class="carta ok"><b>🔔 Il PC manda l'avviso a Monica</b><small>la notifica le arriva sul telefono, come sempre</small></div></div>
+    </div>
+    <div class="nota">🤫 <b>Nei giorni normali</b> avvisa Cloudflare, come oggi. Il gemello guarda e sta zitto.</div>
+    <div class="nota">➕ <b>In più</b> c'è tutta l'officina della scelta 1. E con Cloudflare fermo anche l'aiutante risponde dal PC.</div>
+    <div class="luce"><b>⚡ Se salta la luce</b>L'app va come oggi. Manca solo la riserva, finché torna la luce.</div>
+  </div>
+</div>
+
+</body>
+</html>
