@@ -466,7 +466,7 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   oggetto.sql.exec('INSERT INTO coda (url, aggiunta, sarda) VALUES (?, ?, 0)', 'https://ricette.giallozafferano.it/Vecchia.html', Date.now());
   oggetto.salva({ id: 'gz:Gia-letta', url: 'https://ricette.giallozafferano.it/Gia-letta.html', nome: 'Già letta', nutr: null });
   let j = await (await chiedi({ db: 'cercaFit', q: 'Budino!' })).json();
-  prova('C125 cerca fit: GZ cercato con «light», RicetteFit dal suo elenco (budino e budini), mai la ricerca del sito', chieste.includes('https://www.giallozafferano.it/ricerca-ricette/budino+light/') && !chieste.some(u => /ricettefit\.it\/\?s=/.test(u)) && j.gz === 3 && j.rf === 2);
+  prova('C125 cerca fit: GZ cercato con «light», RicetteFit dal suo elenco (budino e budini), mai la ricerca del sito', chieste.includes('https://www.giallozafferano.it/ricerca-ricette/budino+light/') && !chieste.some(u => /ricettefit\.it\/\?s=/.test(u)) && j.gz === 2 && j.rf === 2);   // C128: j.gz = le nuove (Gia-letta contata in «gia»)
   prova('C125 cerca fit: nuove in coda, già lette contate e mai rimesse', j.nuove === 4 && j.gia === 1 && !oggetto.sql.exec("SELECT 1 FROM coda WHERE url LIKE '%Gia-letta%'").toArray().length);
   const presi = oggetto.prendi(4);
   prova('C125 cerca fit: in testa alla coda, prima di quelle che aspettavano', presi.length === 4 && !presi.includes('https://ricette.giallozafferano.it/Vecchia.html'));
@@ -477,11 +477,11 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   const nPrima = chieste.length;
   j = await (await chiedi({ db: 'cercaFit', q: 'Dopo cena', qq: ['budino', 'pancake proteici', 'budino', 'x'] })).json();
   const nuoveC = chieste.slice(nPrima);
-  prova('C126 momento: più parole insieme (doppioni e 1 lettera tolti), un elenco RicetteFit solo, risultati senza doppioni', j.q === 'budino' && j.gz === 3 && j.rf === 3 && nuoveC.filter(u => u.endsWith('sitemap.xml')).length === 1
+    prova('C126 momento: più parole insieme (doppioni e 1 lettera tolti), un elenco RicetteFit solo, risultati senza doppioni', j.q === 'budino' && j.gz === 2 && j.rf === 3 && nuoveC.filter(u => u.endsWith('sitemap.xml')).length === 1
     && nuoveC.includes('https://www.giallozafferano.it/ricerca-ricette/budino+light/') && nuoveC.includes('https://www.giallozafferano.it/ricerca-ricette/pancake+proteici/') && nuoveC.filter(u => /ricerca-ricette/.test(u)).length === 2);
   oggetto.sql.exec('DELETE FROM coda'); const nT = chieste.length;
   j = await (await chiedi({ db: 'cercaFit', q: '', tutto: true })).json();
-  prova('C126 cerca tutto: parole larghe su GZ (4 ricerche) e le prossime di RicetteFit dal suo elenco, senza parola scritta', j.q === 'tutto' && chieste.slice(nT).filter(u => /ricerca-ricette/.test(u)).length === 4 && chieste.slice(nT).includes('https://www.giallozafferano.it/ricerca-ricette/ricette+proteiche/') && j.rf === 4);
+  prova('C126 cerca tutto: parole larghe su GZ (4 ricerche) e le prossime di RicetteFit dal suo elenco, senza parola scritta', j.q === 'tutto' && chieste.slice(nT).filter(u => /ricerca-ricette/.test(u)).length === 4 && chieste.slice(nT).includes('https://www.giallozafferano.it/ricerca-ricette/ricette+proteiche/') && j.rf + j.gia === 4 && j.rf >= 3 && j.pagine === 4);   // C128: le già lette saltate
   oggetto.metti1('rfSpento', '1'); const nMappe = chieste.filter(u => u.endsWith('sitemap.xml')).length;
   j = await (await chiedi({ db: 'cercaFit', q: 'pollo' })).json();
   prova('C125 cerca fit: RicetteFit spenta dall\'app = mai chiesta', chieste.filter(u => u.endsWith('sitemap.xml')).length === nMappe && j.rf === 0);
@@ -489,6 +489,54 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   j = await (await chiedi({ db: 'cercaFit', q: 'orata' })).json();
   const corta = await (await chiedi({ db: 'cercaFit', q: 'a' })).json();
   prova('C125 cerca fit: siti giù = errore detto; parola di 1 lettera rifiutata; senza accesso niente', /non rispondono/.test(j.errore || '') && !!corta.errore && (await chiedi({ db: 'cercaFit', q: 'pollo' }, false)).status === 403);
+  globalThis.fetch = prima; oggetto.metti1('turbo', ''); oggetto.sql.exec('DELETE FROM coda');
+}
+// C128 (Mario 10/11 «così generico non trova nulla, assurdo»): «Cerca ancora» va alle pagine dopo, RicetteFit mai fuori dal tetto, carico veloce da solo
+{ const prima = globalThis.fetch, chieste = [];
+  const carte = (pre, n) => Array.from({ length: n }, (_, i) => carta(pre + i)).join('');
+  const mappaRf = `<urlset>${Array.from({ length: 12 }, (_, i) => `<url><loc>https://www.ricettefit.it/ricetta/fit-${i}/</loc></url>`).join('')}</urlset>`;
+  globalThis.fetch = async (u, o) => { u = String(u);
+    if (!/giallozafferano\.it|ricettefit\.it/.test(u)) return prima(u, o);
+    chieste.push(u);
+    if (u === 'https://www.giallozafferano.it/ricerca-ricette/tonno+light/') return new Response(carte('Tonno-letta-', 15));
+    if (u === 'https://www.giallozafferano.it/ricerca-ricette/page2/tonno+light/') return new Response(carte('Tonno-nuova-', 15));
+    if (u === 'https://www.giallozafferano.it/ricerca-ricette/page3/tonno+light/') return new Response(carte('Tonno-terza-', 5));
+    if (u === 'https://www.giallozafferano.it/ricerca-ricette/ricette+proteiche/') return new Response(carte('Larga-', 15));
+    if (u === 'https://www.ricettefit.it/recipe-sitemap.xml') return new Response(mappaRf);
+    return new Response('no', { status: 404 }); };
+  oggetto.metti1('turbo', ''); oggetto.sql.exec('DELETE FROM coda'); oggetto.sql.exec("DELETE FROM ricette WHERE url LIKE '%ricettefit%'"); allarmi.length = 0;
+  for (let i = 0; i < 15; i++) oggetto.salva({ id: 'gz:Tonno-letta-' + i, url: `https://ricette.giallozafferano.it/Tonno-letta-${i}.html`, nome: 'Tonno ' + i, nutr: null });
+  let j = await (await chiedi({ db: 'cercaFit', q: 'tonno' })).json();
+  prova('C128 cerca: pagina 1 tutta già letta → va da sola alla pagina 2 e porta le nuove', chieste.includes('https://www.giallozafferano.it/ricerca-ricette/page2/tonno+light/') && j.gz === 15 && j.gia === 15 && j.nuove === 15 && j.pagine === 2);
+  const n1 = chieste.length;
+  j = await (await chiedi({ db: 'cercaFit', q: 'tonno' })).json();
+  prova('C128 «Cerca ancora»: riparte dalla pagina 3, non rilegge la 1 né la 2', !chieste.slice(n1).some(u => /ricerca-ricette\/(page2\/)?tonno/.test(u)) && chieste.slice(n1).includes('https://www.giallozafferano.it/ricerca-ricette/page3/tonno+light/') && j.gz === 5 && j.pagine === 1);
+  const n2 = chieste.length;
+  j = await (await chiedi({ db: 'cercaFit', q: 'tonno' })).json();
+  prova('C128 finite le pagine: riparte dalla prima (così entrano le nuove dei siti)', chieste.slice(n2).includes('https://www.giallozafferano.it/ricerca-ricette/tonno+light/'));
+  oggetto.sql.exec('DELETE FROM coda'); oggetto.metti1('turbo', '');
+  j = await (await chiedi({ db: 'cercaFit', q: '', tutto: true })).json();
+  const rfCoda = oggetto.sql.exec("SELECT COUNT(*) AS n FROM coda WHERE url LIKE 'https://www.ricettefit.it/%'").toArray()[0].n;
+  prova('C128 cerca tutto: RicetteFit sempre dentro anche con tante di GZ (prima 40 di GZ già lette e RicetteFit fuori)', j.rf === 12 && rfCoda === 12 && j.gz === 15 && j.nuove === 27);
+  // carico veloce partito da solo dal cron
+  oggetto.sql.exec('DELETE FROM coda'); oggetto.metti1('turbo', ''); oggetto.metti1('rfFine', ''); oggetto.metti1('rfI', '0'); oggetto.metti1('rfSpento', ''); oggetto.metti1('pausa', '1');
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
+  prova('C128 carico veloce: in pausa non parte', !(await ponte.statoDb()).turbo);
+  oggetto.metti1('pausa', ''); allarmi.length = 0;
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
+  let st = await ponte.statoDb(); console.log('DBG', JSON.stringify(st.turbo), allarmi.length, st.daLeggere, st.pausa, JSON.stringify(st.rf));
+  prova('C128 carico veloce: con RicetteFit e valori da leggere parte da solo (automatico, sveglia impostata)', st.turbo && st.turbo.attivo && st.turbo.auto && allarmi.length === 1 && st.daLeggere > 0);
+  oggetto.sql.exec('DELETE FROM coda'); const n3 = chieste.length; await oggetto.alarm();
+  const sv = chieste.slice(n3), rfLette = sv.filter(u => /ricettefit\.it\/ricetta\//.test(u)).length, valori = sv.filter(u => /Tonno-letta-/.test(u)).length;
+  st = await ponte.statoDb();
+  prova('C128 carico veloce: una sveglia legge 5 RicetteFit (prima 1 ogni 10 minuti) e 10 valori', rfLette === 5 && valori === 10 && st.turbo.valori === 10 && st.turbo.ora > 0);
+  oggetto.metti1('turbo', JSON.stringify({ attivo: true, auto: true, obiettivo: 200, fatte: 0, valori: 0, da: Date.now() - 3600000, ora: Date.now() - 11 * 60000 })); allarmi.length = 0;
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
+  st = await ponte.statoDb();
+  prova('C128 carico veloce: fermo da oltre 10 minuti (sveglia persa) → il cron lo rifà', allarmi.length === 1 && st.turbo.attivo && st.turbo.sveglie === 0);
+  oggetto.metti1('turbo', JSON.stringify({ attivo: false, auto: true, obiettivo: 200, fatte: 0, valori: 0, finito: Date.now() })); allarmi.length = 0;
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
+  prova('C128 carico veloce: l\'ultimo non ha letto niente → niente sveglie a vuoto per un\'ora', allarmi.length === 0 && !(await ponte.statoDb()).turbo.attivo);
   globalThis.fetch = prima; oggetto.metti1('turbo', ''); oggetto.sql.exec('DELETE FROM coda');
 }
 // C125 (Mario 10/11 13:40 «fonti alternative anche a giallozafferano»): la ricerca normale guarda anche RicetteFit, in cima

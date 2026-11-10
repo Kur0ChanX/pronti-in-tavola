@@ -339,10 +339,22 @@ function attesaRic(titolo, indietro, testo) {
 const cartaRic = (r, pref, conValori) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
     <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${esc(rigaFit(r.nutr))}</small>` : ''}</span></button>`;
+/* C128 (Mario 10/11 «ne ho pochissime»; C127 «fammi capire chiaro se sono state caricate»): a che punto è la lettura delle fonti.
+   Il server legge da solo, veloce, RicetteFit (5 ogni 30 s) e i valori che mancano (10 ogni 30 s); qui i numeri e una stima del tempo. */
+function letturaFit(d) {
+  if (!d || d.errore) return '';
+  const t = d.turbo, va = d.daLeggere != null ? d.daLeggere : d.senzaValori || 0, rf = d.rf || {}, tot = rf.tot || 0;
+  const rfResto = !rf.spento && tot && rf.fine !== new Date(Date.now() + 3600000).toISOString().slice(0, 10) ? Math.max(0, tot - (rf.lette || 0) - (rf.scartate || 0)) : 0;
+  if (t && t.attivo && !RIC.turboTimer) RIC.turboTimer = setTimeout(() => { RIC.turboTimer = null; RIC.dbOra = 0; RIC.scelteOra = 0; if (UI.vista === 'ricettario' || UI.vista === 'ricdb') render(); }, 30000);   // i numeri salgono da soli
+  const rfTxt = tot && !rf.spento ? `RicetteFit ${rf.lette || 0} di ${tot}${rfResto ? '' : ' ✅'}` : '', vaTxt = va ? `valori ancora ${va}` : 'valori tutti letti ✅';
+  if (!rfResto && !va) return ` <span class="tenue">Letto tutto: ${rfTxt ? rfTxt + ' · ' : ''}${vaTxt}.</span>`;
+  const min = Math.max(Math.ceil(rfResto / 5) * 0.5, Math.ceil(va / 10) * 0.5), stima = min < 2 ? 'pochi minuti' : min < 60 ? `circa ${Math.ceil(min / 5) * 5} minuti` : `circa ${Math.round(min / 30) / 2} ore`.replace('.', ',');
+  return ` <span class="tenue">${t && t.attivo ? '⏳ Sto leggendo adesso' : '⏳ Da leggere (parto da sola entro 10 minuti)'}: ${[rfTxt, vaTxt].filter(Boolean).join(' · ')}. Finisco fra ${stima} (stima); le nuove proteiche compaiono qui da sole.</span>`;
+}
 /* C124: «🏋️ Proteiche» spiegata in una riga, con le soglie di adesso (cambiano da Impostazioni) e i valori ancora da leggere */
 function notaFit() {
   const d = RIC.db && !RIC.db.errore ? RIC.db : null, g = (k, x) => sogliaFit(k, x);
-  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Per palestra e definizione. <b>Pasti</b>: almeno ${g('fitProt', 25)} g di proteine a porzione (il ${g('fitProtPerc', 25)}% delle calorie), al massimo ${g('fitKcal', 550)} kcal. <b>Snack e dolci</b>: fino a ${g('fitSnackKcal', 300)} kcal, almeno ${g('fitSnackProt', 10)} g di proteine (il ${g('fitSnackPerc', 30)}%). Sempre pochi grassi saturi, zuccheri e sale. Prima quelle con più proteine per caloria. Valori per porzione di GialloZafferano e RicetteFit.${d && d.senzaValori ? ` <span class="tenue">Ancora ${d.senzaValori} ricette da leggere: le trovo da sola, 10 ogni 10 minuti.</span>` : ''}</p>`;
+  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Per palestra e definizione. <b>Pasti</b>: almeno ${g('fitProt', 25)} g di proteine a porzione (il ${g('fitProtPerc', 25)}% delle calorie), al massimo ${g('fitKcal', 550)} kcal. <b>Snack e dolci</b>: fino a ${g('fitSnackKcal', 300)} kcal, almeno ${g('fitSnackProt', 10)} g di proteine (il ${g('fitSnackPerc', 30)}%). Sempre pochi grassi saturi, zuccheri e sale. Prima quelle con più proteine per caloria. Valori per porzione di GialloZafferano e RicetteFit.${letturaFit(d)}</p>`;
 }
 /* C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca per ricerche fitness che mi cerca in automatico… tante fonti»): qui sopra filtra
    le proteiche già lette; il tasto chiede al server di cercare su GialloZafferano e RicetteFit e di leggere SUBITO le nuove (5 ogni 30 s).
@@ -353,7 +365,7 @@ function cercaFitBox(f) {
   const esito = !c ? '' : c.stato === 'carico' ? `<p class="piccolo" style="margin:0">🔎 Cerco ${c.mom === '*' ? 'ricette fit' : Q} su GialloZafferano e RicetteFit…</p>`
     : c.stato === 'errore' ? `<p class="piccolo" style="margin:0">${esc(c.errore)}</p>`
     : c.nuove ? `<p class="piccolo" style="margin:0">🔎 Trovate <b>${c.nuove}</b> ricette nuove ${conQ}${c.gia === 1 ? ' (un\'altra l\'avevo già letta)' : c.gia ? ` (altre ${c.gia} le avevo già lette)` : ''}. Le leggo una per una, 5 ogni 30 secondi: quelle che passano le regole compaiono qui da sole.</p>`
-    : c.gia ? `<p class="piccolo" style="margin:0">Niente di nuovo ${conQ}: ${c.gia === 1 ? 'quella trovata l\'avevo già letta' : `le ${c.gia} trovate le avevo già lette`}. Quelle che passano le regole sono qui sotto.</p>`
+    : c.gia ? `<p class="piccolo" style="margin:0">Niente di nuovo ${conQ}${c.pagine ? ` (ho guardato ${c.pagine} ${c.pagine === 1 ? 'pagina' : 'pagine'} dei siti)` : ''}: ${c.gia === 1 ? 'quella trovata l\'avevo già letta' : `le ${c.gia} trovate le avevo già lette`}. Tocca ancora: la prossima volta vado alle pagine dopo. Quelle che passano le regole sono qui sotto.</p>`
     : `<p class="piccolo" style="margin:0">Nessuna ricetta trovata ${conQ}. Prova con un'altra parola (es. pollo, tonno, budino).</p>`;
   return `<section class="scheda ric-cerca-fit"><h2>🔍 Cerca ricette fit</h2>
     ${q.length >= 2 ? `<button type="button" class="btn pieno" data-a="ric-cerca-fit" ${c && c.stato === 'carico' ? 'disabled' : ''}>${ico('cerca')}Cerca ${Q} su GialloZafferano e RicetteFit</button>` : `<button type="button" class="btn pieno" data-a="ric-cerca-fit-tutto" ${c && c.stato === 'carico' ? 'disabled' : ''}>${ico('cerca')}${m ? `Cerca ancora ricette per «${esc(m[1].replace(/^\S+\s/, ''))}»` : 'Cerca nuove ricette fit su tutti i siti'}</button>
@@ -367,7 +379,7 @@ function cercaFit(q, qq, tutto, chiave) {   // qq: le parole di un momento o di 
   RIC.fitCerca = { q: k, mom, testo, stato: 'carico' }; render();
   RIC.chiedi(Object.assign({ db: 'cercaFit', q }, tutto ? { tutto: true } : mom ? { qq } : {})).then(j => {
     if (!j || j.errore) throw new Error(j && j.errore || 'il server non risponde');
-    RIC.fitCerca = { q: k, mom, testo, stato: 'ok', nuove: j.nuove || 0, gia: j.gia || 0 };
+    RIC.fitCerca = { q: k, mom, testo, stato: 'ok', nuove: j.nuove || 0, gia: j.gia || 0, pagine: j.pagine || 0 };
     if (j.db) RIC.db = j.db;
     if (j.nuove) aggiornaFit(10);   // l'elenco si aggiorna da solo ogni 30 s per 5 minuti
   }).catch(e => { RIC.fitCerca = { q: k, mom, testo, stato: 'errore', errore: `Non riesco a cercare adesso (${e && e.message || e}). Riprova fra poco.` }; })
@@ -480,7 +492,9 @@ function riquadroDb() {
   const nuove7 = (RIC.scelte || []).filter(x => (x.aggiunta || 0) > sett).length, nonArrivate = mie.filter(m => !m.suServer).length;
   const t = d && d.turbo;
   if (t && t.attivo && !RIC.turboTimer) RIC.turboTimer = setTimeout(() => { RIC.turboTimer = null; RIC.dbOra = 0; RIC.scelteOra = 0; if (UI.vista === 'ricettario') render(); }, 30000);   // numeri che salgono da soli
-  const turbo = t ? (t.attivo ? `<p style="margin:6px 0 0"><b>⚡ Carico ${t.obiettivo} ricette: ${t.fatte} fatte</b>${t.scartate ? ` · ${t.scartate} scartate perché incomplete` : ''}</p><div class="ricdb-barra"><i style="width:${Math.min(100, Math.round(t.fatte / (t.obiettivo || 1) * 100))}%"></i></div>`
+  const turbo = t && t.auto ? (t.attivo ? `<p style="margin:6px 0 0"><b>⚡ Sto leggendo da sola RicetteFit e i valori che mancano</b>: ${t.fatte} ricette nuove, ${t.valori || 0} valori letti${t.scartate ? `, ${t.scartate} scartate perché incomplete` : ''}.</p>`
+    : t.finito ? `<p class="piccolo" style="margin:6px 0 0">⚡ Ultima lettura veloce: <b>${t.fatte}</b> ricette nuove, ${t.valori || 0} valori letti.</p>` : '')
+    : t ? (t.attivo ? `<p style="margin:6px 0 0"><b>⚡ Carico ${t.obiettivo} ricette: ${t.fatte} fatte</b>${t.scartate ? ` · ${t.scartate} scartate perché incomplete` : ''}</p><div class="ricdb-barra"><i style="width:${Math.min(100, Math.round(t.fatte / (t.obiettivo || 1) * 100))}%"></i></div>`
     : t.finito ? `<p class="piccolo" style="margin:6px 0 0">⚡ Ultimo carico: <b>${t.fatte}</b> ricette nuove${t.scartate ? `, ${t.scartate} scartate perché incomplete` : ''}.</p>` : '') : '';
   return `<section class="scheda ric-db-box"><h2>🗄 Il mio database</h2>
     <div class="ric-db-griglia">${n(elenco.length + mie.length, '📖 nel ricettario', `le vede anche Monica · ${base} di partenza, ${trovate} trovate, ${mie.length} scritte da te`)}${n(nuove7, '🆕 nuove', `negli ultimi 7 giorni${nuoveOggi ? `, ${nuoveOggi} oggi` : ''}`)}${n(d ? d.coda : null, '⏳ in arrivo', 'il motore le sta leggendo')}${n(scar.length, '📥 sul telefono', `leggibili senza rete · ${nVoci} con la voce`)}</div>
@@ -546,7 +560,7 @@ function vRicDb() {
     const parole = d.paroleFit || [], ora = parole[Math.min(d.fitI || 0, Math.max(0, parole.length - 1))] || '';
     const cf = contaRicHome();
     h += `<section class="scheda" id="ricdb-fit"><h2>🏋️ Ricette proteiche: ${cf.fit}</h2>${cf.fonti ? `<p class="piccolo" style="margin:0 0 4px">${esc(cf.fonti)}</p>` : ''}
-      <p class="piccolo" style="margin:0">Valori per porzione letti: <b>${d.conValori || 0}</b> ricette${d.senzaValori ? `, <b>${d.senzaValori}</b> ancora da leggere (10 ogni 10 minuti)` : ', tutte lette ✅'}.</p>
+      <p class="piccolo" style="margin:0">Valori per porzione letti: <b>${d.conValori || 0}</b> ricette${d.senzaValori ? `, <b>${d.senzaValori}</b> ancora da leggere (${d.turbo && d.turbo.attivo ? 'le sto leggendo adesso, 10 ogni 30 secondi' : '10 ogni 10 minuti; con tante da leggere parto da sola più veloce'})` : ', tutte lette ✅'}.</p>
       <p class="piccolo tenue" style="margin:4px 0 0">${parole.length ? `Il motore cerca anche ricette con queste parole su GialloZafferano, una pagina ogni 4: ${d.paginaFit === 'fine' ? '✅ tutte cercate in questo giro' : `adesso «${esc(ora)}»`}.` : 'Ricerca delle ricette fit spenta: nessuna parola.'}</p>
       <label class="etichetta" for="ric-fit-parole" style="margin-top:6px">Parole da cercare, separate da virgola</label>
       <textarea id="ric-fit-parole" data-ricfit="1" rows="3" maxlength="800">${esc(parole.join(', '))}</textarea>
