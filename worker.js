@@ -73,7 +73,7 @@ Azioni possibili (usa solo queste):
 {"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche (anche gli ultimi avvisi arrivati), imp-lucchetto, imp-anticipo, imp-limite, imp-natale, imp-voce (velocità della voce che legge). Pagine: ordini, ordini-storico (ordini finiti, prove, archiviati), piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), clienti-nuovi (interruttore «Accetta clienti nuovi»), clienti-rifiutati (persone a cui ha detto no, si possono riaccettare), clienti-attesa (chi aspetta il suo sì; chi non compare tocca «Ricorda a Monica»), spesa, ricettario, ricettario-fit (ricette proteiche per palestra e definizione), ricettario-diff (filtro difficoltà), ricettario-db (database e motore delle ricette). Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
 CAPIRE IL SENSO (Mario: «deve capire il contesto di quello che dico, non leggere la parola»): prima di scegliere un posto chiediti cosa vuole FARE Monica con la frase intera, non quale parola ha detto. Es. «la mia amica non riesce ad aprire il link» → clienti (inviti), non ordini; «non mi suona niente quando ordinano» → imp-notifiche; «leggo male le scritte» → imp-vista; «la Laura ora si chiama in un altro modo» → clienti-nome. DATI.indizi = posti trovati solo cercando le parole: un aiuto, spesso sbagliato. Sicura → UNA azione vai. Esiti fra 2-3 posti → 2-3 azioni vai e nel testo «Intendi…?». Non capisci → nessuna azione e chiedi cosa vuole fare.
 {"azione":"idea","testo":"..."}  Monica vuole cambiare o aggiungere qualcosa che NON si può fare dall'app (una funzione nuova, un cambio del funzionamento): scrivi per Mario, che la programma, cosa vuole, dove nell'app e perché, con tutti i dettagli che ha detto
-GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche. Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista. Ricettario = ricette di GialloZafferano, di RicetteFit (ricette fit, il motore ne prende una ogni 10 minuti) e sue (su ogni ricetta la fonte e i valori per porzione: calorie, proteine, carboidrati, grassi, zuccheri, sale); filtri per portata, «Difficoltà» (Facili, Medie, Difficili) e la sezione «🏋️ Proteiche» (almeno 20 g di proteine a porzione, poche calorie, grassi saturi, zuccheri e sale; prima quelle con più proteine); nella Home il riquadro «Proteiche» porta lì; «🗄 Database» porta dritto al database; foto di un passo piccola o sgranata: toccala per ingrandirla, poi «✨ Migliora con l'AI» (l'AI del telefono la rende grande e nitida; dopo la prima volta lo fa da sola).
+GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche (con la corsia d'emergenza 🛟: se il server si ferma, gli avvisi degli ordini partono lo stesso). Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista. Ricettario = ricette di GialloZafferano, di RicetteFit (ricette fit; le nuove arrivano quando le chiedi con «⚡ Carica altre»; con «🛟 Modalità risparmio» in alto, fino alle 01:00 non ne cerca di nuove ma le tue funzionano) e sue (su ogni ricetta la fonte e i valori per porzione: calorie, proteine, carboidrati, grassi, zuccheri, sale); filtri per portata, «Difficoltà» (Facili, Medie, Difficili) e la sezione «🏋️ Proteiche» (almeno 20 g di proteine a porzione, poche calorie, grassi saturi, zuccheri e sale; prima quelle con più proteine); nella Home il riquadro «Proteiche» porta lì; «🗄 Database» porta dritto al database; foto di un passo piccola o sgranata: toccala per ingrandirla, poi «✨ Migliora con l'AI» (l'AI del telefono la rende grande e nitida; dopo la prima volta lo fa da sola).
 Regole: un ordine si riconosce dal numero o dal nome del cliente; se è ambiguo o manca un dato non mettere azioni e chiedi nel testo.
 Con più richieste insieme metti più azioni. Per le domande (cosa cucinare, chi ritira, chi deve pagare, incassi) rispondi nel testo usando SOLO i DATI, senza azioni.
 Con una FOTO: lista scritta a mano o scontrino → azione spesa; menù o lavagna → prezzi o piatti nuovi; foto di un piatto → descrizione o nuovo_piatto.
@@ -332,10 +332,19 @@ async function rfCerca(db, q) {
 }
 /* C130 bis (PT E46): l'errore di Cloudflare in inglese diventa il perché vero, col codice per capirlo da una foto */
 const perche = e => { const m = String(e && e.message || e); return /Exceeded allowed rows (read|written)/i.test(m) ? 'Il server di Cloudflare ha finito le letture gratuite di oggi: riparte da solo stanotte (codice: ' + m + ')' : m; };
+/* C137 MODALITÀ RISPARMIO (Mario 10/11 18:13 «quando è in modalità emergenza… niente cose quasi inutili come aggiornare il ricettario,
+   solo cose base per far funzionare il programma al 100%»): oltre il freno di C130 (LETTURE_FONDO) o con la memoria bloccata da
+   Cloudflare, il ricettario non cerca e non carica ricette nuove, nemmeno a mano, fino all'azzeramento (01:00 d'inverno).
+   Sempre: il ricettario di Monica (mie, aggiungi, togli, scritte da lei), aprire una ricetta, i numeri, «⏹ Ferma», le impostazioni. */
+const bloccatoDO = e => /Exceeded allowed rows (read|written)/i.test(String(e && e.message || e));
+const RISPARMIO = perche => ({ errore: '🛟 Modalità risparmio fino a stanotte: ' + (perche === 'bloccato' ? 'Cloudflare ha fermato la memoria del server per oggi'
+  : 'il server ha usato quasi metà delle letture gratuite di oggi') + '. Il ricettario non cerca ricette nuove; ordini, avvisi e le tue ricette funzionano.', risparmio: { perche } });
+const DB_PAUSA = b => ['cerca', 'controlla', 'cercaFit'].includes(b.db) || (b.db === 'turbo' && b.n !== undefined);
 async function ricettaGz(b, cfg, ctx) {
   const db = ricDb(cfg), poi = p => { if (p && ctx) ctx.waitUntil(p.catch(() => null)); };
   if (b && b.db) {   // { db: 'stato' } numeri · { db: 'pausa'|'riprendi' } ferma o riprende la crescita
     if (!db) return { errore: 'database non collegato' };
+    if (DB_PAUSA(b) && await db.freno()) return RISPARMIO('freno');   // C137
     if (b.db === 'pausa' || b.db === 'riprendi') await db.metti1('pausa', b.db === 'pausa' ? '1' : '');
     if (b.db === 'auto') { await db.mettiAuto(b.acceso === true); return { db: await db.statoDb() }; }   // C136: motore automatico (solo Mario lo vede)
     if (b.db === 'ferma') { await db.turboFerma(); return { db: await db.statoDb() }; }   // C136: «⏹ Ferma» il carico in corso
@@ -405,6 +414,8 @@ async function ricettaGz(b, cfg, ctx) {
     if (b.db === 'togliMia') { await db.togliMia(b.id); return { ok: true }; }
     return { db: await db.statoDb() };
   }
+  // C137: cercare nell'archivio, le proposte e le ricerche su GialloZafferano e RicetteFit riposano in modalità risparmio (aprire una ricetta no)
+  if (b && !b.u && (typeof b.cerca === 'string' || typeof b.cat === 'string') && db && await db.freno()) return RISPARMIO('freno');
   if (b && b.cat === 'db') {   // sfoglia o cerca nel database, 30 per volta («Carica altre» = pagina 'db:<da>')
     if (!db) return { errore: 'database non collegato' };
     const da = typeof b.pagina === 'string' && /^db:\d{1,6}$/.test(b.pagina) ? +b.pagina.slice(3) : 0;
@@ -637,6 +648,90 @@ async function clienteDa(req) {
   return f.stato && f.stato.stringValue === 'approvato' && f.cliente && f.cliente.stringValue ? f.cliente.stringValue : null;
 }
 
+const subValida = sub => !!sub && typeof sub.endpoint === 'string' && /^https:\/\//.test(sub.endpoint) && sub.endpoint.length <= 1000;
+/* Web Push senza contenuto (sw.js chiede a /api/ultimo cosa scrivere): k = chiavi VAPID, dest = [{ endpoint }] */
+async function spingi(k, dest) {
+  const priv = await crypto.subtle.importKey('jwk', k.priv, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
+  const morti = [], esiti = [];
+  let ok = 0;
+  for (const s of dest) {
+    const aud = new URL(s.endpoint).origin;
+    const testa = b64u(new TextEncoder().encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
+    const corpo = b64u(new TextEncoder().encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: CONTATTO })));
+    const firma = b64u(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, priv, new TextEncoder().encode(testa + '.' + corpo)));
+    try {
+      const r = await fetch(s.endpoint, { method: 'POST', headers: { authorization: `vapid t=${testa}.${corpo}.${firma}, k=${k.pub}`, ttl: '86400', urgency: 'high', 'content-length': '0' } });
+      esiti.push(r.status + (r.ok ? '' : ' ' + (await r.text()).slice(0, 120)));
+      if (r.status === 404 || r.status === 410) morti.push(s.endpoint); else if (r.ok) ok++;
+    } catch (e) { esiti.push('errore ' + String(e && e.message || e).slice(0, 120)); }
+  }
+  return { ok, morti, esiti };
+}
+const extraQui = b => ({ nome: String((b && b.nome) || 'Un cliente').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 40) || 'Un cliente',
+  n: Number.isInteger(b && b.n) && b.n > 0 && b.n < 1e6 ? b.n : 0, prova: !!(b && b.prova) });
+
+/* C135 CORSIA D'EMERGENZA (Mario 10/11 17:50 «1 anche per i clienti… non far riscriversi»; PT E53: il 10/11 Cloudflare ha fermato
+   la memoria per le letture gratuite finite e i telefoni non suonavano più). L'oggetto AVVISI copia chiavi VAPID e telefoni in
+   Workers KV (RISERVA) quando cambiano. Se l'oggetto non risponde, gli avvisi partono dalla copia, senza diario né conti salvati;
+   un telefono iscritto in quel momento entra nella copia e torna nell'oggetto da solo (cron ogni 10 minuti, riserva()).
+   KV gratis: 100.000 letture e 1.000 scritture al giorno; qui: 1 lettura ogni 10 minuti + 1 scrittura per telefono nuovo o avviso d'emergenza. */
+const RIS_AVVISI = 'avvisi', RIS_ULTIMO = 'ultimo';
+const riservaKv = env => env && env.RISERVA ? env.RISERVA : null;
+const mem = { ris: null, risT: 0, avvisi: [], qui: {} };   // memoria del Worker: copia letta da poco (1 minuto) e avvisi d'emergenza recenti
+async function leggiRiserva(env, fresca) {
+  const kv = riservaKv(env); if (!kv) return null;
+  if (!fresca && mem.ris && Date.now() - mem.risT < 60000) return mem.ris;
+  const d = await kv.get(RIS_AVVISI, 'json').catch(() => null);
+  if (!(d && d.pub && d.priv)) return null;
+  mem.ris = d; mem.risT = Date.now(); return d;
+}
+/* prima l'oggetto AVVISI; se dà errore, la corsia d'emergenza (che ridà null se non ha la copia: allora resta l'errore vero) */
+async function oRiserva(fai, riserva) {
+  try { return await fai(); } catch (e) { const r = await Promise.resolve().then(riserva).catch(() => null); if (r != null) return r; throw e; }
+}
+/* tetto e pausa come l'oggetto (avvisa), ma nella memoria del Worker: durante il blocco non ci sono conti salvati */
+function frenoRiserva(t) {
+  const ora = Date.now(); mem.avvisi = mem.avvisi.filter(x => ora - x < 86400000);
+  if (mem.avvisi.length >= TETTO_GIORNO) return 'tetto';
+  if (mem.avvisi.length && ora - mem.avvisi[mem.avvisi.length - 1] < PAUSA_MS && t !== 'primo' && t !== 'richiesta') return 'pausa';
+  mem.avvisi.push(ora); return '';
+}
+/* manda dalla copia: ai telefoni di chi gestisce (tutti, o solo uid) o a quelli di un cliente; prima scrive cosa dirà /api/ultimo */
+async function mandaRiserva(env, { uid, cliente, tipo, extra }) {
+  const d = await leggiRiserva(env), kv = riservaKv(env); if (!d) return null;
+  const dest = cliente ? (d.clienti || []).filter(x => x.cliente === cliente) : (d.iscritti || []).filter(x => !uid || x.uid === uid);
+  if (dest.length) {
+    const u = (await kv.get(RIS_ULTIMO, 'json').catch(() => null)) || {}, ora = Date.now();
+    if (cliente) { const per = Object.assign({}, u.per); dest.forEach(x => { per[x.endpoint] = { tipo, quando: ora }; }); u.per = Object.fromEntries(Object.entries(per).sort((a, b) => b[1].quando - a[1].quando).slice(0, 50)); }
+    else u.g = Object.assign({}, extra, { tipo, quando: ora });
+    await kv.put(RIS_ULTIMO, JSON.stringify(u), { expirationTtl: 86400 }).catch(() => null);
+  }
+  const r = await spingi(d, dest);
+  return { mandati: r.ok, telefoni: dest.length, riserva: true };
+}
+async function ultimoRiserva(env, e) {
+  const kv = riservaKv(env); if (!kv) return null;
+  const u = await kv.get(RIS_ULTIMO, 'json').catch(() => null); if (!u) return null;
+  const pu = e && u.per ? u.per[e] : null, g = u.g || { tipo: 'ordine', quando: 0 };
+  return pu && pu.quando > (g.quando || 0) ? pu : g;
+}
+/* telefono iscritto durante il blocco: nella copia (e in «nuovi», che riserva() rimette nell'oggetto); già uguale = niente scrittura */
+async function iscriviRiserva(env, voce) {
+  const kv = riservaKv(env), d = await leggiRiserva(env, true); if (!kv || !d) return null;
+  const lista = voce.cliente ? 'clienti' : 'iscritti', vecchie = d[lista] || [];
+  const uguale = x => x.endpoint === voce.endpoint && (voce.cliente ? x.cliente === voce.cliente : x.uid === voce.uid && !!x.dev === !!voce.dev);
+  if (vecchie.some(uguale)) return true;
+  d[lista] = vecchie.filter(x => x.endpoint !== voce.endpoint).concat(voce).slice(voce.cliente ? -300 : -20);
+  d.nuovi = (d.nuovi || []).filter(x => x.endpoint !== voce.endpoint).concat(voce).slice(-50);
+  await kv.put(RIS_AVVISI, JSON.stringify(d)); mem.ris = d; mem.risT = Date.now();
+  return true;
+}
+async function statoRiserva(env, e) {
+  const d = await leggiRiserva(env); if (!d) return null;
+  return { telefoni: (d.iscritti || []).map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(d.quando).toISOString() })), questo: e ? (d.iscritti || []).some(x => x.endpoint === e) : null,
+    conto: null, ultimi: [], riserva: { attiva: true, quando: d.quando } };
+}
+
 export class Avvisi extends DurableObject {
   async chiavi() {
     let k = await this.ctx.storage.get('vapid');
@@ -653,7 +748,8 @@ export class Avvisi extends DurableObject {
   async stato(e) {
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
     return { telefoni: tutti.map(x => ({ servizio: new URL(x.endpoint).host, da: new Date(x.da).toISOString() })), questo: e ? tutti.some(x => x.endpoint === e) : null,
-      conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [] };
+      conto: (await this.ctx.storage.get('conto')) || null, ultimi: (await this.ctx.storage.get('diario')) || [],
+      riserva: await this.ctx.storage.get('riserva').then(r => r ? { quando: r.quando, telefoni: r.telefoni, clienti: r.clienti } : null) };   // C135
   }
   async scriviDiario(voce) {
     const diario = ((await this.ctx.storage.get('diario')) || []).slice(-9);
@@ -661,12 +757,13 @@ export class Avvisi extends DurableObject {
     await this.ctx.storage.put('diario', diario);
   }
 
-  async iscrivi(uid, sub, dev) {
-    if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint) || sub.endpoint.length > 1000) return false;
+  async iscrivi(uid, sub, dev, senzaCopia) {
+    if (!subValida(sub)) return false;
     const tutti = (await this.ctx.storage.get('iscritti')) || [];
     const altri = tutti.filter(x => x.endpoint !== sub.endpoint);
     altri.push({ uid, endpoint: sub.endpoint, da: Date.now(), ...(dev ? { dev: true } : {}) });   // dev: telefono di Mario (C109)
     await this.ctx.storage.put('iscritti', altri.slice(-20));   // al massimo 20 telefoni
+    if (!senzaCopia) await this.copiaRiserva().catch(() => null);   // C135
     return true;
   }
 
@@ -681,23 +778,11 @@ export class Avvisi extends DurableObject {
       const tieni = Object.entries(pu).sort((a, b) => b[1].quando - a[1].quando).slice(0, 200);
       await this.ctx.storage.put('ultimoPer', Object.fromEntries(tieni));
     }
-    const k = await this.chiavi();
-    const priv = await crypto.subtle.importKey('jwk', k.priv, { name: 'ECDSA', namedCurve: 'P-256' }, false, ['sign']);
-    const morti = [], esiti = [];
-    let ok = 0;
-    for (const s of dest) {
-      const aud = new URL(s.endpoint).origin;
-      const testa = b64u(new TextEncoder().encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
-      const corpo = b64u(new TextEncoder().encode(JSON.stringify({ aud, exp: Math.floor(Date.now() / 1000) + 12 * 3600, sub: CONTATTO })));
-      const firma = b64u(await crypto.subtle.sign({ name: 'ECDSA', hash: 'SHA-256' }, priv, new TextEncoder().encode(testa + '.' + corpo)));
-      try {
-        const r = await fetch(s.endpoint, { method: 'POST', headers: { authorization: `vapid t=${testa}.${corpo}.${firma}, k=${k.pub}`, ttl: '86400', urgency: 'high', 'content-length': '0' } });
-        esiti.push(r.status + (r.ok ? '' : ' ' + (await r.text()).slice(0, 120)));
-        if (r.status === 404 || r.status === 410) morti.push(s.endpoint); else if (r.ok) ok++;
-      } catch (e) { esiti.push('errore ' + String(e && e.message || e).slice(0, 120)); }
-    }
-    if (morti.length) await this.ctx.storage.put(chiave, tutti.filter(x => !morti.includes(x.endpoint)));
-    await this.scriviDiario(Object.assign({ per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti }, chi ? { chi } : {}));
+    const k = await this.chiavi(), { ok, morti, esiti } = await spingi(k, dest);
+    try {   // C135: già mandati; se adesso la memoria dà errore, la corsia d'emergenza NON deve rimandarli (doppioni)
+      if (morti.length) { await this.ctx.storage.put(chiave, tutti.filter(x => !morti.includes(x.endpoint))); await this.copiaRiserva().catch(() => null); }
+      await this.scriviDiario(Object.assign({ per: per || (soloUid ? 'prova' : 'ordine'), telefoni: dest.length, esiti }, chi ? { chi } : {}));
+    } catch (e) { /* diario perso, avvisi partiti */ }
     return { mandati: ok, telefoni: dest.length };
   }
 
@@ -713,12 +798,35 @@ export class Avvisi extends DurableObject {
     const pu = e ? ((await this.ctx.storage.get('ultimoPer')) || {})[e] : null, g = (await this.ctx.storage.get('ultimo')) || { tipo: 'ordine', quando: 0 };
     return pu && pu.quando > (g.quando || 0) ? pu : g;   // stesso telefono gestore e cliente: vale la più recente
   }
-  async iscriviCliente(cliente, sub) {
-    if (!sub || typeof sub.endpoint !== 'string' || !/^https:\/\//.test(sub.endpoint) || sub.endpoint.length > 1000) return false;
+  async iscriviCliente(cliente, sub, senzaCopia) {
+    if (!subValida(sub)) return false;
     const tutti = ((await this.ctx.storage.get('clienti')) || []).filter(x => x.endpoint !== sub.endpoint);
     tutti.push({ cliente, endpoint: sub.endpoint, da: Date.now() });
     await this.ctx.storage.put('clienti', tutti.slice(-300));   // al massimo 300 telefoni di clienti
+    if (!senzaCopia) await this.copiaRiserva().catch(() => null);   // C135
     return true;
+  }
+  /* C135: copia in KV di chiavi e telefoni, solo quando cambiano (firma: il rinnovo a ogni apertura non scrive niente); forza = sempre */
+  async copiaRiserva(forza) {
+    const kv = riservaKv(this.env); if (!kv) return { copia: 'KV non collegato' };
+    const g = this.ctx.storage, k = await this.chiavi();
+    const iscritti = ((await g.get('iscritti')) || []).map(x => Object.assign({ uid: x.uid, endpoint: x.endpoint }, x.dev ? { dev: true } : {}));
+    const clienti = ((await g.get('clienti')) || []).map(x => ({ cliente: x.cliente, endpoint: x.endpoint }));
+    const ord = l => l.map(x => JSON.stringify(x)).sort();   // il rinnovo sposta il telefono in fondo: l'ordine non conta
+    const firma = await hexSha(JSON.stringify([k.pub, ord(iscritti), ord(clienti)])),r = (await g.get('riserva')) || {};
+    if (!forza && r.firma === firma) return { copia: 'uguale', quando: r.quando };
+    const quando = Date.now();
+    await kv.put(RIS_AVVISI, JSON.stringify({ v: 1, quando, pub: k.pub, priv: k.priv, iscritti, clienti }));
+    await g.put('riserva', { firma, quando, telefoni: iscritti.length, clienti: clienti.length });
+    return { copia: 'fatta', quando };
+  }
+  /* C135 (cron ogni 10 minuti, 1 lettura KV): i telefoni iscritti durante il blocco tornano qui; copia mancante = rifatta */
+  async riserva() {
+    const kv = riservaKv(this.env); if (!kv) return { copia: 'KV non collegato' };
+    const d = await kv.get(RIS_AVVISI, 'json').catch(() => null);
+    let rimessi = 0;
+    for (const x of (d && d.nuovi) || []) if (x.cliente ? await this.iscriviCliente(x.cliente, x, true) : await this.iscrivi(x.uid, x, !!x.dev, true)) rimessi++;
+    return Object.assign(await this.copiaRiserva(rimessi > 0 || !(d && d.pub)), { rimessi });
   }
   /* promemoria della sera: domani (ora di Roma) ha ordini? */
   async promemoria() {
@@ -735,9 +843,7 @@ export class Avvisi extends DurableObject {
     if (arr[cliente] && Date.now() - arr[cliente] < 60000) return { fermo: 'pausa' };
     arr[cliente] = Date.now();
     await this.ctx.storage.put('arrivi', Object.fromEntries(Object.entries(arr).sort((x, y) => y[1] - x[1]).slice(0, 100)));
-    const nome = String((b && b.nome) || 'Un cliente').replace(/[<>\u0000-\u001f]/g, '').trim().slice(0, 40) || 'Un cliente';
-    const n = Number.isInteger(b && b.n) && b.n > 0 && b.n < 1e6 ? b.n : 0;
-    const extra = { nome, n, prova: !!(b && b.prova) };
+    const extra = extraQui(b);
     /* suoneria (Mario 08/11 «tipo suoneria», poi «ogni 5 secondi… vibrazione lunghissima»): la notifica torna ogni 5 secondi
        per 1 minuto (12 squilli), finché chi gestisce non la apre o tocca «Ho visto» (/api/visto-qui) */
     await this.ctx.storage.put('squillo', { extra, volte: 1 });
@@ -1202,21 +1308,35 @@ export default {
     if (!url.pathname.startsWith('/api/')) return env.ASSETS.fetch(req);
     const av = env.AVVISI.get(env.AVVISI.idFromName('cucina'));
     try {
-      if (url.pathname === '/api/chiave' && req.method === 'GET') return json({ chiave: await av.chiavePubblica() });
-      if (url.pathname === '/api/stato' && req.method === 'GET') return json(await av.stato(url.searchParams.get('e') || ''));
-      if (url.pathname === '/api/ultimo' && req.method === 'GET') return json(await av.ultimo(url.searchParams.get('e') || ''));
+      // C135: ogni strada degli avvisi ha la corsia d'emergenza (copia in KV) se l'oggetto AVVISI non risponde
+      const e = url.searchParams.get('e') || '';
+      if (url.pathname === '/api/chiave' && req.method === 'GET') return json({ chiave: await oRiserva(() => av.chiavePubblica(), async () => ((await leggiRiserva(env)) || {}).pub) });
+      if (url.pathname === '/api/stato' && req.method === 'GET') return json(await oRiserva(() => av.stato(e), () => statoRiserva(env, e)));
+      if (url.pathname === '/api/ultimo' && req.method === 'GET') {   // vale il più recente fra oggetto e copia (la prova della corsia parte dalla copia anche col server sano)
+        const [a, r] = await Promise.all([Promise.resolve().then(() => av.ultimo(e)).catch(x => ({ guasto: x })), ultimoRiserva(env, e).catch(() => null)]);
+        if (a && a.guasto) { if (r) return json(r); throw a.guasto; }
+        return json(r && r.quando > ((a && a.quando) || 0) ? r : a);
+      }
       if (req.method !== 'POST') return json({ errore: 'metodo' }, 405);
-      if (url.pathname === '/api/avvisa') { const b = await req.json().catch(() => null); return json(await av.avvisa(b && b.tipo, b && b.chi)); }
+      if (url.pathname === '/api/avvisa') {
+        const b = await req.json().catch(() => null), t = TIPI_GESTORE.includes(b && b.tipo) ? b.tipo : 'ordine';
+        return json(await oRiserva(() => av.avvisa(b && b.tipo, b && b.chi), () => { const f = frenoRiserva(t); return f ? { fermo: f, riserva: true } : mandaRiserva(env, { tipo: t }); }));
+      }
       if (url.pathname === '/api/cliente') {
         const c = await clienteDa(req);
         if (!c) return json({ errore: 'prima Monica deve approvarti' }, 403);
         const b = await req.json().catch(() => null);
-        return (await av.iscriviCliente(c, b && b.sub)) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
+        if (!subValida(b && b.sub)) return json({ errore: 'iscrizione non valida' }, 400);
+        return (await oRiserva(() => av.iscriviCliente(c, b.sub), () => iscriviRiserva(env, { cliente: c, endpoint: b.sub.endpoint }))) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
       }
       if (url.pathname === '/api/qui') {
         const c = await clienteDa(req);
         if (!c) return json({ errore: 'prima Monica deve approvarti' }, 403);
-        return json(await av.qui(c, await req.json().catch(() => null)));
+        const b = await req.json().catch(() => null);
+        return json(await oRiserva(() => av.qui(c, b), () => {   // C135: durante il blocco un solo squillo, uno al minuto per cliente
+          if (mem.qui[c] && Date.now() - mem.qui[c] < 60000) return { fermo: 'pausa', riserva: true };
+          mem.qui[c] = Date.now(); return mandaRiserva(env, { tipo: 'qui', extra: extraQui(b) });
+        }));
       }
       if (url.pathname === '/api/aiuto-cliente') {
         const c = await clienteDa(req), g = c ? null : await gestoreDa(req);   // chi gestisce lo prova anche spento («guarda come»)
@@ -1248,19 +1368,27 @@ export default {
       if (!uid) return json({ errore: 'non sei tra chi gestisce' }, 403);
       if (url.pathname === '/api/voce') { const b = await req.json().catch(() => null); return await voce(b, env, ctx).catch(e => json({ errore: String(e.message || e) }, 502)); }
       if (url.pathname === '/api/foto-gz') { const b = await req.json().catch(() => null); return await fotoGz(b && b.u, ctx); }
-      if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b, env, ctx).catch(e => ({ errore: perche(e) })); return json(r, r.errore ? 502 : 200); }
+      if (url.pathname === '/api/gz') { const b = await req.json().catch(() => null); const r = await ricettaGz(b, env, ctx).catch(e => bloccatoDO(e) ? RISPARMIO('bloccato') : { errore: perche(e) }); return json(r, r.risparmio ? 503 : r.errore ? 502 : 200); }   // C137
       if (url.pathname === '/api/conto-ai') return json(await av.contoAI());
       if (url.pathname === '/api/prova-ai') return json(await provaAI(env));
-      if (url.pathname === '/api/visto-qui') return json(await av.vistoQui());
+      if (url.pathname === '/api/visto-qui') return json(await oRiserva(() => av.vistoQui(), () => ({ ok: true, riserva: true })));
       if (url.pathname === '/api/iscrivi') {
         const b = await req.json().catch(() => null);
-        return (await av.iscrivi(uid, b && b.sub, !!(b && b.dev))) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
+        if (!subValida(b && b.sub)) return json({ errore: 'iscrizione non valida' }, 400);
+        const voce = Object.assign({ uid, endpoint: b.sub.endpoint }, b.dev ? { dev: true } : {});
+        return (await oRiserva(() => av.iscrivi(uid, b.sub, !!b.dev), () => iscriviRiserva(env, voce))) ? json({ ok: true }) : json({ errore: 'iscrizione non valida' }, 400);
       }
-      if (url.pathname === '/api/prova') return json(await av.manda(uid));
+      if (url.pathname === '/api/prova') {
+        const b = await req.json().catch(() => null);
+        // C135: { riserva: true } = Mario prova la corsia d'emergenza (dalla copia in KV, ai suoi telefoni), anche col server sano
+        if (b && b.riserva) return json((await mandaRiserva(env, { uid, tipo: 'riserva' })) || { errore: riservaKv(env) ? 'la copia d\'emergenza non c\'è ancora: si fa da sola entro 10 minuti' : 'corsia d\'emergenza non collegata' });
+        return json(await oRiserva(() => av.manda(uid), () => mandaRiserva(env, { uid, tipo: 'ordine' })));
+      }
       if (url.pathname === '/api/pronto') {
         const b = await req.json().catch(() => null), c = b && b.cliente;
         if (typeof c !== 'string' || !/^[\w-]{1,80}$/.test(c)) return json({ errore: 'cliente non valido' }, 400);
-        return json(await av.manda(null, b.tipo === 'proposta' ? 'proposta' : 'pronto', c));
+        const t = b.tipo === 'proposta' ? 'proposta' : 'pronto';
+        return json(await oRiserva(() => av.manda(null, t, c), () => mandaRiserva(env, { cliente: c, tipo: t })));
       }
       if (url.pathname === '/api/aiutante') {
         const b = await req.json().catch(() => null);
@@ -1282,6 +1410,7 @@ export default {
   /* ogni 10 minuti: il motore del database delle ricette, SOLO se Mario l'ha acceso (C136; spento = una riga letta e basta) · ogni sera: promemoria per domani */
   async scheduled(ev, env, ctx) {
     if (ev.cron === CRON_DB) {
+      ctx.waitUntil(Promise.resolve().then(() => env.AVVISI.get(env.AVVISI.idFromName('cucina')).riserva()).catch(() => null));   // C135
       const db = ricDb(env); if (!db) return;
       ctx.waitUntil(Promise.resolve(db.autoAcceso()).then(acceso => acceso ? Promise.all([
         motoreRicette(env).then(() => caricoAuto(db)),   // C128
