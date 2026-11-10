@@ -41,7 +41,7 @@ Sessione attuale: #50 (dopo la #49 `session_01WTjqUwbG8fmnQyBe1vh3er`, chiusa al
 - Sessioni #28-#43 e 1-22: `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo, «Strade scartate #28-#43»).
 
 ## Prossimi passi
-0. C131 (Mario 15:58, regole di Proteiche): se Mario risponde «1», misura su un campione dal vivo (~100 RicetteFit + ~100 GZ, lettori veri `rf.mjs`/`gz.mjs` + `fitRic`, come la #47) quante ricette taglia OGNI regola (proteine, quota, kcal, saturi, zuccheri, sodio, valori mancanti), poi proponi a Mario soglie nuove coi numeri (prima/dopo, con esempi veri: uova, yogurt greco, manzo); le cambia lui (Impostazioni → Sviluppatore) o tu le soglie di base. Niente codice prima della sua scelta.
+0. C131 (Mario 15:58, regole di Proteiche): Mario ha scelto «1» (16:15 «vai di consiglio»): misura su un campione dal vivo (~100 RicetteFit + ~100 GZ, lettori veri `rf.mjs`/`gz.mjs` + `fitRic`, come la #47) quante ricette taglia OGNI regola (proteine, quota, kcal, saturi, zuccheri, sodio, valori mancanti), poi proponi a Mario soglie nuove coi numeri (prima/dopo, con esempi veri: uova, yogurt greco, manzo); le cambia lui (Impostazioni → Sviluppatore) o tu le soglie di base. Niente codice prima della sua scelta.
 1. C130: domani (11/11) chiedi a Mario se è arrivata un'email di Cloudflare; se ha la foto del «Visualizza utilizzo», guarda le righe lette di oggi. Se Mario manda un'email «100%» di oggi: spiegagli che fino alle 01:00 il server poteva dare errori (avvisi a Monica), poi tutto riparte.
 2. C127 pezzi 2-3 (v0.10.15) PRONTI (Principale 50, 10/11 ~16:30): la patch `docs/lavori-in-corso/c127-pezzi-2-3.patch` ha già `data.js` 0.10.15 con le novità e la pulizia del passo di prova (ricette di prova tolte da `RIC.scaricate`, cache e IndexedDB). Giro completo con la patch 91 OK, 0 NO; server 159/0. Al «1» di Mario: `git apply docs/lavori-in-corso/c127-pezzi-2-3.patch`, `git rm` della patch, un commit, push (pubblica il sito), controllo online (`curl … /data.js | grep -m1 VERSIONE_APP` → 0.10.15), riga «👁» per Mario. Al «2»: prima le sue modifiche, poi rifai il giro.
 3. Kit (C129): quando Mario scrive «chiave pronta», `request_credential` (host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»), poi leggi `docs/kit-progetto` di RVC e aggiorna qui (skill `nuova-regola` §versione); se preferisce un'altra strada, seguila.
@@ -51,12 +51,13 @@ Sessione attuale: #50 (dopo la #49 `session_01WTjqUwbG8fmnQyBe1vh3er`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md`: nuove della #49 = giorno proteico «1 va bene / 2 cambia» (foto mandata) e kit «chiave pronta?».
 
 ## Ultimo messaggio di Mario
+10/11 16:15 (nella chat della #49, dopo l'handoff), parola per parola: «vai di consiglio» = risposta alla domanda C131 → scelta 1: misurare quante ricette taglia ogni regola e proporgli soglie nuove coi numeri (prima/dopo, esempi veri).
 10/11 ~15:58 (nella chat della #49, dopo l'handoff), parola per parola: «Secondo te le regole per le ricette per la palestra sono valide o taglia tantissime ricette, oppure è giusto che sia così?» → C131. La #49 gli ha risposto (stima, non misurata): proteine giuste; tagliano troppo i grassi saturi ≤10% delle kcal (uova, manzo, formaggi magri) e gli zuccheri TOTALI ≤10%/15% (contano anche latte, yogurt greco e verdure, non solo lo zucchero aggiunto). Ha proposto di misurare e aspetta la sua scelta (Aspetta Mario).
 10/11 15:37 (in questa chat, con 2 foto dell'email di Cloudflare delle 15:29: «Limite giornaliero di operazioni di Durable Objects raggiunto al 90%… 5000000 rows_read… ripristino 2026-11-11 00:00 UTC»), parola per parola: «è adesso come risolviamo?» → C130, risolto (v0.10.14).
 Prima, 10/11 15:26 (chat della #48): «Le foto vanno bene, pubblica pure se vuoi.» (v0.10.13 approvata). 15:25: «Aggiorna il kit, verifica se, fammi questa cortesia, verifica se è rimasto in tutto il mio account, se è rimasto qualcosa di sospeso per aggiornare al kit. Ma è giusto una cosa mia, per capire un po'. Il kit dovrebbe essere aggiornato, prendilo pure.»
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C131; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C132; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
