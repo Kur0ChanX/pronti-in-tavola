@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.13';
+const VERSIONE_APP = '0.10.14';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.14', data: '10/11/2026',
+    corretto: ['Server: il motore delle ricette rileggeva tutto l\'archivio ogni 30 secondi solo per contarlo e ha quasi finito le letture gratuite di oggi di Cloudflare (email delle 15:29). Ora legge solo quello che serve; se le letture del giorno superano 2 milioni (metà del gratis) il motore riposa fino alle 01:00 e lo dice nel riquadro verde, così ordini e avvisi restano sempre al sicuro. «🔍 Cerca altre» funziona sempre'] },
   { v: '0.10.13', data: '10/11/2026',
     migliorato: ['Ricettario «🏋️ Proteiche» più ordinato: in alto solo Tutte, Proteiche, Preferite e «Altre ▾» (dentro Sarde, Italiane, Le mie)', 'Ricettario «🏋️ Proteiche»: momenti e fonti proteiche a scelta multipla (es. Colazione e Spuntino, Pollo e Albumi), in righe che scorrono di lato, col ✓ su quelle scelte', 'Ricettario: portata, difficoltà, tempo e ordine raccolti in «⚙️ Portata, difficoltà, tempo e ordine», col numero dei filtri accesi', 'Ricettario «🏋️ Proteiche»: riquadro verde con la lettura in corso (barra), «Oggi +N entrate in Proteiche», «🔍 Cerca altre» e «ℹ️ Le regole»'] },
   { v: '0.10.12', data: '10/11/2026',

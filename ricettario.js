@@ -367,6 +367,7 @@ function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente b
   if (!rfResto && !va) return { t: `✅ Letto tutto: ${rfTxt ? rfTxt + ' · ' : ''}valori tutti letti.`, p: -1 };
   const min = Math.max(Math.ceil(rfResto / 5) * 0.5, Math.ceil(va / 10) * 0.5), stima = min < 2 ? 'pochi minuti' : min < 60 ? `circa ${Math.ceil(min / 5) * 5} minuti` : Math.round(min / 30) <= 2 ? 'circa un\'ora' : `circa ${String(Math.round(min / 30) / 2).replace('.', ',')} ore`;
   const p = rfResto ? (tot - rfResto) / tot : (d.conValori || 0) / Math.max(1, (d.conValori || 0) + va);
+  if (d.letture && d.letture.freno && !(t && t.attivo)) return { t: `⏸ In pausa fino alle 01:00: il server ha quasi finito le letture gratuite di oggi e le tiene per gli ordini e gli avvisi. ${[rfTxt, va ? `valori ancora ${va}` : ''].filter(Boolean).join(' · ')}${rfTxt || va ? '. ' : ''}«🔍 Cerca altre» funziona lo stesso.`, p };   // C129
   return { t: `${t && t.attivo ? '⏳ Sto caricando ricette nuove' : '⏳ Da leggere (parto da sola entro 10 minuti)'}: ${[rfTxt && rfTxt + (rfResto ? '' : ' ✅'), va ? `valori ancora ${va}` : 'valori tutti letti ✅'].filter(Boolean).join(' · ')}. Finisco fra ${stima} (stima).`, p };
 }
 /* C124: «🏋️ Proteiche» spiegata in una riga, con le soglie di adesso (cambiano da Impostazioni) e i valori ancora da leggere */
