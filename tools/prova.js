@@ -1705,6 +1705,40 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (via.fit || via.tempo || via.scelte) throw new Error('uscendo da Proteiche restano Pasti o ⚡: ' + JSON.stringify(via));
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC125; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
+    await page.evaluate(() => {
+      window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+      const ss = [{ id: 'rf:budino-proteico-prova', nome: 'Budino proteico prova', zona: 'italiana', categoria: 'Dolci', foto: '', aggiunta: Date.now(), totale: 5, difficolta: 'Facile', cerca: 'budino cacao', nutr: { kcal: 180, prot: 18, carb: 15, grassi: 5, saturi: 1, zuc: 5, fibre: 2, sodio: 150 } }];
+      window.__cf = []; window.__cfRisp = { q: 'budino', gz: 3, rf: 1, nuove: 3, gia: 1 };
+      RIC.chiedi = async c => { if (c.db === 'cercaFit') { window.__cf.push(c); return window.__cfRisp; } if (c.cerca || c.cat) window.__cf.push({ gz: c.cerca }); return c.db === 'mie' ? { scelte: ss } : c.db ? { db: { ricette: 1, coda: 0, scelte: 1, conValori: 1, senzaValori: 0, paroleFit: [], giri: 1, fonte: 1, fonti: 10 } } : { ricette: [], prossima: '' }; };
+      salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.fitCerca = null; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    const box = await page.evaluate(() => ({ parole: [...document.querySelectorAll('.ric-cerca-fit [data-a="ric-cerca-fit"][data-v]')].map(b => b.dataset.v), ph: document.getElementById('ric-cerca').placeholder }));
+    if (box.parole.length !== 6 || !box.parole.includes('budino') || !/Cerca ricette fit/.test(box.ph)) throw new Error('Proteiche: riquadro «🔍 Cerca ricette fit» mancante: ' + JSON.stringify(box));
+    await clic('.ric-cerca-fit [data-v="budino"]'); await page.waitForTimeout(200);
+    let st = await page.evaluate(() => ({ chiesto: window.__cf.slice(-1)[0], q: UI.ric.q, esito: (document.querySelector('.ric-cerca-fit') || {}).innerText || '', nomi: [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')), timer: !!RIC.fitTimer }));
+    if (!st.chiesto || st.chiesto.q !== 'budino' || st.q !== 'budino' || !/Trovate 3 ricette nuove con «budino» \(altre 1 le avevo già lette\)/.test(st.esito) || !st.timer) throw new Error('«🍮 Budino»: ricerca o esito sbagliati: ' + JSON.stringify(st));
+    if (JSON.stringify(st.nomi.filter(n => /prova$/.test(n))) !== '["Budino proteico prova"]') throw new Error('«🍮 Budino»: elenco qui sotto non filtrato: ' + JSON.stringify(st.nomi));
+    await foto('48c-c125-cerca-fit');
+    /* scritta a mano e invio (anche dalla tastiera): niente ricerca generica di GialloZafferano dentro Proteiche */
+    await page.evaluate(() => { window.__cfRisp = { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' }; });
+    await page.locator('#ric-cerca').fill('salmone'); await page.locator('#ric-cerca').press('Enter'); await page.waitForTimeout(250);
+    st = await page.evaluate(() => ({ ultimi: window.__cf.slice(-1), esito: (document.querySelector('.ric-cerca-fit') || {}).innerText || '' }));
+    if (!st.ultimi[0] || st.ultimi[0].q !== 'salmone' || !/Non riesco a cercare adesso \(GialloZafferano e RicetteFit non rispondono/.test(st.esito)) throw new Error('invio dentro Proteiche: errore non detto o ricerca sbagliata: ' + JSON.stringify(st));
+    /* «Niente di nuovo»: tutte già lette */
+    await page.evaluate(() => { window.__cfRisp = { nuove: 0, gia: 4 }; });
+    await clic('.ric-cerca-fit .btn.pieno'); await page.waitForTimeout(200);
+    st = await page.evaluate(() => (document.querySelector('.ric-cerca-fit') || {}).innerText || '');
+    if (!/Niente di nuovo con «salmone»: le 4 trovate le avevo già lette/.test(st)) throw new Error('«niente di nuovo» non detto: ' + st);
+    /* fuori da Proteiche: la ricerca di sempre su GialloZafferano */
+    await clic('[data-a="ric-zona"][data-v="tutte"]'); const n0 = await page.evaluate(() => window.__cf.length);
+    await page.locator('#ric-cerca').fill('lasagne'); await page.locator('#ric-cerca').press('Enter'); await page.waitForTimeout(250);
+    st = await page.evaluate(n0 => ({ nuovi: window.__cf.slice(n0), box: !!document.querySelector('.ric-cerca-fit') }), n0);
+    if (st.box || st.nuovi.some(c => c.q) || !st.nuovi.some(c => c.gz === 'lasagne')) throw new Error('fuori da Proteiche la ricerca non è quella di sempre: ' + JSON.stringify(st));
+    await page.evaluate(() => { clearTimeout(RIC.fitTimer); RIC.fitTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC125c; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario RicetteFit (C124 passo 8): ricetta aperta dal suo sito con fonte e valori, portate del motore nei filtri, interruttore nel Database, link incollato', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaRf = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;

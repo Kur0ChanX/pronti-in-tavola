@@ -16,7 +16,7 @@
    - POST /api/prova-ai → chi gestisce: una domanda piccola a ogni AI (Cloudflare e Groq), con esito e tempo
    - POST /api/conto-ai → chi gestisce: quante domande oggi (Monica e clienti), per la scheda «Solo per te, Mario»
    - POST /api/gz       → chi gestisce: { u } una ricetta di GialloZafferano (gz.mjs) o di RicetteFit (rf.mjs) letta dal vivo, { cerca } la ricerca (C55)
-   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) | 'turbo' (n) | 'mieScritte' | 'salvaMia' (r) | 'togliMia' (id) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
+   - /api/gz { db: 'stato' | 'pausa' | 'riprendi' | 'mie' | 'aggiungi' (r) | 'togli' (id) | 'turbo' (n) | 'mieScritte' | 'salvaMia' (r) | 'togliMia' (id) | 'cercaFit' (q) }, { cat: 'nuove', fuori } (proposte del motore) e { cat: 'db', q, pagina } → il TUO database delle ricette (C60, oggetto Ricettario)
    - GET  /api/ultimo   → che tipo era l'ultima notifica (sw.js sceglie il testo: ordine nuovo o promemoria)
    - ogni sera (cron in wrangler.jsonc) → promemoria «domani hai N ordini» se ce ne sono (Mario 07/11)
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
@@ -343,6 +343,21 @@ async function ricettaGz(b, cfg, ctx) {
       if (!b.base && typeof b.parole !== 'string') return { errore: 'parole mancanti' };
       await db.mettiParoleFit(b.base ? null : paroleFit(b.parole));
       return { db: await db.statoDb() };
+    }
+    if (b.db === 'cercaFit') {   // C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca… in automatico… tante fonti»): GZ (ricerca + «light») e RicetteFit (dal suo elenco: la ricerca del sito è vietata dal robots.txt)
+      const q = minuscolo(b.q).replace(/[^\p{L}\p{N} '-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
+      if (q.length < 2) return { errore: 'scrivi almeno 2 lettere' };
+      const s0 = await db.statoDb(), radici = q.split(' ').filter(p => p.length >= 3).map(p => p.length >= 5 ? p.slice(0, Math.max(4, p.length - 2)) : p);
+      let gz = [], rf = [], rete = 0;
+      try { gz = gzCerca(await paginaGz(urlCerca(/light|protei|\bfit\b/.test(q) ? q : q + ' light'))).map(x => x.url); } catch (e) { rete++; }
+      if (!(s0.rf && s0.rf.spento) && radici.length) {
+        try { rf = rfElenco(await paginaGz(MAPPA_RF, 'RicetteFit')).filter(u => { const t = minuscolo(String(u).split('/ricetta/')[1] || ''); return radici.every(p => t.includes(p)); }).slice(0, 20); }
+        catch (e) { rete++; }
+      }
+      if (rete && !gz.length && !rf.length) return { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' };
+      const n = await db.inCodaPrima(gz.concat(rf)), t = await db.turboStato();
+      if (n.nuove && !(t && t.attivo)) await db.turboAvvia(Math.min(40, n.nuove));   // le legge subito (5 ogni 30 s); un carico già in corso non si tocca
+      return { q, gz: gz.length, rf: rf.length, nuove: n.nuove, gia: n.gia, db: await db.statoDb() };
     }
     if (b.db === 'rf') { await db.metti1('rfSpento', b.acceso === false ? '1' : ''); return { db: await db.statoDb() }; }   // C124: RicetteFit acceso o spento dalla pagina Database
     if (b.db === 'mieScritte') return { mie: await db.mieScritte() };   // ricette scritte a mano, uguali su tutti i telefoni
@@ -842,6 +857,16 @@ export class Ricettario extends DurableObject {
     return tt;
   }
   togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
+  /* C125 «🔍 Cerca ricette fit»: indirizzi trovati dalla ricerca, in testa alla coda (aggiunta = 1); già salvate o scartate: contate, mai rimesse */
+  inCodaPrima(urls) {
+    let nuove = 0, gia = 0;
+    for (const u of [...new Set(urls || [])].slice(0, 40)) {
+      if (typeof u !== 'string' || !(/^https:\/\/ricette\.giallozafferano\.it\/[\w%-]+\.html$/.test(u) || /^https:\/\/www\.ricettefit\.it\/ricetta\/[\w%-]+\/$/.test(u))) continue;
+      if (this.sql.exec('SELECT 1 FROM ricette WHERE url = ? UNION SELECT 1 FROM scartate WHERE url = ?', u, u).toArray().length) { gia++; continue; }
+      this.sql.exec('INSERT INTO coda (url, aggiunta, sarda) VALUES (?, 1, 0) ON CONFLICT(url) DO UPDATE SET aggiunta = 1', u); nuove++;
+    }
+    return { nuove, gia };
+  }
   /* C124: la prima ricetta di RicetteFit che il database non ha (né salvata, né in coda, né scartata), dagli indirizzi da «i» in poi.
      Finito l'elenco senza nuove: «fine» per oggi e domani si riparte dall'inizio (così entrano le ricette nuove). 1 = una in coda. */
   rfInCoda(urls, i, tot, oggi) {
