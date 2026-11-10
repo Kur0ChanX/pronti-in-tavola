@@ -1,3 +1,8 @@
-# Ultima risposta di Claude (10/11/2026 11:33 ora italiana)
+# Ultima risposta di Claude (10/11/2026 13:27 ora italiana)
 
-Grazie: Android ok, ho salvato la foto e l'ho passata alla chat nuova insieme al tuo messaggio. Le prove su iPad e iPhone aspettano finché non ne avrai uno. D'ora in poi scrivi nella **Principale 42**: https://claude.ai/code/[segreto tolto dalla scorta]
+Ho capito: continuo C125 dalla sessione 44 (ricette fit più severe, tasto «Cerca ricette fit», ricette veloci).
+
+───
+✅ FATTO
+- **v0.10.6 online**: in «🏋️ Proteiche» un pasto entra con almeno 25 g di proteine a porzione, che devono dare almeno il 25% delle calorie. Entrano anche snack e dolci proteici fino a 300 kcal. Le soglie per snack e dolci (10 g di proteine, 30% delle calorie, zuccheri 15%, sodio 400 mg) sono **stime mie**, e si cambiano da Impostazioni → Sviluppatore.
+- **v0.10.7 online**: in Proteiche ci sono tre tasti nuovi, «🍽 Pasti», «🍫 Snack e dolci» e «⚡ Pronte in 10 minuti». Il …
