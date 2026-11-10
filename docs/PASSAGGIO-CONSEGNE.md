@@ -8,7 +8,8 @@ Sessione attuale: #46 (dopo la #45 `session_01WTjqUx8FCK2e7jG9SRdRCo`, chiusa al
 
 ## Stato (10/11 13:42 ora italiana)
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta. Scorte della #45 (`scorta-principale-20261110-01WTjqUx8F…`): solo documenti, NON unirle se `ricettario.js` contiene `cercaFitBox`.
-- v0.10.8 ONLINE (controllato 13:34: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.8; `…/ricettario.js` contiene `cercaFitBox`). La parte del server (`{ db: 'cercaFit' }`) è nella stessa pubblicazione ma da qui NON è provabile (chiede l'accesso di chi gestisce): la prova è la foto di Mario dopo «🍮 Budino».
+- v0.10.9 ONLINE (Principale 46, 10/11 13:55: `VERSIONE_APP` 0.10.9 e `ricettario.js` nuovo sul sito vero): C125 strada 2, la ricerca normale anche su RicetteFit; provata dal contenitore con GZ e RicetteFit veri (budino: 4 RicetteFit con foto + 15 GZ). Prove: app 88 OK, database 143 OK.
+- v0.10.8 (controllata 13:34: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.8; `…/ricettario.js` contiene `cercaFitBox`). La parte del server (`{ db: 'cercaFit' }`) è nella stessa pubblicazione ma da qui NON è provabile (chiede l'accesso di chi gestisce): la prova è la foto di Mario dopo «🍮 Budino».
 - C125 FATTO (v0.10.6-0.10.8, piano `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md`, tutti i 5 pezzi ✅). Manca solo la prova di Mario (riga in «Aspetta Mario»).
 - Prove (10/11, Principale 45, sulla v0.10.8): app giro completo 87 OK, 0 NO; `node tools/prova-database.mjs` → 137 OK.
 - Kit qui 35.0; il 37.2 aspetta la chiave di Mario (riga in «Aspetta Mario»). Preferenze ricevute v38 (più nuove del kit): si aggiorna col kit 37.2. CLAUDE.md ~1459 token (tetto 1000).
@@ -48,7 +49,7 @@ Sessione attuale: #46 (dopo la #45 `session_01WTjqUx8FCK2e7jG9SRdRCo`, chiusa al
 - Sessioni 1-22: `docs/lavori-in-corso/strade-scartate-sessioni-1-7.md` e `strade-scartate-sessioni-8-13.md`. Ricette scritte da Claude: NO (PT E25).
 
 ## Prossimi passi
-1. Mario 13:40 «la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale»: domanda in «Aspetta Mario» (1 = è già «🔍 Cerca ricette fit» della v0.10.8; 2 = stesso tasto anche nella ricerca normale del Ricettario, con RicetteFit dalla sitemap e nome/foto dagli indirizzi; 3 = più siti senza valori, fuori da Proteiche). Aspettare la risposta (PT E3: frase dubbia); se risponde 2: estendere `{ cerca: q }` di `worker.js` con i risultati RicetteFit, e la scheda «Da GialloZafferano» diventa «Da GialloZafferano e RicetteFit».
+1. Mario 13:40 «fonti alternative… tasto manuale»: 1 c'era già (v0.10.8), 2 fatto col consiglio (v0.10.9, Principale 46). Resta solo la domanda «vuoi anche 3 (più siti senza valori)?» in «Aspetta Mario»: aspettare la risposta.
 2. Le 3 foto della v0.10.8 (riga in «Aspetta Mario»): se dopo «Budino» compare un errore, causa vera dalla foto (il messaggio dice il perché, PT E46).
 3. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` (host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»). Le altre righe di «Aspetta Mario»: aspettare Mario; iPad e iPhone solo quando ne ha uno.
 
