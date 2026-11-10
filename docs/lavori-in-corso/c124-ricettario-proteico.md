@@ -30,5 +30,5 @@ Ordine nella sezione: grammi di proteine per 100 kcal (più alto prima). Su ogni
 5. Tasto «🗄 Database» (`ric-salta`, `ricettario.js` ~882): `behavior: 'smooth'` → salto diretto (`'instant'`), Mario: «non scorrere, deve andare direttamente».
 6. Home di Monica (`app.js` `vHome`, ~1181): il riquadro «Ricettario» oggi è in fondo dopo «Da preparare»; spostarlo subito sotto i 4 riquadri, largo, coi numeri (ricette, proteiche). Foto a Mario (cambia l'aspetto).
 7. Fonte su ogni ricetta: segno «GialloZafferano» sulle schede e «Fonte: GialloZafferano» nella ricetta; per le altre fonti il loro nome; quelle di Monica «Ricetta di Monica».
-8. Fonte in più RicetteFit.it (scelta da Mario): stesso motore, legge il JSON-LD `Recipe` (passi con foto, valori completi), segno «RicetteFit» su ogni ricetta, link all'originale.
+8. ✅ v0.10.5 (Principale 44) Fonte in più RicetteFit.it (scelta da Mario): `rf.mjs` legge il JSON-LD `Recipe` (passi col titolo e la foto 1024 px, valori per porzione, «Domande frequenti» nel Consiglio, foto grande 1024 px dalla serie di og:image); motore: 1 ricetta per giro dalla sitemap (`recipe-sitemap.xml`, ~905), in testa alla coda, 3 tentativi poi scartata, «fine» per il giorno; interruttore nella pagina Database (`{ db: 'rf', acceso }`).
 Soglie e interruttori in `opzioni.js` (gruppo dev), mai numeri fissi nel codice (regola «Senza Claude»).
