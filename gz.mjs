@@ -59,6 +59,30 @@ function sezione(html, titolo) {
   return m ? testo(m[1]).slice(0, 3000) : '';
 }
 
+/* C124 (Mario 10/11 «ricette gym… poche calorie e grassi cattivi, attenzione a sale e zuccheri»): valori PER PORZIONE di GialloZafferano
+   (dati Edamam). Le proteine ci sono solo nell'HTML (lista «gz-list-macros»), il resto anche nel JSON-LD: prima l'HTML, poi il JSON-LD
+   per quello che manca. Un valore che non c'è resta null, MAI 0 (0 g di zuccheri sarebbe un dato falso). null = nessun valore. */
+const MACRO_GZ = { 'energia': 'kcal', 'carboidrati': 'carb', 'di cui zuccheri': 'zuc', 'proteine': 'prot', 'grassi': 'grassi', 'di cui saturi': 'saturi', 'fibre': 'fibre', 'colesterolo': 'colest', 'sodio': 'sodio' };
+const LD_GZ = { calories: 'kcal', carbohydrateContent: 'carb', sugarContent: 'zuc', proteinContent: 'prot', fatContent: 'grassi', saturatedFatContent: 'saturi', fiberContent: 'fibre', cholesterolContent: 'colest', sodiumContent: 'sodio' };
+const numeroIt = v => { const m = /-?\d+(?:[.,]\d+)?/.exec(String(v ?? '').replace(/\.(?=\d{3}\b)/g, '')); const n = m ? parseFloat(m[0].replace(',', '.')) : NaN; return Number.isFinite(n) && n >= 0 && n < 100000 ? Math.round(n * 10) / 10 : null; };
+export function gzNutrizione(html, ld) {
+  const n = {}; html = String(html || '');
+  const i = html.indexOf('class="gz-list-macros-container"');
+  if (i >= 0) for (const li of html.slice(i, i + 8000).split('</ul>')[0].matchAll(/<li>([\s\S]*?)<\/li>/g)) {
+    const nome = /gz-list-macros-name"><span>([\s\S]*?)<\/span>/.exec(li[1]), val = /gz-list-macros-value"><span>([\s\S]*?)<\/span>/.exec(li[1]);
+    const k = nome && MACRO_GZ[testo(nome[1]).toLowerCase()];
+    if (k && val && n[k] == null) { const x = numeroIt(testo(val[1])); if (x != null) n[k] = x; }
+  }
+  const nu = ld && ld.nutrition || {};
+  for (const [c, k] of Object.entries(LD_GZ)) if (n[k] == null && nu[c] != null) { const x = numeroIt(nu[c]); if (x != null) n[k] = x; }
+  if (n.kcal == null && n.prot == null) return null;   // senza calorie né proteine i valori non servono
+  for (const k of new Set([...Object.values(MACRO_GZ)])) if (n[k] == null) n[k] = null;
+  return n;
+}
+
+/* solo i valori (C124, rilettura delle ricette già salvate): undefined = la pagina non è una ricetta; null = ricetta senza valori */
+export function gzSoloNutr(html) { const ld = recipeLd(html); return ld ? gzNutrizione(html, ld) : undefined; }
+
 /* pagina della ricetta → oggetto per l'app */
 export function gzRicetta(html, url) {
   html = String(html || '');
@@ -87,6 +111,7 @@ export function gzRicetta(html, url) {
     foto: assoluto(primaFoto(ld.image)), categoria: testo([].concat(ld.recipeCategory || '')[0]),
     porzioni, prep: minutiIso(ld.prepTime), cottura: minutiIso(ld.cookTime), totale: minutiIso(ld.totalTime),
     difficolta: dato('Difficoltà'), costo: dato('Costo'),
+    nutr: gzNutrizione(html, ld),   // C124: valori per porzione (null se GZ non li dà)
     ingredienti: [].concat(ld.recipeIngredient || []).map(ingrediente).filter(i => i.nome),
     passi, conserva: sezione(html, 'Conservazione'), consiglio: sezione(html, 'Consiglio'),
     autore: testo(ld.author && (ld.author.name || ld.author)), videoChiave: video ? video[1] : '',
