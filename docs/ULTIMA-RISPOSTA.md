@@ -1,11 +1,12 @@
-# Ultima risposta di Claude (10/11/2026 01:42 ora italiana)
+# Ultima risposta di Claude (10/11/2026 02:00 ora italiana)
 
+Ho capito: vuoi l'AI delle foto nell'app e sapere se le 5 regole vanno su tutto l'account.
 
+───
+✅ **FATTO**
+- Questa chat è arrivata al limite di memoria, quindi ho passato il lavoro a una chat nuova, la **Principale 40**. Il piano dell'AI delle foto è salvato in `docs/lavori-in-corso/c119-ai-foto.md`, e la chat nuova parte da lì.
+- Sessione nuova: [Principale 40](https://claude.ai/code/[segreto tolto dalla scorta]) · catena 6 di 8. Ho controllato repo, ramo e motore: sono giusti.
 
-## Domande a Mario
-
-❓ **DOMANDE**
-📌 Di cosa parliamo: le foto piccole delle ricette vecchie di GialloZafferano. Le vedi quando apri una ricetta e tocchi la foto di un passo. Ingrandite si sgranano: l'AI può renderle più nitide direttamente sul telefono (foto qui sopra, 1 di 1).
-
-1. 🛑 Le foto piccole delle ricette: 1 · metto il tasto «✨ Migliora con l'AI» quando ingrandisci una foto piccola: un tocco e in pochi secondi diventa più nitida (consiglio) · 2 · no: le foto restano come oggi, piccole ma non sgranate.
-   A cosa serve: decidere se questo ingrandimento arriva a tutti.
+───
+💡 **PARERE**
+- **AI delle foto:** c'è un ostacolo. GialloZafferano non lascia leggere le sue foto da un …
