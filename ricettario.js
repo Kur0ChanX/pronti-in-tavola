@@ -354,14 +354,20 @@ function riquadroDb() {
     <div class="fila" style="margin-top:8px"><button type="button" class="btn pieno" data-a="ric-db-turbo" ${t && t.attivo ? 'disabled' : ''}>${t && t.attivo ? '⚡ Sto caricando…' : '⚡ Carica 100 ricette adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-cerca" ${RIC.dbCerco ? 'disabled' : ''}>${RIC.dbCerco ? 'Cerco…' : '🔄 Cerca adesso'}</button><button type="button" class="btn chiaro" data-a="ric-db-controlla" ${RIC.dbControllo ? 'disabled' : ''}>${RIC.dbControllo ? 'Controllo…' : '🔍 Controlla tutte'}</button><button type="button" class="btn chiaro" data-a="vai" data-v="ricdb">Tutto il dettaglio</button></div></section>`;
 }
 /* C83 (Mario 08/11 «hai guardato tutte le ricette caricate bene da GialloZafferano?»): esito del controllo di TUTTE le ricette del database
-   (il server lo rifà da solo ogni giorno; «🔍 Controlla tutte» lo fa subito). Quelle da sistemare le rilegge da solo da GialloZafferano. */
+   (il server lo rifà da solo ogni giorno; «🔍 Controlla tutte» lo fa subito). C123: quelle con problemi le rilegge SUBITO da GZ e per
+   ognuna dice il perché vero: «uguale all'originale» (su GZ è così) o «pagina sparita»; solo quelle non ancora rilette restano da fare. */
 function controlloRic(d) {
   const c = d && d.controllo;
   if (!c) return d ? '<p class="piccolo tenue" style="margin:6px 0 0">🔍 Controllo delle ricette: non ancora fatto, tocca «🔍 Controlla tutte».</p>' : '';
   const q = new Date(c.quando), quando = q.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit' }) + ' alle ' + q.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-  const tutto = !c.nMale && !c.mancanti;
-  const lista = c.nMale ? `<ul class="ricdb-lista">${c.male.slice(0, 8).map(m => `<li>${esc(m.nome)} <span class="piccolo tenue">· ${esc(m.prob.join(' · '))}</span></li>`).join('')}${c.nMale > 8 ? `<li class="tenue">… e altre ${c.nMale - 8}</li>` : ''}</ul>` : '';
-  return `<p style="margin:6px 0 0"><b>${tutto ? '✅' : '🔧'} Controllate ${c.totale} ricette il ${quando}: ${c.ok} a posto</b>${c.nMale ? `, <b>${c.nMale} da sistemare</b> (le rileggo da sola da GialloZafferano, 5 ogni 10 minuti)` : ''}${c.mancanti ? `; ${c.mancanti} del ricettario ancora senza la ricetta intera: rimesse in arrivo` : ''}.</p>${lista}`;
+  const nOrig = c.nOriginali || 0, daFare = (c.nMale || 0) + (c.mancanti || 0);
+  const perche = { uguale: 'su GialloZafferano è così', sparita: 'pagina tolta da GialloZafferano: tengo la copia', 'senza-pagina': 'senza pagina d\'origine' };
+  const voce = m => `<li>${esc(m.nome)} <span class="piccolo tenue">· ${esc([perche[m.esito], ...(m.prob || [])].filter(Boolean).join(' · '))}</span></li>`;
+  const lista = (v, n) => v && v.length ? `<ul class="ricdb-lista">${v.slice(0, 8).map(voce).join('')}${n > 8 ? `<li class="tenue">… e altre ${n - 8}</li>` : ''}</ul>` : '';
+  return `<p style="margin:6px 0 0"><b>${daFare ? '🔧' : '✅'} Controllate ${c.totale} ricette il ${quando}: ${c.ok} a posto</b>${nOrig ? `, ${nOrig} uguali all'originale` : ''}${daFare ? `, <b>${daFare} ancora da rileggere</b>` : ''}.</p>`
+    + (nOrig ? `<p class="piccolo" style="margin:6px 0 0">📌 <b>Uguali all'originale</b>: le ho rilette da GialloZafferano e lì sono proprio così (es. una foto citata che non c'è, un frullato con 1 passo solo). Non è un errore dell'app: restano come l'originale.</p>${lista(c.originali, nOrig)}` : '')
+    + (c.nMale ? `<p class="piccolo" style="margin:6px 0 0">🔧 <b>${c.nMale} ancora da rileggere</b> da GialloZafferano: lo faccio da solo, 5 ogni 10 minuti; poi ognuna avrà qui il suo esito.</p>${lista(c.male, c.nMale)}` : '')
+    + (c.mancanti ? `<p class="piccolo" style="margin:6px 0 0">⚠️ <b>${c.mancanti} del ricettario senza la ricetta intera</b>: GialloZafferano adesso non me la dà, riprovo da solo.${(c.nomiMancanti || []).length ? ' ' + esc(c.nomiMancanti.slice(0, 5).join(', ')) + '.' : ''}</p>` : '');
 }
 function vRicDb() {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
@@ -880,7 +886,9 @@ Object.assign(A, {
   },
   'ric-db-controlla'() {
     if (RIC.dbControllo) return; RIC.dbControllo = true; render();
-    RIC.chiedi({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; mostraToast(c.nMale || c.mancanti ? `🔍 ${c.ok} ricette a posto, ${c.nMale + c.mancanti} da sistemare: ci penso io.` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
+    RIC.chiedi({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; const nO = c.nOriginali || 0, daFare = (c.nMale || 0) + (c.mancanti || 0);
+      // C123: niente «ci penso io» finto (PT E17): l'avviso dice cosa è successo davvero, l'elenco col perché è nel riquadro
+      mostraToast(daFare ? `🔍 ${c.ok} a posto${nO ? `, ${nO} uguali all'originale` : ''}, ${daFare} ancora da rileggere: lo faccio da solo, l'esito lo vedi qui.` : nO ? `✅ ${c.ok} a posto e ${nO} uguali all'originale: su GialloZafferano sono così (elenco qui sotto).` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
       .finally(() => { RIC.dbControllo = false; render(); });
   },
