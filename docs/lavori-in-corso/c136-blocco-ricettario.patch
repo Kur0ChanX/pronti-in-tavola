@@ -30,7 +30,7 @@ index 2be430f4..c75b0680 100644
    { k: 'fitProt', g: 'mario', nome: 'Proteiche: proteine minime', tipo: 'numero', min: 10, max: 60, def: 25, unita: 'g a porzione', parole: /protei|palestr|\bfit/,
      aiuto: 'Un pasto entra in «🏋️ Proteiche» solo con almeno queste proteine a porzione. 25 g: ISSN 2017 dice 20-40 g a pasto, anche in definizione; 25 è un po\' più severo (Mario 10/11).' },
 diff --git a/ricettario.js b/ricettario.js
-index 86f4ed2a..8067a5d3 100644
+index 86f4ed2a..bfc393e9 100644
 --- a/ricettario.js
 +++ b/ricettario.js
 @@ -26,6 +26,8 @@ const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.temp
@@ -157,6 +157,15 @@ index 86f4ed2a..8067a5d3 100644
        <button type="button" class="btn chiaro piccolo" data-a="ric-chiudi-cerca">Chiudi la ricerca</button></section>`;
    }
    if (!filtrato && !c.stato) {
+@@ -682,7 +688,7 @@ function vRicettario() {
+     voceAutomatica(); h += riquadroDb();
+     h += `<section class="scheda"><h2>🔎 Scopri ricette nuove</h2>
+       <button type="button" class="btn pieno" data-a="ric-catalogo" data-v="nuove">🔎 Fammi vedere le ricette nuove</button>
+-      <p class="piccolo tenue" style="margin:0">Il motore cerca su GialloZafferano quelle che non hai ancora (prima col video e i voti alti): apri, e se ti piace «➕ Aggiungi».</p>
++      <p class="piccolo tenue" style="margin:0">${motoreAuto() ? 'Il motore cerca su GialloZafferano quelle che non hai ancora' : 'Ti propongo quelle del database che non hai ancora'} (prima col video e i voti alti): apri, e se ti piace «➕ Aggiungi».${motoreAuto() ? '' : ` Per averne altre: «⚡ Carica altre ${nCarico()} ricette» nel riquadro «🗄 Il mio database».`}</p>
+       <details class="ric-intro ric-catalogo-box"><summary><b>📚 Catalogo per portata</b> <small class="tenue">tutte le ricette di GialloZafferano</small></summary>
+         <div class="scelte">${CATALOGO_RIC.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="${k}">${t}</button>`).join('')}</div>
+         <details class="ric-intro ric-ingr"><summary><b>Per ingrediente</b> <small class="tenue">(${CATALOGO_ING.length})</small></summary><div class="scelte">${CATALOGO_ING.map(([k, t]) => `<button type="button" class="scelta" data-a="ric-catalogo" data-v="ricette-con-${k}">${t}</button>`).join('')}</div></details></details>
 @@ -1021,7 +1027,7 @@ Object.assign(A, {
    'ric-fit-base'() { salvaParoleFit('', true); },
    'ric-rf'(el) {   // C124: RicetteFit acceso o spento (senza Claude)
@@ -286,10 +295,23 @@ index 76148965..22349f3f 100644
    const ponteSim = new Proxy({}, { get: (_, k) => (...a) => Promise.resolve().then(() => sim[k](...a)) });
    const cfgSim = { RICETTARIO: { idFromName: () => 'x', get: () => ponteSim }, AVVISI: { idFromName: () => 'c', get: () => ({}) } };
 diff --git a/tools/prova.js b/tools/prova.js
-index 78a1f2e8..72e35732 100644
+index 78a1f2e8..62eb1588 100644
 --- a/tools/prova.js
 +++ b/tools/prova.js
-@@ -736,13 +736,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+@@ -725,7 +725,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     // 🗄 pagina Database ricette (C60): numeri del telefono e del server, «Sfoglia» apre l'archivio nel Ricettario
+     await page.evaluate(() => { RIC.db = { ricette: 42, coda: 5, voci: 7, mbVoci: 1.2, mb: 3, oggi: 12, pausa: false, fonte: 3, fonti: 10, sezione: 'dolci', giri: 20, pagine: 9, passate: 0, ultimoGiro: { quando: Date.now() - 120000 } }; RIC.dbOra = Date.now(); vai('ricdb'); });
+     await page.locator('#ricdb-archivio h2', { hasText: '42 trovate' }).waitFor({ timeout: 3000 });
+-    if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count()) || !(await page.locator('#ricdb-archivio', { hasText: 'sarde: pagina 1 · altre: sezione 3 di 9 (Dolci) · 22%' }).count())) throw new Error('il motore non dice stato e avanzamento');
++    // C136: di base il motore lavora solo a mano (stato e ultimo giro detti); acceso da Mario torna «Lavora sul server»
++    if (!(await page.locator('#ricdb-archivio', { hasText: 'A mano: lavora solo quando lo chiedi tu · ultimo giro 2 min fa' }).count()) || !(await page.locator('#ricdb-archivio', { hasText: 'sarde: pagina 1 · altre: sezione 3 di 9 (Dolci) · 22%' }).count())) throw new Error('il motore non dice stato e avanzamento');
++    await page.evaluate(() => { RIC.db.auto = true; render(); });
++    if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count())) throw new Error('C136: col motore automatico acceso non dice «Lavora sul server»');
++    await page.evaluate(() => { RIC.db.auto = false; render(); });
+     await page.evaluate(() => { RIC._c3 = RIC.chiedi; RIC.chiedi = async c => c.db === 'cerca' ? { db: Object.assign({}, RIC.db, { ricette: 44 }), nuove: 2 } : RIC._c3(c); });
+     await clic('[data-a="ric-db-cerca"]'); await page.waitForTimeout(300);
+     if (!(await page.locator('#ricdb-archivio h2', { hasText: '44 trovate' }).count())) throw new Error('«Cerca adesso» non aggiorna i numeri');
+@@ -736,13 +740,16 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
      await page.evaluate(() => { RIC.chiedi = RIC._c; }); await clic('[data-a="ric-chiudi-cerca"]');
      // 🗄 Il mio database in vista nel Ricettario (Mario 08/11 «sembra nascosta»): numeri e motore senza cambiare pagina
      const box = await page.locator('.ric-db-box').innerText();
@@ -311,7 +333,7 @@ index 78a1f2e8..72e35732 100644
      // C83: «🔍 Controlla tutte» → esito di tutte le ricette in vista, con quelle da sistemare
      await page.evaluate(() => { RIC._c5 = RIC.chiedi; RIC.chiedi = async c => c.db === 'controlla' ? { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 }, db: Object.assign({}, RIC.db, { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 } }) } : RIC._c5(c); });
      await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
-@@ -1819,10 +1822,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+@@ -1819,10 +1826,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
      let nota = await carica();
      if (!/⏳ Sto caricando ricette nuove: RicetteFit 230 di 905 · valori ancora 400\. Finisco fra circa un'ora \(stima\)/.test(nota.t) || nota.barra !== '26' || !/Oggi \+1 entrata in Proteiche ✅/.test(nota.t) || /10 ogni 10 minuti/.test(nota.t)) throw new Error('Proteiche: lettura delle fonti non detta (C127 riquadro verde): ' + JSON.stringify(nota));
      await foto('48d-c128-lettura');
@@ -327,7 +349,7 @@ index 78a1f2e8..72e35732 100644
      await page.evaluate(() => { RIC.db = Object.assign({}, window.__db128, { turbo: null, daLeggere: 0, senzaValori: 0, rf: { lette: 880, tot: 905, scartate: 25, fine: new Date(Date.now() + 3600000).toISOString().slice(0, 10) } }); render(); });
      nota = await carica();
      if (!/✅ Letto tutto: RicetteFit 880 di 905 · valori tutti letti\./.test(nota.t) || nota.barra !== null) throw new Error('Proteiche: «letto tutto» non detto: ' + JSON.stringify(nota));
-@@ -1897,7 +1903,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+@@ -1897,7 +1907,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
      /* Database: riga RicetteFit con l'interruttore (senza Claude) */
      await page.evaluate(() => { RIC.dbOra = 0; vai('ricdb'); }); await page.waitForTimeout(400); await page.evaluate(() => render());
      const t = await page.evaluate(() => (document.querySelector('#ricdb-fit') || {}).innerText || '');
