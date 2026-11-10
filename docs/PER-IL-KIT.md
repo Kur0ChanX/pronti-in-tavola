@@ -61,3 +61,9 @@ Controlli fatti dalla Principale 52 sul kit 38.16 (REGOLE.md, skill, Preferenze 
 - Mancano `tools/scarica-kit.py` e `tools/test-scarica-kit.py`, ma il punto 8 li chiede (33 prove → qui 32 + quella del progetto).
 - `tools/test-guardia.py` ha `<OWNER>` e `<NOME-REPO>`: giusto, ma il punto 3 «se è uguale saltalo» non avvisa che anche le prove hanno segnaposto (la guardia era rossa finché non li ho sostituiti).
 - Punto 3 «scrivi con Write, niente script»: per 75 file (~700 KB) costerebbe ~200 mila token; qui copiati con `cp` dai file estratti, dopo il controllo dei segnaposto e delle parti del progetto. Proposta: permettere la copia per i file senza parti del progetto.
+
+## PT E58 · Foto aperte con Read: il contatore le pesa ~70k token l'una (Salvagente 2, 10/11)
+- Fatto provato: due PNG a 2x (780×1508, 180 e 198 KB) aperti con `Read` → avvisi C433 «235 KB (~70k token)» e «257 KB (~77k token)»; il contatore dell'attesa lunga è salito a 258k e ha chiesto le consegne dopo una sola risposta a Mario.
+- Proposta 1 (hook PreToolUse su `Read`): un'immagine oltre ~100 KB si ferma PRIMA, col comando pronto per farne una copia piccola (1x, larga al massimo 400 px, JPEG). Oggi l'avviso arriva dopo, quando il peso è già nel contesto.
+- Proposta 2 (da misurare, è un'ipotesi): il peso vero di un'immagine nel contesto può essere molto più basso dei byte del file; se una misura lo conferma, `handoff-check.py` e C433 dovrebbero contare le immagini a parte, sennò le consegne partono troppo presto e si spendono token per niente.
+
