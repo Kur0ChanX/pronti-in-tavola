@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (10/11/2026 17:10 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 17:39 ora italiana)
 
-Kit si le regole attiva su rvc quelle selezionate da me con i controlli richiesti
+2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordini
