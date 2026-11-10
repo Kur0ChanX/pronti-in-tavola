@@ -1,0 +1,26 @@
+{
+"account": "108763",
+"sessione": "b7e9ec6a8997",
+"giorno": "2026-11-10",
+"turni": 1,
+"peso": 767051,
+"uscita": 22948,
+"contesto_max": 191683,
+"anomalie": [
+"avvio pesante: 138k token dopo le letture d'avvio (tetto 130k)"
+],
+"remota": "01WTjqUtvkKY",
+"aiutanti": 0,
+"strumenti": 40,
+"motori": {
+"opus": 767051
+},
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"19:15 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+]
+}
+}
