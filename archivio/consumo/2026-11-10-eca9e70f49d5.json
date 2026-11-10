@@ -1,0 +1,20 @@
+{
+"account": "108763",
+"sessione": "eca9e70f49d5",
+"giorno": "2026-11-10",
+"turni": 1,
+"peso": 1281473,
+"uscita": 95175,
+"contesto_max": 258892,
+"anomalie": [
+"2 uscite di strumento enormi (257 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"avvio pesante: 170k token dopo le letture d'avvio (tetto 130k)",
+"95k token scritti in un turno"
+],
+"remota": "01WTjqUtvmZC",
+"aiutanti": 0,
+"strumenti": 46,
+"motori": {
+"fable": 1281473
+}
+}

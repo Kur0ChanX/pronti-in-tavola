@@ -6,6 +6,10 @@
 
 Salvagente 1 = `session_01WTjqUtRJWxKmp6nyeUvNrE` (aperta da Mario a mano 10/11 18:30 con una domanda; ruolo «parallela» messo a mano con `scorta.py ruolo parallela`; catena nuova, cuori 💚 💛 ❤️ 🖤 in `docs/CHI-FA-COSA.md`). Solo documenti: nessun file di codice toccato. Chiusa per la regola dell'attesa lunga (contesto oltre 180k mentre aspetta Mario).
 
+## Stato (Salvagente 2 `session_01WTjqUtvmZCDENLTWcamJxv`, 10/11 19:08 ora italiana, chiusa alla soglia; la apre la Salvagente 2 con `create_session` (catena 2 di 8))
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-parallela-20261110-01WTjqUtvmZC/claude/pronti-ramo-definitivo.
+- (qui le righe di giudizio della Salvagente 2: fatto, provato, dove si verifica)
+
 ## Stato (Salvagente 1 `session_01WTjqUtRJWxKmp6nyeUvNrE`, 10/11 18:48 ora italiana, chiusa alla soglia; la apre la Salvagente 1 con `create_session` (catena 1 di 8))
 - Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-parallela-20261110-01WTjqUtRJWx/claude/pronti-ramo-definitivo.
 - Fatto: ricerca, risposta a Mario con 3 strade e DOMANDA 1 🛑 (10/11 ~18:45), C138 in Da fare; nessun codice. Provato: niente da provare (solo documenti). Si verifica: `git log --oneline -4 -- docs/lavori-in-corso/c138-salvagente-in-casa.md docs/CONSEGNE-PARALLELA-SALVAGENTE.md`.
@@ -48,22 +52,20 @@ Salvagente 1 = `session_01WTjqUtRJWxKmp6nyeUvNrE` (aperta da Mario a mano 10/11 
 ## Motore e forza di pensiero
 Motore: **claude-fable-5-2** (Fable 5.2) · impegno **Massimo** (`max`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
-## Testo per aprire la Salvagente 2
-la apre la Salvagente 1 con `create_session` (catena 1 di 8). Scritto da Salvagente 1 il 10/11/2026 (righe di fatto da `tools/consegne.py fatti --parallela`).
+## Testo per aprire la Salvagente 3
+la apre la Salvagente 2 con `create_session` (catena 2 di 8). Scritto da Salvagente 2 il 10/11/2026 (righe di fatto da `tools/consegne.py fatti --parallela`).
 
-Titolo: `💛 🍝 Salvagente 2 · metti Fable`
+Titolo: `💛 🍝 Salvagente 3 · metti Fable`
 
 Testo da incollare:
 ```
-[AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motore non è Fable non fare niente, nemmeno l'avvio: scrivi a Mario solo «⛔ La sessione di prima lavorava con Fable: metti Fable (menu del motore nell'app o /model), poi scrivimi "via". Per andare con Opus scrivimi "vai con Opus".» Se sei Fable, avvio normale: Sei la chat parallela Salvagente 2 di Pronti in Tavola, linea «Salvagente» (ramo claude/pronti-ramo-definitivo). git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached» prima git checkout claude/pronti-ramo-definitivo). Leggi CLAUDE.md, docs/ERRORI.md e le tue consegne docs/CONSEGNE-PARALLELA-SALVAGENTE.md (leggi i file solo a blocchi con grep -n e sed -n, mai interi); continua da sola dai «Prossimi passi».
+[AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motore non è Fable non fare niente, nemmeno l'avvio: scrivi a Mario solo «⛔ La sessione di prima lavorava con Fable: metti Fable (menu del motore nell'app o /model), poi scrivimi "via". Per andare con Opus scrivimi "vai con Opus".» Se sei Fable, avvio normale: Sei la chat parallela Salvagente 3 di Pronti in Tavola, linea «Salvagente» (ramo claude/pronti-ramo-definitivo). git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached» prima git checkout claude/pronti-ramo-definitivo). Leggi CLAUDE.md, docs/ERRORI.md e le tue consegne docs/CONSEGNE-PARALLELA-SALVAGENTE.md (leggi i file solo a blocchi con grep -n e sed -n, mai interi); continua da sola dai «Prossimi passi».
 ```
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-10 18:30 · avvia plane mode pensiero profondo brain storming Volevo farti una domanda, sicc… → C138: voce in Da fare e riga 🛑 in «Aspetta Mario»; ricerca e 3 strade in `docs/lavori-in-corso/c138-salvagente-in-casa.md` (commit a3826375); risposta con le 3 strade e DOMANDA 1 mandata 10/11 ~18:45, aspetta la sua scelta
-- 2026-11-10 18:51 · Più che altro ho paura di che mi si stacca la luce, cioè la stabilità che ti dà … → girato alla Salvagente 2 con `send_message`; non è ancora la scelta: vuole il confronto fra la 1 e la 2 con gli schemi (prossimo passo 0)
+- 2026-11-10 18:50 · [AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motor… → 
 
 Ultimo, intero:
-> Più che altro ho paura di che mi si stacca la luce, cioè la stabilità che ti dà un server non te la dà nessuno. Io il mio PC lo utilizzerei solo come alternativa o supporto. Confrontami un po' con degli schemi, la scelta 1 e la scelta 2, perché io ero intenzionato un po' la scelta 2, ma tu mi consigli la 1, quindi magari qualcosa non l'ho capito.
+> [AVVIO] ⛔ FABLE (C472): la sessione di prima lavorava con Fable. Se il tuo motore non è Fable non fare niente, nemmeno l'avvio: scrivi a Mario solo «⛔ La sessione di prima lavorava con Fable: metti Fable (menu del motore nell'app o /model), poi scrivimi "via". Per andare con Opus scrivimi "vai con Opus".» Se sei Fable, avvio normale: Sei la chat parallela Salvagente 2 di Pronti in Tavola, linea «Salvagente» (ramo claude/pronti-ramo-definitivo). git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached» prima git checkout claude/pronti-ramo-definitivo). Leggi CLAUDE.md, docs/ERRORI.md e le tue consegne docs/CONSEGNE-PARALLELA-SALVAGENTE.md (leggi i file solo a blocchi con grep -n e sed -n, mai interi); continua da sola dai «Prossimi passi».
 
-Il primo messaggio (10/11 18:30), intero: `docs/lavori-in-corso/c138-salvagente-in-casa.md` «Parole di Mario».
