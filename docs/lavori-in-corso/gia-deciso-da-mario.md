@@ -9,3 +9,4 @@ Spostato dalle consegne il 08/11 (#27). Si aggiorna qui.
 - 08/11 ~15:10 · Voci Supertonic 3 e Kokoro (Sara, Nicola): NO, «tono, pause e accenti sembrano stranieri».
 - 10/11 ~13:57 · Proteiche: niente parole fisse; momenti della giornata (colazione, spuntino, merenda, pranzo, cena, dopo cena, dolci…) e fonte proteica FACOLTATIVA con tante voci; ricerca sempre possibile anche senza scegliere niente («cerca tutto», 14:10).
 - 10/11 ~14:18 · Fonti: «2» = anche siti senza valori, valori calcolati dagli ingredienti; basta segnare fonte e «calcolati» nella ricetta (o sezione a parte).
+- 10/11 ~15:05 · Proteiche (C127, «vai di consiglio 1 e 3»): pagina ordinata come la foto `archivio/foto/2026-11-10-1500-c127-proposta-filtri.png` (momenti e fonti a scelta multipla, il resto in «⚙️» e «Altre ▾», riquadro «Sto caricando» in Proteiche); funzioni smart: «📅 Il mio giorno proteico» e «🔁 Simili a questa» (NO «Sorprendimi», lista della spesa solo dentro il giorno proteico).
