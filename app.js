@@ -117,6 +117,20 @@ function mostraToast(msg, annulla) {
   $('#toast').innerHTML = `<div class="toast" role="status"><span>${esc(msg)}</span>${annulla ? '<button type="button" data-a="annulla">Annulla</button>' : ''}</div>`;
   tToast = setTimeout(() => { $('#toast').innerHTML = ''; fnAnnulla = null; }, annulla ? opz('annullaSecondi') * 1000 : 3200);   // secondi regolabili (C88)
 }
+/* (C120, Mario 10/11 «perché rompi sempre il codice quando funziona?») «Accesso non riuscito» senza motivo non aiuta nessuno:
+   il messaggio dice il perché vero (rete, finestra bloccata o chiusa) e, per un errore diverso, il suo codice (per Mario e Claude).
+   chiusa = cosa dire se la finestra di Google si chiude senza entrare ('' = niente, per chi l'ha chiusa apposta) */
+function msgAccesso(e, chiusa) {
+  const c = String((e && e.code) || '');
+  if (!navigator.onLine || c === 'auth/network-request-failed' || c === 'unavailable') return 'Manca la rete: accendi il Wi-Fi o i dati e riprova.';
+  if (c === 'auth/popup-closed-by-user' || c === 'auth/cancelled-popup-request' || c === 'auth/user-cancelled') return chiusa || '';
+  if (c === 'auth/popup-blocked') return 'Il telefono ha bloccato la finestra di Google: tocca di nuovo e, se te lo chiede, consenti.';
+  if (c === 'auth/user-mismatch') return 'Questo non è il tuo account: scegli quello con cui entri di solito.';
+  if (c === 'auth/too-many-requests') return 'Troppi tentativi: aspetta un minuto e riprova.';
+  if (c === 'auth/web-storage-unsupported' || c === 'auth/operation-not-supported-in-this-environment') return 'Questo browser non lascia entrare con Google: apri il link in Chrome e riprova.';
+  const motivo = c ? c.replace(/^auth\//, '') : String((e && e.message) || '').slice(0, 60);
+  return 'Accesso non riuscito. Riprova.' + (motivo ? ` (motivo: ${motivo})` : '');
+}
 /* ogni cambio: salva da solo e, se serve, si può annullare per 10 secondi */
 function cambia(msg, fn, annullabile = true) {
   const prima = annullabile ? JSON.stringify(S) : null;
@@ -2133,7 +2147,7 @@ const A = {
     if (!Dati.attivo) { mostraToast('Nell\'anteprima non si entra con Google: prova sul sito vero.'); return; }
     UI.invInvio = true; render();
     try { await Dati.entraGoogle(); await Dati.chiediGestore(); }
-    catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Accesso non riuscito. Riprova.'); }
+    catch (e) { const m = msgAccesso(e, 'Finestra di Google chiusa: tocca di nuovo «Entra con Google».'); if (m) mostraToast(m); }
     UI.invInvio = false; render();
   },
   async installa() {
@@ -2159,7 +2173,10 @@ const A = {
     try { await Dati.togliGestore(id); mostraToast('Tolto: non gestisce più la cucina.'); } catch (e) { mostraToast(e.code === 'unavailable' ? 'Manca la rete: riprova appena torna.' : 'Non è andata. Riprova tra poco.'); }
     render();
   },
-  'entra-monica'() { Dati.entraGoogle().catch(() => mostraToast('Accesso non riuscito. Riprova.')); },
+  'entra-monica'() {
+    if (!navigator.onLine) { mostraToast(msgAccesso(null)); return; }   // (C120) senza rete non si apre nemmeno la finestra di Google
+    Dati.entraGoogle().catch(e => { const m = msgAccesso(e, 'Finestra di Google chiusa: tocca di nuovo «Area riservata».'); if (m) mostraToast(m); });
+  },
   ruolo(el) { P.ruolo = el.dataset.v; salvaP(); UI.foglio = null; UI.modifica = null; vai(P.ruolo === 'monica' ? 'home' : 'menu'); if (P.ruolo === 'monica') notificaMonica(); },
   vai(el) { vai(el.dataset.v); },
   cat(el) { UI.cat = el.dataset.v; const t = document.getElementById('cat-' + el.dataset.v); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-a="cat"]').forEach(b => b.setAttribute('aria-pressed', b === el)); },
@@ -2921,8 +2938,7 @@ Object.assign(A, {
     L.errore = '';
     try { await Dati.rientra(); Lucchetto.metti(Dati.io.uid, null); L.fallito = false; }
     catch (e) {
-      L.errore = e.code === 'auth/user-mismatch' ? 'Questo non è il tuo account: scegli quello con cui entri di solito.'
-        : e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request' ? '' : 'Accesso non riuscito. Riprova.';
+      L.errore = msgAccesso(e);
     }
     render();
   },
