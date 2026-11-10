@@ -34,6 +34,8 @@ const TETTO_GIORNO = 60;        // al massimo 60 avvisi «ordine nuovo» al gior
 const TIPI_GESTORE = ['ordine', 'ordineProva', 'primo', 'richiesta', 'risposta', 'modifica', 'qui', 'chiusi'];
 const TIPI_SERVER = ['esagera'];   // (C109) avvisi che manda solo il server (un telefono non li può chiedere con /api/avvisa)   // cosa è successo, per il testo e per aprire il punto giusto (C27)
 const PAUSA_MS = 15 * 1000;
+/* (C119) foto dei passi «a strisce» delle ricette vecchie di GZ (3 foto 220×170 in una): stessa regola di fotoRicetta in ricettario.js */
+const STRISCIA = /_strip_\d+-\d+\.\w+(?:$|[?#])|seq\d+\.\w+(?:$|[?#])/i;
 const SQUILLO_MS = 5000, SQUILLI = 12;   // «sono qui»: uno squillo ogni 5 secondi per 1 minuto (C51)     // e non più di uno ogni 15 secondi
 
 const b64u = buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -675,16 +677,22 @@ export class Ricettario extends DurableObject {
       // ricette scritte a mano (id «mia…»), uguali su tutti i telefoni; tolta=1 = cancellata
       'CREATE TABLE IF NOT EXISTS mie (id TEXT PRIMARY KEY, json TEXT, aggiornata INTEGER, tolta INTEGER DEFAULT 0)'].forEach(q => this.sql.exec(q));
     try { this.sql.exec('ALTER TABLE coda ADD COLUMN sarda INTEGER DEFAULT 0'); } catch (e) { /* c'è già */ }
-    for (const c of ['voto REAL DEFAULT 0', 'video INTEGER DEFAULT 0']) { try { this.sql.exec('ALTER TABLE ricette ADD COLUMN ' + c); } catch (e) { /* c'è già */ } }
+    for (const c of ['voto REAL DEFAULT 0', 'video INTEGER DEFAULT 0', 'strisce INTEGER DEFAULT 0']) { try { this.sql.exec('ALTER TABLE ricette ADD COLUMN ' + c); } catch (e) { /* c'è già */ } }
+    /* (C119) ricette vecchie di GZ: foto dei passi a strisce piccole (ogni foto 220×170, si sgranano); una volta sola per quelle già salvate */
+    if (!this.leggi1('strisceOk')) {
+      this.sql.exec("UPDATE ricette SET strisce = CASE WHEN instr(json, '_strip_') > 0 OR lower(json) GLOB '*seq[0-9]*' THEN 1 ELSE 0 END");
+      this.metti1('strisceOk', 1);
+    }
   }
   leggi1(k) { const r = this.sql.exec('SELECT v FROM stato WHERE k = ?', k).toArray()[0]; return r ? r.v : ''; }
   metti1(k, v) { this.sql.exec('INSERT INTO stato (k, v) VALUES (?, ?) ON CONFLICT(k) DO UPDATE SET v = excluded.v', k, String(v ?? '')); }
   salva(r) {
     if (!r || !/^gz:[\w%-]+$/.test(r.id || '') || !r.nome) return false;
     const ora = Date.now(), cerca = minuscolo([r.nome, r.categoria, (r.ingredienti || []).map(i => i.nome).join(' ')].join(' '));
-    this.sql.exec(`INSERT INTO ricette (id, url, nome, categoria, foto, descr, cerca, json, creata, aggiornata, voto, video) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      ON CONFLICT(id) DO UPDATE SET nome = excluded.nome, categoria = excluded.categoria, foto = excluded.foto, descr = excluded.descr, cerca = excluded.cerca, json = excluded.json, aggiornata = excluded.aggiornata, voto = excluded.voto, video = excluded.video`,
-      r.id, r.url || '', r.nome, r.categoria || '', r.foto || '', String(r.intro || '').slice(0, 200), cerca, JSON.stringify(r), ora, ora, Number(r.voto) || 0, r.hls || r.mp4 ? 1 : 0);
+    const strisce = (r.passi || []).some(p => (p.foto || []).some(f => STRISCIA.test(String(f)))) ? 1 : 0;
+    this.sql.exec(`INSERT INTO ricette (id, url, nome, categoria, foto, descr, cerca, json, creata, aggiornata, voto, video, strisce) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(id) DO UPDATE SET nome = excluded.nome, categoria = excluded.categoria, foto = excluded.foto, descr = excluded.descr, cerca = excluded.cerca, json = excluded.json, aggiornata = excluded.aggiornata, voto = excluded.voto, video = excluded.video, strisce = excluded.strisce`,
+      r.id, r.url || '', r.nome, r.categoria || '', r.foto || '', String(r.intro || '').slice(0, 200), cerca, JSON.stringify(r), ora, ora, Number(r.voto) || 0, r.hls || r.mp4 ? 1 : 0, strisce);
     this.sql.exec('DELETE FROM coda WHERE url = ?', r.url || '');
     return true;
   }
@@ -835,10 +843,11 @@ export class Ricettario extends DurableObject {
     return true;
   }
   togli(id) { this.sql.exec('DELETE FROM scelte WHERE id = ?', String(id)); }
-  /* PROPOSTE del motore: ricette dell'archivio che il tuo ricettario non ha; prima quelle col video e i voti più alti */
+  /* PROPOSTE del motore: ricette dell'archivio che il tuo ricettario non ha; prima quelle con le foto grandi (C119, Mario 10/11
+     «sgranatissime»: le vecchie a strisce vanno in fondo), poi col video e i voti più alti */
   proposte(fuori, da) {
     const no = new Set([...(fuori || []).map(String), ...this.scelte().map(x => x.id)]);
-    const tt = this.sql.exec('SELECT id, url, nome, foto, categoria, descr, voto, video FROM ricette ORDER BY video DESC, voto DESC, creata DESC LIMIT 400').toArray().filter(x => !no.has(x.id));
+    const tt = this.sql.exec('SELECT id, url, nome, foto, categoria, descr, voto, video FROM ricette ORDER BY strisce ASC, video DESC, voto DESC, creata DESC LIMIT 400').toArray().filter(x => !no.has(x.id));
     return tt.slice(Math.max(0, Number(da) || 0), (Number(da) || 0) + 31).map(x => ({ url: x.url, nome: x.nome, foto: x.foto, categoria: x.categoria, desc: x.descr, voto: x.voto, video: !!x.video }));
   }
   statoDb() {
