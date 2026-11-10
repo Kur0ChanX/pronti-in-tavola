@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 01:35 · 01QTFEqQ5ALf
-avrei approfondito tantissimo questa intelligenza artificiale della 20 e avrei messo delle risposte bot però fatte bene se un cliente vuole scriverle e monica che dici ma deve essere qualcosa di super figo come fanno nei siti fatti bene
-
 ## 2026-11-08 02:30 · 01QTFEqQ5ALf
 cerca la miglior ia gratuita per Queste cose
 iniziaml assistente per monica non clienti
@@ -151,3 +148,6 @@ volevo scrivere un blocco al ricettario
 
 ## 2026-11-10 17:44 · 01WTjqUuJHcT
 Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?
+
+## 2026-11-10 17:52 · 01WTjqUuJHcT
+1 anche per i clienti e non far riscriversi in clienti per carità se no diventa uno stress quest' app
