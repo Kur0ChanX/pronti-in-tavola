@@ -1,0 +1,29 @@
+{
+"account": "108763",
+"sessione": "b0ee7ac921bc",
+"giorno": "2026-11-10",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 305568,
+"anomalie": [],
+"blocchi": {
+"Stop 3 · Consegne non su GitHub (C226,": 1,
+"Stop 5 · «👉 DA FARE TU» senza": 1,
+"Stop 13 · There are uncommitted changes in": 1
+},
+"esempi_blocchi": {
+"Stop 3 · Consegne non su GitHub (C226,": [
+"18:42 · Consegne non su GitHub (C226, blocco 1/3): docs/ERRORI.md fuori dal commit. Fai commit e push adesso (`git push -u origin claude/pronti-ramo-definitivo`), controlla `git rev-parse HEAD origin/claude/p"
+],
+"Stop 5 · «👉 DA FARE TU» senza": [
+"18:42 · «👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del blocco «A cosa serve: …» (cosa ottiene Mario, l'app o il lavoro). Riscrivi solo quel blocco."
+],
+"Stop 13 · There are uncommitted changes in": [
+"18:42 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+]
+},
+"remota": "01WTjqUv32ce",
+"aiutanti": 0,
+"strumenti": 0
+}
