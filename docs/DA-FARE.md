@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 10/11 · 🟢 Principale 51 · C130 Cloudflare bloccato dalle 15:35: 🛑 «Upgrade del piano» (pulsante arancione nell'email, Workers Paid 5 $/mese) → tutto riparte in pochi minuti; scrivimi «fatto» e controllo. Poi: chiave di sola lettura «Account Analytics» (1 sì · 2 no). A cosa serve: app al 100% adesso e un freno che vede tutto.
+- 10/11 · 🟢 Principale 51 · C130 contatore vero di Cloudflare, gratis: crei una chiave di sola lettura «Account Analytics» (ti guido) e il server vede le letture di tutto l'account. 1 · sì · 2 · no. A cosa serve: l'avviso ti arriva anche per letture che il mio contatore non vede.
 - 10/11 · 🟢 Principale 50 · C132 regola nuova «soluzioni smart come il modulo sicuro, per tutti i progetti» (Mario 16:35 nella #42): scegli fra le proposte 1-3 della #42 (anche più numeri): 1 chiavi sempre col modulo sicuro · 2 link già compilati · 3 promemoria prima di ogni scadenza (la 4, guide giuste con le foto, va nel kit comunque). A cosa serve: la porto nel kit per tutti i progetti.
 - 10/11 · 🟢 Principale 48 · C127+C128 v0.10.13: chiudi e riapri l'app, Ricettario → «🏋️ Proteiche»: una foto della parte alta (zone, «Quando», «Fonte proteica», riquadro verde con «RicetteFit N di 905» e «Oggi +N entrate»). A cosa serve: vedere coi dati veri la pagina nuova e quante proteiche arrivano.
 - 10/11 · 🟢 Principale 49 · C127 giorno proteico: foto `archivio/foto/2026-11-10-1530-c127-giorno-proteico.png` mandata. Rispondi 1 = va bene, lo pubblico (v0.10.15) · 2 = cambia qualcosa. A cosa serve: pubblicarlo come lo vuoi tu.

@@ -1,12 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #51 (dopo la #50 `session_01WTjqUud6hw3u8NS12Xw9V8`, chiusa alla soglia 10/11 16:41; la apre la #50 con `create_session` (catena 7 di 8)).
+Sessione attuale: #52 (dopo la #51 `session_01WTjqUv8dDcEnw4cyAzmz4S`, chiusa alla soglia 10/11 17:02; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
 - **Cosa preme a Mario adesso (10/11 16:55):** 1) C131: Mario ha scelto «p1» → soglie di base nuove di Proteiche (dettagli nei Prossimi passi 0). 2) C133: controllare le 7 regole scelte per il kit (doppioni, regole migliori, conflitti) prima di passarle alla sessione del kit. 3) C127 giorno proteico pronto in patch (aspetta «1»). 4) Kit v38: pacchetto scaricato, aspetta «1 · Sì» (domanda del pacchetto).
 
-## Stato (10/11 16:55 ora italiana)
+## Stato (10/11 17:02 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261110-01WTjqUv8dDc/claude/pronti-ramo-definitivo.
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (qui il push di `*.js`, `*.css`, `*.html` del ramo pubblica il sito vero da solo: `sito.yml`; i soli documenti no). Scorte della #50 (`scorta-principale-20261110-01WTjqUud6hw`, solo consumo e ULTIMA-RISPOSTA) e della #49 (`…01WTjqUwbG8f`): solo documenti, NON unirle. Scorte parallele Voce: NON unirle (E97).
 - ONLINE v0.10.14 (verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.14). Nel ramo il codice è uguale all'online: nessun `.js` cambiato dalla #50.
 - C127 pezzi 2-3 PRONTI in `docs/lavori-in-corso/c127-pezzi-2-3.patch` (verifica: `git apply --check docs/lavori-in-corso/c127-pezzi-2-3.patch` senza errori): contiene anche `data.js` 0.10.15 con le novità e la pulizia del passo di prova. Giro completo con la patch 91 OK, 0 NO; server 159/0 (#50, 16:25).
