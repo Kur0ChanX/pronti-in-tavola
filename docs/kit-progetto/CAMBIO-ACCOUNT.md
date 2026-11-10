@@ -12,7 +12,7 @@ Perché: arrivano in tutte le chat e in tutte le sessioni di quell'account (come
 4. Salva. La prima riga deve dire la versione (es. «v27 · 23/10/2026 · …»).
 
 ## 2. Parallel Search nella chat (ricerca sul web aggiornata, gratis, senza chiave)
-Perché: nelle chat normali Claude cerca con Parallel; nelle sessioni dei progetti c'è già da `.mcp.json`.
+Perché: Claude cerca con Parallel, nelle chat normali e nelle sessioni dei progetti (da kit 38.3 non è più in `.mcp.json`: senza connettore nei progetti resta solo la ricerca di serie).
 1. Apri https://claude.ai e vai in **Customize** → **Connectors**.
 2. Premi **+ Add** (o **+**), poi **Add custom connector**.
 3. Nome: `Parallel Search`. Indirizzo del server:
@@ -25,8 +25,8 @@ Perché: nelle chat normali Claude cerca con Parallel; nelle sessioni dei proget
 
 ## 3. Aprire la sessione nuova
 Di solito la apre Claude da sola (`create_session`). Tocca a te solo a 8 sessioni di fila, al cambio account o se Claude te lo dice.
-1. Apri su GitHub `docs/PROSSIMA-SESSIONE.md` del progetto: dentro ci sono repo, ramo, motore, impegno, titolo e testo «[AVVIO]».
-2. Apri https://claude.ai/code e scegli repo e ramo scritti nel file; motore e impegno come dice il file.
+1. Apri su GitHub `docs/PROSSIMA-SESSIONE.md` del progetto: dentro ci sono repo, ramo, motore, titolo e testo «[AVVIO]».
+2. Apri https://claude.ai/code e scegli repo e ramo scritti nel file; il motore come dice il file (l'impegno non serve sceglierlo).
 3. Incolla il testo «[AVVIO]» e invia. La sessione si dà da sola il titolo scritto nel file.
 
 ## Solo la prima volta su un account nuovo

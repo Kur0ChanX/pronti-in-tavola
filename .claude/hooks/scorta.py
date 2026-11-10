@@ -29,7 +29,7 @@
 # codice vecchio il 29/10). Ora nessuno scrive nella scorta di un altro; all'avvio avvio-check.py elenca TUTTE le scorte
 # vive del ramo (scorte_vive) e dice di chi sono. Senza id della sessione resta il nome vecchio scorta-<ruolo>/<ramo>,
 # che si legge ancora. Le scorte di chat ferme da più di SCORTE_GIORNI non si guardano più all'avvio (una riga le conta).
-import datetime, json, os, re, subprocess, sys, time
+import datetime, glob, json, os, re, shutil, subprocess, sys, time
 
 CWD = os.environ.get("CLAUDE_PROJECT_DIR") or os.getcwd()
 RUOLI = ("principale", "parallela")
@@ -44,19 +44,88 @@ REGISTRO_MAX = 40
 FILE_RISPOSTA = {"principale": "docs/ULTIMA-RISPOSTA.md", "parallela": "docs/ULTIMA-RISPOSTA-PARALLELA.md"}
 RISPOSTA_MAX = 600  # caratteri: basta per capire di cosa parla, non diventa una copia della chat
 CODA_TRASCRIZIONE = 2_000_000  # byte letti dalla fine della trascrizione (le risposte lunghe con strumenti pesano)
-VOCE = re.compile(r"^## (\d{4}-\d{2}-\d{2} \d{2}:\d{2}) · (\S+)$")
+# C469 fase 1: una forma sola delle testate, anche di quelle scritte a mano («~11:0x», «· 01Ab… (girato alla …)»), usata
+# anche da avvio-check.py e tools/consegne.py: prima 3 lettori su 4 le prendevano per testo della voce di prima.
+VOCE = re.compile(r"^## (\d{4}-\d{2}-\d{2} ~?\d{2}:\d[\dx]) · (\S.*)$")
+
+
+def ora_voce(quando):
+    # chiave per ordinare e confrontare le ore: «2026-11-09 ~11:0x» → «2026-11-09 11:00»
+    return str(quando).replace("~", "").replace("x", "0")
 TESTA_REGISTRO = ("# Messaggi di Mario (ultimi {n}, ora italiana)\n\n"
                   "Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.\n")
 # C352: «Sei la chat parallela» vale su QUALSIASI riga dell'[AVVIO] (la P44 l'aveva sulla seconda: ruolo sbagliato), e vale
 # anche un avvio che comincia con «[AVVIO] Chat parallela …».
 AVVIO_PARALLELA = re.compile(r"^\[AVVIO\](?:\s*Chat parallela\b|.*?\bSei la (?:chat|sessione) parallela\b)", re.I | re.S)
 FILE_SCORTA = tuple(FILE_MSG.values()) + tuple(FILE_REGISTRO.values()) + tuple(FILE_RISPOSTA.values())
+# C469 fase 1 (Mario 04/11 «ho paura di perdere cose che ho scritto»): archivio di TUTTI i messaggi di Mario, senza tetto,
+# un file al mese per tutte le chat. Lo scrive la scorta (copia locale in .git/scorta-archivio.md), si unisce voce per
+# voce (driver «archivio»: nome nuovo, un contenitore col codice vecchio lascia il conflitto invece di tagliare a 40).
+# Mai letto all'avvio: si cerca con git grep. Il registro (ultimi 40) resta per l'avvio e le consegne.
+ARCHIVIO = "archivio/messaggi-mario"
+TESTA_ARCHIVIO = ("# Archivio dei messaggi di Mario · {mese} (tutte le chat, ora italiana)\n\n"
+                  "Scritto da `.claude/hooks/scorta.py` (C469), senza tetto: non si legge all'avvio, si cerca con "
+                  "`git grep`. Non si modifica a mano.\n")
+DRIVER = {"registro": "python3 -I .claude/hooks/scorta.py unisci-registro %O %A %B",
+          "archivio": "python3 -I .claude/hooks/scorta.py unisci-archivio %O %A %B",
+          "impostazioni": "python3 -I tools/unisci-json.py %O %A %B"}  # E325: settings.json sempre valido
+
+
+def file_archivio(quando):
+    # «2026-11-09 22:07» → archivio/messaggi-mario/2026-11.md
+    return f"{ARCHIVIO}/{quando[:7]}.md"
+
+
+def configura_driver():
+    # C469 B6 e fase 1: i driver vanno detti a ogni contenitore (git config locale), anche a quelli avviati prima
+    for nome, comando in DRIVER.items():
+        if not git("config", "--get", f"merge.{nome}.driver"):
+            run("config", f"merge.{nome}.driver", comando)
 
 
 def sessione_corta(sessione):
     # C352: id della sessione del cloud (session_01… nelle consegne, cse_01… nella variabile): stesso id, prefisso diverso.
     # E226: 12 caratteri (con 8 le sessioni di un giorno erano uguali); in locale l'id è un uuid: resta il primo blocco.
     return (re.match(r"[A-Za-z0-9]*", re.sub(r"^(session|cse)_", "", str(sessione or ""))).group(0))[:12]
+
+
+CHI_FA_COSA = "docs/CHI-FA-COSA.md"
+
+
+def catene(base):
+    """C450 (kit 35.4): le catene della tabella «## Catene» di docs/CHI-FA-COSA.md: [{nome, numero, segni, ids, attiva,
+    chiusa}], ids = id corti (12) di tutte le sessioni scritte nella riga (la prima è quella aperta), attiva = quella
+    aperta o '' se la catena è chiusa. [] se il file manca o la tabella non c'è."""
+    try:
+        with open(os.path.join(base, CHI_FA_COSA), encoding="utf-8") as f:
+            testo = f.read()
+    except OSError:
+        return []
+    out, dentro = [], False
+    for riga in testo.splitlines():
+        if riga.startswith("## "):
+            dentro = riga.startswith("## Catene")
+            continue
+        if not dentro or not riga.startswith("| ") or riga.startswith("|---") or riga.startswith("| Catena "):
+            continue
+        celle = [c.strip() for c in riga.strip().strip("|").split("|")]
+        if len(celle) < 5:
+            continue
+        ids = [sessione_corta(x) for x in re.findall(r"session_([A-Za-z0-9]{12,})", celle[4])]
+        chiusa = len(celle) > 5 and celle[5] not in ("", "—", "-")
+        out.append({"nome": celle[0], "numero": celle[3], "segni": celle[2].split(), "ids": ids,
+                    "attiva": "" if chiusa or not ids else ids[0], "chiusa": chiusa})
+    return out
+
+
+def sessioni_attive(base):
+    """C450: id corti delle sessioni aperte di tutte le catene (quelle che possono ancora scrivere una scorta)."""
+    return {c["attiva"] for c in catene(base) if c["attiva"]}
+
+
+def catena_di(base, mia):
+    """C450: la catena (riga di «## Catene») che contiene la sessione `mia`, o None (sessione aperta a mano, non ancora scritta)."""
+    return next((c for c in catene(base) if mia and mia in c["ids"]), None)
 
 
 def sessione_di(dati):
@@ -151,32 +220,53 @@ def nome_scorta(gitdir, ruolo, ramo):
     return f"scorta-{ruolo}-{data}-{chi}/{ramo}"
 
 
-def lavoro_della_scorta(scorta, head="HEAD"):
+def lavoro_della_scorta(scorta, head="HEAD", scadenza=None):
     """C352: cosa porterebbe al ramo l'unione di una scorta: «nuovo» (lavoro vero da unire), «niente» (già tutto nel
     ramo, o solo i file della scorta stessa), «vecchia» (il ramo ha cambiato dopo le stesse righe: unirla farebbe solo
-    conflitti di codice vecchio, come la scorta-parallela del 29/10 con 112 segni). Merge simulato: non tocca niente."""
-    rc, out = run("merge-tree", "--write-tree", head, scorta, timeout=60)
+    conflitti di codice vecchio, come la scorta-parallela del 29/10 con 112 segni). Merge simulato: non tocca niente.
+    C469 A9: «scadenza» (ora assoluta, la dà l'hook d'avvio): nessun comando la supera; con meno di 15 s niente scavo."""
+    def tempo(t):
+        return t if scadenza is None else max(1, min(t, scadenza - time.time()))
+    rc, out = run("merge-tree", "--write-tree", "--name-only", head, scorta, timeout=tempo(60))
     for _ in range(3):
         # C352: il contenitore in cloud è un clone poco profondo (ultimi 50 commit): senza la base comune git rifiuta
         # («unrelated histories», rc 128) e la scorta passava per «nuovo». Si scava la storia (mai si accorcia).
         if rc != 128 or run("rev-parse", "--is-shallow-repository")[1] != "true":
             break
         ramo = git("symbolic-ref", "-q", "--short", "HEAD")
-        if not ramo or run("fetch", "-q", "--deepen=200", "origin", ramo, timeout=120)[0]:
+        if not ramo or (scadenza is not None and scadenza - time.time() < 15) or \
+                run("fetch", "-q", "--deepen=200", "origin", ramo, timeout=tempo(120))[0]:
             break
-        rc, out = run("merge-tree", "--write-tree", head, scorta, timeout=60)
-    albero = (out.splitlines() or [""])[0].strip()
+        rc, out = run("merge-tree", "--write-tree", "--name-only", head, scorta, timeout=tempo(60))
+    righe = out.splitlines()
+    albero = (righe or [""])[0].strip()
     if rc not in (0, 1) or not albero:
         return "nuovo"  # non so dire: meglio chiedere il merge che perdere lavoro
-    if rc == 1:
+    # C469 fase 1: conflitti SOLO nei file della scorta o nell'archivio (contenitore senza i driver: due chat che
+    # scrivono lo stesso mese) non fanno «vecchia»: decidono i messaggi (sennò un messaggio di Mario resterebbe fuori)
+    conflitti = righe[1:righe.index("")] if "" in righe else righe[1:]
+    if rc == 1 and any(f not in FILE_SCORTA and not f.startswith(ARCHIVIO + "/") for f in conflitti):
         return "vecchia"
-    file = [f for f in git("diff", "--name-only", head, albero).splitlines() if f not in FILE_SCORTA]
-    return "nuovo" if file else "niente"
+    file = [f for f in git("diff", "--name-only", head, albero).splitlines()
+            if f not in FILE_SCORTA and not f.startswith(ARCHIVIO + "/")]  # l'archivio lo guarda messaggi_nuovi
+    return "nuovo" if file or messaggi_nuovi(scorta, head) else "niente"
 # "[AVVIO]" = prompt di avvio scritto dalla sessione che chiude (#58): non è un messaggio di Mario
 # "<cross-session-message" = messaggio di un'altra sessione (es. un altro progetto): non è un messaggio di Mario
 # "<agent-message" = rapporto finale di un aiutante (strumento Agent, #73): non è un messaggio di Mario
 AVVISI_DI_SISTEMA = ("<task-notification", "<system-reminder", "<wake ", "[SYSTEM NOTIFICATION", "[AVVIO]",
-                     "<cross-session-message", "<agent-message")
+                     "<cross-session-message", "<agent-message", "[MESSAGE FROM NON-USER SOURCE")
+# C469 rapporto 12 voce 8: l'avvio (Mario a volte ci aggiunge parole sue) e i messaggi girati da un'altra sessione vanno
+# interi nell'ARCHIVIO con l'etichetta, mai nel registro né nell'ultimo messaggio (non sono messaggi di Mario)
+GIRATO = re.compile(r'^(?:\[MESSAGE FROM NON-USER SOURCE[^\n]*\n)?\s*<cross-session-message from-session="([^"]*)"[^>]*>'
+                    r'\n?(.*?)(?:</cross-session-message>\s*)?\Z', re.S)
+GIRATO_TESTA = re.compile(r"\A\s*The following was sent by another Claude Code session.*?(?:\n\s*\n|\Z)", re.S)
+GIRATO_MAX = 20_000  # caratteri: un messaggio fra sessioni può arrivare a 64 KiB
+# C469 rapporto 12 voce 6: la domanda a cui Mario risponde («1», «vai come consiglio») in coda alla voce dell'archivio
+RISPONDEVA = "> Rispondeva a:"
+DOMANDA_MAX = 2_000
+INIZIO_DOMANDE = re.compile(r"^[\s>*#_]*❓", re.M)  # come domande-chiare.py: il blocco inizia a capo
+RIGA_CORTA = re.compile(r"^[\s>*_]*(?:⚠️\s*)?Aspettano te\s*:.*$\n?", re.M)
+CODA_DOMANDA = re.compile(r"\n*^> Rispondeva a:.*\Z", re.M | re.S)
 # avviso del riavvio del contenitore (E104, 25/10 P16): da solo prendeva il posto del messaggio di Mario; attaccato a un
 # messaggio vero si toglie e resta il messaggio
 RIAVVIO = re.compile(r"\s*This session's worker process was restarted\.[^\n]*", re.I)
@@ -231,14 +321,46 @@ def ora_italiana():
         return datetime.datetime.utcnow().strftime("%d/%m/%Y %H:%M UTC")
 
 
+def avvio_o_girato(testo):
+    """C469 rapporto 12 voce 8: (etichetta, testo da archiviare) per l'avvio e i messaggi girati; None per il resto."""
+    if testo.startswith("[AVVIO]"):
+        return "(avvio)", testo
+    m = GIRATO.match(testo)
+    if not m:
+        return None
+    corpo = GIRATO_TESTA.sub("", m.group(2)).strip()
+    if len(corpo) > GIRATO_MAX:
+        corpo = corpo[:GIRATO_MAX] + " …[tagliato]"
+    return f"(girato da {sessione_corta(m.group(1)) or '?'})", corpo
+
+
+def prendi_domanda(gitdir):
+    """C469 rapporto 12 voce 6: il blocco ❓ dell'ultima risposta (salvato allo Stop), una volta sola: poi si cancella."""
+    percorso = os.path.join(gitdir, "scorta-domanda.md")
+    try:
+        with open(percorso, encoding="utf-8") as f:
+            domanda = f.read().strip()
+        os.remove(percorso)
+    except OSError:
+        return ""
+    return domanda
+
+
 def salva_msg(dati, gitdir, ruolo="principale"):
     testo = RIAVVIO.sub("", str(dati.get("prompt") or "")).strip()
+    try:
+        speciale = avvio_o_girato(testo)
+        if speciale and speciale[1]:
+            scrivi_nell_archivio(gitdir, f"{sessione_di(dati) or '?'} {speciale[0]}",
+                                 togli_segreti(speciale[1]))
+    except Exception:
+        pass  # l'archivio dei messaggi girati non deve mai fermare la scorta
     if not testo or testo.startswith(AVVISI_DI_SISTEMA):
         return  # avvisi automatici (GitHub, promemoria, prompt di avvio): non sono messaggi di Mario
     testo = togli_segreti(testo)
     with open(os.path.join(gitdir, "scorta-msg.md"), "w", encoding="utf-8") as f:
         f.write(f"# Ultimo messaggio di Mario ({ora_italiana()} ora italiana)\n\n{testo}\n")
-    aggiungi_al_registro(gitdir, ruolo, testo, sessione_di(dati))
+    aggiungi_al_registro(gitdir, ruolo, testo, sessione_di(dati), prendi_domanda(gitdir))
 
 
 def testo_assistente(voce):
@@ -295,6 +417,16 @@ def salva_risposta(dati, gitdir):
             return t
         corto = t[:n]
         return (corto.rsplit(None, 1)[0] if " " in corto else corto) + " …"
+    # C469 rapporto 12 voce 6: il blocco ❓ (a capo, senza la riga corta «Aspettano te») per la prossima voce di Mario
+    # nell'archivio; una risposta senza domande lo cancella (Mario allora non sta rispondendo a una domanda)
+    inizio = INIZIO_DOMANDE.search(testo)
+    blocco = RIGA_CORTA.sub("", testo[inizio.start():].split("───")[0]).strip() if inizio else ""
+    percorso = os.path.join(gitdir, "scorta-domanda.md")
+    if blocco:
+        with open(percorso, "w", encoding="utf-8") as f:
+            f.write(taglia(blocco, DOMANDA_MAX) + "\n")
+    elif os.path.exists(percorso):
+        os.remove(percorso)
     corpo, domande = taglia(corpo, RISPOSTA_MAX), taglia(domande, RISPOSTA_MAX)
     with open(os.path.join(gitdir, "scorta-risposta.md"), "w", encoding="utf-8") as f:
         f.write(f"# Ultima risposta di Claude ({ora_italiana()} ora italiana)\n\n{corpo}\n"
@@ -314,13 +446,132 @@ def leggi_voci(testo):
     return [(q, ses, "\n".join(r).strip()) for q, ses, r in voci]
 
 
-def scrivi_voci(voci):
-    voci = voci[-REGISTRO_MAX:]
+def scrivi_voci(voci, tetto=REGISTRO_MAX, testa=None):
+    # tetto 0 = tutte (archivio); testa None = quella del registro
+    voci = voci[-tetto:] if tetto else voci
     corpo = "".join(f"\n## {q} · {ses}\n{t}\n" for q, ses, t in voci)
-    return TESTA_REGISTRO.format(n=REGISTRO_MAX) + corpo
+    return (TESTA_REGISTRO.format(n=REGISTRO_MAX) if testa is None else testa) + corpo
 
 
-def aggiungi_al_registro(gitdir, ruolo, testo, sessione):
+def senza_domanda(testo):
+    """C469 rapporto 12 voce 6: il testo di Mario senza «> Rispondeva a: …» (che sta solo nell'archivio)."""
+    return CODA_DOMANDA.sub("", str(testo or "")).rstrip()
+
+
+def chiave(v):
+    # stessa voce = stessa ora, sessione e testo di Mario (con o senza la domanda dell'archivio): niente doppi
+    return v[0], v[1], senza_domanda(v[2])
+
+
+def unisci_voci(*testi):
+    # voci di più registri o archivi, senza doppi (chiave), in ordine di ora (stabile); fra la voce del registro e la
+    # stessa dell'archivio con la domanda a cui rispondeva resta la più lunga
+    indice, voci = {}, []
+    for t in testi:
+        for v in leggi_voci(t):
+            k = chiave(v)
+            if k not in indice:
+                indice[k] = len(voci)
+                voci.append(v)
+            elif len(v[2]) > len(voci[indice[k]][2]):
+                voci[indice[k]] = v
+    voci.sort(key=lambda v: ora_voce(v[0]))
+    return voci
+
+
+def scrivi_archivio(voci):
+    mese = voci[0][0][:7] if voci else ""
+    return scrivi_voci(voci, tetto=0, testa=TESTA_ARCHIVIO.format(mese=mese))
+
+
+def unisci_registri(*testi):
+    """C469 B6: unione di registri voce per voce, come aggiungi_al_registro (stessa voce = stessa ora, sessione e testo),
+    in ordine di ora, le ultime REGISTRO_MAX. È il driver «registro» di .gitattributes: prima vinceva la scorta intera
+    (cp %B %A) e i messaggi entrati intanto nel ramo da un'altra chat sparivano (09/11 19:11 e 19:16, rimessi a mano)."""
+    return scrivi_voci(unisci_voci(*testi))
+
+
+def driver_registro(base, nostro, loro, archivio=False):
+    """git merge, driver «registro» (%O %A %B): scrive l'unione in %A. Uscita 0 = unito; 1 = git lascia il conflitto
+    (mai un'unione a metà che perde voci). archivio=True: driver «archivio», senza tetto."""
+    try:
+        testi = []
+        for percorso in (nostro, loro):
+            with open(percorso, encoding="utf-8") as f:
+                testi.append(f.read())
+        voci = unisci_voci(*testi)
+        unito = scrivi_archivio(voci) if archivio else scrivi_voci(voci)
+        attese = max(len(leggi_voci(t)) for t in testi)
+        if len(leggi_voci(unito)) < (attese if archivio else min(REGISTRO_MAX, attese)):
+            return 1
+        with open(nostro, "w", encoding="utf-8") as f:
+            f.write(unito)
+        return 0
+    except Exception:
+        return 1
+
+
+def messaggi_nuovi(scorta, head="HEAD"):
+    """C469 B6: voci del registro della scorta che il ramo non ha e più nuove della voce più vecchia del ramo (quelle
+    più vecchie sono uscite per il tetto delle REGISTRO_MAX, ma erano arrivate). Una scorta che porta solo un messaggio
+    di Mario NON è «niente»: va unita, sennò il messaggio non entra mai nel registro del ramo."""
+    nuove = []
+    for f in FILE_REGISTRO.values():
+        rc, suo = run("show", f"{scorta}:{f}")
+        if rc:
+            continue
+        ramo = leggi_voci(git("show", f"{head}:{f}"))
+        piu_vecchia, gia = min((ora_voce(v[0]) for v in ramo), default=""), {chiave(v) for v in ramo}
+        nuove += [v for v in leggi_voci(suo) if chiave(v) not in gia and ora_voce(v[0]) >= piu_vecchia]
+    # C469 fase 1: l'archivio non ha tetto, il confronto è esatto (anche i messaggi più vecchi della prima voce del ramo);
+    # una voce che il ramo ha nei registri ma non ancora nell'archivio non è nuova (la porta la prossima scorta)
+    # (confronto con la chiave: la domanda attaccata nell'archivio, rapporto 12 voce 6, non fa una voce nuova)
+    nei_registri = {chiave(v) for f in FILE_REGISTRO.values() for v in leggi_voci(git("show", f"{head}:{f}"))}
+    for f in git("ls-tree", "--name-only", scorta, f"{ARCHIVIO}/").splitlines():
+        gia = {chiave(v) for v in leggi_voci(git("show", f"{head}:{f}"))} | nei_registri | {chiave(v) for v in nuove}
+        nuove += [v for v in leggi_voci(git("show", f"{scorta}:{f}")) if chiave(v) not in gia]
+    return nuove
+
+
+def archivio_della_scorta(gitdir, head, prima):
+    """C469 fase 1: {percorso nel ramo: testo} dei mesi dei miei messaggi (.git/scorta-archivio.md, mai tagliato),
+    uniti all'archivio del ramo (HEAD) e a quello dell'ultima scorta (contenitore riavviato: niente perso)."""
+    try:
+        with open(os.path.join(gitdir, "scorta-archivio.md"), encoding="utf-8") as f:
+            mie = leggi_voci(f.read())
+    except OSError:
+        return {}
+    # anche le voci dei registri del ramo: un messaggio arrivato da una chat col codice vecchio (solo nel registro)
+    # entra nell'archivio alla prima scorta di una chat aggiornata, prima di uscire dai 40
+    mesi = {}
+    for v in mie + [v for f in FILE_REGISTRO.values() for v in leggi_voci(git("show", f"{head}:{f}"))]:
+        mesi.setdefault(file_archivio(v[0]), []).append(v)
+    return {percorso: scrivi_archivio(unisci_voci(git("show", f"{head}:{percorso}"),
+                                                  git("show", f"{prima}:{percorso}") if prima else "",
+                                                  scrivi_voci(voci, tetto=0, testa="")))
+            for percorso, voci in mesi.items()}
+
+
+def adesso():
+    try:
+        from zoneinfo import ZoneInfo
+        return datetime.datetime.now(ZoneInfo("Europe/Rome")).strftime("%Y-%m-%d %H:%M")
+    except Exception:
+        return datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+
+
+def senza_testate(testo):
+    # una riga del testo uguale a una testata la spezzerebbe: uno spazio davanti
+    return "\n".join(" " + r if VOCE.match(r) else r for r in str(testo or "").splitlines()).strip()
+
+
+def scrivi_nell_archivio(gitdir, sessione, testo, quando=None):
+    # C469 fase 1: l'archivio locale, che non si taglia mai (la scorta lo porta nel ramo)
+    with open(os.path.join(gitdir, "scorta-archivio.md"), "a", encoding="utf-8") as f:
+        f.write(f"\n## {quando or adesso()} · {sessione}\n{senza_testate(testo)}\n")
+
+
+def aggiungi_al_registro(gitdir, ruolo, testo, sessione, domanda=""):
     # il registro di questo contenitore; il primo messaggio lo fa partire dall'unione di quello del ramo (HEAD) e di
     # quello della scorta su GitHub (contenitore nuovo con la scorta non ancora unita: i messaggi di prima non si
     # perdono). Dopo, solo il proprio: le voci più vecchie delle 40 tolte non devono rientrare.
@@ -338,18 +589,17 @@ def aggiungi_al_registro(gitdir, ruolo, testo, sessione):
             if v not in viste:
                 viste.add(v)
                 voci.append(v)
-    try:
-        from zoneinfo import ZoneInfo
-        quando = datetime.datetime.now(ZoneInfo("Europe/Rome")).strftime("%Y-%m-%d %H:%M")
-    except Exception:
-        quando = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M")
+    quando = adesso()
     sessione = sessione_corta(sessione) or "?"
-    # una riga del testo uguale a una testata la spezzerebbe: uno spazio davanti
-    testo = "\n".join(" " + r if VOCE.match(r) else r for r in testo.splitlines())
-    voci.append((quando, sessione, testo.strip()))
-    voci.sort(key=lambda v: v[0])  # ordine stabile: a parità di minuto resta l'ordine di arrivo
+    testo = senza_testate(testo)
+    voci.append((quando, sessione, testo))
+    voci.sort(key=lambda v: ora_voce(v[0]))  # ordine stabile: a parità di minuto resta l'ordine di arrivo
     with open(percorso, "w", encoding="utf-8") as f:
         f.write(scrivi_voci(voci))
+    # la stessa voce nell'archivio; con la domanda a cui rispondeva (rapporto 12 voce 6), citata con «> »
+    if domanda:
+        testo += f"\n\n{RISPONDEVA}\n" + "\n".join("> " + r for r in domanda.splitlines())
+    scrivi_nell_archivio(gitdir, sessione, testo, quando)
 
 
 def ruolo_da_avvio(testo):
@@ -467,8 +717,19 @@ def scorta(gitdir, ruolo="principale", push=True):
         prima = locale or remota
         chiudi = da_chiudere(gitdir, ruolo, ramo, head, nome)
 
-    env = dict(os.environ, GIT_INDEX_FILE=os.path.join(gitdir, "scorta-index"))
-    if run("read-tree", head, env=env)[0] or run("add", "-A", env=env, timeout=60)[0]:
+    indice = os.path.join(gitdir, "scorta-index")
+    env = dict(os.environ, GIT_INDEX_FILE=indice)
+    # C469 (09/11: 13 «tempo scaduto» dell'hook a ogni messaggio, in 5 sessioni): si parte dall'indice vero di git, che sa
+    # già quali file sono cambiati: `git add -A` da ~2 s (molti di più a contenitore freddo, oltre i 10 s dell'hook) a
+    # ~0,01 s, stesso albero. Senza l'indice vero (o se la copia non riesce) si riparte da HEAD come prima.
+    try:
+        # E327: copy2 tiene l'ora dell'indice vero; con copyfile un file cambiato nello stesso secondo e con la stessa
+        # lunghezza sembrava «non cambiato» (racy git) e la scorta salvava il contenuto VECCHIO (prova rossa «a volte»)
+        shutil.copy2(os.path.join(gitdir, "index"), indice)
+        pronto = True
+    except OSError:
+        pronto = run("read-tree", head, env=env)[0] == 0
+    if not pronto or run("add", "-A", env=env, timeout=60)[0]:
         return
     msg = os.path.join(gitdir, "scorta-msg.md")
     if os.path.exists(msg):
@@ -481,10 +742,23 @@ def scorta(gitdir, ruolo="principale", push=True):
             blob = git("hash-object", "-w", percorso)
             if not blob or run("update-index", "--add", "--cacheinfo", f"100644,{blob},{nel_ramo}", env=env)[0]:
                 return
+    for nel_ramo, testo in archivio_della_scorta(gitdir, head, prima).items():  # C469 fase 1
+        blob = git("hash-object", "-w", "--stdin", inp=testo)
+        if not blob or run("update-index", "--add", "--cacheinfo", f"100644,{blob},{nel_ramo}", env=env)[0]:
+            return
+    # C434: i totali del consumo (spreco-token.py) stanno in .git/consumo, fuori dai file del progetto: qui entrano
+    # nel commit della scorta in archivio/consumo/, senza toccare i file né l'indice veri.
+    for consumo in sorted(glob.glob(os.path.join(gitdir, "consumo", "*.json"))):
+        blob = git("hash-object", "-w", consumo)
+        nel_ramo = "archivio/consumo/" + os.path.basename(consumo)
+        if not blob or run("update-index", "--add", "--cacheinfo", f"100644,{blob},{nel_ramo}", env=env)[0]:
+            return
     albero = git("write-tree", env=env)
     if not albero:
         return
     if prima and git("rev-parse", f"{prima}^{{tree}}") == albero and run("merge-base", "--is-ancestor", head, prima)[0] == 0:
+        if push and not gia_spinta(gitdir, nome, prima):  # C469 rapporto 12 voce 10: l'invio di prima era fallito
+            lancia_spinta(prima, nome, chiudi)
         return  # niente di nuovo dall'ultima scorta
     if ferma and not prima and git("rev-parse", f"{head}^{{tree}}") == albero and \
             run("merge-base", "--is-ancestor", head, f"refs/remotes/origin/{ramo}")[0] == 0:
@@ -505,9 +779,25 @@ def scorta(gitdir, ruolo="principale", push=True):
         with open(os.path.join(gitdir, "scorta-a-parte"), "w", encoding="utf-8") as f:
             f.write(nome + "\n")
     if push:  # in background: la risposta a Mario non aspetta la rete
-        subprocess.Popen(["timeout", "120", sys.executable, "-I", os.path.abspath(__file__), "spingi", nuovo, nome,
-                          *chiudi], cwd=CWD, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
-                         stderr=subprocess.DEVNULL, start_new_session=True)
+        lancia_spinta(nuovo, nome, chiudi)
+
+
+def lancia_spinta(nuovo, nome, chiudi):
+    subprocess.Popen(["timeout", "120", sys.executable, "-I", os.path.abspath(__file__), "spingi", nuovo, nome,
+                      *chiudi], cwd=CWD, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL,
+                     stderr=subprocess.DEVNULL, start_new_session=True)
+
+
+def gia_spinta(gitdir, nome, punta):
+    """C469 rapporto 12 voce 10: la scorta è già su GitHub? (riferimento remoto aggiornato dal push, o il segno
+    .git/scorta-spinta scritto da spingi dopo un invio riuscito). No → il giro dopo la rimanda anche senza modifiche."""
+    if git("rev-parse", "-q", "--verify", f"refs/remotes/origin/{nome}") == punta:
+        return True
+    try:
+        with open(os.path.join(gitdir, "scorta-spinta"), encoding="utf-8") as f:
+            return f.read().split() == [nome, punta]
+    except OSError:
+        return False
 
 
 def leggi_segni(gitdir):
@@ -574,6 +864,10 @@ def chiudi_a_parte(nome, punta):
 
 def spingi(nuovo, nome, *chiudi):
     if run("push", "-q", "origin", f"{nuovo}:refs/heads/{nome}", timeout=50)[0] == 0:
+        gitdir = git("rev-parse", "--absolute-git-dir")
+        if gitdir:  # C469 rapporto 12 voce 10: l'ultimo invio riuscito
+            with open(os.path.join(gitdir, "scorta-spinta"), "w", encoding="utf-8") as f:
+                f.write(f"{nome} {nuovo}\n")
         for voce in chiudi:  # C276: la scorta normale è ripartita, i rami a parte si chiudono
             chiudi_a_parte(*voce.split("=", 1))
         return
@@ -613,6 +907,7 @@ def main():
     gitdir = git("rev-parse", "--absolute-git-dir")
     if not gitdir:
         return
+    configura_driver()  # C469 B6 e fase 1: anche nei contenitori avviati prima dei driver
     if sys.argv[1:2] == ["ruolo"]:  # a mano: python3 -I .claude/hooks/scorta.py ruolo [parallela]
         if sys.argv[2:3] and sys.argv[2] in RUOLI:
             scrivi_ruolo(gitdir, sys.argv[2])
@@ -643,6 +938,10 @@ def main():
 
 
 if __name__ == "__main__":  # C352: avvio-check.py importa lavoro_della_scorta, senza far partire la scorta
+    if sys.argv[1:2] == ["unisci-registro"] and len(sys.argv) == 5:  # C469 B6: driver di git, l'uscita conta
+        sys.exit(driver_registro(*sys.argv[2:5]))
+    if sys.argv[1:2] == ["unisci-archivio"] and len(sys.argv) == 5:  # C469 fase 1: driver «archivio», senza tetto
+        sys.exit(driver_registro(*sys.argv[2:5], archivio=True))
     try:
         main()
     except Exception:

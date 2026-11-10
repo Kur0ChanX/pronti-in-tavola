@@ -18,6 +18,7 @@ import time
 
 SOGLIA = 20
 RIPETI = 5
+INTERO = 30  # minuti fra due avvisi col testo intero (C469 fase 2)
 PAUSA = 15
 
 
@@ -28,9 +29,11 @@ def file_memoria(progetto):
 
 def main():
     try:
-        json.load(sys.stdin)
+        dati = json.load(sys.stdin)
     except Exception:
-        pass
+        dati = {}
+    if isinstance(dati, dict) and dati.get('agent_id'):
+        return 0  # C469 fase 2 (rapporto 14 voce 5): un aiutante non ha messaggi di Mario in coda
     modo = sys.argv[1] if len(sys.argv) > 1 else 'tool'
     progetto = os.environ.get('CLAUDE_PROJECT_DIR') or os.getcwd()
     mem_path = file_memoria(progetto)
@@ -53,10 +56,14 @@ def main():
         durata = (adesso - m['inizio']) / 60
         if durata >= soglia and adesso - m.get('avvisato', 0) >= RIPETI * 60:
             m['avvisato'] = adesso
-            avviso = (f'⏱ Turno lungo (C218): lavori da {int(durata)} min senza chiudere il turno e i messaggi di Mario'
-                      ' aspettano in coda. Finito il pezzetto in corso: Bash in sottofondo `sleep 60; echo "ripresa'
-                      ' automatica: …"`, poi l\'ultimo messaggio a Mario (riga di stato, domande aperte in fondo) e'
-                      ' chiudi il turno. Comandi lunghi (prove, build) sempre in sottofondo.')
+            if adesso - m.get('intero', 0) >= INTERO * 60:  # C469 fase 2: il testo intero ogni 30 minuti, sennò corto
+                m['intero'] = adesso
+                avviso = (f'⏱ Turno lungo (C218): lavori da {int(durata)} min senza chiudere il turno e i messaggi di'
+                          ' Mario aspettano in coda. Finito il pezzetto in corso: Bash in sottofondo `sleep 60; echo'
+                          ' "ripresa automatica: …"`, poi l\'ultimo messaggio a Mario (riga di stato, domande aperte in'
+                          ' fondo) e chiudi il turno. Comandi lunghi (prove, build) sempre in sottofondo.')
+            else:
+                avviso = f'⏱ Turno lungo (C218): {int(durata)} min. Chiudi il turno come detto.'
         m['ultimo'] = adesso
     try:
         with open(mem_path, 'w', encoding='utf-8') as f:

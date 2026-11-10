@@ -21,6 +21,7 @@ casi = [
     ('versione', minuti(gh=500, attivo=False), 'github'),         # Blacksmith spento, GitHub con minuti
     ('versione', minuti(gh=500, bs=2990), 'github'),              # Blacksmith finito
     ('versione', minuti(gh=1800, bs=2990), 'locale'),             # GitHub solo con la riserva
+    ('versione', minuti(gh=1700, bs=2990), 'locale'),             # C471: 116 liberi < 2 giri da 87
     ('versione', minuti(gh=2764, attivo=False), 'locale'),
     ('lunedi', minuti(), 'blacksmith'),
     ('lunedi', minuti(bs=2500, giorni=20), 'nessuno'),            # i minuti servono alle versioni

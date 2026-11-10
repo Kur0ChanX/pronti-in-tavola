@@ -3,10 +3,6 @@
     "context7": {
       "type": "http",
       "url": "https://mcp.context7.com/mcp"
-    },
-    "parallel-search": {
-      "type": "http",
-      "url": "https://search.parallel.ai/mcp"
     }
   }
 }

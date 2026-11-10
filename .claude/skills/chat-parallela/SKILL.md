@@ -17,7 +17,7 @@ description: Regole delle due chat sullo stesso ramo (chi fa cosa, chat principa
 
 ## La chat parallela
 - Serve per un lavoro grande in una zona separata, che non tocca i file della principale.
-- Catena nuova (kit 30.7): nome di una parola, che non cambia mai, e prima forma libera della tabella «## Catene» di `docs/CHI-FA-COSA.md` (riserva: libri 📗 📒 📕 📓); numero da 1; fissi per tutta la catena anche all'handoff; chi la apre scrive la riga. Al massimo 3 parallele aperte insieme. Titoli: skill `consegne` fase 6.
+- Catena nuova (kit 30.7): nome di una parola, che non cambia mai, e prima forma libera della tabella «## Catene» di `docs/CHI-FA-COSA.md` (riserva: libri 📗 📒 📕 📓); numero da 1; fissi per tutta la catena anche all'handoff; chi la apre scrive la riga. Quante parallele insieme lo decide Mario (REGOLE «Chat e carico»). Titoli: skill `consegne` fase 6.
 - Prompt di avvio: «[AVVIO] Sei la chat parallela <zona> <NN> di <progetto> (ramo <ramo>)» + fetch e merge del ramo + file da leggere (`CLAUDE.md`, `docs/ERRORI.md`, le sue consegne `docs/CONSEGNE-PARALLELA-<lavoro>.md`).
 - Con quella frase la scorta si segna «parallela»: ramo `scorta-parallela-<AAAAMMGG>-<id sessione>/<ramo>` (uno per sessione, C352: due parallele insieme non si pestano), messaggio di Mario in `docs/ULTIMO-MESSAGGIO-PARALLELA.md`. Aperta a mano senza la frase: primo comando `python3 -I .claude/hooks/scorta.py ruolo parallela`.
 - All'avvio unisce solo la sua scorta; quella della principale non si unisce (al massimo `git show <scorta>:<file del messaggio>`).
@@ -30,3 +30,14 @@ description: Regole delle due chat sullo stesso ramo (chi fa cosa, chat principa
 - Chat ferma con un lavoro aperto (niente commit né messaggi da più di 1 ora): l'altra guarda `get_session`. Se è morta: una riga a Mario con il testo da incollare; il lavoro urgente (PR pronta, unione) lo prende l'altra, scrivendolo nel file.
 - Sessione nuova: la apre la chat che chiude con `create_session` (a 8 della catena Mario; skill `consegne`, fase 5); l'altra chat non la apre.
 - `send_message` solo a sessioni attive nell'ultima ora; per le altre una riga in `docs/DA-FARE.md`.
+
+## Carico (kit 35.1)
+- Per guardare le altre sessioni: `list_sessions` sempre con `limit` 4 (spostato da REGOLE «Token», kit 36.14).
+- Prima di passare un lavoro a un'altra chat (anche alla principale) guardo i suoi lavori in corso in `docs/CHI-FA-COSA.md`.
+- Richiesta piccola con l'altra chat carica: la faccio io, se non pesta la sua zona; sennò chat a parte. Passata a una chat carica si perde o arriva tardissimo.
+- Lavoro grosso mentre l'altra ha un lavoro grosso: chat a parte, mai in coda alla sua.
+- Ogni chat cose diverse, mai accavallate: zone e file in `docs/CHI-FA-COSA.md`, le parole di Mario girate intere.
+- Quante chat insieme lo decide Mario, non un numero fisso; una chat avviata su un lavoro importante si finisce.
+
+## Aiutanti (spostato da `REGOLE.md` «Token, file e aiutanti», kit 37.2)
+- Agente dedicato (`.claude/agents/`, motore leggero), mai `general-purpose` (Fable → skill `fable-opus`), rapporto corto, ognuno i suoi file, poi le prove delle parti cambiate; vicino alla soglia niente aiutanti lunghi.
