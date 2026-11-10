@@ -15,5 +15,13 @@
 "strumenti": 31,
 "motori": {
 "fable": 693819
+},
+"blocchi": {
+"Stop 12 · Ti fermi ad aspettare Mario": 1
+},
+"esempi_blocchi": {
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"19:20 · Ti fermi ad aspettare Mario con il contesto a 183k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+]
 }
 }
