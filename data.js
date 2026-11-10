@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.13';
+const VERSIONE_APP = '0.10.14';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.14', data: '10/11/2026',
+    nuovo: ['Ricettario «🏋️ Proteiche»: «📅 Il mio giorno proteico» in alto propone colazione, pranzo, spuntino e cena con i grammi di proteine e il totale; restano uguali per tutto il giorno, «🔄» cambia un piatto (con Annulla), l\'obiettivo in grammi si cambia con «✏️ Cambia»', 'Giorno proteico: «🛒 Lista della spesa» mette gli ingredienti delle 4 ricette per 1 porzione nella tua lista (sale, pepe e acqua no; Annulla toglie tutto) e «📤 Manda» lo condivide su WhatsApp', 'Ricetta proteica: in fondo «🔁 Simili a questa», fino a 4 proteiche con la stessa fonte o per lo stesso momento', 'Aiutante: «fammi un piano proteico» ti porta al giorno proteico'] },
   { v: '0.10.13', data: '10/11/2026',
     migliorato: ['Ricettario «🏋️ Proteiche» più ordinato: in alto solo Tutte, Proteiche, Preferite e «Altre ▾» (dentro Sarde, Italiane, Le mie)', 'Ricettario «🏋️ Proteiche»: momenti e fonti proteiche a scelta multipla (es. Colazione e Spuntino, Pollo e Albumi), in righe che scorrono di lato, col ✓ su quelle scelte', 'Ricettario: portata, difficoltà, tempo e ordine raccolti in «⚙️ Portata, difficoltà, tempo e ordine», col numero dei filtri accesi', 'Ricettario «🏋️ Proteiche»: riquadro verde con la lettura in corso (barra), «Oggi +N entrate in Proteiche», «🔍 Cerca altre» e «ℹ️ Le regole»'] },
   { v: '0.10.12', data: '10/11/2026',
