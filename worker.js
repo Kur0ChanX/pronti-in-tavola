@@ -320,6 +320,7 @@ const leggiWeb = u => urlRf(u) ? leggiRf(urlRf(u)) : leggiGz(u);
 const urlDaId = id => /^rf:/.test(String(id || '')) ? urlDaIdRf(id) : urlGz('https://ricette.giallozafferano.it/' + String(id || '').slice(3) + '.html');
 /* C125 (Mario 10/11 13:40 «la ricerca… nelle fonti alternative anche a giallozafferano»): ricette di RicetteFit con le parole
    cercate, dal loro elenco (1 richiesta al giorno, poi la cache). Spenta dalla pagina Database o RicetteFit giù = nessuna, senza errori. */
+const FIT_TUTTO = ['ricette proteiche', 'ricette light', 'secondi proteici', 'dolci proteici'];   // C126 «🔍 Cerca tutto» su GialloZafferano
 async function rfCerca(db, q) {
   let rr = [];
   try { if (db && await db.leggi1('rfSpento')) return []; rr = rfTrova(await paginaGz(MAPPA_RF, 'RicetteFit'), q, 12); } catch (e) { return []; }
@@ -355,15 +356,24 @@ async function ricettaGz(b, cfg, ctx) {
       return { db: await db.statoDb() };
     }
     if (b.db === 'cercaFit') {   // C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca… in automatico… tante fonti»): GZ (ricerca + «light») e RicetteFit (dal suo elenco: la ricerca del sito è vietata dal robots.txt)
-      const q = minuscolo(b.q).replace(/[^\p{L}\p{N} '-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
+      // C126: un momento (es. «🌅 Colazione») manda più parole insieme (qq, al massimo 4): si cercano tutte, senza doppioni
+      const pulisci = x => minuscolo(x).replace(/[^\p{L}\p{N} '-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 40);
+      // C126 (Mario 10/11 14:10 «senza selezionare… mi cerca tutto nei siti e le carica»): { tutto: true } = parole larghe su GZ e le prossime 30 di RicetteFit
+      const qq = [...new Set((b.tutto ? FIT_TUTTO : Array.isArray(b.qq) && b.qq.length ? b.qq : [b.q]).map(pulisci).filter(x => x.length >= 2))].slice(0, 4), q = b.tutto ? 'tutto' : qq[0] || '';
       if (q.length < 2) return { errore: 'scrivi almeno 2 lettere' };
-      const s0 = await db.statoDb(), radici = radiciRf(q);
-      let gz = [], rf = [], rete = 0;
-      try { gz = gzCerca(await paginaGz(urlCerca(/light|protei|\bfit\b/.test(q) ? q : q + ' light'))).map(x => x.url); } catch (e) { rete++; }
-      if (!(s0.rf && s0.rf.spento) && radici.length) {
-        try { rf = rfTrova(await paginaGz(MAPPA_RF, 'RicetteFit'), q, 20).map(x => x.url); }
-        catch (e) { rete++; }
+      const s0 = await db.statoDb(), conRf = !(s0.rf && s0.rf.spento);
+      let gz = [], rf = [], rete = 0, mappa = null;
+      for (const x of qq) {
+        try { gz = gz.concat(gzCerca(await paginaGz(urlCerca(/light|protei|\bfit\b/.test(x) ? x : x + ' light'))).map(y => y.url)); } catch (e) { rete++; }
+        if (conRf && !b.tutto && radiciRf(x).length) {
+          try { mappa = mappa || await paginaGz(MAPPA_RF, 'RicetteFit'); rf = rf.concat(rfTrova(mappa, x, 20).map(y => y.url)); }
+          catch (e) { rete++; }
+        }
       }
+      if (conRf && b.tutto) {   // tutto RicetteFit è fit: le prossime 30 dell'elenco, da dove è arrivato il motore
+        try { const i = (s0.rf && s0.rf.i) || 0; rf = rfElenco(await paginaGz(MAPPA_RF, 'RicetteFit')).slice(i, i + 30); } catch (e) { rete++; }
+      }
+      gz = [...new Set(gz)]; rf = [...new Set(rf)].slice(0, 30);
       if (rete && !gz.length && !rf.length) return { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' };
       const n = await db.inCodaPrima(gz.concat(rf)), t = await db.turboStato();
       if (n.nuove && !(t && t.attivo)) await db.turboAvvia(Math.min(40, n.nuove));   // le legge subito (5 ogni 30 s); un carico già in corso non si tocca

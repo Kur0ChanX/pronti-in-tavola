@@ -347,30 +347,30 @@ function notaFit() {
 /* C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca per ricerche fitness che mi cerca in automatico… tante fonti»): qui sopra filtra
    le proteiche già lette; il tasto chiede al server di cercare su GialloZafferano e RicetteFit e di leggere SUBITO le nuove (5 ogni 30 s).
    Entrano in «🏋️ Proteiche» solo se passano le regole (valori per porzione). Instagram e YouTube no: condizioni d'uso e niente valori. */
-const FIT_CERCA = [['pollo', '🍗 Pollo'], ['tonno', '🐟 Tonno'], ['albumi', '🥚 Albumi'], ['pancake', '🥞 Pancake'], ['budino', '🍮 Budino'], ['yogurt', '🥣 Yogurt']];
 function cercaFitBox(f) {
-  const q = f.q.trim(), k = q.toLowerCase(), c = RIC.fitCerca && RIC.fitCerca.q === k ? RIC.fitCerca : null, Q = `«${esc(q)}»`;
-  const esito = !c ? '' : c.stato === 'carico' ? `<p class="piccolo" style="margin:0">🔎 Cerco ${Q} su GialloZafferano e RicetteFit…</p>`
+  const q = f.q.trim(), k = q.toLowerCase(), m = momentoFit(f.fit), x = RIC.fitCerca;
+  const c = x && (x.mom === '*' ? !m && !k : x.mom ? !!m && x.mom === m[0] : !!k && x.q === k) ? x : null, Q = `«${esc(c ? c.testo : q)}»`, conQ = c && c.mom === '*' ? 'su tutti i siti' : 'con ' + Q;   // C126: esito del momento scelto o della parola scritta
+  const esito = !c ? '' : c.stato === 'carico' ? `<p class="piccolo" style="margin:0">🔎 Cerco ${c.mom === '*' ? 'ricette fit' : Q} su GialloZafferano e RicetteFit…</p>`
     : c.stato === 'errore' ? `<p class="piccolo" style="margin:0">${esc(c.errore)}</p>`
-    : c.nuove ? `<p class="piccolo" style="margin:0">🔎 Trovate <b>${c.nuove}</b> ricette nuove con ${Q}${c.gia === 1 ? ' (un\'altra l\'avevo già letta)' : c.gia ? ` (altre ${c.gia} le avevo già lette)` : ''}. Le leggo una per una, 5 ogni 30 secondi: quelle che passano le regole compaiono qui da sole.</p>`
-    : c.gia ? `<p class="piccolo" style="margin:0">Niente di nuovo con ${Q}: ${c.gia === 1 ? 'quella trovata l\'avevo già letta' : `le ${c.gia} trovate le avevo già lette`}. Quelle che passano le regole sono qui sotto.</p>`
-    : `<p class="piccolo" style="margin:0">Nessuna ricetta trovata con ${Q}. Prova con un'altra parola (es. pollo, tonno, budino).</p>`;
+    : c.nuove ? `<p class="piccolo" style="margin:0">🔎 Trovate <b>${c.nuove}</b> ricette nuove ${conQ}${c.gia === 1 ? ' (un\'altra l\'avevo già letta)' : c.gia ? ` (altre ${c.gia} le avevo già lette)` : ''}. Le leggo una per una, 5 ogni 30 secondi: quelle che passano le regole compaiono qui da sole.</p>`
+    : c.gia ? `<p class="piccolo" style="margin:0">Niente di nuovo ${conQ}: ${c.gia === 1 ? 'quella trovata l\'avevo già letta' : `le ${c.gia} trovate le avevo già lette`}. Quelle che passano le regole sono qui sotto.</p>`
+    : `<p class="piccolo" style="margin:0">Nessuna ricetta trovata ${conQ}. Prova con un'altra parola (es. pollo, tonno, budino).</p>`;
   return `<section class="scheda ric-cerca-fit"><h2>🔍 Cerca ricette fit</h2>
-    <div class="scelte">${FIT_CERCA.map(([v, t]) => `<button type="button" class="scelta" data-a="ric-cerca-fit" data-v="${v}" aria-pressed="${k === v}">${t}</button>`).join('')}</div>
-    ${q.length >= 2 ? `<button type="button" class="btn pieno" data-a="ric-cerca-fit" ${c && c.stato === 'carico' ? 'disabled' : ''}>${ico('cerca')}Cerca ${Q} su GialloZafferano e RicetteFit</button>` : '<p class="piccolo tenue" style="margin:0">Tocca una parola o scrivila nella ricerca in alto: cerco anche su GialloZafferano e RicetteFit e leggo subito le ricette nuove.</p>'}
+    ${q.length >= 2 ? `<button type="button" class="btn pieno" data-a="ric-cerca-fit" ${c && c.stato === 'carico' ? 'disabled' : ''}>${ico('cerca')}Cerca ${Q} su GialloZafferano e RicetteFit</button>` : `<button type="button" class="btn pieno" data-a="ric-cerca-fit-tutto" ${c && c.stato === 'carico' ? 'disabled' : ''}>${ico('cerca')}${m ? `Cerca ancora ricette per «${esc(m[1].replace(/^\S+\s/, ''))}»` : 'Cerca nuove ricette fit su tutti i siti'}</button>
+      <p class="piccolo tenue" style="margin:0">Puoi anche toccare un momento qui sopra (Colazione, Pranzo, Cena…) o scrivere un piatto o un ingrediente nella ricerca in alto.</p>`}
     ${esito}</section>`;
 }
-function cercaFit(q) {
-  q = String(q || '').trim(); const k = q.toLowerCase();
+function cercaFit(q, qq, tutto) {   // qq: le parole di un momento; tutto: «Cerca nuove ricette fit su tutti i siti» (C126)
+  q = String(q || '').trim(); const k = q.toLowerCase(), mom = tutto ? '*' : Array.isArray(qq) ? UI.ric.fit : '', testo = q;
   if (q.length < 2 || (RIC.fitCerca && RIC.fitCerca.q === k && RIC.fitCerca.stato === 'carico')) return;   // niente doppio tocco
-  if (!navigator.onLine) { RIC.fitCerca = { q: k, stato: 'errore', errore: 'Senza rete non posso cercare: le proteiche già lette sono qui sotto.' }; render(); return; }
-  RIC.fitCerca = { q: k, stato: 'carico' }; render();
-  RIC.chiedi({ db: 'cercaFit', q }).then(j => {
+  if (!navigator.onLine) { RIC.fitCerca = { q: k, mom, testo, stato: 'errore', errore: 'Senza rete non posso cercare: le proteiche già lette sono qui sotto.' }; render(); return; }
+  RIC.fitCerca = { q: k, mom, testo, stato: 'carico' }; render();
+  RIC.chiedi(Object.assign({ db: 'cercaFit', q }, tutto ? { tutto: true } : mom ? { qq } : {})).then(j => {
     if (!j || j.errore) throw new Error(j && j.errore || 'il server non risponde');
-    RIC.fitCerca = { q: k, stato: 'ok', nuove: j.nuove || 0, gia: j.gia || 0 };
+    RIC.fitCerca = { q: k, mom, testo, stato: 'ok', nuove: j.nuove || 0, gia: j.gia || 0 };
     if (j.db) RIC.db = j.db;
     if (j.nuove) aggiornaFit(10);   // l'elenco si aggiorna da solo ogni 30 s per 5 minuti
-  }).catch(e => { RIC.fitCerca = { q: k, stato: 'errore', errore: `Non riesco a cercare adesso (${e && e.message || e}). Riprova fra poco.` }; })
+  }).catch(e => { RIC.fitCerca = { q: k, mom, testo, stato: 'errore', errore: `Non riesco a cercare adesso (${e && e.message || e}). Riprova fra poco.` }; })
     .finally(() => { if (UI.vista === 'ricettario') render(); });
 }
 function aggiornaFit(n) {
@@ -379,9 +379,41 @@ function aggiornaFit(n) {
 }
 /* C125 (Mario 10/11 «dolci proteici, snack, primi, secondi… ricette immediate»): dentro «🏋️ Proteiche» Pasti, Snack e dolci, «⚡ Pronte in N minuti»
    (N da Impostazioni → Sviluppatore, fitVeloci; usa il filtro del tempo, quindi «✕ Azzera i filtri» toglie anche questo) */
+/* C126 (Mario 10/11 13:57 «6 selezioni così sono troppo vincolato, dividile per spuntino merenda pranzo cena dolce colazione post cena»):
+   momenti della giornata. Un tocco = filtra le proteiche di quel momento E cerca su tutte le fonti le sue parole (al massimo 4).
+   Il momento di una ricetta si decide qui sola (come catRic, PT E49): profilo (pasto o snack), portata e parole del NOME. */
+const MOMENTI_FIT = [
+  ['colazione', '🌅 Colazione', ['colazione proteica', 'pancake proteici', 'porridge proteico', 'overnight oats']],
+  ['spuntino', '🍎 Spuntino', ['spuntino proteico', 'snack proteici', 'barrette proteiche']],
+  ['merenda', '🧃 Merenda', ['merenda proteica', 'muffin proteici', 'torta proteica']],
+  ['pranzo', '🍝 Pranzo', ['pranzo proteico', 'pasta proteica', 'insalata di pollo', 'bowl proteica']],
+  ['cena', '🍽 Cena', ['cena proteica', 'secondi di pesce light', 'petto di pollo', 'frittata di albumi']],
+  ['dopocena', '🌙 Dopo cena', ['dessert proteico', 'budino proteico', 'mousse proteica', 'yogurt greco']],
+  ['dolci', '🍰 Dolci', ['dolci proteici', 'cheesecake proteica', 'brownies proteici', 'gelato proteico']],
+  ['allenamento', '💪 Dopo l\'allenamento', ['post workout', 'frullato proteico', 'pancake proteici', 'riso e pollo']]];
+const PAROLE_MOM = {
+  colazione: /pancake|porridge|overnight|avena|muffin|plumcake|crep|waffle|french toast|granola|muesli|frullat|smoothie|yogurt|skyr|biscott|ciambell|colazion|brioche/,
+  dolce: /dolc|tort[ae]|budin|mousse|cheesecake|gelat|biscott|muffin|brownie|tiramis|crem[ae]|panna cotta|semifreddo|barrett|cioccolat|cookie|plumcake|crostat|ciambell|pancake|dessert/,
+  pranzo: /pasta|spaghett|penne|fusill|rigaton|riso|risott|insalat|bowl|poke|cous|farro|orzo|quinoa|wrap|piadin|panin|burger|lasagn|gnocch|tagliatell|zupp|minestr/,
+  cena: /pollo|tacchino|manzo|vitello|maiale|pesce|salmone|merluzzo|tonno|orata|branzino|spigola|gamber|polpo|calamar|seppi|uov|frittat|omelette|albumi|zupp|vellutat|insalat|tofu|tempeh|burger|polpett|spiedin|involtin|filett|tagliata/,
+  dopocena: /yogurt|skyr|ricotta|fiocchi di latte|kefir|budin|mousse|gelat|crem[ae]|panna cotta|dessert/ };
+function momentoRic(r, m) {
+  const n = r && r.nutr, p = fitRic(n); if (!p) return false;
+  const t = senzaAccenti(r.nome), dolce = r.categoria === 'dolci' || PAROLE_MOM.dolce.test(t);
+  if (m === 'colazione') return PAROLE_MOM.colazione.test(t);
+  if (m === 'spuntino') return p === 'snack';
+  if (m === 'merenda') return p === 'snack' && (dolce || PAROLE_MOM.colazione.test(t));
+  if (m === 'pranzo') return p === 'pasto' && !dolce && (r.categoria === 'primi' || PAROLE_MOM.pranzo.test(t));
+  if (m === 'cena') return p === 'pasto' && !dolce && (['secondi', 'contorni', 'antipasti'].includes(r.categoria) || PAROLE_MOM.cena.test(t));
+  if (m === 'dopocena') return p === 'snack' && n.kcal <= 220 && PAROLE_MOM.dopocena.test(t);
+  if (m === 'dolci') return dolce;
+  if (m === 'allenamento') return n.prot >= 20 && n.carb != null && n.carb >= n.prot;   // proteine e carboidrati insieme
+  return true;
+}
+const momentoFit = k => MOMENTI_FIT.find(x => x[0] === k);
 function sceltaFit(f) {
   const n = sogliaFit('fitVeloci', 10), b = (a, v, t, si) => `<button type="button" class="scelta" data-a="${a}" data-v="${v}" aria-pressed="${si}">${t}</button>`;
-  return `<div class="scelte ric-fit-scelte" role="group" aria-label="Che tipo">${b('ric-fit-tipo', 'pasto', '🍽 Pasti', f.fit === 'pasto')}${b('ric-fit-tipo', 'snack', '🍫 Snack e dolci', f.fit === 'snack')}${b('ric-tempo', n, `⚡ Pronte in ${n} minuti`, f.tempo === n)}</div>`;
+  return `<div class="scelte ric-fit-scelte" role="group" aria-label="Quando">${MOMENTI_FIT.map(([k, t]) => b('ric-fit-tipo', k, t, f.fit === k)).join('')}${b('ric-tempo', n, `⚡ Pronte in ${n} minuti`, f.tempo === n)}</div>`;
 }
 
 /* 🗄 DATABASE RICETTE (C60, C61; Mario 08/11 «quante ricette ho, quante nuove, quali, quali con la voce, dati offline»):
@@ -515,6 +547,7 @@ function vRicettario() {
   if (RIC.stato !== 'pronto') return attesaRic('Ricettario');
   leggiScelte(); chiediStatoDb();
   const f = UI.ric || (UI.ric = Object.assign(filtriVuoti(), leggiRic('pit-ric-filtri', {}), { q: '' }));   // C69: filtri ricordati (non la ricerca scritta)
+  if (f.fit && !momentoFit(f.fit)) f.fit = '';   // C126: «pasto»/«snack» salvati dalla v0.10.7-0.10.9 non sono più scelte
   if (f.facile) { f.diff = f.diff || 'facile'; delete f.facile; }   // C124: il vecchio «Solo facili» diventa «Facili»
   if (UI.ricZona) { f.zona = UI.ricZona; f.cat = ''; delete UI.ricZona; salvaFiltri(); }   // dall'aiutante o dalla Home («🏋️ Proteiche»)
   const pref = preferiteRic(), q = senzaAccenti(f.q).trim(), cache = cacheRic();
@@ -522,7 +555,7 @@ function vRicettario() {
   const scar = RIC.scaricate, extra = Object.assign({}, scar, cache);
   const elenco = elencoRic();
   const tutte = mie.concat(elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti, nutr: r.nutr || x.nutr || null }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
-  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && (f.fit ? fitRic(r.nutr) === f.fit : fitRic(r.nutr)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
+  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && (momentoFit(f.fit) ? momentoRic(r, f.fit) : fitRic(r.nutr)) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
     && (!f.tempo || (minutiRic(r) > 0 && minutiRic(r) <= f.tempo)) && (!f.diff || diffRic(r.difficolta) === f.diff)
@@ -903,8 +936,9 @@ Object.assign(A, {
   'ric-riapri'(el) { delete RIC.errore[el.dataset.v]; render(); },
   'ric-zona'(el) { const f = UI.ric; f.zona = el.dataset.v; if (f.zona !== 'fit') { f.fit = ''; if (f.tempo === sogliaFit('fitVeloci', 10)) f.tempo = 0; } salvaFiltri(); render(); },   // C125: Pasti/Snack e «⚡» valgono solo dentro Proteiche
   'ric-cat'(el) { UI.ric.cat = el.dataset.v; salvaFiltri(); render(); },
+  'ric-cerca-fit-tutto'() { const m = momentoFit(UI.ric.fit); if (m) cercaFit(m[1].replace(/^\S+\s/, ''), m[2]); else cercaFit('tutti i siti', null, true); },   // C126 (Mario 14:10 «mi cerca tutto nei siti»)
   'ric-cerca-fit'(el) { const v = el.dataset.v || (UI.ric.q || '').trim(); if (v.length < 2) return; UI.ric.q = v; cercaFit(v); },   // C125
-  'ric-fit-tipo'(el) { UI.ric.fit = UI.ric.fit === el.dataset.v ? '' : el.dataset.v; salvaFiltri(); render(); },   // C125: ritocco = tolto
+  'ric-fit-tipo'(el) { const f = UI.ric; f.fit = f.fit === el.dataset.v ? '' : el.dataset.v; salvaFiltri(); const m = momentoFit(f.fit); if (m) cercaFit(m[1].replace(/^\S+\s/, ''), m[2]); else render(); },   // C126: ritocco = tolto; un momento cerca anche le sue parole
   'ric-tempo'(el) { const v = Number(el.dataset.v); UI.ric.tempo = UI.ric.tempo === v ? 0 : v; salvaFiltri(); render(); },
   'ric-diff'(el) { UI.ric.diff = UI.ric.diff === el.dataset.v ? '' : el.dataset.v; salvaFiltri(); render(); },
   'ric-fit-base'() { salvaParoleFit('', true); },
