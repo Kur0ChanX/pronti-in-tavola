@@ -1752,6 +1752,79 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (dbf.m !== 'GialloZafferano 35 · RicetteFit 5' || !/Ricette proteiche: 3\s*GialloZafferano 2 · RicetteFit 1/.test(dbf.f)) throw new Error('Database: numeri per fonte sbagliati: ' + JSON.stringify(dbf));
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC125; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C127 giorno proteico: 4 proposte uguali tutto il giorno, 🔄 con Annulla, obiettivo, Manda, 🛒 per 1 porzione con Annulla, Nascondi, aiutante; «🔁 Simili»', async () => {   // autonomo
+    await page.evaluate(() => {
+      window.__primaGiorno = [P.ruolo, UI.devCliente, JSON.stringify(SPESA.mia)]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+      ['pit-giorno-fit', 'pit-giorno-ob', 'pit-giorno-fit-no', 'pit-ric-filtri', 'pit-ric-cache'].forEach(k => localStorage.removeItem(k)); SPESA.mia = []; RIC.giornoSpesa = null;
+      const ora = Date.now(), nu = (kcal, prot) => ({ kcal, prot, carb: 20, grassi: 5, saturi: 1, zuc: 2, fibre: 2, sodio: 200 }), r = (id, nome, categoria, n) => ({ id, nome, zona: 'italiana', categoria, foto: '', aggiunta: ora, totale: 20, difficolta: 'Facile', cerca: '', nutr: n });
+      const ss = [r('rf:pancake-proteici-prova', 'Pancake proteici prova', 'Dolci', nu(300, 30)), r('gz:Porridge-proteico-prova', 'Porridge proteico prova', 'Dolci', nu(320, 30)), r('rf:overnight-oats-prova', 'Overnight oats prova', 'Dolci', nu(350, 28)),
+        r('gz:Pasta-e-ceci-prova', 'Pasta e ceci prova', 'Primi piatti', nu(480, 32)), r('gz:Risotto-proteico-prova', 'Risotto proteico prova', 'primi', nu(450, 35)),
+        r('gz:Barretta-proteica-prova', 'Barretta proteica prova', 'Dolci', nu(200, 20)), r('rf:hummus-proteico-prova', 'Hummus proteico prova', 'Antipasti', nu(180, 15)),
+        r('gz:Pollo-al-limone-prova', 'Pollo al limone prova', 'Secondi piatti', nu(380, 40)), r('gz:Orata-al-forno-prova', 'Orata al forno prova', 'secondi', nu(300, 35)),
+        r('gz:Carbonara-giorno-prova', 'Carbonara giorno prova', 'primi', { kcal: 558.7, prot: 22.8, carb: 61, grassi: 24, saturi: 9, zuc: 2.5, fibre: 2.7, sodio: 475 })];
+      const perU = Object.fromEntries(ss.map(x => [urlRic(x.id), x])); window.__giornoChiesti = [];
+      RIC.chiedi = async c => {
+        if (c.u && perU[c.u]) { const x = perU[c.u]; window.__giornoChiesti.push(x.id); return { ricetta: Object.assign({}, x, { v: 4, fonte: x.id.slice(0, 2), url: c.u, porzioni: 4, prep: 10, cottura: 10, autore: 'Prova',
+          ingredienti: [{ nome: 'Petto di pollo', q: 600, u: 'g' }, { nome: 'Sale fino', q: null, u: '' }, { nome: 'Acqua', q: 200, u: 'ml' }, { nome: 'Olio', q: 2, u: 'cucchiai' }, { nome: 'Basilico', q: null, u: '' }, { nome: 'Extra ' + x.nome, q: 400, u: 'g' }],
+          passi: [{ t: 'Cuoci. Cuoci tutto in padella.', foto: [] }] }) }; }
+        if (c.db === 'mie') return { scelte: ss };
+        return c.db ? { db: { ricette: 40, coda: 0, scelte: ss.length, conValori: ss.length, senzaValori: 0, paroleFit: [], giri: 1, fonte: 1, fonti: 10, rf: { lette: 5, tot: 905, inCoda: 0, scartate: 0, i: 5, fine: '', spento: false } } } : { ricette: [], prossima: '' }; };
+      ss.forEach(x => { delete RIC.scaricate[x.id]; }); dbRic('readwrite', st => ss.forEach(x => st.delete(x.id))).catch(() => {});
+      salvaScelte(ss); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    const leggi = () => page.evaluate(() => { const b = document.querySelector('main .ric-giorno'), g = JSON.parse(localStorage.getItem('pit-giorno-fit') || 'null');
+      return { c: !!b, righe: b ? [...b.querySelectorAll('.ric-giorno-riga')].map(x => ({ id: ((x.querySelector('[data-a="vai"]') || {}).dataset || {}).v || '', t: x.innerText.replace(/\s+/g, ' ') })) : [], testo: b ? b.innerText.replace(/\s+/g, ' ') : '',
+        manda: b ? decodeURIComponent((b.querySelector('a[href*="wa.me"]') || {}).href || '') : '', g, oggi: oggi(), ob: obGiorno(), apri: !!document.querySelector('main [data-a="ric-giorno-apri"]'),
+        prima: (() => { const t = document.querySelector('main .ric-giorno'), c = document.querySelector('main .ric-carica'); return !!(t && c && (t.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING)); })() }; });
+    const s0 = await leggi(), ids = s0.righe.map(x => x.id.replace(/^ricetta:/, ''));
+    const giusti = await page.evaluate(ii => { const m = ['colazione', 'pranzo', 'spuntino', 'cena'], tt = tutteRic(); return ii.map((id, k) => { const x = tt.find(y => y.id === id); return !!x && !!momentoRic(x, m[k]); }); }, ids);
+    if (!s0.c || !s0.prima || s0.righe.length !== 4 || new Set(ids).size !== 4 || giusti.includes(false) || !/🌅 Colazione/.test(s0.righe[0].t) || !/🍽 Cena/.test(s0.righe[3].t)) throw new Error('giorno proteico: 4 proposte diverse, giuste e sopra il riquadro verde? ' + JSON.stringify({ s0, giusti }));
+    const tot = await page.evaluate(ii => Math.round(ii.reduce((t, id) => t + tutteRic().find(y => y.id === id).nutr.prot, 0)), ids);
+    if (!s0.testo.includes(`Totale ${tot} g di 150`) || !/mancano \d+ g/.test(s0.testo) || !s0.g || s0.g.data !== s0.oggi || !s0.manda.includes('Il mio giorno proteico (obiettivo 150 g di proteine)') || !s0.manda.includes(`Totale ${tot} g di proteine`)) throw new Error('giorno proteico: totale, «mancano», data o «Manda» sbagliati: ' + JSON.stringify({ tot, s0 }));
+    /* uguale dopo un nuovo disegno; data vecchia → piano di oggi */
+    await page.evaluate(() => render()); const s1 = await leggi();
+    if (JSON.stringify(s1.righe) !== JSON.stringify(s0.righe)) throw new Error('giorno proteico: cambia a ogni disegno: ' + JSON.stringify([s0.righe, s1.righe]));
+    await page.evaluate(() => { const g = JSON.parse(localStorage.getItem('pit-giorno-fit')); g.data = '2000-01-01'; g.scelte = { colazione: 'gz:Carbonara-giorno-prova' }; localStorage.setItem('pit-giorno-fit', JSON.stringify(g)); render(); });
+    const s2 = await leggi(); if (s2.g.data !== s2.oggi || s2.righe.some(x => /Carbonara/.test(x.t))) throw new Error('giorno proteico: il piano di ieri è rimasto: ' + JSON.stringify(s2.g));
+    /* 🔄 cambia solo la colazione, «Annulla» la rimette */
+    const col = (await leggi()).righe.map(x => x.id);
+    await clic('main [data-a="ric-giorno-cambia"][data-v="colazione"]'); const s3 = await leggi();
+    if (s3.righe[0].id === col[0] || s3.righe.slice(1).map(x => x.id).join() !== col.slice(1).join() || !(await page.locator('#toast', { hasText: 'Cambiata: colazione' }).count())) throw new Error('giorno proteico: 🔄 non cambia solo la colazione: ' + JSON.stringify([col, s3.righe]));
+    await clic('#toast [data-a="annulla"]'); if ((await leggi()).righe.map(x => x.id).join() !== col.join()) throw new Error('giorno proteico: «Annulla» del 🔄 non rimette la colazione');
+    /* obiettivo: 400 rifiutato, 120 ok */
+    await clic('main [data-a="ric-giorno-ob"]'); await page.fill('#ric-giorno-ob', '400'); await page.dispatchEvent('#ric-giorno-ob', 'change'); await page.waitForTimeout(200);
+    if ((await leggi()).ob !== 150 || !(await page.locator('#toast', { hasText: 'da 50 a 300' }).count())) throw new Error('giorno proteico: obiettivo 400 accettato');
+    await page.fill('#ric-giorno-ob', '120'); await page.dispatchEvent('#ric-giorno-ob', 'change'); await page.waitForTimeout(200); const s4 = await leggi();
+    if (s4.ob !== 120 || !s4.testo.includes('Obiettivo 120 g') || !s4.testo.includes(`di 120`) || (tot < 120) !== /mancano/.test(s4.testo) || (tot >= 120) !== /obiettivo raggiunto/.test(s4.testo)) throw new Error('giorno proteico: obiettivo 120 non preso: ' + s4.testo);
+    /* 🛒 scarica le 4, per 1 porzione, unite, niente sale e acqua; «Annulla» toglie tutto */
+    await clic('main [data-a="ric-giorno-spesa"]'); await page.waitForFunction(() => RIC.giornoSpesa && RIC.giornoSpesa.stato === 'ok', null, { timeout: 20000 });
+    const sp = await page.evaluate(ii => ({ mia: SPESA.mia.map(v => [v.n, v.q]), chiesti: window.__giornoChiesti.slice(), extra: ii.map(id => { const x = tutteRic().find(y => y.id === id); const v = SPESA.mia.find(z => z.n === 'Extra ' + x.nome); return v && v.q; }),
+      riga: (document.querySelector('main .ric-giorno') || {}).innerText || '', toast: (document.querySelector('#toast') || {}).innerText || '' }), col.map(x => x.replace(/^ricetta:/, '')));
+    const mia = Object.fromEntries(sp.mia);
+    if (mia['Petto di pollo'] !== '600 g' || mia.Olio !== '2 cucchiai' || mia.Basilico !== '' || 'Sale fino' in mia || 'Acqua' in mia || sp.mia.length !== 7 || sp.extra.join() !== '100 g,100 g,100 g,100 g' || sp.chiesti.length < 4 || !/Messe 7 cose/.test(sp.toast) || !/Messe 7 cose in «La mia lista», per 1 porzione/.test(sp.riga)) throw new Error('giorno proteico: lista della spesa sbagliata: ' + JSON.stringify(sp));
+    await clic('#toast [data-a="annulla"]'); if (await page.evaluate(() => SPESA.mia.length || !!RIC.giornoSpesa)) throw new Error('giorno proteico: «Annulla» della spesa non toglie tutto');
+    /* con un momento scelto il riquadro sparisce; «Nascondi» e «📅» */
+    await clic('main [data-a="ric-fit-tipo"][data-v="cena"]'); const s5 = await leggi(); await clic('main [data-a="ric-fit-tipo"][data-v="cena"]');
+    if (s5.c || !(await leggi()).c) throw new Error('giorno proteico: con «Cena» scelta il riquadro resta (o non torna)');
+    await clic('main [data-a="ric-giorno-chiudi"]'); const s6 = await leggi(); await page.evaluate(() => render()); const s7 = await leggi();
+    if (s6.c || !s6.apri || s7.c) throw new Error('giorno proteico: «Nascondi» non chiude o non è ricordato');
+    await clic('main [data-a="ric-giorno-apri"]'); if (!(await leggi()).c) throw new Error('giorno proteico: «📅» non lo riapre');
+    /* aiutante: «fammi il giorno proteico» → dritto lì, anche da nascosto e con un momento scelto */
+    const ai = await page.evaluate(() => { const c = capisciDove('fammi un piano proteico per oggi'); return c && c[0] && Object.assign({ voce: c[0].voce }, controllaAI(c[0])); });
+    if (!ai || ai.voce !== 'giorno-proteico' || !ai.ui || !ai.ui.ricGiorno || ai.ui.ricZona !== 'fit') throw new Error('aiutante: «piano proteico» non porta al giorno proteico: ' + JSON.stringify(ai));
+    await page.evaluate(() => { localStorage.setItem('pit-giorno-fit-no', 'true'); UI.ric.fit = 'cena'; UI.vista = 'home'; render(); Object.assign(UI, { ricZona: 'fit', ricGiorno: true }); vai('ricettario'); });
+    await page.waitForTimeout(300); if (!(await leggi()).c || (await page.evaluate(() => UI.ric.fit))) throw new Error('aiutante: arrivato in Proteiche senza il giorno proteico in vista');
+    /* «🔁 Simili» in una proteica (mai lei stessa), niente in una non proteica */
+    await page.evaluate(() => vai('ricetta:gz:Pollo-al-limone-prova')); await page.waitForSelector('main .ric-passi', { timeout: 15000 });
+    const sim = await page.evaluate(() => [...document.querySelectorAll('main .ric-simili .ric-carta')].map(b => b.dataset.v));
+    if (!sim.length || sim.length > 4 || sim.includes('ricetta:gz:Pollo-al-limone-prova') || sim.includes('ricetta:gz:Carbonara-giorno-prova')) throw new Error('«🔁 Simili» sbagliate: ' + JSON.stringify(sim));
+    await page.evaluate(() => vai('ricetta:gz:Carbonara-giorno-prova')); await page.waitForSelector('main .ric-passi', { timeout: 15000 });
+    if (await page.locator('main .ric-simili').count()) throw new Error('«🔁 Simili» in una ricetta non proteica');
+    await page.evaluate(() => { const [r, d, m] = window.__primaGiorno; P.ruolo = r; UI.devCliente = d; SPESA.mia = JSON.parse(m); salvaSpesa(); ['pit-giorno-fit', 'pit-giorno-ob', 'pit-giorno-fit-no', 'pit-ric-filtri'].forEach(k => localStorage.removeItem(k));
+      UI.ric = null; RIC.giornoSpesa = null; RIC.giornoOra = null; salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
