@@ -4,11 +4,11 @@ Sessione attuale: #55 (dopo la #54 `session_01WTjqUv32ceej8YoR2QzfQU`, chiusa al
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); C137 = in emergenza il ricettario si ferma (richiesta sua: ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 e C137 (v0.10.18) sono FATTE: non rifarle.
-- **Cosa preme a Mario adesso (10/11 18:56):** 1) All'01:05 il server deve ripartire e la corsia d'emergenza (C135) deve avere la sua copia: verifica e una riga a Mario. 2) Niente soldi, niente blocchi alle persone (PT E53, E54).
+- **Cosa preme a Mario adesso (10/11 19:10):** 1) v0.10.18 online PRIMA dell'01:00 (promesso): il primo deploy è FALLITO (PT E57, token senza permesso KV); rifatta senza il cassetto KV. 2) C135 si accende solo col cassetto: passo a mano di Mario (vedi Prossimi passi 1). 3) All'01:05 il server deve ripartire. Niente soldi, niente blocchi alle persone (PT E53, E54).
 
 ## Stato (10/11 18:56 ora italiana)
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (il push di `*.js`, `*.css`, `*.html`, `wrangler.jsonc`, `*.mjs` pubblica sito e server da solo: `sito.yml`). Scorta `scorta-principale-20261110-01WTjqUv32ce…` = della #54 (questa): unirla solo se ha lavoro non nel ramo.
-- **v0.10.18 spinta alle 18:56** (commit `10511e50`, merge col lavoro della chat Salvagente, solo documenti C138). Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.18. Se dà ancora 0.10.17: il giro «Pubblica sito» è fallito, quasi certo sul KV nuovo → guarda il log (`mcp__github__actions_list` del workflow sito.yml, poi `get_job_logs`): wrangler deve dire «Provisioning RISERVA (KV Namespace)… ✨ provisioned».
+- **v0.10.18**: il push delle 18:56 è FALLITO nel giro «Pubblica sito» (run 42869980930: «/storage/kv/namespaces… Authentication error 10000»: il token è un Account API Token senza KV, PT E57). Rifatta SENZA `kv_namespaces` in `wrangler.jsonc` (C137 attiva; C135 nel codice ma spenta: `/api/stato` → `riserva: {spenta: true}`, Notifiche lo dice onestamente). Verifica: `curl -s …/data.js | grep -m1 VERSIONE_APP` → 0.10.18 e il giro sito.yml verde (`mcp__github__actions_list`, `list_workflow_runs`, `sito.yml`). Se non l'ha spinta la #54: giro completo `node tools/prova.js` (la prova «7 tocchi sulla firma» cade lanciata DA SOLA con SOLO, nel giro completo passava), poi commit e push.
 - **C135 come funziona** (worker.js, cerca «C135»): KV `RISERVA` in `wrangler.jsonc` SENZA id (wrangler ≥4.45 lo crea al deploy; il token di Workers Builds ha «Workers KV Storage Edit», doc ufficiale letta 10/11). L'oggetto Avvisi scrive la chiave `avvisi` (VAPID pub+priv, iscritti, clienti) solo quando cambia (`copiaRiserva`, firma su elenchi ordinati); cron `*/10` → `riserva()` (1 lettura KV, rimette i `nuovi` iscritti durante il blocco, rifà la copia se manca). Ogni `/api/*` degli avvisi passa da `oRiserva(oggetto, corsia)`. `/api/ultimo` = il più recente fra oggetto e KV `ultimo`. `/api/prova {riserva:true}` = prova di Mario dalla copia (sw.js tipo `riserva`). La copia NON c'è finché la memoria è bloccata: si fa da sola al primo giro del cron dopo l'01:00.
 - **C137 come funziona**: server `RISPARMIO(perche)` + `DB_PAUSA` in `ricettaGz` (cerca, controlla, cercaFit, turbo con n, archivio, proposte, ricerche dal vivo) con freno (`LETTURE_FONDO` 2 milioni) o memoria bloccata (503, `risparmio.perche` 'freno'|'bloccato'). App: tutte le domande del ricettario passano da `chiediRic` (ricettario.js), riquadro `#ric-risparmio` «🛟 Modalità risparmio fino alle 01:00» (ora da mezzanotte UTC).
 - Prove: `tools/prova-database.mjs` 180/180 (blocchi C135 e C137); app 92/92 (giro completo 91 + C55 resa stabile, PT E56).
@@ -39,10 +39,11 @@ Sessione attuale: #55 (dopo la #54 `session_01WTjqUv32ceej8YoR2QzfQU`, chiusa al
 
 ## Prossimi passi
 0. Subito all'avvio: `curl` della versione (0.10.18?). Se il deploy è fallito: log del giro, causa vera, correzione (PT E53: prima la fonte). Poi a Mario, nel primo messaggio, cosa c'è di nuovo (tabella corta): corsia d'emergenza (Impostazioni → Notifiche, «🧪 Prova la corsia» solo Mario, funziona dopo l'01:00 quando la copia c'è) e modalità risparmio («🛟» in alto nel Ricettario). «Chiudi e riapri l'app» (PT E22).
-1. Alle 01:05 (sveglia): `…/api/chiave` dà la chiave; `…/api/stato` ha `riserva.quando` (copia fatta; se manca, aspetta il giro del cron delle 01:10); motore `auto` spento, letture basse. A Mario una riga «server ripartito, notifiche attive, corsia d'emergenza pronta: tocca «🧪 Prova la corsia d'emergenza»». Promessa C130: 7 giorni senza email di Cloudflare.
-2. Foto a Mario (skill `foto`) di C136 (riquadro «🗄 Il mio database») e di C135 (Notifiche con «🛟 Corsia d'emergenza pronta») quando il server risponde: chiudono le promesse 👁.
-3. C130 contatore vero (chiave «Account Analytics», Aspetta Mario) al «1». C127 al «1» (patch pezzi 2-3).
-4. Snellire `docs/DA-FARE.md` e `docs/ERRORI.md` (oltre il tetto).
+1. **C135 da accendere (passo a mano di Mario, dopo il «1»)**: A cosa serve: senza il cassetto, se Cloudflare ferma di nuovo la memoria, i telefoni non suonano. Strada consigliata: Mario crea il cassetto in Cloudflare (Storage e database → Workers KV → Crea, nome `pronti-in-tavola-riserva`) e manda l'ID (non è segreto: «KV namespace IDs are public»); tu lo scrivi in `wrangler.jsonc` (`"kv_namespaces": [{ "binding": "RISERVA", "id": "…" }]`) e pubblichi. Pulsanti esatti: PRIMA verifica sulla doc ufficiale e su `docs/GUIDE-GIUSTE.md` (PT E6), poi riga in «Aspetta Mario». Alternativa: dare al token «Workers KV Storage: Modifica».
+2. Alle 01:05 (sveglia): `…/api/chiave` dà la chiave; `…/api/stato` ha `riserva.quando` (copia fatta; se manca, aspetta il giro del cron delle 01:10); motore `auto` spento, letture basse. A Mario una riga «server ripartito, notifiche attive, corsia d'emergenza pronta: tocca «🧪 Prova la corsia d'emergenza»». Promessa C130: 7 giorni senza email di Cloudflare.
+3. Foto a Mario (skill `foto`) di C136 (riquadro «🗄 Il mio database») e di C135 (Notifiche con «🛟 Corsia d'emergenza pronta») quando il server risponde: chiudono le promesse 👁.
+4. C130 contatore vero (chiave «Account Analytics», Aspetta Mario) al «1». C127 al «1» (patch pezzi 2-3).
+5. Snellire `docs/DA-FARE.md` e `docs/ERRORI.md` (oltre il tetto).
 
 ## Domande aperte
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (9 della principale). Nessuna nuova della #54. Controllo Da fare: 0 voci aggiunte (nessun messaggio di Mario in questa sessione); C135 e C137 aggiornate (fatte, v0.10.18).
@@ -52,7 +53,7 @@ Sessione attuale: #55 (dopo la #54 `session_01WTjqUv32ceej8YoR2QzfQU`, chiusa al
 Prima: 18:10 «come integriamo il server emergenza e quando?» → C135 (KV, copia da sola), fatta nella v0.10.18.
 
 ## Numeri liberi
-Prossimo E libero: PT E57; prossimo C libero: C139; prossimo M libero: M1.
+Prossimo E libero: PT E58; prossimo C libero: C139; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, da `get_session` della #54): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
