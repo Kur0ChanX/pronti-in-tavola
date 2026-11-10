@@ -55,7 +55,7 @@ L'app deve funzionare risolvi ora io non ho soldi ti avviso» → blocco alle pe
 Prima, in questa chat: 16:45 foto dell'email «Le richieste di servizio sono temporaneamente bloccate» + «Quello che ho voluto sempre evitare dall'inizio di questo progetto, alla fine non siamo riusciti a renderlo inevitabile.»; «non sei stato per niente bravo in questo» (PT E53); 16:53 foto della posta (blocco 15:35) + «trovami ler forza adesso soluzioni per far funzionare l'app al 100% me lo merito per i tuoi errori».
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C135; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C136; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
