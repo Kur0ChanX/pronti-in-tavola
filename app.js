@@ -1848,7 +1848,9 @@ function render() {
   document.documentElement.classList.toggle('grande', !!P.grande);
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
-  const orizz = [...document.querySelectorAll('.giorni, .settimana, .scelte')].map(x => x.scrollLeft);   // file che scorrono di lato: restano dove erano (C31)
+  /* file che scorrono di lato: restano dove erano (C31); C127: ritrovate per nome (classe + aria-label), non per posizione, così una riga che compare sopra non le scambia */
+  const righeLato = () => { const n = {}; return [...document.querySelectorAll('.giorni, .settimana, .scelte')].map(x => { const k = x.className + '|' + (x.getAttribute('aria-label') || ''); n[k] = (n[k] || 0) + 1; return [k + '|' + n[k], x]; }); };
+  const orizz = {}; righeLato().forEach(([k, x]) => { if (x.scrollLeft) orizz[k] = x.scrollLeft; });
   const chiuso = statoLucchetto();   /* la parte di Monica col lucchetto: nessun dato nella pagina finché non si apre */
   const invito = !chiuso && P.invitoGestore && P.ruolo !== 'monica';
   const benv = !chiuso && (invito || serveBenvenuto());
@@ -1869,7 +1871,7 @@ function render() {
   if (UI.foglio && UI.foglio.tipo === 'ritaglio') ritAnteprima();
   /* stesso foglio ridisegnato (più/meno, scelta del giorno): niente animazione d'entrata, resta fermo dov'era (Mario 07/11, C29 C31) */
   if (fh && chiaveFoglio === ultimoFoglio) { $('.velo').classList.add('fermo'); $('.foglio').scrollTop = fy; }
-  document.querySelectorAll('.giorni, .settimana, .scelte').forEach((x, i) => { if (orizz[i]) x.scrollLeft = orizz[i]; });
+  righeLato().forEach(([k, x]) => { if (orizz[k]) x.scrollLeft = orizz[k]; });
   if (UI.tocco) { const [a, v] = UI.tocco.split('|'); document.querySelectorAll(`[data-a="${a}"][aria-pressed="true"]`).forEach(b => { if ((b.dataset.v || '') === v) b.classList.add('scatta'); }); UI.tocco = null; }
   if (UI.vista !== ultimaVista && $('main.corpo') && !/^cucina:/.test(UI.vista)) $('main.corpo').classList.add('entra');   // cucina guidata: niente entrata, la voce sul telefono blocca le animazioni e la pagina restava vuota (Mario 08/11)
   $('#guida').innerHTML = P.ruolo === 'monica' && !chiuso && !P.guida && UI.vista === 'home' ? guida() : '';
