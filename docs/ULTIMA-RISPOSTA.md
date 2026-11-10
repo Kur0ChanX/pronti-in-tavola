@@ -1,22 +1,19 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 16:55 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: vuoi l'app di nuovo al 100% adesso.
+
+✅ **FATTO**
+- **Causa provata** dalla tua foto: Cloudflare ha bloccato il server alle **15:35**. Il freno è andato online solo alle 15:52. Il mio **carico veloce** (il giro che legge da solo le ricette nuove) ha finito le letture prima. La lezione è scritta nel diario degli errori.
+- Il blocco dura da 17 minuti prima che il freno arrivasse online: dalle 15:35 Monica **non riceve le notifiche** degli ordini.
 
 ───
-💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
 
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
+💡 **PARERE**
+- **Gratis, prima delle 01:00, non si può riavere tutto.** I dati delle notifiche stanno dentro la memoria bloccata.
+- …
 
 ## Domande a Mario
 
-❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+❓ **DOMANDE**
+📌 **Di cosa parliamo:** il server è bloccato fino alle 01:00. Pagando, riparte in pochi minuti.
+1. 🛑 **Cosa facciamo?** 1 · faccio l'upgrade adesso (5 $ al mese) · 2 · aspetto le 01:00 gratis, e nell'app metto un avviso per Monica: «notifiche ferme, apri l'app per vedere gli ordini». Consiglio: **1**.
