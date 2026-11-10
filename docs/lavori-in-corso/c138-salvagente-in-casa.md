@@ -70,3 +70,8 @@ Di cosa parliamo: usare il suo PC di casa come aiuto per l'app di Monica, per no
 Consiglio dato: 1; dopo due settimane di numeri della sentinella si decide la 2; la 3 solo come progetto da appassionato.
 Detto anche: sul motore di GitHub in casa (gratis oggi, solo repository privati, meglio in WSL2, fa anche da orologio dei lavori); 5 regole per il PC (niente porte sul router, utente a parte senza poteri di amministratore, chiavi coi permessi minimi, aggiornamenti automatici, UPS con spegnimento ordinato e riaccensione dal BIOS).
 
+## Parole di Mario (10/11 18:51, intere; scritte nella Salvagente 1 dopo il passaggio, girate alla 2)
+> Più che altro ho paura di che mi si stacca la luce, cioè la stabilità che ti dà un server non te la dà nessuno. Io il mio PC lo utilizzerei solo come alternativa o supporto. Confrontami un po' con degli schemi, la scelta 1 e la scelta 2, perché io ero intenzionato un po' la scelta 2, ma tu mi consigli la 1, quindi magari qualcosa non l'ho capito.
+
+Lettura (Salvagente 1): non è ancora la scelta. Vuole il confronto fra la 1 e la 2 con gli schemi; propende per la 2; il PC solo come alternativa o supporto, per paura che salti la luce. Punti per la risposta: in 1 e in 2 il server vero resta Cloudflare (luce saltata = si ferma solo l'aiuto, l'app va); la 2 contiene la 1; il consiglio «1 adesso» riguardava solo l'ordine dei lavori (prima i numeri della sentinella; la 2 è in parte doppione della corsia d'emergenza C135). Se conferma la 2: in due tempi, prima l'officina e poi il gemello.
+
