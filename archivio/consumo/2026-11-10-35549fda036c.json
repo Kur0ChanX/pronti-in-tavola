@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "35549fda036c",
 "giorno": "2026-11-10",
-"turni": 3,
-"peso": 592168,
-"uscita": 14696,
-"contesto_max": 255473,
+"turni": 4,
+"peso": 1206488,
+"uscita": 25241,
+"contesto_max": 287964,
 "anomalie": [
 "1 uscite di strumento enormi (97 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ]
