@@ -73,6 +73,9 @@ const OPZIONI = [
     aiuto: 'Oltre questo numero (o con 10 domande in un minuto) a quel cliente risponde il telefono, senza AI: ordini, prezzi, allergie. Non viene fermato e ti arriva una segnalazione. Vale solo se è più alto della segnalazione.' },
   { k: 'ascoltoAvviso', g: 'mario', nome: 'Microfono dei clienti: segnalazione', tipo: 'numero', min: 10, max: 500, def: 40, unita: 'frasi al giorno',
     aiuto: 'Quando un cliente supera questo numero di frasi dette al microfono in un giorno ti arriva una segnalazione (di nuovo al doppio). Il cliente NON viene mai fermato.' },
+  /* C136 (Mario 10/11 «a manuale poco alla volta»): quante ricette legge il server a ogni carico a mano (il server taglia a 50) */
+  { k: 'ricCarico', g: 'mario', nome: 'Ricettario: ricette per ogni carico', tipo: 'numero', min: 5, max: 50, def: 20, unita: 'ricette', parole: /ricette per (ogni )?carico|carica altre/,
+    aiuto: 'Quante ricette nuove legge il server quando tocchi «⚡ Carica altre» nel database o «🔍 Cerca altre» in Proteiche. Poche alla volta = meno letture gratuite del server consumate.' },
   /* C124 soglie di «🏋️ Proteiche» nel Ricettario (valori per porzione; fonti in docs/lavori-in-corso/c124-ricettario-proteico.md) */
   { k: 'fitProt', g: 'mario', nome: 'Proteiche: proteine minime', tipo: 'numero', min: 10, max: 60, def: 25, unita: 'g a porzione', parole: /protei|palestr|\bfit/,
     aiuto: 'Un pasto entra in «🏋️ Proteiche» solo con almeno queste proteine a porzione. 25 g: ISSN 2017 dice 20-40 g a pasto, anche in definizione; 25 è un po\' più severo (Mario 10/11).' },
