@@ -1,12 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #53 (dopo la #52 `session_01WTjqUuJHcTsnzrn3Zd6bAE`, chiusa alla soglia 10/11 17:46; la apre la #52 con `create_session` (catena 2 di 8)).
+Sessione attuale: #54 (dopo la #53 `session_01WTjqUwM2NNTWHtEAdVH6dq`, chiusa alla soglia 10/11 18:21; la apre la #53 con `create_session` (catena 3 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.). NUOVO 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario.
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #20 alla #26: stesso file, in fondo.
 - **Cosa preme a Mario adesso (10/11 17:46):** 1) C136 PRIMA delle 01:00: il ricettario non deve più lavorare da solo (a mano, poco alla volta), sennò alle 01:00 il cron lo riaccende. 2) C135 corsia d'emergenza degli avvisi (aspetta la scelta 1-3). 3) Alle 01:00 controllare che il server riparta. Mario era arrabbiato per il blocco di Cloudflare (PT E53, E54): niente soldi, niente blocchi alle persone.
 
-## Stato (10/11 17:46 ora italiana)
+## Stato (10/11 18:21 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261110-01WTjqUwM2NN/claude/pronti-ramo-definitivo.
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta (il push di `*.js`, `*.css`, `*.html` del ramo pubblica il sito da solo: `sito.yml`). Scorta `scorta-principale-20261110-01WTjqUuJHcT…` = della #52 (questa): unirla solo se ha lavoro non nel ramo.
 - v0.10.16 online (C134, Notifiche oneste col server fermo; giro 90/90). Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.16; `app.js` contiene «server degli avvisi è fermo».
 - Server: memoria (Durable Objects) bloccata da Cloudflare fino alle 01:00 italiane; il Worker risponde (errore tradotto da `perche`). Verifica: `curl -s …/api/chiave` → oggi `{"errore":"…letture gratuite…"}`, dopo le 01:00 `{"chiave":"…"}`.
@@ -49,20 +50,17 @@ Sessione attuale: #53 (dopo la #52 `session_01WTjqUuJHcTsnzrn3Zd6bAE`, chiusa al
 Prima: 17:41 «cmq bisogna mettere un blocco al ritardo se tutto il consumo era quello che non vada sempre in automatico a manuale poco alla volta» + «volevo scrivere un blocco al ricettario» → C136. 17:39 «2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordini» → «2» alla riga nella Home + C135. 17:34 «mandami una foto prima e dopo» → foto mandata. 17:15 «è normale che funziona?» (foto della prova notifiche) → sì, la prova la fa il telefono; C134.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C137; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C138; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-10 17:15 · è normale che funziona? → C134 v0.10.16
-- 2026-11-10 17:34 · mandami una foto prima e dopo → foto mandata (`archivio/foto/2026-11-10-c134-notifiche-confronto.png`)
-- 2026-11-10 17:39 · 2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordi… → «2» alla riga nella Home; C135
-- 2026-11-10 17:41 · cmq bisogna mettere un blocco al ritardo se tutto il consumo era quello che non … → C136 blocco al ricettario (Prossimi passi 0)
-- 2026-11-10 17:41 · volevo scrivere un blocco al ricettario → C136 (era «ricettario», non «ritardo»)
-- 2026-11-10 17:44 · Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatt… → risposto; domanda C135
+- 2026-11-10 17:48 · [AVVIO] Sessione #53 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-10 18:10 · come integriamo il server emergenza e quando? → 
+- 2026-11-10 18:13 · quando è in modalità emergenza mettinche non si possono fare cose quasi inutili … → 
 
 Ultimo, intero:
-> Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?
+> quando è in modalità emergenza mettinche non si possono fare cose quasi inutili come aggiornate ricettario al solo cose base per far funzionare il programma al 100%
 
