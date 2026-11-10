@@ -2,9 +2,9 @@
 "account": "108763",
 "sessione": "03f4cd4d7956",
 "giorno": "2026-11-10",
-"turni": 1,
-"peso": 0,
-"uscita": 0,
-"contesto_max": 295032,
+"turni": 4,
+"peso": 285178,
+"uscita": 6517,
+"contesto_max": 351839,
 "anomalie": []
 }
