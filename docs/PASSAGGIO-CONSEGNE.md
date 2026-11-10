@@ -8,7 +8,8 @@ Sessione attuale: #46 (dopo la #45 `session_01WTjqUx8FCK2e7jG9SRdRCo`, chiusa al
 
 ## Stato (10/11 13:42 ora italiana)
 - Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta. Scorte della #45 (`scorta-principale-20261110-01WTjqUx8F…`): solo documenti, NON unirle se `ricettario.js` contiene `cercaFitBox`.
-- v0.10.9 ONLINE (Principale 46, 10/11 13:55: `VERSIONE_APP` 0.10.9 e `ricettario.js` nuovo sul sito vero): C125 strada 2, la ricerca normale anche su RicetteFit; provata dal contenitore con GZ e RicetteFit veri (budino: 4 RicetteFit con foto + 15 GZ). Prove: app 88 OK, database 143 OK.
+- v0.10.10 ONLINE (Principale 46, 10/11 14:13, `VERSIONE_APP` letto dal sito vero): C126 pezzo 1, Proteiche per momenti (8) e «Cerca nuove ricette fit su tutti i siti». Prove: app 88 OK, database 145 OK. Prossimo: C126 pezzo 2 (fonte proteica facoltativa, tante voci, + Impostazioni), poi fonti (🛑 domanda a Mario).
+- v0.10.9 (Principale 46, 10/11 13:55: `VERSIONE_APP` 0.10.9 e `ricettario.js` nuovo sul sito vero): C125 strada 2, la ricerca normale anche su RicetteFit; provata dal contenitore con GZ e RicetteFit veri (budino: 4 RicetteFit con foto + 15 GZ). Prove: app 88 OK, database 143 OK.
 - v0.10.8 (controllata 13:34: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.8; `…/ricettario.js` contiene `cercaFitBox`). La parte del server (`{ db: 'cercaFit' }`) è nella stessa pubblicazione ma da qui NON è provabile (chiede l'accesso di chi gestisce): la prova è la foto di Mario dopo «🍮 Budino».
 - C125 FATTO (v0.10.6-0.10.8, piano `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md`, tutti i 5 pezzi ✅). Manca solo la prova di Mario (riga in «Aspetta Mario»).
 - Prove (10/11, Principale 45, sulla v0.10.8): app giro completo 87 OK, 0 NO; `node tools/prova-database.mjs` → 137 OK.
