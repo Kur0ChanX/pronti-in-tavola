@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.7';
+const VERSIONE_APP = '0.10.8';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.8', data: '10/11/2026',
+    nuovo: ['Ricettario «🏋️ Proteiche»: riquadro «🔍 Cerca ricette fit». Tocca una parola (pollo, tonno, budino…) o scrivila: l\'app cerca su GialloZafferano e RicetteFit e legge subito le ricette nuove. In «Proteiche» entrano solo quelle che passano le regole'],
+    migliorato: ['Ricettario: in «🏋️ Proteiche» e nella pagina Database vedi quante ricette vengono da GialloZafferano e quante da RicetteFit'] },
   { v: '0.10.7', data: '10/11/2026',
     nuovo: ['Ricettario «🏋️ Proteiche»: tre tasti nuovi in alto, «🍽 Pasti», «🍫 Snack e dolci» e «⚡ Pronte in 10 minuti» per le ricette veloci (i minuti si cambiano in Impostazioni → Sviluppatore)'],
     migliorato: ['Il motore cerca da solo anche pancake e budini proteici, mug cake, overnight oats, skyr e ricette con le proteine in polvere',
