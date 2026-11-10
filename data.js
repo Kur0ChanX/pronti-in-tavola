@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.16';
+const VERSIONE_APP = '0.10.17';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.17', data: '10/11/2026',
+    migliorato: ['Ricettario: il motore delle ricette non lavora più da solo ogni 10 minuti, così le letture gratuite del server restano per ordini e avvisi. Le ricette nuove arrivano solo quando le chiedi: «⚡ Carica altre 20 ricette» nel riquadro «🗄 Il mio database» (o «🔍 Cerca altre» in Proteiche). Il carico finisce da solo in pochi minuti e si può fermare con «⏹ Ferma». Mario sceglie quante ricette per volta (da 5 a 50) in «Solo per te, Mario» e può riaccendere il motore automatico dal dettaglio del database, con conferma'] },
   { v: '0.10.16', data: '10/11/2026',
     corretto: ['Notifiche: se il server degli avvisi è fermo, la pagina Notifiche lo dice in rosso col motivo vero, al posto di «manca la rete?». La notifica di prova la fa il telefono da solo: ora dice che il telefono le sa mostrare e avvisa che gli ordini nuovi non suonano finché il server non riparte'] },
   { v: '0.10.15', data: '10/11/2026',

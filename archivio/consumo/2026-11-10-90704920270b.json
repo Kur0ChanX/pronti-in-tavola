@@ -1,0 +1,42 @@
+{
+"account": "108763",
+"sessione": "90704920270b",
+"giorno": "2026-11-10",
+"turni": 4,
+"peso": 2105293,
+"uscita": 73965,
+"contesto_max": 265588,
+"anomalie": [
+"avvio pesante: 136k token dopo le letture d'avvio (tetto 130k)",
+"71k token scritti in un turno"
+],
+"remota": "01WTjqUwM2NN",
+"aiutanti": 0,
+"strumenti": 78,
+"motori": {
+"opus": 2105293
+},
+"blocchi": {
+"Stop 8 · Promessa a Mario senza voce": 2,
+"Stop 13 · There are uncommitted changes in": 4,
+"Stop 6 · Segno delle domande nel titolo": 1,
+"Stop 4 · Messaggio per Mario in inglese": 1
+},
+"esempi_blocchi": {
+"Stop 8 · Promessa a Mario senza voce": [
+"18:02 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «La pubblico appena il giro completo è verde, prima delle 01:00.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la vede Mario> · pr",
+"18:11 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Se un telefono si iscrive proprio durante il blocco, lo salvo nella copia e lo rimetto nella memoria dopo.». Nella sua voce (o in una nuova) s"
+],
+"Stop 13 · There are uncommitted changes in": [
+"18:03 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"18:08 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"18:11 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"18:02 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
+],
+"Stop 4 · Messaggio per Mario in inglese": [
+"18:03 · Messaggio per Mario in inglese (E139): riscrivilo tutto in italiano, frasi corte. Codice, comandi e nomi tecnici possono restare come sono."
+]
+}
+}
