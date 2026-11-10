@@ -362,22 +362,35 @@ async function ricettaGz(b, cfg, ctx) {
       const qq = [...new Set((b.tutto ? FIT_TUTTO : Array.isArray(b.qq) && b.qq.length ? b.qq : [b.q]).map(pulisci).filter(x => x.length >= 2))].slice(0, 4), q = b.tutto ? 'tutto' : qq[0] || '';
       if (q.length < 2) return { errore: 'scrivi almeno 2 lettere' };
       const s0 = await db.statoDb(), conRf = !(s0.rf && s0.rf.spento);
-      let gz = [], rf = [], rete = 0, mappa = null;
+      /* C128 (Mario 10/11 «così generico non trova nulla, assurdo»): prima le 40 trovate erano sempre la pagina 1 di GZ, già letta,
+         e RicetteFit restava fuori dal tetto di 40. Ora: prima RicetteFit (tutta fit) saltando le già lette; GZ dalla pagina dove era
+         arrivata l'ultima ricerca di quella parola, avanti finché trova nuove (al massimo 2 pagine per parola e 6 in tutto). */
+      let gz = [], rf = [], rete = 0, gia = 0, pagine = 0;
+      if (conRf) {
+        try {
+          const mappa = await paginaGz(MAPPA_RF, 'RicetteFit');
+          const cand = b.tutto ? rfElenco(mappa) : [].concat(...qq.filter(x => radiciRf(x).length).map(x => rfTrova(mappa, x, 300).map(y => y.url)));
+          const n = await db.nuoveTra(cand, 20); rf = n.nuove; gia += n.gia;
+        } catch (e) { rete++; }
+      }
       for (const x of qq) {
-        try { gz = gz.concat(gzCerca(await paginaGz(urlCerca(/light|protei|\bfit\b/.test(x) ? x : x + ' light'))).map(y => y.url)); } catch (e) { rete++; }
-        if (conRf && !b.tutto && radiciRf(x).length) {
-          try { mappa = mappa || await paginaGz(MAPPA_RF, 'RicetteFit'); rf = rf.concat(rfTrova(mappa, x, 20).map(y => y.url)); }
-          catch (e) { rete++; }
+        const chiave = 'cercaPag:' + x, salvata = await db.leggi1(chiave);
+        let u = salvata && salvata !== 'fine' ? salvata : urlCerca(/light|protei|\bfit\b/.test(x) ? x : x + ' light');
+        for (let k = 0; k < 2 && pagine < 6 && gz.length < 20 && u; k++) {
+          let html = ''; pagine++;
+          try { html = await paginaGz(u); } catch (e) { rete++; break; }
+          const lista = gzCerca(html).map(y => y.url), n = await db.nuoveTra(lista, 20 - gz.length);
+          gz = gz.concat(n.nuove); gia += n.gia;
+          u = lista.length ? gzProssima(html, u, lista.length) : '';
+          await db.metti1(chiave, u || 'fine');   // la prossima volta da qui; finite le pagine si ricomincia dalla prima
+          if (n.nuove.length) break;
         }
       }
-      if (conRf && b.tutto) {   // tutto RicetteFit è fit: le prossime 30 dell'elenco, da dove è arrivato il motore
-        try { const i = (s0.rf && s0.rf.i) || 0; rf = rfElenco(await paginaGz(MAPPA_RF, 'RicetteFit')).slice(i, i + 30); } catch (e) { rete++; }
-      }
-      gz = [...new Set(gz)]; rf = [...new Set(rf)].slice(0, 30);
-      if (rete && !gz.length && !rf.length) return { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' };
-      const n = await db.inCodaPrima(gz.concat(rf)), t = await db.turboStato();
+      gz = [...new Set(gz)];
+      if (rete && !gz.length && !rf.length && !gia) return { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' };
+      const n = await db.inCodaPrima(rf.concat(gz)), t = await db.turboStato();
       if (n.nuove && !(t && t.attivo)) await db.turboAvvia(Math.min(40, n.nuove));   // le legge subito (5 ogni 30 s); un carico già in corso non si tocca
-      return { q, gz: gz.length, rf: rf.length, nuove: n.nuove, gia: n.gia, db: await db.statoDb() };
+      return { q, gz: gz.length, rf: rf.length, nuove: n.nuove, gia: gia + n.gia, pagine, db: await db.statoDb() };
     }
     if (b.db === 'rf') { await db.metti1('rfSpento', b.acceso === false ? '1' : ''); return { db: await db.statoDb() }; }   // C124: RicetteFit acceso o spento dalla pagina Database
     if (b.db === 'mieScritte') return { mie: await db.mieScritte() };   // ricette scritte a mano, uguali su tutti i telefoni
@@ -450,6 +463,10 @@ const paroleFit = t => [...new Set(String(t || '').toLowerCase().split(/[,;\n]+/
    (solo le nuove). Una sola alla volta in coda: se la pagina non risponde si riprova, alla 3ª volta va fra le scartate (PT E29). */
 const RF_GIRO = 60;   // indirizzi dell'elenco guardati per giro per trovare quella nuova
 const NUTR_GIRO = 10;   // C124: ricette già salvate senza valori, rilette 10 ogni 10 minuti (~1300 in un giorno)
+/* C128 (Mario 10/11 «ne ho pochissime, come è possibile»): con RicetteFit da leggere o valori mancanti il cron fa partire da solo
+   il «carico veloce» (sveglie ogni 30 s): 5 RicetteFit per sveglia (905 in ~1,5 ore invece di 6 giorni, 1 pagina ogni 6 s) e 10 valori
+   (1100 in ~1 ora invece di 19). Si ferma da solo quando non c'è più niente da leggere. */
+const NUTR_TURBO = 10, AUTO_OBIETTIVO = 200, AUTO_PAUSA = 3600000;
 const RICETTE_GIRO = 2, TURBO_GIRO = 5, TURBO_PAUSA = 30000, TURBO_SVEGLIE = 400, TURBO_VUOTE = 20, CODA_MIN = 10, CRON_DB = '*/10 * * * *';
 /* ricetta completa = nome, almeno 3 ingredienti, almeno 2 passi e una foto (Mario 08/11 «con cura») */
 const ricettaCompleta = r => !!(r && r.nome && Array.isArray(r.ingredienti) && r.ingredienti.length >= 3 && Array.isArray(r.passi) && r.passi.length >= 2 && r.foto);
@@ -457,9 +474,10 @@ const ricettaCompleta = r => !!(r && r.nome && Array.isArray(r.ingredienti) && r
    Ritorna { fatte, scartate, nuoveCoda }: ricette complete salvate, incomplete scartate, indirizzi messi in coda. */
 async function passoMotore(db, quante, aMano) {
   const s = await db.statoDb(); if (s.pausa && !aMano) return null;
-  let nuoveCoda = 0, rf = s.rf && s.rf.inCoda ? 1 : 0;
-  if (s.rf && !s.rf.spento && !rf && s.rf.fine !== oggiRf()) {   // C124: RicetteFit, una nuova per giro
-    try { const tt = rfElenco(await paginaGz(MAPPA_RF, 'RicetteFit')); rf = await db.rfInCoda(tt.slice(s.rf.i || 0, (s.rf.i || 0) + RF_GIRO), s.rf.i || 0, tt.length, oggiRf()); }
+  const rfMax = aMano ? TURBO_GIRO : 1;   // C128: nel carico veloce (e con «Cerca adesso») 5 RicetteFit per volta, col cron 1
+  let nuoveCoda = 0, rf = Math.min(rfMax, (s.rf && s.rf.inCoda) || 0);
+  if (s.rf && !s.rf.spento && rf < rfMax && s.rf.fine !== oggiRf()) {   // C124: RicetteFit, una nuova per giro
+    try { const tt = rfElenco(await paginaGz(MAPPA_RF, 'RicetteFit')); rf += await db.rfInCoda(tt.slice(s.rf.i || 0, (s.rf.i || 0) + RF_GIRO), s.rf.i || 0, tt.length, oggiRf(), rfMax - rf); }
     catch (e) { /* elenco non raggiungibile: si riprova al prossimo giro, la coda di GZ va avanti */ }
   }
   if (s.coda < CODA_MIN) {
@@ -481,7 +499,7 @@ async function passoMotore(db, quante, aMano) {
     else await db.posizione(dopo ? i : (i + 1) % FONTI_DB.length || 1, dopo, nuove, !dopo && i === FONTI_DB.length - 1);
   }
   let fatte = 0, scartate = 0;
-  for (const u of await db.prendi(quante + rf)) {
+  for (const u of await db.prendi(aMano ? Math.max(quante, rf + 2) : quante + rf)) {   // C128: nel carico veloce le RicetteFit + 2 delle altre (quelle cercate a mano non aspettano)
     const ok = urlGz(u) || urlRf(u); if (!ok) { await db.togliCoda(u); continue; }
     try {
       const r = await leggiWeb(ok);
@@ -495,6 +513,18 @@ async function passoMotore(db, quante, aMano) {
   return { fatte, scartate, nuoveCoda };
 }
 const oggiRf = () => new Date(Date.now() + 3600000).toISOString().slice(0, 10);   // giorno (ora italiana d'inverno, basta per «una volta al giorno»)
+/* C128: il cron fa partire da solo il carico veloce se ci sono RicetteFit da leggere oggi o valori mancanti (mai in pausa, mai sopra un
+   carico in corso; se l'ultimo automatico non ha letto niente, si riprova dopo un'ora: niente sveglie a vuoto) */
+async function caricoAuto(db) {
+  if (!db) return false;
+  const s = await db.statoDb(), t = s.turbo;
+  if (s.pausa || (t && t.attivo)) return false;
+  if (t && t.auto && !t.fatte && !t.valori && Date.now() - (t.finito || 0) < AUTO_PAUSA) return false;
+  const rf = s.rf && !s.rf.spento && s.rf.fine !== oggiRf();
+  if (!rf && !s.daLeggere) return false;
+  await db.turboAvvia(AUTO_OBIETTIVO, true);
+  return true;
+}
 async function motoreRicette(cfg, aMano) {
   const db = ricDb(cfg); if (!db) return;
   const p = await passoMotore(db, RICETTE_GIRO, aMano);
@@ -505,7 +535,7 @@ async function motoreRicette(cfg, aMano) {
 /* C124: valori per porzione delle ricette salvate prima della v0.10.3 (solo la pagina, niente video). Esito sempre scritto:
    valori · senza valori (GZ non li dà, o pagina sparita) · rete giù = riprova, alla 3ª «senza valori» (PT E29: mai fermi). */
 async function leggiNutr(db, n) {
-  const urls = await db.senzaNutr(n).catch(() => []);
+  const urls = await Promise.resolve().then(() => db.senzaNutr(n)).catch(() => []);   // C128: anche dentro l'oggetto (carico veloce)
   await Promise.all(urls.map(async u => {
     let html = '';
     try { html = await paginaGz(u); } catch (e) { return /risponde 40[4]|risponde 410/.test(String(e.message)) ? db.mettiNutr(u, null) : db.nutrRiprova(u); }
@@ -884,6 +914,16 @@ export class Ricettario extends DurableObject {
   }
   togliCoda(u) { this.sql.exec('DELETE FROM coda WHERE url = ?', String(u)); }
   /* C125 «🔍 Cerca ricette fit»: indirizzi trovati dalla ricerca, in testa alla coda (aggiunta = 1); già salvate o scartate: contate, mai rimesse */
+  /* C128: fra gli indirizzi trovati, quelli che il database non ha (né salvati né scartati): al massimo «max», e quanti erano già letti */
+  nuoveTra(urls, max) {
+    const nuove = []; let gia = 0;
+    for (const u of [...new Set(urls || [])]) {
+      if (nuove.length >= (Number(max) || 40)) break;
+      if (typeof u !== 'string') continue;
+      if (this.sql.exec('SELECT 1 FROM ricette WHERE url = ? UNION SELECT 1 FROM scartate WHERE url = ?', u, u).toArray().length) gia++; else nuove.push(u);
+    }
+    return { nuove, gia };
+  }
   inCodaPrima(urls) {
     let nuove = 0, gia = 0;
     for (const u of [...new Set(urls || [])].slice(0, 40)) {
@@ -895,16 +935,17 @@ export class Ricettario extends DurableObject {
   }
   /* C124: la prima ricetta di RicetteFit che il database non ha (né salvata, né in coda, né scartata), dagli indirizzi da «i» in poi.
      Finito l'elenco senza nuove: «fine» per oggi e domani si riparte dall'inizio (così entrano le ricette nuove). 1 = una in coda. */
-  rfInCoda(urls, i, tot, oggi) {
-    let k = 0;
+  rfInCoda(urls, i, tot, oggi, max = 1) {   // C128: nel carico veloce fino a 5 per volta
+    let k = 0, messe = 0;
     for (const u of (urls || []).slice(0, RF_GIRO)) {
       k++;
       if (typeof u !== 'string' || !/^https:\/\/www\.ricettefit\.it\/ricetta\/[\w%-]+\/$/.test(u)) continue;
       if (this.sql.exec('SELECT 1 FROM ricette WHERE url = ? UNION SELECT 1 FROM coda WHERE url = ? UNION SELECT 1 FROM scartate WHERE url = ?', u, u, u).toArray().length) continue;
       this.sql.exec('INSERT INTO coda (url, aggiunta, sarda) VALUES (?, ?, 0)', u, Date.now());
       this.metti1('rfI', (Number(i) || 0) + k); this.metti1('rfTot', Number(tot) || 0);
-      return 1;
+      if (++messe >= max) return messe;
     }
+    if (messe) return messe;
     const dopo = (Number(i) || 0) + k, finito = !k || dopo >= (Number(tot) || 0);
     this.metti1('rfI', finito ? 0 : dopo); this.metti1('rfTot', Number(tot) || 0);
     if (finito) this.metti1('rfFine', String(oggi || ''));
@@ -934,8 +975,8 @@ export class Ricettario extends DurableObject {
   }
   /* TURBO «carica N»: sveglie del Durable Object ogni ~30 s; ferma a N ricette complete nuove, a 400 sveglie o a 20 sveglie vuote di fila */
   turboStato() { try { return JSON.parse(this.leggi1('turbo') || 'null'); } catch (e) { return null; } }
-  async turboAvvia(n) {
-    const t = { obiettivo: Math.min(200, Math.max(1, Math.floor(Number(n)) || 1)), fatte: 0, scartate: 0, attivo: true, da: Date.now(), finito: 0, sveglie: 0, vuote: 0 };
+  async turboAvvia(n, auto) {   // auto (C128): partito da solo per leggere RicetteFit e i valori mancanti
+    const t = { obiettivo: Math.min(200, Math.max(1, Math.floor(Number(n)) || 1)), fatte: 0, scartate: 0, valori: 0, attivo: true, auto: !!auto, da: Date.now(), finito: 0, sveglie: 0, vuote: 0 };
     this.metti1('turbo', JSON.stringify(t));
     await this.ctx.storage.setAlarm(Date.now() + 1000);
     return t;
@@ -944,9 +985,11 @@ export class Ricettario extends DurableObject {
     const t = this.turboStato(); if (!t || !t.attivo) return;
     let p = null;
     try { p = await passoMotore(this, Math.min(TURBO_GIRO, t.obiettivo - t.fatte), true); } catch (e) { /* sveglia sprecata: conta come vuota */ }
-    t.sveglie++;
+    let v = 0;   // C128: intanto i valori per porzione che mancano, 10 per sveglia
+    try { if (this.daLeggere()) v = await leggiNutr(this, NUTR_TURBO); } catch (e) { /* al prossimo giro */ }
+    t.sveglie++; t.valori = (t.valori || 0) + v;
     if (p) { t.fatte += p.fatte; t.scartate += p.scartate; }
-    t.vuote = p && (p.fatte || p.scartate) ? 0 : t.vuote + 1;
+    t.vuote = (p && (p.fatte || p.scartate)) || v ? 0 : t.vuote + 1;
     if (t.fatte >= t.obiettivo || t.sveglie >= TURBO_SVEGLIE || t.vuote >= TURBO_VUOTE) { t.attivo = false; t.finito = Date.now(); }
     this.metti1('turbo', JSON.stringify(t));
     if (t.attivo) await this.ctx.storage.setAlarm(Date.now() + TURBO_PAUSA);
@@ -1046,6 +1089,7 @@ export class Ricettario extends DurableObject {
     const tt = this.sql.exec('SELECT id, url, nome, foto, categoria, descr, voto, video FROM ricette ORDER BY strisce ASC, video DESC, voto DESC, creata DESC LIMIT 400').toArray().filter(x => !no.has(x.id));
     return tt.slice(Math.max(0, Number(da) || 0), (Number(da) || 0) + 31).map(x => ({ url: x.url, nome: x.nome, foto: x.foto, categoria: x.categoria, desc: x.descr, voto: x.voto, video: !!x.video }));
   }
+  daLeggere() { return (this.sql.exec("SELECT COUNT(*) AS n FROM ricette WHERE nutr IS NULL AND url != ''").toArray()[0] || {}).n || 0; }   // valori che il lettore può ancora leggere
   statoDb() {
     this.riempiScelte();
     const uno = (q, ...a) => this.sql.exec(q, ...a).toArray()[0] || {}, v = uno('SELECT COUNT(*) AS n, COALESCE(SUM(byte), 0) AS b FROM voci');
@@ -1053,7 +1097,7 @@ export class Ricettario extends DurableObject {
     return { scelte: uno('SELECT COUNT(*) AS n FROM scelte').n, nelRicettario: uno('SELECT COUNT(*) AS n FROM scelte').n, scartate: uno('SELECT COUNT(*) AS n FROM scartate').n,
       turbo: this.turboStato(), controllo: j('controllo'), mieServer: uno('SELECT COUNT(*) AS n FROM mie WHERE tolta = 0').n, ricette: uno('SELECT COUNT(*) AS n FROM ricette').n, coda: uno('SELECT COUNT(*) AS n FROM coda').n, voci: v.n, mbVoci: Math.round(v.b / 104857.6) / 10,
       oggi: uno('SELECT COUNT(*) AS n FROM ricette WHERE creata > ?', Date.now() - 86400000).n, pausa: !!this.leggi1('pausa'),
-      conValori: uno('SELECT COUNT(*) AS n FROM ricette WHERE nutr = 1').n, senzaValori: uno('SELECT COUNT(*) AS n FROM ricette WHERE nutr IS NULL').n,   // C124
+      conValori: uno('SELECT COUNT(*) AS n FROM ricette WHERE nutr = 1').n, senzaValori: uno('SELECT COUNT(*) AS n FROM ricette WHERE nutr IS NULL').n, daLeggere: this.daLeggere(),   // C124
       paroleFit: this.paroleFit(), fitI: Number(this.leggi1('fitI')) || 0, paginaFit: this.leggi1('paginaFit') || '',
       rf: { lette: uno("SELECT COUNT(*) AS n FROM ricette WHERE id LIKE 'rf:%'").n, inCoda: uno("SELECT COUNT(*) AS n FROM coda WHERE url LIKE 'https://www.ricettefit.it/%'").n,   // C124 passo 8
         scartate: uno("SELECT COUNT(*) AS n FROM scartate WHERE url LIKE 'https://www.ricettefit.it/%'").n, i: Number(this.leggi1('rfI')) || 0, tot: Number(this.leggi1('rfTot')) || 0,
@@ -1149,7 +1193,7 @@ export default {
   /* ogni 10 minuti: il motore del database delle ricette · ogni sera: promemoria per domani */
   async scheduled(ev, env, ctx) {
     if (ev.cron === CRON_DB) {
-      ctx.waitUntil(motoreRicette(env).catch(() => null));
+      ctx.waitUntil(motoreRicette(env).then(() => caricoAuto(ricDb(env))).catch(() => null));   // C128
       const db = ricDb(env);   // C83: una volta al giorno il controllo di tutte le ricette, da solo
       if (db) ctx.waitUntil(Promise.resolve(db.statoDb()).then(s => !s.controllo || Date.now() - s.controllo.quando > 86400000 ? controllaTutte(db) : null).catch(() => null));
       return;
