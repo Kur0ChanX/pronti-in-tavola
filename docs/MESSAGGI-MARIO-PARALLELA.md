@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 02:40 · 01QTFEqQ5ALf
-ma utilizza limiti di altri progetti?
-
 ## 2026-11-08 02:49 · 01QTFEqQ92G5
 aggiungi in modo molto avanzato l'aiutante per monica per cambiare aggiungere funzioni ecc impostazioni ecc ecc con prima la visione e modifica potenzialo al massimo inventati quello che vuoi soluzioni geniali e innovative ultime uscite
 
@@ -153,3 +150,6 @@ Volevo farti una domanda, siccome sto creando, cioè non è che sto creando, sto
 
 ## 2026-11-10 18:51 · 01WTjqUtRJWx
 Più che altro ho paura di che mi si stacca la luce, cioè la stabilità che ti dà un server non te la dà nessuno. Io il mio PC lo utilizzerei solo come alternativa o supporto. Confrontami un po' con degli schemi, la scelta 1 e la scelta 2, perché io ero intenzionato un po' la scelta 2, ma tu mi consigli la 1, quindi magari qualcosa non l'ho capito.
+
+## 2026-11-10 22:33 · 01WTjqUwhQi5
+Stanotte si resetta hai controllato tutti i consumi e limitato ricette? o ottimizzato senza troppi consumi?
