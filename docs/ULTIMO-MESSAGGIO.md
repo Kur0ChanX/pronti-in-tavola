@@ -1,3 +1,10 @@
-# Ultimo messaggio di Mario (10/11/2026 11:32 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 11:27 ora italiana)
 
-non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+controlla tutte 
+ok github chiave
+devo verificare vapore ma per ora ok
+devo verificare dopoia richiesta ma per ora ok
+proverò ipad ma per ora ok
+ok poi dimmi i passi
+ipad ok orizzontale
+Francesco compare tra i nomi
