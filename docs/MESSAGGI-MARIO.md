@@ -2,19 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 13:26 · 01QTFEqTYwXG
-una frase per tutti  per tutti e quella per monica benvenuta nella tua app ecc ecc 
-
-fammi ora quello per i miei amici per farla vedere
-
-## 2026-11-07 13:30 · 01QTFEqTYwXG
-per i miei amici è monica che invita fallo cosi come se monica invitasse
-io gestisco e basta
-mettili nella mia app gli inviti ora
-
-## 2026-11-07 13:33 · 01QTFEqTYwXG
-con link funzionante ovviamente da cliente e quello di monica da padrona admin
-
 ## 2026-11-07 13:43 · 01QTFEqTYwXG
 correggi questo da iphone ospite
 
@@ -119,37 +106,35 @@ dimmi le regole che vuoi mettere per tutti
 ## 2026-11-10 11:00 · 01WTjqUxmJ9k
 deepgram fatto come valido un anno che senso ha?!?
 
-## 2026-11-10 11:32 · 01WTjqUxmJ9k
-non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
+## 2026-11-10 11:25 · 01WTjqUuQygq
+Aggiungi al ricettario una voce proteica e cerchi in automatico le ricette per fitness sala pesi con poche calorie e grassi cattivi e con attenzione a sale zucchero ecc ecc insomma ricette gym per aiutare ad asciugarsi ma per migliorare l'ipertrofia 
+Metti anche filtro per difficoltà e il tasto database quando lo clicco con fare scorrere l'app velocemente giú ma deve andare direttamente, ricettario mettilo un pò piú in vista sembra trascurato sotto poi le ricette di giallo zafferano le segni che sono di giallo e se ne trovi altre ricette esempio per fitness in altre fonti migliori mettile caricate al meglio tutti i passaggi info foto fatte bene ecc ecc  e segnami la fonte dove l'hai presa.
+migliora ricettario in generale
 
-## 2026-11-10 12:50 · 01WTjqUtxqaC
-Vai di consiglio e ti chiedo metti solo le ricette un pò piú severe per il fitness e mettimi tasto cerca per per ricerche fitness che mi cerca in automatico guarda in tante fonti  gold standard molto attendibili per le ricette fitness gym senza ingrassare e ipertrofia anche ricette dolci proteiche Snack primi secondi sfizio proteico light ricette rivisitate in chiave proteica light Ne vedo moltissime su anche instagram e YouTube influenzer e canali Fit
-Cerco anche ricette immediate un esempio stupido tipo la cioccolata la fà con le proteine in polvere al cioccolato con poca acqua ecc ecc ma è un esempio 
-al momento sembra che carichi solo ricette di GialloZafferano valutate per calorie e proteine  riverifica tutto
+## 2026-11-10 11:27 · 01WTjqUuQygq
+controlla tutte 
+ok github chiave
+devo verificare vapore ma per ora ok
+devo verificare dopoia richiesta ma per ora ok
+proverò ipad ma per ora ok
+ok poi dimmi i passi
+ipad ok orizzontale
+Francesco compare tra i nomi
 
-### 10/11 ~13:40 (Principale 45, C125)
-intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale
+## 2026-11-10 11:35 · 01WTjqUuQygq
+1 consiglio
 
-### 10/11 ~13:57 (Principale 46, C125-C126, foto `archivio/foto/2026-11-10-1356-proteiche-albumi.jpg`: Proteiche dopo «Albumi», «3 ricette: RicetteFit 2 · GialloZafferano 1», «Niente di nuovo con «albumi»: le 23 trovate le avevo già lette»)
-si ma perché ricerca solo in questo modo ricette fit è il meglio non aggiungiamo altre fonti? e poi 6 selezioni cosí sono troppo vincolato dividile al massimo per spuntino merenda pranzo cena dolce colazione post cena ecc no poi se voglio scelgo la fonte proteica ma mettine tante di fonti non cosí e altre funzioni e cerca e le aggiunge al meglio nelle mie ricette scritte bene chiare complete con foto video passo per passo ecc ecc
+## 2026-11-10 16:27 · 01WTjqUuQygq
+fatto fove incollo api rvc lettura?
 
-### 10/11 ~14:10 (Principale 46, C126)
-se voglio fare una ricerca senza selezionare la proteina devo poterla fare e mi cerca tutto o anche senza aggiungere esempio pranzo cena dopo allenamento ecc ecc mi cerca tutto nei siti e le carica nell'app
+## 2026-11-10 16:28 · 01WTjqUuQygq
+figo questa cosa che hai aperta la finestra è io incollato inventati soluzioni simili cosí smart per tutti i miei progetti
 
-### 10/11 ~14:18 (Principale 46, C126, risposta alla 🛑 sulle fonti)
-2 ma metti una sezione a parte quelli con valori calcolati o segnami semplicemente la fonte nella ricetta e capisco
+## 2026-11-10 16:29 · 01WTjqUuQygq
+30 novembre 27 ma tu avvisami prima ok?
 
-### 10/11 ~14:21 (Principale 46, C126, foto `archivio/foto/2026-11-10-1420-proteiche-momenti.jpg`: Proteiche con le righe Tutte/Proteiche/Preferite/Sarde/Italiane/Le mie, 8 momenti, ⚡, portate)
-fammi multi scelta e fammi capire chiare se sono state caricate e fai ordine cè un pò di caos in tutta la pagina aggiungi funzioni utili e smart
+## 2026-11-10 16:30 · 01WTjqUuQygq
+la 4 la usiamo da una vita anzi l'abbiamo potenziata con che salvi le foto oer migliorare le guide spero sia andata anche su rvc questa funzione
 
-### 10/11 ~14:23 (Principale 46, C126, foto `archivio/foto/2026-11-10-1422-dopo-allenamento-niente-nuovo.jpg` e `…-1422-dopo-allenamento-cerco.jpg`: «15 ricette: RicetteFit 8 · GialloZafferano 7», «Ancora 1114 ricette da leggere: 10 ogni 10 minuti», «Niente di nuovo con «Dopo l'allenamento»: le 40 trovate le avevo già lette»)
-non c'è niente di nuovo ne ho pochissime come è possibile
-
-## 2026-11-10 15:37 · 01WTjqUwbG8f
-è adesso come risolviamo?
-
-## 2026-11-10 15:55 · 01WTjqUwbG8f
-Secondo te le regole per le ricette per la palestra sono valide o taglia tantissime ricette, oppure è giusto che sia così?
-
-## 2026-11-10 16:15 · 01WTjqUwbG8f
-vai di consiglio
+## 2026-11-10 16:32 · 01WTjqUuQygq
+ma tutte le regole che abbiamo creato su pronti in tavola dimmele e vediamo se le ha rvc
