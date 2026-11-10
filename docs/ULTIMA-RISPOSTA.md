@@ -1,22 +1,11 @@
-# Ultima risposta di Claude (10/11/2026 15:56 ora italiana)
+# Ultima risposta di Claude (10/11/2026 16:43 ora italiana)
 
-Ho capito: chiedi se le regole di «🏋️ Proteiche» sono giuste o se tagliano troppe ricette.
+Ho capito: le soglie P1 vanno bene, e vuoi aggiungere al kit 7 regole, dopo un controllo di doppioni, regole migliori e conflitti.
 
 ───
-💡 PARERE
-È una stima: non ho ancora contato le ricette scartate.
-
-| Regola | Giusta? | Perché |
-|---|---|---|
-| Proteine (almeno 25 g a pasto, almeno il 25% delle calorie) | ✅ sì | è il cuore di una ricetta da palestra |
-| Calorie (massimo 550 a pasto) | ✅ per la definizione | per mettere massa sarebbe poco |
-| Sale (sodio massimo 700 mg a pasto) | ✅ va bene | |
-| **Grassi saturi** (massimo il 10% delle calorie) | ❌ troppo severa | 10% è il limite consigliato per tutta la giornata, non per un …
-
-## Domande a Mario
-
-❓ DOMANDE
-1. 📌 Di cosa parliamo: le regole che decidono quali ricette finiscono in «🏋️ Proteiche» (Ricettario). Ora ne tagliano tante, forse anche ricette buone.
-   1 · la chat nuova conta quante ricette vere taglia ogni regola, poi ti propone le regole nuove con esempi prima e dopo (consiglio) · 2 · allenta subito grassi saturi e zuccheri, senza misurare · 3 · vanno bene così
-
-La tua domanda è passata alla chat nuova (Principale 50), con la riga in «Aspetta Mario»: rispondi pure lì.
+✅ FATTO
+- Il contesto di questa sessione era pieno, quindi ho passato tutto alla nuova sessione. Le consegne sono salvate su GitHub e tutti i controlli sono veri.
+- La sessione #51 parte con 2 lavori:
+  1. mette le soglie P1 e pubblica (saturi 13%, zuccheri 15/20%, sale 800/500 mg);
+  2. controlla le tue 7 regole (doppioni, versioni migliori, conflitti) e ti propone il testo finale per il kit.
+- Sessione nuova: [Principale 51](https://claude.ai/code/[segreto …

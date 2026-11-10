@@ -2,11 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 13:26 · 01QTFEqTYwXG
-una frase per tutti  per tutti e quella per monica benvenuta nella tua app ecc ecc 
-
-fammi ora quello per i miei amici per farla vedere
-
 ## 2026-11-07 13:30 · 01QTFEqTYwXG
 per i miei amici è monica che invita fallo cosi come se monica invitasse
 io gestisco e basta
@@ -153,3 +148,17 @@ Secondo te le regole per le ricette per la palestra sono valide o taglia tantiss
 
 ## 2026-11-10 16:15 · 01WTjqUwbG8f
 vai di consiglio
+
+## 2026-11-10 16:41 · 01WTjqUud6hw
+p1 va bene
+
+poi aggiungi
+Un lavoro che si ripete da solo si misura prima contro i limiti gratuiti
+Una causa si dice solo con una prova, sennò è un'«ipotesi»
+Proporti soluzioni smart geniali e intelligenti anche se non le chiedi
+Guide giuste con le foto dei siti
+Messaggi d'errore con il perché vero e il codice
+Ogni lavoro automatico finisce con un esito scritto
+Indirizzi di siti esterni provati dal vivo prima di usarli
+
+controlla prima se ci sono doppioni o regole migliori o conflitti ecc ecc
