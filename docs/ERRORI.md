@@ -67,6 +67,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E59** `git rev-parse --short` vuole UNA revisione: con due dà «Needed a single revision» e sembra un push fallito; usare `git rev-parse HEAD origin/<ramo>`.
 - **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse: il testo lungo di una voce aperta va come elenco, mai come riga `| C…`; dopo ogni ritocco di Da fare `promesse.py --controlla` prima del commit.
 - **PT E61** Sessione nata solo per aspettare Mario: avvio leggero (il contesto parte da ~85k; oltre 180k al primo stop l'attesa lunga fa rifare le consegne). Solo i passi scritti nelle consegne, pensieri corti, niente indagini né uscite lunghe (`list_triggers`, file interi) se non servono.
+- **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓» (lì il controllo vuole la domanda intera: «📌 Di cosa parliamo», scelte «1 · …», foto; sennò fa riscrivere e Mario legge due volte).
 
 ## Lezioni ereditate da RVC
 - **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.
