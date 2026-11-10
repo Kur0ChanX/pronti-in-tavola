@@ -1,13 +1,14 @@
-# Ultima risposta di Claude (10/11/2026 02:26 ora italiana)
+# Ultima risposta di Claude (10/11/2026 09:02 ora italiana)
 
+Aggiornamento sul kit: adesso è pronto il 37.2, che contiene **tutte e 5** le regole che hai chiesto (prima ne aveva 4).
 
+───
+✅ **FATTO**
+- Ho segnato quale versione del kit ha ciascuna regola e ho aggiornato la tua riga in «Aspetta Mario». Tutto salvato su GitHub.
 
 ## Domande a Mario
 
-❓ DOMANDE
-📌 Di cosa parliamo: il kit è il pacchetto di regole uguale in tutti i tuoi progetti. Le 5 regole nuove ci arrivano solo da una sessione aperta sul repo del kit, perché da qui non posso toccarlo.
-
-1. Chi apre la sessione del kit?
-   · 1 · La apro io adesso (consiglio): unisce le 5 regole e la v37 da sola, tu non fai niente.
-   · 2 · La apri tu: ti scrivo il testo da incollare per farla partire.
-   · 3 · Più tardi: le regole restano solo in questo progetto finché non si fa.
+❓ **DOMANDE**
+1. 📌 **Di cosa parliamo:** porto qui il kit 37.2. Qui siamo ancora alla 35.0. Le regole valgono già grazie alle tue Preferenze v37; il kit le mette anche nei file del progetto.
+   - **1 · Sì (consiglio):** ti preparo la guida controllata per creare su GitHub la **chiave di sola lettura** (un permesso che lascia solo leggere i file del kit), circa 5 minuti dal PC. Dopo, i kit nuovi li porto da solo.
+   - **2 · Più avanti:** resta la 35.0 finché non creiamo la chiave.
