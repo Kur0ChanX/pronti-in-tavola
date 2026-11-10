@@ -183,9 +183,15 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.3';
+const VERSIONE_APP = '0.10.4';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.4', data: '10/11/2026',
+    nuovo: ['Ricettario: nuova sezione «🏋️ Proteiche» per palestra e definizione: ricette con almeno 20 g di proteine a porzione, poche calorie, pochi grassi saturi, zuccheri e sale; prima quelle con più proteine. Si apre anche dalla Home, col riquadro «Proteiche»',
+      'Ricettario: su ogni ricetta i «Valori per porzione» (calorie, proteine, carboidrati, grassi, zuccheri, sale) e la fonte, con «Apri l\'originale»; nell\'elenco ogni ricetta dice da dove viene (GialloZafferano)',
+      'Ricettario: filtro «Difficoltà» sempre in vista (Facili, Medie, Difficili) e ordina per «💪 Più proteine» o «🔥 Meno calorie»'],
+    migliorato: ['Home: il Ricettario sta subito sotto i 4 riquadri, coi numeri delle ricette', 'Ricettario: il tasto «🗄 Database» porta subito al database, senza scorrere',
+      'Database ricette: quante ricette hanno già i valori, e le parole che il motore usa per cercare le ricette fit (le cambi tu, si salvano da sole)'] },
   { v: '0.10.3', data: '10/11/2026',
     nuovo: ['Ricettario: il motore ora legge da GialloZafferano i valori per porzione di ogni ricetta (calorie, proteine, grassi, saturi, zuccheri, sale) e cerca da solo anche ricette leggere e proteiche (pollo, tacchino, pesce, legumi…). Per le ricette già salvate ci mette circa un giorno. Servono alla sezione «🏋️ Proteiche», che arriva nella prossima versione'] },
   { v: '0.10.2', data: '10/11/2026',
