@@ -17,6 +17,7 @@ Salvagente 1 = `session_01WTjqUtRJWxKmp6nyeUvNrE` (aperta da Mario a mano 10/11 
 - Mario NON ha ancora risposto alla DOMANDA 1. Verifica: la riga 🛑 è ancora in «Aspetta Mario»; `ReadNotifications`; `docs/MESSAGGI-MARIO-PARALLELA.md`.
 
 ## Prossimi passi
+0. **SUBITO** (Mario 10/11 18:51, scritto nella Salvagente 1 dopo il passaggio e girato con `send_message`; parole intere in fondo e in `c138-salvagente-in-casa.md`): rispondergli col confronto fra la scelta 1 e la 2 **con gli schemi**. Ha paura che salti la luce, il PC lo vuole «solo come alternativa o supporto», era «intenzionato» alla 2 e teme di non aver capito. Punti: in 1 e in 2 il server vero resta Cloudflare; la 2 contiene la 1; il consiglio «1 adesso» era solo sull'ordine dei lavori. Non è ancora la scelta: la riga 🛑 resta, in fondo alla risposta la domanda in 2 righe.
 1. Titolo verde e primo messaggio corto: la DOMANDA 1 è 🛑, quindi niente codice e niente piano finché Mario sceglie. In fondo solo «⚠️ Aspettano te» (la domanda intera solo quando Mario scrive: è già nella chat della Salvagente 1 e nella riga).
 2. Quando Mario risponde (qui, o nella Salvagente 1 che la gira): togli la riga da «Aspetta Mario», scrivi la scelta in `c138-salvagente-in-casa.md`, poi:
    - scelta 1 (officina) → specifica nello stesso file dei 4 lavori (motore del ricettario in casa, sentinella, copia viva di Firestore, prove) e piano a pezzi per Opus (skill `fable-opus`); per ogni pezzo la misura dei consumi PRIMA (PT E52) e il controllo dei doppioni con C130 e C135 (`docs/CHI-FA-COSA.md`: cosa ha già fatto la Principale);
@@ -60,10 +61,9 @@ Testo da incollare:
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
 - 2026-11-10 18:30 · avvia plane mode pensiero profondo brain storming Volevo farti una domanda, sicc… → C138: voce in Da fare e riga 🛑 in «Aspetta Mario»; ricerca e 3 strade in `docs/lavori-in-corso/c138-salvagente-in-casa.md` (commit a3826375); risposta con le 3 strade e DOMANDA 1 mandata 10/11 ~18:45, aspetta la sua scelta
+- 2026-11-10 18:51 · Più che altro ho paura di che mi si stacca la luce, cioè la stabilità che ti dà … → girato alla Salvagente 2 con `send_message`; non è ancora la scelta: vuole il confronto fra la 1 e la 2 con gli schemi (prossimo passo 0)
 
 Ultimo, intero:
-> avvia plane mode pensiero profondo brain storming
-> 
-> 
-> Volevo farti una domanda, siccome sto creando, cioè non è che sto creando, sto mettendo il motore di GitHub sul computer per fare le verifiche delle applicazioni senza che mi consumano minuti, cioè quindi lo sto facendo solo in locale, volevo chiederti se è possibile di se posso creare una sorta di, nel mio computer fisso sempre acceso, una sorta di Claude Flare per quando finisco i limiti. Volevo chiederti per quello, per Claude Flare e poi per Firebase. Volevo capire se è possibile creare dei server nel mio PC sicuri, non hackerabili o difficilmente hackerabili, che posso utilizzare sulle mie applicazioni in caso, come salvagente, in caso ho un problema, rimangono attive sul progetto. Magari, cosa ne so, si possono copiare quello che c'è su Cloudflare e quello che c'è su Firebase, si portano sui miei programmi e si attivano solo quando oltrepasso i limiti come salvagente di emergenza. Volevo sapere se si poteva fare delle cose del genere sui miei computer, girano su Windows. I miei computer sono abbastanza performanti, se non sono performanti. Volevo chiederti se potevo creare dei server del genere, magari li attacco sotto un UPS in caso manca la corrente e niente, internet o la fibra, quindi 2.5 gigabit. Quindi volevo chiederti questo consiglio qua, se puoi cercare approfonditamente delle soluzioni super moderne, smart e intelligenti.
+> Più che altro ho paura di che mi si stacca la luce, cioè la stabilità che ti dà un server non te la dà nessuno. Io il mio PC lo utilizzerei solo come alternativa o supporto. Confrontami un po' con degli schemi, la scelta 1 e la scelta 2, perché io ero intenzionato un po' la scelta 2, ma tu mi consigli la 1, quindi magari qualcosa non l'ho capito.
 
+Il primo messaggio (10/11 18:30), intero: `docs/lavori-in-corso/c138-salvagente-in-casa.md` «Parole di Mario».
