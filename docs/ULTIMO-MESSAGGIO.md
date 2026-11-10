@@ -1,5 +1,3 @@
-# Ultimo messaggio di Mario (09/11/2026 23:51 ora italiana)
+# Ultimo messaggio di Mario (10/11/2026 01:10 ora italiana)
 
-Calcolati dagli ingredienti. La cucina è di casa: per allergie gravi chiedi a Monica.
-
-Da modificare con : Calcolati dagli ingredienti. Possono essere presenti contaminazioni, per allergie e/o intolleranze scrivimi!
+b + migliora con ia
