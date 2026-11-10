@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 00:25 · 01QTFEqU1M1r
-mi sono rotto siamo un ora che problemi hai oggi????
-
 ## 2026-11-07 00:28 · 01QTFEqU1M1r
 manda il link
 
@@ -133,3 +130,6 @@ b + migliora con ia
 
 ## 2026-11-10 01:56 · 01WTjqUwXqzf
 ia delle foto sembra ok implemetala nell'app e dimmi se 5 regole non aggiungi all account
+
+## 2026-11-10 08:30 · 01WTjqUumYwY
+dimmi le regole che vuoi mettere per tutti
