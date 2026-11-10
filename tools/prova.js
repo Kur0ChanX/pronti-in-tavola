@@ -1670,6 +1670,55 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!ai || ai.voce !== 'ricettario-fit' || ai.vai !== 'ricettario' || !ai.ui || ai.ui.ricZona !== 'fit') throw new Error('aiutante: «ricette proteiche» non porta alla sezione: ' + JSON.stringify(ai));
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC124; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario RicetteFit (C124 passo 8): ricetta aperta dal suo sito con fonte e valori, portate del motore nei filtri, interruttore nel Database, link incollato', async () => {   // autonomo
+    await page.evaluate(() => {
+      window.__primaRf = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+      const ora = Date.now(), nu = { kcal: 320, prot: 38.5, carb: null, grassi: 9.1, saturi: 1.6, zuc: 0.4, fibre: null, sodio: 310 };
+      const ss = [{ id: 'rf:pollo-fit-rf', nome: 'Pollo fit rf', zona: 'italiana', categoria: 'Secondi', foto: '', aggiunta: ora, totale: 25, difficolta: 'Facile', cerca: 'pollo', nutr: nu },
+        { id: 'gz:Primo-motore-prova', nome: 'Primo motore prova', zona: 'italiana', categoria: 'Primi piatti', foto: '', aggiunta: ora - 1, totale: 20, difficolta: 'Facile', cerca: 'pasta', nutr: null }];
+      const F = 'https://www.ricettefit.it/wp-content/uploads/2026/04/';
+      const st = { ricette: 2, coda: 0, voci: 0, mbVoci: 0, oggi: 0, pausa: false, scelte: 2, nelRicettario: 2, conValori: 1, senzaValori: 0, paroleFit: ['proteiche'], fitI: 0, paginaFit: '', giri: 3, fonte: 1, fonti: 10,
+        rf: { lette: 12, tot: 905, inCoda: 0, scartate: 0, i: 12, fine: '', spento: false } };
+      window.__rf = [];
+      RIC.chiedi = async c => { window.__rf.push(c);
+        if (c.u) return { ricetta: { id: 'rf:pollo-fit-rf', v: 4, fonte: 'rf', nome: 'Pollo fit rf', url: 'https://www.ricettefit.it/ricetta/pollo-fit-rf/', foto: '', porzioni: 2, prep: 10, cottura: 15, totale: 25, difficolta: 'Facile', autore: 'La Cuoca Fit',
+          ingredienti: [{ nome: 'Petto di pollo', q: 300, u: 'g' }, { nome: 'Limone', q: 1, u: '' }, { nome: 'Sale', q: null, u: '' }], passi: [{ t: 'Tagliare il pollo. Taglia il petto a strisce.', foto: [F + 'passo1.webp'] }, { t: 'Cuocere. In padella per 8 minuti.', foto: [] }],
+          nutr: nu, consiglio: 'Posso usare il tacchino?\nSì, va benissimo.' } };
+        if (c.db === 'mie') return { scelte: ss };
+        if (c.db === 'rf') return { db: Object.assign({}, st, { rf: Object.assign({}, st.rf, { spento: c.acceso === false }) }) };
+        return c.db ? { db: st } : { ricette: [], prossima: '' }; };
+      salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      UI.vista = 'ricettario'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    /* portata del motore («Primi piatti») sotto il filtro «Primi»; la carta di RicetteFit col suo nome */
+    await page.evaluate(() => { UI.ric.cat = 'primi'; render(); });
+    let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$|rf$/.test(n)));
+    if (JSON.stringify(nomi) !== '["Primo motore prova"]') throw new Error('filtro «Primi»: le ricette del motore («Primi piatti») non escono: ' + JSON.stringify(nomi));
+    await page.evaluate(() => { UI.ric.cat = 'secondi'; render(); });
+    const carta = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta')].filter(c => /Pollo fit rf/.test(c.innerText)).map(c => (c.querySelector('.ric-fonte') || {}).textContent)[0]);
+    if (carta !== 'RicetteFit') throw new Error('carta di RicetteFit: fonte sbagliata o assente nei «Secondi»: ' + JSON.stringify(carta));
+    /* ricetta aperta dal sito di RicetteFit (non da GZ): fonte, link, valori «(tabelle CREA)», foto del passo, consiglio */
+    await page.evaluate(() => { UI.ric.cat = ''; vai('ricetta:rf:pollo-fit-rf'); }); await page.waitForTimeout(400); await page.evaluate(() => render());
+    const ric = await page.evaluate(() => ({ chiesto: (window.__rf.find(c => c.u) || {}).u, fonte: (document.querySelector('.ric-fonte-riga') || {}).innerText, link: (document.querySelector('.ric-fonte-riga a') || {}).href,
+      valori: (document.querySelector('.ric-valori') || {}).innerText, fotoPasso: !!document.querySelector('.ric-passi img[src$="passo1.webp"]'), testo: document.querySelector('main').innerText }));
+    if (ric.chiesto !== 'https://www.ricettefit.it/ricetta/pollo-fit-rf/') throw new Error('ricetta RicetteFit chiesta all\'indirizzo sbagliato: ' + JSON.stringify(ric.chiesto));
+    if (!/Fonte: RicetteFit/.test(ric.fonte || '') || ric.link !== 'https://www.ricettefit.it/ricetta/pollo-fit-rf/') throw new Error('ricetta RicetteFit: fonte o link sbagliati: ' + JSON.stringify(ric));
+    if (!/tabelle CREA/.test(ric.valori || '') || !/Proteica/.test(ric.valori) || !ric.fotoPasso || !/Posso usare il tacchino\?/.test(ric.testo) || /GialloZafferano/.test(ric.testo)) throw new Error('ricetta RicetteFit: valori, foto del passo, consiglio o nome della fonte sbagliati: ' + JSON.stringify(ric).slice(0, 600));
+    await foto('49-rf-ricetta');
+    /* Database: riga RicetteFit con l'interruttore (senza Claude) */
+    await page.evaluate(() => { RIC.dbOra = 0; vai('ricdb'); }); await page.waitForTimeout(400); await page.evaluate(() => render());
+    const t = await page.evaluate(() => (document.querySelector('#ricdb-fit') || {}).innerText || '');
+    if (!/RicetteFit.*12 di 905 prese\. Una nuova ogni 10 minuti\./s.test(t)) throw new Error('Database: riga RicetteFit sbagliata: ' + JSON.stringify(t));
+    await clic('[data-a="ric-rf"]'); await page.waitForTimeout(300);
+    const sp = await page.evaluate(() => ({ c: window.__rf.filter(c => c.db === 'rf').slice(-1)[0], t: (document.querySelector('#ricdb-fit') || {}).innerText, toast: (document.querySelector('.toast') || {}).textContent }));
+    if (!sp.c || sp.c.acceso !== false || !/Spenta\./.test(sp.t || '') || !/Riaccendi/.test(sp.t) || !/RicetteFit spenta/.test(sp.toast || '')) throw new Error('Database: «Spegni» RicetteFit non va: ' + JSON.stringify(sp));
+    /* link di RicetteFit incollato nella ricerca: si apre dentro l'app */
+    await page.evaluate(() => { vai('ricettario'); UI.ric.q = 'https://www.ricettefit.it/ricetta/pollo-fit-rf/'; const f = document.querySelector('[data-ric-cerca]'); f.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); });
+    const vista = await page.evaluate(() => UI.vista);
+    if (vista !== 'ricetta:rf:pollo-fit-rf') throw new Error('link di RicetteFit incollato: non apre la ricetta: ' + vista);
+    await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaRf; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
+  });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();
 })();

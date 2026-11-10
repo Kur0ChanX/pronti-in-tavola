@@ -15,6 +15,7 @@ const cartella = mkdtempSync(join(tmpdir(), 'pit-db-'));
 const codice = readFileSync(join(radice, 'worker.js'), 'utf8')
   .replace("import { DurableObject } from 'cloudflare:workers';", 'class DurableObject { constructor(ctx, cfg) { this.ctx = ctx; this.env = cfg; } }')
   .replace("from './gz.mjs'", `from '${pathToFileURL(join(radice, 'gz.mjs')).href}'`)
+  .replace("from './rf.mjs'", `from '${pathToFileURL(join(radice, 'rf.mjs')).href}'`)
   .replace("from './ascolta.mjs'", `from '${pathToFileURL(join(radice, 'ascolta.mjs')).href}'`);
 writeFileSync(join(cartella, 'worker.mjs'), codice);
 const W = await import(pathToFileURL(join(cartella, 'worker.mjs')).href);
@@ -50,6 +51,7 @@ globalThis.fetch = async (u) => {
 const cfg = { RICETTARIO: { idFromName: () => 'x', get: () => ponte }, AVVISI: { idFromName: () => 'c', get: () => ({}) } };
 
 oggetto.mettiParoleFit([]);   // la corsia «fit» (C124) ha le sue prove in fondo: qui spenta, così i conti di sotto restano quelli
+oggetto.metti1('rfSpento', '1');   // anche RicetteFit (C124 passo 8): prove in fondo
 /* 1. il motore: prima pagina in coda, 2 ricette scaricate per giro */
 await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
 let s = await ponte.statoDb();
@@ -372,6 +374,76 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   j = await (await chiedi({ db: 'fit', base: true })).json();
   prova('C124 fit: «rimetti quelle di base»', j.db.paroleFit.length === 18 && j.db.paroleFit[0] === 'proteiche');
   prova('C124 fit: senza accesso di chi gestisce niente', (await chiedi({ db: 'fit', parole: 'x' }, false)).status === 403);
+  globalThis.fetch = prima; oggetto.mettiParoleFit(null);
+}
+// C124 passo 8 (Mario 10/11 «altre fonti migliori… segnami la fonte», «piano piano in automatico»): RicetteFit
+{ const { rfRicetta, rfElenco, urlRf, idRf, urlDaIdRf, ingredienteRf } = await import(pathToFileURL(join(radice, 'rf.mjs')).href);
+  const { esaminaRicetta } = await import(pathToFileURL(join(radice, 'gz.mjs')).href);
+  const F = 'https://www.ricettefit.it/wp-content/uploads/2026/04/';
+  const paginaRf = (slug, o = {}) => `<html><head><meta property="og:image" content="${F}${slug}-foto.webp"/></head><body>
+    <img srcset="${F}${slug}-foto.webp 1920w, ${F}${slug}-foto-300x200.webp 300w, ${F}${slug}-foto-1024x683.webp 1024w, ${F}${slug}-foto-768x512.webp 768w">
+    <span>Difficoltà: <b>${o.diff || 'Principiante'}</b></span>
+    <script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': [{ '@type': 'WebPage' }, { '@type': 'Recipe', name: o.nome || 'Pollo fit ' + slug,
+      description: 'Petto di pollo &amp; limone, leggero.', image: [F + slug + '-500x500.webp'], author: { '@type': 'Person', name: 'La Cuoca Fit' }, recipeYield: '2', recipeCategory: ['Secondi'],
+      prepTime: 'PT0H10M', cookTime: 'PT0H15M', totalTime: 'PT0H25M',
+      recipeIngredient: o.ing || ['300 g Petto di pollo', '1 pz Limone', '10 ml Olio extravergine', 'Sale q.b.'],
+      recipeInstructions: o.passi || [{ '@type': 'HowToStep', name: 'Tagliare il pollo', text: 'Taglia il petto di pollo a strisce sottili e regolari.', image: F + slug + '-passo1.webp' },
+        { '@type': 'HowToStep', name: 'Cuocere', text: 'Cuoci in padella antiaderente per 8 minuti, girando spesso.', image: '' }],
+      nutrition: { '@type': 'NutritionInformation', calories: '320 calories', proteinContent: '38.5 grams', fatContent: '9.1 grams', saturatedFatContent: '1.6 grams', sugarContent: '0.4 grams', sodiumContent: '310 milligrams', transFatContent: '6.2 grams' } }] })}</script>
+    <h2>Domande frequenti (FAQ)</h2><div class="dr-faqs-list"><div class="dr-faq-item"><div class="dr-faq-title-wrap"><h3 class="dr-title">
+    Posso usare il tacchino?</h3></div><div class="dr-faq-content-wrap"><p><p>Sì, la fesa di tacchino va benissimo.</p></p></div></div></div></section><h2>Altro</h2></body></html>`;
+  const u1 = 'https://www.ricettefit.it/ricetta/pollo-al-limone/';
+  const r = rfRicetta(paginaRf('pollo-al-limone'), u1);
+  prova('RicetteFit: id «rf:» e indirizzo all\'originale', r.id === 'rf:pollo-al-limone' && r.url === u1 && idRf(u1) === r.id && urlDaIdRf(r.id) === u1);
+  prova('RicetteFit: foto grande da 1024 px (non il ritaglio da 500 del JSON-LD, PT E45)', r.foto === F + 'pollo-al-limone-foto-1024x683.webp');
+  prova('RicetteFit: passi col titolo davanti e la loro foto', r.passi.length === 2 && r.passi[0].t === 'Tagliare il pollo. Taglia il petto di pollo a strisce sottili e regolari.' && r.passi[0].foto[0] === F + 'pollo-al-limone-passo1.webp' && !r.passi[1].foto.length);
+  prova('RicetteFit: valori per porzione col punto decimale; mancanti null, mai 0; niente «trans»', r.nutr.kcal === 320 && r.nutr.prot === 38.5 && r.nutr.saturi === 1.6 && r.nutr.sodio === 310 && r.nutr.carb === null && r.nutr.fibre === null);
+  prova('RicetteFit: ingredienti «quantità unità nome», «pz» senza unità, «Sale q.b.»', JSON.stringify(r.ingredienti.map(i => [i.nome, i.q, i.u])) === '[["Petto di pollo",300,"g"],["Limone",1,""],["Olio extravergine",10,"ml"],["Sale",null,""]]');
+  prova('RicetteFit: difficoltà come quella di GZ (Principiante → Facile, Intermedio → Media)', r.difficolta === 'Facile' && rfRicetta(paginaRf('x', { diff: 'Intermedio' }), 'https://www.ricettefit.it/ricetta/x/').difficolta === 'Media');
+  prova('RicetteFit: domande frequenti nel «Consiglio», tempi, porzioni, autore, testo pulito', r.consiglio === 'Posso usare il tacchino?\nSì, la fesa di tacchino va benissimo.' && r.prep === 10 && r.totale === 25 && r.porzioni === 2 && r.autore === 'La Cuoca Fit' && r.intro === 'Petto di pollo & limone, leggero.' && r.categoria === 'Secondi');
+  prova('RicetteFit: la ricetta letta passa il controllo delle ricette (C83)', esaminaRicetta(r).length === 0 && r.v === 4);
+  prova('RicetteFit: solo pagine di ricetta di ricettefit.it (mai un proxy aperto)', !urlRf('https://evil.it/ricetta/x/') && !urlRf('http://www.ricettefit.it/ricetta/x/') && !urlRf('https://www.ricettefit.it/wp-admin/') && !urlRf('https://www.ricettefit.it/ricetta/') && urlRf('https://ricettefit.it/ricetta/x') === 'https://www.ricettefit.it/ricetta/x/');
+  prova('RicetteFit: pagina che non è una ricetta = null', rfRicetta('<html></html>', u1) === null && rfRicetta(paginaRf('y'), 'https://evil.it/ricetta/y/') === null);
+  prova('RicetteFit: «2 Uova» senza unità, «1/2 Limone» al modo di GZ', JSON.stringify(ingredienteRf('2 Uova')) === '{"nome":"Uova","q":2,"u":"","nota":""}' && ingredienteRf('Farina 00 300 g').q === 300);
+  const mappa = ['https://www.ricettefit.it/ricetta/', u1, 'https://www.ricettefit.it/ricetta/rf-corta/', 'https://www.ricettefit.it/ricetta/rf-giu/', u1, 'https://www.ricettefit.it/ricetta/rf-buona/'];
+  const xml = `<urlset>${mappa.map(u => `<url><loc>${u}</loc><image:image><image:loc>${F}a.webp</image:loc></image:image></url>`).join('')}</urlset>`;
+  prova('RicetteFit: elenco dalla sitemap senza indice, foto né doppioni', JSON.stringify(rfElenco(xml)) === JSON.stringify([u1, 'https://www.ricettefit.it/ricetta/rf-corta/', 'https://www.ricettefit.it/ricetta/rf-giu/', 'https://www.ricettefit.it/ricetta/rf-buona/']));
+
+  // il motore: una ricetta nuova per giro, in testa alla coda, mai ferma su una pagina rotta (PT E29)
+  const prima = globalThis.fetch, chiesteRf = [];
+  globalThis.fetch = async (u, o) => { u = String(u);
+    if (u.startsWith('https://www.ricettefit.it/')) { chiesteRf.push(u);
+      if (u === 'https://www.ricettefit.it/recipe-sitemap.xml') return new Response(xml);
+      if (u.endsWith('/rf-giu/')) return new Response('giù', { status: 503 });
+      if (u.endsWith('/rf-corta/')) return new Response(paginaRf('rf-corta', { passi: [{ '@type': 'HowToStep', text: 'Un passo solo, troppo poco.' }] }));
+      return new Response(paginaRf(u.split('/').slice(-2)[0])); }
+    return prima(u, o); };
+  oggetto.mettiParoleFit([]); oggetto.metti1('rfSpento', ''); oggetto.sql.exec('DELETE FROM coda');
+  const giro = async () => { await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci(); return ponte.statoDb(); };
+  let s = await giro();
+  prova('RicetteFit motore: giro 1 legge la prima (in testa alla coda) e la mette nel ricettario', s.rf.lette === 1 && !!(await ponte.una('rf:pollo-al-limone')) && (await ponte.scelte()).some(x => x.id === 'rf:pollo-al-limone' && x.url === u1 && x.nutr && x.nutr.prot === 38.5));
+  prova('RicetteFit motore: elenco e posizione ricordati', s.rf.i === 1 && s.rf.tot === 4 && s.rf.inCoda === 0);
+  s = await giro();
+  prova('RicetteFit motore: incompleta (1 passo) = scartata, mai riprovata', s.rf.scartate === 1 && !(await ponte.una('rf:rf-corta')));
+  for (let k = 0; k < 4; k++) s = await giro();   // 3 tentativi; al 4° giro va fra le scartate
+  prova('RicetteFit motore: pagina giù riprovata 3 volte, poi scartata (mai ferma)', s.rf.scartate === 2 && chiesteRf.filter(u => u.endsWith('/rf-giu/')).length === 3 && s.rf.inCoda === 0);
+  s = await giro(); s = await giro();
+  const mappeOggi = chiesteRf.filter(u => u.endsWith('sitemap.xml')).length;
+  prova('RicetteFit motore: finito l\'elenco «fine» per oggi, posizione da capo; tutte le buone lette', s.rf.lette === 2 && !!(await ponte.una('rf:rf-buona')) && !!s.rf.fine && s.rf.i === 0);
+  s = await giro();
+  prova('RicetteFit motore: dopo «fine» oggi l\'elenco non si richiede più', chiesteRf.filter(u => u.endsWith('sitemap.xml')).length === mappeOggi);
+  // il telefono: apre, aggiunge, accende e spegne
+  let j = await (await chiedi({ u: 'https://www.ricettefit.it/ricetta/carbonara-fit/' })).json();
+  prova('RicetteFit telefono: ricetta aperta dall\'app e salvata nel database', j.ricetta && j.ricetta.id === 'rf:carbonara-fit' && !!(await ponte.una('rf:carbonara-fit')));
+  j = await (await chiedi({ u: 'https://evil.it/ricetta/x/' })).json();
+  prova('RicetteFit telefono: indirizzo di un altro sito rifiutato', j.errore === 'indirizzo non valido');
+  j = await (await chiedi({ db: 'aggiungi', r: { id: 'rf:nuova-fit', nome: 'Nuova fit', foto: F + 'n.webp', zona: 'italiana' } })).json();
+  prova('RicetteFit telefono: «➕ Aggiungi» col suo indirizzo e la sua foto; la ricetta intera letta subito', j.scelte.some(x => x.id === 'rf:nuova-fit' && x.url === 'https://www.ricettefit.it/ricetta/nuova-fit/' && x.foto === F + 'n.webp') && !!(await ponte.una('rf:nuova-fit')));
+  j = await (await chiedi({ db: 'rf', acceso: false })).json();
+  const nGiri = chiesteRf.length; oggetto.metti1('rfFine', ''); await giro();
+  prova('RicetteFit: spenta dall\'app (senza Claude) = nessuna richiesta a RicetteFit', j.db.rf.spento === true && chiesteRf.length === nGiri);
+  j = await (await chiedi({ db: 'rf', acceso: true })).json();
+  prova('RicetteFit: riaccesa; senza accesso di chi gestisce niente', j.db.rf.spento === false && (await chiedi({ db: 'rf', acceso: false }, false)).status === 403);
   globalThis.fetch = prima; oggetto.mettiParoleFit(null);
 }
 console.log(`${ok} OK, ${no} NO`);
