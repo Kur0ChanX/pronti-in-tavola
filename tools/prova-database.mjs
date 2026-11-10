@@ -474,6 +474,11 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   oggetto.metti1('turbo', JSON.stringify({ obiettivo: 100, fatte: 3, attivo: true })); oggetto.sql.exec('DELETE FROM coda');
   j = await (await chiedi({ db: 'cercaFit', q: 'pancake proteici' })).json();
   prova('C125 cerca fit: con parole fit niente «light»; un carico già in corso non si tocca', chieste.includes('https://www.giallozafferano.it/ricerca-ricette/pancake+proteici/') && j.db.turbo.obiettivo === 100 && j.rf === 1);
+  const nPrima = chieste.length;
+  j = await (await chiedi({ db: 'cercaFit', q: 'Dopo cena', qq: ['budino', 'pancake proteici', 'budino', 'x'] })).json();
+  const nuoveC = chieste.slice(nPrima);
+  prova('C126 momento: più parole insieme (doppioni e 1 lettera tolti), un elenco RicetteFit solo, risultati senza doppioni', j.q === 'budino' && j.gz === 3 && j.rf === 3 && nuoveC.filter(u => u.endsWith('sitemap.xml')).length === 1
+    && nuoveC.includes('https://www.giallozafferano.it/ricerca-ricette/budino+light/') && nuoveC.includes('https://www.giallozafferano.it/ricerca-ricette/pancake+proteici/') && nuoveC.filter(u => /ricerca-ricette/.test(u)).length === 2);
   oggetto.metti1('rfSpento', '1'); const nMappe = chieste.filter(u => u.endsWith('sitemap.xml')).length;
   j = await (await chiedi({ db: 'cercaFit', q: 'pollo' })).json();
   prova('C125 cerca fit: RicetteFit spenta dall\'app = mai chiesta', chieste.filter(u => u.endsWith('sitemap.xml')).length === nMappe && j.rf === 0);
