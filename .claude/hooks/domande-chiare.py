@@ -17,6 +17,7 @@ sempre»): blocca UNA volta anche se nel turno lo strumento dei file (SendUserFi
   - le foto o i video (file veri in `archivio/`) delle righe della propria catena (session_id nella tabella
     «## Catene» di docs/CHI-FA-COSA.md) in «## 0. Aspetta Mario» che il messaggio ricorda («Scorte 70»), o i file
     citati nel blocco della domanda.
+«👉 DA FARE TU» senza la riga «A cosa serve» nel suo blocco: blocca UNA volta (kit 37.2).
 Il turno parte dall'ultimo messaggio che non è del sistema (transcript_path).
 Secondo giro (`stop_hook_active`), niente blocco delle domande, qualunque errore: silenzio, uscita 0.
 Prova: python3 -I tools/test-domande-chiare.py
@@ -37,7 +38,9 @@ MOVIMENTO = re.compile(r'animazion|animat|video|\bonda\b|sfum|transizion|scorrim
                        re.I)
 MEDIA = re.compile(r'archivio/[\w./+-]+\.(?:mp4|webm|mov|gif|png|jpe?g)', re.I)
 VIDEO = ('.mp4', '.webm', '.mov', '.gif')
-RIGA_CATENA = re.compile(r"^-\s*\d{2}/\d{2}\s*·\s*\S+\s+([^\W\d][\w']*)\s+(\d+)\s*·")
+RIGA_CATENA = re.compile(r"^-\s*\d{2}/\d{2}\s*·\s*\S+\s+([^\W\d][\w']*)\s+(\d+)(?:\s*→\s*(\d+))?\s*·")
+# C469 fase 2 (rodato dal vivo): la riga corta in fondo a ogni messaggio non ripete la domanda; la foto va con quella intera
+RIGA_CORTA = re.compile(r'^[\s>*_]*(?:⚠️\s*)?Aspettano te\s*:.*$', re.M)
 
 
 def blocco(testo):
@@ -48,7 +51,23 @@ def blocco(testo):
         return None
     resto = pulito[inizio.start():]
     fine = FINE.search(resto)
-    return resto[:fine.start()] if fine else resto
+    # 10/11 (rodato dal vivo): la riga corta «⚠️ Aspettano te» attaccata senza «───» non fa parte delle domande
+    return RIGA_CORTA.sub('', resto[:fine.start()] if fine else resto)
+
+
+DA_FARE = re.compile(r'^[\s>*#_]*👉[^\n]*DA FARE TU', re.M)
+
+
+def manca_a_cosa_serve(testo):
+    """kit 37.2 (Pronti in Tavola, Mario «regola per tutti i progetti ed account»): il blocco «👉 DA FARE TU» (fino a
+    «───» o alla fine) parte da «A cosa serve: …». → True se manca."""
+    pulito = BLOCCHI_CODICE.sub(' ', testo)
+    m = DA_FARE.search(pulito)
+    if not m:
+        return False
+    resto = pulito[m.start():]
+    fine = FINE.search(resto)
+    return not re.search(r'a cosa serve', resto[:fine.start()] if fine else resto, re.I)
 
 
 def difetti(testo):
@@ -121,7 +140,14 @@ def mandati_nel_turno(percorso):
 
 
 def catena_della_sessione(progetto, sessione):
-    """→ nome della catena di questa sessione (tabella «## Catene» di docs/CHI-FA-COSA.md), '' se non c'è."""
+    """→ nome della catena di questa sessione (tabella «## Catene» di docs/CHI-FA-COSA.md), '' se non c'è.
+    C469 fase 2 (rapporto 14 voce 1): in cloud l'ingresso dell'hook ha l'id locale, mai nella tabella; quello della
+    tabella è `session_` + la parte dopo `cse_` di CLAUDE_CODE_REMOTE_SESSION_ID. Si prova prima quello."""
+    remoto = os.environ.get('CLAUDE_CODE_REMOTE_SESSION_ID') or ''
+    if '_' in remoto and sessione != 'session_' + remoto.split('_', 1)[1]:
+        trovata = catena_della_sessione(progetto, 'session_' + remoto.split('_', 1)[1])
+        if trovata:
+            return trovata
     if not sessione:
         return ''
     try:
@@ -149,7 +175,10 @@ def file_aspetta_mario(progetto, finale, catena):
     out = []
     for riga in (m.group(1).splitlines() if m else []):
         c = RIGA_CATENA.match(riga.strip())
-        if not c or c.group(1) != catena or f'{c.group(1)} {c.group(2)}' not in finale:
+        if not c or c.group(1) != catena:
+            continue
+        resto = RIGA_CORTA.sub('', finale)
+        if not any(re.search(rf'\b{re.escape(c.group(1))}\s+{n}\b', resto) for n in (c.group(2), c.group(3)) if n):
             continue
         out += [f for f in MEDIA.findall(riga) if os.path.isfile(os.path.join(progetto, f))]
     return out
@@ -186,6 +215,11 @@ def main():
         if mancano:
             print('Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): '
                   + '; '.join(mancano) + '. Mandali, poi chiudi il turno riscrivendo solo la parte che li riguarda (domanda o riga).',
+                  file=sys.stderr)
+            return 2
+        if manca_a_cosa_serve(finale):
+            print('«👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del '
+                  'blocco «A cosa serve: …» (cosa ottiene Mario, l\'app o il lavoro). Riscrivi solo quel blocco.',
                   file=sys.stderr)
             return 2
     b = blocco(finale)

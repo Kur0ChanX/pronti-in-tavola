@@ -77,7 +77,7 @@ try:
 
     t = Transcript(); t.modifica(100, "app/a.js"); t.finale("✅ FATTO\nAggiunto il tasto.")
     codice, err = t.esito()
-    controlla(codice == 2 and "app/a.js" in err and "Cancello" in err, "codice cambiato, nessuna prova, «fatto» = blocco", err)
+    controlla(codice == 2 and "app/a.js" in err and "Cancello" in err and "non riscrivere" in err, "codice cambiato, nessuna prova, «fatto» = blocco", err)
 
     controlla(t.esito(attivo=True)[0] == 0, "secondo giro (stop_hook_active) = silenzio")
 
@@ -89,6 +89,12 @@ try:
 
     t = Transcript(); t.modifica(100, "app/a.js"); t.prova(200, "npm run build && npx playwright test > out.txt; tail -3 out.txt", "  2 failed\n  40 passed"); t.finale("Fatto.")
     controlla(t.esito()[0] == 2, "uscita con «2 failed» non conta")
+
+    # C469 fase 2 (rapporto 14 voce 16): «0 failed» è una prova riuscita, «10 failed» no.
+    t = Transcript(); t.modifica(100, "app/a.js"); t.prova(200, "npx vitest run", "Tests  0 failed | 40 passed\n  0 failed"); t.finale("Fatto.")
+    controlla(t.esito()[0] == 0, "uscita con «0 failed» = prova riuscita")
+    t = Transcript(); t.modifica(100, "app/a.js"); t.prova(200, "npx vitest run", "Tests  10 failed | 40 passed"); t.finale("Fatto.")
+    controlla(t.esito()[0] == 2, "uscita con «10 failed» non conta")
 
     t = Transcript(); t.modifica(100, "app/a.js"); t.prova(200); t.modifica(300, "tests/b.spec.js", "Write"); t.finale("Funziona.")
     codice, err = t.esito()
@@ -164,9 +170,12 @@ try:
     controlla(r.returncode == 0, "transcript che non c'è = silenzio")
 
     # Modo commit (C333, E208): secondo sguardo dopo un git commit, una volta ogni 15 minuti, mai blocca.
-    def sguardo(entrata, risposta=None, nome="Bash"):
+    def sguardo(entrata, risposta=None, nome="Bash", extra=None):
+        dati = {"tool_name": nome, "tool_input": entrata, "tool_response": risposta or {"stdout": "1 file changed"},
+                "session_id": "sess-a"}
+        dati.update(extra or {})
         r = subprocess.run([sys.executable, "-I", HOOK, "commit"], capture_output=True, text=True, env=env,
-                           input=json.dumps({"tool_name": nome, "tool_input": entrata, "tool_response": risposta or {"stdout": "1 file changed"}}))
+                           input=json.dumps(dati))
         controlla(r.returncode == 0 and r.stderr == "", "modo commit: mai blocca")
         return json.loads(r.stdout)["hookSpecificOutput"]["additionalContext"] if r.stdout.strip() else ""
     os.makedirs(os.path.join(progetto, ".git"), exist_ok=True)
@@ -184,10 +193,52 @@ try:
               "commit riuscito = secondo sguardo con le domande", testo)
     controlla(sguardo({"command": "git -C . commit -qm y"}) == "", "secondo commit entro 15 minuti = silenzio")
     with open(mem, "w", encoding="utf-8") as f:
-        json.dump({"ultimo": time.time() - 16 * 60}, f)
-    controlla(sguardo({"command": "git -C . commit -qm y"}) != "", "dopo 15 minuti = di nuovo")
+        json.dump({"ultimo": time.time() - 16 * 60, "sessione": "sess-a"}, f)
+    corto =sguardo({"command": "git -C . commit -qm y"})
+    controlla(corto != "", "dopo 15 minuti = di nuovo")
+    # C469 fase 2 (rapporto 14 voce 9): intero la prima volta della sessione, poi corto; mai negli aiutanti.
+    controlla("Secondo sguardo" in corto and "c'è già?" in corto and len(corto) < 200 and "dove lo vede Mario" not in corto,
+              "stessa sessione, secondo avviso = testo corto", corto)
+    with open(mem, "w", encoding="utf-8") as f:
+        json.dump({"ultimo": time.time() - 16 * 60, "sessione": "sess-a"}, f)
+    controlla(sguardo({"command": "git -C . commit -qm y"}, extra={"agent_id": "ag1"}) == "", "aiutante = silenzio")
+    nuovo = sguardo({"command": "git -C . commit -qm y"}, extra={"session_id": "sess-b"})
+    controlla("dove lo vede Mario" in nuovo, "sessione nuova = di nuovo il testo intero", nuovo)
     r = subprocess.run([sys.executable, "-I", HOOK, "commit"], input="rotto", capture_output=True, text=True, env=env)
     controlla(r.returncode == 0 and r.stdout == "", "modo commit, entrata rotta = silenzio")
+
+    # C469 fase 2 (rapporto 13 M9, E306): merge che toglie file = avviso coi nomi; spostati, già allineato, merge-base = silenzio.
+    capo = subprocess.run(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=progetto, capture_output=True, text=True).stdout.strip()
+    scrivi(progetto, "docs/vecchio.md", "uno\n")
+    scrivi(progetto, "docs/sposta.md", "due\n")
+    subprocess.run(git + ["add", "docs/vecchio.md", "docs/sposta.md"], cwd=progetto, check=True)
+    subprocess.run(git + ["commit", "-q", "-m", "base"], cwd=progetto, check=True)
+    subprocess.run(git + ["checkout", "-q", "-b", "altro"], cwd=progetto, check=True)
+    subprocess.run(git + ["rm", "-q", "docs/vecchio.md"], cwd=progetto, check=True)
+    subprocess.run(git + ["mv", "docs/sposta.md", "docs/spostato.md"], cwd=progetto, check=True)
+    subprocess.run(git + ["commit", "-q", "-m", "togli"], cwd=progetto, check=True)
+    subprocess.run(git + ["checkout", "-q", capo], cwd=progetto, check=True)
+    subprocess.run(git + ["merge", "-q", "--ff-only", "altro"], cwd=progetto, check=True)
+    tolti = sguardo({"command": "git fetch -q && git merge --ff-only altro"}, {"stdout": "Fast-forward"})
+    controlla("E306" in tolti and "docs/vecchio.md" in tolti and "sposta" not in tolti, "merge che toglie un file = avviso", tolti)
+    controlla(sguardo({"command": "git merge altro"}, {"stdout": "Already up to date."}) == "", "merge già allineato = silenzio")
+    controlla(sguardo({"command": "git merge-base HEAD altro"}) == "", "merge-base = silenzio")
+    controlla(sguardo({"command": "git merge --abort"}) == "", "merge --abort = silenzio")
+
+    # C469 fase 2 (rapporto 13 M9, E309): commit che tocca Da fare con una voce 👁 senza prova = avviso subito.
+    scrivi(progetto, "docs/DA-FARE.md", "# Da fare\n| C312 | 🔴 **Schede** 👁 Lo vedi: Inizio | Claude | adesso |\n")
+    subprocess.run(git + ["add", "docs/DA-FARE.md"], cwd=progetto, check=True)
+    subprocess.run(git + ["commit", "-q", "-m", "da fare"], cwd=progetto, check=True)
+    rotta = sguardo({"command": "git commit -qm 'da fare'"})
+    controlla("E309" in rotta and "C312" in rotta, "commit di Da fare con 👁 senza prova = avviso", rotta)
+    scrivi(progetto, "docs/DA-FARE.md", "# Da fare\n| C312 | 🔴 **Schede** 👁 Lo vedi: Inizio · prova: foto | Claude | adesso |\n")
+    subprocess.run(git + ["commit", "-qam", "da fare giusto"], cwd=progetto, check=True)
+    controlla("E309" not in sguardo({"command": "git commit -qam x"}), "commit di Da fare in ordine = niente avviso")
+    scrivi(progetto, "docs/altro.md", "x\n")
+    subprocess.run(git + ["add", "docs/altro.md"], cwd=progetto, check=True)
+    subprocess.run(git + ["commit", "-q", "-m", "altro"], cwd=progetto, check=True)
+    scrivi(progetto, "docs/DA-FARE.md", "# Da fare\n| C312 | 🔴 **Schede** 👁 Lo vedi: Inizio | Claude | adesso |\n")
+    controlla("E309" not in sguardo({"command": "git commit -qm x"}), "commit che non tocca Da fare = niente controllo")
 finally:
     shutil.rmtree(cartella)
 

@@ -16,12 +16,12 @@ def controlla(cond, nome):
     ok_n += 1
 
 
-def hook(memoria, modo, minuto, soglia=None):
+def hook(memoria, modo, minuto, soglia=None, dati=None):
     env = dict(os.environ, CLAUDE_PROJECT_DIR=memoria, TURNO_TMP=memoria, TURNO_ORA=str(1_000_000 + minuto * 60))
     env.pop("TURNO_MINUTI", None)
     if soglia is not None:
         env["TURNO_MINUTI"] = str(soglia)
-    r = subprocess.run([sys.executable, "-I", HOOK, modo], input=json.dumps({"tool_name": "Bash"}),
+    r = subprocess.run([sys.executable, "-I", HOOK, modo], input=json.dumps(dati or {"tool_name": "Bash"}),
                        capture_output=True, text=True, env=env)
     controlla(r.returncode == 0, "mai blocca (uscita 0)")
     if not r.stdout.strip():
@@ -41,7 +41,11 @@ try:
     a = hook(mem, "tool", 21)
     controlla("21 min" in a and "sottofondo" in a and "C218" in a, "21 min: avviso")
     controlla(hook(mem, "tool", 23) == "", "avviso non ripetuto prima di 5 min")
-    controlla("27 min" in hook(mem, "tool", 27), "avviso ripetuto dopo 5 min")
+    b = hook(mem, "tool", 27)
+    controlla("27 min" in b and "sottofondo" not in b, "avviso ripetuto dopo 5 min, corto (C469: intero ogni 30 min)")
+    controlla(hook(mem, "tool", 33, dati={"tool_name": "Bash", "agent_id": "a1"}) == "", "C469: a un aiutante niente avviso")
+    controlla("sottofondo" not in hook(mem, "tool", 40), "C469: 40 min, ancora corto")
+    controlla("sottofondo" in hook(mem, "tool", 51), "C469: 30 min dopo il primo intero, di nuovo intero")
     # Fine del turno: si riparte da zero.
     controlla(hook(mem, "stop", 28) == "", "stop: zitto")
     controlla(hook(mem, "tool", 30) == "", "turno nuovo: zitto")

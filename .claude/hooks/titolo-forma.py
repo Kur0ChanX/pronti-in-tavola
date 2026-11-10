@@ -8,8 +8,9 @@ Su `set_session_title` e `create_session` (strumenti di claude-code-remote) cont
 - icona del progetto (quella scritta nel suo CLAUDE.md): una emoji, senza lettere né numeri;
 - Nome della catena in una parola, fisso (Principale, Dov'è, Scorte, Atlante), spazio, numero senza # né P; mai in fondo;
 - cosa fa: al massimo 3 parole e ~24 caratteri.
-- C423 (Mario 02/11): subito dopo il numero, facoltativo, il segno delle domande: « ❔» (verde: lavora con domande aperte
-  in «## 0. Aspetta Mario») o « ❓» (giallo: ferma ad aspettare Mario); mai sui rossi e sui neri.
+- C454 (Mario 04/11 16:5x «io nelle sessioni non vedo nessun punto di domanda»; prima C423): subito dopo il numero,
+  facoltativo, « ❓N» = N risposte che Mario deve dare (righe della catena in «## 0. Aspetta Mario»), su ogni colore;
+  sessione chiusa (rosso o nero) con domande aperte: « ❓N → NN» (la sessione dove rispondere). Il «❔» non si usa più.
 I cerchi sono solo della catena «Principale». Se `docs/CHI-FA-COSA.md` ha la tabella «## Catene» (| Catena | Forma | …),
 il segno deve essere della forma di quella catena.
 Eccezione: i titoli che cominciano con «✗ DOPPIONE» (E44).
@@ -31,7 +32,8 @@ FORME = {
 PRINCIPALE = 'principale'
 TETTO_COSA = 24
 STRUMENTO = re.compile(r'(?:^|__)(set_session_title|create_session)$')
-ESEMPI = '«🟢 <icona> Principale 466 · colori Planner» · «🟨 <icona> Dov\'è 8 · foto da ridare» · «❤️ <icona> Scorte 67 · v118 online»'
+ESEMPI = ('«🟢 <icona> Principale 466 · colori Planner» · «🟨 <icona> Dov\'è 8 · foto da ridare» · «❤️ <icona> Scorte 67 · v118 online» '
+          '· con domande aperte «🟢 <icona> Principale 535 ❓5 · minibar» · chiusa «🔴 <icona> Principale 534 ❓5 → 535 · consegne»')
 
 
 def forma_di(segno):
@@ -54,8 +56,10 @@ def linee(progetto):
             dentro = riga.strip() in ('## Catene', '## Linee')
         elif dentro and riga.startswith('|'):
             celle = [c.strip().strip('*') for c in riga.strip().strip('|').split('|')]
-            if len(celle) >= 2 and celle[1].lower() in FORME:
-                uscita[celle[0].lower()] = celle[1].lower()
+            # C469 rapporto 15 voce 5: «libri (riserva)» = libri (prima le catene coi libri non avevano il controllo)
+            forma = (celle[1].lower().split() or [''])[0] if len(celle) >= 2 else ''
+            if forma in FORME:
+                uscita[celle[0].lower()] = forma
     return uscita
 
 
@@ -78,15 +82,16 @@ def controlla(titolo, tabella=None):
     catena, cosa = resto.split(' · ', 1)
     if re.search(r'[#⭐]|\bP\d', catena):
         return 'il numero va senza #, ⭐ né P, subito dopo il nome della catena (Principale 466, Dov\'è 8)'
-    m = re.fullmatch(r"([^\W\d_][\w'’]*) (\d+)(?: ([❔❓]))?", catena)
+    if re.search(r'[❔❓]', catena) and not re.search(r' ❓[1-9]\d*(?: → \d+)?$', catena):
+        return ('il segno delle domande è « ❓N» dopo il numero, N = risposte che Mario deve dare (Principale 535 ❓5); '
+                'chiusa con domande aperte « ❓N → NN» (dove rispondere); il «❔» non si usa più (C454)')
+    m = re.fullmatch(r"([^\W\d_][\w'’]*) (\d+)(?: ❓(\d+)(?: → (\d+))?)?", catena)
     if not m:
         return f'«{catena}»: serve il nome della catena in una parola, spazio, numero (Principale 466, Scorte 68)'
     nome = m.group(1).lower()
     stato = FORME[forma].index(segno)  # 0 verde · 1 giallo · 2 rosso · 3 nero
-    if m.group(3) == '❔' and stato != 0:
-        return '«❔» (domande aperte mentre lavora) va solo col verde; ferma ad aspettare Mario: giallo con «❓»'
-    if m.group(3) == '❓' and stato != 1:
-        return '«❓» (ferma ad aspettare Mario) va solo col giallo; lavora con domande aperte: verde con «❔»'
+    if m.group(4) and stato < 2:
+        return '«→ NN» (la sessione dove rispondere) va solo sulle sessioni chiuse (rosso o nero); una sessione aperta risponde da sé'
     if nome == PRINCIPALE and forma != 'cerchi':
         return 'la catena Principale usa i cerchi: 🟢 lavora · 🟡 tocca a Mario · 🔴 chiusa · ⚫ bloccata'
     if nome != PRINCIPALE and forma == 'cerchi':

@@ -1,6 +1,6 @@
 ---
 name: pr
-description: Regole delle PR verso main e dei minuti GitHub (bozza, un solo giro, unione da sola col verde, ramo-copia, quando si pubblica, corsia urgenze, quando leggere l'esito). Usala prima di aprire o segnare pronta una PR, prima di un push che può far partire le prove e quando arriva l'esito di un giro.
+description: PR verso main: bozza, un solo giro, unione col verde, ramo-copia, quando si pubblica, urgenze, esito. Usala prima di aprire o segnare pronta una PR, prima di un push che può far partire le prove e quando arriva l'esito di un giro.
 ---
 
 # PR, prove su GitHub e minuti
@@ -8,7 +8,7 @@ description: Regole delle PR verso main e dei minuti GitHub (bozza, un solo giro
 Le regole corte sono in `docs/kit-progetto/REGOLE.md` («Rami e PR»); qui la procedura. Passi tecnici del progetto, se ci sono: skill `unione-pr` (unione e intoppi) e `minuti-github` (conteggio).
 
 ## Minuti: contano QUANTE volte girano le prove, non quanto durano
-1. Un solo giro completo per versione, dove dice il `CLAUDE.md` del progetto (di base: nel contenitore, gratis, poi un giro di conferma su GitHub).
+1. Un solo giro completo per versione, fuori, dove dice `REGOLE.md` «Rami e PR» (e lo smistatore del progetto, se c'è).
 2. Le prove partono solo a PR aperta, riaperta o segnata pronta: niente `synchronize`, quindi un push su una PR pronta non fa partire niente.
 3. Unione solo col verde sull'ultimo commit; dopo un push, bozza → pronta per un giro nuovo.
 4. Mario vede subito ogni modifica: ogni push del ramo che tocca l'app la pubblica sull'anteprima (solo costruzione, niente prove); il sito vero cambia a versione finita, le urgenze subito. A Mario dico l'indirizzo e cosa provare.
@@ -17,8 +17,8 @@ Le regole corte sono in `docs/kit-progetto/REGOLE.md` («Rami e PR»); qui la pr
 
 ## Dalla bozza all'unione
 1. PR verso `main` in **bozza** (draft) mentre lavoro: in bozza le prove su GitHub non partono.
-2. Prima di ogni push, in locale: unità, regole, build e prove nel browser della parte cambiata (il `CLAUDE.md` del progetto dice se serve il giro completo). Mai «[skip ci]» nei commit, nemmeno di soli documenti (F04): i workflow su push hanno già `paths`, un commit di soli documenti non fa partire niente; nello squash GitHub lo incolla e `main` non pubblica. La guardia lo ferma.
-3. Versione finita: foto dell'aspetto già approvate da Mario, prove verdi come al punto 2 (giro completo in locale solo se il `CLAUDE.md` del progetto lo chiede), `docs/DA-FARE.md` e novità aggiornati (ogni voce con «👁 Lo vedi» della versione è dentro, o a Mario dico perché no). Testi delle novità: chiari e professionali, da aggiornamento d'app; mai far capire che ci parliamo (niente «come chiesto», nomi, sessioni); permessi e controlli sulle persone solo nei dettagli dello sviluppatore.
+2. Prima di ogni push, in locale: unità, regole, build e prove nel browser della parte cambiata. Mai «[skip ci]» nei commit, nemmeno di soli documenti (F04): i workflow su push hanno già `paths`, un commit di soli documenti non fa partire niente; nello squash GitHub lo incolla e `main` non pubblica. La guardia lo ferma. Numeri doppi (voce C di Da fare, versione dell'app: due chat sullo stesso ramo, kit 37.2): li ferma l'hook `numeri-doppi.py` prima del push; a una il primo numero libero (dopo `git fetch` e `git grep`) e «era Cxx doppio»; cosa guarda: `.claude/numeri-doppi.json` del progetto (senza: solo `docs/DA-FARE.md`).
+3. Versione finita: foto dell'aspetto già approvate da Mario, prove verdi come al punto 2, `docs/DA-FARE.md` e novità aggiornati (ogni voce con «👁 Lo vedi» della versione è dentro, o a Mario dico perché no). Testi delle novità: chiari e professionali, da aggiornamento d'app; mai far capire che ci parliamo (niente «come chiesto», nomi, sessioni); permessi e controlli sulle persone solo nei dettagli dello sviluppatore.
 4. **Ramo-copia**: `versione-vNN` = copia del commit provato, push; la PR parte da lì. Il ramo comune resta libero, codice compreso, anche col giro in corso (entra nella versione dopo). Con la PR pronta niente push su `versione-vNN`: per una correzione la PR torna prima in bozza.
 5. Prima di segnare pronta: `git log -1 --format=%s origin/versione-vNN` senza «[skip ci]» (la guardia ferma `create_pull_request` non in bozza e `update_pull_request` `draft: false` se l'ultimo commit del ramo su GitHub lo porta, C413). Poi push e PR aperta già pronta (`create_pull_request` `draft: false`, o `update_pull_request` `draft: false`): parte UN giro. Dopo 1 minuto controllo che il giro sia partito.
 6. Esito: si legge UNA volta, all'evento `check_suite` o dopo ≥15 minuti dal push (`get_check_runs` sul commit del giro, anche se dopo ci sono commit di soli documenti), oppure con un ciclo in sottofondo che costa zero token. Mai letture ripetute in chat, mai sveglie sotto i 50 minuti per guardare GitHub (la ripresa dei turni brevi è un'altra cosa).
@@ -40,5 +40,15 @@ Urgenza di sicurezza = dati visti da chi non deve, permessi sbagliati, dati pers
 ## Push
 - Prima di ogni push: `git fetch` e merge normale (il lavoro di un'altra chat si unisce così); prima guardo l'esito delle prove, poi commit e push in un comando a parte.
 - Push di soli documenti sempre ok: non fanno partire le prove.
-- Rami a parte, mai cancellati a mano (solo il lavoro mensile «Pulisci le scorte» toglie le `scorta-*` più vecchie di 30 giorni già nel ramo, C352): scorte per sessione `scorta-<ruolo>-<AAAAMMGG>-<id>/<ramo>` (C352; le vecchie `scorta-<ruolo>/<ramo>` e `scorta/<ramo>` non si scrivono più, si leggono ancora), rami-copia `versione-vNN`, copie `vecchio-…` dell'hook di avvio.
+- Rami a parte, mai cancellati a mano (solo «Pulisci le scorte», ogni notte e all'avvio con `--unite`, toglie le `scorta-*` già nel ramo o di sessioni chiuse col solo commit automatico, C352, C469): scorte per sessione `scorta-<ruolo>-<AAAAMMGG>-<id>/<ramo>` (C352; le vecchie `scorta-<ruolo>/<ramo>` e `scorta/<ramo>` non si scrivono più, si leggono ancora), rami-copia `versione-vNN`, copie `vecchio-…` dell'hook di avvio.
 - Un push con l'albero dei file identico al precedente (es. unire una scorta vuota) non conta come «solo documenti»: con zero file cambiati il giro può essere completo.
+
+## Lezioni dal diario (spostate intere da `docs/ERRORI.md`, C469 A6, 09/11)
+- **E328** «Pubblica ora» col giro in corso: PR 146 unita e a Mario «pubblico adesso», ma il controllo F02 ferma la pubblicazione su `main` fino al giro verde (10/11 11:49). Prima di promettere «ora» guardo F02; più veloce solo il lancio a mano (urgenze), col sì di Mario.
+- **E256** Dopo `git merge origin/main` (squash di un ramo-copia vecchio) un file tolto nel ramo DOPO la copia torna senza conflitto: controllo sempre `git diff <punta prima del merge> HEAD` = vuoto (#503: `C57-pezzo1.patch` tornato, tolto di nuovo).
+- **E210** Correzione urgente di ciò che Mario vede: la pubblica SUBITO la chat che l'ha fatta (PR sua), senza ok; prima di ogni versione niente di già visibile sparisce (prova nel browser coi casi brutti) e ogni cosa tolta è nelle Novità.
+- **E252** Dopo l'unione l'ESITO di ogni giro su `main` (sito, regole, Worker), non solo la partenza: v119 regole rosse (indice mancante) viste da Sentry 1 ora dopo.
+- **E83** Un push con l'albero identico al precedente (es. scorta vuota) fa girare il giro completo con zero file cambiati (~15 min). Con una PR pronta non pushare una scorta vuota (o riuso dell'esito verde, C109).
+- **E164** Dopo ogni modifica a `VERSIONI` o a qualsiasi file, prove dell'app prima del push, anche per «solo testo» (Novità oltre 130 caratteri = giro rosso). Ogni voce 🔴 o 🐞 di `docs/DA-FARE.md`: frase semplice in `atlante/atlante.json` `lavoriFacili`, stesso commit.
+- **E136** Permessi, profili, Visione, limiti: mai nelle righe `facile` delle Novità, solo in «Tutti i dettagli» (li vede solo lo sviluppatore).
+- **E312** Push sul ramo-copia di una PR = nessun giro: `prove.yml` parte solo ad apertura o «pronta» (#146: un'ora persa ad aspettare). Dopo il push di una correzione: `actions_run_trigger run_workflow prove.yml` sul ramo-copia, poi `get_check_runs`.
