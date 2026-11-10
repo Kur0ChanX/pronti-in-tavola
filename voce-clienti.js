@@ -539,14 +539,19 @@ async function registraCliente(o = {}) {
     if (blob.size > 1200000) { statoVC('', ''); mostraToast('Frase troppo lunga: dimmela in due pezzi.'); return; }
     statoVC('capisco', '');
     try {
-      const r = await (window.ascoltaServerFinto || ascoltaServer)({ audio: await base64Di(blob), tipo: blob.type, piatti: nomiPiattiVoce() });
+      const devCli = typeof UI !== 'undefined' && !!UI.devCliente;   // (C108) Mario che guarda come cliente: il server usa la strada dei clienti (Deepgram), non quella di chi gestisce
+      const r = await (window.ascoltaServerFinto || ascoltaServer)({ audio: await base64Di(blob), tipo: blob.type, piatti: nomiPiattiVoce(), comeCliente: devCli });
       if (VC.giro !== giro) return;
+      if (devCli && r && r.motore) UI.ultimoAscolto = nomiMotori(r.motore);   // solo per Mario, nella barra sviluppatore: chi ha sentito la frase
       if (r && r.testo) { consegnaDetto(scegliTrascrizione(r), o); return; }
       statoVC('', ''); mostraToast('Non ho capito le parole: riprova o scrivi la frase.');   // (C108b, PT E41) il server non ferma mai nessuno
     } catch (e) { if (VC.giro === giro) { statoVC('', ''); mostraToast(e.message || 'Adesso non riesco a capire la voce: scrivi la frase.'); } }
   };
   VC.media = mr; mr.start(250); ticVoce(true); statoVC('registro', '');
 }
+/* «groq:whisper-large-v3+deepgram → qwen/…» → «Groq + Deepgram · corretto» (C108: Mario vede se Deepgram ha risposto) */
+const nomiMotori = m => { const [sentiti, corr] = String(m || '').split(' → ');
+  return sentiti.split('+').map(x => /deepgram/.test(x) ? 'Deepgram' : /cloudflare/.test(x) ? 'Cloudflare' : /turbo/.test(x) ? 'Groq veloce' : /groq/.test(x) ? 'Groq' : x).join(' + ') + (corr ? ' · corretto' : ''); };
 const base64Di = blob => new Promise((ok, no) => { const fr = new FileReader(); fr.onload = () => ok(String(fr.result).split(',')[1] || ''); fr.onerror = () => no(new Error('audio non leggibile')); fr.readAsDataURL(blob); });
 async function ascoltaServer(corpo) {
   const tok = await Dati.tokenCliente(); if (!tok) throw new Error('Riapri l\'app e riprova.');
