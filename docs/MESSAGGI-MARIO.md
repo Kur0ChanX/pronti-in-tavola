@@ -144,3 +144,6 @@ intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le 
 
 ### 10/11 ~13:57 (Principale 46, C125-C126, foto `archivio/foto/2026-11-10-1356-proteiche-albumi.jpg`: Proteiche dopo «Albumi», «3 ricette: RicetteFit 2 · GialloZafferano 1», «Niente di nuovo con «albumi»: le 23 trovate le avevo già lette»)
 si ma perché ricerca solo in questo modo ricette fit è il meglio non aggiungiamo altre fonti? e poi 6 selezioni cosí sono troppo vincolato dividile al massimo per spuntino merenda pranzo cena dolce colazione post cena ecc no poi se voglio scelgo la fonte proteica ma mettine tante di fonti non cosí e altre funzioni e cerca e le aggiunge al meglio nelle mie ricette scritte bene chiare complete con foto video passo per passo ecc ecc
+
+### 10/11 ~14:10 (Principale 46, C126)
+se voglio fare una ricerca senza selezionare la proteina devo poterla fare e mi cerca tutto o anche senza aggiungere esempio pranzo cena dopo allenamento ecc ecc mi cerca tutto nei siti e le carica nell'app

@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.9';
+const VERSIONE_APP = '0.10.10';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.10', data: '10/11/2026',
+    migliorato: ['Ricettario «🏋️ Proteiche»: al posto delle 6 parole fisse ci sono i momenti della giornata: 🌅 Colazione, 🍎 Spuntino, 🧃 Merenda, 🍝 Pranzo, 🍽 Cena, 🌙 Dopo cena, 🍰 Dolci, 💪 Dopo l\'allenamento. Un tocco mostra le ricette proteiche di quel momento e ne cerca subito di nuove su GialloZafferano e RicetteFit', 'Ricettario «🏋️ Proteiche»: «Cerca nuove ricette fit su tutti i siti» cerca anche senza scegliere un momento o scrivere un piatto, e carica le ricette nuove nell\'app'] },
   { v: '0.10.9', data: '10/11/2026',
     migliorato: ['Ricettario: la ricerca di sempre ora guarda anche su RicetteFit, non solo su GialloZafferano. Scrivi un piatto (es. budino, pollo al limone) e tocca «Cerca … su GialloZafferano e RicetteFit»: in cima quelle di RicetteFit con la foto, sotto quelle di GialloZafferano'] },
   { v: '0.10.8', data: '10/11/2026',

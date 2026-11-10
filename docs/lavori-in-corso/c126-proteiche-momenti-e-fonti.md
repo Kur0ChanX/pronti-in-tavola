@@ -22,7 +22,7 @@ Viene dopo C125 (v0.10.6-0.10.9). Codice: `ricettario.js` (`cercaFitBox`, `FIT_C
 - Ogni ricetta nuova entra come le altre: passi, foto (dei passi solo se il sito le ha), video se c'è, fonte scritta.
 
 ## Pezzi (in quest'ordine, un push per pezzo provato)
-1. Momenti al posto delle 6 parole + filtro momento in Proteiche.
+1. ✅ v0.10.10 (Principale 46) Momenti al posto delle 6 parole e di «Pasti / Snack e dolci» + filtro momento in Proteiche: `ricettario.js` `MOMENTI_FIT` (parole da cercare, max 4), `PAROLE_MOM`, `momentoRic`; `worker.js` `cercaFit` con `qq`. Prove: passi C125 aggiornati, «C126 momento» in `tools/prova-database.mjs`. Le parole dei momenti nelle Impostazioni: col pezzo 2. Anche «Cerca nuove ricette fit su tutti i siti» (Mario 14:10 «senza selezionare… mi cerca tutto»): `{ db: 'cercaFit', tutto: true }` = `FIT_TUTTO` su GZ + le prossime 30 di RicetteFit da `rf.i`.
 2. Fonte proteica facoltativa (molte voci) + Impostazioni.
 3. Fonti A provate dal vivo; ognuna buona = lettore come `rf.mjs` + corsia del motore + ricerca.
 4. Fonti B: solo dopo il sì di Mario.
