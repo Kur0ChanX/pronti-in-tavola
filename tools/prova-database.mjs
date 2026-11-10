@@ -49,6 +49,7 @@ globalThis.fetch = async (u) => {
 };
 const cfg = { RICETTARIO: { idFromName: () => 'x', get: () => ponte }, AVVISI: { idFromName: () => 'c', get: () => ({}) } };
 
+oggetto.mettiParoleFit([]);   // la corsia «fit» (C124) ha le sue prove in fondo: qui spenta, così i conti di sotto restano quelli
 /* 1. il motore: prima pagina in coda, 2 ricette scaricate per giro */
 await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
 let s = await ponte.statoDb();
@@ -306,6 +307,72 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   const html = await fg('https://www.giallozafferano.it/images/finta.png');
   prova('C119: se GZ non dà una foto → 502 col motivo', html.status === 502 && /non è una foto/.test((await html.json()).errore));
   globalThis.fetch = prima; await finisci();
+}
+// C124 (Mario 10/11 «ricette per fitness… poche calorie e grassi cattivi, attenzione a sale e zuccheri»): valori per porzione
+{ const { gzNutrizione, gzSoloNutr } = await import(pathToFileURL(join(radice, 'gz.mjs')).href);
+  const li = (n, v, u = 'g') => `<li><span class="gz-list-macros-name"><span>${n}</span></span><span class="gz-list-macros-unit"><span>${u}</span></span><span class="gz-list-macros-value"><span>${v}</span></span></li>`;
+  const macro = (kcal, prot) => `<div class="gz-list-macros-container"><ul>${li('Energia', kcal, 'Kcal')}${li('Proteine', prot)}${li('&nbsp;&nbsp;di cui saturi', '2,1')}${li('Sodio', '380', 'mg')}</ul></div>`;
+  const n1 = gzNutrizione(macro('412,5', '32,4'), { nutrition: { calories: '999 kcal', fatContent: '9,5 g', sugarContent: '1,2 g' } });
+  prova('C124: valori dall\'HTML (virgole decimali), il JSON-LD solo per quelli che mancano', n1.kcal === 412.5 && n1.prot === 32.4 && n1.saturi === 2.1 && n1.sodio === 380 && n1.grassi === 9.5 && n1.zuc === 1.2);
+  prova('C124: un valore che manca è null, mai 0', n1.fibre === null && n1.carb === null);
+  prova('C124: senza calorie né proteine = nessun valore', gzNutrizione('', { nutrition: { fatContent: '3 g' } }) === null && gzNutrizione('', {}) === null);
+  const ldR = `<script type="application/ld+json">${JSON.stringify({ '@type': 'Recipe', name: 'x' })}</script>`;
+  prova('C124: pagina che non è una ricetta = undefined (si riprova), ricetta senza valori = null', gzSoloNutr('<html></html>') === undefined && gzSoloNutr(ldR) === null);
+
+  /* rilettura delle ricette salvate prima (senza valori): 10 per giro, esito sempre scritto */
+  oggetto.sql.exec('DELETE FROM ricette'); oggetto.sql.exec('DELETE FROM coda'); oggetto.sql.exec('DELETE FROM scelte');
+  oggetto.mettiParoleFit([]); oggetto.metti1('pausa', '');
+  for (let i = 0; i < 12; i++) { oggetto.salva({ id: 'gz:Fit-' + i, url: `https://ricette.giallozafferano.it/Fit-${i}.html`, nome: 'Fit ' + i, v: 4, ingredienti: [], passi: [] }); oggetto.aggiungi({ id: 'gz:Fit-' + i, nome: 'Fit ' + i }); }
+  const prima = globalThis.fetch, lette = [];
+  globalThis.fetch = async (u, o) => { u = String(u); const m = /\/Fit-(\d+)\.html$/.exec(u); if (!m) return prima(u, o); lette.push(+m[1]);
+    if (m[1] === '10') return new Response('', { status: 404 }); if (m[1] === '11') return new Response('giù', { status: 503 });
+    return new Response(ldR.replace('"x"', '"Fit"') + macro(String(300 + +m[1] * 10), String(20 + +m[1]))); };
+  let s0 = await ponte.statoDb();
+  prova('C124: 12 ricette senza valori da leggere', s0.senzaValori === 12 && s0.conValori === 0);
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
+  let s1 = await ponte.statoDb();
+  prova('C124: un giro legge 10 ricette, solo la pagina (niente video)', lette.length === 10 && s1.senzaValori === 2 + lette.filter(n => n === 11).length);
+  for (let i = 0; i < 4; i++) { await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci(); }
+  s1 = await ponte.statoDb();
+  const j10 = await ponte.una('gz:Fit-10'), j11 = await ponte.una('gz:Fit-11'), j3 = await ponte.una('gz:Fit-3');
+  prova('C124: pagina sparita = senza valori; rete giù 3 volte = senza valori (mai fermi, PT E29)', j10.nutr === null && j11.nutr === null && j11.nutrProve === 3 && lette.filter(n => n === 11).length === 3);
+  prova('C124: alla fine 10 con valori, 0 da leggere, nessuna riletta due volte', s1.conValori === 10 && s1.senzaValori === 0 && lette.filter(n => n === 3).length === 1 && j3.nutr.kcal === 330 && j3.nutr.prot === 23);
+  const sc = await ponte.scelte(), x3 = sc.find(x => x.id === 'gz:Fit-3'), x10 = sc.find(x => x.id === 'gz:Fit-10');
+  prova('C124: il ricettario porta i valori al telefono (per filtrare anche senza rete)', x3.nutr && x3.nutr.prot === 23 && x3.nutr.kcal === 330 && x3.nutr.sodio === 380 && !('colest' in x3.nutr) && x10.nutr === null);
+  oggetto.salva({ id: 'gz:Nuova', url: 'https://ricette.giallozafferano.it/Nuova.html', nome: 'Nuova', nutr: { kcal: 200, prot: 25 } });
+  oggetto.salva({ id: 'gz:Senza', url: 'https://ricette.giallozafferano.it/Senza.html', nome: 'Senza', nutr: null });
+  prova('C124: le ricette lette col lettore nuovo hanno già l\'esito: non si rileggono', !(await ponte.senzaNutr(20)).length && (await ponte.statoDb()).conValori === 11);
+  oggetto.sql.exec("UPDATE ricette SET nutr = NULL, json = json_remove(json, '$.nutr') WHERE id = 'gz:Fit-1'"); oggetto.metti1('pausa', '1'); lette.length = 0;
+  await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
+  prova('C124: in pausa niente riletture dei valori', lette.length === 0);
+  oggetto.metti1('pausa', ''); globalThis.fetch = prima;
+}
+// C124: corsia «fit» del motore (una pagina su 4) con le parole cambiabili dalla pagina Database
+{ const prima = globalThis.fetch, chieste = [];
+  const cartaF = n => `<article class="gz-card"><a href="https://ricette.giallozafferano.it/${n}.html" title="${n}"></a><h2 class="gz-title"><a>${n}</a></h2></article>`;
+  globalThis.fetch = async (u, o) => { u = String(u);
+    if (u === 'https://www.giallozafferano.it/ricerca-ricette/petto+di+pollo/') { chieste.push(u); return new Response(Array.from({ length: 15 }, (_, i) => cartaF('Pollo-' + i)).join('') + '<link rel="next" href="https://www.giallozafferano.it/ricerca-ricette/page2/petto+di+pollo/">'); }
+    if (u === 'https://www.giallozafferano.it/ricerca-ricette/page2/petto+di+pollo/') { chieste.push(u); return new Response(cartaF('Pollo-15') + cartaF('Pollo-16')); }
+    if (u === 'https://www.giallozafferano.it/ricerca-ricette/tonno/') { chieste.push(u); return new Response(cartaF('Tonno-0')); }
+    if (/ricerca-ricette|ricette-cat/.test(u)) chieste.push(u);
+    return prima(u, o); };
+  oggetto.sql.exec('DELETE FROM coda'); oggetto.mettiParoleFit(['petto di pollo', 'tonno']);
+  const giro = async () => { oggetto.sql.exec('DELETE FROM coda'); oggetto.metti1('pagine', 1); await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci(); };
+  await giro(); let s = await ponte.statoDb();
+  prova('C124 fit: la pagina 1 su 4 cerca la prima parola, pagina dopo ricordata', chieste[0] === 'https://www.giallozafferano.it/ricerca-ricette/petto+di+pollo/' && /page2\/petto\+di\+pollo/.test(s.paginaFit) && s.fitI === 0);
+  await giro(); s = await ponte.statoDb();
+  prova('C124 fit: finite le pagine, la parola dopo', chieste[1] === 'https://www.giallozafferano.it/ricerca-ricette/page2/petto+di+pollo/' && s.fitI === 1 && s.paginaFit === '');
+  await giro(); s = await ponte.statoDb();
+  prova('C124 fit: finite le parole, «fine» fino al prossimo giro completo', chieste[2] === 'https://www.giallozafferano.it/ricerca-ricette/tonno/' && s.paginaFit === 'fine' && s.fitI === 0);
+  await giro();
+  prova('C124 fit: dopo «fine» le pagine 1 su 4 tornano alle altre sezioni', chieste.length === 4 && !/petto|tonno/.test(chieste[3]));
+  prova('C124 fit: le ricette trovate entrano nel ricettario come le altre', !!(await ponte.una('gz:Pollo-0')) && (await ponte.scelte()).some(x => x.id === 'gz:Pollo-0'));
+  let j = await (await chiedi({ db: 'fit', parole: 'Pollo, tonno; Orata!, a, pollo' })).json();
+  prova('C124 fit: parole cambiate dall\'app, pulite, senza doppioni né parole di 1 lettera', JSON.stringify(j.db.paroleFit) === '["pollo","tonno","orata"]' && j.db.paginaFit === '' && j.db.fitI === 0);
+  j = await (await chiedi({ db: 'fit', base: true })).json();
+  prova('C124 fit: «rimetti quelle di base»', j.db.paroleFit.length === 18 && j.db.paroleFit[0] === 'proteiche');
+  prova('C124 fit: senza accesso di chi gestisce niente', (await chiedi({ db: 'fit', parole: 'x' }, false)).status === 403);
+  globalThis.fetch = prima; oggetto.mettiParoleFit(null);
 }
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);
