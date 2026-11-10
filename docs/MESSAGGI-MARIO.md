@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-07 00:34 · 01QTFEqU1M1r
-risolvi per piacere siamo 2 ore cerca bene
-
 ## 2026-11-07 01:09 · 01QTFEqU1M1r
 link e passaggi chiari
 
@@ -133,3 +130,8 @@ dimmi le regole che vuoi mettere per tutti
 
 ## 2026-11-10 11:00 · 01WTjqUxmJ9k
 deepgram fatto come valido un anno che senso ha?!?
+
+## 2026-11-10 11:25 · 01WTjqUuQygq
+Aggiungi al ricettario una voce proteica e cerchi in automatico le ricette per fitness sala pesi con poche calorie e grassi cattivi e con attenzione a sale zucchero ecc ecc insomma ricette gym per aiutare ad asciugarsi ma per migliorare l'ipertrofia 
+Metti anche filtro per difficoltà e il tasto database quando lo clicco con fare scorrere l'app velocemente giú ma deve andare direttamente, ricettario mettilo un pò piú in vista sembra trascurato sotto poi le ricette di giallo zafferano le segni che sono di giallo e se ne trovi altre ricette esempio per fitness in altre fonti migliori mettile caricate al meglio tutti i passaggi info foto fatte bene ecc ecc  e segnami la fonte dove l'hai presa.
+migliora ricettario in generale
