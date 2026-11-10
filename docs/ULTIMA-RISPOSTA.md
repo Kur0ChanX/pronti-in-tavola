@@ -1,3 +1,12 @@
-# Ultima risposta di Claude (10/11/2026 11:33 ora italiana)
+# Ultima risposta di Claude (10/11/2026 13:56 ora italiana)
 
-Grazie: Android ok, ho salvato la foto e l'ho passata alla chat nuova insieme al tuo messaggio. Le prove su iPad e iPhone aspettano finché non ne avrai uno. D'ora in poi scrivi nella **Principale 42**: https://claude.ai/code/[segreto tolto dalla scorta]
+
+
+## Domande a Mario
+
+❓ DOMANDA 1 (riscritta)
+📌 Di cosa parliamo: le fonti delle ricette nel Ricettario. Oggi sono GialloZafferano e RicetteFit, le uniche con proteine e calorie per porzione.
+1 · Restano solo queste due: tutte le ricette che trovi hanno i valori e possono entrare in «Proteiche». **Consiglio questa.**
+2 · Aggiungo altri siti fit senza valori: avresti più ricette nella ricerca, ma non entrerebbero in «Proteiche».
+
+Rispondi col numero: aspetto la tua scelta.
