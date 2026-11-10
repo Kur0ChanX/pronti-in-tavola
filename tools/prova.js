@@ -1670,6 +1670,41 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!ai || ai.voce !== 'ricettario-fit' || ai.vai !== 'ricettario' || !ai.ui || ai.ui.ricZona !== 'fit') throw new Error('aiutante: «ricette proteiche» non porta alla sezione: ' + JSON.stringify(ai));
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC124; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C125: Proteiche con Pasti, Snack e dolci, «⚡ Pronte in 10 minuti», nota con le due regole', async () => {   // autonomo
+    await page.evaluate(() => {
+      window.__primaC125 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+      const ora = Date.now(), nu = (kcal, prot, saturi, zuc, sodio) => ({ kcal, prot, carb: 20, grassi: 5, saturi, zuc, fibre: 2, sodio });
+      const ss = [
+        { id: 'gz:Pollo-fit-prova', nome: 'Pollo fit prova', zona: 'italiana', categoria: 'Secondi piatti', foto: '', aggiunta: ora, totale: 30, difficolta: 'Facile', cerca: 'pollo', nutr: nu(380, 38, 2, 3, 400) },
+        { id: 'gz:Frittata-albumi-prova', nome: 'Frittata albumi prova', zona: 'italiana', categoria: 'secondi', foto: '', aggiunta: ora - 1, totale: 10, difficolta: 'Facile', cerca: 'albumi', nutr: nu(250, 30, 2, 1, 300) },
+        { id: 'rf:budino-proteico-prova', nome: 'Budino proteico prova', zona: 'italiana', categoria: 'Dolci', foto: '', aggiunta: ora - 2, totale: 5, difficolta: 'Facile', cerca: 'budino', nutr: nu(180, 18, 1, 5, 150) },
+        { id: 'gz:Carbonara-prova', nome: 'Carbonara prova', zona: 'italiana', categoria: 'primi', foto: '', aggiunta: ora - 3, totale: 30, difficolta: 'Media', cerca: 'uova', nutr: nu(558.7, 22.8, 9, 2.5, 475) }];
+      RIC.chiedi = async c => c.db === 'mie' ? { scelte: ss } : c.db ? { db: { ricette: 4, coda: 0, scelte: 4, conValori: 4, senzaValori: 0, paroleFit: [], giri: 1, fonte: 1, fonti: 10 } } : { ricette: [], prossima: '' };
+      salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    const nomi = () => page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$/.test(n)));
+    const st = await page.evaluate(() => ({ scelte: [...document.querySelectorAll('.ric-fit-scelte .scelta')].map(b => b.textContent), nota: (document.querySelector('.ric-nota-fit') || {}).innerText || '' }));
+    if (JSON.stringify(st.scelte) !== '["🍽 Pasti","🍫 Snack e dolci","⚡ Pronte in 10 minuti"]') throw new Error('Proteiche: scelte Pasti/Snack/⚡ mancanti: ' + JSON.stringify(st.scelte));
+    if (!/Pasti: almeno 25 g di proteine/.test(st.nota) || !/Snack e dolci: fino a 300 kcal/.test(st.nota) || !/RicetteFit/.test(st.nota)) throw new Error('Proteiche: nota senza le due regole: ' + st.nota);
+    let n = await nomi();
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova","Pollo fit prova"]') throw new Error('Proteiche: elenco o ordine sbagliati (carbonara fuori, prima più proteine per caloria): ' + JSON.stringify(n));
+    await clic('[data-a="ric-fit-tipo"][data-v="pasto"]'); n = await nomi();
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Pollo fit prova"]') throw new Error('«🍽 Pasti» sbagliato: ' + JSON.stringify(n));
+    await clic('[data-a="ric-fit-tipo"][data-v="snack"]'); n = await nomi();
+    const riga = await page.evaluate(() => (document.querySelector('main .ric-elenco .ric-carta .ric-valori-riga') || {}).textContent || '');
+    if (JSON.stringify(n) !== '["Budino proteico prova"]' || !/snack o dolce/.test(riga)) throw new Error('«🍫 Snack e dolci» sbagliato: ' + JSON.stringify({ n, riga }));
+    await clic('[data-a="ric-fit-tipo"][data-v="snack"]');   // ritocco = tolto
+    await clic('.ric-fit-scelte [data-a="ric-tempo"]'); n = await nomi();
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova"]') throw new Error('«⚡ Pronte in 10 minuti» sbagliato: ' + JSON.stringify(n));
+    await foto('48b-c125-proteiche-scelte');
+    await clic('[data-a="ric-fit-tipo"][data-v="pasto"]');
+    await clic('[data-a="ric-zona"][data-v="tutte"]');
+    const via = await page.evaluate(() => ({ fit: UI.ric.fit, tempo: UI.ric.tempo, scelte: !!document.querySelector('.ric-fit-scelte') }));
+    if (via.fit || via.tempo || via.scelte) throw new Error('uscendo da Proteiche restano Pasti o ⚡: ' + JSON.stringify(via));
+    await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC125; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario RicetteFit (C124 passo 8): ricetta aperta dal suo sito con fonte e valori, portate del motore nei filtri, interruttore nel Database, link incollato', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaRf = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;

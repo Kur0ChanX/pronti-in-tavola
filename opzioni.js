@@ -96,7 +96,9 @@ const OPZIONI = [
   { k: 'fitSnackZuc', g: 'mario', nome: 'Proteiche: snack e dolci, zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 15, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc|zucche/,
     aiuto: 'Snack e dolci: zuccheri in parte delle calorie. 15%: stima di Claude (contano anche quelli della frutta; l\'OMS dice 10% al giorno per quelli aggiunti).' },
   { k: 'fitSnackSodio', g: 'mario', nome: 'Proteiche: snack e dolci, sodio massimo', tipo: 'numero', min: 100, max: 1500, def: 400, unita: 'mg a porzione', parole: /protei|palestr|\bfit|snack|dolc|\bsale\b|sodio/,
-    aiuto: 'Snack e dolci: sodio massimo a porzione. 400 mg: stima di Claude.' }
+    aiuto: 'Snack e dolci: sodio massimo a porzione. 400 mg: stima di Claude.' },
+  { k: 'fitVeloci', g: 'mario', nome: 'Proteiche: «⚡ Pronte in…»', tipo: 'numero', min: 5, max: 30, def: 10, unita: 'minuti', parole: /protei|palestr|\bfit|veloc|minut|immediat/,
+    aiuto: 'Il tasto «⚡ Pronte in 10 minuti» della sezione «🏋️ Proteiche» mostra le ricette pronte entro questi minuti (tempo totale della ricetta). Mario 10/11: «ricette immediate».' }
 ];
 const OPZ = Object.fromEntries(OPZIONI.map(o => [o.k, o]));
 const baseOpz = o => typeof o.def === 'function' ? o.def() : Array.isArray(o.def) ? o.def.slice() : o.def;

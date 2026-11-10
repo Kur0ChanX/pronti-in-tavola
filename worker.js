@@ -404,7 +404,9 @@ const FONTI_DB = ['sardegna', 'primi', 'secondi', 'dolci', 'antipasti', 'contorn
 /* C124 (Mario 10/11 «cerchi in automatico le ricette per fitness sala pesi»): corsia «fit» del motore, una pagina su 4 (le sarde restano
    una su 2): cerca su GialloZafferano queste parole, una dopo l'altra. Si cambiano dalla pagina Database (senza Claude). Quali vanno in
    «🏋️ Proteiche» lo decidono poi i valori per porzione, sul telefono. */
-const FIT_BASE = ['proteiche', 'light', 'petto di pollo', 'fesa di tacchino', 'merluzzo', 'salmone', 'tonno', 'albumi', 'gamberi', 'polpo', 'pesce spada', 'orata', 'ceci', 'lenticchie', 'ricotta', 'yogurt greco', 'bresaola', 'uova'];
+const FIT_BASE = ['proteiche', 'light', 'petto di pollo', 'fesa di tacchino', 'merluzzo', 'salmone', 'tonno', 'albumi', 'gamberi', 'polpo', 'pesce spada', 'orata', 'ceci', 'lenticchie', 'ricotta', 'yogurt greco', 'bresaola', 'uova',
+  'proteico', 'proteine in polvere', 'pancake proteici', 'budino proteico', 'mug cake', 'overnight oats', 'skyr'];   // C125: snack, dolci e ricette immediate (provate dal vivo 10/11: tutte danno ricette)
+const FIT_BASE_1 = FIT_BASE.slice(0, 18);   // la lista di base della v0.10.3: se è salvata uguale, vale la base nuova (Mario non l'ha cambiata)
 const urlCerca = q => `https://www.giallozafferano.it/ricerca-ricette/${encodeURIComponent(q).replace(/%20/g, '+')}/`;
 const paroleFit = t => [...new Set(String(t || '').toLowerCase().split(/[,;\n]+/).map(p => p.replace(/[^\p{L}\p{N} '-]/gu, '').replace(/\s+/g, ' ').trim()).filter(p => p.length >= 2 && p.length <= 40))].slice(0, 30);
 /* C124 passo 8 (Mario 10/11 «piano piano… in automatico»): RicetteFit, UNA ricetta nuova per giro (144 al giorno: le ~905 in circa 6 giorni),
@@ -803,7 +805,7 @@ export class Ricettario extends DurableObject {
     if ((this.sql.exec("SELECT json_extract(json, '$.nutrProve') AS n FROM ricette WHERE url = ?", String(url)).toArray()[0] || {}).n >= 3) this.mettiNutr(url, null);
   }
   /* C124: parole della corsia «fit» (vuoto = di base; [] = corsia spenta) */
-  paroleFit() { const t = this.leggi1('paroleFit'); if (!t) return FIT_BASE.slice(); try { const a = JSON.parse(t); return Array.isArray(a) ? a : FIT_BASE.slice(); } catch (e) { return FIT_BASE.slice(); } }
+  paroleFit() { const t = this.leggi1('paroleFit'); if (!t) return FIT_BASE.slice(); try { const a = JSON.parse(t); return Array.isArray(a) && a.join('|') !== FIT_BASE_1.join('|') ? a : FIT_BASE.slice(); } catch (e) { return FIT_BASE.slice(); } }
   mettiParoleFit(a) { this.metti1('paroleFit', a ? JSON.stringify(a) : ''); this.metti1('fitI', 0); this.metti1('paginaFit', ''); }
   posizioneFit(pagina, nuove) {   // pagina dopo della parola; finite le pagine, la parola dopo; finite le parole «fine» fino al prossimo giro completo
     if (pagina) this.metti1('paginaFit', pagina);
