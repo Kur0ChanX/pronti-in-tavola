@@ -10,7 +10,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟡 Principale 44 | C124 passo 8: RicetteFit.it dal motore, v0.10.5 online 10/11 ~12:50; aspetta le foto di Mario | NUOVO `rf.mjs` · `worker.js` (motore, `/api/gz`, oggetto Ricettario) · `ricettario.js` · `sw.js` (foto) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
+| 🔴 Principale 44 | chiusa alla soglia 10/11 ~13:05: v0.10.5 RicetteFit dal motore, v0.10.6 soglie C125 a due profili; C125 pezzi 2-5 alla 45 | NUOVO `rf.mjs` · `worker.js` (motore, `/api/gz`, oggetto Ricettario) · `ricettario.js` · `sw.js` (foto) · `data.js` · `tools/prova.js`, `tools/prova-database.mjs` | 10/11 |
 | 🔴 Principale 43 | chiusa alla soglia 10/11 ~12:20: C124 v0.10.3 (server: valori per porzione, corsia fit) e v0.10.4 (🏋️ Proteiche, Difficoltà, valori e fonte, Database diretto, Ricettario nella Home); manca RicetteFit.it | — | 10/11 |
 | 🔴 Principale 42 | chiusa alla soglia 10/11 ~11:40: v0.10.2 online; C108 Deepgram: chiave confermata nel server (giro 10/11 11:01); v0.10.2 «guarda come cliente» usa la strada dei clienti (Deepgram) + 🎧 nella barra sviluppatore. Tocca la zona di 🟨 Voce 11 (ferma dal 09/11 22:31 ad aspettare la chiave, che Mario ha messo il 10/11 ~11:00 nella Principale) | `voce-clienti.js` (solo la chiamata a `ascoltaServer` + `nomiMotori`) · `worker.js` (solo `/api/ascolta`: `comeCliente` per chi gestisce) · `app.js` `barraDev` · `style.css` `.prova.dev` · `data.js` · `tools/prova.js` passo «ascolto preciso» | 10/11 |
 | 🔴 Principale 41 | chiusa alla soglia 10/11 ~11:05: v0.10.1 (C123 controllo ricette con esito vero) online; chiusi C119, C118, C111; Deepgram: segreto messo da Mario, pubblicazione avviata | — | 10/11 |

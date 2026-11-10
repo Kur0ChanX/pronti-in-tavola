@@ -1,29 +1,33 @@
 # Passaggio di consegne
 
-Sessione attuale: #44 (dopo la #43 `session_01WTjqUxpFkSSjXChsysjvPh`, chiusa alla soglia 10/11 12:18; la apre la #43 con `create_session` (catena 1 di 8)).
+Sessione attuale: #45 (dopo la #44 `session_01WTjqUtY9GgqzGxG4dQ2KZe`, chiusa alla soglia 10/11 12:56; la apre la #44 con `create_session` (catena 2 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda: app, Firebase, Cloudflare, passaparola, ricettario, aiutante AI, voce, foto del menù NO, ecc.).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`. Dalla #16 alla #19: stesso file, in fondo. Dalla #27 alla #30: vedi «Sessione appena chiusa» qui sotto. Dalla #20 alla #26: stesso file, in fondo (la #26: v0.9.18-0.9.26 del ricettario, voce vera Microsoft, «📥 Scarica», «💾 Copia di sicurezza»).
-- **Cosa preme a Mario adesso (10/11 12:20):** 1) vedere la v0.10.4 (🏋️ Proteiche, Ricettario sotto i 4 riquadri) e mandare la foto (riga in «Aspetta Mario»); 2) la fonte RicetteFit.it (C124 passo 8, scelta sua); 3) la chiave GitHub del kit (ha detto sì, guida data); 4) Deepgram provato da lui su Android.
+- **Cosa preme a Mario adesso (10/11 12:56):** 1) C125: ricette fit più severe, «🔍 Cerca ricette fit» da tante fonti attendibili, ricette immediate (piano `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md`, «vai di consiglio»: decidi tu); 2) vedere la v0.10.5 (Proteiche + RicetteFit) e mandare le 3 foto (riga in «Aspetta Mario»); 3) la chiave GitHub del kit; 4) Deepgram provato da lui su Android.
 
-## Stato (10/11 12:18 ora italiana)
-- Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta. Le scorte della #43 (`scorta-principale-20261110-01WTjqUxpFkS`) NON vanno unite: il lavoro è già tutto nel ramo.
-- v0.10.4 ONLINE se il push del codice è riuscito (verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.4; `curl -s …/ricettario.js | grep -c contaRicHome` → ≥1). v0.10.3 (solo server) online alle ~12:00, controllato.
-- Valori per porzione: il server rilegge le ricette vecchie 10 ogni 10 minuti (~1300 → circa un giorno). Verifica dalla pagina Database ricette (riquadro «🏋️ Ricette proteiche»: «letti: N, M ancora da leggere») o `{ db: 'stato' }` → `conValori`, `senzaValori`.
-- Prove (10/11, Principale 43, sulla v0.10.4): app `python3 -I tools/anteprima.py && node tools/prova.js` → 84 OK, 0 NO (sulla 0.10.4 rifatto in sottofondo prima del push); `node tools/prova-database.mjs` → 105 OK.
-- Kit qui 35.0; il 37.2 aspetta la chiave di Mario (riga in «Aspetta Mario»). Preferenze ricevute v37 (più nuove del kit): si aggiorna col kit 37.2. CLAUDE.md ~1459 token (tetto 1000): da accorciare con l'aggiornamento del kit.
+## Stato (10/11 12:56 ora italiana)
+- Ramo = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessuna PR aperta. Scorte della #44 (`scorta-principale-20261110-01WTjqUtY9Gg`): NON unirle se il codice delle soglie C125 è già nel ramo (vedi riga sotto).
+- v0.10.5 ONLINE (controllato 12:50: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.5; `…/ricettario.js` contiene `URL_RF`; `…/sw.js` contiene `ricettefit`).
+- C125 pezzo 1 (soglie a due profili, `opzioni.js` 5 soglie `fitSnack*` e `fitProt`/`fitProtPerc` a 25, `ricettario.js` `fitRic` → 'pasto' | 'snack' | false, `rigaFit` «· snack o dolce», prova nel passo «ricettario RicetteFit»): v0.10.6, pushata dalla #44 dopo il giro completo verde. Verifica: `curl -s …/data.js | grep -m1 VERSIONE_APP` → 0.10.6 (la pubblicazione ci mette ~5 minuti); se è ancora 0.10.5 dopo 15 minuti, guarda il giro «Pubblica sito».
+- RicetteFit sul server: NON verificabile da qui (le letture del database chiedono l'accesso di chi gestisce). La prova è la foto di Mario della riga «📗 RicetteFit: N di 905 prese» nella pagina Database (riga in «Aspetta Mario»). Se N resta 0 dopo 1 ora: il server di Cloudflare non riesce a leggere ricettefit.it (ipotesi da provare, non certezza).
+- Prove (10/11, Principale 44, sulla v0.10.5): app giro completo 85 OK, 0 NO; `node tools/prova-database.mjs` → 128 OK.
+- Kit qui 35.0; il 37.2 aspetta la chiave di Mario (riga in «Aspetta Mario»). Preferenze ricevute v38 (più nuove del kit): si aggiorna col kit 37.2. CLAUDE.md ~1459 token (tetto 1000).
 
 ## Riferimenti
 - Consegna della chat: `archivio/CONSEGNA-CHAT-2026-11-05.md`. Decisioni: `docs/SPECIFICA.md`. Piano dati: `docs/SPEC-FIREBASE.md`. Lavori: `docs/DA-FARE.md`. Regole del prodotto: `.claude/rules/progetto.md`; prove: `.claude/rules/prove.md`.
-- **Piano C124**: `docs/lavori-in-corso/c124-ricettario-proteico.md` (fonti verificate, formato dei valori di GZ, soglie con le fonti, 8 passi).
+- **Piano C124**: `docs/lavori-in-corso/c124-ricettario-proteico.md` (8 passi, tutti fatti). **Piano C125**: `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md` (5 pezzi).
 
-## Sessione appena chiusa (#43)
-- Avvio: unita la scorta della #41 (`01WTjqUxmJ9k`, solo consumi e ULTIMA-RISPOSTA). Nessun messaggio nuovo di Mario in questa sessione.
-- C124 v0.10.3 (server): `gz.mjs` `gzNutrizione`/`gzSoloNutr` (proteine dall'HTML `gz-list-macros`, il resto anche dal JSON-LD, mancante = null); `worker.js` colonna `nutr` (1 valori · 0 senza · NULL da leggere), `leggiNutr` 10 per giro (in pausa no), corsia «fit» del motore (`FIT_BASE`, una pagina su 4, `posizioneFit`, `{ db: 'fit', parole | base }`), `scelte()` porta `nutr` al telefono, `statoDb` con `conValori`, `senzaValori`, `paroleFit`, `fitI`, `paginaFit`.
-- C124 v0.10.4 (telefono): `ricettario.js` zona «🏋️ Proteiche» (`fitRic`, soglie `opz('fit*')`), `DIFF_RIC` + `ric-diff` (sostituisce «Solo facili»), ordina «💪 Più proteine»/«🔥 Meno calorie», `fonteRic` sulle carte, `valoriRic` e «Fonte · Apri l'originale» nella ricetta, `notaFit`, riquadro «🏋️ Ricette proteiche» nel Database con le parole fit (textarea, salva su change), `ric-salta` diretto (`instant`), `contaRicHome`; `app.js` `ricHome()` sotto i 4 riquadri + icona `libro`; `opzioni.js` 6 soglie `fit*` nel gruppo 'mario' e `filtraImp` protetto (voci senza `parole`); `aiutante.js` voci `ricettario-fit` (ui `ricZona`), `ricettario-diff`, `ricettario-db`; `worker.js` GUIDA e voci dell'AI; `style.css` classi `.ric-home-*`, `.ric-fonte`, `.ric-valori*`, `.ric-nota-fit`; `tools/prova.js` passo autonomo «ricettario C124» (foto 46-48 in /tmp/pit); `tools/prova-database.mjs` prove C124 (corsia fit spenta in testa alle prove vecchie).
-- Controllo Da fare: 0 voci aggiunte (nessun messaggio nuovo); C124 aggiornata (manca solo RicetteFit) e riga in «Aspetta Mario» per la foto.
+## Sessione appena chiusa (#44)
+- Avvio: v0.10.4 online controllata; scorte delle chat Voce non unite (solo documenti loro; Voce 11 ferma, E97).
+- C124 passo 8, v0.10.5: NUOVO `rf.mjs` (lettore RicetteFit dal JSON-LD: passi col titolo e la foto 1024 px, valori per porzione, «Domande frequenti» nel Consiglio, foto grande dalla serie di og:image); `gz.mjs` esporta `recipeLd`; `worker.js`: `paginaGz(u, chi)`, `leggiRf`, `leggiWeb`, `urlDaId`, motore con 1 ricetta RicetteFit per giro (`RF_GIRO`, `oggiRf`, sitemap `recipe-sitemap.xml` ~905, in testa alla coda, 3 tentativi poi scartata, `rfFine` per il giorno), `/api/gz` apre `rf:`, `{ db: 'rf', acceso }`, oggetto Ricettario (`rfInCoda`, `prendi` con RicetteFit prima, `salva`/`aggiungi` con `rf:`, `statoDb.rf`); `ricettario.js`: `URL_RF`, `webRic`, `urlRic`, `idDaUrl`, `catRic` (PT E49: le portate del motore «Primi piatti» ora escono coi filtri), link RicetteFit incollato, «(tabelle CREA)», riga RicetteFit con Spegni/Riaccendi nel Database; `sw.js` foto RicetteFit senza rete; `data.js` v0.10.5.
+- C125 (Mario 12:50, arrivato dalla chat doppione Principale 45 `session_01WTjqUtxqaC`, chiusa su scelta di Mario «1»): piano scritto; pezzo 1 (soglie) fatto, vedi «Stato».
+- Controllo Da fare: 0 voci aggiunte (C125 già scritta dalla chat doppione).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
+- #44 (RicetteFit): foto dal JSON-LD → NO (ritagli da 500 px, PT E45): og:image + la sua serie srcset ≥ 1000 px. Ricerca del sito (`/?s=`) → NO (vietata nel loro robots.txt): l'elenco viene dalla sitemap. Il loro `transFatContent` è «Grassi insaturi» sul sito: non si usa. Ricette RicetteFit nella coda normale → NO (sarebbero rimaste dietro a GZ, e una fallita mai ripresa): una sola alla volta, in testa (`prendi` ordina RicetteFit prima).
+- #44 (prove): `SOLO=… node tools/prova.js` con `timeout 110` si ferma prima della fine (il passo da solo ci mette ~2-3 minuti): lanciarlo in sottofondo.
+- #44 (C125): Instagram e YouTube come fonti → NO (condizioni d'uso, niente formato ricetta; PT E25). Soglie fisse più alte per tutte → NO (taglierebbero snack e dolci proteici): due profili, pasto e snack.
 - #43 (consegne): `tools/consegne.py fatti` lanciato DUE volte alza il numero di sessione due volte (#45 invece di #44): lanciarlo una volta sola; se serve rifarlo, rimettere a mano «Sessione attuale».
 - #43 (prove): un dato di prova senza `v: 4` viene riletto anche da `rileggiSegnate` (C72): le ricette finte delle prove C124 hanno `v: 4`. `SOLO='novit…'` fa fallire «sviluppatore: 7 tocchi» (dipende dai passi prima): serve il giro completo.
 - #43 (C124): rileggere i valori con `leggiGz` → NO (chiede anche la pagina del video): basta `paginaGz` + `gzSoloNutr`. Contare i valori con `json_type` su tutto il JSON a ogni `statoDb` → NO (lento): colonna `nutr`.
@@ -43,24 +47,21 @@ Sessione attuale: #44 (dopo la #43 `session_01WTjqUxpFkSSjXChsysjvPh`, chiusa al
 - Sessioni 1-22: `docs/lavori-in-corso/strade-scartate-sessioni-1-7.md` e `strade-scartate-sessioni-8-13.md`. Ricette scritte da Claude: NO (PT E25).
 
 ## Prossimi passi
-1. Controlla che la v0.10.4 sia online (riga «Stato»). Se NON lo è (push del codice mancato): giro completo delle prove e push del codice già nel ramo.
-2. A Mario i passi della foto C124 (riga in «Aspetta Mario»): chiudi e riapri, Home → «Proteiche», apri una ricetta. Ricordagli che la sezione si riempie in circa un giorno.
-3. C124 passo 8 (Mario 10/11 ~12:25 «piano piano… in automatico»: dal motore, poche per giro, mai tutte insieme): RicetteFit.it come seconda fonte (piano `docs/lavori-in-corso/c124-ricettario-proteico.md`): id `rf:<slug>`, lettore del JSON-LD `Recipe` (passi con foto, `nutrition` completo), segno «RicetteFit» (`FONTI_RIC` in `ricettario.js` c'è già), link all'originale; prima prova dal vivo l'indirizzo (PT E29) e dal sito vero (PT E25).
-4. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` con host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»; poi leggere `docs/kit-progetto/VERSIONE` del repo del kit (ramo `claude/rvc-ramo-definitivo`).
-5. «Scrivimi!» sotto gli allergeni: proposto dalla #40, nessuna risposta (non farlo senza sì). Le altre righe di «Aspetta Mario»: aspettare Mario; iPad e iPhone solo quando ne ha uno.
+1. Controlla «Stato»: v0.10.6 online (soglie C125)? Dillo a Mario: «🏋️ Proteiche» più severo (pasto 25 g e 25%), entrano snack e dolci proteici fino a 300 kcal (10 g, 30%, zuccheri 15%, sodio 400 mg = stime di Claude).
+2. C125 pezzi 2-4 (piano `docs/lavori-in-corso/c125-fitness-severo-e-cerca.md`): «⚡ Pronte in 10 minuti», parole nuove della corsia fit, «🔍 Cerca ricette fit», numero di ricette per fonte (Database e Home). Un push per pezzo provato.
+3. C125 pezzo 5: fonti nuove attendibili, una alla volta: ricerca aggiornata (skill `ricerca-aggiornata`), robots.txt, prova dal vivo (PT E29) e dal sito vero (PT E25).
+4. A Mario, nel primo messaggio: «sembrava solo GialloZafferano» perché RicetteFit è uscita alle 12:45; le 3 foto (Home, Proteiche, riga RicetteFit nel Database); Instagram e YouTube no, in una riga col perché; le soglie nuove dette come stime dove lo sono.
+5. Kit 37.2: quando Mario scrive «chiave pronta», `request_credential` (host `raw.githubusercontent.com`, prefisso `token`, nome «Kit RVC lettura»). Le altre righe di «Aspetta Mario»: aspettare Mario; iPad e iPhone solo quando ne ha uno.
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (chiave del kit da creare; fonte fit già scelta: RicetteFit.it).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md`. Per C125 nessuna 🛑: Mario ha detto «vai di consiglio».
 
 ## Ultimo messaggio di Mario
-10/11 ~12:25 (nella #43), parola per parola: «Possiamo farlo piano piano come per il ricettario non tutto in una volta no? basta che lo fà in automatico le ricette fitness piano piano no? che dici?» → risposta: sì, è già così (corsia fit una pagina su 4, valori 10 ogni 10 minuti); anche RicetteFit.it entrerà così, dal motore, poche ricette per giro, mai un carico unico.
-10/11 ~11:40 (in questa chat, dopo l'handoff), parola per parola: «1 consiglio» → fonte fit = RicetteFit.it (riga 🛑 tolta da «Aspetta Mario», piano C124 aggiornato).
-10/11 11:32 (scritto nella chat chiusa della #41, girato qui), parola per parola: «non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android».
-Prima, 11:25 in questa chat: «controlla tutte / ok github chiave / devo verificare vapore ma per ora ok / devo verificare dopoia richiesta ma per ora ok / proverò ipad ma per ora ok / ok poi dimmi i passi / ipad ok orizzontale / Francesco compare tra i nomi» (con la foto del controllo).
-11:20 in questa chat: «Aggiungi al ricettario una voce proteica e cerchi in automatico le ricette per fitness sala pesi con poche calorie e grassi cattivi e con attenzione a sale zucchero ecc ecc insomma ricette gym per aiutare ad asciugarsi ma per migliorare l'ipertrofia / Metti anche filtro per difficoltà e il tasto database quando lo clicco con fare scorrere l'app velocemente giú ma deve andare direttamente, ricettario mettilo un pò piú in vista sembra trascurato sotto poi le ricette di giallo zafferano le segni che sono di giallo e se ne trovi altre ricette esempio per fitness in altre fonti migliori mettile caricate al meglio tutti i passaggi info foto fatte bene ecc ecc e segnami la fonte dove l'hai presa. / migliora ricettario in generale».
+10/11 ~12:50 (scritto nella chat doppione Principale 45, girato alla #44), parola per parola: «Vai di consiglio e ti chiedo metti solo le ricette un pò piú severe per il fitness e mettimi tasto cerca per per ricerche fitness che mi cerca in automatico guarda in tante fonti  gold standard molto attendibili per le ricette fitness gym senza ingrassare e ipertrofia anche ricette dolci proteiche Snack primi secondi sfizio proteico light ricette rivisitate in chiave proteica light Ne vedo moltissime su anche instagram e YouTube influenzer e canali Fit / Cerco anche ricette immediate un esempio stupido tipo la cioccolata la fà con le proteine in polvere al cioccolato con poca acqua ecc ecc ma è un esempio / al momento sembra che carichi solo ricette di GialloZafferano valutate per calorie e proteine  riverifica tutto». Nella stessa chat doppione aveva scelto «1: chiudi il doppione, continua la 44».
+Prima, 10/11 ~12:25 (nella #43): «Possiamo farlo piano piano come per il ricettario non tutto in una volta no? basta che lo fà in automatico le ricette fitness piano piano no? che dici?» → fatto così in v0.10.5.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C125; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C126; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, `.claude/settings.json`): li eredita la sessione nuova, a Mario non si chiede di sceglierli (E277).
