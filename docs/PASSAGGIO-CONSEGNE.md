@@ -20,7 +20,7 @@ Sessione attuale: #49 (dopo la #48 `session_01WTjqUtGdNdfJFPzdQkQu77`, chiusa al
 
 ## Sessione appena chiusa (#48)
 - Avvio: scorte #45-#47 non unite (solo documenti, superate). Nessuna sveglia della #47 da cancellare.
-- C127 pezzo 1 fatto: v0.10.13 online. Foto prima/dopo: `archivio/foto/2026-11-10-1520-c127-prima.png`, `…-dopo.png` (mandate a Mario a fine turno).
+- C127 pezzo 1 fatto: v0.10.13 online. Foto prima/dopo: `archivio/foto/2026-11-10-1520-c127-prima.png`, `…-dopo.png`: approvate da Mario alle 15:26 («Le foto vanno bene»).
 - Errore mio trovato dalle prove: «Altre ▾» chiamato `ric-altre`, già usato da «Carica altre ricette» più in basso (la seconda definizione cancella la prima) → PT E51 + passo automatico in `tools/prova.js`.
 - Passo C69 di `tools/prova.js` reso autonomo (si lancia da solo con `SOLO=`).
 - Obiettivo del giorno proteico sul TELEFONO (`pit-giorno-ob`), non in Impostazioni: Impostazioni sono condivise col server e il gruppo «Solo per te, Mario» Monica non lo vede; un obiettivo a testa (occhio critico «due persone»).
@@ -47,7 +47,8 @@ Sessione attuale: #49 (dopo la #48 `session_01WTjqUtGdNdfJFPzdQkQu77`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (nuova: foto della pagina Proteiche v0.10.13).
 
 ## Ultimo messaggio di Mario
-10/11 15:25 (nella chat della #48, dopo l'handoff), parola per parola: «Aggiorna il kit, verifica se, fammi questa cortesia, verifica se è rimasto in tutto il mio account, se è rimasto qualcosa di sospeso per aggiornare al kit. Ma è giusto una cosa mia, per capire un po'. Il kit dovrebbe essere aggiornato, prendilo pure.»
+10/11 15:26 (nella chat della #48, dopo l'handoff), parola per parola: «Le foto vanno bene, pubblica pure se vuoi.» = foto prima/dopo della v0.10.13 (C127 pezzo 1) APPROVATE; la v0.10.13 era già online dalle 15:20 (glielo ha detto la #48). Niente da pubblicare.
+Prima, 10/11 15:25: «Aggiorna il kit, verifica se, fammi questa cortesia, verifica se è rimasto in tutto il mio account, se è rimasto qualcosa di sospeso per aggiornare al kit. Ma è giusto una cosa mia, per capire un po'. Il kit dovrebbe essere aggiornato, prendilo pure.»
 Prima, 10/11 ~15:05: «Vai di consiglio 1 e 3» (C127).
 
 ## Numeri liberi
