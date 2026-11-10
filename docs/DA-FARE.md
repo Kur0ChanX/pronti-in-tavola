@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 10/11 · 🟢 Principale 51 · C130 «app ferma»: cosa vedi fermo? 1 · notifiche degli ordini · 2 · l'app o un tasto (foto) · 3 · aiutante o microfono. A cosa serve: se è un guasto diverso lo correggo subito.
 - 10/11 · 🟢 Principale 51 · C130 contatore vero di Cloudflare, gratis: crei una chiave di sola lettura «Account Analytics» (ti guido) e il server vede le letture di tutto l'account. 1 · sì · 2 · no. A cosa serve: l'avviso ti arriva anche per letture che il mio contatore non vede.
 - 10/11 · 🟢 Principale 50 · C132 regola nuova «soluzioni smart come il modulo sicuro, per tutti i progetti» (Mario 16:35 nella #42): scegli fra le proposte 1-3 della #42 (anche più numeri): 1 chiavi sempre col modulo sicuro · 2 link già compilati · 3 promemoria prima di ogni scadenza (la 4, guide giuste con le foto, va nel kit comunque). A cosa serve: la porto nel kit per tutti i progetti.
 - 10/11 · 🟢 Principale 48 · C127+C128 v0.10.13: chiudi e riapri l'app, Ricettario → «🏋️ Proteiche»: una foto della parte alta (zone, «Quando», «Fonte proteica», riquadro verde con «RicetteFit N di 905» e «Oggi +N entrate»). A cosa serve: vedere coi dati veri la pagina nuova e quante proteiche arrivano.
