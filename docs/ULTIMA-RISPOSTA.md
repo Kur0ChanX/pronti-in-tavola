@@ -1,13 +1,10 @@
-# Ultima risposta di Claude (10/11/2026 02:26 ora italiana)
+# Ultima risposta di Claude (10/11/2026 09:02 ora italiana)
 
 
 
 ## Domande a Mario
 
-❓ DOMANDE
-📌 Di cosa parliamo: il kit è il pacchetto di regole uguale in tutti i tuoi progetti. Le 5 regole nuove ci arrivano solo da una sessione aperta sul repo del kit, perché da qui non posso toccarlo.
-
-1. Chi apre la sessione del kit?
-   · 1 · La apro io adesso (consiglio): unisce le 5 regole e la v37 da sola, tu non fai niente.
-   · 2 · La apri tu: ti scrivo il testo da incollare per farla partire.
-   · 3 · Più tardi: le regole restano solo in questo progetto finché non si fa.
+❓ **DOMANDE**
+1. 📌 **Di cosa parliamo:** il kit è il pacchetto delle regole con cui lavoro, nei file del progetto. Qui è fermo alla 35.0; la nuova 37.0 ha già 4 delle 5 regole che hai chiesto per tutti i progetti. Non si vede nell'app: cambia solo come lavoro io. Ti chiedo adesso perché la sessione del kit ha appena finito la 37.0.
+   - **1 · Sì (consiglio):** ti preparo una guida controllata passo passo. Tu crei su GitHub una **chiave di sola lettura** (un permesso che lascia solo leggere i file del kit), circa 5 minuti dal PC. Poi porto qui la 37.0, e i kit futuri li porto da solo.
+   - …
