@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (10/11/2026 17:45 ora italiana)
+# Ultima risposta di Claude (10/11/2026 18:08 ora italiana)
 
-La v0.10.16 è su GitHub e il sito si sta aggiornando; controllo quando è online.
+The code is already saved on GitHub as a patch. I'll commit it once the run is green, because committing it publishes the site.
