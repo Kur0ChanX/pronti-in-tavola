@@ -451,5 +451,37 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   prova('RicetteFit: riaccesa; senza accesso di chi gestisce niente', j.db.rf.spento === false && (await chiedi({ db: 'rf', acceso: false }, false)).status === 403);
   globalThis.fetch = prima; oggetto.mettiParoleFit(null);
 }
+// C125 «🔍 Cerca ricette fit»: GZ (ricerca + «light») e RicetteFit (dal suo elenco), in testa alla coda, lette subito col turbo
+{ const prima = globalThis.fetch, chieste = []; let giu = false;
+  const cartaF = n => `<article class="gz-card"><a href="https://ricette.giallozafferano.it/${n}.html" title="${n}"></a><h2 class="gz-title"><a>${n}</a></h2></article>`;
+  const xml = `<urlset>${['budino-proteico-al-cacao', 'pollo-al-limone', 'budini-fit-alla-vaniglia', 'pancake-proteici'].map(x => `<url><loc>https://www.ricettefit.it/ricetta/${x}/</loc></url>`).join('')}</urlset>`;
+  globalThis.fetch = async (u, o) => { u = String(u);
+    if (!/giallozafferano\.it|ricettefit\.it/.test(u)) return prima(u, o);   // le altre (accesso di chi gestisce) al finto di sempre
+    chieste.push(u);
+    if (giu) return new Response('giù', { status: 503 });
+    if (/ricerca-ricette\/(budino\+light|pancake\+proteici|pollo\+light)\/$/.test(u)) return new Response(cartaF('Budino-light') + cartaF('Budino-al-cacao') + cartaF('Gia-letta'));
+    if (u === 'https://www.ricettefit.it/recipe-sitemap.xml') return new Response(xml);
+    return new Response('no', { status: 404 }); };
+  oggetto.metti1('turbo', ''); oggetto.metti1('rfSpento', ''); oggetto.sql.exec('DELETE FROM coda'); allarmi.length = 0;
+  oggetto.sql.exec('INSERT INTO coda (url, aggiunta, sarda) VALUES (?, ?, 0)', 'https://ricette.giallozafferano.it/Vecchia.html', Date.now());
+  oggetto.salva({ id: 'gz:Gia-letta', url: 'https://ricette.giallozafferano.it/Gia-letta.html', nome: 'Già letta', nutr: null });
+  let j = await (await chiedi({ db: 'cercaFit', q: 'Budino!' })).json();
+  prova('C125 cerca fit: GZ cercato con «light», RicetteFit dal suo elenco (budino e budini), mai la ricerca del sito', chieste.includes('https://www.giallozafferano.it/ricerca-ricette/budino+light/') && !chieste.some(u => /ricettefit\.it\/\?s=/.test(u)) && j.gz === 3 && j.rf === 2);
+  prova('C125 cerca fit: nuove in coda, già lette contate e mai rimesse', j.nuove === 4 && j.gia === 1 && !oggetto.sql.exec("SELECT 1 FROM coda WHERE url LIKE '%Gia-letta%'").toArray().length);
+  const presi = oggetto.prendi(4);
+  prova('C125 cerca fit: in testa alla coda, prima di quelle che aspettavano', presi.length === 4 && !presi.includes('https://ricette.giallozafferano.it/Vecchia.html'));
+  prova('C125 cerca fit: le legge subito (turbo con l\'allarme)', j.db.turbo && j.db.turbo.attivo && j.db.turbo.obiettivo === 4 && allarmi.length === 1);
+  oggetto.metti1('turbo', JSON.stringify({ obiettivo: 100, fatte: 3, attivo: true })); oggetto.sql.exec('DELETE FROM coda');
+  j = await (await chiedi({ db: 'cercaFit', q: 'pancake proteici' })).json();
+  prova('C125 cerca fit: con parole fit niente «light»; un carico già in corso non si tocca', chieste.includes('https://www.giallozafferano.it/ricerca-ricette/pancake+proteici/') && j.db.turbo.obiettivo === 100 && j.rf === 1);
+  oggetto.metti1('rfSpento', '1'); const nMappe = chieste.filter(u => u.endsWith('sitemap.xml')).length;
+  j = await (await chiedi({ db: 'cercaFit', q: 'pollo' })).json();
+  prova('C125 cerca fit: RicetteFit spenta dall\'app = mai chiesta', chieste.filter(u => u.endsWith('sitemap.xml')).length === nMappe && j.rf === 0);
+  oggetto.metti1('rfSpento', ''); giu = true;
+  j = await (await chiedi({ db: 'cercaFit', q: 'orata' })).json();
+  const corta = await (await chiedi({ db: 'cercaFit', q: 'a' })).json();
+  prova('C125 cerca fit: siti giù = errore detto; parola di 1 lettera rifiutata; senza accesso niente', /non rispondono/.test(j.errore || '') && !!corta.errore && (await chiedi({ db: 'cercaFit', q: 'pollo' }, false)).status === 403);
+  globalThis.fetch = prima; oggetto.metti1('turbo', ''); oggetto.sql.exec('DELETE FROM coda');
+}
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);
