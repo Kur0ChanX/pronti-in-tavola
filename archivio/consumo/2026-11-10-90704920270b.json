@@ -1,0 +1,19 @@
+{
+"account": "108763",
+"sessione": "90704920270b",
+"giorno": "2026-11-10",
+"turni": 1,
+"peso": 1904356,
+"uscita": 71620,
+"contesto_max": 253436,
+"anomalie": [
+"avvio pesante: 136k token dopo le letture d'avvio (tetto 130k)",
+"71k token scritti in un turno"
+],
+"remota": "01WTjqUwM2NN",
+"aiutanti": 0,
+"strumenti": 72,
+"motori": {
+"opus": 1904356
+}
+}
