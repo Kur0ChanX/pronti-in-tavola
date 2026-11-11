@@ -1685,14 +1685,17 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
     /* Home: Ricettario e Proteiche subito sotto i 4 riquadri, coi numeri */
     const home = await page.evaluate(() => { const r = document.querySelector('main .riquadri'), d = r && r.nextElementSibling; return { dopo: d ? d.className : '', testo: d ? d.innerText : '' }; });
-    if (!/ric-home-due/.test(home.dopo) || !/Ricettario/.test(home.testo) || !/Proteiche\s*\n?2 ricette/.test(home.testo)) throw new Error('Home: Ricettario non subito sotto i 4 riquadri o numeri sbagliati: ' + JSON.stringify(home));
+    if (!/ric-home-due/.test(home.dopo) || !/Ricettario/.test(home.testo) || !/Proteiche\s*\n?3 ricette/.test(home.testo)) throw new Error('Home: Ricettario non subito sotto i 4 riquadri o numeri sbagliati: ' + JSON.stringify(home));
     await page.waitForTimeout(900); await foto('46-c124-home');   // i riquadri entrano con una piccola animazione
     /* «🏋️ Proteiche» dalla Home: solo quelle giuste, prima più proteine per caloria, riga «perché è qui» */
     await clic('[data-a="ric-vai-fit"]');
     const fit = await page.evaluate(() => ({ vista: UI.vista, zona: UI.ric.zona, premuto: (document.querySelector('[data-a="ric-zona"][aria-pressed="true"]') || {}).textContent, nomi: [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')), riga: (document.querySelector('.ric-valori-riga') || {}).textContent, nota: !!document.querySelector('.ric-carica') && !document.querySelector('.ric-nota-fit'), fonte: (document.querySelector('.ric-carta .ric-fonte') || {}).textContent }));
     if (fit.vista !== 'ricettario' || fit.zona !== 'fit' || !/Proteiche/.test(fit.premuto || '')) throw new Error('«Proteiche» dalla Home non apre la sezione: ' + JSON.stringify(fit));
-    if (JSON.stringify(fit.nomi.filter(n => /prova$/.test(n))) !== '["Pollo fit prova","Merluzzo fit prova"]') throw new Error('Proteiche: ricette o ordine sbagliati (carbonara 559 kcal, sale alto, senza valori: fuori): ' + JSON.stringify(fit.nomi));
-    if (fit.riga !== '💪 38 g proteine · 380 kcal · sale 1 g' || !fit.nota || fit.fonte !== 'GialloZafferano') throw new Error('Proteiche: riga dei valori, nota o fonte sbagliate: ' + JSON.stringify(fit));
+    /* C141: entra anche la troppo salata (col 🔴 nella pagella); fuori la carbonara (16% di proteine) e quella senza valori; prima il voto più alto */
+    if (JSON.stringify(fit.nomi.filter(n => /prova$/.test(n))) !== '["Merluzzo fit prova","Pollo fit prova","Salata prova"]') throw new Error('Proteiche: ricette o ordine sbagliati (carbonara 16% di proteine, senza valori: fuori; ordine per voto): ' + JSON.stringify(fit.nomi));
+    const pagCarte = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta')].filter(c => /prova/.test(c.innerText)).map(c => (c.querySelector('.ric-pagella-riga') || {}).textContent));
+    if (JSON.stringify(pagCarte) !== '["Voto 10 🟢🟢🟢🟢🟢","Voto 8 🟢🟡🟢🟢🟡","Voto 8 🟢🟡🟢🟢🔴"]') throw new Error('C141 pagella sulle carte sbagliata: ' + JSON.stringify(pagCarte));
+    if (fit.riga !== '💪 27 g proteine · 300 kcal · sale 0,9 g' || !fit.nota || fit.fonte !== 'GialloZafferano') throw new Error('Proteiche: riga dei valori, nota o fonte sbagliate: ' + JSON.stringify(fit));
     await foto('47-c124-proteiche');
     /* difficoltà in vista (Facili comprende «Molto facile», Difficili «Molto difficile») */
     await clic('[data-a="ric-zona"][data-v="tutte"]'); await clic('[data-a="ric-piu"]'); await clic('[data-a="ric-diff"][data-v="facile"]');   // C127: dentro «⚙️»
@@ -1752,7 +1755,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-regole"]');
     const st = await page.evaluate(() => ({ scelte: [...document.querySelectorAll('.ric-fit-scelte .scelta')].map(b => b.textContent), nota: (document.querySelector('.ric-nota-fit') || {}).innerText || '' }));
     if (JSON.stringify(st.scelte) !== '["🌅 Colazione","🍎 Spuntino","🧃 Merenda","🍝 Pranzo","🍽 Cena","🌙 Dopo cena","🍰 Dolci","💪 Dopo l\'allenamento","⚡ Pronte in 10 minuti"]') throw new Error('Proteiche: momenti e ⚡ mancanti (C126): ' + JSON.stringify(st.scelte));
-    if (!/Pasti: almeno 25 g di proteine/.test(st.nota) || !/Snack e dolci: fino a 300 kcal/.test(st.nota) || !/RicetteFit/.test(st.nota)) throw new Error('Proteiche: nota senza le due regole: ' + st.nota);
+    if (!/almeno il 20% delle calorie dalle proteine, almeno 8 g/.test(st.nota) || !/voto da 1 a 10/.test(st.nota) || !/🟢 bene, 🟡 così così, 🔴 attento/.test(st.nota)) throw new Error('C141 Proteiche: nota senza regola d\'entrata o pagella: ' + st.nota);
     let n = await nomi();
     if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova","Pollo fit prova"]') throw new Error('Proteiche: elenco o ordine sbagliati (carbonara fuori, prima più proteine per caloria): ' + JSON.stringify(n));
     const conta = await page.evaluate(() => (document.querySelector('.ric-conta') || {}).innerText || '');
@@ -1961,7 +1964,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       fitRic({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 }), fitRic({ kcal: 200, prot: 6.3, saturi: 0.3, zuc: 18.7, sodio: 176 }), rigaFit({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 }),
       /* C131 P1 (Mario 10/11): saturi 12,4% e sodio 780 entrano; saturi 13,5% o sodio 820 no */
       fitRic({ kcal: 400, prot: 30, saturi: 5.5, zuc: 2, sodio: 780 }), fitRic({ kcal: 400, prot: 30, saturi: 6, zuc: 2, sodio: 780 }), fitRic({ kcal: 400, prot: 30, saturi: 5.5, zuc: 2, sodio: 820 })]);
-    if (JSON.stringify(prof) !== '["pasto",false,"snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto",false,false]') throw new Error('C125 soglie: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
+    /* C141 (Mario 11/11 «fai passare tutte le ricette proteiche»): entra chi ha almeno il 20% delle calorie dalle proteine e 8 g; il resto lo dice la pagella */
+    if (JSON.stringify(prof) !== '["pasto","pasto","snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto","pasto","pasto"]') throw new Error('C141 regola d\'entrata: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
+    const pag = await page.evaluate(() => [{ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }, { kcal: 458, prot: 24.4, saturi: 6.5, zuc: 2.8, sodio: 463 }, { kcal: 150, prot: 10, saturi: 0.5, zuc: 2, sodio: 100 }, { kcal: 300, prot: 12, saturi: 1, zuc: 5, sodio: 100 }]
+      .map(n => { const p = pagellaRic(n); return p.voto + ':' + p.voci.map(x => x.c).join('') + ':' + fitRic(n); }));
+    if (JSON.stringify(pag) !== '["8:vgvvg:pasto","5:ggrvg:pasto","10:vvvvv:snack","7:rvvvv:false"]') throw new Error('C141 pagella: voti o semafori sbagliati: ' + JSON.stringify(pag));
     /* portata del motore («Primi piatti») sotto il filtro «Primi»; la carta di RicetteFit col suo nome */
     await page.evaluate(() => { UI.ric.cat = 'primi'; render(); });
     let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$|rf$/.test(n)));
