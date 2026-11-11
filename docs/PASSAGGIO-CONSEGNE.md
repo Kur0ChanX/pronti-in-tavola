@@ -61,7 +61,7 @@ Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o
 - 2026-11-11 17:52 · nell'ambiente pronti in tavola → chiave YouTube, variabile d'ambiente
 - 2026-11-11 17:53 · fatto → variabile salvata e provata
 - 2026-11-11 18:04 · ok vai avanti allora → C141 pezzo 3
-- 2026-11-11 18:22 · nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta… → 
+- 2026-11-11 18:22 · nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta… → C141 pagella + 207 stimate (online, PT E69), foto, DOMANDA 1
 
 Ultimo, intero:
 > nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta quanto è proteica calorica grassa zuccheri sale ecc ecc con i voti o inventati tu qualcosa di migliore ti dò carta bianca fai passare tutte le ricette proteiche
