@@ -1,11 +1,10 @@
-# Ultima risposta di Claude (10/11/2026 19:20 ora italiana)
+# Ultima risposta di Claude (10/11/2026 19:24 ora italiana)
 
-Ho capito: mentre aspetto l'ID del cassetto, ho alleggerito i due file di lavoro più pesanti.
-🧠 Opus · Extra
+🛑 Prima la scelta decisiva della chat Salvagente 3: usare il PC di casa come riserva. Rispondi 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente.
 
 ───
 ✅ FATTO
-- **Diario degli errori: da 26 a 9 KB.** Ogni lezione ora sta in una riga. Il testo lungo è in un file a parte, niente è perso. Ogni sessione nuova lo legge all'avvio, quindi da ora parte più leggera.
-- **Lista delle cose da fare: da 41,8 a 38,7 KB**, sotto il tetto di 40 KB. Ho accorciato 18 voci lunghe e il testo intero è conservato.
-- Ho corretto una voce sbagliata: l'aiutante dei clienti risultava ancora senza la chiave di Groq. La chiave l'avevi già messa l'8/11.
-- …
+- Sessione 56 aperta (5ª su 8 di fila). Online c'è la versione 0.10.18, controllata adesso.
+- Il server resta fermo fino all'01:00: Cloudflare ha finito le letture gratis di oggi. Era previsto, riparte da solo.
+- Ho messo la mia **sveglia** (un promemoria che mi riaccende da sola) alle 01:05, per controllare che sia ripartito.
+- La sveglia della sessione 55 non ho potuto cancellarla: il permesso automatico me …
