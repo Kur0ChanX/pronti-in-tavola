@@ -11,7 +11,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟢 Principale 56 | C135 corsia d'emergenza: aspetta l'ID del cassetto KV da Mario, poi `wrangler.jsonc` e pubblicazione; sveglia 01:05 (server ripartito) | `wrangler.jsonc` · `docs/DA-FARE.md` · `docs/PASSAGGIO-CONSEGNE.md` | 10/11 |
+| 🔴 Principale 56 | chiusa 11/11 ~06:35 (attesa lunga): cassetto creato da Mario, deploy rosso 10041, aspetta foto Workers; alla 57. C135 corsia d'emergenza: aspetta l'ID del cassetto KV da Mario, poi `wrangler.jsonc` e pubblicazione; sveglia 01:05 (server ripartito) | `wrangler.jsonc` · `docs/DA-FARE.md` · `docs/PASSAGGIO-CONSEGNE.md` | 10/11 |
 | 🔴 Principale 55 | chiusa alla soglia 10/11 ~19:25: guida del cassetto KV e DOMANDA 1 a Mario; ERRORI.md e DA-FARE.md snelliti; C135 (ID del cassetto) e sveglia 01:05 alla 56 | `docs/GUIDE-GIUSTE.md` · `docs/DA-FARE.md` · `docs/DA-FARE-FATTE.md` · `docs/ERRORI.md` · `docs/ERRORI-STORIA.md` | 10/11 |
 | 💛 Salvagente 4 | C138 PC di casa come riserva di Cloudflare e Firebase: solo piano, niente codice; confronto 1-2 con gli schemi mandato dalla 2 (10/11 19:05); aspetta la scelta di Mario | `docs/lavori-in-corso/c138-salvagente-in-casa.md` · `docs/lavori-in-corso/c138-schemi.html` · `docs/CONSEGNE-PARALLELA-SALVAGENTE.md` | 10/11 |
 | 🔴 Principale 54 | chiusa alla soglia 10/11 ~19:10: v0.10.18 online (C135 spenta senza KV, C137 attiva); alla 55 | `worker.js` · `wrangler.jsonc` · `app.js` · `ricettario.js` · `sw.js` · `aiutante.js` · `data.js` · `tools/prova*.js` | 10/11 |
