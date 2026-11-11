@@ -60,8 +60,8 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal regis
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-11 06:33 · [AVVIO] Sessione #57 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
-- 2026-11-11 10:39 · Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non v… → 
+- 2026-11-11 06:33 · [AVVIO] Sessione #57 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto; foto 06:37/06:39 → PT E64 (login sbagliato), GUIDE-GIUSTE
+- 2026-11-11 10:39 · Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non v… → C139 v0.10.19 (commit d99687a) + DOMANDA 1-3
 
 Ultimo, intero:
 > Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non vorrei che si ricreasse assolutamente quel problema di bloccare Claude Flare. Evitalo assolutamente, al massimo le ricette le aggiungiamo da Claude, ti dico di fare una ricerca e di aggiungerle tu manualmente, oppure dall'app, ma con doppia richiesta, con doppio clic, che magari esce un avviso che dice potrebbero consumare i dati di, e mi metti la cosa tecnica. Insomma, per le cose superflue facciamo attenzione ai consumi di tutta l'app. Deve funzionare bene io, Monica, e i clienti dobbiamo comunicare bene, con notifiche, risposte, tutto il funzionamento dell'app fatto bene, tutto il resto è superfluo.
