@@ -17,7 +17,8 @@ from stima import stima_ricetta, norm
 RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE = os.path.join(RADICE, '.cache-stime')
 # Un canale = un riquadro nell'app. Per aggiungerne uno: nome come lo scrive lui, id del canale (UC…).
-CANALI = [('Massimo Pietrobon Gobbi', 'UCkQmObN7tBXzPQTQhlT704Q')]
+CANALI = [('Massimo Pietrobon Gobbi', 'UCkQmObN7tBXzPQTQhlT704Q'),
+          ('Beardedscara', 'UCWhoPXcEJRPWxtIwjSGgpug')]   # C145 (Mario 11/11 22:46 «aggiungi tutti i suoi video di ricette»)
 
 # Tipo della ricetta: la prima parola che compare (nome, hashtag, ingredienti) decide. Ordine = priorità.
 TIPI = [('Pancake', r'pancake'), ('Porridge', r'porridge|porridgemis|portidge|ba(?:c?k)e?d ?oats?'), ('Cheesecake', r'chee?r?s?e?cake'), ('Brownie', r'brownie'),
