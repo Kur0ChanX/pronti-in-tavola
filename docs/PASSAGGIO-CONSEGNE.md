@@ -1,22 +1,22 @@
 # Passaggio di consegne
 
-Sessione attuale: #58 (dopo la #57 `session_01WTjqUuGgdEp6b8Lnd8vrPB`, chiusa alla soglia 11/11 10:58; la apre la #57 con `create_session` (catena 7 di 8)).
+Sessione attuale: #59 (dopo la #58 `session_01WTjqUtkYeeZHD4f7DVbw4V`, chiusa alla soglia 11/11 12:55; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (11/11 10:58):** 1) il ricettario non deve MAI più bloccare Cloudflare (C139, Mario 10:39: «funzionare bene io, Monica e i clienti… tutto il resto è superfluo»); 2) accendere la corsia d'emergenza C135: il cassetto fatto da Mario sta nel login Cloudflare SBAGLIATO (`info.prontiintavola@…`, Workers & Pages vuoto, foto 06:37 e 06:39); Mario deve fare Log out, entrare col login del sito (probabilmente `mario.miscera@…`), account «Pronti in Tavola», e ricreare il cassetto `pronti-in-tavola-riserva` (standard). Niente soldi, niente blocchi alle persone.
+- **Cosa preme a Mario adesso (11/11 12:55):** 1) ricette proteiche: ne vuole 200, «specialmente dolci snack merenda colazione dopo allenamento» (C139): online 191 ma solo 4 dolci → DOMANDA regola dolci 1-3; 2) il ricettario non deve MAI bloccare Cloudflare (le 191 sono un file del sito, zero letture); 3) corsia d'emergenza C135 (login Cloudflare giusto); 4) C140 giri di prova: PC di casa → Blacksmith → GitHub per tutti i progetti.
 
-## Stato (11/11 10:58 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261111-01WTjqUuGgdE/claude/pronti-ramo-definitivo.
-- Ramo = origin (verifica: `git rev-parse HEAD origin/claude/pronti-ramo-definitivo`, senza `--short`: PT E59). Nessuna PR aperta (il push di `*.js`, `*.css`, `*.html`, `wrangler.jsonc`, `*.mjs` pubblica da solo: `sito.yml`). Ultimo giro «Pubblica sito» 193 ROSSO (10041) sul commit dce5b93; dopo, il binding è tornato commento (commit 3893430, solo `wrangler.jsonc`: giro nuovo da controllare verde).
-- **v0.10.19 online** (verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.19; `ricettario.js` contiene `okConsumo`). Giro «Pubblica sito» 194 verde; dopo, il push d99687a (controlla verde con `actions_list sito.yml perPage 1`). C137 attiva; C135 spenta (`/api/stato` → `riserva: {spenta: true}`).
+## Stato (11/11 12:55 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Scorta della #58 da unire solo se ha lavoro nuovo.
+- Il push di `*.js`, `*.css`, `*.html`, `wrangler.jsonc`, `*.mjs` pubblica da solo (`sito.yml`): codice a metà = patch in `docs/lavori-in-corso/`, mai commit dei `.js`. Pubblicazioni 0.10.20-22 verdi (sito aggiornato).
+- **v0.10.22 online** (verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -m1 VERSIONE_APP` → 0.10.22; `…/ricette-fit.js` ha 191 righe `  {`). Giro completo locale 93/93 sulla 0.10.20; sulla 0.10.22 92/93 con la sola soglia della prova C139 (carte ≥ 10) poi corretta a 3 e `SOLO=C139` verde.
 - **C135, cosa manca**: causa del 10041 TROVATA (PT E64, foto di Mario): cassetto nell'account `0818…` del login `info.prontiintavola`, che non ha il Worker. Quando Mario manda l'indirizzo del cassetto NUOVO (`…/<account>/workers/kv/namespaces/<ID>/settings`): metti l'ID in `wrangler.jsonc` (togli `//` dalla riga «Da rimettere…», ID nuovo), push, controlla il giro verde, poi `/api/stato` → `riserva` con `quando` dopo 10 minuti. Guida corretta in `GUIDE-GIUSTE.md` (cassetto C135).
 - **C135 come funziona** (worker.js, cerca «C135», `riservaKv`): copia `avvisi` scritta solo quando cambia; cron `*/10` → `riserva()`; `/api/prova {riserva:true}` = prova di Mario. ~150 letture KV al giorno.
-- **C139 (v0.10.19)**: in Proteiche momenti, fonti, invio e voce SOLO filtrano (prima facevano partire `cercaFit` da soli: era la crescita); `okConsumo()` in `ricettario.js` = conferma con avviso tecnico su Carica altre, Cerca adesso, Controlla tutte, Cerca altre; `LETTURE_FONDO` 1.000.000 in `worker.js`. Prove 92/92. Piano e domanda: `docs/lavori-in-corso/c139-ricette-senza-consumi.md`.
+- **C139**: v0.10.19 = Proteiche filtra senza cercare sul web + doppia conferma (`okConsumo`). v0.10.20 = `ricette-fit.js` (191: RicetteFit 154, GZ 37; dolci 4, spuntino 13, merenda 4, colazione 3, allenamento 50) scritto da `tools/raccogli-fit.mjs` (pagine in `.cache-fit/`, non su GitHub: rilancio = rilegge i siti ~30 min; regola presa da `ricettario.js` col `vm`); caricato da `caricaRicette`, aggiunto in `elencoRic`. v0.10.21-22 = `PAROLE_MOM.salato` toglie i piatti salati da Colazione, Merenda, Dopo cena e Dolci (PT E65). Stima con regole snack più larghe (prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %): 230 buone, dolci 22, merenda 23, colazione 16. Dettagli: `docs/lavori-in-corso/c139-ricette-senza-consumi.md`.
 - Server: ripartito l'11/11 alle 01:26 (non alle 01:00: PT E63); `/api/chiave` dà la chiave, `/api/stato` 2 telefoni iscritti, `riserva: {spenta: true}` (manca il cassetto). Verifica: `curl -s …/api/chiave` → `{"chiave":…}`.
-- Sveglie: la mia `trig_012apGb54kDTC1piNcujxKiB` (01:05) è già suonata; quella della #55 `trig_014GQsL6yeqH3aSfpkb9gCRD` SPENTA (delete rifiutato dal permesso automatico). Nessuna sveglia da rifare.
+- Sveglie: nessuna mia; nessuna da rifare.
 - C127 pezzi 2-3 in `docs/lavori-in-corso/c127-pezzi-2-3.patch`: tocca `data.js` → v0.10.19 o dopo (`git apply --exclude=data.js` + novità a mano), al «1» di Mario.
-- File snelli: `docs/ERRORI.md` 9,5 KB (storia intera in `docs/ERRORI-STORIA.md`: lezione nuova = riga corta lì + testo lungo nella storia); `docs/DA-FARE.md` 38,7 KB (18 voci accorciate, testo intero in fondo a `DA-FARE-FATTE.md` come ELENCO «- (APERTA…)», mai righe `| C…`: PT E60).
+- File snelli: `docs/ERRORI.md` ~10 KB, al tetto (lezione nuova = riga corta + storia in `ERRORI-STORIA.md`); `docs/DA-FARE.md` voci ≤ 400 caratteri.
 - Chat parallela **Salvagente 4** attiva (C138, solo documenti, `docs/CONSEGNE-PARALLELA-SALVAGENTE.md`, riga 🛑 in Aspetta Mario): i suoi file non si toccano; la sua scorta non si unisce (E97).
 - Kit: RVC ha il 38.18 pronto (arriva col «KIT NUOVO» all'avvio), non urgente; Preferenze v38 uguali.
 
@@ -25,11 +25,11 @@ Sessione attuale: #58 (dopo la #57 `session_01WTjqUuGgdEp6b8Lnd8vrPB`, chiusa al
 - Piani: C137 `docs/lavori-in-corso/c137-modalita-risparmio.md`; C136 `docs/lavori-in-corso/c136-blocco-ricettario.md`; C127 `docs/lavori-in-corso/c127-giorno-proteico.md` + patch.
 - Manuali KV: developers.cloudflare.com/kv/get-started (dashboard: Workers KV → «Create instance»), /kv/concepts/kv-namespaces («KV namespace IDs are public»), /workers/authorization/workers (permessi per i binding).
 
-## Sessione appena chiusa (#57)
-- Avvio leggero; foto di Mario: Workers & Pages vuoto e profilo `info.prontiintavola` → C135 causa = login/account sbagliato (PT E64, GUIDE-GIUSTE corretta, foto `archivio/foto/2026-11-11-0637-*` e `-0639-*`).
-- C139 v0.10.19 fatta e online (vedi Stato). Riavvio del contenitore a metà: scorta mia unita.
+## Sessione appena chiusa (#58)
+- Avvio; messaggio di Mario 11:25 (arrivato nella #57) = strada 1 → 191 proteiche nel file del sito, v0.10.20-22 online, PT E65. C140 (giri casa → Blacksmith → GitHub): fatti dai manuali e DOMANDA 1 (motore di casa già collegato?).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
+- #58: allentare SOLO gli zuccheri degli snack (30 % o 40 %) → +2 dolci appena: li blocca la quota di proteine. Altre 10 ricerche di dolci su GZ (senza zucchero, albumi, ricotta…) → 0 nuove buone. Filtro «yogurt»/«dolc» nei nomi → pollo a colazione e «patate dolci» nei dolci (PT E65). `tools/anteprima.py` con `ricette-fit.js` dentro → rompe i conteggi delle prove vecchie: il file si aggiunge solo nella prova C139 (`addScriptTag`, poi `RICETTE_FIT.splice(0)`).
 - #57: ipotesi B (permesso KV del token) SCARTATA: il problema era il login/account (PT E64). Tasti dei momenti in Proteiche che cercano sul web da soli → tolti (consumavano). Prova C55 da sola (`SOLO=C55`) è rossa anche prima delle modifiche: nel giro completo è verde.
 - #56: collegare un cassetto creato a mano con il solo accesso «Editor» del token → «KV namespace not found 10041» (manuale: «non servono permessi sulle risorse collegate», dal vivo NON vale o è l'account). Link `dash.cloudflare.com/?to=/:account/workers/kv/namespaces` dal telefono → apre la Home.
 - #55: collegare il cassetto dal pannello «Associazioni» del Worker → scartato: il deploy successivo da GitHub (`wrangler.jsonc`) lo toglierebbe. `git rev-parse --short HEAD origin/…` → «Needed a single revision» che sembra un push fallito (PT E59). Testo intero delle voci aperte come righe `| C…` in `DA-FARE-FATTE.md` → `promesse.py --controlla` rosso (PT E60).
@@ -40,30 +40,30 @@ Sessione attuale: #58 (dopo la #57 `session_01WTjqUuGgdEp6b8Lnd8vrPB`, chiusa al
 - Sessioni #28-#46 e 1-22: `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo).
 
 ## Prossimi passi
-0. Avvio leggero (PT E61). Controlla il giro «Pubblica sito» di d99687a verde.
-1. Mario manda l'indirizzo del cassetto nuovo (C135) → `wrangler.jsonc`, push, giro verde, `/api/stato` riserva accesa; poi chiedi la foto Notifiche → «🛟 Corsia d'emergenza pronta» + «🧪 Prova».
-2. ✅ Mario ha RISPOSTO (dopo l'handoff, nella 57): «Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto 
-cerca da varie fonti» = strada 1. Era: DOMANDA C139 (1 = Claude cerca e mette le ricette in un file statico del sito, zero letture; 2 = solo app; 3 = tutte e due). Con 1 o 3: piano corto in `c139-…md` (file JSON in `FILE_APP` di `tools/sito.py` e `GUSCIO` di `sw.js`, PT E38; fonti ufficiali PT E25), poi codice.
-3. Foto di Mario della conferma in Proteiche («🔍 Cerca altre») per chiudere la promessa C139.
+0. Avvio leggero. Controlla il sito: v0.10.22.
+1. Mario risponde alla DOMANDA regola dolci (riga C139 in «Aspetta Mario»). Con 2: soglie di base `fitSnackProt` 8, `fitSnackPerc` 20, `fitSnackZuc` 30 in `ricettario.js` (`fitRic`) e in `opzioni.js` (stessi nomi), aggiorna la nota delle regole e le prove C124/C125 che citano «10 g»/«30 %»; poi `node tools/raccogli-fit.mjs 200` (rilegge i siti, ~30 min, in sottofondo), `SOLO=C139`, giro completo, versione, push, foto. Con 3: cercare un terzo sito con valori per porzione nel JSON-LD (fonti ufficiali, PT E25).
+2. C140: alla risposta di Mario sul motore di casa (foto Runners) → specifica in `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`: un motore per progetto sul PC, passo «scegli» (chiave di sola lettura dei motori + crediti Blacksmith da `.claude/conta-minuti.py`), pubblici sempre su GitHub; regola per tutti i progetti → kit (sessione del kit).
+3. C135: Mario manda l'indirizzo del cassetto nuovo → `wrangler.jsonc`, push, giro verde, `/api/stato` riserva accesa.
+4. Foto di Mario di Proteiche per chiudere la promessa C139.
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (11 della principale; nuove della #57: C135 🛑 login giusto, C139 strada 1-3). Controllo Da fare: 1 voce aggiunta (C139).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (12 della principale; nuove della #58: C139 regola dolci 🛑, C140 motore di casa). Controllo Da fare: 1 voce aggiunta (C140).
 
 ## Ultimo messaggio di Mario
-11/11 10:39, parola per parola: «Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non vorrei che si ricreasse assolutamente quel problema di bloccare Claude Flare. Evitalo assolutamente, al massimo le ricette le aggiungiamo da Claude, ti dico di fare una ricerca e di aggiungerle tu manualmente, oppure dall'app, ma con doppia richiesta, con doppio clic, che magari esce un avviso che dice potrebbero consumare i dati di, e mi metti la cosa tecnica. Insomma, per le cose superflue facciamo attenzione ai consumi di tutta l'app. Deve funzionare bene io, Monica, e i clienti dobbiamo comunicare bene, con notifiche, risposte, tutto il funzionamento dell'app fatto bene, tutto il resto è superfluo.» → C139 v0.10.19 + DOMANDA 1-3.
-Prima (foto 06:37 Workers & Pages vuoto; 06:39 menù profilo `info.prontiintavola`) → PT E64, passi Log out e login giusto.
+11/11 ~11:45, parola per parola: «Domanda, puoi fare in modo che tutti i progetti possano passare per il mio GitHub a casa, che ho creato un server, se provano inizialmente il mio server del PC a casa per fare i giri di prova su GitHub, se è occupato da un altro progetto che non c'è spazio passano a Blacksmith, se ho finito i crediti di Blacksmith passa a GitHub server normale, quello con quello il server gratuito, ecco, con i limiti per chi ce li ha, per chi ha un progetto privato, chi ce l'ha pubblico invece è un altro discorso.» → C140, DOMANDA 1.
+Prima (11:25, nella #57): «Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto cerca da varie fonti» → C139 v0.10.20-22.
 
 ## Numeri liberi
-Prossimo E libero: PT E65; prossimo C libero: C140; prossimo M libero: M1.
+Prossimo E libero: PT E66; prossimo C libero: C141; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-11 06:33 · [AVVIO] Sessione #57 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto; foto 06:37/06:39 → PT E64 (login sbagliato), GUIDE-GIUSTE
-- 2026-11-11 10:39 · Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non v… → C139 v0.10.19 (commit d99687a) + DOMANDA 1-3
+- 2026-11-11 10:59 · [AVVIO] Sessione #58 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; messaggio 11:25 dalla #57 → C139 v0.10.20-22
+- 2026-11-11 11:45 · Domanda, puoi fare in modo che tutti i progetti possano passare per il mio GitHu… → C140 + DOMANDA 1
 
 Ultimo, intero:
-> Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non vorrei che si ricreasse assolutamente quel problema di bloccare Claude Flare. Evitalo assolutamente, al massimo le ricette le aggiungiamo da Claude, ti dico di fare una ricerca e di aggiungerle tu manualmente, oppure dall'app, ma con doppia richiesta, con doppio clic, che magari esce un avviso che dice potrebbero consumare i dati di, e mi metti la cosa tecnica. Insomma, per le cose superflue facciamo attenzione ai consumi di tutta l'app. Deve funzionare bene io, Monica, e i clienti dobbiamo comunicare bene, con notifiche, risposte, tutto il funzionamento dell'app fatto bene, tutto il resto è superfluo.
+> Domanda, puoi fare in modo che tutti i progetti possano passare per il mio GitHub a casa, che ho creato un server, se provano inizialmente il mio server del PC a casa per fare i giri di prova su GitHub, se è occupato da un altro progetto che non c'è spazio passano a Blacksmith, se ho finito i crediti di Blacksmith passa a GitHub server normale, quello con quello il server gratuito, ecco, con i limiti per chi ce li ha, per chi ha un progetto privato, chi ce l'ha pubblico invece è un altro discorso.
 
