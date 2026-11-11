@@ -21,13 +21,12 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E15** Indirizzo corretto nel codice: controllare anche i dati salvati; l'app usa sempre `SITO` di `data.js`.
 - **PT E16** Animazioni: provarle su Safari; niente `filter` animati su iPhone.
 - **PT E17** Mai scrivere nelle schermate una funzione che non c'è ancora: testi onesti.
-- **PT E18** Link da aprire = cliccabile; link da copiare = riquadro.
+- **PT E18 E66** Sito da aprire nei passi = SEMPRE link cliccabile (se il profondo non va, quello base); da copiare = riquadro (`domande-chiare.py`).
 - **PT E19** Samsung Internet scurisce ogni sito: pulsante «Apri in Chrome»; provare i browser dei telefoni veri.
 - **PT E20** Un comando che Mario usa subito va in vista, solo per lui, con conferma; i 7 tocchi solo per cose rare.
 - **PT E21** Testi col nome di chi scrive: un'alternativa sempre presente e la prova anche con «guarda come».
 - **PT E22** Proponendo un servizio: guida e testo pronto nello stesso messaggio; dopo ogni pubblicazione «chiudi e riapri l'app».
 - **PT E23** Funzioni di un altro file con `typeof … === 'function'`; la prova «sito vero» apre i file separati.
-- **PT E24** Abitudini scritte nelle consegne (es. artefatto dell'anteprima): chiedersi se a Mario servono ancora.
 - **PT E24** (bis) Un dato che Mario vuole «vedere chiaramente» va nella pagina principale, non in una sottopagina.
 - **PT E25** Contenuti di fiducia (ricette, dosi, salute, leggi): fonte ufficiale, mai scritti da me; prima l'aspetto a Mario.
 - **PT E25** (bis) Ogni scarico da un sito esterno si prova dal sito vero (Hugging Face rifiuta *.workers.dev).
@@ -71,7 +70,6 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓» (lì il controllo vuole la domanda intera: «📌 Di cosa parliamo», scelte «1 · …», foto; sennò fa riscrivere e Mario legge due volte).
 - **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
 - **PT E64** Risorsa creata a mano su Cloudflare: prima di dare il passo, far scegliere a Mario l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); errore 10041 = account sbagliato (provato 11/11).
-- **PT E66** Ogni sito da aprire nei passi = link cliccabile, anche se il link profondo non va (allora quello base, es. dash.cloudflare.com); controllo in `domande-chiare.py`.
 
 ## Lezioni ereditate da RVC
 - **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.
