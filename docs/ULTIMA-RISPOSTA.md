@@ -1,16 +1,7 @@
-# Ultima risposta di Claude (11/11/2026 10:59 ora italiana)
+# Ultima risposta di Claude (11/11/2026 11:26 ora italiana)
 
+Ho passato la tua risposta, parola per parola, alla Principale 58 (`[segreto tolto dalla scorta]`): il lavoro delle 200 ricette lo fa lei.
 
+L'ho letta come la scelta 1: cerca da più fonti e mette le ricette in un file del sito, così non consumano il server. Prima i dolci, gli snack, la merenda, la colazione e il dopo allenamento, poi il resto.
 
-## Domande a Mario
-
-❓ DOMANDE
-**DOMANDA 1** · Da dove arrivano le ricette proteiche nuove?
-📌 Di cosa parliamo: le ricette nuove di «🏋️ Proteiche» nel Ricettario. Oggi arrivano solo se dai la conferma. Adesso va decisa la strada per il futuro, così non torna il blocco di Cloudflare.
-1 · Le cerco io quando me lo chiedi e le metto in un file del sito. L'app le mostra senza usare il server: zero consumi. (consiglio)
-2 · Solo dall'app, con la conferma di adesso. Consumano un po', ma il freno le ferma prima del limite.
-3 · Tutte e due: io le metto nel file e tu puoi anche cercarne dall'app.
-
-Rispondi col numero.
-
-Ho …
+Le consegne sono aggiornate con la tua risposta e salvate su GitHub. Da adesso scrivi nella 58.
