@@ -1,0 +1,26 @@
+{
+"account": "108763",
+"sessione": "4b2ef3e140b8",
+"giorno": "2026-11-11",
+"turni": 2,
+"peso": 389059,
+"uscita": 8645,
+"contesto_max": 142336,
+"anomalie": [],
+"remota": "01WTjqUwi3Ab",
+"aiutanti": 0,
+"strumenti": 17,
+"motori": {
+"opus": 389059
+},
+"memoria_scaduta": 1,
+"ricreati": 74457,
+"blocchi": {
+"Stop 6 · Il turno finisce con una": 1
+},
+"esempi_blocchi": {
+"Stop 6 · Il turno finisce con una": [
+"01:27 · Il turno finisce con una domanda o un passo a mano per Mario: scrivi in docs/DA-FARE.md, sezione «## 0. Aspetta Mario» in cima, una riga per ogni cosa che aspetta Mario («- 11/11 · <segno giallo> <Nom"
+]
+}
+}
