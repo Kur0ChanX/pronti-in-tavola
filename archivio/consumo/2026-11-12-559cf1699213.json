@@ -1,0 +1,26 @@
+{
+"account": "108763",
+"sessione": "559cf1699213",
+"giorno": "2026-11-12",
+"turni": 1,
+"peso": 586607,
+"uscita": 4228,
+"contesto_max": 324403,
+"anomalie": [],
+"remota": "01WTjqUwz4Kr",
+"aiutanti": 0,
+"strumenti": 7,
+"motori": {
+"opus": 586607
+},
+"memoria_scaduta": 1,
+"ricreati": 316479,
+"blocchi": {
+"Stop 8 · Promessa a Mario senza voce": 1
+},
+"esempi_blocchi": {
+"Stop 8 · Promessa a Mario senza voce": [
+"00:09 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Ti manderà le foto delle novità dei video e una sola domanda per pubblicarle.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la ve"
+]
+}
+}
