@@ -1,7 +1,7 @@
 /* C139 (Mario 11/11 11:25 «Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto,
    cerca da varie fonti»): Claude raccoglie le ricette proteiche dal computer e le scrive in ricette-fit.js, un file del sito.
    Il server di Cloudflare non legge niente (zero letture): l'app le mostra in «🏋️ Proteiche» come le altre.
-   - Fonti: RicetteFit (tutto il suo elenco) e GialloZafferano (ricerche con parole proteiche). Si legge SOLO nome, foto, tempi e
+   - Fonti: RicetteFit (tutto il suo elenco), GialloZafferano (ricerche con parole proteiche) e i Blog di GialloZafferano (stesse ricerche). Si legge SOLO nome, foto, tempi e
      valori per porzione dalla pagina ufficiale; testo, dosi e passi l'app li legge dal sito d'origine quando si apre (PT E25).
    - Entra solo una ricetta che passa la STESSA regola dell'app (fitRic di ricettario.js, soglie di base): il codice si prende da lì.
    - Prima i momenti che chiede Mario (dolci, spuntino, merenda, colazione, dopo l'allenamento), poi il resto; niente doppioni di nome.
@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
 import { createHash } from 'node:crypto';
-import { gzRicetta, gzCerca, gzProssima, UA_GZ } from '../gz.mjs';
+import { gzRicetta, gzCerca, gzProssima, bgCerca, UA_GZ } from '../gz.mjs';
 import { rfRicetta, rfElenco, MAPPA_RF } from '../rf.mjs';
 
 const RADICE = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
@@ -23,7 +23,8 @@ const PAROLE_GZ = ['dolci proteici', 'pancake proteici', 'torta proteica', 'muff
   'ricotta light', 'frullato proteico', 'mousse proteica', 'gelato proteico', 'plumcake proteico', 'crepes proteiche',
   'colazione proteica', 'snack proteici', 'merenda proteica', 'albumi', 'fiocchi di latte', 'ricette proteiche', 'secondi proteici',
   'pollo light', 'tacchino light', 'pesce light', 'ricette light',
-  'dolci senza zucchero', 'dolci light', 'dolci con albumi', 'dolci con ricotta', 'dolci con yogurt', 'crema di ricotta', 'semifreddo yogurt', 'frittelle di albumi', 'muffin salati', 'snack salati light'];
+  'dolci senza zucchero', 'dolci light', 'dolci con albumi', 'dolci con ricotta', 'dolci con yogurt', 'crema di ricotta', 'semifreddo yogurt', 'frittelle di albumi', 'muffin salati', 'snack salati light',
+  'dolci fit', 'dolci proteici senza zucchero', 'torta yogurt greco', 'budino skyr', 'tiramisu proteico', 'cheesecake light', 'mousse yogurt greco', 'biscotti avena', 'dolci con fiocchi di latte', 'pancake albumi', 'torta albumi', 'crema proteica'];
 fs.mkdirSync(CACHE, { recursive: true });
 
 /* la regola dell'app, presa dal codice vero (un posto solo: se Mario cambia le soglie di base, questo le segue) */
@@ -62,10 +63,11 @@ for (const p of PAROLE_GZ) {
   for (let k = 0; k < 3 && u; k++) {
     const h = pagina(u), l = gzCerca(h);
     l.forEach(x => { if (!cand.has(x.url)) cand.set(x.url, 'gz'); });
+    bgCerca(h).forEach(x => { if (!cand.has(x)) cand.set(x, 'bg'); });   // C139: le ricette dei Blog di GialloZafferano mostrate dalla stessa ricerca
     u = l.length ? gzProssima(h, u, l.length) : '';
   }
 }
-console.error(`candidati: ${cand.size} (RicetteFit ${[...cand.values()].filter(x => x === 'rf').length})`);
+console.error(`candidati: ${cand.size} (RicetteFit ${[...cand.values()].filter(x => x === 'rf').length}, blog ${[...cand.values()].filter(x => x === 'bg').length})`);
 
 /* 2. ogni candidato: valori per porzione → regola dell'app */
 const giaApp = new Set((fs.readFileSync(path.join(RADICE, 'ricette.js'), 'utf8').match(/\["([\w-]+)"/g) || []).map(x => 'gz:' + x.slice(2, -1)));
@@ -100,12 +102,12 @@ resto.sort(perProt).forEach(x => { if (scelte.length < QUANTE && !presi.has(x.id
 prima.sort(perProt).forEach(x => { if (scelte.length < QUANTE && !presi.has(x.id)) { presi.add(x.id); scelte.push(x); } });
 
 const conta = {}; PRIMA.forEach(m => { conta[m] = scelte.filter(x => x.momenti.includes(m)).length; });
-const fonti = { gz: scelte.filter(x => x.id.startsWith('gz:')).length, rf: scelte.filter(x => x.id.startsWith('rf:')).length };
+const fonti = { gz: scelte.filter(x => x.id.startsWith('gz:')).length, rf: scelte.filter(x => x.id.startsWith('rf:')).length, bg: scelte.filter(x => x.id.startsWith('bg:')).length };
 const oggi = new Date().toLocaleDateString('it-IT', { timeZone: 'Europe/Rome' });
 const righe = scelte.map(({ momenti, ...x }) => '  ' + JSON.stringify(x)).join(',\n');
 fs.writeFileSync(path.join(RADICE, 'ricette-fit.js'), `/* C139 · Ricette proteiche scelte da Claude il ${oggi} (Mario 11/11 «aggiungi 200 ricette proteiche… cerca da varie fonti»).
    File del sito: il server non legge niente per mostrarle (zero letture di Cloudflare). Scritto da tools/raccogli-fit.mjs, NON a mano.
-   Solo nome, foto, tempo e valori per porzione delle pagine ufficiali (GialloZafferano ${fonti.gz}, RicetteFit ${fonti.rf}): dosi e passi
+   Solo nome, foto, tempo e valori per porzione delle pagine ufficiali (GialloZafferano ${fonti.gz}, RicetteFit ${fonti.rf}, Blog di GialloZafferano ${fonti.bg}): dosi e passi
    l'app li legge dal sito d'origine quando si apre la ricetta (PT E25). Ognuna passa la regola «🏋️ Proteiche» di ricettario.js. */
 const RICETTE_FIT = [
 ${righe}

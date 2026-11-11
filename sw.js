@@ -94,7 +94,7 @@ self.addEventListener('fetch', e => {
   if (r.method !== 'GET') return;
   if (fisso(r.url)) { e.respondWith(caches.match(r).then(m => m || fetch(r).then(x => metti(r, x)))); return; }
   // foto delle ricette scaricate (ricettario «📥 Scarica»): dalla copia sul telefono, così si vedono senza rete
-  if (/^https:\/\/(?:www\.giallozafferano\.it\/images|www\.ricettefit\.it\/wp-content\/uploads)\//.test(r.url)) { e.respondWith(caches.open('gz-foto').then(c => c.match(r.url)).then(m => m || fetch(r))); return; }
+  if (/^https:\/\/(?:www\.giallozafferano\.it\/images|www\.ricettefit\.it\/wp-content\/uploads|blog\.giallozafferano\.it\/[a-z0-9-]+\/wp-content\/uploads)\//.test(r.url)) { e.respondWith(caches.open('gz-foto').then(c => c.match(r.url)).then(m => m || fetch(r))); return; }
   if (new URL(r.url).origin !== location.origin) return;
   if (/\.onnx$/.test(new URL(r.url).pathname)) return;   // (C119) il modello dell'AI delle foto (5 MB) lo tiene foto-ai.js nella sua memoria: niente seconda copia
   e.respondWith(primaRete(r));
