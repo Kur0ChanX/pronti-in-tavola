@@ -53,6 +53,22 @@ SINONIMI = [
     (r'latte di mandorl|bevanda (alla |di )?mandorl', 'latte di mandorla'), (r'bevanda (vegetale|di soia|di riso|d avena)', 'bevanda vegetale'),
     (r'amido di mais|maizena|fecola', 'amido di mais'), (r'cacao amaro|cacao in polvere|\bcacao\b', 'cacao amaro'),
 ]
+# ingredienti comuni → codice CREA esatto (prima della ricerca per parole, che sbaglia: «uova» prendeva le uova di anatra)
+CODICI = [
+    (r'\buov[ao]\b|\buova\b', '181100'), (r'tuorl', '181100'), (r'latte .*scremat|latte .*parz|latte light', '135020'), (r'latte di cocco', '007520'),
+    (r'\blatte\b(?! di )', '135010'), (r'ricotta', '166820'), (r'burro d[i ]* ?arachid|burro di arachidi|crema di arachidi', '009010'),
+    (r'\bburro\b', '190010'), (r'zucchero', '201500'), (r'miele', '210010'), (r'farina integrale', '000240'), (r'farina (di frumento|00|0\b|tipo)|\bfarina\b(?! di)', '000220'),
+    (r'banan', '007510'), (r'fragol', '007730'), (r'mirtill|frutti di bosco|lampon', '007760'), (r'olio', '009210'), (r'petto di pollo|pollo', '106500'),
+    (r'tacchino|fesa', '106850'), (r'tonno .*natural|tonno al natur|tonno in salamoia', '123550'), (r'tonno', '123610'), (r'mandorl', '008540'),
+    (r'nocciol', '008550'), (r'arachid', '008500'), (r'philadelphia light|spalmabile light|formaggio spalmabile light', '170510'),
+    (r'philadelphia|spalmabile', '162050'), (r'mozzarella', '164820'), (r'parmigian', '166000'), (r'grana', '162410'), (r'pecorin', '166050'),
+    (r'riso basmati', '000130'), (r'\briso\b', '000100'), (r'pasta integrale', '000850'), (r'\bpasta\b|spaghett|penne|fusill|rigaton', '000800'),
+    (r'\bpane\b', '000530'), (r'salmone affumicato', '122410'), (r'salmon', '122400'), (r'cioccolato fondente', '203020'), (r'cioccolato', '203010'),
+    (r'mascarpone', '164800'), (r'panna', '140300'), (r'yogurt .*(scremat|magro|0)', '152000'), (r'yogurt', '151000'),
+    (r'manzo|bovino|macinato', '101160'), (r'merluzz|nasello', '121410'), (r'gamber', '128100'), (r'ceci', '004010'), (r'fagiol', '004100'),
+    (r'zucchin', '005740'), (r'spinac', '005700'), (r'pomodor', '006600'), (r'cocco', '007530'), (r'datter', '007630'), (r'albicocc', '007000'),
+    (r'succo di limone|limone', '008040'), (r'arancia|arance', '008001'), (r'prosciutto cotto', '110400'), (r'bresaola', '110020'),
+]
 # pesi tipici (g) per le righe senza grammi
 PEZZI = [(r'\buov[ao]\b|\buova\b', 55), (r'album', 33), (r'tuorl', 18), (r'banan', 120), (r'mel[ae]\b', 150), (r'pera|pere\b', 150),
          (r'vasett', 125), (r'scoop|misurin', 30), (r'fett[ae] di pane', 30), (r'fett[ae] biscottat', 10), (r'datter', 8), (r'noc[ei]\b', 5),
@@ -81,6 +97,11 @@ def alimento(testo):
     for rx, nome in SINONIMI:
         if re.search(rx, t):
             return dict(zip(K, PRODOTTI[nome])), 'etichetta: ' + nome
+    for rx, cod in CODICI:
+        if re.search(rx, t):
+            a = next((x for x in CREA if x['codice'] == cod), None)
+            if a:
+                return _valori(a), 'CREA ' + cod + ' ' + a['nome']
     parole = [w for w in t.split() if len(w) > 2 and not re.match(r'^\d', w) and w not in ('del', 'della', 'con', 'per', 'senza', 'fresco', 'fresca', 'grattugiat', 'g', 'gr', 'ml')]
     if not parole:
         return None
@@ -97,13 +118,17 @@ def alimento(testo):
             meglio, punti = a, p
     if not meglio or punti < 1.5 and len(parole) > 1:
         return None
-    v = {k: meglio.get(k) for k in K}
+    return _valori(meglio), 'CREA ' + meglio['codice'] + ' ' + meglio['nome']
+
+
+def _valori(a):
+    v = {k: a.get(k) for k in K}
     if v['saturi'] is None:
         v['saturi'] = round((v.get('grassi') or 0) * 0.3, 2)   # manca nella scheda: 30 % dei grassi (stima prudente)
     for k in K:
         if v[k] is None:
             v[k] = 0
-    return v, 'CREA ' + meglio['codice'] + ' ' + meglio['nome']
+    return v
 
 
 def grammi(riga):
