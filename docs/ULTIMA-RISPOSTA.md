@@ -1,16 +1,25 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:17 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
+Ho capito: vuoi circa 200 dolci proteici fatti con creme e shake proteici, albumi, yogurt greco e Philadelphia proteica. E una risposta sullo youtuber.
 
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
+🧠 Opus · Medio
 
 ───
 ✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
+- Ho aggiunto 50 parole di ricerca nuove: proteine in polvere, whey, shake, Philadelphia, quark, mug cake (torta in tazza), albumi, skyr…
+- La raccolta gira da sola: legge circa 2.000 pagine, ci vuole circa mezz'ora (stima). Ti dico quanti dolci trova.
+- La tua richiesta è salvata su GitHub, parola per parola.
 
 ───
 💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+- Lo youtuber (Massimo Pietrobon Gobbi): ti avevo risposto nella sessione prima, ma il …
+
+## Domande a Mario
+
+❓ DOMANDE
+🛑 DOMANDA 1 · Come arriviamo a 200 dolci?
+Serve a decidere quali ricette possono entrare in Proteiche.
+1. L'app calcola i valori dagli ingredienti con la tabella CREA. Sulla carta della ricetta scrive «valori stimati». Così entrano anche le ricette di Pietrobon e dei blog. È un lavoro grande (stima: 1-2 sessioni).
+2. Solo i siti che danno i valori ufficiali: pochi dolci, ma nessun valore calcolato da noi.
+3. Allargo la regola dei dolci (per esempio meno proteine richieste): ne entrano di più, ma sono meno proteici.
+👉 Consiglio la 1. Ti chiedo il permesso perché sono numeri sulla …

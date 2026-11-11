@@ -2,16 +2,18 @@
 "account": "108763",
 "sessione": "74d7c9f6855b",
 "giorno": "2026-11-11",
-"turni": 1,
-"peso": 425024,
-"uscita": 6340,
-"contesto_max": 123910,
-"anomalie": [],
+"turni": 2,
+"peso": 736966,
+"uscita": 15072,
+"contesto_max": 161373,
+"anomalie": [
+"un turno ha aggiunto 161k token al contesto"
+],
 "remota": "01WTjqUuVtcn",
 "aiutanti": 0,
-"strumenti": 14,
+"strumenti": 28,
 "motori": {
-"opus": 425024
+"opus": 736966
 },
 "memoria_scaduta": 1,
 "ricreati": 120569
