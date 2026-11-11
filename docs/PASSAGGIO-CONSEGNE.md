@@ -45,6 +45,7 @@ Sessione attuale: #65 (dopo la #64 `session_01WTjqUvhRwDshdn5BjyHhHU`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 12; 🛑 foto C141 e C140). Controllo Da fare: 0 voci aggiunte (19:10 «come fa il progetto rvc» = risposta in chat; 19:20 = C140 scelta 3).
 
 ## Ultimo messaggio di Mario
+11/11 ~19:24 (arrivato nella #64 dopo l'handoff, passato alla #65), parola per parola: «hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo» → C140 = **3** (privato + PC di casa, poi GitHub: riga tolta da «Aspetta Mario»; partire dal punto 3 dei Prossimi passi, scelta «3»); domanda sulle ricette: rispondere coi numeri veri di `ricette-stimate.js` e Proteiche (207 stimate: Cookpad 135, blog 28, YouTube 44 → Proteiche 407) e cosa manca per arrivare a 500.
 11/11 ~19:20, parola per parola: «se lo rendiamo privato e mettiamo il mio PC?» → C140 scelta 3, DOMANDA 1 riscritta (#64).
 Prima: 19:10 «come fa il progetto rvc» → risposta in chat (#64); 19:06 «devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito» → C140.
 Prima: 18:22 «nelle ricette aggiungile tutte quante e metti un voto…» → C141 (online, foto, 🛑).
