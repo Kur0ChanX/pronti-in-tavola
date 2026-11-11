@@ -338,7 +338,7 @@ const perche = e => { const m = String(e && e.message || e); return /Exceeded al
    Sempre: il ricettario di Monica (mie, aggiungi, togli, scritte da lei), aprire una ricetta, i numeri, «⏹ Ferma», le impostazioni. */
 const bloccatoDO = e => /Exceeded allowed rows (read|written)/i.test(String(e && e.message || e));
 const RISPARMIO = perche => ({ errore: '🛟 Modalità risparmio fino a stanotte: ' + (perche === 'bloccato' ? 'Cloudflare ha fermato la memoria del server per oggi'
-  : 'il server ha usato quasi metà delle letture gratuite di oggi') + '. Il ricettario non cerca ricette nuove; ordini, avvisi e le tue ricette funzionano.', risparmio: { perche } });
+  : 'il server ha usato un quinto delle letture gratuite di oggi') + '. Il ricettario non cerca ricette nuove; ordini, avvisi e le tue ricette funzionano.', risparmio: { perche } });
 const DB_PAUSA = b => ['cerca', 'controlla', 'cercaFit'].includes(b.db) || (b.db === 'turbo' && b.n !== undefined);
 async function ricettaGz(b, cfg, ctx) {
   const db = ricDb(cfg), poi = p => { if (p && ctx) ctx.waitUntil(p.catch(() => null)); };
@@ -489,7 +489,7 @@ const CARICO_BASE = 20, CARICO_MAX = 50, CARICO_SVEGLIE = 4;   // sveglie per og
 const caricoN = n => { const x = Math.floor(Number(n)); return x >= 1 ? Math.min(CARICO_MAX, x) : CARICO_BASE; };
 /* C130 (email di Cloudflare 10/11 15:29: «90% del limite giornaliero di 5.000.000 rows_read», per TUTTO l'account: avvisi e app compresi):
    oltre questo numero di righe lette in un giorno (UTC, come Cloudflare) il lavoro di fondo del ricettario riposa fino a domani */
-const LETTURE_FONDO = 2000000;
+const LETTURE_FONDO = 1000000;   // Mario 11/11 «per le cose superflue facciamo attenzione ai consumi»: il ricettario si ferma a un quinto del gratis (era 2 milioni)
 /* C130 bis (blocco di Cloudflare del 10/11 alle 15:35, PT E53; Mario «non mettere blocchi, avvisami»): le persone non si fermano MAI;
    oltre LETTURE_FONDO riposa solo il motore automatico e a Mario arriva un avviso. I conteggi che leggono tutte le righe (pagina Database, riquadro verde) si rifanno al massimo ogni CONTI_MS, quello della coda ogni CODA_MS */
 const CONTI_MS = 1800000, CODA_MS = 900000;

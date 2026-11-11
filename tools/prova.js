@@ -731,7 +731,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('#ricdb-archivio', { hasText: 'Lavora sul server' }).count())) throw new Error('C136: col motore automatico acceso non dice «Lavora sul server»');
     await page.evaluate(() => { RIC.db.auto = false; render(); });
     await page.evaluate(() => { RIC._c3 = RIC.chiedi; RIC.chiedi = async c => c.db === 'cerca' ? { db: Object.assign({}, RIC.db, { ricette: 44 }), nuove: 2 } : RIC._c3(c); });
-    await clic('[data-a="ric-db-cerca"]'); await page.waitForTimeout(300);
+    page.once('dialog', d => d.accept()); await clic('[data-a="ric-db-cerca"]'); await page.waitForTimeout(300);
     if (!(await page.locator('#ricdb-archivio h2', { hasText: '44 trovate' }).count())) throw new Error('«Cerca adesso» non aggiorna i numeri');
     await page.evaluate(() => { RIC.chiedi = RIC._c3; RIC.dbOra = Date.now(); });
     if (!(await page.locator('.scheda h2', { hasText: 'Il tuo ricettario: ' }).count())) throw new Error('manca «Il tuo ricettario: N»');
@@ -744,7 +744,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // ⚡ Carica (Mario 08/11); C136 «a manuale poco alla volta»: N ricette (base 20, «Solo per te, Mario»), «⏹ Ferma» mentre carica
     if (!/⚡ Carica altre 20 ricette/.test(box) || !/🖐 Ricette nuove solo quando le chiedi tu/.test(box) || /entro 10 minuti|Motore al lavoro/.test(box)) throw new Error('C136: il riquadro del database non dice che si carica a mano: ' + box.slice(0, 400));
     await page.evaluate(() => { window.__c136 = []; RIC._c4 = RIC.chiedi; RIC.chiedi = async c => { window.__c136.push(c); return c.db === 'turbo' ? { turbo: { obiettivo: c.n, fatte: 0, scartate: 0, attivo: true } } : c.db === 'ferma' ? { db: Object.assign({}, RIC.db, { turbo: { obiettivo: 20, fatte: 3, scartate: 0, attivo: false, fermato: true, finito: Date.now() } }) } : c.db === 'stato' ? { db: RIC.db } : RIC._c4(c); }; });
-    await clic('[data-a="ric-db-turbo"]'); await page.waitForTimeout(400);
+    /* Mario 11/11 «doppia richiesta… potrebbero consumare i dati… la cosa tecnica»: «No» = niente richiesta al server */
+    let msg11 = ''; page.once('dialog', d => { msg11 = d.message(); d.dismiss(); }); await clic('[data-a="ric-db-turbo"]'); await page.waitForTimeout(300);
+    if (await page.evaluate(() => window.__c136.length) || !/Cloudflare/.test(msg11) || !/Durable Objects/.test(msg11) || !/avvisi a Monica e ai clienti/.test(msg11) || !/fino a 20 ricette/.test(msg11)) throw new Error('«⚡ Carica» senza doppia conferma o avviso tecnico: ' + JSON.stringify(msg11));
+    page.once('dialog', d => d.accept()); await clic('[data-a="ric-db-turbo"]'); await page.waitForTimeout(400);
     if (!(await page.locator('.ric-db-box', { hasText: 'Carico 20 ricette: 0 fatte' }).count()) || (await page.evaluate(() => window.__c136.find(c => c.db === 'turbo').n)) !== 20) throw new Error('C136: «⚡ Carica altre 20» non chiede 20 ricette o non mostra il carico in corso');
     await clic('.ric-db-box [data-a="ric-db-ferma"]'); await page.waitForTimeout(400);
     if (!(await page.locator('.ric-db-box', { hasText: 'Ultimo carico (fermato da te): 3 ricette nuove' }).count())) throw new Error('C136: «⏹ Ferma» non ferma il carico');
@@ -753,13 +756,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     // C83: «🔍 Controlla tutte» → esito di tutte le ricette in vista, con quelle da sistemare
     await page.waitForFunction(() => !RIC.scarico, null, { timeout: 30000 }); await page.waitForTimeout(300);   // lo scarico sul telefono finisce prima: il suo avviso «📥 N ricette» non copre quelli da controllare
     await page.evaluate(() => { RIC._c5 = RIC.chiedi; RIC.chiedi = async c => c.db === 'controlla' ? { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 }, db: Object.assign({}, RIC.db, { controllo: { quando: Date.now(), totale: 120, ok: 119, nMale: 1, male: [{ id: 'gz:X', nome: 'Pane cafone', prob: ['passo 3: resti di HTML'] }], mancanti: 0 } }) } : RIC._c5(c); });
-    await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
+    page.once('dialog', d => d.accept()); await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
     if (!(await page.locator('.ric-db-box', { hasText: 'Controllate 120 ricette' }).count()) || !(await page.locator('.ric-db-box', { hasText: 'Pane cafone' }).count())) throw new Error('«🔍 Controlla tutte» non mostra l\'esito');
     // C123: le rilette uguali su GZ: «uguali all'originale» col perché, e mai più «ci penso io» finto
     await page.evaluate(() => { const c = { quando: Date.now(), totale: 1161, ok: 1156, nMale: 0, male: [], nOriginali: 5, originali: [{ id: 'gz:P', nome: 'Peperonata', prob: ['passo 6: 1 foto mancante'], esito: 'uguale' }, { id: 'gz:F', nome: 'Frullato di frutta', prob: ['1 passo solo'], esito: 'uguale' }], mancanti: 0 };
       RIC.chiedi = async q => q.db === 'controlla' ? { controllo: c, db: Object.assign({}, RIC.db, { controllo: c }) } : RIC._c5(q); });
     await page.evaluate(() => { window.__toast = []; window.__mt = window.mostraToast; window.mostraToast = (t, ...a) => { window.__toast.push(String(t)); return window.__mt(t, ...a); }; });   // PT E56: l'avviso di fine scarico («📥 N ricette») copriva quello controllato: si guardano tutti gli avvisi
-    await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
+    page.once('dialog', d => d.accept()); await clic('.ric-db-box [data-a="ric-db-controlla"]'); await page.waitForTimeout(300);
     if (!(await page.locator('.ric-db-box', { hasText: "5 uguali all'originale" }).count()) || !(await page.locator('.ric-db-box li', { hasText: 'Frullato di frutta' }).filter({ hasText: 'su GialloZafferano è così' }).count())) throw new Error('C123: le «uguali all\'originale» non hanno il perché');
     const avvisi = await page.evaluate(() => { window.mostraToast = window.__mt; return window.__toast.join(' | '); });
     if (/ci penso io/.test(avvisi)) throw new Error('C123: l\'avviso promette ancora «ci penso io»');
@@ -1756,15 +1759,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!/3 ricette: GialloZafferano 2 · RicetteFit 1/.test(conta)) throw new Error('Proteiche: numero per fonte mancante: ' + conta);
     await page.evaluate(() => { window.__cf125 = 0; const c0 = RIC.chiedi; RIC.chiedi = c => { if (c.db === 'cercaFit') window.__cf125++; return c0(c); }; });
     await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); n = await nomi();
-    const cerca = await page.evaluate(() => RIC.fitCerca && { mom: RIC.fitCerca.mom, testo: RIC.fitCerca.testo });
-    if (JSON.stringify(n) !== '["Frittata albumi prova","Pollo fit prova"]' || !cerca || cerca.mom !== 's:cena|' || cerca.testo !== 'Cena') throw new Error('«🍽 Cena» sbagliato (elenco o ricerca del momento): ' + JSON.stringify({ n, cerca }));
+    const cerca = await page.evaluate(() => ({ f: RIC.fitCerca, n: window.__cf125 }));   // Mario 11/11: un momento filtra e basta, sul web solo con «Cerca altre»
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Pollo fit prova"]' || cerca.f || cerca.n) throw new Error('«🍽 Cena» sbagliato (elenco, o ha cercato sul web da solo): ' + JSON.stringify({ n, cerca }));
     /* C127 scelta MULTIPLA (Mario 10/11 «multi scelta»): Cena + Dolci = l'una O l'altra, ricordata; spegnere = solo filtra, niente ricerca */
     await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); n = await nomi();
     const multi = await page.evaluate(() => ({ fit: UI.ric.fit, salvato: JSON.parse(localStorage.getItem('pit-ric-filtri')).fit, accesi: [...document.querySelectorAll('.ric-fit-scelte [aria-pressed="true"]')].map(b => b.dataset.v), cerche: window.__cf125 }));
-    if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova","Pollo fit prova"]' || multi.fit !== 'cena,dolci' || multi.salvato !== 'cena,dolci' || JSON.stringify(multi.accesi) !== '["cena","dolci"]' || multi.cerche !== 2) throw new Error('«🍽 Cena» + «🍰 Dolci» (scelta multipla) sbagliato: ' + JSON.stringify({ n, multi }));
+    if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova","Pollo fit prova"]' || multi.fit !== 'cena,dolci' || multi.salvato !== 'cena,dolci' || JSON.stringify(multi.accesi) !== '["cena","dolci"]' || multi.cerche !== 0) throw new Error('«🍽 Cena» + «🍰 Dolci» (scelta multipla) sbagliato: ' + JSON.stringify({ n, multi }));
     await clic('[data-a="ric-fit-tipo"][data-v="cena"]'); n = await nomi();
     const spento = await page.evaluate(() => ({ fit: UI.ric.fit, cerche: window.__cf125 }));
-    if (JSON.stringify(n) !== '["Budino proteico prova"]' || spento.fit !== 'dolci' || spento.cerche !== 2) throw new Error('spegnere «🍽 Cena» non toglie solo lei o cerca ancora: ' + JSON.stringify({ n, spento }));
+    if (JSON.stringify(n) !== '["Budino proteico prova"]' || spento.fit !== 'dolci' || spento.cerche !== 0) throw new Error('spegnere «🍽 Cena» non toglie solo lei o cerca ancora: ' + JSON.stringify({ n, spento }));
     const riga = await page.evaluate(() => (document.querySelector('main .ric-elenco .ric-carta .ric-valori-riga') || {}).textContent || '');
     if (!/snack o dolce/.test(riga)) throw new Error('«🍰 Dolci»: riga senza «snack o dolce»: ' + riga);
     await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); await clic('[data-a="ric-fit-tipo"][data-v="pranzo"]'); n = await nomi();
@@ -1775,8 +1778,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     /* fonti proteiche sempre in vista, anche più di una (O fra loro), E coi momenti */
     const np = await page.evaluate(() => ({ n: document.querySelectorAll('.ric-prot-scelte .scelta').length, apri: !!document.querySelector('[data-a="ric-prot-apri"]') }));
     await clic('[data-a="ric-prot"][data-v="pollo"]'); n = await nomi();
-    const cp = await page.evaluate(() => RIC.fitCerca && RIC.fitCerca.mom);
-    if (np.n < 15 || np.apri || JSON.stringify(n) !== '["Pollo fit prova"]' || cp !== 's:|pollo') throw new Error('fonte proteica «🍗 Pollo» sbagliata: ' + JSON.stringify({ np, n, cp }));
+    const cp = await page.evaluate(() => window.__cf125);
+    if (np.n < 15 || np.apri || JSON.stringify(n) !== '["Pollo fit prova"]' || cp !== 0) throw new Error('fonte proteica «🍗 Pollo» sbagliata: ' + JSON.stringify({ np, n, cp }));
     await clic('[data-a="ric-prot"][data-v="albumi"]'); n = await nomi();
     if (JSON.stringify(n) !== '["Frittata albumi prova","Pollo fit prova"]') throw new Error('«🍗 Pollo» + «🥚 Albumi» (l\'una o l\'altra) sbagliato: ' + JSON.stringify(n));
     await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); n = await nomi();
@@ -1806,6 +1809,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
       const ss = [{ id: 'rf:budino-proteico-prova', nome: 'Budino proteico prova', zona: 'italiana', categoria: 'Dolci', foto: '', aggiunta: Date.now(), totale: 5, difficolta: 'Facile', cerca: 'budino cacao', nutr: { kcal: 180, prot: 18, carb: 15, grassi: 5, saturi: 1, zuc: 5, fibre: 2, sodio: 150 } }];
       window.__cf = []; window.__cfRisp = { q: 'budino', gz: 3, rf: 1, nuove: 3, gia: 1 };
+      window.__confPrima = window.confirm; window.__conf = []; window.__confSi = true; window.confirm = m => { window.__conf.push(m); return window.__confSi; };
       RIC.chiedi = async c => { if (c.db === 'cercaFit') { window.__cf.push(c); return window.__cfRisp; } if (c.cerca || c.cat) window.__cf.push({ gz: c.cerca }); return c.db === 'mie' ? { scelte: ss } : c.db ? { db: { ricette: 1, coda: 0, scelte: 1, conValori: 1, senzaValori: 0, paroleFit: [], giri: 1, fonte: 1, fonti: 10 } } : { ricette: [], prossima: '' }; };
       salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.fitCerca = null; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
       UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
@@ -1814,10 +1818,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const box = await page.evaluate(() => ({ vecchie: document.querySelectorAll('.ric-cerca-fit [data-a="ric-cerca-fit"][data-v]').length, testo: (document.querySelector('.ric-cerca-fit') || {}).innerText || '', ph: document.getElementById('ric-cerca').placeholder }));
     if (box.vecchie || !/Cerca altre/.test(box.testo) || !/Tocca e cerco ricette fit nuove su GialloZafferano e RicetteFit/.test(box.testo) || !/Cerca ricette fit/.test(box.ph)) throw new Error('Proteiche: riquadro verde senza «🔍 Cerca altre» (C127): ' + JSON.stringify(box));
     /* C126 (Mario 14:10 «senza selezionare… mi cerca tutto nei siti»): niente momento né parola = cerca tutto */
-    await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
+    await page.evaluate(() => { window.__confSi = false; }); await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(150);
+    const no11 = await page.evaluate(() => ({ n: window.__cf.length, m: window.__conf.slice(-1)[0] || '' }));
+    if (no11.n || !/Cloudflare/.test(no11.m) || !/Durable Objects/.test(no11.m)) throw new Error('«Cerca altre»: senza doppia conferma o avviso tecnico, o «No» ha cercato lo stesso: ' + JSON.stringify(no11));
+    await page.evaluate(() => { window.__confSi = true; }); await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
     const tutto = await page.evaluate(() => ({ chiesto: window.__cf.slice(-1)[0], esito: (document.querySelector('.ric-cerca-fit') || {}).innerText || '' }));
     if (!tutto.chiesto || tutto.chiesto.tutto !== true || tutto.chiesto.qq || !/Trovate 3 ricette nuove su tutti i siti/.test(tutto.esito)) throw new Error('«Cerca nuove ricette fit su tutti i siti» sbagliato: ' + JSON.stringify(tutto));
-    await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]'); await page.waitForTimeout(200);
+    await clic('[data-a="ric-fit-tipo"][data-v="dopocena"]'); await page.waitForTimeout(150);
+    if (await page.evaluate(() => window.__cf.length) !== 1) throw new Error('il momento «🌙 Dopo cena» ha cercato sul web da solo (Mario 11/11: solo col tasto)');
+    await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
     let st = await page.evaluate(() => ({ chiesto: window.__cf.slice(-1)[0], esito: (document.querySelector('.ric-cerca-fit') || {}).innerText || '', nomi: [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')), timer: !!RIC.fitTimer }));
     if (!st.chiesto || st.chiesto.q !== 'Dopo cena' || !Array.isArray(st.chiesto.qq) || st.chiesto.qq.length !== 4 || !st.chiesto.qq.includes('budino proteico') || !/Trovate 3 ricette nuove con «Dopo cena» \(un'altra l'avevo già letta\)/.test(st.esito) || !st.timer) throw new Error('«🌙 Dopo cena»: ricerca del momento o esito sbagliati: ' + JSON.stringify(st));
     if (JSON.stringify(st.nomi.filter(n => /prova$/.test(n))) !== '["Budino proteico prova"]') throw new Error('«🌙 Dopo cena»: elenco qui sotto non filtrato: ' + JSON.stringify(st.nomi));
@@ -1831,7 +1840,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (n1.n !== st.n || !/Tocca e cerco ricette fit nuove/.test(n1.testo)) throw new Error('spegnere le scelte ha cercato o lasciato l\'esito vecchio: ' + JSON.stringify(n1));
     /* scritta a mano e invio (anche dalla tastiera): niente ricerca generica di GialloZafferano dentro Proteiche */
     await page.evaluate(() => { window.__cfRisp = { errore: 'GialloZafferano e RicetteFit non rispondono adesso: riprova fra poco' }; });
+    const nInvio = await page.evaluate(() => window.__cf.length);
     await page.locator('#ric-cerca').fill('salmone'); await page.locator('#ric-cerca').press('Enter'); await page.waitForTimeout(250);
+    if (await page.evaluate(() => window.__cf.length) !== nInvio) throw new Error('invio dentro Proteiche ha cercato sul web da solo (Mario 11/11: filtra le già lette)');
+    await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(250);
     st = await page.evaluate(() => ({ ultimi: window.__cf.slice(-1), esito: (document.querySelector('.ric-cerca-fit') || {}).innerText || '' }));
     if (!st.ultimi[0] || st.ultimi[0].q !== 'salmone' || !/Non riesco a cercare adesso \(GialloZafferano e RicetteFit non rispondono/.test(st.esito)) throw new Error('invio dentro Proteiche: errore non detto o ricerca sbagliata: ' + JSON.stringify(st));
     /* «Niente di nuovo»: tutte già lette */
@@ -1844,10 +1856,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.locator('#ric-cerca').fill('lasagne'); await page.locator('#ric-cerca').press('Enter'); await page.waitForTimeout(250);
     st = await page.evaluate(n0 => ({ nuovi: window.__cf.slice(n0), box: !!document.querySelector('.ric-cerca-fit') }), n0);
     if (st.box || st.nuovi.some(c => c.q) || !st.nuovi.some(c => c.gz === 'lasagne')) throw new Error('fuori da Proteiche la ricerca non è quella di sempre: ' + JSON.stringify(st));
-    await page.evaluate(() => { clearTimeout(RIC.fitTimer); RIC.fitTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC125c; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.vista = 'home'; render(); });
+    await page.evaluate(() => { window.confirm = window.__confPrima; clearTimeout(RIC.fitTimer); RIC.fitTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC125c; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.vista = 'home'; render(); });
   });
   await passo('ricettario C128 lettura delle fonti: a che punto è (RicetteFit e valori, stima), «niente di nuovo» con le pagine guardate', async () => {   // autonomo
     await page.evaluate(() => {
+      window.__confPrima = window.confirm; window.confirm = () => true;
       window.__primaC128 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
       const ss = [{ id: 'rf:budino-proteico-prova', nome: 'Budino proteico prova', zona: 'italiana', categoria: 'Dolci', foto: '', aggiunta: Date.now(), totale: 5, difficolta: 'Facile', cerca: 'budino', nutr: { kcal: 180, prot: 18, carb: 15, grassi: 5, saturi: 1, zuc: 5, fibre: 2, sodio: 150 } }];
       window.__db128 = { ricette: 900, coda: 3, scelte: 1, conValori: 500, senzaValori: 400, daLeggere: 400, paroleFit: [], giri: 1, fonte: 1, fonti: 10,
@@ -1880,7 +1893,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('[data-a="ric-cerca-fit-tutto"]'); await page.waitForTimeout(200);
     const esito = await page.evaluate(() => (document.querySelector('.ric-cerca-fit') || {}).innerText || '');
     if (!/Niente di nuovo su tutti i siti \(ho guardato 6 pagine dei siti\): le 23 trovate le avevo già lette\. Tocca ancora: la prossima volta vado alle pagine dopo/.test(esito)) throw new Error('«niente di nuovo» senza le pagine: ' + esito);
-    await page.evaluate(() => { clearTimeout(RIC.fitTimer); RIC.fitTimer = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC128; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.ricZona = null; UI.vista = 'home'; render(); });
+    await page.evaluate(() => { window.confirm = window.__confPrima; clearTimeout(RIC.fitTimer); RIC.fitTimer = null; clearTimeout(RIC.turboTimer); RIC.turboTimer = null; RIC.fitCerca = null; [P.ruolo, UI.devCliente] = window.__primaC128; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; RIC.cerca = { stato: '', risultati: [] }; UI.ricZona = null; UI.vista = 'home'; render(); });
   });
   await passo('ricettario C125 ricerca con RicetteFit: tasto e titolo dicono le due fonti, RicetteFit in cima con la sua etichetta', async () => {   // autonomo
     await page.evaluate(() => {
