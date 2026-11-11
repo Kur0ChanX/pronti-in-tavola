@@ -487,7 +487,7 @@ const PAROLE_MOM = {
   salato: /pollo|tacchin|manzo|vitell|maiale|lonza|bresaola|prosciutto|speck|salmone|merluzz|baccal|tonno|sgombr|orata|branzin|spigola|pesce|gamber|polpo|calamar|seppi|cozz|vongol|tofu|tempeh|seitan|cipoll|aglio|curry|senape|salsa|marinat|piastra|griglia|padella|insalat|zupp|vellutat|frittat|omelette|burger|polpett|spiedin|involtin|wrap|piadin|panin|sandwich|pizza|quiche|torta salata|salat[ie]|formaggio|parmigian|feta|spinac|zucchin|peperon|melanzan|broccol|funghi|ceci|lenticch|fagiol/ };
 function momentoRic(r, m) {
   const n = r && r.nutr, p = fitRic(n); if (!p) return false;
-  const t = senzaAccenti(r.nome), dolce = r.categoria === 'dolci' || PAROLE_MOM.dolce.test(t);
+  const t = senzaAccenti(r.nome), dolce = r.categoria === 'dolci' || (PAROLE_MOM.dolce.test(t) && !PAROLE_MOM.salato.test(t));   // C139: «patate dolci», «agrodolce» non sono dolci
   const dolceCol = PAROLE_MOM.colazione.test(t) && !PAROLE_MOM.salato.test(t);   // C139: colazione dolce, mai pollo allo yogurt
   if (m === 'colazione') return dolceCol;
   if (m === 'spuntino') return p === 'snack';

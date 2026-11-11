@@ -1813,12 +1813,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       salvaScelte([doppia]); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
       const tt = elencoRic(), fit = tt.filter(x => x.fit), stessa = tt.filter(x => x.id === doppia.id);
       const mom = {}; ['dolci', 'spuntino', 'merenda', 'colazione', 'allenamento', 'pranzo', 'cena'].forEach(m => { mom[m] = fit.filter(x => momentoRic(x, m)).length; });
-      const salateCol = fit.filter(x => momentoRic(x, 'colazione') && /pollo|tacchin|gamber|tonno|salmone/.test(senzaAccenti(x.nome))).map(x => x.nome);   // C139: mai «Pollo allo yogurt» a colazione
+      const salateCol = fit.filter(x => (momentoRic(x, 'colazione') || momentoRic(x, 'dolci')) && /pollo|tacchin|gamber|tonno|salmone/.test(senzaAccenti(x.nome))).map(x => x.nome);   // C139: mai «Pollo allo yogurt» a colazione
       if (momentoRic({ nome: 'Pollo allo yogurt prova', categoria: 'secondi', nutr: { kcal: 300, prot: 40, carb: 5, zuc: 2, saturi: 1, sodio: 300 } }, 'colazione')) salateCol.push('prova finta');
       return { salateCol, file: RICETTE_FIT.length, fit: fit.length, tutteFit: fit.every(x => fitRic(x.nutr)), stessa: stessa.map(x => x.nome), mom, fonti: perFonte(fit), conLink: fit.every(x => /^(gz|rf):[\w%-]+$/.test(x.id) && x.foto) };
     });
     if (r.file < 150 || r.fit !== r.file - 1 || !r.tutteFit || JSON.stringify(r.stessa) !== '["Copia mia prova"]' || !r.conLink || r.salateCol.length) throw new Error('C139: file delle proteiche sbagliato: ' + JSON.stringify(r));
-    if (!(r.mom.dolci >= 10 && r.mom.colazione >= 2 && r.mom.spuntino >= 10 && r.mom.merenda >= 3 && r.mom.allenamento >= 10) || !/GialloZafferano \d+ · RicetteFit \d+|RicetteFit \d+ · GialloZafferano \d+/.test(r.fonti)) throw new Error('C139: momenti di Mario o fonti scarsi: ' + JSON.stringify(r));
+    if (!(r.mom.dolci >= 5 && r.mom.colazione >= 2 && r.mom.spuntino >= 10 && r.mom.merenda >= 3 && r.mom.allenamento >= 10) || !/GialloZafferano \d+ · RicetteFit \d+|RicetteFit \d+ · GialloZafferano \d+/.test(r.fonti)) throw new Error('C139: momenti di Mario o fonti scarsi: ' + JSON.stringify(r));
     await page.evaluate(() => { UI.ricZona = 'fit'; UI.vista = 'ricettario'; render(); });
     await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
     await clic('[data-a="ric-fit-tipo"][data-v="dolci"]');
