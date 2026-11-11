@@ -39,6 +39,7 @@ Sessione attuale: #67 (dopo la #66 `session_01WTjqUup234iNMuPGR7huag`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
+0. Consegne FERME alla fase 4 (`consegne.py controlla`: «scorta non unita» FALSO; la scorta della #66 ha il codice C144 = patch, 6 file su 6 identici, controllato in una copia di lavoro). DOMANDA 2 a Mario: «1/vai» → la #66 apre la #67 con `create_session`; «2» → la #66 pubblica al «1» delle foto e poi passa. DOMANDA 3: «1» → `tools/consegne.py`: una scorta i cui file diversi sono uguali a HEAD + una patch di `docs/lavori-in-corso/` conta come salvata (prova nuova).
 1. 🛑 Mario risponde sulle foto C144: «1» → `git apply docs/lavori-in-corso/c144-app.patch`, `python3 -I tools/anteprima.py`, giro completo `node tools/prova.js` (0 «NO»), commit e push (pubblica), `curl` di `ricette-video.js` dal sito, `git rm` della patch, v0.10.24 con le novità; «2» → cambiare quello che dice, nuove foto.
 2. Mario «fatto» sul passo 1 di C140 → controllo `visibility: private` e il prossimo giro di `sito.yml`; poi il passo 2 (motore sul PC, guida su docs.github.com «Adding self-hosted runners»).
 3. DOMANDA 1 della #65 «1» → patch C143 (`git apply docs/lavori-in-corso/c143-guardia.patch && python3 -I tools/test-guardia.py`) e kit 38.26.
