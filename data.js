@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.20';
+const VERSIONE_APP = '0.10.21';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.21', data: '11/11/2026',
+    corretto: ['Ricettario, Proteiche: in «🌅 Colazione», «🧃 Merenda» e «🌙 Dopo cena» non compaiono più piatti salati solo perché hanno lo yogurt nel nome (es. «Pollo allo yogurt»)'] },
   { v: '0.10.20', data: '11/11/2026',
     nuovo: ['Ricettario: 191 ricette proteiche nuove in «🏋️ Proteiche», scelte da Claude su RicetteFit e GialloZafferano (prima colazione, spuntini, dolci e dopo l\'allenamento, poi pranzi e cene). Sono un file del sito: non consumano niente del server. Ognuna rispetta le regole delle Proteiche; aprendola, dosi e passaggi arrivano dal sito d\'origine'] },
   { v: '0.10.19', data: '11/11/2026',
