@@ -44,6 +44,7 @@ Sessione attuale: #64 (dopo la #63 `session_01WTjqUvCWdASm6EXuq3bu3x`, chiusa 11
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 12; 🛑 foto C141 e C140). Controllo Da fare: 0 voci aggiunte (la richiesta 20:06 è in C140).
 
 ## Ultimo messaggio di Mario
+11/11 ~20:12 (arrivato nella #63 dopo l'handoff, passato alla #64), parola per parola: «come fa il progetto rvc» → domanda su C140: come fa RVC con i giri (PC di casa → Blacksmith → GitHub); rispondere dal kit (RVC-Operation-by-YNOY-CORP/RVC, `docs/kit-progetto`) senza `add_repo` (E28).
 11/11 ~20:06, parola per parola: «devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito» → C140, DOMANDA 1 (progetto pubblico).
 Prima: 18:22 «nelle ricette aggiungile tutte quante e metti un voto…» → C141 (online, foto, 🛑).
 
