@@ -37,9 +37,12 @@ PRODOTTI = {
     'proteine vegane': (380, 72, 8, 2, 8, 1.5, 900),
     'farina proteica': (360, 35, 40, 4, 5, 1, 50),
     'cacao amaro': (355, 20, 11.5, 0.5, 25.6, 15, 20),
+    'caffè (bevanda)': (2, 0.1, 0.3, 0, 0, 0, 2),   # CREA «caffè tostato» è la polvere: 150 ml di caffè non sono 150 g di polvere
 }
 # parole della riga → prodotto (o nome CREA); le prime che combaciano vincono
 SINONIMI = [
+    (r'\bcaff[eè]\b(?! (solubile|in polvere|macinato))', 'caffè (bevanda)'),
+    (r'\bproteine?\s+(al|alla|alle|allo|gusto)\b', 'proteine in polvere'),
     (r'\b(whey|proteine? in polvere|proteine (alla |al gusto )?(vaniglia|cioccolato|cacao|fragola|biscotto)|scoop|misurin|isolat[eo]|protein powder)', 'proteine in polvere'),
     (r'\bproteine? vegan', 'proteine vegane'), (r'farina proteica|protein flour', 'farina proteica'),
     (r'philadelphia.*prote|philadelphia protein', 'philadelphia protein'), (r'\bskyr\b', 'skyr'),
