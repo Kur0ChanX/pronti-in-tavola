@@ -13,3 +13,6 @@ Foto `archivio/foto/2026-11-11-2250-mario-stimata-cookpad-ingredienti.jpg` e `�
 3. Quelle che restano senza passi né video: fuori dall'elenco (non si cancellano dal file: un filtro, così il giorno dopo non tornano).
 4. Controllare anche le ricette video di C144/C145: tutte hanno il video (ok).
 5. Prova (`SOLO=C141`: ogni stimata ha passi o video) e foto a Mario prima di pubblicare (PT E69).
+
+## Stato
+- 11/11 #67 FATTO nella patch `docs/lavori-in-corso/c144-app.patch` (non pubblicata, PT E69): `tools/raccogli_stimate.py --passi` ha letto i passi di 163 ricette (Cookpad, blog GZ) → 206 su 207 coi passi (100 anche con le foto dei passi), tolta «Porridge overnight alla mela» (senza passi). App: `stimataRic` usa `x.passi`, filtro `conPassiStimata` (senza passi né video fuori). Prova `SOLO=C14` verde (C141/C146 + C144). Manca: foto a Mario e il suo «1».

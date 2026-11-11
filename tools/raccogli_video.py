@@ -17,7 +17,10 @@ from stima import stima_ricetta, norm
 RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE = os.path.join(RADICE, '.cache-stime')
 # Un canale = un riquadro nell'app. Per aggiungerne uno: nome come lo scrive lui, id del canale (UC…).
-CANALI = [('Massimo Pietrobon Gobbi', 'UCkQmObN7tBXzPQTQhlT704Q')]
+# Canali che scrivono la ricetta a sezioni (ingredienti, preparazione, valori): si leggono con sezioni(), passi compresi
+A_SEZIONI = {'Beardedscara'}
+CANALI = [('Massimo Pietrobon Gobbi', 'UCkQmObN7tBXzPQTQhlT704Q'),
+          ('Beardedscara', 'UCWhoPXcEJRPWxtIwjSGgpug')]   # C145 (Mario 11/11 22:46 «aggiungi tutti i suoi video di ricette»)
 
 # Tipo della ricetta: la prima parola che compare (nome, hashtag, ingredienti) decide. Ordine = priorità.
 TIPI = [('Pancake', r'pancake'), ('Porridge', r'porridge|porridgemis|portidge|ba(?:c?k)e?d ?oats?'), ('Cheesecake', r'chee?r?s?e?cake'), ('Brownie', r'brownie'),
@@ -80,7 +83,7 @@ def riga_valori(testo):
     return ''
 
 
-def numeri(riga):
+def numeri(riga, largo=False):
     """kcal, carbo, prot, grassi dalla riga dei valori; None se ne manca uno (meglio niente che un numero sbagliato).
     Forme vere: «Kcal totali : 519 / 55.8 g carbo / 42.4 g proteine / 13.4 g grassi», «158.8 c/ 70.6 p / 30.6 g»,
     «Per metà pancake : 505 kcal / 65.5 g carbo / 33.3 proteime / 10.2 g grass», «54 g carbo / … kcal 515»."""
@@ -90,12 +93,12 @@ def numeri(riga):
         mm = [m for m in (re.search(r, t) for r in rx) if m]
         return float(min(mm, key=lambda m: m.start()).group(1)) if mm else None
     def dopo_prot(r):   # «… / 70.6 p / 30.6 g metà … 15.3 g»: i grassi senza nome sono il primo «N g» DOPO le proteine
-        mp = re.search(N + r'\s*g?\s*(?:prot\w*|p)\b', t)
+        mp = re.search(N + (r'\s*g?\s*(?:pro\w*|p)\b' if largo else r'\s*g?\s*(?:prot\w*|p)\b'), t)
         m = re.search(r, t[mp.end():] if mp else t)
         return float(m.group(1)) if m else None
     v = {'kcal': primo(N + r'\s*kcal', r'kcal\D{0,45}?' + N),
          'carb': primo(N + r'\s*g?\s*(?:carbo\w*|c)\b'),
-         'prot': primo(N + r'\s*g?\s*(?:prot\w*|p)\b'),
+         'prot': primo(N + (r'\s*g?\s*(?:pro\w*|p)\b' if largo else r'\s*g?\s*(?:prot\w*|p)\b')),   # «42.4 g proteine», «70.6 p»; largo: «12g Pro» (C145)
          'grassi': primo(N + r'\s*g?\s*grass\w*') or dopo_prot(N + r'\s*g\b(?!\s*(?:carb|prot|c\b|p\b))')}
     if v['kcal'] is None and None not in (v['carb'], v['prot'], v['grassi']):
         v['kcal'] = round(4 * v['carb'] + 4 * v['prot'] + 9 * v['grassi'])   # «Per un gelato : 18 g carbo / 20 g proteine / 11 g»
@@ -104,6 +107,72 @@ def numeri(riga):
     if abs(4 * v['prot'] + 4 * v['carb'] + 9 * v['grassi'] - v['kcal']) > 0.2 * v['kcal'] + 30:
         return None   # i conti non tornano: la riga si legge male
     return v
+
+
+NUMERI_PAROLA = {'una': 1, 'uno': 1, 'un': 1, 'due': 2, 'tre': 3, 'quattro': 4, 'cinque': 5, 'sei': 6, 'otto': 8, 'dieci': 10}
+
+
+def sezioni(testo):
+    """C145: descrizioni a sezioni (Beardedscara): «🧾 Ingredienti per ~3 porzioni:», «👨‍🍳 Preparazione:» coi passi a trattino o pallino,
+    «🔥 Valori nutrizionali - per UNA porzione:», poi considerazioni e pubblicità (fuori). Esce ingredienti, passi, valori e porzioni
+    COME LI SCRIVE LUI (PT E25); «A 🔄 B» = «A (oppure B)»."""
+    pulisci = lambda l: re.sub(r'^[^\w~½¼¾(]+', '', re.sub(r'[\u200b-\u200f\u2060\ufeff]', '', l)).strip(' ;.,')
+    sez, sotto, ing, passi, val, note, testa_ing, testa_val = '', '', [], [], [], [], '', ''
+    ha_prep = re.search(r'(?im)^\W*(preparazione|procedimento)', testo)
+    for l in testo.split('\n'):
+        l0 = re.sub(r'[\u200b-\u200f\u2060\ufeff]', '', l).strip()
+        if not l0:
+            continue
+        b = norm(l0)
+        testa = not re.match(r'[•\-*]', l0) and (l0.endswith(':') or len(b) < 40)   # un titolo, non una riga a pallino («• ingredienti “ottimi”»)
+        if testa and b.startswith('ingredient') and len(b) < 90:   # «🧾 Ingredienti per ~3 porzioni:» (mai «unisci gli ingredienti»)
+            sez, testa_ing, sotto = 'ing', l0, ''; continue
+        if testa and re.match(r'(preparazione|procedimento)\b', b) and len(b) < 60:
+            sez, sotto = 'passi', ''; continue
+        if testa and b.startswith('valori') and len(b) < 80:
+            sez, testa_val = 'val', l0; continue
+        if testa and re.search(r'consideraz', b):
+            sez = 'note'; continue   # i suoi consigli: «Cosa scrive sotto il video» nell'app (ingredienti e passi sono già sopra)
+        if re.search(r'consideraz|figata|grazie|link|clicca|ricettario|segui|#\w|\bvoto\b', b):
+            sez = 'fine'; continue
+        if sez in ('ing', 'passi') and l0.endswith(':') and len(b) < 40 and not re.search(r'\d', b):
+            sotto = pulisci(l0).rstrip(':'); continue   # «Per la base:», «Per il ripieno:»
+        if sez == 'ing' and not ha_prep and re.match(r'\s*-', l0) and not re.search(r'\d|q\.? ?b\b', b[:14]) and len(b.split()) >= 4:
+            sez = 'passi'   # passi a trattino subito dopo gli ingredienti, senza «Preparazione»
+        if sez == 'ing':
+            for pezzo in l0.split(';'):
+                t = pulisci(pezzo)
+                if re.match(r'\W*\*', pezzo) or re.search(r'(?i)kcal', pezzo):
+                    continue   # note a piè di lista («*a me non piace», «*opzionali») e valori
+                if t:
+                    alt = [x.strip(' ;.,') for x in re.split(r'\s*🔄\s*', t)]
+                    ing.append(alt[0] + (f" (oppure {' oppure '.join(pulisci(x) for x in alt[1:] if pulisci(x))})" if len(alt) > 1 and any(pulisci(x) for x in alt[1:]) else '')
+                               + (' (facoltativo)' if re.search(r'(?i)facoltativ', sotto) else ''))
+        elif sez == 'passi':
+            t = pulisci(l0)
+            if t:
+                t = (sotto + ': ' + t[0].lower() + t[1:]) if sotto else t
+                passi.append(t[0].upper() + t[1:])
+                sotto = ''
+        elif sez == 'val':
+            val.append(pulisci(l0))
+        elif sez == 'note' and pulisci(l0):
+            t = pulisci(l0)
+            note.append(t[0].upper() + t[1:])
+    m = re.search(r'(?i)(?:per|-)\s*~?\s*(\d+|' + '|'.join(NUMERI_PAROLA) + r')\b', testa_ing)   # «per ~3 porzioni», «- 8 fette»
+    porz = int(m.group(1)) if m and m.group(1).isdigit() else NUMERI_PAROLA.get(m.group(1).lower(), 1) if m else 1
+    riga, nv = '', None
+    for i, v in enumerate(val):   # la prima riga con le kcal; se proteine, carboidrati e grassi sono sotto, una riga per uno, si uniscono
+        if re.search(r'(?i)kcal', v) and re.search(r'\d', v):
+            for r in (v, ' · '.join(val[i:i + 4])):
+                nv = numeri(r, largo=True)
+                if nv:
+                    riga = r
+                    break
+            break
+    return {'ing': ing, 'passi': passi, 'riga': riga, 'nv': nv, 'porzioni': max(1, min(porz, 12)), 'note': note,
+            'a_porzione': True if re.search(r'(?i)\bper\s+(1|una|un|uno|ogni|singol\w*)\b|a porzione|per porzione|\b(a|una) (fetta|biscotto|pezzo)\b', testa_val)
+            else None}   # None = non lo dice: decide la stima (main)
 
 
 # Come si scrivono nell'app i cibi presi da hashtag e titoli (#pluncake → Plumcake). Il resto: prima lettera maiuscola.
@@ -166,7 +235,7 @@ def principali(ing, base):
     return out
 
 
-def nome_pulito(titolo, tipo, ing, data, testo=''):
+def nome_pulito(titolo, tipo, ing, data, testo='', lungo=40):
     """Il nome come lo scrive lui; se non distingue la ricetta («Pancake», «#ricetta», i soli valori, una data):
     cibo + due ingredienti principali («Pancake con albumi e avena»), sennò cibo + data del video («Pancake del 27 nov 2025»)."""
     n = re.sub(r'(?i)\s*(#\w+|@\w+|codice.*|cod\.? sconto.*|“[^”]*”|"[^"]*")', ' ', titolo)
@@ -177,7 +246,7 @@ def nome_pulito(titolo, tipo, ing, data, testo=''):
     if len(pezzi) > 1:   # «Torta pancake fit, porterò la ricetta» → «Torta pancake fit»; «Una delle mie colazioni preferite - OVERNIGHT PORRIDGE» → il pezzo col cibo
         n = next((x for x in pezzi if re.search(CIBO, x) and not re.fullmatch(r'(?i)\s*ricett\w*.*', x)), pezzi[0])
     n = re.sub(r'\s+', ' ', re.sub(LODI, ' ', n)).strip(' -:/!.,')
-    if len(n) > 40:
+    if len(n) > lungo:
         n = ''   # una frase, non un nome
     if n.isupper() or n.islower():
         n = n.capitalize()
@@ -237,13 +306,20 @@ def main():
         c = conti.setdefault(autore, {'video': len(video), 'ricette': 0, 'suoi': 0, 'stimati': 0, 'senza': 0, 'scartati': 0, 'doppie': 0})
         doppie = {}
         for v in video:
-            ing = ingredienti(v['testo'])
+            sz = sezioni(v['testo']) if autore in A_SEZIONI else None
+            if sz is not None:   # C145: titolo senza emoji e frecce («🥒 FRITTELLE di ZUCCHINE ⤵️» → «Frittelle di zucchine»)
+                t = re.sub(r'[\U0001F000-\U0001FAFF\U000E0000-\U000E007F☀-➿⬀-⯿⤴⤵\ufe0f\u200d\u2060]', '', re.sub(r'#\w+', '', v['titolo']))
+                t = re.sub(r'\s+', ' ', t.replace('”', '').replace('“', '').replace('"', '')).strip(' -')
+                v = dict(v, titolo=t.capitalize() if re.search(r'\b[A-ZÀ-Ü]{3,}\b', t) else t)   # una parola TUTTA MAIUSCOLA → «Frittelle di zucchine»
+            ing = ingredienti(v['testo']) if sz is None else sz['ing']
             if ing and re.search(INTEGRATORI, ' '.join(ing)):
                 ing = []   # è la lista degli integratori, non degli ingredienti
-            riga = riga_valori(v['titolo'] + '\n' + v['testo'])
+            riga = riga_valori(v['titolo'] + '\n' + v['testo']) if sz is None else sz['riga']
             cibo = re.search(CIBO, v['titolo'] + ' ' + ' '.join(re.findall(r'#\w+', v['testo'])))
-            nv = numeri(riga) if riga else None   # i suoi valori leggibili: li scrive solo sotto le ricette
+            nv = sz['nv'] if sz is not None else numeri(riga) if riga else None   # i suoi valori leggibili: li scrive solo sotto le ricette
             ricetta = (len(ing) >= 2 or ((cibo or nv) and not re.search(NON_RICETTE, v['titolo']))) and not re.search(MAI_RICETTE, v['titolo'])
+            if sz is not None:
+                ricetta = len(ing) >= 2 and not re.search(MAI_RICETTE, v['titolo'])   # a sezioni: ricetta = ingredienti scritti
             if re.fullmatch(r'\s*\d{1,2}\s+\w+\s+\d{4}\s*', v['titolo']) and len(ing) < 2:
                 ricetta = False
             if not ricetta:
@@ -262,21 +338,33 @@ def main():
                 if elenco:
                     print('  DOP ', v['titolo'][:90].replace('\n', ' '))
                 continue
-            x = {'id': 'yt:' + v['id'], 'nome': nome_pulito(v['titolo'], tipo, ing, v['data'], v['testo']), 'tipo': tipo, 'autore': autore,
+            x = {'id': 'yt:' + v['id'], 'nome': nome_pulito(v['titolo'], tipo, ing, v['data'], v['testo'], 40 if sz is None else 55), 'tipo': tipo, 'autore': autore,
                  'foto': v['img'] or f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg", 'url': 'https://www.youtube.com/watch?v=' + v['id'],
                  'data': v['data'], 'ingredienti': ing, 'testo': testo_pulito(v['testo'])}
             doppie.update({k: x for k in ([chiave, chiave2] if chiave2 else [chiave])})
+            if sz is not None:
+                x['testo'] = ('Considerazioni:\n' + '\n'.join(sz['note']))[:600] if sz['note'] else ''
+            if sz is not None and sz['passi']:
+                x['passi'] = sz['passi']   # C145/C146: i passi come li scrive lui → «Passo passo» e «Ascolta» nell'app
             if x['id'] in stimate:
                 x['proteica'] = True   # è anche in «🏋️ Proteiche»: lì valori, pagella e voto
             if riga:
                 x['valoriSuoi'] = riga
-            if nv:
+            if nv and sz is not None:
+                porz, a_porz = sz['porzioni'], sz['a_porzione']
+                if a_porz is None and porz > 1:   # «Valori nutrizionali:» senza dire per cosa: vince il più vicino alla stima dagli ingredienti
+                    st, _, _ = stima_ricetta([re.sub(r'\s*\(oppure .*$', '', i) for i in ing if '(facoltativo)' not in i], porz)
+                    a_porz = not st or abs(nv['kcal'] - st['kcal']) <= abs(nv['kcal'] - st['kcal'] * porz)
+                x['nutr'] = nv if a_porz or porz == 1 else {k: round(n / porz, 1) for k, n in nv.items()}
+                x['porzioni'] = porz; x['suoi'] = True; c['suoi'] += 1
+            elif nv:
                 gia, porz = porzioni_suoi(riga)
                 x['nutr'] = nv if gia or porz == 1 else {k: round(n / porz, 1) for k, n in nv.items()}   # sempre a porzione, come le altre
                 x['porzioni'] = porz; x['suoi'] = True; c['suoi'] += 1
             elif len(ing) >= 2:
-                porz = 2 if re.search(r'(?i)(due|2) (pasti|porzioni)|per met', v['testo']) else 1
-                st, _, _ = stima_ricetta(ing, porz)
+                porz = sz['porzioni'] if sz is not None else 2 if re.search(r'(?i)(due|2) (pasti|porzioni)|per met', v['testo']) else 1
+                ing_st = [re.sub(r'\s*\(oppure .*$', '', i) for i in ing if '(facoltativo)' not in i]   # la stima usa la prima scelta
+                st, _, _ = stima_ricetta(ing_st, porz)
                 if st and 40 <= st['kcal'] <= 1500:
                     x['nutr'] = st; x['porzioni'] = porz; x['stimata'] = True; c['stimati'] += 1
             if 'nutr' not in x:

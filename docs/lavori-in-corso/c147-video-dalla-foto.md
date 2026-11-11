@@ -13,4 +13,4 @@ Foto `archivio/foto/2026-11-11-2254-mario-spumone-video.jpg` (sul suo telefono, 
 - Da provare sul telefono vero (Android di Mario; iPhone quando ne ha uno, C113): il riquadro di prova non ha YouTube.
 
 ## Stato
-- 11/11 #67: codice nella patch unica `docs/lavori-in-corso/c144-app.patch` (insieme a C144, C145, C146): si pubblica al «1» di Mario sulle foto.
+- 11/11 #67 FATTO nella patch unica `docs/lavori-in-corso/c144-app.patch` (`apriVideoYt`, `chiudiVideoYt`, gesto indietro, aggiornamento che aspetta), prova C147 dentro `SOLO=C144` verde. Manca: foto a Mario e il suo «1»; prova sul telefono vero.
