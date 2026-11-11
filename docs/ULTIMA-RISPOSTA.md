@@ -1,31 +1,12 @@
-# Ultima risposta di Claude (11/11/2026 19:22 ora italiana)
+# Ultima risposta di Claude (11/11/2026 19:31 ora italiana)
 
-Ho capito: proponi di rendere privato Pronti in Tavola e di fare le prove sul tuo PC.
-
-───
-✅ FATTO
-- Ho scritto la tua proposta nel lavoro C140 ed è salvata su GitHub (commit `d59b6f4c`).
-
-───
-💡 PARERE
-È una buona idea e te la consiglio.
-
-| Cosa | Oggi (pubblico) | Privato |
-|---|---|---|
-| Chi vede codice e documenti | tutti | solo tu e Claude |
-| Prove sul tuo PC | rischioso | sicuro (lo consiglia anche GitHub) |
-| Minuti di GitHub | senza limite | 2.000 al mese gratis |
-| App di Monica e dei clienti | — | non cambia niente |
-
-- Ho controllato: nessun pezzo dell'app legge i file da GitHub. …
+Ho segnato le mie promesse in «Da fare» e le ho salvate su GitHub. Qui sotto la domanda riscritta più chiara.
 
 ## Domande a Mario
 
-❓ DOMANDE
-🛑 DOMANDA 1 · C140, dove facciamo le prove?
-A cosa serve: decidere dove si fanno le prove prima di pubblicare l'app.
-1. Resta pubblico, prove solo su GitHub gratis.
-2. Resta pubblico, prove sul tuo PC. Rischio: un estraneo può far girare il suo codice sul tuo PC.
-3. Diventa privato, prove prima sul tuo PC e poi su GitHub (consiglio).
+❓ **DOMANDA 1** · Posso modificare le regole automatiche del progetto?
+📌 Di cosa parliamo: sono i file che controllano da soli il mio lavoro. Li vedi solo su GitHub, non nell'app. Senza il tuo ok scritto non posso toccarli. Mi servono adesso per due cose:
+- accendere la difesa che ferma i salvataggi che pubblicherebbero l'app senza il tuo ok (è l'errore di oggi con la pagella);
+- aggiornare il kit di regole all'ultima versione, che sa già mandare i giri di prova al tuo PC di casa.
 
-Se scegli 3 ti mando i passi. Prima rendi privato il progetto, ci vogliono un paio di minuti. Poi installiamo il motore sul PC.
+1 · ok: accendo la difesa, aggiorno il kit e ti mostro un salvataggio di prova bloccato (consiglio) · 2 · …
