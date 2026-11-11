@@ -1961,7 +1961,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       fitRic({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 }), fitRic({ kcal: 200, prot: 6.3, saturi: 0.3, zuc: 18.7, sodio: 176 }), rigaFit({ kcal: 180, prot: 16, saturi: 1, zuc: 5, sodio: 150 }),
       /* C131 P1 (Mario 10/11): saturi 12,4% e sodio 780 entrano; saturi 13,5% o sodio 820 no */
       fitRic({ kcal: 400, prot: 30, saturi: 5.5, zuc: 2, sodio: 780 }), fitRic({ kcal: 400, prot: 30, saturi: 6, zuc: 2, sodio: 780 }), fitRic({ kcal: 400, prot: 30, saturi: 5.5, zuc: 2, sodio: 820 })]);
-    if (JSON.stringify(prof) !== '["pasto",false,"snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto",false,false]') throw new Error('C125 soglie: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
+    /* C141 (Mario 11/11 «fai passare tutte le ricette proteiche»): entra chi ha almeno il 20% delle calorie dalle proteine e 8 g; il resto lo dice la pagella */
+    if (JSON.stringify(prof) !== '["pasto","pasto","snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto","pasto","pasto"]') throw new Error('C141 regola d\'entrata: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
+    const pag = await page.evaluate(() => [{ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }, { kcal: 458, prot: 24.4, saturi: 6.5, zuc: 2.8, sodio: 463 }, { kcal: 150, prot: 10, saturi: 0.5, zuc: 2, sodio: 100 }, { kcal: 300, prot: 12, saturi: 1, zuc: 5, sodio: 100 }]
+      .map(n => { const p = pagellaRic(n); return p.voto + ':' + p.voci.map(x => x.c).join('') + ':' + fitRic(n); }));
+    if (JSON.stringify(pag) !== '["8:vgvvg:pasto","5:ggrvg:pasto","10:vvvvv:snack","7:rvvvv:false"]') throw new Error('C141 pagella: voti o semafori sbagliati: ' + JSON.stringify(pag));
     /* portata del motore («Primi piatti») sotto il filtro «Primi»; la carta di RicetteFit col suo nome */
     await page.evaluate(() => { UI.ric.cat = 'primi'; render(); });
     let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$|rf$/.test(n)));

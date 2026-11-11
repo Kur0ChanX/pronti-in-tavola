@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "6979bdc9294b",
 "giorno": "2026-11-11",
-"turni": 9,
-"peso": 470815,
-"uscita": 12246,
-"contesto_max": 123720,
+"turni": 11,
+"peso": 1002559,
+"uscita": 26872,
+"contesto_max": 165398,
 "anomalie": [],
 "blocchi": {
 "Stop 6 · Il turno finisce con una": 2,
@@ -26,8 +26,8 @@
 },
 "remota": "01WTjqUu7eAD",
 "aiutanti": 0,
-"strumenti": 31,
+"strumenti": 58,
 "motori": {
-"opus": 470815
+"opus": 1002559
 }
 }
