@@ -1,24 +1,24 @@
-# Ultima risposta di Claude (11/11/2026 18:49 ora italiana)
+# Ultima risposta di Claude (11/11/2026 19:08 ora italiana)
 
-✅ FATTO
-- **Proteiche ora ha 407 ricette**: le 200 di prima più **207 con valori stimati**. I dolci sono 147.
-- Ogni carta ha «Voto N» e 5 pallini colorati. Le ricette stimate hanno «≈ … stimati».
-- Dentro una ricetta stimata ci sono la pagella e gli ingredienti. Per i passi c'è un tasto che apre Cookpad, o il video di YouTube.
-- Le prove del ricettario sono tutte verdi, compresa quella nuova delle stimate. Il giro completo delle prove gira adesso. Tutto è salvato su GitHub.
+Ho capito: vuoi i giri di prova prima sul tuo PC NZXT di casa, poi su Blacksmith, poi su GitHub gratis.
+🧠 Opus · Extra
 
-Voti oggi: 55 ricette hanno 10, 67 hanno 9, 209 hanno 8. Le altre (76) vanno da 3 a 7.
+🛑 Ancora aperta: le foto della pagella delle Proteiche (già online). 1 = va bene · 2 = cambia qualcosa.
+🛑 Salvagente: scegli da 1 a 4 come usare il PC di casa per far ripartire l'app se Cloudflare o Firebase si fermano.
 
 ───
-💡 PARERE
-- Le stimate non …
+✅ FATTO
+- **Prove dell'app**: le ho fatte girare tutte, 95 su 95 verdi. L'app online con la pagella è a posto.
+- **Prova del Ricettario sistemata**: falliva solo quando girava da sola. La guida del primo avvio («Avanti») copriva la Home. Ora è verde …
 
 ## Domande a Mario
 
 ❓ DOMANDE
 
-**DOMANDA 1** · Le foto qui sopra (1-4) vanno bene?
-**A cosa serve:** senza il tuo ok non pubblico la novità nell'app vera.
-1. Va bene, pubblica **(mio consiglio)**
-2. Cambia qualcosa: dimmi cosa
+**DOMANDA 1** 🛑 · Dove girano le prove di Pronti in Tavola?
+📌 Di cosa parliamo: le prove automatiche di GitHub per questa app (oggi: messa online e pulizia notturna). Il progetto è pubblico.
+**A cosa serve:** decidere se il tuo PC entra nei giri di questo progetto.
+1 · Qui solo GitHub gratis, senza limite. Il PC di casa per i progetti privati **(mio consiglio: zero rischi, zero costi)**
+2 · Anche qui prima il PC di casa. Ti guido a bloccare le modifiche degli estranei, poi mi mandi la foto della pagina dei motori (Impostazioni → Actions → Runners).
 
-⚠️ Aspettano te: 11 · foto pagella, giri di prova, Salvagente 🛑, contatore Cloudflare…
+**DOMANDA 2** · Accendo la …
