@@ -57,12 +57,12 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal regis
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-10 19:22 · [AVVIO] Sessione #56 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
-- 2026-11-11 05:07 · dimmi cosa devo fare → 
-- 2026-11-11 06:13 · ora? → 
-- 2026-11-11 06:16 · Jurisdiction o standard? → 
-- 2026-11-11 06:17 · fatto ora? → 
-- 2026-11-11 06:20 · https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[… → 
+- 2026-11-10 19:22 · [AVVIO] Sessione #56 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto, sveglia 01:05 (server ripartito 01:26, PT E63)
+- 2026-11-11 05:07 · dimmi cosa devo fare → passi del cassetto C135
+- 2026-11-11 06:13 · ora? → guida corretta (menù Storage & databases), GUIDE-GIUSTE
+- 2026-11-11 06:16 · Jurisdiction o standard? → risposta: standard
+- 2026-11-11 06:17 · fatto ora? → ID dall'indirizzo della pagina
+- 2026-11-11 06:20 · https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[… → ID in wrangler.jsonc, deploy rosso 10041, tolto; chiesta foto Workers & Pages
 
 Ultimo, intero:
 > https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[segreto tolto dalla scorta]/settings
