@@ -110,3 +110,8 @@ Con le 191 proteiche nuove la foto di «🌅 Colazione» mostrava «Pollo allo y
 - (testo intero tolto da ERRORI.md l'11/11 #60) - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓» (lì il controllo vuole la domanda intera: «📌 Di cosa parliamo», scelte «1 · …», foto; sennò fa riscrivere e Mario legge due volte).
 
 - 11/11 17:43 (#61) PT E28 ripetuto: ho aperto il modulo della chiave YouTube (`request_credential`) mentre Mario era al telefono; l'app dice «Questa richiesta non può essere approvata dal telefono» (foto `archivio/foto/2026-11-11-1743-modulo-solo-computer.jpg`). Causa: non ho riletto PT E28 prima di chiedere una chiave. Difesa: la riga E28 ora nomina `request_credential`.
+
+## PT E70 · 11/11 #63 · prova C55 rossa da sola (C142)
+- Sintomo: `SOLO=C55 node tools/prova.js` rossa («.ric-home» non si tocca), nel giro completo verde (95/95).
+- Causa provata (log intero di Playwright): `#guida` del primo avvio di Monica («Avanti») copriva la Home; nel giro la chiude prima «Monica: notifica e guida». Il vapore dell'apertura NON era la causa (provato).
+- Difesa: la C55 mette `P.guida = true` nella sua preparazione. In più: i timer da 120 s di `passo` ora hanno `.unref()` (prima il giro restava acceso ~2 minuti a vuoto dopo l'ultima prova).
