@@ -2,23 +2,35 @@
 "account": "108763",
 "sessione": "8c017f12ddcb",
 "giorno": "2026-11-11",
-"turni": 1,
-"peso": 117691,
-"uscita": 2984,
-"contesto_max": 99017,
-"anomalie": [],
+"turni": 7,
+"peso": 980923,
+"uscita": 22824,
+"contesto_max": 233173,
+"anomalie": [
+"1 uscite di strumento enormi (233 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+],
 "remota": "01WTjqUtkYee",
 "aiutanti": 0,
-"strumenti": 5,
+"strumenti": 36,
 "motori": {
-"opus": 117691
+"opus": 980923
 },
 "blocchi": {
-"Stop 5 · Domanda a Mario poco chiara": 1
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 13 · There are uncommitted changes in": 5,
+"Stop 6 · Il turno finisce con una": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": [
 "11:00 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: C135. Risc"
+],
+"Stop 13 · There are uncommitted changes in": [
+"12:24 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"12:35 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"12:45 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 6 · Il turno finisce con una": [
+"11:46 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
 ]
 }
 }
