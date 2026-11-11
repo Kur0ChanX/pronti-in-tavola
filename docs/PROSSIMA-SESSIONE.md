@@ -13,5 +13,5 @@ Scritta da: #66 per la #67 · 11/11/2026 · la apre la #66 con `create_session` 
 ## Testo da incollare
 ```
 [AVVIO] Sessione #67 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
-Leggi CLAUDE.md, docs/ERRORI.md e docs/PASSAGGIO-CONSEGNE.md; continua da sola dai «Prossimi passi».
+⛔ NON unire la scorta 01WTjqUup234 (codice C144 non approvato: pubblicherebbe, PT E69). Leggi CLAUDE.md, docs/ERRORI.md e docs/PASSAGGIO-CONSEGNE.md; continua da sola dai «Prossimi passi».
 ```

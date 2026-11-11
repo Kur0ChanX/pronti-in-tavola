@@ -39,6 +39,7 @@ Sessione attuale: #67 (dopo la #66 `session_01WTjqUup234iNMuPGR7huag`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
+⛔ NON unire la scorta `scorta-principale-20261111-01WTjqUup234` anche se l'hook d'avvio lo dice: contiene il codice C144 NON approvato (= `c144-app.patch`, 6 file identici); unirla e fare push PUBBLICA l'app (PT E69). Si toglie da sola quando la patch viene applicata e pubblicata.
 00. Avvio: Mario 22:50 «si» letto come «vai» (DOMANDA 2): la #66 ha aperto la #67 con la scorta = patch C144 (controllo FALSO accettato). Dirlo a Mario in una riga. Poi C146 per primo (Mario lo boccia così com'è: «non hanno senso»), poi C145, poi una sola serie di foto per C144+C145+C146.
 0b. C145 (Mario 22:47): `CANALI` + rilancio con `--elenco` e lettura a occhio del suo canale; `ricette-video.js` nuovo dentro la patch di C144 (rifarla), foto in più col secondo riquadro; una domanda sola a Mario per C144+C145.
 0. Consegne FERME alla fase 4 (`consegne.py controlla`: «scorta non unita» FALSO; la scorta della #66 ha il codice C144 = patch, 6 file su 6 identici, controllato in una copia di lavoro). DOMANDA 2 a Mario: «1/vai» → la #66 apre la #67 con `create_session`; «2» → la #66 pubblica al «1» delle foto e poi passa. DOMANDA 3: «1» → `tools/consegne.py`: una scorta i cui file diversi sono uguali a HEAD + una patch di `docs/lavori-in-corso/` conta come salvata (prova nuova).
