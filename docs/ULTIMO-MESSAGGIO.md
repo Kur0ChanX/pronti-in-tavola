@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (11/11/2026 06:13 ora italiana)
+# Ultimo messaggio di Mario (11/11/2026 06:20 ora italiana)
 
-ora?
+https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[segreto tolto dalla scorta]/settings
