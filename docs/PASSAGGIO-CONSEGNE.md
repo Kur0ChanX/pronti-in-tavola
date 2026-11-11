@@ -42,7 +42,7 @@ Sessione attuale: #68 (dopo la #67 `session_01WTjqUwz4Kr6fArhFSzcogf`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-00. Mario 11/11 ~23:09 «ok consiglio» = «1» alla DOMANDA 4: la #67 ha aperto la #68 con la scorta = patch (controllo FALSO accettato). DOMANDA 3 resta aperta. Dirlo a Mario in una riga.
+00. Mario 12/11 ~00:08 «ok consiglio» = «1» alla DOMANDA 4: la #67 ha aperto la #68 con la scorta = patch (controllo FALSO accettato). DOMANDA 3 resta aperta. Dirlo a Mario in una riga.
 ⛔ NON unire le scorte `scorta-principale-20261111-01WTjqUup234` (#66) e quella della #67 (`01WTjqUwz4`): contengono codice dell'app NON approvato (= `c144-app.patch`); unirle e fare push PUBBLICA l'app (PT E69).
 1. FOTO per Mario (skill `foto`, PT E58): `git apply docs/lavori-in-corso/c144-app.patch`, `python3 -I tools/anteprima.py`, `SOLO=C14 node tools/prova.js`; foto: riquadri dei 2 youtuber, una ricetta di Beardedscara (passi + valori), una stimata di Cookpad coi passi, il video aperto dentro l'app (C147; nel contenitore YouTube può non caricarsi: dirlo). Poi `git checkout --` dei 6 file e `rm ricette-video.js` (MAI commit dei `.js`). Una sola 🛑 DOMANDA a Mario per C144-C147 al posto della riga 🛑 C144 di «Aspetta Mario»; titolo giallo.
 2. Al «1» di Mario: `git apply` della patch, anteprima, giro completo `node tools/prova.js` (0 «NO»), commit e push (pubblica), `curl` di `ricette-video.js` e `ricette-stimate.js` dal sito, `git rm` della patch, v0.10.24 con le novità; Mario prova C147 sul suo Android (YouTube dentro l'app).
@@ -67,7 +67,7 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
 - 2026-11-11 22:52 · [AVVIO] Sessione #67 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; C146, C145 nella patch c144 (commit b4c9f0b0, d5b11e04)
 - 2026-11-11 22:54 · metti i video che partono da lì → C147 (patch c144, prova verde; foto alla #68)
-- 2026-11-11 23:09 · ok consiglio → risposta alla DOMANDA 4 («1»): #68 aperta
+- 2026-11-12 00:08 · ok consiglio → risposta alla DOMANDA 4 («1»): #68 aperta
 
 Ultimo, intero:
 > metti i video che partono da lì
