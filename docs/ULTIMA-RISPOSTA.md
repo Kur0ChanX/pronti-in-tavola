@@ -1,31 +1,25 @@
-# Ultima risposta di Claude (11/11/2026 19:22 ora italiana)
+# Ultima risposta di Claude (11/11/2026 20:00 ora italiana)
 
-Ho capito: proponi di rendere privato Pronti in Tavola e di fare le prove sul tuo PC.
+🧠 Continuo con Opus 5.5 · impegno Extra, come la sessione precedente.
+
+🛑 Ti aspetta ancora la pagella delle Proteiche (C141): rispondi 1 = va bene · 2 = cambia.
+🛑 Ti aspetta ancora la scelta sul PC di casa come riserva (Salvagente 4): 1, 2, 3 o 4.
 
 ───
 ✅ FATTO
-- Ho scritto la tua proposta nel lavoro C140 ed è salvata su GitHub (commit `d59b6f4c`).
-
-───
-💡 PARERE
-È una buona idea e te la consiglio.
-
-| Cosa | Oggi (pubblico) | Privato |
-|---|---|---|
-| Chi vede codice e documenti | tutti | solo tu e Claude |
-| Prove sul tuo PC | rischioso | sicuro (lo consiglia anche GitHub) |
-| Minuti di GitHub | senza limite | 2.000 al mese gratis |
-| App di Monica e dei clienti | — | non cambia niente |
-
-- Ho controllato: nessun pezzo dell'app legge i file da GitHub. …
+- La sezione «🎬 Ricette video» è pronta: **201 ricette** di Massimo Pietrobon Gobbi, divise per tipo (Pancake 50, Porridge 33…). Le 4 foto sono qui sopra.
+- 133 ricette hanno i valori scritti da lui, 43 hanno valori stimati, 25 non hanno valori.
+- Ho dato nomi chiari, per esempio «Pancake con uova e albumi». Ho tolto 7 video doppi.
+- …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-🛑 DOMANDA 1 · C140, dove facciamo le prove?
-A cosa serve: decidere dove si fanno le prove prima di pubblicare l'app.
-1. Resta pubblico, prove solo su GitHub gratis.
-2. Resta pubblico, prove sul tuo PC. Rischio: un estraneo può far girare il suo codice sul tuo PC.
-3. Diventa privato, prove prima sul tuo PC e poi su GitHub (consiglio).
+**DOMANDA 1 🛑** · Ricette video (foto 1-4)
+A cosa serve: la pubblico solo come la vuoi tu.
+1 = va bene, la pubblico · 2 = cambia (dimmi cosa).
 
-Se scegli 3 ti mando i passi. Prima rendi privato il progetto, ci vogliono un paio di minuti. Poi installiamo il motore sul PC.
+**DOMANDA 2** · Sessione nuova
+A cosa serve: questa chat è quasi alla soglia dei token. Un controllo del passaggio di consegne è FALSO e la regola bloccata vuole il tuo ok.
+Il motivo: la mia copia automatica contiene il codice delle Ricette video non ancora pubblicato. L'ho confrontato con la patch salvata: i 6 file sono identici, non si perde niente.
+1 = «vai», apro la #67 e le passo la tua risposta sulle foto · 2 = resto qui, pubblico qui …
