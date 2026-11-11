@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-09 10:23 · 01WTjqUwCuTd
-nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me mettimi un procione nel mio nome, dopo il mio nome, nel mio utente, Monica mettili dopo il suo nome e metti un cuoricino rosso.
-
 ## 2026-11-09 10:56 · 01WTjqUwCuTd
 Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
 
@@ -146,3 +143,6 @@ passo 2 della guida
 
 ## 2026-11-11 17:16 · 01WTjqUuVtcn
 Per i dolci cerca diversi dolci con la crema proteica, magari fatta con lo shake, con gli shaker, ricette con albumi, con yogurt greco, con magari Philadelphia proteica, insomma con tutte questi prodotti proteici, magari fare che cercare un 200 ricette così. Ti avevo mandato anche un link di uno youtuber, non mi hai più risposto.
+
+## 2026-11-11 17:21 · 01WTjqUuVtcn
+Facciamo che apriamo le porte, facciamo allora la regola o la risposta 1, ma che apriamo le porte a tutto ciò che non è magari segnato con i valori, però se guardiamo i siti di fitness e i canali fitness non ci può dare delle ricette che non siano fitness, ecco, però magari facciamo una categoria a parte, sempre su proteiche, però magari mettiamo valori non verificati, così apriamo tantissime ricette. Io direi di ne possiamo aggiungere 500, non solo, metti tantissimi dolci, magari metti un 50% dolci, tutto il resto primi, secondi, post allenamento e quant'altro. Ma stai attento che magari se in un dolce c'è scritto cetriolo, yogurt non è un dolce, cioè il cetriolo non fa parte dei dolci, stai attento a quello. Io direi sì, un 50% tra merende, snack, dolci, e gli altri, cioè nel senso, metti più dolci, per farlo in breve, metti più dolci e meno primi e secondi, però metteli anche quelli, sempre con ricette, anche con valori non verificati, prova a stimarli tu, e dello youtuber magari qualche valore lo dice lui.
