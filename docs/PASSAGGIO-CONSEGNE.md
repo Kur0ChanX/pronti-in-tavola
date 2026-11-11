@@ -42,7 +42,8 @@ Sessione attuale: #58 (dopo la #57 `session_01WTjqUuGgdEp6b8Lnd8vrPB`, chiusa al
 ## Prossimi passi
 0. Avvio leggero (PT E61). Controlla il giro «Pubblica sito» di d99687a verde.
 1. Mario manda l'indirizzo del cassetto nuovo (C135) → `wrangler.jsonc`, push, giro verde, `/api/stato` riserva accesa; poi chiedi la foto Notifiche → «🛟 Corsia d'emergenza pronta» + «🧪 Prova».
-2. Mario risponde alla DOMANDA C139 (1 = Claude cerca e mette le ricette in un file statico del sito, zero letture; 2 = solo app; 3 = tutte e due). Con 1 o 3: piano corto in `c139-…md` (file JSON in `FILE_APP` di `tools/sito.py` e `GUSCIO` di `sw.js`, PT E38; fonti ufficiali PT E25), poi codice.
+2. ✅ Mario ha RISPOSTO (dopo l'handoff, nella 57): «Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto 
+cerca da varie fonti» = strada 1. Era: DOMANDA C139 (1 = Claude cerca e mette le ricette in un file statico del sito, zero letture; 2 = solo app; 3 = tutte e due). Con 1 o 3: piano corto in `c139-…md` (file JSON in `FILE_APP` di `tools/sito.py` e `GUSCIO` di `sw.js`, PT E38; fonti ufficiali PT E25), poi codice.
 3. Foto di Mario della conferma in Proteiche («🔍 Cerca altre») per chiudere la promessa C139.
 
 ## Domande aperte
