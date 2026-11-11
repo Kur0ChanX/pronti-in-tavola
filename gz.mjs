@@ -14,6 +14,20 @@ export function urlGz(u) {
     return SITO_GZ + x.pathname.slice(1);
   } catch (e) { return ''; }
 }
+/* C139 (Mario 11/11 «cerca dei siti o portali famosi con ricette fitness»): Blog di GialloZafferano, id «bg:<blog>/<ricetta>».
+   Stesse pagine (JSON-LD Recipe, valori per porzione quando il blogger li calcola): le legge gzRicetta. Solo blog.giallozafferano.it. */
+export const SITO_BG = 'https://blog.giallozafferano.it/';
+export function urlBg(u) {
+  try {
+    const x = new URL(String(u || '')), m = /^\/([a-z0-9-]+)\/([\w%-]+)\/?$/i.exec(x.pathname);
+    if (x.protocol !== 'https:' || x.hostname !== 'blog.giallozafferano.it' || !m || /^(community|wp-content|tag|category)$/.test(m[1])) return '';
+    return SITO_BG + m[1].toLowerCase() + '/' + m[2] + '/';
+  } catch (e) { return ''; }
+}
+export const idBg = u => { const x = urlBg(u); return x ? 'bg:' + x.slice(SITO_BG.length, -1) : ''; };
+export const urlDaIdBg = id => /^bg:[a-z0-9-]+\/[\w%-]+$/i.test(String(id || '')) ? urlBg(SITO_BG + String(id).slice(3) + '/') : '';
+/* le ricette dei blog che la ricerca di GialloZafferano mostra fra le sue (senza doppioni) */
+export const bgCerca = html => [...new Set([...String(html || '').matchAll(/href="(https:\/\/blog\.giallozafferano\.it\/[^"#?]+)"/g)].map(m => urlBg(m[1])).filter(Boolean))];
 
 const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', egrave: 'è', eacute: 'é', agrave: 'à', ograve: 'ò', ugrave: 'ù', igrave: 'ì', deg: '°', rsquo: '’', lsquo: '‘', hellip: '…',
   Egrave: 'È', Eacute: 'É', Agrave: 'À', Ograve: 'Ò', Ugrave: 'Ù', Igrave: 'Ì', ldquo: '“', rdquo: '”', laquo: '«', raquo: '»', ndash: '–', mdash: '—', euro: '€',
@@ -106,7 +120,7 @@ export function gzRicetta(html, url) {
   const porzioni = parseInt(String([].concat(ld.recipeYield || '')[0]).replace(/\D+/g, ' ').trim(), 10) || 4;
   return {
     v: 4,   // 4 = C83 (niente domande né pubblicità nell'ultimo passo, lettere accentate); 3 = passi coi numerini delle foto e tutti i paragrafi (C72): le copie vecchie sui telefoni si rileggono
-    id: 'gz:' + url.replace(SITO_GZ, '').replace(/\.html$/, ''),
+    id: urlBg(url) ? idBg(url) : 'gz:' + url.replace(SITO_GZ, '').replace(/\.html$/, ''),   // C139: anche i Blog di GialloZafferano
     url, nome: testo(ld.name), intro: (sezione(html, 'PRESENTAZIONE') || testo(ld.description)).split(/\n(?=Ecco|Scopri|Leggi|Prova anche|Se ti piac)/)[0].trim(),
     foto: assoluto(primaFoto(ld.image)), categoria: testo([].concat(ld.recipeCategory || '')[0]),
     porzioni, prep: minutiIso(ld.prepTime), cottura: minutiIso(ld.cookTime), totale: minutiIso(ld.totalTime),
