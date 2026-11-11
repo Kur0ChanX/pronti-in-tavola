@@ -1,31 +1,20 @@
-# Ultima risposta di Claude (11/11/2026 19:22 ora italiana)
+# Ultima risposta di Claude (11/11/2026 23:07 ora italiana)
 
-Ho capito: proponi di rendere privato Pronti in Tavola e di fare le prove sul tuo PC.
+Ho capito: vuoi che il video parta toccando la foto della ricetta, dentro l'app, e non che si apra YouTube fuori.
+🧠 Opus · Extra, come la sessione precedente.
 
-───
-✅ FATTO
-- Ho scritto la tua proposta nel lavoro C140 ed è salvata su GitHub (commit `d59b6f4c`).
-
-───
-💡 PARERE
-È una buona idea e te la consiglio.
-
-| Cosa | Oggi (pubblico) | Privato |
-|---|---|---|
-| Chi vede codice e documenti | tutti | solo tu e Claude |
-| Prove sul tuo PC | rischioso | sicuro (lo consiglia anche GitHub) |
-| Minuti di GitHub | senza limite | 2.000 al mese gratis |
-| App di Monica e dei clienti | — | non cambia niente |
-
-- Ho controllato: nessun pezzo dell'app legge i file da GitHub. …
+✅ FATTO (pronto ma **non pubblicato**: aspetta le tue foto)
+- **C147** Tocchi la foto e il video parte dentro l'app, grande sopra la ricetta. «✕» o il gesto indietro lo chiudono. Se arriva un ordine, il video continua.
+- **C146** Le ricette di Cookpad e del blog ora hanno i **passi** nell'app, con «Ascolta»: 206 su 207 (100 anche con le foto dei passi). L'unica senza passi né video è stata tolta.
+- **C145** Beardedscara aggiunto in «🎬 …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-🛑 DOMANDA 1 · C140, dove facciamo le prove?
-A cosa serve: decidere dove si fanno le prove prima di pubblicare l'app.
-1. Resta pubblico, prove solo su GitHub gratis.
-2. Resta pubblico, prove sul tuo PC. Rischio: un estraneo può far girare il suo codice sul tuo PC.
-3. Diventa privato, prove prima sul tuo PC e poi su GitHub (consiglio).
+🛑 **DOMANDA 4**: la sessione è al limite e il controllo del passaggio di consegne ne segna uno **FALSO**.
+- A cosa serve: la sessione nuova riparte pulita e ti fa le foto di C144-C147 insieme.
+- Contesto: il falso è la copia automatica di questa sessione. L'ho controllata: gli 8 file di codice sono identici alla patch salvata, quindi non si perde nulla.
+- **1** = apro lo stesso la sessione nuova (#68) *(consiglio)*
+- **2** = aspetto
 
-Se scegli 3 ti mando i passi. Prima rendi privato il progetto, ci vogliono un paio di minuti. Poi installiamo il motore sul PC.
+Promemoria: 🛑 DOMANDA 3 della #66. Con «1» questo controllo non si fermerà più.
