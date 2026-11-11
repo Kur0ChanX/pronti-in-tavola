@@ -17,7 +17,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C141 | (Mario 11/11 sera, risposta 1) 500 proteiche con valori stimati, metà dolci/merende/snack, fonti fitness (blog GZ, Cookpad, YouTube Pietrobon), niente cetriolo nei dolci: `docs/lavori-in-corso/c141-proteiche-stimate.md`. 👁 Lo vedi: Proteiche → «🧪 Valori stimati» con ~500 ricette, ~250 dolci · prova: tua foto | Claude | 🟡 |
+| C141 | (Mario 11/11 sera, risposta 1) 500 proteiche con valori stimati, metà dolci/merende/snack, fonti fitness (blog GZ, Cookpad, YouTube Pietrobon), niente cetriolo nei dolci: `docs/lavori-in-corso/c141-proteiche-stimate.md`. 👁 Lo vedi: in chat l'esito della prova chiave YouTube (sessione Aiuto 11, var YOUTUBE_API_KEY); poi Proteiche → «🧪 Valori stimati» con ~500 ricette, ~250 dolci · prova: tua foto | Claude | 🟡 |
 | C140 | (Mario 11/11 ~11:45) Giri di prova: PC di casa → Blacksmith → GitHub, pubblici sempre GitHub, per tutti i progetti: `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`. 👁 Lo vedi: un giro che parte sul PC di casa e, col PC occupato, su Blacksmith · prova: tua foto delle Actions | Claude | 🟡 |
 | C139 | (Mario 11/11) Ricette senza consumi + 200 proteiche nel file del sito: `docs/lavori-in-corso/c139-ricette-senza-consumi.md`. 👁 Lo vedi: Proteiche → «🔍 Cerca altre» chiede conferma con «Cloudflare»; Home → Proteiche ~200 in più, coi momenti Dolci (~20+), Spuntino, Merenda, Colazione, Dopo l'allenamento · prova: foto di Mario | Claude |
 | C138 | (Mario 10/11 18:30 «server nel mio PC… come salvagente») Salvagente in casa: 3 strade in `docs/lavori-in-corso/c138-salvagente-in-casa.md`, solo piano. 👁 Lo vedi: le 3 strade in chat, poi il piano scritto · prova: tua lettura | Claude (Salvagente 3) | 🟡 |
