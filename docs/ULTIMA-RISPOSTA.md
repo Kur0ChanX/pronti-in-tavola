@@ -1,16 +1,15 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:43 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
-
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
+Ho capito: l'app ti chiede di approvare il modulo, ma dal telefono non si può.
 
 ───
-✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
+⚠️ ATTENZIONE
+- Errore mio: il modulo della chiave si approva **solo dal computer**. Dovevo dirtelo prima: era già scritto nel diario degli errori (PT E28).
+- Difesa: ora quella regola nomina anche il modulo della chiave, così non ricapita.
 
 ───
-💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+👉 DA FARE TU
+A cosa serve: salvare la chiave in un posto sicuro, dove io non la vedo mai.
+1. Sul telefono tocca «Nega»: non si rompe niente.
+2. La chiave resta su Google, non si perde. Puoi chiudere quella pagina.
+3. Quando sei al computer, apri questo link e apri …
