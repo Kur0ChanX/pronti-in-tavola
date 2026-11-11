@@ -3,7 +3,7 @@
 ## Parole di Mario (11/11 ~11:45, Principale 58, intere)
 «Domanda, puoi fare in modo che tutti i progetti possano passare per il mio GitHub a casa, che ho creato un server, se provano inizialmente il mio server del PC a casa per fare i giri di prova su GitHub, se è occupato da un altro progetto che non c'è spazio passano a Blacksmith, se ho finito i crediti di Blacksmith passa a GitHub server normale, quello con quello il server gratuito, ecco, con i limiti per chi ce li ha, per chi ha un progetto privato, chi ce l'ha pubblico invece è un altro discorso.»
 
-## Parole di Mario (11/11 ~20:10, Principale 63, intere)
+## Parole di Mario (11/11 ~19:06, Principale 63, intere)
 «devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito»
 
 ## Fatti (manuali GitHub letti l'11/11/2026)

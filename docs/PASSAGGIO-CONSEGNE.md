@@ -1,10 +1,10 @@
 # Passaggio di consegne
 
-Sessione attuale: #64 (dopo la #63 `session_01WTjqUvCWdASm6EXuq3bu3x`, chiusa 11/11 ~20:10 in attesa delle risposte, oltre 180k (C455); la apre la #63 con `create_session` (catena 3 di 8)).
+Sessione attuale: #64 (dopo la #63 `session_01WTjqUvCWdASm6EXuq3bu3x`, chiusa 11/11 ~19:10 in attesa delle risposte, oltre 180k (C455); la apre la #63 con `create_session` (catena 3 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (11/11 #63):** 1) 🛑 foto della pagella (C141, già ONLINE, PT E69): «1» = va bene, «2» = cosa cambiare; 2) 🛑 C140: Mario 20:06 «prima il PC NZXT di casa, poi Blacksmith, poi GitHub gratis» → DOMANDA 1 della #63 (progetto PUBBLICO: 1 qui solo GitHub, 2 anche qui il PC); 3) DOMANDA 2 della #63: ok per accendere la difesa C143 (`.claude/`, RVC E59); 4) più ricette proteiche (dolci) coi valori stimati.
+- **Cosa preme a Mario adesso (11/11 #63):** 1) 🛑 foto della pagella (C141, già ONLINE, PT E69): «1» = va bene, «2» = cosa cambiare; 2) 🛑 C140: Mario 19:06 «prima il PC NZXT di casa, poi Blacksmith, poi GitHub gratis» → DOMANDA 1 della #63 (progetto PUBBLICO: 1 qui solo GitHub, 2 anche qui il PC); 3) DOMANDA 2 della #63: ok per accendere la difesa C143 (`.claude/`, RVC E59); 4) più ricette proteiche (dolci) coi valori stimati.
 
 ## Stato (11/11 19:09 ora italiana)
 - Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice **0.10.23** (non alzata: aspetta il «1» sulle foto). Scorte NON unite: scorta-principale-20261111-01WTjqUvCWdA/claude/pronti-ramo-definitivo.
@@ -24,7 +24,7 @@ Sessione attuale: #64 (dopo la #63 `session_01WTjqUvCWdASm6EXuq3bu3x`, chiusa 11
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
 
 ## Sessione appena chiusa (#63)
-- Scorta della #62 unita; giro completo 95/95; C142 chiusa (guida del primo avvio copriva la Home, PT E70) e timer delle prove con `.unref()`; C143 come patch (manca l'ok); C140: progetto pubblico, DOMANDA 1 🛑 e DOMANDA 2 (C143) mandate a Mario ~20:10.
+- Scorta della #62 unita; giro completo 95/95; C142 chiusa (guida del primo avvio copriva la Home, PT E70) e timer delle prove con `.unref()`; C143 come patch (manca l'ok); C140: progetto pubblico, DOMANDA 1 🛑 e DOMANDA 2 (C143) mandate a Mario ~19:10.
 
 ## Sessione prima (#62)
 - Chiave YouTube (PT E68); C141 regola larga + pagella + 207 stimate ONLINE senza ok (PT E69); foto mandate.
@@ -41,10 +41,10 @@ Sessione attuale: #64 (dopo la #63 `session_01WTjqUvCWdASm6EXuq3bu3x`, chiusa 11
 4. Più stimate (`tools/stima.py`, ingredienti sconosciuti) solo dopo il «1» sulle foto.
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 12; 🛑 foto C141 e C140). Controllo Da fare: 0 voci aggiunte (la richiesta 20:06 è in C140).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 12; 🛑 foto C141 e C140). Controllo Da fare: 0 voci aggiunte (la richiesta 19:06 è in C140).
 
 ## Ultimo messaggio di Mario
-11/11 ~20:06, parola per parola: «devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito» → C140, DOMANDA 1 (progetto pubblico).
+11/11 ~19:06, parola per parola: «devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito» → C140, DOMANDA 1 (progetto pubblico).
 Prima: 18:22 «nelle ricette aggiungile tutte quante e metti un voto…» → C141 (online, foto, 🛑).
 
 ## Numeri liberi

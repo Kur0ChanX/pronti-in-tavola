@@ -39,7 +39,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E30** «Migliora» una ricetta ufficiale = completare ciò che manca, mai aggiungere; nel dubbio un esempio prima.
 - **PT E31** Misure chieste come le usa chi cucina (teglie); i conti li fa l'app.
 - **PT E32** Prima di ricordare le righe di un'altra chat: rileggere Da fare dopo l'ultimo fetch.
-- **PT E33** Orari, date e numeri noti alla macchina li prende la macchina, mai scritti a mano.
+- **PT E33** Orari, date e numeri noti alla macchina li prende la macchina, mai scritti a mano. Ricapitato (#63 «~20:06» alle 19:06): `consegne.py controlla` ferma i «gg/mm ~HH:MM» nel futuro.
 - **PT E34** Domanda di verifica: in cima SÌ/NO, quante, contro cosa, cosa resta fuori; se il controllo manca, lo faccio subito.
 - **PT E35** Controllo nuovo dentro una classe esistente: foto sul telefono prima di consegnarlo.
 - **PT E36** Ogni cosa che chiedo a Mario dice prima «A cosa serve».

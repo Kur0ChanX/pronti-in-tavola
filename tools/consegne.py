@@ -137,6 +137,14 @@ def ora_italiana(quando=None):
     return d.astimezone(tz) if tz else d
 
 
+def orari_nel_futuro(testo, adesso=None):
+    """PT E33 (#63 scrisse «11/11 ~20:06» alle 19:10): «gg/mm ~HH:MM» di oggi più tardi di adesso = orario scritto a mano sbagliato."""
+    adesso = adesso or ora_italiana()
+    oggi, minuti = adesso.strftime("%d/%m"), adesso.hour * 60 + adesso.minute
+    return [m.group(0) for m in re.finditer(r"(\d{2}/\d{2})[^\S\n]*~[^\S\n]*(\d{1,2}):(\d{2})\b", testo)
+            if m.group(1) == oggi and int(m.group(2)) * 60 + int(m.group(3)) > minuti + 5]
+
+
 def ramo_di_lavoro():
     try:
         return leggi(".claude/ramo-di-lavoro.txt").strip()
@@ -886,6 +894,9 @@ def controlla(args):
         esiti.append(("numero nuovo uguale nelle consegne e in PROSSIMA-SESSIONE", n is not None and f"#{n} " in prossima))
     parole = len(senza_sezione_msg(testo).split())  # la sezione dei messaggi la scrive lo script: non conta
     esiti.append((f"consegne entro {MAX_PAROLE} parole ({parole})", parole <= MAX_PAROLE))
+    futuri = orari_nel_futuro(testo)
+    esiti.append(("orari di oggi «~HH:MM» non nel futuro (PT E33: l'ora la dà `TZ=Europe/Rome date`)"
+                  + (f": {', '.join(futuri[:3])}" if futuri else ""), not futuri))
     esiti.append(("3 righe fisse presenti", all(k in testo for k in ("Già deciso da Mario", "Da non rifare", "Cosa preme a Mario"))))
     esiti.append(("impegno noto (registro della sessione o .claude/settings.json)", bool(impegno()[0])))
     msg = messaggi_dopo_consegne(args.registro, consegne)
