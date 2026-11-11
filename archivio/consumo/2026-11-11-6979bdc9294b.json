@@ -1,0 +1,21 @@
+{
+"account": "108763",
+"sessione": "6979bdc9294b",
+"giorno": "2026-11-11",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 84583,
+"anomalie": [],
+"blocchi": {
+"Stop 6 · Il turno finisce con una": 1
+},
+"esempi_blocchi": {
+"Stop 6 · Il turno finisce con una": [
+"17:45 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+]
+},
+"remota": "01WTjqUu7eAD",
+"aiutanti": 0,
+"strumenti": 0
+}
