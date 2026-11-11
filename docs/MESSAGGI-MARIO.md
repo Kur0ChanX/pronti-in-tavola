@@ -2,32 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-09 10:23 · 01WTjqUwCuTd
-nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me mettimi un procione nel mio nome, dopo il mio nome, nel mio utente, Monica mettili dopo il suo nome e metti un cuoricino rosso.
-
-## 2026-11-09 10:56 · 01WTjqUwCuTd
-Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
-
-## 2026-11-09 19:38 · 01WTjqUxhhMW
-principale 34 accorciare claude md Ne vale veramente la pena? Risparmiamo veramente tanti token e tanto tempo? E non c'è nessun problema assolutamente sulla lucidità? Al 100% non c'è problema?
-
-## 2026-11-09 23:51 · 01WTjqUx6Bw4
-Calcolati dagli ingredienti. La cucina è di casa: per allergie gravi chiedi a Monica.
-
-Da modificare con : Calcolati dagli ingredienti. Possono essere presenti contaminazioni, per allergie e/o intolleranze scrivimi!
-
-## 2026-11-09 23:58 · 01WTjqUx6Bw4
-quelle che separi sono sgranatissime controllale tutte se sono in hd di tutte le rivette e evita questo problema in futuro e risolvi tutte le foto in bassa qualità e riscaricale in tutte le ricette
-
-## 2026-11-10 01:10 · 01WTjqUx6Bw4
-b + migliora con ia
-
-## 2026-11-10 01:56 · 01WTjqUwXqzf
-ia delle foto sembra ok implemetala nell'app e dimmi se 5 regole non aggiungi all account
-
-## 2026-11-10 08:30 · 01WTjqUumYwY
-dimmi le regole che vuoi mettere per tutti
-
 ## 2026-11-10 11:00 · 01WTjqUxmJ9k
 deepgram fatto come valido un anno che senso ha?!?
 
@@ -146,3 +120,27 @@ passo 2 della guida
 
 ## 2026-11-11 17:16 · 01WTjqUuVtcn
 Per i dolci cerca diversi dolci con la crema proteica, magari fatta con lo shake, con gli shaker, ricette con albumi, con yogurt greco, con magari Philadelphia proteica, insomma con tutte questi prodotti proteici, magari fare che cercare un 200 ricette così. Ti avevo mandato anche un link di uno youtuber, non mi hai più risposto.
+
+## 2026-11-11 17:44 · 01WTjqUu7eAD
+chiave
+
+## 2026-11-11 17:47 · 01WTjqUu7eAD
+chiave sono al pc
+
+## 2026-11-11 17:48 · 01WTjqUu7eAD
+sono al pc fammi incollarew la chiave
+
+## 2026-11-11 17:49 · 01WTjqUu7eAD
+riprova
+
+## 2026-11-11 17:50 · 01WTjqUu7eAD
+la metto nel'ambiente
+
+## 2026-11-11 17:52 · 01WTjqUu7eAD
+fatto
+
+## 2026-11-11 17:52 · 01WTjqUu7eAD
+nell'ambiente pronti in tavola
+
+## 2026-11-11 17:53 · 01WTjqUu7eAD
+fatto
