@@ -1848,6 +1848,49 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await foto('48d-c141-ricetta-stimata');
     await page.evaluate(() => { RICETTE_STIMATE.splice(0); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC141; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C144 ricette video: bottone, riquadro per youtuber, tipi, ricetta col video su YouTube e i valori dell\'autore, senza server', async () => {   // autonomo
+    if (await page.evaluate(() => typeof RICETTE_VIDEO === 'undefined')) await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-video.js') });
+    const n = await page.evaluate(() => {
+      window.__primaC144 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
+      window.__c144 = 0; RIC.chiedi = async c => { window.__c144++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
+      salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-pref'); UI.ric = null; UI.ricVideoTipo = null; RIC.db = null; RIC.scelteOra = Date.now();
+      UI.vista = 'ricettario'; render(); return RICETTE_VIDEO.length;
+    });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    const b = await page.evaluate(() => (document.querySelector('.ric-video-link') || {}).textContent || '');
+    if (n < 150 || !/Ricette video/.test(b) || !b.includes('(' + n + ')')) throw new Error('C144: bottone «🎬 Ricette video» assente o senza il numero: ' + JSON.stringify({ n, b }));
+    await clic('.ric-video-link');
+    const au = await page.evaluate(() => ({ v: UI.vista, a: [...document.querySelectorAll('.ric-video-autore')].map(x => x.innerText) }));
+    if (au.v !== 'ricvideo' || au.a.length !== 1 || !/Massimo Pietrobon Gobbi/.test(au.a[0]) || !new RegExp(n + ' ricette video').test(au.a[0])) throw new Error('C144: riquadro dello youtuber sbagliato: ' + JSON.stringify(au));
+    await foto('48e-c144-video-youtuber');
+    await clic('.ric-video-autore');
+    const l = await page.evaluate(() => ({ v: UI.vista, carte: document.querySelectorAll('main .ric-elenco .ric-carta').length, tipi: [...document.querySelectorAll('[data-a="ric-video-tipo"]')].map(x => x.dataset.v),
+      canale: (document.querySelector('main a[href^="https://www.youtube.com/channel/"]') || {}).href || '', nomiVuoti: [...document.querySelectorAll('main .ric-carta b')].filter(x => !x.textContent.trim()).length }));
+    if (l.v !== 'ricvideo:0' || l.carte !== n || l.tipi.length < 6 || !l.tipi.includes('Pancake') || !l.canale || l.nomiVuoti) throw new Error('C144: elenco dello youtuber sbagliato: ' + JSON.stringify(l));
+    await foto('48f-c144-video-elenco');
+    await clic('[data-a="ric-video-tipo"][data-v="Pancake"]');
+    const pc = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta small:first-of-type')].map(x => x.textContent.split(' · ')[0]));
+    if (!pc.length || pc.length >= n || pc.some(t => t !== 'Pancake')) throw new Error('C144: il tipo «Pancake» non filtra: ' + JSON.stringify(pc.slice(0, 5)));
+    // una coi valori dell'autore e senza ingredienti scritti: video su YouTube, «Valori scritti da…», niente Ingredienti; «Indietro» torna all'elenco
+    const id1 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.suoi && !x.ingredienti.length && x.tipo === 'Pancake') || {}).id);
+    await clic(`main .ric-carta[data-v="ricetta:${id1}"]`);
+    const d1 = await page.evaluate(() => ({ yt: (document.querySelector('main a.ric-yt') || {}).href || '', suoi: (document.querySelector('.ric-suoi') || {}).innerText || '', ing: !!document.querySelector('.ric-ing'),
+      kcal: (document.querySelector('.ric-valori-griglia b') || {}).textContent, passi: (document.querySelector('main a.btn[href*="youtube.com/watch"]') || {}).textContent || '', indietro: (document.querySelector('.testata .indietro') || {}).dataset.v, server: window.__c144 }));
+    if (!/^https:\/\/www\.youtube\.com\/watch\?v=/.test(d1.yt) || !/Valori scritti da Massimo Pietrobon Gobbi/.test(d1.suoi) || d1.ing || !(Number(d1.kcal) > 0) || !/Guarda il video/.test(d1.passi) || d1.indietro !== 'ricvideo:0' || d1.server)
+      throw new Error('C144: ricetta video (valori suoi) aperta male: ' + JSON.stringify(d1));
+    await foto('48g-c144-ricetta-video');
+    // una coi soli ingredienti (≈ stimati): ingredienti, spesa, scritta «stimati»
+    const id2 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.stimata && !x.proteica && x.ingredienti.length >= 3) || {}).id);
+    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id2); await page.waitForTimeout(200);
+    const d2 = await page.evaluate(() => ({ ing: document.querySelectorAll('.ric-ing li').length, stimati: !!document.querySelector('.ric-stimati'), suoi: !!document.querySelector('.ric-suoi'), spesa: !!document.querySelector('[data-a="ric-spesa"]') }));
+    if (d2.ing < 3 || !d2.stimati || d2.suoi || !d2.spesa) throw new Error('C144: ricetta video (stimata) aperta male: ' + JSON.stringify(d2));
+    // ⭐ preferita: la ritrovo nelle Preferite del Ricettario; dal Ricettario «Indietro» torna al Ricettario
+    await clic('[data-a="ric-pref"]');
+    await page.evaluate(() => { UI.ric = null; UI.ricZona = 'pref'; UI.vista = 'ricettario'; render(); });
+    const pr = await page.evaluate(id => ({ c: !!document.querySelector(`main .ric-elenco .ric-carta[data-v="ricetta:${id}"]`), da: UI.ricVideoDa }), id2);
+    if (!pr.c || pr.da) throw new Error('C144: la preferita video non è nelle Preferite: ' + JSON.stringify(pr));
+    await page.evaluate(() => { localStorage.removeItem('pit-ric-pref'); RICETTE_VIDEO.splice(0); Object.keys(VIDEO_CACHE).forEach(k => delete VIDEO_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC144; UI.ric = null; UI.ricVideoTipo = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
