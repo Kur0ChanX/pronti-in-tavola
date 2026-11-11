@@ -1,14 +1,16 @@
-# Ultima risposta di Claude (11/11/2026 06:31 ora italiana)
+# Ultima risposta di Claude (11/11/2026 06:40 ora italiana)
 
-✅ FATTO
-- Ho collegato il tuo cassetto e ho provato a pubblicare. Cloudflare ha rifiutato: «cassetto non trovato».
-- L'app non si è rotta: online c'è ancora la versione 0.10.18, controllata.
-- Ho tolto di nuovo il collegamento, così le prossime pubblicazioni non si bloccano. Il codice del cassetto è salvato.
+Ho capito: hai aperto il menù del profilo 👤.
 
 ───
-💡 PARERE
-Le cause possibili sono due, e per ora sono solo **ipotesi** (idee non ancora provate):
-1. Il cassetto è in un account Cloudflare diverso da quello del server.
-2. La chiave che GitHub usa per pubblicare non ha il permesso di usare i cassetti.
+✅ FATTO
+- La foto spiega tutto. Sei entrato con **info.prontiintavola@gmail.com**: questo login ha solo l'account vuoto, quello del cassetto.
+- Il sito invece l'hai creato il 6/11 con un **altro login**. Dagli appunti dovrebbe essere la tua email personale, **mario.miscera@gmail.com**.
+- Ho aggiornato la guida e ho salvato le foto.
 
-Una tua foto mi dice qual è …
+───
+👉 DA FARE TU
+**A cosa serve:** entrare nel login dove c'è il sito. Solo lì il cassetto funziona.
+
+1. Nel menù che hai aperto tocca **Log out**.
+2. Rientra con **mario.miscera@gmail.com**. Se non va, usa …
