@@ -1,16 +1,13 @@
-# Ultima risposta di Claude (11/11/2026 06:40 ora italiana)
+# Ultima risposta di Claude (11/11/2026 11:00 ora italiana)
 
-Ho capito: hai aperto il menù del profilo 👤.
 
-───
-✅ FATTO
-- La foto spiega tutto. Sei entrato con **info.prontiintavola@gmail.com**: questo login ha solo l'account vuoto, quello del cassetto.
-- Il sito invece l'hai creato il 6/11 con un **altro login**. Dagli appunti dovrebbe essere la tua email personale, **mario.miscera@gmail.com**.
-- Ho aggiornato la guida e ho salvato le foto.
 
-───
-👉 DA FARE TU
-**A cosa serve:** entrare nel login dove c'è il sito. Solo lì il cassetto funziona.
+## Domande a Mario
 
-1. Nel menù che hai aperto tocca **Log out**.
-2. Rientra con **mario.miscera@gmail.com**. Se non va, usa …
+❓ DOMANDA 1 🛑
+
+📌 Di cosa parliamo: la **corsia d'emergenza** degli avvisi. È una copia di riserva che fa partire le notifiche a Monica e ai clienti anche se il server di Cloudflare ha un guasto. Adesso è spenta: il **cassetto** (un piccolo archivio di Cloudflare dove sta la copia) l'hai creato con l'account sbagliato, `info.prontiintavola`, che non contiene l'app.
+
+A cosa serve rispondere: finché manca il cassetto giusto, un guasto del server può bloccare le notifiche.
+
+1 · Ti guido io, un tocco alla volta. Esci dall'account (Log out), rientri con l'account del sito (probabilmente …
