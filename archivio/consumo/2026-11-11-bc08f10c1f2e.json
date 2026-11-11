@@ -1,0 +1,29 @@
+{
+"account": "108763",
+"sessione": "bc08f10c1f2e",
+"giorno": "2026-11-11",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 198673,
+"anomalie": [],
+"blocchi": {
+"Stop 3 · Consegne non su GitHub (C226,": 1,
+"Stop 13 · There are uncommitted changes in": 1,
+"Stop 6 · Segno delle domande nel titolo": 1
+},
+"esempi_blocchi": {
+"Stop 3 · Consegne non su GitHub (C226,": [
+"19:04 · Consegne non su GitHub (C226, blocco 1/3): docs/ERRORI-STORIA.md, docs/ERRORI.md fuori dal commit. Fai commit e push adesso (`git push -u origin claude/pronti-ramo-definitivo`), controlla `git rev-par"
+],
+"Stop 13 · There are uncommitted changes in": [
+"19:04 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"19:04 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
+]
+},
+"remota": "01WTjqUvCWdA",
+"aiutanti": 0,
+"strumenti": 0
+}
