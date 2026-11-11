@@ -1,16 +1,13 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:56 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
+Ho capito: dovevo solo controllare che la chiave YouTube funzioni e mandare l'esito alla chat principale.
 
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
-
-───
 ✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
+- La variabile `YOUTUBE_API_KEY` c'è.
+- Così com'è, la chiave **non** funziona: ha uno spazio o un "a capo" in più (40 caratteri invece di 39).
+- Con una copia senza lo spazio funziona: la ricerca "pietrobon" trova il canale «Massimo Pietrobon gobbi».
+- Ho mandato l'esito alla chat principale. La chiave non è mai comparsa in chiaro.
 
 ───
 💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+La strada più sicura sono due cose insieme. Il codice toglie da solo gli spazi in più quando legge la chiave: così anche un errore …
