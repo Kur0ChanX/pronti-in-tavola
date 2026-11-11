@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (11/11/2026 13:52 ora italiana)
+# Ultimo messaggio di Mario (11/11/2026 13:57 ora italiana)
 
-passo 2 della guida
+https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[segreto tolto dalla scorta]
