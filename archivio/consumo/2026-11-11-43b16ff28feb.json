@@ -1,0 +1,25 @@
+{
+"account": "108763",
+"sessione": "43b16ff28feb",
+"giorno": "2026-11-11",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 188199,
+"anomalie": [],
+"blocchi": {
+"Stop 5 · Foto e video (E240, E247;": 1,
+"Stop 13 · There are uncommitted changes in": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Foto e video (E240, E247;": [
+"14:07 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 13 · There are uncommitted changes in": [
+"14:07 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+]
+},
+"remota": "01WTjqUtumXX",
+"aiutanti": 0,
+"strumenti": 0
+}

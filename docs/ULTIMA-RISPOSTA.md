@@ -1,13 +1,7 @@
-# Ultima risposta di Claude (11/11/2026 13:52 ora italiana)
+# Ultima risposta di Claude (11/11/2026 14:07 ora italiana)
 
-Ho capito: sei dentro Cloudflare e vuoi il passo 2.
+Non manca nessun video: nella domanda 1, «video» sono i video YouTube di Pietrobon Gobbi. Nell'app non cambia niente che si muova, quindi non c'è nulla da filmare.
 
-───
-👉 DA FARE TU
-A cosa serve: prima di creare il cassetto controlliamo di essere nell'account giusto. L'altra volta è stato creato nell'account sbagliato e non funzionava.
+Restano 5 file dell'app non salvati con un commit, ed è voluto. Se li salvo così, il sito si pubblica subito con il lavoro a metà. Le stesse modifiche sono già su GitHub come patch (un file con l'elenco delle modifiche, da applicare dopo). I file veri li pubblico quando finisce la raccolta delle ricette e il giro completo delle prove è verde.
 
-2. Tocca il menù ☰ in alto a sinistra → **Compute** → **Workers & Pages**.
-3. Guarda l'elenco:
-   - c'è **pronti-in-tavola** → sei nell'account giusto, vai al passo 4;
-   - la pagina è vuota → in alto tocca il nome dell'account (con le freccine ⇕) e scegli l'altro. Se non c'è un altro account, mandami una foto e mi fermo.
-4. Menù ☰ → **Storage & databases** → **Workers …
+La domanda 1 su Pietrobon Gobbi resta valida: scegli 1, 2 o 3 (io consiglio 1).
