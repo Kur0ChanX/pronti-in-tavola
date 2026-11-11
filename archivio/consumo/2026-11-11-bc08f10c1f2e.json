@@ -2,16 +2,17 @@
 "account": "108763",
 "sessione": "bc08f10c1f2e",
 "giorno": "2026-11-11",
-"turni": 2,
-"peso": 0,
-"uscita": 0,
-"contesto_max": 227584,
+"turni": 3,
+"peso": 84220,
+"uscita": 1210,
+"contesto_max": 254640,
 "anomalie": [],
 "blocchi": {
 "Stop 3 · Consegne non su GitHub (C226,": 1,
 "Stop 13 · There are uncommitted changes in": 1,
 "Stop 6 · Segno delle domande nel titolo": 1,
-"Stop 6 · Il turno finisce con una": 1
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
 "Stop 3 · Consegne non su GitHub (C226,": [
@@ -25,9 +26,15 @@
 ],
 "Stop 6 · Il turno finisce con una": [
 "19:08 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"19:08 · Ti fermi ad aspettare Mario con il contesto a 230k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
 ]
 },
 "remota": "01WTjqUvCWdA",
 "aiutanti": 0,
-"strumenti": 0
+"strumenti": 2,
+"motori": {
+"opus": 84220
+}
 }
