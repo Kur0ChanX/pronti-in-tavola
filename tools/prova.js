@@ -15,7 +15,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   page.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) errori.push('console: ' + m.text()); });
   const foto = async n => page.screenshot({ path: `${OUT}/${n}.png` });
   const clic = async (sel, opz) => { await page.locator(sel).first().click(opz); await page.waitForTimeout(250); };
-  const passo = async (nome, fn) => { if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test(nome)) return; try { await Promise.race([fn(), new Promise((_, no) => setTimeout(() => no(new Error('BLOCCATA oltre 120 s (la prova non deve mai restare appesa)')), 120000))]); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(0, 3).join(' | ')); } };
+  const passo = async (nome, fn) => { if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test(nome)) return; try { await Promise.race([fn(), new Promise((_, no) => setTimeout(() => no(new Error('BLOCCATA oltre 120 s (la prova non deve mai restare appesa)')), 120000).unref())]); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(0, 3).join(' | ')); } };
 
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
@@ -692,7 +692,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   });
   await passo('ricettario (C55): GialloZafferano dentro l\'app (finto server), preferite, porzioni, spesa, cucina guidata, ricetta mia', async () => {
     await page.evaluate(() => {
-      P.ruolo = 'monica'; S.impostazioni.ricettario = true;
+      P.ruolo = 'monica'; S.impostazioni.ricettario = true; P.guida = true;   // C142: da sola la guida del primo avvio («Avanti») copriva la Home
       try { localStorage.removeItem('pit-ric-cache'); localStorage.removeItem('pit-ric-pref'); localStorage.removeItem('pit-ric-mie'); localStorage.removeItem('pit-ric-note'); } catch (e) { /* niente */ }
       const finta = { url: 'https://ricette.giallozafferano.it/Seadas-sebadas.html', id: 'gz:Seadas-sebadas', nome: 'Seadas (sebadas)', intro: 'Dolce gallurese di formaggio e miele.', foto: '', porzioni: 4, prep: 60, cottura: 10,
         difficolta: 'Media', costo: 'Medio', ingredienti: [{ nome: 'Semola', q: 250, u: 'g', nota: '' }, { nome: 'Pecorino fresco', q: 300, u: 'g', nota: '' }, { nome: 'Miele', q: null, u: '', nota: '' }, { nome: 'Strutto', q: 25, u: 'g', nota: '' }, { nome: 'Acqua', q: 120, u: 'ml', nota: '' }, { nome: 'Limone', q: 1, u: '', nota: '' }],
