@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 11/11 · 🟢 Principale 62 · C141 pagella delle Proteiche: foto `archivio/foto/2026-11-11-1930-c141-pagella-*.png` mandate. Rispondi 1 = va bene, la pubblico · 2 = cambia (dimmi cosa).
+- 11/11 · 🛑 · 🟡 Principale 62 · C141 pagella delle Proteiche: foto `archivio/foto/2026-11-11-1930-c141-pagella-*.png` mandate. Rispondi 1 = va bene, la pubblico · 2 = cambia (dimmi cosa).
 - 11/11 · 🟢 Principale 58 · C140 giri prima sul PC di casa, poi Blacksmith, poi GitHub: DOMANDE 1 il motore di casa è già collegato (foto Impostazioni → Actions → Runners)? 2 un motore per progetto (consiglio) o organizzazione · `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`.
 - 10/11 · 🛑 · 💛 Salvagente 4 · PC di casa come riserva di Cloudflare e Firebase: scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente. Schemi mandati 19:02: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png` `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`. A cosa serve: scrivere il piano.
 - 10/11 · 🟢 Principale 51 · C130 contatore vero di Cloudflare, gratis: crei una chiave di sola lettura «Account Analytics» (ti guido) e il server vede le letture di tutto l'account. 1 · sì · 2 · no. A cosa serve: l'avviso ti arriva anche per letture che il mio contatore non vede.
