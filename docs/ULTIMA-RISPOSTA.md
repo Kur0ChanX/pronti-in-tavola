@@ -1,16 +1,15 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:44 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
+Ho capito: sei ancora al telefono e il modulo resta bloccato.
 
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
-
-───
-✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
+👉 DA FARE TU
+A cosa serve: chiudere questa richiesta, che dal telefono non si può approvare.
+1. Tocca «Nega»: non si perde niente, la chiave resta su Google.
+2. Quando sei al **computer**, apri questo link e apri la sessione «Principale 61»: [claude.ai/code](https://claude.ai/code)
+3. Da lì scrivimi «chiave»: il modulo si apre e la incolli.
 
 ───
 💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+- Non è urgente: intanto vado avanti con i dolci dei blog e gli ultimi 15 video di Pietrobon.
+
+⚠️ Aspettano te: 12 · chiave dal PC, foto Dolci, giri casa, Salvagente…
