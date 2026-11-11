@@ -32,7 +32,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E25** (bis) Ogni scarico da un sito esterno si prova dal sito vero (Hugging Face rifiuta *.workers.dev).
 - **PT E26** Voce per persone vere: tono 1.0, frasi corte, sigle per intero; ascoltarla prima di consegnarla.
 - **PT E27** Pochi comandi raggruppati, prova del solo pezzo, giro completo una volta prima del push.
-- **PT E28** Richieste solo dal computer (anche `request_credential`): dirlo PRIMA e dare la strada dal PC.
+- **PT E28/E68** Modulo sicuro solo dal PC: prima guardo `origin` in `get_session` (android = telefono). Chiavi Google (`X-Goog-Api-Key`): il modulo le rifiuta → a mano nelle impostazioni dell'ambiente.
 - **PT E29** Ogni indirizzo esterno si prova dal vivo; un giro automatico non resta mai fermo sullo stesso errore.
 - **PT E30** «Migliora» una ricetta ufficiale = completare ciò che manca, mai aggiungere; nel dubbio un esempio prima.
 - **PT E31** Misure chieste come le usa chi cucina (teglie); i conti li fa l'app.
