@@ -14,5 +14,14 @@
 - #63 (11/11): Pronti in Tavola è PUBBLICO (`search/repositories`: visibility public). Quindi qui GitHub è gratis senza tetto, e il PC di casa porterebbe il rischio scritto sopra (una PR da un fork può aggiungere un workflow `pull_request` che gira sul PC). Oggi qui girano su GitHub solo `sito.yml` (pubblica, ~1 min) e `pulisci-scorte.yml`; il giro completo delle prove è in locale (`node tools/prova.js`).
 - Con «se è spento o occupato passa al prossimo»: serve un lavoro «scegli» su GitHub (pochi secondi) che legge i motori con una chiave di sola lettura (Amministrazione: lettura) e mette `runs-on` di conseguenza; sennò un giro col PC spento resta in coda fino a 24 ore (anche la pubblicazione).
 
+## Parole di Mario (11/11 ~19:2x, Principale 64, intere)
+«se lo rendiamo privato e mettiamo il mio PC?»
+
+## Scelta 3: privato + PC (controllato l'11/11 19:21, docs.github.com)
+- Privato su GitHub Free: 2.000 minuti al mese di GitHub per tutti i privati dell'account; i motori di casa sono gratis. Qui oggi su GitHub solo `sito.yml` e `pulisci-scorte.yml`.
+- Rami protetti: nei privati di Free non ci sono, ma qui non ne usiamo (`list_branches`: tutti `protected: false`). Nessun file del codice legge il repo da GitHub (grep).
+- Account personale: il motore di casa serve UN repo → un secondo motore sul PC solo per questo. Blacksmith qui non è collegato.
+- In più: nomi di clienti e messaggi di Mario nei documenti non restano in pubblico.
+
 ## Stato
 Domande a Mario (riga in «## 0. Aspetta Mario»). Regola per tutti i progetti → kit (sessione del kit), qui la prova su Pronti in Tavola.
