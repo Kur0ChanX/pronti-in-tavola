@@ -2,24 +2,34 @@
 "account": "108763",
 "sessione": "429b6733a7bc",
 "giorno": "2026-11-11",
-"turni": 3,
-"peso": 148082,
-"uscita": 4924,
-"contesto_max": 128351,
+"turni": 4,
+"peso": 1122597,
+"uscita": 26188,
+"contesto_max": 190604,
 "anomalie": [],
 "blocchi": {
-"Stop 6 · Il turno finisce con una": 2
+"Stop 6 · Il turno finisce con una": 2,
+"Stop 13 · There are uncommitted changes in": 1,
+"Stop 8 · Promessa a Mario senza voce": 1
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
 "06:33 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
 "06:37 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 13 · There are uncommitted changes in": [
+"10:50 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"10:50 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Prove complete in corso (circa 15 minuti); poi pubblico e ti scrivo il resoconto.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove l"
 ]
 },
 "remota": "01WTjqUuGgdE",
 "aiutanti": 0,
-"strumenti": 6,
+"strumenti": 45,
 "motori": {
-"opus": 148082
-}
+"opus": 1122597
+},
+"memoria_scaduta": 1,
+"ricreati": 131727
 }
