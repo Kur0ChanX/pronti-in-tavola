@@ -22,7 +22,7 @@
    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
 import { DurableObject } from 'cloudflare:workers';
-import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta, gzSoloNutr } from './gz.mjs';
+import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta, gzSoloNutr, urlBg, idBg, urlDaIdBg } from './gz.mjs';
 import { rfRicetta, rfElenco, rfTrova, radiciRf, urlRf, idRf, urlDaIdRf, MAPPA_RF } from './rf.mjs';
 import { ascolta } from './ascolta.mjs';   // «ascolto preciso» dei clienti (C105): due Whisper + correttore col menù
 /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
@@ -318,7 +318,7 @@ async function leggiGz(u) {
 /* C124 passo 8: RicetteFit (rf.mjs). leggiWeb = la ricetta dal sito giusto (GialloZafferano o RicetteFit) */
 async function leggiRf(u) { return rfRicetta(await paginaGz(u, 'RicetteFit'), u); }
 const leggiWeb = u => urlRf(u) ? leggiRf(urlRf(u)) : leggiGz(u);
-const urlDaId = id => /^rf:/.test(String(id || '')) ? urlDaIdRf(id) : urlGz('https://ricette.giallozafferano.it/' + String(id || '').slice(3) + '.html');
+const urlDaId = id => /^rf:/.test(String(id || '')) ? urlDaIdRf(id) : /^bg:/.test(String(id || '')) ? urlDaIdBg(id) : urlGz('https://ricette.giallozafferano.it/' + String(id || '').slice(3) + '.html');
 /* C125 (Mario 10/11 13:40 «la ricerca… nelle fonti alternative anche a giallozafferano»): ricette di RicetteFit con le parole
    cercate, dal loro elenco (1 richiesta al giorno, poi la cache). Spenta dalla pagina Database o RicetteFit giù = nessuna, senza errori. */
 const FIT_TUTTO = ['ricette proteiche', 'ricette light', 'secondi proteici', 'dolci proteici'];   // C126 «🔍 Cerca tutto» su GialloZafferano
@@ -450,12 +450,12 @@ async function ricettaGz(b, cfg, ctx) {
     if (db && ricette.length) poi(db.inCoda(ricette.map(x => x.url)));   // quello che si scorre entra in coda per il database
     return { ricette: rf.concat(ricette), rf: rf.length, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
   }
-  const u = urlGz(b && b.u) || urlRf(b && b.u);
+  const u = urlGz(b && b.u) || urlRf(b && b.u) || urlBg(b && b.u);   // C139: anche i Blog di GialloZafferano
   if (!u) return { errore: 'indirizzo non valido' };
   let r = null, err = null;
   try { r = await leggiWeb(u); } catch (e) { err = e; }
   if (r) { if (db) poi(db.salva(r)); return { ricetta: r }; }   // ogni ricetta aperta: salvata per sempre
-  const salvata = db ? await db.una(urlRf(u) ? idRf(u) : 'gz:' + u.replace('https://ricette.giallozafferano.it/', '').replace(/\.html$/, '')).catch(() => null) : null;
+  const salvata = db ? await db.una(urlRf(u) ? idRf(u) : urlBg(u) ? idBg(u) : 'gz:' + u.replace('https://ricette.giallozafferano.it/', '').replace(/\.html$/, '')).catch(() => null) : null;
   if (salvata) return { ricetta: salvata, dalDb: true };   // GialloZafferano giù o cambiato: la copia del database
   if (err) throw err;
   return { errore: 'ricetta non trovata nella pagina' };
@@ -1221,7 +1221,7 @@ export class Ricettario extends DurableObject {
       return x;
     }); }
   aggiungi(x) {
-    if (!x || !/^(?:gz|rf):[\w%-]+$/.test(x.id || '') || !x.nome) return false;
+    if (!x || !(/^(?:gz|rf):[\w%-]+$/.test(x.id || '') || urlDaIdBg(x.id)) || !x.nome) return false;
     const pulito = (v, n) => String(v || '').slice(0, n);
     this.sql.exec('INSERT OR IGNORE INTO scelte (id, url, nome, zona, categoria, foto, aggiunta) VALUES (?, ?, ?, ?, ?, ?, ?)', x.id, urlDaId(x.id),
       pulito(x.nome, 120), ['sarda', 'gallura', 'italiana'].includes(x.zona) ? x.zona : 'italiana', pulito(x.categoria, 40), /^https:\/\/(?:[\w.-]+\.giallozafferano\.it|www\.ricettefit\.it\/wp-content\/uploads)\//.test(x.foto || '') ? pulito(x.foto, 300) : '', Date.now());
