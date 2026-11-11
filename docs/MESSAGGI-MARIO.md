@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 13:43 · 01WTjqUx82oy
-Pensi che i passi di tutte le ricette caricate siano completi e chiare? o ci sono buchi riguardale tutte migliorale e le nuove le carichi dora in poi migliorate
-
 ## 2026-11-08 13:51 · 01WTjqUx82oy
 Controlla tutte le ricette e falle come giallo zafferano uguali paro paro
 
@@ -144,7 +141,8 @@ cerca da varie fonti
 ## 2026-11-11 11:45 · 01WTjqUtkYee
 Domanda, puoi fare in modo che tutti i progetti possano passare per il mio GitHub a casa, che ho creato un server, se provano inizialmente il mio server del PC a casa per fare i giri di prova su GitHub, se è occupato da un altro progetto che non c'è spazio passano a Blacksmith, se ho finito i crediti di Blacksmith passa a GitHub server normale, quello con quello il server gratuito, ecco, con i limiti per chi ce li ha, per chi ha un progetto privato, chi ce l'ha pubblico invece è un altro discorso.
 
-## 2026-11-11 13:42 · 01WTjqUtkYee
-2 dolci ancora leggeri e proteici
+## 2026-11-11 13:36 · 01WTjqUwA2q2
+vai di consiglio e procediamo con la guida cassetto
 
-Puoi cercare dei siti o portali famosi con ricette fitness con inventiva e fantasia cerca bene ovunque nel web se hai blocchi per carcare dimmelo
+## 2026-11-11 13:43 · 01WTjqUwA2q2
+scusa e la regola dei link? perché l'hai saltata quella cliccabile se devo entrare e quella copiabile se devo copiare cerca come mai non l'hai presa
