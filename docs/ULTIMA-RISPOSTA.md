@@ -1,12 +1,17 @@
-# Ultima risposta di Claude (11/11/2026 12:57 ora italiana)
+# Ultima risposta di Claude (11/11/2026 13:38 ora italiana)
 
-Ho capito: sessione #59 avviata. Ho fatto i controlli d'avvio e adesso aspetto le tue risposte.
-
-🛑 **C135, corsia d'emergenza:** mi serve l'indirizzo del cassetto nuovo. Va creato nell'account Cloudflare giusto, quello che ha «pronti-in-tavola» in Workers & Pages.
-🛑 **Salvagente 4 (C138), PC di casa come riserva:** scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente.
+Ho capito: c'erano modifiche non salvate su GitHub.
+🧠 Opus · Medio
 
 ───
 ✅ FATTO
-- Sul sito c'è la v0.10.22, con 191 ricette proteiche. L'ho controllato adesso.
-- Il server degli avvisi risponde e vede 2 telefoni iscritti.
-- La **scorta** (copia automatica del lavoro …
+- Il cambio delle soglie dei dolci ora è su GitHub, salvato come **patch** (un file con le sole modifiche, da applicare dopo).
+- Non ho salvato i file del codice: farlo avrebbe pubblicato subito il sito a metà lavoro. Li rimetto e pubblico quando finisce la raccolta, dopo le prove.
+- La raccolta delle ricette va avanti: le regole nuove le aveva già lette all'avvio.
+
+───
+👉 DA FARE TU
+La guida del cassetto è nel messaggio di prima. A che passo sei?
+
+───
+⚠️ Aspettano te: 13 · cassetto C135, Salvagente casa, motore …
