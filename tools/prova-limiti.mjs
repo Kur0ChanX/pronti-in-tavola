@@ -4,7 +4,7 @@ import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'
 const radice = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const src = fs.readFileSync(path.join(radice, 'worker.js'), 'utf8')
   .replace("import { DurableObject } from 'cloudflare:workers';", 'class DurableObject { constructor(ctx, env) { this.ctx = ctx; this.env = env; } }')
-  .replace("from './gz.mjs'", `from '${pathToFileURL(path.join(radice, 'gz.mjs'))}'`).replace("from './ascolta.mjs'", `from '${pathToFileURL(path.join(radice, 'ascolta.mjs'))}'`)
+  .replace("from './gz.mjs'", `from '${pathToFileURL(path.join(radice, 'gz.mjs'))}'`).replace("from './rf.mjs'", `from '${pathToFileURL(path.join(radice, 'rf.mjs'))}'`).replace("from './ascolta.mjs'", `from '${pathToFileURL(path.join(radice, 'ascolta.mjs'))}'`)
   + '\nexport { Avvisi as _Avvisi, limitiAIC as _limitiAIC, chiediAI as _chiediAI, TETTO_AIC as _TETTO };\n';
 const tmp = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'pit-')), 'worker.mjs'); fs.writeFileSync(tmp, src);
 const { _Avvisi: Avvisi, _limitiAIC: limitiAIC, _chiediAI: chiediAI, _TETTO: TETTO } = await import(pathToFileURL(tmp));

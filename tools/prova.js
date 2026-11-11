@@ -20,6 +20,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
   await page.waitForTimeout(5200);
+  /* PT E67: le prove del server (database, GialloZafferano e blog, limiti) stanno nel giro: fuori dal giro una era rossa da giorni (C130) */
+  await passo('prove del server: database, GZ, limiti (PT E67)', async () => {
+    for (const f of ['prova-database.mjs', 'prova-gz.mjs', 'prova-limiti.mjs']) {
+      let out = '';
+      try { out = require('child_process').execFileSync('node', [path.join(__dirname, f)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 110000 }); }
+      catch (e) { throw new Error(f + ' rossa: ' + String(e.stdout || e.message).split('\n').filter(l => /^NO\b|Error/.test(l)).slice(0, 3).join(' · ')); }
+      if (!/\b0 NO\b/.test(out)) throw new Error(f + ': esito mancante');
+    }
+  });
   await passo('vapore dopo l\'apertura anche per i clienti (C115)', async () => {
     await page.locator('.vapore').waitFor({ state: 'attached', timeout: 4000 });
     await page.locator('.vapore').waitFor({ state: 'detached', timeout: 6000 });
@@ -1998,6 +2007,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { vai('ricettario'); UI.ric.q = 'https://www.ricettefit.it/ricetta/pollo-fit-rf/'; const f = document.querySelector('[data-ric-cerca]'); f.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true })); });
     const vista = await page.evaluate(() => UI.vista);
     if (vista !== 'ricetta:rf:pollo-fit-rf') throw new Error('link di RicetteFit incollato: non apre la ricetta: ' + vista);
+    await page.evaluate(() => { vai('ricettario'); UI.ric.q = 'https://blog.giallozafferano.it/AnnaTorte/ricetta-muffin-fit/'; const v0 = window.vai; window.vai = x => { window.__vbg = x; }; try { document.querySelector('[data-ric-cerca]').dispatchEvent(new Event('submit', { cancelable: true, bubbles: true })); } finally { window.vai = v0; } });
+    const vbg = await page.evaluate(() => ({ v: window.__vbg, u: urlRic('bg:annatorte/ricetta-muffin-fit'), f: fonteRic({ id: 'bg:a/b' }), i: idDaUrl('https://blog.giallozafferano.it/annatorte/ricetta-muffin-fit/') }));
+    if (vbg.v !== 'ricetta:bg:annatorte/ricetta-muffin-fit' || vbg.u !== 'https://blog.giallozafferano.it/annatorte/ricetta-muffin-fit/' || vbg.f !== 'Blog di GialloZafferano' || vbg.i !== 'bg:annatorte/ricetta-muffin-fit') throw new Error('C139 link di un Blog di GialloZafferano: ' + JSON.stringify(vbg));
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaRf; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
