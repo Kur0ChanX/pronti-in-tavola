@@ -1,0 +1,37 @@
+{
+"account": "108763",
+"sessione": "43b16ff28feb",
+"giorno": "2026-11-11",
+"turni": 2,
+"peso": 85268,
+"uscita": 783,
+"contesto_max": 193632,
+"anomalie": [],
+"blocchi": {
+"Stop 5 · Foto e video (E240, E247;": 1,
+"Stop 13 · There are uncommitted changes in": 2,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 6 · Il turno finisce con una": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Foto e video (E240, E247;": [
+"14:07 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 13 · There are uncommitted changes in": [
+"14:07 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"14:07 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"14:07 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 6 · Il turno finisce con una": [
+"14:07 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+]
+},
+"remota": "01WTjqUtumXX",
+"aiutanti": 0,
+"strumenti": 3,
+"motori": {
+"opus": 85268
+}
+}
