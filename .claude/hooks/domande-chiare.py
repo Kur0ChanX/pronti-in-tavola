@@ -70,6 +70,22 @@ def manca_a_cosa_serve(testo):
     return not re.search(r'a cosa serve', resto[:fine.start()] if fine else resto, re.I)
 
 
+SITO_DA_APRIRE = re.compile(r'\b(apri|entra|vai)\b[^\n]{0,40}\b(sito|dashboard|console|cloudflare|firebase|github|google|blacksmith)\b', re.I)
+
+
+def manca_link_da_aprire(testo):
+    """PT E18 + PT E66: nel blocco «👉 DA FARE TU» un sito da aprire («Apri il sito di Cloudflare») vuole un link
+    cliccabile (https:// fuori dai riquadri di codice). → True se manca."""
+    m = DA_FARE.search(testo)
+    if not m:
+        return False
+    resto = testo[m.start():]
+    fine = FINE.search(resto)
+    resto = resto[:fine.start()] if fine else resto
+    fuori = BLOCCHI_CODICE.sub(' ', resto)
+    return bool(SITO_DA_APRIRE.search(fuori)) and 'https://' not in fuori
+
+
 def difetti(testo):
     """→ elenco dei difetti del blocco delle domande (vuoto = va bene)."""
     b = blocco(testo)
@@ -221,6 +237,11 @@ def main():
             print('«👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del '
                   'blocco «A cosa serve: …» (cosa ottiene Mario, l\'app o il lavoro). Riscrivi solo quel blocco.',
                   file=sys.stderr)
+            return 2
+        if manca_link_da_aprire(finale):
+            print('«👉 DA FARE TU» dice di aprire un sito ma non c\'è il link cliccabile (PT E18, PT E66): metti '
+                  'l\'indirizzo https:// nel testo (cliccabile, fuori dal riquadro); il riquadro solo per ciò che Mario '
+                  'copia. Riscrivi solo quel blocco.', file=sys.stderr)
             return 2
     b = blocco(finale)
     if b is None:
