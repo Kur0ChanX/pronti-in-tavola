@@ -200,4 +200,15 @@ controlla(c == 0 and not err, "«👉 DA FARE TU» con «A cosa serve»: passa",
 c, err = stop("✅ FATTO\n- ok\n───\n👉 DA FARE TU\n1. passo\n───\nA cosa serve: in un altro blocco")
 controlla(c == 2, "«A cosa serve» fuori dal blocco non conta", f"{c} {err}")
 
+# PT E66 (Mario 11/11 «la regola dei link? perché l'hai saltata»): sito da aprire = link cliccabile nel blocco
+SENZA_LINK = "✅ FATTO\n- ok\n───\n👉 DA FARE TU\nA cosa serve: la riserva.\n1. Apri l'app o il sito di Cloudflare.\n2. Scrivi:\n```\nnome\n```"
+c, err = stop(SENZA_LINK)
+controlla(c == 2 and "PT E66" in err, "sito da aprire senza link: blocca", f"{c} {err}")
+c, err = stop(SENZA_LINK.replace("Cloudflare.", "Cloudflare: https://dash.cloudflare.com"))
+controlla(c == 0 and not err, "sito da aprire con link cliccabile: passa", f"{c} {err}")
+c, err = stop(SENZA_LINK.replace("```\nnome", "```\nhttps://dash.cloudflare.com"))
+controlla(c == 2, "link solo nel riquadro (da copiare) non conta come cliccabile", f"{c} {err}")
+c, err = stop(SENZA_LINK, attivo=True)
+controlla(c == 0, "secondo giro: silenzio", f"{c} {err}")
+
 print(f"OK domande-chiare: {ok_n} controlli")

@@ -57,7 +57,7 @@ Prima, 11/11 ~11:45, parola per parola: «Domanda, puoi fare in modo che tutti i
 Prima (11:25, nella #57): «Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto cerca da varie fonti» → C139 v0.10.20-22.
 
 ## Numeri liberi
-Prossimo E libero: PT E66; prossimo C libero: C141; prossimo M libero: M1.
+Prossimo E libero: PT E67; prossimo C libero: C141; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
