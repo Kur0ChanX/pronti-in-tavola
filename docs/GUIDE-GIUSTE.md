@@ -26,6 +26,7 @@ Una riga per pagina: servizio · pagina · come ci si arriva · vista il (✅ co
 - GitHub · Settings → Secrets and variables → Actions (segreti del sito) · ✅ 07/11 parole di Mario «fatto»
 
 ## Guide pronte (da provare: dopo, ogni passo visto va nell'indice come ✅)
+- **GitHub · rendere privato il progetto (C140)** (docs.github.com «Setting repository visibility», letto 11/11/2026): https://github.com/Kur0ChanX/pronti-in-tavola/settings → in fondo «Danger Zone» → **Change visibility** → privato → **I have read and understand these effects** → **Make this repository private** (può chiedere la password o il codice). Da vedere con Mario.
 ### Firebase passo 5 · entrare con Google e diventare gestori (07/11, ~20 minuti)
 1. Apri https://console.firebase.google.com/project/pronti-in-tavola/authentication/settings → scheda **Impostazioni** → si apre il riquadro «Collegamento dell'account utente»: telefono in **orizzontale** (a sinistra compare l'elenco delle impostazioni; in verticale c'è la freccia **←** in alto nel riquadro) → **Domini autorizzati**. Attenzione: è la scheda Impostazioni DENTRO Authentication, non l'ingranaggio ⚙ del menù → **Aggiungi dominio** → incolla `pronti-in-tavola.pronti-in-tavola.workers.dev` → **Aggiungi**. Foto.
 2. Apri https://pronti-in-tavola.pronti-in-tavola.workers.dev → in fondo **Area riservata** → scegli il tuo account Google.

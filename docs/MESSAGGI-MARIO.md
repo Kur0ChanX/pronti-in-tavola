@@ -124,3 +124,6 @@ devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi git
 
 ## 2026-11-11 19:20 · 01WTjqUvhRwD
 se lo rendiamo privato e mettiamo il mio PC?
+
+## 2026-11-11 19:24 · 01WTjqUvhRwD
+hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo

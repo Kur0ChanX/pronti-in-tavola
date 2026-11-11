@@ -23,5 +23,15 @@
 - Account personale: il motore di casa serve UN repo → un secondo motore sul PC solo per questo. Blacksmith qui non è collegato.
 - In più: nomi di clienti e messaggi di Mario nei documenti non restano in pubblico.
 
+## Parole di Mario (11/11 ~19:24, arrivate nella #64 dopo l'handoff, intere)
+«hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo» → scelta **3**.
+
+## Scelta 3: piano (#65, 11/11)
+- Minuti misurati (`actions_list` di `sito.yml`, 11/11): 68 giri in 3 giorni = 118 minuti arrotondati (~40 al giorno, giorni di lavoro fitto) → stima ~1.200 al mese su 2.000, più `pulisci-scorte.yml`. Finiti i minuti, GitHub ferma i giri dei privati (anche la pubblicazione) fino al mese dopo; i motori di casa non consumano minuti.
+- Controllato prima del passo 1 (`search/repositories`, 11/11): niente GitHub Pages, 0 fork, 1 stella (si perde).
+- Passo 1 (Mario, 1 minuto): Settings → in fondo «Danger Zone» → **Change visibility** → privato → **I have read and understand these effects** → **Make this repository private** (docs.github.com «Setting repository visibility», letto 11/11). Dopo: io controllo `visibility: private` e che la pubblicazione parta.
+- Passo 2 (Mario, dal PC): secondo motore per questo repo: Settings → Actions → Runners → **New self-hosted runner** → Windows; comandi in PowerShell da amministratore (il codice dura 1 ora; cartella sua; come servizio), etichette `self-hosted` + `casa` (docs.github.com «Adding self-hosted runners», letto 11/11).
+- Passo 3 (io, dopo l'ok per `.claude/`): kit 38.26 (caso «casa» in `tools/scegli-giro.py`), giro completo in `prove.yml` sul PC (in coda oltre 3 minuti → GitHub). Pubblicazione: resta su GitHub (deve partire anche col PC spento); sul PC solo se i minuti si avvicinano al tetto (decido coi numeri veri dopo il passo 2).
+
 ## Stato
-Domande a Mario (riga in «## 0. Aspetta Mario»). Regola per tutti i progetti → kit (sessione del kit), qui la prova su Pronti in Tavola.
+Mario ha scelto 3 (11/11 19:24). Aspetta il passo 1 di Mario e l'ok per `.claude/` (righe in «## 0. Aspetta Mario»). Regola per tutti i progetti → kit (sessione del kit), qui la prova su Pronti in Tavola.
