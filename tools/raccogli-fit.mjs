@@ -24,7 +24,15 @@ const PAROLE_GZ = ['dolci proteici', 'pancake proteici', 'torta proteica', 'muff
   'colazione proteica', 'snack proteici', 'merenda proteica', 'albumi', 'fiocchi di latte', 'ricette proteiche', 'secondi proteici',
   'pollo light', 'tacchino light', 'pesce light', 'ricette light',
   'dolci senza zucchero', 'dolci light', 'dolci con albumi', 'dolci con ricotta', 'dolci con yogurt', 'crema di ricotta', 'semifreddo yogurt', 'frittelle di albumi', 'muffin salati', 'snack salati light',
-  'dolci fit', 'dolci proteici senza zucchero', 'torta yogurt greco', 'budino skyr', 'tiramisu proteico', 'cheesecake light', 'mousse yogurt greco', 'biscotti avena', 'dolci con fiocchi di latte', 'pancake albumi', 'torta albumi', 'crema proteica'];
+  'dolci fit', 'dolci proteici senza zucchero', 'torta yogurt greco', 'budino skyr', 'tiramisu proteico', 'cheesecake light', 'mousse yogurt greco', 'biscotti avena', 'dolci con fiocchi di latte', 'pancake albumi', 'torta albumi', 'crema proteica',
+  // C139 (Mario 11/11 sera: «dolci con la crema proteica, fatta con lo shake… albumi, yogurt greco, Philadelphia proteica… 200 ricette così»)
+  'proteine in polvere', 'whey', 'shake proteico', 'dolci con proteine', 'philadelphia', 'philadelphia light', 'quark', 'skyr dolce', 'fiocchi di latte dolce',
+  'cheesecake yogurt greco', 'tiramisu light', 'tiramisu yogurt greco', 'budino proteico cioccolato', 'mug cake proteica', 'mug cake', 'torta in tazza',
+  'muffin albumi', 'brownies albumi', 'crepes albumi', 'waffle proteici', 'pan di spagna albumi', 'meringhe', 'mousse albumi', 'semifreddo proteico',
+  'gelato yogurt greco', 'ghiaccioli yogurt', 'barrette avena', 'energy balls', 'protein balls', 'biscotti proteici avena', 'ciambella proteica',
+  'plumcake yogurt greco', 'torta ricotta light', 'crostata light', 'dolci senza zucchero yogurt', 'dolci con stevia', 'dolci con eritritolo',
+  'crema pasticcera light', 'crema yogurt greco', 'crema albumi', 'french toast proteico', 'porridge albumi', 'oatmeal proteico', 'banana bread proteico',
+  'cottage cheese', 'ricotta e cacao', 'yogurt greco e frutta', 'parfait yogurt', 'chia pudding', 'budino chia', 'zabaione light'];
 fs.mkdirSync(CACHE, { recursive: true });
 
 /* la regola dell'app, presa dal codice vero (un posto solo: se Mario cambia le soglie di base, questo le segue) */
