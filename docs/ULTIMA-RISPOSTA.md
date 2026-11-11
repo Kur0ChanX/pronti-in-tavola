@@ -1,16 +1,13 @@
-# Ultima risposta di Claude (11/11/2026 10:59 ora italiana)
+# Ultima risposta di Claude (11/11/2026 11:00 ora italiana)
 
 
 
 ## Domande a Mario
 
-❓ DOMANDE
-**DOMANDA 1** · Da dove arrivano le ricette proteiche nuove?
-📌 Di cosa parliamo: le ricette nuove di «🏋️ Proteiche» nel Ricettario. Oggi arrivano solo se dai la conferma. Adesso va decisa la strada per il futuro, così non torna il blocco di Cloudflare.
-1 · Le cerco io quando me lo chiedi e le metto in un file del sito. L'app le mostra senza usare il server: zero consumi. (consiglio)
-2 · Solo dall'app, con la conferma di adesso. Consumano un po', ma il freno le ferma prima del limite.
-3 · Tutte e due: io le metto nel file e tu puoi anche cercarne dall'app.
+❓ DOMANDA 1 🛑
 
-Rispondi col numero.
+📌 Di cosa parliamo: la **corsia d'emergenza** degli avvisi. È una copia di riserva che fa partire le notifiche a Monica e ai clienti anche se il server di Cloudflare ha un guasto. Adesso è spenta: il **cassetto** (un piccolo archivio di Cloudflare dove sta la copia) l'hai creato con l'account sbagliato, `info.prontiintavola`, che non contiene l'app.
 
-Ho …
+A cosa serve rispondere: finché manca il cassetto giusto, un guasto del server può bloccare le notifiche.
+
+1 · Ti guido io, un tocco alla volta. Esci dall'account (Log out), rientri con l'account del sito (probabilmente …
