@@ -2,11 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 03:13 · 01QTFEqQ92G5
-per i clienti fallo al meglio ma tienilo disattivato nelle mie impostazioni per tutti i clienti devo capite questa cosa dei limiti poi c'è si blocca per i limiti crea un altro ponte automatico che lavora allo stesso modo con nuovi limiti poi
-IA deve dire tocca conferma non fai con una bella voce non robotica se puoi semore femminile
-invece per il collegamento bei vlienti per whatsapp per contattare monica quello lascialo
-
 ## 2026-11-08 03:16 · 01QTFEqQ92G5
 Manca nel messaggio whatsapp il nome e cognome messo nell'app
 
@@ -147,3 +142,6 @@ fatto ora?
 
 ## 2026-11-11 06:20 · 01WTjqUwi3Ab
 https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[segreto tolto dalla scorta]/settings
+
+## 2026-11-11 10:39 · 01WTjqUuGgdE
+Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non vorrei che si ricreasse assolutamente quel problema di bloccare Claude Flare. Evitalo assolutamente, al massimo le ricette le aggiungiamo da Claude, ti dico di fare una ricerca e di aggiungerle tu manualmente, oppure dall'app, ma con doppia richiesta, con doppio clic, che magari esce un avviso che dice potrebbero consumare i dati di, e mi metti la cosa tecnica. Insomma, per le cose superflue facciamo attenzione ai consumi di tutta l'app. Deve funzionare bene io, Monica, e i clienti dobbiamo comunicare bene, con notifiche, risposte, tutto il funzionamento dell'app fatto bene, tutto il resto è superfluo.
