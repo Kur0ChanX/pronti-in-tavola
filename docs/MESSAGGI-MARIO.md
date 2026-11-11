@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 14:31 · 01WTjqUx82oy
-riscrivimi la domanda 4 voci l'ho persa
-
-## 2026-11-08 14:33 · 01WTjqUx82oy
-non mi piacciono come tono e pause e accenti sembrano stranieri ai altre alternative?
-
 ## 2026-11-09 10:23 · 01WTjqUwCuTd
 nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me mettimi un procione nel mio nome, dopo il mio nome, nel mio utente, Monica mettili dopo il suo nome e metti un cuoricino rosso.
 
@@ -146,3 +140,9 @@ che dici se integriamo  questo per le ricerche ?
 
 ## 2026-11-11 13:52 · 01WTjqUwA2q2
 passo 2 della guida
+
+## 2026-11-11 16:45 · 01WTjqUuVtcn
+È normale che non vedo ancora le ricette caricate, vedo sempre le stesse sulle proteine. Guarda i numeri, vedo tipo nei dolci ne vedo solo pochissime, 4 o 5 ricette proteiche.
+
+## 2026-11-11 17:16 · 01WTjqUuVtcn
+Per i dolci cerca diversi dolci con la crema proteica, magari fatta con lo shake, con gli shaker, ricette con albumi, con yogurt greco, con magari Philadelphia proteica, insomma con tutte questi prodotti proteici, magari fare che cercare un 200 ricette così. Ti avevo mandato anche un link di uno youtuber, non mi hai più risposto.
