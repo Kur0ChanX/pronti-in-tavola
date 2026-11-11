@@ -2,6 +2,18 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
+## 2026-11-10 01:10 · 01WTjqUx6Bw4
+b + migliora con ia
+
+## 2026-11-10 01:56 · 01WTjqUwXqzf
+ia delle foto sembra ok implemetala nell'app e dimmi se 5 regole non aggiungi all account
+
+## 2026-11-10 08:30 · 01WTjqUumYwY
+dimmi le regole che vuoi mettere per tutti
+
+## 2026-11-10 11:00 · 01WTjqUxmJ9k
+deepgram fatto come valido un anno che senso ha?!?
+
 ## 2026-11-10 11:32 · 01WTjqUxmJ9k
 non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
 
@@ -118,29 +130,17 @@ passo 2 della guida
 ## 2026-11-11 17:16 · 01WTjqUuVtcn
 Per i dolci cerca diversi dolci con la crema proteica, magari fatta con lo shake, con gli shaker, ricette con albumi, con yogurt greco, con magari Philadelphia proteica, insomma con tutte questi prodotti proteici, magari fare che cercare un 200 ricette così. Ti avevo mandato anche un link di uno youtuber, non mi hai più risposto.
 
-## 2026-11-11 17:44 · 01WTjqUu7eAD
-chiave
+## 2026-11-11 17:21 · 01WTjqUuVtcn
+Facciamo che apriamo le porte, facciamo allora la regola o la risposta 1, ma che apriamo le porte a tutto ciò che non è magari segnato con i valori, però se guardiamo i siti di fitness e i canali fitness non ci può dare delle ricette che non siano fitness, ecco, però magari facciamo una categoria a parte, sempre su proteiche, però magari mettiamo valori non verificati, così apriamo tantissime ricette. Io direi di ne possiamo aggiungere 500, non solo, metti tantissimi dolci, magari metti un 50% dolci, tutto il resto primi, secondi, post allenamento e quant'altro. Ma stai attento che magari se in un dolce c'è scritto cetriolo, yogurt non è un dolce, cioè il cetriolo non fa parte dei dolci, stai attento a quello. Io direi sì, un 50% tra merende, snack, dolci, e gli altri, cioè nel senso, metti più dolci, per farlo in breve, metti più dolci e meno primi e secondi, però metteli anche quelli, sempre con ricette, anche con valori non verificati, prova a stimarli tu, e dello youtuber magari qualche valore lo dice lui.
 
-## 2026-11-11 17:47 · 01WTjqUu7eAD
-chiave sono al pc
+## 2026-11-11 17:34 · 01WTjqUuVtcn
+Chiave youtube
 
-## 2026-11-11 17:48 · 01WTjqUu7eAD
-sono al pc fammi incollarew la chiave
+## 2026-11-11 17:42 · 01WTjqUuVtcn
+ci sono fammela incollare
 
-## 2026-11-11 17:49 · 01WTjqUu7eAD
-riprova
+## 2026-11-11 17:43 · 01WTjqUuVtcn
+?!?!?
 
-## 2026-11-11 17:50 · 01WTjqUu7eAD
-la metto nel'ambiente
-
-## 2026-11-11 17:52 · 01WTjqUu7eAD
-fatto
-
-## 2026-11-11 17:52 · 01WTjqUu7eAD
-nell'ambiente pronti in tavola
-
-## 2026-11-11 17:53 · 01WTjqUu7eAD
-fatto
-
-## 2026-11-11 18:04 · 01WTjqUu7eAD
-ok vai avanti allora
+## 2026-11-11 17:43 · 01WTjqUuVtcn
+fammi incollare la chiave
