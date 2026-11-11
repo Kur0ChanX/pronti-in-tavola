@@ -1,13 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #65 (dopo la #64 `session_01WTjqUvhRwDshdn5BjyHhHU`, chiusa alla soglia 11/11 19:22; la apre la #64 con `create_session` (catena 4 di 8)).
+Sessione attuale: #66 (dopo la #65 `session_01WTjqUumr4nH1ZeRWix2tJQ`, chiusa alla soglia 11/11 19:40; la apre la #65 con `create_session` (catena 4 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (11/11 #64):** 1) 🛑 C140: Mario 19:20 «se lo rendiamo privato e mettiamo il mio PC?» → DOMANDA 1 riscritta con 3 scelte (1 pubblico solo GitHub · 2 pubblico col PC · 3 privato + PC poi GitHub, consiglio); 2) 🛑 foto della pagella (C141, già ONLINE, PT E69): «1» va bene, «2» cosa cambiare; 3) ok per accendere la difesa C143 (`.claude/`, RVC E59); 4) più ricette proteiche (dolci) coi valori stimati.
 
-## Stato (11/11 19:22 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice **0.10.23** (verifica: `grep VERSIONE_APP data.js`; non alzata: aspetta il «1» sulle foto). Scorte NON unite: scorta-principale-20261111-01WTjqUvhRwD/claude/pronti-ramo-definitivo.
+## Stato (11/11 19:40 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?.
 - ⚠️ **PT E69**: i push della #62 di `ricettario.js`, `opzioni.js`, `aiutante.js`, `style.css`, `ricette-stimate.js`, `tools/sito.py` hanno PUBBLICATO il sito (`sito.yml`) senza foto approvata né giro completo. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/ricettario.js | grep -c pagellaRic` → 5; `…/ricette-stimate.js` → 200. Giro completo dopo: 95/95 verde (#63).
 - **C141 nell'app (online)**: Proteiche = ogni ricetta «ricca di proteine» (UE: ≥ 20 % delle calorie, ≥ 8 g; `fitRic` in `ricettario.js`), **pagella** `pagellaRic` (voto 1-10, semaforo proteine/calorie/saturi/zuccheri/sale in % del fabbisogno UE, proteine doppie), ordine per voto; soglie in `opzioni.js` (`fitEntraPerc`, `pagVerde`, `pagGiallo`, `fitProtPerc` = verde proteine, `fitProt` = pasto da, `fitSnackProt` = minimo); tolte `fitKcal/Saturi/Zuc/Sodio/SnackPerc/SnackZuc/SnackSodio`. `ricette-stimate.js` (207: Cookpad 135, blog GZ 28, YouTube 44; 114 dolci) → Proteiche 407 (147 dolci). Stimate: «≈ … stimati», niente «Ascolta», passi con link alla fonte.
 - **Raccolta**: `python3 -I tools/raccogli_stimate.py` (cache `.cache-stime/` solo nel contenitore: rilanciarla rilegge i siti, ~1 h). YouTube con `YOUTUBE_API_KEY` (variabile d'ambiente, spazio in fondo → trim; solo nelle sessioni nuove). Scarti: 298 stima (ingredienti sconosciuti in `tools/stima.py`), 386 sotto il 20 %.
@@ -58,9 +58,9 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-11 19:10 · [AVVIO] Sessione #64 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, orari corretti, controllo nuovo in consegne.py, risposta su RVC
-- 2026-11-11 19:20 · se lo rendiamo privato e mettiamo il mio PC? → C140 scelta 3, DOMANDA 1 riscritta
+- 2026-11-11 19:24 · [AVVIO] Sessione #65 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-11 19:33 · mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazio… → 
 
 Ultimo, intero:
-> se lo rendiamo privato e mettiamo il mio PC?
+> mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazioni che hai in una sezione a parte esempio ricette video e dividi per il nome che dici? occupiamo teoppo spazio limiti ecc?
 
