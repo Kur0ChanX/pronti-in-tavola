@@ -16,6 +16,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C139 | (Mario 11/11 10:39) Ricette senza consumi, v0.10.19: `docs/lavori-in-corso/c139-ricette-senza-consumi.md`. 👁 Lo vedi: app chiusa e riaperta, Proteiche → «🔍 Cerca altre» chiede conferma con «Cloudflare» · prova: foto di Mario | Claude |
 | C138 | (Mario 10/11 18:30 «server nel mio PC… come salvagente») Salvagente in casa: 3 strade in `docs/lavori-in-corso/c138-salvagente-in-casa.md`, solo piano. 👁 Lo vedi: le 3 strade in chat, poi il piano scritto · prova: tua lettura | Claude (Salvagente 3) | 🟡 |
 | C137 | (Mario 10/11 18:13 «in modalità emergenza… niente cose quasi inutili come aggiornare ricettario») **v0.10.18 (#54): fatta, prove verdi.** Modalità risparmio (piano `docs/lavori-in-corso/c137-modalita-risparmio.md`), con C135. 👁 Lo vedi: «🛟 Modalità risparmio» nel Ricettario (freno finto) · prova: tua foto | Claude | 🔴 |
 | C136 | (Mario 10/11 17:41 «un blocco al ricettario… a manuale poco alla volta») v0.10.17: motore automatico spento (interruttore solo per Mario), carichi a mano di N (5-50, base 20), «⏹ Ferma». 👁 Lo vedi: chiudi e riapri l'app, Ricettario → «🗄 Il mio database»: «🖐 Ricette nuove solo quando le chiedi tu» e «⚡ Carica altre 20 ricette» · prova: tua foto | Claude | 🟡 |

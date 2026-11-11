@@ -183,9 +183,13 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.18';
+const VERSIONE_APP = '0.10.19';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.19', data: '11/11/2026',
+    migliorato: ['Ricettario: le ricette nuove dal web non partono più da sole. I tasti «🍽 Cena», «🍗 Pollo» e la ricerca scritta dentro «🏋️ Proteiche» filtrano solo le ricette già lette (zero consumo). Per cercarne di nuove: «🔍 Cerca altre», che prima chiede conferma',
+      'Ricettario: «⚡ Carica altre», «🔄 Cerca adesso», «🔍 Controlla tutte» e «🔍 Cerca altre» chiedono conferma con un avviso: consumano i dati gratuiti di Cloudflare, e se finissero si fermerebbero anche gli avvisi a Monica e ai clienti',
+      'Ricettario: la modalità risparmio parte prima, a un quinto delle letture gratuite del giorno (era quasi metà): ordini, menù, clienti e avvisi hanno sempre la precedenza'] },
   { v: '0.10.18', data: '10/11/2026',
     nuovo: ['Avvisi degli ordini: preparata la corsia d\'emergenza 🛟 (copia di riserva dei telefoni iscritti, così gli avvisi partono anche col server fermo). Si accende appena Mario collega il cassetto su Cloudflare: in Impostazioni → Notifiche c\'è scritto se è collegata',
       'Ricettario: modalità risparmio 🛟. Se il server ha usato quasi metà delle letture gratuite del giorno, o Cloudflare lo ferma, fino all\'01:00 il ricettario non cerca e non carica ricette nuove e in alto lo dice col perché. Il tuo ricettario, le ricette salvate, ordini, menù, clienti e avvisi funzionano come sempre'] },
