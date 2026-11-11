@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 15:55 · 01WTjqUwbG8f
-Secondo te le regole per le ricette per la palestra sono valide o taglia tantissime ricette, oppure è giusto che sia così?
-
-## 2026-11-10 16:15 · 01WTjqUwbG8f
-vai di consiglio
-
 ## 2026-11-10 16:47 · 01WTjqUv8dDc
 Quello che ho voluto sempre evitare dall'inizio di questo progetto, alla fine non siamo riusciti a renderlo inevitabile.
 
@@ -127,3 +121,6 @@ se lo rendiamo privato e mettiamo il mio PC?
 
 ## 2026-11-11 19:24 · 01WTjqUvhRwD
 hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo
+
+## 2026-11-11 22:46 · 01WTjqUup234
+aggiungi tutti  i suoi video di ricette
