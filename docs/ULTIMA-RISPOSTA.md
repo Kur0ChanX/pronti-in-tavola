@@ -1,16 +1,20 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:52 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
-
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
+La chiave è salvata nell'ambiente, ma YouTube non risponde ancora.
 
 ───
 ✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
+- Nell'ambiente ora c'è una **variabile** (un valore con un nome) chiamata `KEY`. La «Network secrets» non c'è: hai usato la variabile.
+- YouTube risponde ancora «chiave mancante». È normale: una variabile la legge solo una **sessione nuova**, non questa.
+- Ho aggiornato Da fare e salvato su GitHub.
 
 ───
 💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+Il nome `KEY` è troppo generico. Con altre chiavi in futuro si confonde. Meglio `YOUTUBE_API_KEY`.
+
+───
+👉 DA FARE TU
+
+**A cosa serve:** con un nome chiaro so sempre quale chiave è.
+
+1. Menu dell'ambiente …
