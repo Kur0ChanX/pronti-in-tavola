@@ -1,16 +1,17 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:41 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
-
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
+Ho capito: sei nella finestra «Crea chiave API» e cerchi YouTube nell'elenco.
 
 ───
-✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
+👉 DA FARE TU
+A cosa serve: la chiave deve servire solo per YouTube, così è più sicura.
 
-───
-💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+1. Tocca la casella «Filtra» in alto nell'elenco e scrivi:
+```
+youtube
+```
+2. Spunta «YouTube Data API v3», poi tocca «OK».
+3. «Restrizioni delle applicazioni» lascialo su «Nessuna». Tocca «Crea».
+4. Appare la chiave: **non copiarla in chat**. Scrivimi «fatto» e ti apro il modulo sicuro.
+
+⚠️ Se scrivendo «youtube» non esce niente: l'elenco mostra solo le API già accese, quindi manca il passo 3 di prima. Tocca «Annulla», …
