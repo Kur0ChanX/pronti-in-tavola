@@ -2,10 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 02:30 · 01QTFEqQ5ALf
-cerca la miglior ia gratuita per Queste cose
-iniziaml assistente per monica non clienti
-
 ## 2026-11-08 02:40 · 01QTFEqQ5ALf
 ma utilizza limiti di altri progetti?
 
@@ -151,3 +147,6 @@ Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatt
 
 ## 2026-11-11 05:07 · 01WTjqUwi3Ab
 dimmi cosa devo fare
+
+## 2026-11-11 06:13 · 01WTjqUwi3Ab
+ora?
