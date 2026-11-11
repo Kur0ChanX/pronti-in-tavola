@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (11/11/2026 19:20 ora italiana)
+# Ultimo messaggio di Mario (11/11/2026 22:46 ora italiana)
 
-se lo rendiamo privato e mettiamo il mio PC?
+aggiungi tutti  i suoi video di ricette
