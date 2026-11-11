@@ -16,7 +16,7 @@ from stima import stima_ricetta, dolce_o_salato, porzioni, norm
 
 RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE = os.path.join(RADICE, '.cache-stime')
-QUANTE = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 500
+QUANTE = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 5000   # C141: «aggiungile tutte quante»
 UA = 'Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/124 Mobile Safari/537.36'
 os.makedirs(CACHE, exist_ok=True)
 lette = 0
@@ -64,16 +64,12 @@ def minuti(iso):
     return (int(m.group(1) or 0) * 60 + int(m.group(2) or 0)) if m else 0
 
 
-# la regola dell'app (fitRic di ricettario.js, soglie di base) — se cambiano là, cambiale qui (la prova C141 le confronta)
+# la regola d'entrata dell'app (fitRic di ricettario.js, C141 «fai passare tutte le ricette proteiche»): almeno il 20% delle calorie dalle
+# proteine (regola UE «ricco di proteine») e almeno 8 g a porzione; il resto lo dice la pagella nell'app. Se cambia là, cambiala qui.
 def fit(n):
-    if not n or n['kcal'] <= 0:
+    if not n or n['kcal'] <= 0 or n['prot'] < 8 or n['prot'] * 400 / n['kcal'] < 20:
         return False
-    quota, zuc = n['prot'] * 400 / n['kcal'], n['zuc'] * 400 / n['kcal']
-    if n['saturi'] * 900 / n['kcal'] > 13:
-        return False
-    if n['prot'] >= 25 and quota >= 25 and n['kcal'] <= 550 and zuc <= 15 and n['sodio'] <= 800:
-        return 'pasto'
-    return 'snack' if n['kcal'] <= 300 and n['prot'] >= 8 and quota >= 20 and zuc <= 30 and n['sodio'] <= 500 else False
+    return 'pasto' if n['prot'] >= 25 or n['kcal'] > 300 else 'snack'
 
 
 ATTREZZI = r'\b(ciotol|forchett|padella|coperchi|frusta|frullator|mixer|stamp[oi]|teglia|pirofil|carta forno|carta da forno|pellicola|spatol|cucchiaio di legno|bilancia|tazza da)\w*'

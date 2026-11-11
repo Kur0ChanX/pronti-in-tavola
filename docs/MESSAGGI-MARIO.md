@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 11:32 · 01WTjqUxmJ9k
-non ho ipad e iphone che è quello messo male ho solo android ora è questa è la foto sembra ok ma lo era quasi da sempre ok android
-
 ## 2026-11-10 12:50 · 01WTjqUtxqaC
 Vai di consiglio e ti chiedo metti solo le ricette un pò piú severe per il fitness e mettimi tasto cerca per per ricerche fitness che mi cerca in automatico guarda in tante fonti  gold standard molto attendibili per le ricette fitness gym senza ingrassare e ipertrofia anche ricette dolci proteiche Snack primi secondi sfizio proteico light ricette rivisitate in chiave proteica light Ne vedo moltissime su anche instagram e YouTube influenzer e canali Fit
 Cerco anche ricette immediate un esempio stupido tipo la cioccolata la fà con le proteine in polvere al cioccolato con poca acqua ecc ecc ma è un esempio 
@@ -144,3 +141,6 @@ fatto
 
 ## 2026-11-11 18:04 · 01WTjqUu7eAD
 ok vai avanti allora
+
+## 2026-11-11 18:22 · 01WTjqUu7eAD
+nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta quanto è proteica calorica grassa zuccheri sale ecc ecc con i voti o inventati tu qualcosa di migliore ti dò carta bianca fai passare tutte le ricette proteiche
