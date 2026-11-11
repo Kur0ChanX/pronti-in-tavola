@@ -18,7 +18,9 @@
 "blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": 1,
 "Stop 13 · There are uncommitted changes in": 5,
-"Stop 6 · Il turno finisce con una": 1
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1,
+"Stop 6 · Segno delle domande nel titolo": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": [
@@ -31,6 +33,12 @@
 ],
 "Stop 6 · Il turno finisce con una": [
 "11:46 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"12:54 · Ti fermi ad aspettare Mario con il contesto a 233k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"12:54 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 58 ❓12 · scegli regola dolci» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altr"
 ]
 }
 }
