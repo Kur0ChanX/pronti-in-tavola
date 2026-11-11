@@ -1,13 +1,9 @@
-# Ultima risposta di Claude (11/11/2026 11:00 ora italiana)
+# Ultima risposta di Claude (11/11/2026 11:30 ora italiana)
 
+Ho capito: il messaggio delle 11:25 risponde alla domanda delle ricette, quindi strada 1. Cerco io 200 ricette proteiche da più siti e le metto in un file dell'app, così Cloudflare non consuma niente.
+🧠 Opus · Medio
 
-
-## Domande a Mario
-
-❓ DOMANDA 1 🛑
-
-📌 Di cosa parliamo: la **corsia d'emergenza** degli avvisi. È una copia di riserva che fa partire le notifiche a Monica e ai clienti anche se il server di Cloudflare ha un guasto. Adesso è spenta: il **cassetto** (un piccolo archivio di Cloudflare dove sta la copia) l'hai creato con l'account sbagliato, `info.prontiintavola`, che non contiene l'app.
-
-A cosa serve rispondere: finché manca il cassetto giusto, un guasto del server può bloccare le notifiche.
-
-1 · Ti guido io, un tocco alla volta. Esci dall'account (Log out), rientri con l'account del sito (probabilmente …
+✅ FATTO (finora)
+- Ho scritto uno strumento che legge RicetteFit e GialloZafferano e tiene solo le ricette che passano la regola «🏋️ Proteiche» dell'app. Mette prima dolci, spuntino, merenda, colazione e dopo l'allenamento, poi il resto.
+- Le ricette vanno nel file nuovo `ricette-fit.js` (un **file statico**: un file fisso del sito, che il telefono scarica una volta e tiene).
+- …
