@@ -17,3 +17,9 @@ cerca da varie fonti»
 1. `tools/raccogli-fit.mjs` (gira sul computer di Claude, mai sul server): tutto RicetteFit + ricerche proteiche su GialloZafferano; tiene solo chi passa `fitRic` di `ricettario.js` (codice preso da lì, un posto solo); prima i momenti di Mario (fino a 3 su 4), poi il resto; niente doppioni di nome. Scrive `ricette-fit.js` (nome, foto, tempo, valori per porzione; dosi e passi dal sito d'origine all'apertura, PT E25).
 2. App: `caricaRicette` carica anche `ricette-fit.js`; `elencoRic` le aggiunge (una già nel ricettario resta la sua). File in `FILE_APP` di `tools/sito.py` e nell'anteprima (come `ricette.js`, che non sta nel `GUSCIO`).
 3. Prova nuova in `tools/prova.js` (le proteiche del file si vedono nei momenti), giro, v0.10.20, foto a Mario.
+
+## Esito (#58, 11/11)
+- v0.10.20 online: 191 proteiche in `ricette-fit.js` (RicetteFit 154, GialloZafferano 37) su 1.914 lette; 1.673 non passano le regole Proteiche, 26 senza valori. Non arrivano a 200: le altre non rispettano le soglie (soprattutto zuccheri dei dolci).
+- Momenti: dolci 13, spuntino 14, merenda 4, colazione 3 (dopo la correzione PT E65), dopo l'allenamento 50. Pochi dolci e colazioni: le soglie snack (zuccheri ≤ 20% delle kcal) li scartano → domanda a Mario.
+- v0.10.21: niente piatti salati in Colazione, Merenda, Dopo cena (PT E65).
+- Rifare/aggiungere: `node tools/raccogli-fit.mjs 200` (pagine in `.cache-fit/`), prova `SOLO=C139`, giro, push.

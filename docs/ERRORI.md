@@ -58,6 +58,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E50** «Cerca ancora» ricorda dove è arrivato; tetti dopo aver tolto le già lette; guardare il ritmo vero di ogni fonte.
 - **PT E51** Prima di dare un nome a un'azione (`data-a`) cercarlo in tutti i file (prova «nessun nome definito due volte»).
 - **PT E52** Lavoro che si ripete da solo: misurarlo PRIMA contro il limite gratuito; `node --input-type=module --check < worker.js`.
+- **PT E65** Filtro a parole (momenti, categorie): provarlo su un elenco vero e grande e guardare cosa entra; «yogurt» metteva il pollo a colazione (prova C139 con controesempio).
 - **PT E53** All'avviso di un limite PRIMA si ferma la fonte (interruttore), poi si corregge; il freno vale per tutto il server.
 - **PT E54** Per un mio errore la soluzione è gratis e nel codice, mai i soldi di Mario; consumo alto = avviso, mai una persona ferma.
 - **PT E55** Una seconda strada per una cosa che esiste: controllarla contro ogni lettore dello stato; «è cambiato?» su insiemi ordinati.
