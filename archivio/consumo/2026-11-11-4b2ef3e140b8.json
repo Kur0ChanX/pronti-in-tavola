@@ -2,19 +2,19 @@
 "account": "108763",
 "sessione": "4b2ef3e140b8",
 "giorno": "2026-11-11",
-"turni": 3,
-"peso": 565744,
-"uscita": 9882,
-"contesto_max": 158798,
+"turni": 4,
+"peso": 743413,
+"uscita": 11282,
+"contesto_max": 169799,
 "anomalie": [],
 "remota": "01WTjqUwi3Ab",
 "aiutanti": 0,
-"strumenti": 20,
+"strumenti": 21,
 "motori": {
-"opus": 565744
+"opus": 743413
 },
-"memoria_scaduta": 2,
-"ricreati": 169973,
+"memoria_scaduta": 3,
+"ricreati": 287853,
 "blocchi": {
 "Stop 6 · Il turno finisce con una": 2
 },
