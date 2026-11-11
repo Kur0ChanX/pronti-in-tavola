@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 14:31 · 01WTjqUx82oy
-riscrivimi la domanda 4 voci l'ho persa
-
-## 2026-11-08 14:33 · 01WTjqUx82oy
-non mi piacciono come tono e pause e accenti sembrano stranieri ai altre alternative?
-
 ## 2026-11-09 10:23 · 01WTjqUwCuTd
 nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me mettimi un procione nel mio nome, dopo il mio nome, nel mio utente, Monica mettili dopo il suo nome e metti un cuoricino rosso.
 
@@ -146,3 +140,9 @@ che dici se integriamo  questo per le ricerche ?
 
 ## 2026-11-11 13:52 · 01WTjqUwA2q2
 passo 2 della guida
+
+## 2026-11-11 13:55 · 01WTjqUwA2q2
+vorrei tutte le sue ricette
+
+## 2026-11-11 13:57 · 01WTjqUwA2q2
+https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[segreto tolto dalla scorta]
