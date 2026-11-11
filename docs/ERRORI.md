@@ -65,14 +65,13 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E55** Una seconda strada per una cosa che esiste: controllarla contro ogni lettore dello stato; «è cambiato?» su insiemi ordinati.
 - **PT E56** Prova di un avviso: registrare TUTTI gli avvisi (spia su `mostraToast`); «a volte» si indaga subito.
 - **PT E57** Permessi di un token: provati dal vivo; risorsa nuova su Cloudflare = passo chiaro di Mario, non a sorpresa nel deploy.
-- **PT E58** Foto fatte da me: controllo coi numeri nello script; se serve l'occhio, copia a 1x ≤400 px JPEG, mai l'originale 2x.
+- **PT E58 E71** Foto fatte da me: PRIMA la skill `foto`; controllo coi numeri nello script; se serve l'occhio, copia ≤400 px JPEG con la scritta «DI LAVORO» in alto (E314).
 - **PT E59** `git rev-parse --short` con due revisioni dà «Needed a single revision»: usare `git rev-parse HEAD origin/<ramo>`.
 - **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse (mai righe `| C…` di voci aperte); dopo ogni ritocco di Da fare `promesse.py --controlla`.
 - **PT E61** Sessione nata solo per aspettare Mario: avvio leggero, solo i passi delle consegne, niente indagini né uscite lunghe (storia).
 - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓».
 - **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
 - **PT E64** Risorsa a mano su Cloudflare: prima l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); 10041 = account sbagliato.
-- **PT E71** Prima immagine della sessione (foto di prova comprese): PRIMA la skill `foto`; ogni immagine che apro porta la scritta in alto (E314: «DI LAVORO» se è per me).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
