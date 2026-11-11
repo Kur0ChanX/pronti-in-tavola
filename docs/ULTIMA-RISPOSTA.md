@@ -1,14 +1,19 @@
-# Ultima risposta di Claude (11/11/2026 06:31 ora italiana)
+# Ultima risposta di Claude (11/11/2026 06:37 ora italiana)
 
+Ho capito: nella foto Workers & Pages è vuoto.
+🧠 Opus · Medio
+
+───
 ✅ FATTO
-- Ho collegato il tuo cassetto e ho provato a pubblicare. Cloudflare ha rifiutato: «cassetto non trovato».
-- L'app non si è rotta: online c'è ancora la versione 0.10.18, controllata.
-- Ho tolto di nuovo il collegamento, così le prossime pubblicazioni non si bloccano. Il codice del cassetto è salvato.
+- La tua foto conferma la causa: hai creato il cassetto in un **altro account** Cloudflare. Il server dell'app sta nell'account «Pronti in Tavola».
+- Ho scritto l'errore nel diario (PT E64) e ho corretto la guida: d'ora in poi si sceglie prima l'account.
 
 ───
 💡 PARERE
-Le cause possibili sono due, e per ora sono solo **ipotesi** (idee non ancora provate):
-1. Il cassetto è in un account Cloudflare diverso da quello del server.
-2. La chiave che GitHub usa per pubblicare non ha il permesso di usare i cassetti.
+Il cassetto vecchio è vuoto e non costa niente: puoi lasciarlo lì. Non serve cancellarlo.
 
-Una tua foto mi dice qual è …
+───
+👉 DA FARE TU
+**A cosa serve:** creare il cassetto nell'account dove vive l'app, così GitHub lo trova e la corsia d'emergenza si accende.
+
+1. Su Cloudflare apri …
