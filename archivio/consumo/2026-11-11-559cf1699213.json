@@ -1,0 +1,31 @@
+{
+"account": "108763",
+"sessione": "559cf1699213",
+"giorno": "2026-11-11",
+"turni": 1,
+"peso": 2557534,
+"uscita": 87236,
+"contesto_max": 311676,
+"anomalie": [
+"un turno ha aggiunto 197k token al contesto",
+"87k token scritti in un turno"
+],
+"remota": "01WTjqUwz4Kr",
+"aiutanti": 0,
+"strumenti": 93,
+"motori": {
+"opus": 2557534
+},
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"23:07 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: #66, #68, "
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"23:07 · Ti fermi ad aspettare Mario con il contesto a 311k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+]
+}
+}
