@@ -127,6 +127,9 @@ function caricaRicette() {
   s.onload = () => { RIC.stato = typeof RICETTE_GZ !== 'undefined' ? 'pronto' : 'errore'; render(); };
   s.onerror = () => { RIC.stato = 'errore'; s.remove(); render(); };
   document.head.appendChild(s);
+  /* C139 (Mario 11/11 «aggiungi 200 ricette proteiche… cerca da varie fonti»): le proteiche scelte da Claude, file del sito (zero letture del server).
+     Senza questo file il ricettario va lo stesso: si vedono appena arriva. */
+  if (typeof RICETTE_FIT === 'undefined') { const f = document.createElement('script'); f.src = 'ricette-fit.js'; f.onload = () => render(); f.onerror = () => f.remove(); document.head.appendChild(f); }
 }
 
 /* ---------- 📥 SCARICATE (Mario 08/11 «offline crea il motore… cercare e scaricare… in un click») ----------
@@ -225,7 +228,9 @@ function salvaCache(r) {
    salvate sul server (uguali sul telefono di Monica e di Mario) e copiate qui per usarle senza rete */
 RIC.scelte = (() => { try { return JSON.parse(localStorage.getItem('pit-ric-scelte') || '[]'); } catch (e) { return []; } })();
 function elencoRic() {
-  const base0 = typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : [], ids = new Set(base0.map(r => r.id));
+  const fit0 = typeof RICETTE_FIT !== 'undefined' ? RICETTE_FIT : [], gz0 = typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : [];
+  const idsGz = new Set(gz0.map(r => r.id)), sc = new Set(RIC.scelte.map(x => x.id));   // C139: una proteica già aggiunta a mano resta la sua copia
+  const base0 = gz0.concat(fit0.filter(r => !idsGz.has(r.id) && !sc.has(r.id))), ids = new Set(base0.map(r => r.id));
   const nu = {}; RIC.scelte.forEach(x => { if (x.nutr) nu[x.id] = x.nutr; });   // C124: valori per porzione dal server, anche per quelle di partenza
   const base = base0.map(r => nu[r.id] && !r.nutr ? Object.assign({}, r, { nutr: nu[r.id] }) : r);
   return base.concat(RIC.scelte.filter(x => !ids.has(x.id)).map(x => ({ id: x.id, pagina: x.id.slice(3), nome: x.nome, zona: x.zona || 'italiana', categoria: catRic(x.categoria), foto: x.foto || '', totale: Number(x.totale) || 0, difficolta: x.difficolta || '', nutr: x.nutr || null, cerca: x.cerca || '', aggiunta: x.aggiunta || 0, scelta: true, nuova: (x.aggiunta || 0) > Date.now() - 7 * 86400000 })));
