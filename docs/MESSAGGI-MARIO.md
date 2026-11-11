@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-09 10:23 · 01WTjqUwCuTd
-nell'utente che mi ha detto che io e Monica abbiamo la stellina, magari a me mettimi un procione nel mio nome, dopo il mio nome, nel mio utente, Monica mettili dopo il suo nome e metti un cuoricino rosso.
-
 ## 2026-11-09 10:56 · 01WTjqUwCuTd
 Puoi mandarmi l'animazione Inoi, quella che hai fatto tu, in altissima qualità, perché devo inviarla a un altro progetto che mi piace molto come l'hai fatta tu, come scrive, il tratto come scrive, la devo inviare a un altro progetto, sempre su Cloud, quindi fai in modo che la legga bene, insomma, sai tu come inviarglielo per comunicare al meglio senza perdersi nessun frame, me la puoi inviare?
 
@@ -146,3 +143,6 @@ passo 2 della guida
 
 ## 2026-11-11 17:16 · 01WTjqUuVtcn
 Per i dolci cerca diversi dolci con la crema proteica, magari fatta con lo shake, con gli shaker, ricette con albumi, con yogurt greco, con magari Philadelphia proteica, insomma con tutte questi prodotti proteici, magari fare che cercare un 200 ricette così. Ti avevo mandato anche un link di uno youtuber, non mi hai più risposto.
+
+## 2026-11-11 17:44 · 01WTjqUu7eAD
+chiave
