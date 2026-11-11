@@ -20,15 +20,6 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
   await page.waitForTimeout(5200);
-  /* PT E67: le prove del server (database, GialloZafferano e blog, limiti) stanno nel giro: fuori dal giro una era rossa da giorni (C130) */
-  await passo('prove del server: database, GZ, limiti (PT E67)', async () => {
-    for (const f of ['prova-database.mjs', 'prova-gz.mjs', 'prova-limiti.mjs']) {
-      let out = '';
-      try { out = require('child_process').execFileSync('node', [path.join(__dirname, f)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 110000 }); }
-      catch (e) { throw new Error(f + ' rossa: ' + String(e.stdout || e.message).split('\n').filter(l => /^NO\b|Error/.test(l)).slice(0, 3).join(' · ')); }
-      if (!/\b0 NO\b/.test(out)) throw new Error(f + ': esito mancante');
-    }
-  });
   await passo('vapore dopo l\'apertura anche per i clienti (C115)', async () => {
     await page.locator('.vapore').waitFor({ state: 'attached', timeout: 4000 });
     await page.locator('.vapore').waitFor({ state: 'detached', timeout: 6000 });
@@ -1824,7 +1815,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       const mom = {}; ['dolci', 'spuntino', 'merenda', 'colazione', 'allenamento', 'pranzo', 'cena'].forEach(m => { mom[m] = fit.filter(x => momentoRic(x, m)).length; });
       const salateCol = fit.filter(x => (momentoRic(x, 'colazione') || momentoRic(x, 'dolci')) && /pollo|tacchin|gamber|tonno|salmone/.test(senzaAccenti(x.nome))).map(x => x.nome);   // C139: mai «Pollo allo yogurt» a colazione
       if (momentoRic({ nome: 'Pollo allo yogurt prova', categoria: 'secondi', nutr: { kcal: 300, prot: 40, carb: 5, zuc: 2, saturi: 1, sodio: 300 } }, 'colazione')) salateCol.push('prova finta');
-      return { salateCol, file: RICETTE_FIT.length, fit: fit.length, tutteFit: fit.every(x => fitRic(x.nutr)), stessa: stessa.map(x => x.nome), mom, fonti: perFonte(fit), conLink: fit.every(x => /^(gz|rf):[\w%-]+$/.test(x.id) && x.foto) };
+      return { salateCol, file: RICETTE_FIT.length, fit: fit.length, tutteFit: fit.every(x => fitRic(x.nutr)), stessa: stessa.map(x => x.nome), mom, fonti: perFonte(fit), conLink: fit.every(x => /^(?:(?:gz|rf):[\w%-]+|bg:[a-z0-9-]+\/[\w%-]+)$/.test(x.id) && x.foto) };
     });
     if (r.file < 150 || r.fit !== r.file - 1 || !r.tutteFit || JSON.stringify(r.stessa) !== '["Copia mia prova"]' || !r.conLink || r.salateCol.length) throw new Error('C139: file delle proteiche sbagliato: ' + JSON.stringify(r));
     if (!(r.mom.dolci >= 3 && r.mom.colazione >= 2 && r.mom.spuntino >= 10 && r.mom.merenda >= 3 && r.mom.allenamento >= 10) || !/GialloZafferano \d+ · RicetteFit \d+|RicetteFit \d+ · GialloZafferano \d+/.test(r.fonti)) throw new Error('C139: momenti di Mario o fonti scarsi: ' + JSON.stringify(r));
@@ -2011,6 +2002,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const vbg = await page.evaluate(() => ({ v: window.__vbg, u: urlRic('bg:annatorte/ricetta-muffin-fit'), f: fonteRic({ id: 'bg:a/b' }), i: idDaUrl('https://blog.giallozafferano.it/annatorte/ricetta-muffin-fit/') }));
     if (vbg.v !== 'ricetta:bg:annatorte/ricetta-muffin-fit' || vbg.u !== 'https://blog.giallozafferano.it/annatorte/ricetta-muffin-fit/' || vbg.f !== 'Blog di GialloZafferano' || vbg.i !== 'bg:annatorte/ricetta-muffin-fit') throw new Error('C139 link di un Blog di GialloZafferano: ' + JSON.stringify(vbg));
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaRf; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
+  });
+  /* PT E67: le prove del server (database, GialloZafferano e blog, limiti) stanno nel giro: fuori dal giro una era rossa da giorni (C130) */
+  await passo('prove del server: database, GZ, limiti (PT E67)', async () => {
+    for (const f of ['prova-database.mjs', 'prova-gz.mjs', 'prova-limiti.mjs']) {
+      let out = '';
+      try { out = require('child_process').execFileSync('node', [path.join(__dirname, f)], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], timeout: 110000 }); }
+      catch (e) { throw new Error(f + ' rossa: ' + String(e.stdout || e.message).split('\n').filter(l => /^NO\b|Error/.test(l)).slice(0, 3).join(' · ')); }
+      if (!/\b0 NO\b/.test(out)) throw new Error(f + ': esito mancante');
+    }
   });
   console.log(errori.length ? errori.join('\n') : 'Nessun errore nella pagina');
   await browser.close();

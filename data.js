@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.22';
+const VERSIONE_APP = '0.10.23';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.23', data: '11/11/2026',
+    nuovo: ['Ricettario: anche le ricette dei Blog di GialloZafferano (un link incollato nella ricerca si apre dentro l\'app)'],
+    migliorato: ['Ricettario, Proteiche: dolci e snack un po\' più dolci ammessi (proteine almeno 8 g, zuccheri fino al 30%): più ricette in «🍰 Dolci», «🧃 Merenda» e «🌅 Colazione»'] },
   { v: '0.10.22', data: '11/11/2026',
     corretto: ['Ricettario, Proteiche: in «🍰 Dolci» non compaiono più piatti salati con «patate dolci» o «agrodolce» nel nome'] },
   { v: '0.10.21', data: '11/11/2026',
