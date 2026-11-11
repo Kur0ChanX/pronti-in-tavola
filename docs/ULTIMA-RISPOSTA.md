@@ -1,13 +1,5 @@
-# Ultima risposta di Claude (11/11/2026 11:00 ora italiana)
+# Ultima risposta di Claude (11/11/2026 11:30 ora italiana)
 
+Ho salvato su GitHub il lavoro fatto a metà, come **patch** (un file che descrive le modifiche al codice, da applicare dopo). Così non va perso.
 
-
-## Domande a Mario
-
-❓ DOMANDA 1 🛑
-
-📌 Di cosa parliamo: la **corsia d'emergenza** degli avvisi. È una copia di riserva che fa partire le notifiche a Monica e ai clienti anche se il server di Cloudflare ha un guasto. Adesso è spenta: il **cassetto** (un piccolo archivio di Cloudflare dove sta la copia) l'hai creato con l'account sbagliato, `info.prontiintavola`, che non contiene l'app.
-
-A cosa serve rispondere: finché manca il cassetto giusto, un guasto del server può bloccare le notifiche.
-
-1 · Ti guido io, un tocco alla volta. Esci dall'account (Log out), rientri con l'account del sito (probabilmente …
+I file di codice veri non li carico ancora: caricarli pubblica subito il sito, e senza il file delle ricette la pubblicazione si romperebbe. Li carico tutti insieme quando lo strumento finisce, dopo le prove.
