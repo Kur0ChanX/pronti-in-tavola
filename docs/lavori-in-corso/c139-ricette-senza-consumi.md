@@ -34,3 +34,9 @@ Prossimo: terza fonte «blog GZ» in `tools/raccogli-fit.mjs` (trovare l'elenco 
 - Regola 2 applicata (soglie snack 8 g · 20 % · 30 %). Terza fonte **Blog di GialloZafferano** nel codice (id «bg:<blog>/<ricetta>», `gz.mjs` `urlBg`/`bgCerca`, server e app): la ricerca di GZ mostra già i blog; circa 1 su 5 ha i valori per porzione (provato su 32). Raccolta rifatta in sottofondo.
 - Mario 13:55 (nella #59, foto `archivio/foto/2026-11-11-1355-youtube-pietrobon.jpg`): «vorrei tutte le sue ricette» (Massimo Pietrobon Gobbi, YouTube/Instagram/TikTok). Trovato (ricerca 11/11): nessun sito né blog; le ricette sono solo nelle descrizioni dei video/post, con «Kcal totali» della ricetta intera (non per porzione) e codici sconto. Instagram vuole il login. → DOMANDA a Mario.
 - **v0.10.23 online (#60)**: 200 proteiche (RicetteFit 163, GZ 36, blog 1); dolci 22, spuntino 53, merenda 23, colazione 17, allenamento 52. Blog: 348 candidate, quasi tutte senza valori per porzione → 1 sola entra. Giro 94/94. Manca: foto di Mario.
+
+## 11/11 #61 · Mario (sera, parola per parola)
+«Per i dolci cerca diversi dolci con la crema proteica, magari fatta con lo shake, con gli shaker, ricette con albumi, con yogurt greco, con magari Philadelphia proteica, insomma con tutte questi prodotti proteici, magari fare che cercare un 200 ricette così. Ti avevo mandato anche un link di uno youtuber, non mi hai più risposto.»
+- Prima: 15:05 foto Proteiche con 4-5 dolci → telefono ancora su v0.10.22 (v0.10.23 online alle 15:20): chiudi e riapri.
+- Scoperto: i Blog di GialloZafferano danno i valori «per una porzione di 100 g» (JSON-LD `servingSize: 100 g`), non per porzione vera. Es. pancake proteici del blog: 239 kcal, 11,7 g prot / 100 g → quota 19,6 % < 20: fuori per poco.
+- Passo 1: +50 parole di ricerca in `tools/raccogli-fit.mjs` (proteine in polvere, whey, philadelphia, quark, mug cake, albumi…), raccolta 600 in sottofondo per misurare quanti dolci esistono con le regole di oggi.
