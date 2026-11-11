@@ -26,10 +26,11 @@ TIPI = [('Pancake', r'pancake'), ('Porridge', r'porridge|porridgemis'), ('Cheese
         ('Budini e creme', r'budin|pudding|crem[ae]|cremin|mousse|tiramis|panna ?cotta'),
         ('Frullati', r'frullat|shake|smoothie'), ('Pane e salati', r'bread|pane|piadin|pizz|focacc|toast|wrap'),
         ('Pasti', r'poll[oi]|tacchin|tonno|salmon|pasta|ris[oi]\b|riso|patat|uov[ao]|frittat|burger|polpett|insalat|carne|manzo|zucchin')]
-CIBO = r'(?i)\b(tort[ae]|tortin\w*|cheesecake|cheescake|pancake|bread|pane|pizz\w*|biscott\w*|muffin|crem[ae]|cremin\w*|gelat\w*|tiramis\w*|budin\w*|brownie|plumcake|frittat\w*|poll[oi]|tonno|salmon\w*|pasta|insalat\w*|burger|wrap|piadin\w*|toast|porridge\w*|overnight|yogurt|mousse|cookie|crepes?|waffle|ricett\w*|polpett\w*|cake|crostat\w*|ciambell\w*|focacc\w*|spumone|semifredd\w*|sorbett\w*|pudding|frullat\w*|smoothie|lattaiolo|brioss)\b'
+CIBO = r'(?i)\b(tort[ae]|tortin\w*|cheesecake|cheescake|pancake|bread|pane|pizz\w*|biscott\w*|muffin|crem[ae]|cremin\w*|gelat\w*|tiramis\w*|budin\w*|brownie|plumcake|frittat\w*|poll[oi]|tonno|salmon\w*|pasta|insalat\w*|burger|wrap|piadin\w*|toast|porridge\w*|overnight|yogurt|mousse|cookie|crepes?|waffle|ricett\w*|polpett\w*|cake|crostat\w*|ciambell\w*|focacc\w*|spumone|semifredd\w*|sorbett\w*|pudding|frullat\w*|smoothie|lattaiolo|brioss|muffins|nuggets|angel ?cake|bake?c?ke?d ?oats?|pancakemis\w*|chersecake|portidge|pluncake|gelatofit|sushi|banana ?bread)\b'
 INTEGRATORI = r'(?i)melatonin|omega ?3|creatina|\beaa\b|beta ?alanin|\bvit\.? ?[cd]\b|\bzm[ab]'
 # Video di cibo che NON sono una ricetta (scherzi, saluti, giornate alimentari): letti a occhio l'11/11 con --elenco.
-NON_RICETTE = r'(?i)non chiedetemi|è salvo|grazie ragazzi|cosa mangio|settimane (dalla|della) gara|in ogni situazione #gym #funny'
+NON_RICETTE = (r'(?i)non chiedetemi|è salvo|grazie ragazzi|cosa mangio|settimane (dalla|della) gara|in ogni situazione #gym #funny'
+               r'|full ?day ?of ?eating|allenamento|peak ?week|push day|pull day|leg day|\bbulk\b|weeks out|pasto libero|dopo mesi')
 VUOTO = r'(?i)^\s*(codice|cod\.? sconto|sconto|usa il codice|link|http|www\.|@|seguimi|iscriviti|instagram|tiktok)'
 
 
@@ -84,19 +85,18 @@ def numeri(riga):
     «Per metà pancake : 505 kcal / 65.5 g carbo / 33.3 proteime / 10.2 g grass», «54 g carbo / … kcal 515»."""
     t = riga.lower().replace(',', '.')
     N = r'(\d+(?:\.\d+)?)'
-    def primo(*rx):
-        for r in rx:
-            m = re.search(r, t)
-            if m:
-                return float(m.group(1))
-        return None
+    def primo(*rx):   # fra più forme vince quella che compare PRIMA nella riga (i totali prima di «Metà : 555 kcal»)
+        mm = [m for m in (re.search(r, t) for r in rx) if m]
+        return float(min(mm, key=lambda m: m.start()).group(1)) if mm else None
     def ultimo(r):
         m = re.findall(r, t)
         return float(m[-1]) if m else None
-    v = {'kcal': primo(N + r'\s*kcal', r'kcal\D{0,25}?' + N),
+    v = {'kcal': primo(N + r'\s*kcal', r'kcal\D{0,45}?' + N),
          'carb': primo(N + r'\s*g?\s*(?:carbo\w*|c)\b'),
          'prot': primo(N + r'\s*g?\s*(?:prot\w*|p)\b'),
          'grassi': primo(N + r'\s*g?\s*grass\w*') or ultimo(N + r'\s*g\b(?!\s*(?:carb|prot|c\b|p\b))')}
+    if v['kcal'] is None and None not in (v['carb'], v['prot'], v['grassi']):
+        v['kcal'] = round(4 * v['carb'] + 4 * v['prot'] + 9 * v['grassi'])   # «Per un gelato : 18 g carbo / 20 g proteine / 11 g»
     if None in v.values() or not (50 <= v['kcal'] <= 2500):
         return None
     if abs(4 * v['prot'] + 4 * v['carb'] + 9 * v['grassi'] - v['kcal']) > 0.2 * v['kcal'] + 30:
@@ -104,24 +104,103 @@ def numeri(riga):
     return v
 
 
-def nome_pulito(titolo, tipo):
+# Come si scrivono nell'app i cibi presi da hashtag e titoli (#pluncake → Plumcake). Il resto: prima lettera maiuscola.
+NOMI_CIBO = {'cheescake': 'Cheesecake', 'chersecake': 'Cheesecake', 'portidge': 'Porridge', 'pluncake': 'Plumcake', 'muffins': 'Muffin',
+             'gelatofit': 'Gelato fit', 'angelcake': 'Angel cake', 'bakedoats': 'Baked oats', 'backedoat': 'Baked oats', 'bakedoat': 'Baked oats',
+             'pancakemisu': 'Pancakemisù', 'bread': 'Pane', 'bananabread': 'Banana bread', 'crepe': 'Crêpes', 'crepes': 'Crêpes',
+             'tiramisu': 'Tiramisù', 'ricettafit': 'Ricetta fit', 'gelatino': 'Gelato', 'polli': 'Pollo'}
+# Un nome per tipo, quando il titolo non dice altro
+TIPO_UNO = {'Torte e tortini': 'Torta', 'Budini e creme': 'Crema', 'Gelati e freddi': 'Gelato', 'Frullati': 'Frullato', 'Pane e salati': 'Pane',
+            'Pasti': 'Piatto', 'Altro': 'Ricetta'}
+MESI = ['gen', 'feb', 'mar', 'apr', 'mag', 'giu', 'lug', 'ago', 'set', 'ott', 'nov', 'dic']
+# Ingredienti che non danno il nome (pesano poco o ci sono ovunque)
+BANALI = (r'\b(acqua|sale|lievit\w*|bicarbonato|dolcific\w*|eritrit\w*|ertritol\w*|stevia|cannella|vanigli\w*|vanillina|aroma\w*|scorza|succo|'
+          r'ghiaccio|pepe|olio|yumm\w*|topping|amido|latte|piacere|facoltativ\w*|faciltativ\w*|spray|caffe|frullate)\b')
+SOLO_NOME = [(r'(farina|fiocchi|crema)( di| d)? ?avena|^avena', 'avena'), (r'^album', 'albumi'), (r'^uov', 'uova'), (r'^yogurt greco', 'yogurt greco'),
+             (r'^proteine|^whey|^isolat', 'proteine'), (r'^philadelphia', 'philadelphia'), (r'^ricotta', 'ricotta'), (r'^banan', 'banana'),
+             (r'^cacao', 'cacao'), (r'^gocce di cioccolato', 'gocce di cioccolato'), (r'^cioccolat', 'cioccolato'), (r'^mirtill', 'mirtilli'),
+             (r'^skyr', 'skyr'), (r'^fragol', 'fragole'), (r'^mel[ae]\b', 'mela'), (r'^burro di arachid', 'burro di arachidi'), (r'^zucca', 'zucca'),
+             (r'^pollo|^petto di pollo', 'pollo'), (r'^tonno', 'tonno'), (r'^patat[ae] dolc', 'patate dolci'), (r'^carot', 'carote'), (r'^limon', 'limone')]
+AGGETTIVI = r'\b(intere?|intero|light|magr\w*|neutr\w*|grattugg?iat\w*|amaro|fresc\w*|surgelat\w*|cott\w*|crud\w*|schiacciat\w*|zero|bianc[oa])\b'
+
+
+def nome_cibo(testo):
+    """Il cibo nominato nel titolo o negli hashtag (#pluncake → Plumcake); «ricetta» solo se non c'è altro."""
+    tt = [m.group(0) for m in re.finditer(CIBO, testo)]
+    t = next((x for x in tt if not re.match(r'(?i)ricett', x)), tt[0] if tt else '').replace('#', '').strip()
+    k = norm(t).replace(' ', '')
+    return NOMI_CIBO.get(k, t.capitalize()) if t else ''
+
+
+def generico(n):
+    """Nome che non distingue una ricetta dall'altra («Pancake», «Ricetta», «8 settembre 2026», «Torte e tortini»)."""
+    t = re.sub(r'\b(fit|fitness|proteic\w*|ricett\w*|la mia|versione|il mio|di|e|al|alla)\b', ' ', norm(n))
+    return len(t.split()) <= 1 or bool(re.fullmatch(r'\s*\d{1,2}\s+\w+\s+\d{4}\s*', n))
+
+
+def principali(ing, base):
+    """I due ingredienti che danno il nome («Pancake con albumi e avena»): nell'ordine in cui li scrive lui, senza i banali."""
+    out, b = [], (norm(base).split() or [''])[0]
+    for l in ing:
+        t = norm(l)
+        t = re.sub(r'^[\d ]*(g|gr|grammi|ml|cl|kg|scoop|misurin\w*|cucchiai\w*|cucchiain\w*|tazzin\w*|vasett\w*|fett\w*|pizzico)?\b ?(di |d )?', '', t)
+        t = re.split(r'\b(o|io|oppure|al|alla|allo|ai|alle|gusto|tipo|circa|a occhio|q b|qb)\b', t)[0].strip()
+        if not t or re.search(BANALI, t) or (b and b in t):
+            continue
+        for rx, nome in SOLO_NOME:
+            if re.search(rx, t):
+                t = nome
+                break
+        else:
+            t = ' '.join(re.sub(AGGETTIVI, ' ', t).split()[:3])
+        if t and t not in out and not re.search(r'\d', t):
+            out.append(t)
+        if len(out) == 2:
+            break
+    return out
+
+
+def nome_pulito(titolo, tipo, ing, data, testo=''):
+    """Il nome come lo scrive lui; se non distingue la ricetta («Pancake», «#ricetta», i soli valori, una data):
+    cibo + due ingredienti principali («Pancake con albumi e avena»), sennò cibo + data del video («Pancake del 27 nov 2025»)."""
     n = re.sub(r'(?i)\s*(#\w+|@\w+|codice.*|cod\.? sconto.*|“[^”]*”|"[^"]*")', ' ', titolo)
     n = re.sub(r'\s+', ' ', n).strip(' -:/!.,')
-    if re.search(r'(?i)kcal|\d+\s*g\s*(carbo|prot|grass)', n) or len(re.sub(r'[^a-zàèéìòù]', '', n.lower())) < 3:
-        m = re.search(CIBO, titolo)   # il titolo sono i valori o solo hashtag: il nome viene dal cibo nominato, o dal tipo
-        n = (m.group(0) if m else tipo).replace('#', '')
-        n = {'cheescake': 'cheesecake', 'porridgemisù': 'porridgemisù'}.get(n.lower(), n)
+    if re.search(r'(?i)kcal|\d+\s*g?\s*(carbo|prot|grass)', n):
+        n = ''   # il titolo sono i valori: il nome viene dal cibo nominato
     if n.isupper() or n.islower():
         n = n.capitalize()
-    return n
+    n = NOMI_CIBO.get(norm(n).replace(' ', ''), n)
+    if n and not generico(n):
+        return n
+    base = n if n and not re.match(r'(?i)(ricett|altro|\d)', n) else ''
+    base = base or nome_cibo(titolo) or nome_cibo(' '.join(re.findall(r'#\w+', testo))) or TIPO_UNO.get(tipo, tipo)
+    if re.match(r'(?i)ricett', base):
+        base = TIPO_UNO.get(tipo, tipo)
+    pp = principali(ing, base)
+    if pp:
+        return f"{base} con {' e '.join(pp)}"
+    a, m, g = (data.split('-') + ['', '', ''])[:3]
+    return f"{base} del {int(g)} {MESI[int(m) - 1]} {a}" if g else base
 
 
 def tipo_di(*testi):
-    t = norm(' '.join(testi))
-    for nome, rx in TIPI:
-        if re.search(rx, t):
-            return nome
+    """Il primo testo che dice un tipo vince: prima il titolo, poi gli hashtag, poi gli ingredienti («Torta brasiliana» è una torta
+    anche se fra gli ingredienti c'è l'avena al gusto brownie)."""
+    for testo in testi:
+        t = norm(testo)
+        for nome, rx in TIPI:
+            if re.search(rx, t):
+                return nome
     return 'Altro'
+
+
+def porzioni_suoi(riga):
+    """(valori già a porzione?, porzioni) dalla riga dei suoi valori: «Per metà pancake : 505 kcal» = a porzione, 2;
+    «Per due pasti. Kcal totali : 1323» = totali, 2; «Kcal totali : 519» = ricetta intera, 1."""
+    t = norm(riga)
+    due = bool(re.search(r'\bmeta\b|\bmezz|\b(2|due)( 3)? pasti|\bx ?2\b|per (2|due)\b', t))
+    gia = bool(re.search(r'per meta|per mezz|kcal mezz|a fetta|per un gelato|a porzione|per porzione', t))
+    return gia, 2 if due else 1
 
 
 def testo_pulito(testo):
@@ -131,7 +210,7 @@ def testo_pulito(testo):
         if not l or re.search(VUOTO, l) or re.search(r'(?i)codice|sconto|https?://', l):
             continue
         righe.append(l)
-    return '\n'.join(righe)[:900]
+    return '\n'.join(righe)[:600]
 
 
 def main():
