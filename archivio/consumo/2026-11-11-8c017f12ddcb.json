@@ -2,18 +2,18 @@
 "account": "108763",
 "sessione": "8c017f12ddcb",
 "giorno": "2026-11-11",
-"turni": 7,
-"peso": 980923,
-"uscita": 22824,
-"contesto_max": 233173,
+"turni": 8,
+"peso": 1100199,
+"uscita": 24641,
+"contesto_max": 261890,
 "anomalie": [
 "1 uscite di strumento enormi (233 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ],
 "remota": "01WTjqUtkYee",
 "aiutanti": 0,
-"strumenti": 36,
+"strumenti": 39,
 "motori": {
-"opus": 980923
+"opus": 1100199
 },
 "blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": 1,
