@@ -99,7 +99,7 @@ const saleRic = n => n && n.sodio != null ? Math.round(n.sodio * 2.5 / 100) / 10
 /* «perché è qui»: es. «💪 32 g proteine · 410 kcal · sale 0,9 g» */
 const rigaFit = n => n && n.kcal > 0 ? `💪 ${n.prot != null ? numIt(n.prot) + ' g proteine · ' : ''}${Math.round(n.kcal)} kcal${saleRic(n) != null ? ' · sale ' + numIt(saleRic(n)) + ' g' : ''}${fitRic(n) === 'snack' ? ' · snack o dolce' : ''}` : '';
 /* C124 (Mario 10/11 «le ricette di GialloZafferano segnale… e segnami la fonte»): da dove viene ogni ricetta */
-const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit', bg: 'Blog di GialloZafferano' };   // C139: bg = Blog di GialloZafferano
+const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit', bg: 'Blog di GialloZafferano', cp: 'Cookpad', yt: 'YouTube' };   // C141: cp, yt   // C139: bg = Blog di GialloZafferano
 const fonteRic = r => r.mia ? 'Ricetta tua' : FONTI_RIC[String(r.id || '').split(':')[0]] || 'GialloZafferano';
 /* C125 pezzo 4 (Mario 10/11 «sembra che carichi solo ricette di GialloZafferano»): quante per fonte, es. «GialloZafferano 9 · RicetteFit 3» */
 const perFonte = rr => { const n = {}; rr.forEach(r => { if (!r.mia) { const f = fonteRic(r); n[f] = (n[f] || 0) + 1; } }); return Object.keys(n).sort((a, b) => n[b] - n[a] || a.localeCompare(b)).map(f => `${f} ${n[f]}`).join(' · '); };
@@ -161,6 +161,8 @@ function caricaRicette() {
   /* C139 (Mario 11/11 «aggiungi 200 ricette proteiche… cerca da varie fonti»): le proteiche scelte da Claude, file del sito (zero letture del server).
      Senza questo file il ricettario va lo stesso: si vedono appena arriva. */
   if (typeof RICETTE_FIT === 'undefined') { const f = document.createElement('script'); f.src = 'ricette-fit.js'; f.onload = () => render(); f.onerror = () => f.remove(); document.head.appendChild(f); }
+  /* C141 (Mario 11/11 «aggiungile tutte quante»): le proteiche coi VALORI STIMATI (Cookpad, blog di GialloZafferano, YouTube), file del sito */
+  if (typeof RICETTE_STIMATE === 'undefined') { const f = document.createElement('script'); f.src = 'ricette-stimate.js'; f.onload = () => render(); f.onerror = () => f.remove(); document.head.appendChild(f); }
 }
 
 /* ---------- 📥 SCARICATE (Mario 08/11 «offline crea il motore… cercare e scaricare… in un click») ----------
@@ -261,7 +263,8 @@ RIC.scelte = (() => { try { return JSON.parse(localStorage.getItem('pit-ric-scel
 function elencoRic() {
   const fit0 = typeof RICETTE_FIT !== 'undefined' ? RICETTE_FIT : [], gz0 = typeof RICETTE_GZ !== 'undefined' ? RICETTE_GZ : [];
   const idsGz = new Set(gz0.map(r => r.id)), sc = new Set(RIC.scelte.map(x => x.id));   // C139: una proteica già aggiunta a mano resta la sua copia
-  const base0 = gz0.concat(fit0.filter(r => !idsGz.has(r.id) && !sc.has(r.id))), ids = new Set(base0.map(r => r.id));
+  const st0 = typeof RICETTE_STIMATE !== 'undefined' ? RICETTE_STIMATE.map(stimataRic) : [];   // C141
+  const base0 = gz0.concat(fit0.filter(r => !idsGz.has(r.id) && !sc.has(r.id)), st0), ids = new Set(base0.map(r => r.id));
   const nu = {}; RIC.scelte.forEach(x => { if (x.nutr) nu[x.id] = x.nutr; });   // C124: valori per porzione dal server, anche per quelle di partenza
   const base = base0.map(r => nu[r.id] && !r.nutr ? Object.assign({}, r, { nutr: nu[r.id] }) : r);
   return base.concat(RIC.scelte.filter(x => !ids.has(x.id)).map(x => ({ id: x.id, pagina: x.id.slice(3), nome: x.nome, zona: x.zona || 'italiana', categoria: catRic(x.categoria), foto: x.foto || '', totale: Number(x.totale) || 0, difficolta: x.difficolta || '', nutr: x.nutr || null, cerca: x.cerca || '', aggiunta: x.aggiunta || 0, scelta: true, nuova: (x.aggiunta || 0) > Date.now() - 7 * 86400000 })));
@@ -323,10 +326,20 @@ function ispira() {
     })
     .finally(() => { RIC.ispiraVa = false; if (UI.vista === 'ricettario') render(); });
 }
+/* C141: una ricetta del file delle stimate come le altre dell'elenco; aperta, ha gli ingredienti del file e i passi sulla fonte (PT E25) */
+const STIMATE_CACHE = {};
+function stimataRic(x) {
+  if (STIMATE_CACHE[x.id]) return STIMATE_CACHE[x.id];
+  const ing = (x.ingredienti || []).map(ingRic).filter(i => i.nome);
+  return (STIMATE_CACHE[x.id] = { id: x.id, nome: x.nome, zona: 'italiana', categoria: x.dolce ? 'dolci' : '', foto: x.foto || '', totale: Number(x.totale) || 0, difficolta: '',
+    nutr: x.nutr, stimata: true, url: x.url, autore: x.autore || '', porzioni: x.porzioni || 1, ingredienti: ing, passi: [], cerca: ing.map(i => i.nome).join(', ') });
+}
+const isStimata = id => /^(cp|yt):/.test(String(id || '')) || (typeof RICETTE_STIMATE !== 'undefined' && RICETTE_STIMATE.some(x => x.id === id));
 /* la ricetta completa: mia, già sul telefono, o da chiedere al server */
 function ricetta(id) {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (/^mia:/.test(id)) { const m = mieRic().find(x => x.id === id); return m ? daMia(m) : null; }
+  if (isStimata(id) && typeof RICETTE_STIMATE !== 'undefined') { const x = RICETTE_STIMATE.find(y => y.id === id); if (x) return stimataRic(x); }
   return cacheRic()[id] || RIC.scaricate[id] || null;
 }
 function apriGz(id) {
@@ -417,7 +430,7 @@ function attesaRic(titolo, indietro, testo) {
 }
 const cartaRic = (r, pref, conValori) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
-    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${esc(rigaFit(r.nutr))}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;
+    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ''}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;
 /* C128 (Mario 10/11 «ne ho pochissime»; C127 «fammi capire chiaro se sono state caricate»): a che punto è la lettura delle fonti.
    Mentre carica ricette il server legge RicetteFit (5 ogni 30 s) e i valori che mancano (10 ogni 30 s); qui i numeri e una stima del tempo.
    C136: col motore automatico spento (di base) si legge solo a mano: il testo dice dove toccare, niente «parto da sola». */
@@ -798,7 +811,7 @@ function vRicetta(id) {
   const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
   let h = testataMonica('Ricetta', 'ricettario') + '<main class="corpo">';
   // Mario 08/11: «il play come prima cosa nella ricetta»
-  h += `<button type="button" class="btn pieno ric-play" data-a="ric-play" data-v="${esc(id)}">▶️ Ascolta la ricetta passo passo</button>`;
+  if (r.passi.length) h += `<button type="button" class="btn pieno ric-play" data-a="ric-play" data-v="${esc(id)}">▶️ Ascolta la ricetta passo passo</button>`;
   if (webRic(id) && !nelRicettario(id)) h += `<section class="scheda ric-aggiungi"><p style="margin:0"><b>Non è ancora nel tuo ricettario.</b> Ti piace? Aggiungila: la vedrete tu e Monica nell'elenco, con video, foto e voce.</p>
     <button type="button" class="btn pieno" data-a="ric-aggiungi" data-v="${esc(id)}">➕ Aggiungi al mio ricettario</button></section>`;
   else if ((RIC.scelte || []).some(x => x.id === id)) h += `<p class="piccolo tenue" style="margin:0">✓ Nel tuo ricettario · <button type="button" class="link" data-a="ric-togli" data-v="${esc(id)}">Togli</button></p>`;
@@ -822,7 +835,8 @@ function vRicetta(id) {
       <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${esc(id)}">${ico('carrello')}Metti nella lista della spesa</button></section>
     <section class="scheda"><h2>📝 Le tue note</h2><textarea id="ric-nota" data-ricnota="${esc(id)}" rows="2" maxlength="1000" placeholder="Es. metà zucchero; a Laura piace con più pecorino">${esc(notaRic(id))}</textarea>
       <p class="piccolo tenue" style="margin:0">Si salvano da sole su questo telefono e le rivedi nella cucina guidata.</p></section>
-    <section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${(fr => r.passi.map((p, k) => `<li><div>${fotoPasso(p, false, fr[k])}<span>${passoHtml(p.t)}</span></div></li>`).join(''))(fotoRicetta(r))}</ol></section>`;
+    ${r.passi.length ? `<section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${(fr => r.passi.map((p, k) => `<li><div>${fotoPasso(p, false, fr[k])}<span>${passoHtml(p.t)}</span></div></li>`).join(''))(fotoRicetta(r))}</ol></section>`
+      : r.url ? `<section class="scheda"><h2>Passo passo</h2><p style="margin:0">I passi sono su ${esc(fonteRic(r))}${/^yt:/.test(id) ? ', nel video e sotto il video' : ''}.</p><a class="btn pieno" href="${esc(r.url)}" target="_blank" rel="noopener">${/^yt:/.test(id) ? '▶️ Guarda il video' : '📖 Leggi i passi'} su ${esc(fonteRic(r))} ↗</a></section>` : ''}`;
   if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di ${esc(fonteRic(r))}${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
@@ -839,6 +853,7 @@ function valoriRic(n, r) {
     ${pagellaHtml(n)}
     <div class="ric-valori-griglia">${cella(Math.round(n.kcal), 'kcal')}${cella(g(n.prot), 'proteine')}${cella(g(n.carb), 'carboidrati')}${cella(g(n.grassi), 'grassi')}</div>
     ${sotto ? `<p class="piccolo" style="margin:0">${sotto}</p>` : ''}
+    ${r && r.stimata ? `<p class="piccolo ric-stimati" style="margin:0">≈ <b>Valori stimati</b> da Claude dagli ingredienti (tabella CREA ed etichette dei prodotti proteici), non verificati: possono sbagliare di circa il 10%.</p>` : ''}
     <p class="piccolo tenue" style="margin:0">Valori indicativi di ${esc(fonteRic(r))}${/^gz:/.test(r.id || '') ? ' (dati Edamam)' : /^rf:/.test(r.id || '') ? ' (tabelle CREA)' : /^bg:/.test(r.id || '') ? ' (calcolati dal blog)' : ''}, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p></section>`;
 }
 /* il video si gioca DENTRO l'app: Android/iPhone col lettore del telefono; dove serve, hls.js (si scarica solo allora) */
