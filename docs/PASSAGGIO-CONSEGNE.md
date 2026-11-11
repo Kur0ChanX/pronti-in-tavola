@@ -41,7 +41,7 @@ Sessione attuale: #59 (dopo la #58 `session_01WTjqUtkYeeZHD4f7DVbw4V`, chiusa al
 
 ## Prossimi passi
 0. Avvio leggero. Controlla il sito: v0.10.22.
-1. Mario risponde alla DOMANDA regola dolci (riga C139 in «Aspetta Mario»). Con 2: soglie di base `fitSnackProt` 8, `fitSnackPerc` 20, `fitSnackZuc` 30 in `ricettario.js` (`fitRic`) e in `opzioni.js` (stessi nomi), aggiorna la nota delle regole e le prove C124/C125 che citano «10 g»/«30 %»; poi `node tools/raccogli-fit.mjs 200` (rilegge i siti, ~30 min, in sottofondo), `SOLO=C139`, giro completo, versione, push, foto. Con 3: cercare un terzo sito con valori per porzione nel JSON-LD (fonti ufficiali, PT E25).
+1. Mario ha risposto «2» (13:42, nella #58: «2 dolci ancora leggeri e proteici. Puoi cercare dei siti o portali famosi con ricette fitness con inventiva e fantasia cerca bene ovunque nel web se hai blocchi per carcare dimmelo») → regole snack più larghe E cerca altri siti fitness famosi (anche stranieri se con valori per porzione; fonti ufficiali, PT E25; ogni blocco di ricerca o di sito detto subito a Mario). Per la 2: soglie di base `fitSnackProt` 8, `fitSnackPerc` 20, `fitSnackZuc` 30 in `ricettario.js` (`fitRic`) e in `opzioni.js` (stessi nomi), aggiorna la nota delle regole e le prove C124/C125 che citano «10 g»/«30 %»; poi `node tools/raccogli-fit.mjs 200` (rilegge i siti, ~30 min, in sottofondo), `SOLO=C139`, giro completo, versione, push, foto. Con 3: cercare un terzo sito con valori per porzione nel JSON-LD (fonti ufficiali, PT E25).
 2. C140: alla risposta di Mario sul motore di casa (foto Runners) → specifica in `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`: un motore per progetto sul PC, passo «scegli» (chiave di sola lettura dei motori + crediti Blacksmith da `.claude/conta-minuti.py`), pubblici sempre su GitHub; regola per tutti i progetti → kit (sessione del kit).
 3. C135: Mario manda l'indirizzo del cassetto nuovo → `wrangler.jsonc`, push, giro verde, `/api/stato` riserva accesa.
 4. Foto di Mario di Proteiche per chiudere la promessa C139.
@@ -50,7 +50,10 @@ Sessione attuale: #59 (dopo la #58 `session_01WTjqUtkYeeZHD4f7DVbw4V`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (12 della principale; nuove della #58: C139 regola dolci 🛑, C140 motore di casa). Controllo Da fare: 1 voce aggiunta (C140).
 
 ## Ultimo messaggio di Mario
-11/11 ~11:45, parola per parola: «Domanda, puoi fare in modo che tutti i progetti possano passare per il mio GitHub a casa, che ho creato un server, se provano inizialmente il mio server del PC a casa per fare i giri di prova su GitHub, se è occupato da un altro progetto che non c'è spazio passano a Blacksmith, se ho finito i crediti di Blacksmith passa a GitHub server normale, quello con quello il server gratuito, ecco, con i limiti per chi ce li ha, per chi ha un progetto privato, chi ce l'ha pubblico invece è un altro discorso.» → C140, DOMANDA 1.
+11/11 13:42 (nella #58 dopo l'handoff), parola per parola: «2 dolci ancora leggeri e proteici
+
+Puoi cercare dei siti o portali famosi con ricette fitness con inventiva e fantasia cerca bene ovunque nel web se hai blocchi per carcare dimmelo» → risposta 2 alla DOMANDA regola dolci + ricerca di altri siti (Prossimi passi 1).
+Prima, 11/11 ~11:45, parola per parola: «Domanda, puoi fare in modo che tutti i progetti possano passare per il mio GitHub a casa, che ho creato un server, se provano inizialmente il mio server del PC a casa per fare i giri di prova su GitHub, se è occupato da un altro progetto che non c'è spazio passano a Blacksmith, se ho finito i crediti di Blacksmith passa a GitHub server normale, quello con quello il server gratuito, ecco, con i limiti per chi ce li ha, per chi ha un progetto privato, chi ce l'ha pubblico invece è un altro discorso.» → C140, DOMANDA 1.
 Prima (11:25, nella #57): «Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto cerca da varie fonti» → C139 v0.10.20-22.
 
 ## Numeri liberi
