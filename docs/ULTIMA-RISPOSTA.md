@@ -1,13 +1,5 @@
-# Ultima risposta di Claude (11/11/2026 11:00 ora italiana)
+# Ultima risposta di Claude (11/11/2026 12:24 ora italiana)
 
+Il pacchetto del sito contiene il file nuovo delle ricette.
 
-
-## Domande a Mario
-
-❓ DOMANDA 1 🛑
-
-📌 Di cosa parliamo: la **corsia d'emergenza** degli avvisi. È una copia di riserva che fa partire le notifiche a Monica e ai clienti anche se il server di Cloudflare ha un guasto. Adesso è spenta: il **cassetto** (un piccolo archivio di Cloudflare dove sta la copia) l'hai creato con l'account sbagliato, `info.prontiintavola`, che non contiene l'app.
-
-A cosa serve rispondere: finché manca il cassetto giusto, un guasto del server può bloccare le notifiche.
-
-1 · Ti guido io, un tocco alla volta. Esci dall'account (Log out), rientri con l'account del sito (probabilmente …
+Aspetto la fine del giro delle prove (circa 30 minuti, stima). Se è verde, pubblico la versione 0.10.20 e ti mando la foto.
