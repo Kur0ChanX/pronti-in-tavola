@@ -482,16 +482,19 @@ const PAROLE_MOM = {
   dolce: /dolc|tort[ae]|budin|mousse|cheesecake|gelat|biscott|muffin|brownie|tiramis|crem[ae]|panna cotta|semifreddo|barrett|cioccolat|cookie|plumcake|crostat|ciambell|pancake|dessert/,
   pranzo: /pasta|spaghett|penne|fusill|rigaton|riso|risott|insalat|bowl|poke|cous|farro|orzo|quinoa|wrap|piadin|panin|burger|lasagn|gnocch|tagliatell|zupp|minestr/,
   cena: /pollo|tacchino|manzo|vitello|maiale|pesce|salmone|merluzzo|tonno|orata|branzino|spigola|gamber|polpo|calamar|seppi|uov|frittat|omelette|albumi|zupp|vellutat|insalat|tofu|tempeh|burger|polpett|spiedin|involtin|filett|tagliata/,
-  dopocena: /yogurt|skyr|ricotta|fiocchi di latte|kefir|budin|mousse|gelat|crem[ae]|panna cotta|dessert/ };
+  dopocena: /yogurt|skyr|ricotta|fiocchi di latte|kefir|budin|mousse|gelat|crem[ae]|panna cotta|dessert/,
+  /* C139: piatti salati («Pollo allo yogurt», «Gamberi marinati allo yogurt») mai in Colazione, Merenda o Dopo cena solo per la parola «yogurt» */
+  salato: /pollo|tacchin|manzo|vitell|maiale|lonza|bresaola|prosciutto|speck|salmone|merluzz|baccal|tonno|sgombr|orata|branzin|spigola|pesce|gamber|polpo|calamar|seppi|cozz|vongol|tofu|tempeh|seitan|cipoll|aglio|curry|senape|salsa|marinat|piastra|griglia|padella|insalat|zupp|vellutat|frittat|omelette|burger|polpett|spiedin|involtin|wrap|piadin|panin|sandwich|pizza|quiche|torta salata|salat[ie]|formaggio|parmigian|feta|spinac|zucchin|peperon|melanzan|broccol|funghi|ceci|lenticch|fagiol/ };
 function momentoRic(r, m) {
   const n = r && r.nutr, p = fitRic(n); if (!p) return false;
   const t = senzaAccenti(r.nome), dolce = r.categoria === 'dolci' || PAROLE_MOM.dolce.test(t);
-  if (m === 'colazione') return PAROLE_MOM.colazione.test(t);
+  const dolceCol = PAROLE_MOM.colazione.test(t) && !PAROLE_MOM.salato.test(t);   // C139: colazione dolce, mai pollo allo yogurt
+  if (m === 'colazione') return dolceCol;
   if (m === 'spuntino') return p === 'snack';
-  if (m === 'merenda') return p === 'snack' && (dolce || PAROLE_MOM.colazione.test(t));
+  if (m === 'merenda') return p === 'snack' && (dolce || dolceCol);
   if (m === 'pranzo') return p === 'pasto' && !dolce && (r.categoria === 'primi' || PAROLE_MOM.pranzo.test(t));
   if (m === 'cena') return p === 'pasto' && !dolce && (['secondi', 'contorni', 'antipasti'].includes(r.categoria) || PAROLE_MOM.cena.test(t));
-  if (m === 'dopocena') return p === 'snack' && n.kcal <= 220 && PAROLE_MOM.dopocena.test(t);
+  if (m === 'dopocena') return p === 'snack' && n.kcal <= 220 && PAROLE_MOM.dopocena.test(t) && !PAROLE_MOM.salato.test(t);
   if (m === 'dolci') return dolce;
   if (m === 'allenamento') return n.prot >= 20 && n.carb != null && n.carb >= n.prot;   // proteine e carboidrati insieme
   return true;
