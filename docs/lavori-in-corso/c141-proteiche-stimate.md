@@ -27,3 +27,6 @@ Prima (stessa sera): «Per i dolci cerca diversi dolci con la crema proteica, ma
 - 11/11 #61 ~18:00: tabella CREA completa (832 alimenti, `tools/dati/alimenti.json`; 573 senza saturi → 30 % dei grassi). `stima.py` con elenco CODICI (uova → gallina, non anatra). **Misura** (`tools/valida_stima.py`, 556 ricette GZ coi valori veri, 378 stimate): errore mediano kcal 8 %, proteine 9 %; entro il 20 %: 77 % e 76 %. Pietrobon «Torta a colazione»: prot 23,8 (lui 23,5), carbo 33,3 (33,5), kcal 397 (335: yogurt greco intero contro 0 %?).
 - 11/11 #62 ~18:20: chiave YouTube nella variabile `YOUTUBE_API_KEY` (spazio in fondo → trim), provata. `raccogli_stimate.py` legge tutti gli 878 video: 107 con ingredienti, 18 passano la regola (molti scartati da zuccheri > 15 g o saturi > 13 %: regola dell'app, non cambiata). Corretti caffè (bevanda, non polvere), acqua, «proteine al gusto», integratori e titoli-data. Raccolta completa lanciata (lenta).
 - Prossimo: pezzo 3 `tools/raccogli_stimate.py` (blog GZ + Cookpad + feed Pietrobon).
+
+## Mario 11/11 ~18:30 (#62, parola per parola)
+«nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta quanto è proteica calorica grassa zuccheri sale ecc ecc con i voti o inventati tu qualcosa di migliore ti dò carta bianca fai passare tutte le ricette proteiche»

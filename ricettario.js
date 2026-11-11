@@ -52,15 +52,46 @@ async function chiediRic(corpo) {
 }
 const riquadroRisparmio = () => inRisparmio() ? `<div class="avviso" id="ric-risparmio"><div><b>🛟 Modalità risparmio fino alle ${oraRisparmio()}</b><br><span class="piccolo">${RIC.risparmio.perche === 'bloccato'
   ? 'Cloudflare ha fermato la memoria del server per oggi' : 'Il server ha usato un quinto delle letture gratuite di oggi'}: fino ad allora il ricettario non cerca e non carica ricette nuove, così le letture restano per le cose importanti. Funzionano come sempre: il tuo ricettario, le ricette salvate sul telefono, ordini, menù, clienti e avvisi.</span></div></div>` : '';
-/* C125 (Mario 10/11 «un po' più severe… anche dolci proteici e snack»): 'pasto' (regole piene) o 'snack' (poche calorie, più quota di proteine);
-   false = non è proteica. Soglie in Impostazioni → Sviluppatore. */
+/* C141 (Mario 11/11 ~18:30 «fai passare tutte le ricette proteiche… metti un voto… quanto è proteica calorica grassa zuccheri sale…
+   inventati tu qualcosa di migliore, carta bianca»): ENTRA in «🏋️ Proteiche» ogni ricetta «ricca di proteine» per la regola UE
+   (Reg. CE 1924/2006: almeno il 20% delle calorie dalle proteine, fitEntraPerc) con almeno fitSnackProt g a porzione. Il resto lo dice la
+   PAGELLA (pagellaRic). 'pasto' da fitProt g di proteine o oltre fitSnackKcal kcal; sennò 'snack' (snack e dolci). false = non è proteica. */
 const valoriPieni = n => !!n && n.kcal > 0 && [n.prot, n.saturi, n.zuc, n.sodio].every(x => x != null);
 function fitRic(n) {
-  if (!valoriPieni(n)) return false;
-  const quota = n.prot * 400 / n.kcal, zuc = n.zuc * 400 / n.kcal;
-  if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 13)) return false;
-  if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 15) && n.sodio <= sogliaFit('fitSodio', 800)) return 'pasto';
-  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 8) && quota >= sogliaFit('fitSnackPerc', 20) && zuc <= sogliaFit('fitSnackZuc', 30) && n.sodio <= sogliaFit('fitSnackSodio', 500) ? 'snack' : false;
+  if (!valoriPieni(n) || n.prot < sogliaFit('fitSnackProt', 8) || n.prot * 400 / n.kcal < sogliaFit('fitEntraPerc', 20)) return false;
+  return n.prot >= sogliaFit('fitProt', 25) || n.kcal > sogliaFit('fitSnackKcal', 300) ? 'pasto' : 'snack';
+}
+/* PAGELLA (C141): semaforo come sulle etichette per proteine, calorie, grassi saturi, zuccheri e sale, e un VOTO da 1 a 10.
+   Calorie, saturi, zuccheri e sale in parte del fabbisogno di un giorno (assunzioni di riferimento UE, Reg. UE 1169/2011: 2000 kcal,
+   20 g saturi, 90 g zuccheri, 6 g sale): 🟢 fino al pagVerde% (15), 🟡 fino al pagGiallo% (30), 🔴 oltre. Proteine in parte delle calorie:
+   🟢 dal fitProtPerc% (25, scelta di Mario 10/11), 🟡 dal fitEntraPerc% (20, regola UE), 🔴 sotto. Voto: 🟢 2 punti, 🟡 1, 🔴 0,
+   le proteine contano doppio (12 punti = 10). Soglie in Impostazioni → «Solo per te, Mario». */
+const RI_UE = { kcal: 2000, saturi: 20, zuc: 90, sale: 6 };
+const PAROLE_PAG = { prot: { v: 'tante', g: 'buone', r: 'poche' }, altro: { v: 'poche', g: 'medie', r: 'tante' } };
+function pagellaRic(n) {
+  if (!valoriPieni(n)) return null;
+  const quota = n.prot * 400 / n.kcal, ve = sogliaFit('pagVerde', 15) / 100, gi = Math.max(ve, sogliaFit('pagGiallo', 30) / 100), sale = n.sodio * 2.5 / 1000;
+  const col = x => x <= ve ? 'v' : x <= gi ? 'g' : 'r';
+  const voci = [
+    { k: 'prot', ico: '💪', nome: 'Proteine', val: numIt(n.prot) + ' g', c: quota >= sogliaFit('fitProtPerc', 25) ? 'v' : quota >= sogliaFit('fitEntraPerc', 20) ? 'g' : 'r' },
+    { k: 'kcal', ico: '🔥', nome: 'Calorie', val: Math.round(n.kcal) + ' kcal', c: col(n.kcal / RI_UE.kcal) },
+    { k: 'saturi', ico: '🧈', nome: 'Grassi saturi', val: numIt(n.saturi) + ' g', c: col(n.saturi / RI_UE.saturi) },
+    { k: 'zuc', ico: '🍬', nome: 'Zuccheri', val: numIt(n.zuc) + ' g', c: col(n.zuc / RI_UE.zuc) },
+    { k: 'sale', ico: '🧂', nome: 'Sale', val: numIt(sale) + ' g', c: col(sale / RI_UE.sale) }];
+  voci.forEach(x => { x.parola = (x.k === 'prot' ? PAROLE_PAG.prot : PAROLE_PAG.altro)[x.c]; });
+  const punti = voci.reduce((t, x, i) => t + { v: 2, g: 1, r: 0 }[x.c] * (i ? 1 : 2), 0);
+  return { voci, voto: Math.max(1, Math.round(punti * 10 / 12)) };
+}
+const votoRic = r => { const p = pagellaRic(r && r.nutr); return p ? p.voto : 0; };
+const PALLINO = { v: '🟢', g: '🟡', r: '🔴' };
+const colVoto = v => v >= 8 ? 'v' : v >= 5 ? 'g' : 'r';
+/* sulla carta: «Voto 8 · 🟢🟢🟡🟢🟢» (stesso ordine della pagella) */
+const rigaPagella = n => { const p = pagellaRic(n); return p ? `<small class="ric-pagella-riga"><b class="ric-voto ${colVoto(p.voto)}">Voto ${p.voto}</b> <span aria-label="${esc(p.voci.map(x => x.nome + ' ' + x.parola).join(', '))}">${p.voci.map(x => PALLINO[x.c]).join('')}</span></small>` : ''; };
+/* nella ricetta: il voto grande e una riga per voce, con la parola (tante, medie, poche) */
+function pagellaHtml(n) {
+  const p = pagellaRic(n); if (!p) return '';
+  return `<div class="ric-pagella"><p class="ric-pagella-voto"><b class="ric-voto ${colVoto(p.voto)}">Voto ${p.voto}/10</b> <span class="piccolo">pagella fit${fitRic(n) ? '' : ' · non entra in Proteiche'}</span></p>
+    <ul>${p.voci.map(x => `<li>${PALLINO[x.c]} ${x.ico} ${x.nome} <b>${x.val}</b> <span class="tenue">${x.parola}</span></li>`).join('')}</ul></div>`;
 }
 const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
 const numIt = x => String(Math.round(x * 10) / 10).replace('.', ',');
@@ -386,7 +417,7 @@ function attesaRic(titolo, indietro, testo) {
 }
 const cartaRic = (r, pref, conValori) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
-    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${esc(rigaFit(r.nutr))}</small>` : ''}</span></button>`;
+    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${esc(rigaFit(r.nutr))}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;
 /* C128 (Mario 10/11 «ne ho pochissime»; C127 «fammi capire chiaro se sono state caricate»): a che punto è la lettura delle fonti.
    Mentre carica ricette il server legge RicetteFit (5 ogni 30 s) e i valori che mancano (10 ogni 30 s); qui i numeri e una stima del tempo.
    C136: col motore automatico spento (di base) si legge solo a mano: il testo dice dove toccare, niente «parto da sola». */
@@ -407,7 +438,7 @@ function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente b
 /* C124: «🏋️ Proteiche» spiegata in una riga, con le soglie di adesso (cambiano da Impostazioni) e i valori ancora da leggere */
 function notaFit() {
   const g = (k, x) => sogliaFit(k, x);
-  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Per palestra e definizione. <b>Pasti</b>: almeno ${g('fitProt', 25)} g di proteine a porzione (il ${g('fitProtPerc', 25)}% delle calorie), al massimo ${g('fitKcal', 550)} kcal. <b>Snack e dolci</b>: fino a ${g('fitSnackKcal', 300)} kcal, almeno ${g('fitSnackProt', 8)} g di proteine (il ${g('fitSnackPerc', 20)}%). Sempre pochi grassi saturi, zuccheri e sale. Prima quelle con più proteine per caloria. Valori per porzione di GialloZafferano e RicetteFit.</p>`;
+  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Entrano tutte le ricette <b>ricche di proteine</b> (regola UE: almeno il ${g('fitEntraPerc', 20)}% delle calorie dalle proteine, almeno ${g('fitSnackProt', 8)} g a porzione). Ognuna ha la <b>pagella</b>: 🟢 bene, 🟡 così così, 🔴 attento, per proteine, calorie, grassi saturi, zuccheri e sale, e un <b>voto da 1 a 10</b> (le proteine contano doppio). Prima quelle col voto più alto. Valori per porzione.</p>`;
 }
 /* C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca per ricerche fitness che mi cerca in automatico… tante fonti»): qui sopra filtra
    le proteiche già lette; il tasto chiede al server di cercare su GialloZafferano e RicetteFit e di leggere SUBITO le nuove (5 ogni 30 s).
@@ -689,7 +720,8 @@ function vRicettario() {
   const az = (a, b) => a.nome.localeCompare(b.nome, 'it');
   rr = rr.sort(f.ordine === 'nuove' ? (a, b) => (b.aggiunta || 0) - (a.aggiunta || 0) || az(a, b) : f.ordine === 'az' ? az
     : f.ordine === 'veloci' ? (a, b) => (minutiRic(a) || 1e4) - (minutiRic(b) || 1e4) || az(a, b)
-    : f.ordine === 'prot' || (!f.ordine && f.zona === 'fit') ? (a, b) => protPer100(b.nutr) - protPer100(a.nutr) || az(a, b)
+    : f.ordine === 'prot' ? (a, b) => protPer100(b.nutr) - protPer100(a.nutr) || az(a, b)
+    : !f.ordine && f.zona === 'fit' ? (a, b) => votoRic(b) - votoRic(a) || protPer100(b.nutr) - protPer100(a.nutr) || az(a, b)   // C141: prima il voto più alto
     : f.ordine === 'kcal' ? (a, b) => (a.nutr && a.nutr.kcal > 0 ? a.nutr.kcal : 1e5) - (b.nutr && b.nutr.kcal > 0 ? b.nutr.kcal : 1e5) || az(a, b)
     : (a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || az(a, b));
   const filtrato = filtriAttivi(f);
@@ -804,6 +836,7 @@ function valoriRic(n, r) {
   const sotto = [n.zuc != null && 'di cui zuccheri ' + g(n.zuc), n.saturi != null && 'di cui grassi saturi ' + g(n.saturi), n.fibre != null && 'fibre ' + g(n.fibre), saleRic(n) != null && 'sale ' + g(saleRic(n))].filter(Boolean).join(' · ');
   return `<section class="scheda ric-valori"><h2>Valori per porzione</h2>
     ${fitRic(n) ? `<p class="ric-fit-si" style="margin:0">🏋️ <b>Proteica</b>: ${esc(rigaFit(n).replace(/^💪 /, ''))}</p>` : ''}
+    ${pagellaHtml(n)}
     <div class="ric-valori-griglia">${cella(Math.round(n.kcal), 'kcal')}${cella(g(n.prot), 'proteine')}${cella(g(n.carb), 'carboidrati')}${cella(g(n.grassi), 'grassi')}</div>
     ${sotto ? `<p class="piccolo" style="margin:0">${sotto}</p>` : ''}
     <p class="piccolo tenue" style="margin:0">Valori indicativi di ${esc(fonteRic(r))}${/^gz:/.test(r.id || '') ? ' (dati Edamam)' : /^rf:/.test(r.id || '') ? ' (tabelle CREA)' : /^bg:/.test(r.id || '') ? ' (calcolati dal blog)' : ''}, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p></section>`;
