@@ -11,6 +11,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 63 | avvio, giro completo (C141 è online), C143 difesa come patch (aspetta ok), attesa foto C141 | `docs/lavori-in-corso/c143-guardia.patch` · `docs/DA-FARE.md` | 11/11 |
 | 🔴 Principale 62 | chiusa 11/11 ~18:52 (oltre 180k in attesa delle foto): C141 pagella + 207 stimate ONLINE (PT E69), foto mandate, DOMANDA 1 🛑; alla 63 | `ricettario.js` · `opzioni.js` · `aiutante.js` · `style.css` · `ricette-stimate.js` · `tools/raccogli_stimate.py` · `tools/stima.py` · `tools/prova.js` | 11/11 18:10 |
 | 🔴 Principale 58 | chiusa 11/11 ~12:55 (attesa oltre 180k): C139 191 proteiche v0.10.20-22 online, PT E65; C140 domanda; alla 59 | `ricette-fit.js` · `tools/raccogli-fit.mjs` · `ricettario.js` · `data.js` · `tools/prova.js` · `tools/sito.py` | 11/11 |
 | 🔴 Principale 57 | chiusa 11/11 ~10:58 (attesa oltre 180k): C135 causa trovata (login sbagliato, PT E64), C139 v0.10.19 online; alla 58 | `ricettario.js` · `worker.js` · `data.js` · `tools/prova.js` · `docs/GUIDE-GIUSTE.md` | 11/11 |

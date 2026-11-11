@@ -1,0 +1,231 @@
+--- a/.claude/hooks/guardia.py
++++ b/.claude/hooks/guardia.py
+@@ -16,6 +16,9 @@
+ #     Mario #295: «toglila … se no sporca o ci dimentichiamo»).
+ #   - 5stelle Pocket (C97 A): comandi di rete verso Pocket fuori dal lettore guardato, utente/password di Pocket,
+ #     stampa di tutte le variabili (env, printenv, set), WebFetch verso Pocket; «sblocca» del lettore chiede conferma a Mario.
++#   - C143 (PT E69): sul ramo di lavoro, commit e push (anche push_files / create_or_update_file di GitHub) che portano file
++#     del sito (i `paths` di .github/workflows/sito.yml: il push li PUBBLICA da solo) senza «[pubblica]» nel messaggio.
++#     «[pubblica]» = foto approvata da Mario + giro completo verde, o urgenza decisa. Sennò il codice resta una patch.
+ # Se qualcosa va storto la guardia lascia passare (|| true nelle impostazioni): non blocca mai il lavoro per un suo errore.
+ # Prova: python3 -I tools/test-guardia.py
+ import json, os, re, subprocess, sys
+@@ -48,6 +51,10 @@
+ STAMPA_AMBIENTE = INIZIO + r"(?:env|printenv|export\s+-p|declare\s+-[a-zA-Z]*x|set)\s*(?:$|[|;&>)])"
+ # Parole che fanno saltare i workflow di un push (documentazione di GitHub Actions, «Skipping workflow runs»).
+ SALTA_CI = r"\[(?:skip ci|ci skip|no ci|skip actions|actions skip)\]|skip-checks:\s*true"
++# C143 (PT E69, 11/11): il push dei file del sito sul ramo di lavoro pubblica l'app vera; il permesso è questa parola.
++PUBBLICA = r"\[pubblica\]"
++TUTTI_IN_SCENA = (INIZIO + r"git\s+add\s+(?:[^;&|\n]*\s)?(?:-A|--all|-u|--update|\.)(?=\s|$|[;&|])"
++                  r"|" + INIZIO + r"git\s+commit\b[^;&|\n]*\s(?:-[a-zA-Z]*a[a-zA-Z]*\b|--all\b)")
+ 
+ 
+ def esito(decisione, motivo):
+@@ -120,6 +127,112 @@
+     return "/".join(pezzi[-2:]).lower() if len(pezzi) >= 2 else ""
+ 
+ 
++def cartella():
++    return os.environ.get("CLAUDE_PROJECT_DIR") or "."
++
++
++def git(*argomenti):
++    """Uscita di un comando git di sola lettura, '' se fallisce (la guardia lascia passare)."""
++    try:
++        r = subprocess.run(["git", *argomenti], capture_output=True, text=True, timeout=5, cwd=cartella())
++        return r.stdout if r.returncode == 0 else ""
++    except Exception:
++        return ""
++
++
++def leggi(*percorso):
++    try:
++        with open(os.path.join(cartella(), *percorso), encoding="utf-8") as f:
++            return f.read()
++    except Exception:
++        return ""
++
++
++def schemi_del_sito():
++    """I `paths` di sito.yml (un posto solo): GitHub li usa per decidere se pubblicare. `**` = tutto, `*` = senza «/»."""
++    blocco = re.search(r"^\s*paths:\s*\n((?:[ \t]*-[ \t]*\S.*\n?)+)", leggi(".github", "workflows", "sito.yml"), re.M)
++    if not blocco:
++        return []
++    schemi = []
++    for voce in re.findall(r"-[ \t]*['\"]?([^'\"\n]+?)['\"]?[ \t]*$", blocco.group(1), re.M):
++        schemi.append("^" + re.escape(voce).replace(r"\*\*", ".*").replace(r"\*", "[^/]*") + "$")
++    return schemi
++
++
++def del_sito(file):
++    schemi = schemi_del_sito()
++    return sorted({f for f in file if any(re.match(s, f) for s in schemi)})
++
++
++def ramo_di_lavoro():
++    return leggi(".claude", "ramo-di-lavoro.txt").strip()
++
++
++def sul_ramo_di_lavoro():
++    """True se HEAD è il ramo che pubblica. RAMO_ATTUALE_PROVA solo per le prove."""
++    attuale = os.environ.get("RAMO_ATTUALE_PROVA") or git("rev-parse", "--abbrev-ref", "HEAD").strip()
++    return bool(attuale) and attuale == ramo_di_lavoro()
++
++
++def file_del_commit(cmd):
++    """File che il commit porterebbe: già in scena, più `git add …` / `-a` nello stesso comando.
++    IN_SCENA_PROVA e CAMBIATI_PROVA (elenchi con virgole) solo per le prove."""
++    finto = os.environ.get("IN_SCENA_PROVA")
++    file = set(finto.split(",") if finto is not None else git("diff", "--cached", "--name-only").split())
++    if re.search(TUTTI_IN_SCENA, cmd):
++        if "CAMBIATI_PROVA" in os.environ:
++            file.update(os.environ["CAMBIATI_PROVA"].split(","))
++        else:
++            for riga in git("status", "--porcelain", "--untracked-files=all").splitlines():
++                file.add(riga[3:].split(" -> ")[-1].strip('"'))
++    for m in re.finditer(INIZIO + r"git\s+add\s+([^;&|\n]*)", cmd):
++        file.update(p.strip("'\"") for p in m.group(1).split() if not p.startswith("-"))
++    return sorted(f for f in file if f)
++
++
++def cosa_porta_il_push():
++    """(file cambiati su GitHub, messaggi dei commit) di origin/<ramo>..HEAD. FILE_PUSH_PROVA e MESSAGGI_PUSH_PROVA per le prove."""
++    if "FILE_PUSH_PROVA" in os.environ:
++        return [f for f in os.environ["FILE_PUSH_PROVA"].split(",") if f], os.environ.get("MESSAGGI_PUSH_PROVA", "")
++    remoto = f"origin/{ramo_di_lavoro()}"
++    return git("diff", "--name-only", remoto, "HEAD").split(), git("log", "--format=%B", f"{remoto}..HEAD")
++
++
++def elenco_corto(file):
++    return ", ".join(file[:4]) + (f" e altri {len(file) - 4}" if len(file) > 4 else "")
++
++
++PERCHE_C143 = ("il push sul ramo di lavoro PUBBLICA da solo l'app vera (sito.yml, PT E69). «[pubblica]» nel messaggio solo con "
++               "foto approvata da Mario + giro completo verde, o urgenza decisa. Sennò il codice resta una patch in docs/lavori-in-corso/ "
++               "(git diff > …) e i file del sito fuori dal commit.")
++
++
++def controlla_pubblica_bash(cmd):
++    commit, push = re.search(COMMIT, cmd), re.search(PUSH, cmd)
++    if not (commit or push) or re.search(PUBBLICA, cmd, re.I) or not sul_ramo_di_lavoro():
++        return
++    if commit and not merge_a_meta():  # merge a metà: lo controlla il push, che vede solo cosa cambia davvero su GitHub
++        sito = del_sito(file_del_commit(cmd))
++        if sito:
++            esito("deny", f"C143: il commit porta file del sito ({elenco_corto(sito)}) senza «[pubblica]». " + PERCHE_C143)
++    if push and not re.search(r"scorta-", cmd):
++        file, messaggi = cosa_porta_il_push()
++        sito = del_sito(file)
++        if sito and not re.search(PUBBLICA, messaggi, re.I):
++            esito("deny", f"C143: il push porta file del sito ({elenco_corto(sito)}) e nessun commit dice «[pubblica]». "
++                          "Se è approvato: `git commit --allow-empty -m \"[pubblica] …\"`, poi il push. " + PERCHE_C143)
++
++
++def controlla_pubblica_github(ingresso):
++    """push_files / create_or_update_file sul ramo di lavoro con file del sito: serve «[pubblica]» nel messaggio."""
++    if str(ingresso.get("branch") or "") != ramo_di_lavoro() or re.search(PUBBLICA, str(ingresso.get("message") or ""), re.I):
++        return
++    file = [str(f.get("path") or "") for f in (ingresso.get("files") or []) if isinstance(f, dict)]
++    sito = del_sito(file + [str(ingresso.get("path") or "")])
++    if sito:
++        esito("deny", f"C143: il commit su GitHub porta file del sito ({elenco_corto(sito)}) senza «[pubblica]». " + PERCHE_C143)
++
++
+ def controlla_pocket(cmd):
+     if re.match(SBLOCCA, cmd):
+         esito("ask", "togliere il blocco del lettore di 5stelle Pocket. Mario, tocca Sì solo se l'hai chiesto tu dopo aver letto il motivo dello stop.")
+@@ -162,6 +275,7 @@
+         esito("deny", "mai «playwright install»: Chromium è già in /opt/pw-browsers (WebKit nel contenitore non c'è).")
+     if re.search(r"(?:^|[\s;&|(])(?:export\s+)?CLAUDE_CODE_EFFORT_LEVEL=", cmd):
+         esito("deny", "mai la variabile CLAUDE_CODE_EFFORT_LEVEL: l'impegno va in .claude/settings.json (\"effortLevel\").")
++    controlla_pubblica_bash(cmd)
+ 
+ 
+ def main():
+@@ -194,6 +308,7 @@
+     elif nome.endswith("__push_files") or nome.endswith("__create_or_update_file"):
+         if re.search(SALTA_CI, str(ingresso.get("message") or ""), re.I):
+             esito("deny", "«[skip ci]» nel messaggio del commit (F04): non serve e nello squash ferma la pubblicazione su main (E132). Toglilo.")
++        controlla_pubblica_github(ingresso)
+     elif nome.endswith("__create_pull_request") or nome.endswith("__update_pull_request"):
+         # C413 (Mario «si» 02/11): PR aperta non in bozza, o segnata pronta, con «[skip ci]» in cima al ramo = nessun giro (E257, v136).
+         bozza = ingresso.get("draft")
+--- a/tools/test-guardia.py
++++ b/tools/test-guardia.py
+@@ -6,11 +6,16 @@
+ GUARDIA = os.path.join(QUI, ".claude", "hooks", "guardia.py")
+ 
+ 
++RAMO = open(os.path.join(QUI, ".claude", "ramo-di-lavoro.txt"), encoding="utf-8").read().strip()
++# C143: di base niente file in scena né da pushare, così le prove non dipendono dallo stato vero del repo.
++C143_VUOTO = {"IN_SCENA_PROVA": "", "CAMBIATI_PROVA": "", "FILE_PUSH_PROVA": "", "MESSAGGI_PUSH_PROVA": "", "RAMO_ATTUALE_PROVA": RAMO}
++
++
+ def decide(nome, ingresso, corpo="", **finti):
+     # CORPO_PR_PROVA: corpo finto della PR, così le prove dell'unione non chiedono niente a GitHub.
+     r = subprocess.run([sys.executable, "-I", GUARDIA], input=json.dumps({"tool_name": nome, "tool_input": ingresso}),
+                        capture_output=True, text=True, timeout=10, cwd=QUI,
+-                       env={**os.environ, "CLAUDE_PROJECT_DIR": QUI, "CORPO_PR_PROVA": corpo, **finti})
++                       env={**os.environ, "CLAUDE_PROJECT_DIR": QUI, "CORPO_PR_PROVA": corpo, **C143_VUOTO, **finti})
+     if r.returncode != 0:
+         return "errore:" + r.stderr.strip()[-200:]
+     if not r.stdout.strip():
+@@ -140,6 +145,50 @@
+     if avuto != atteso:
+         errori += 1
+         print(f"✗ «{comando}» (merge a metà {meta}): atteso {atteso}, avuto {avuto}")
++# C143 (PT E69): sul ramo di lavoro commit e push con file del sito (paths di sito.yml) solo con «[pubblica]».
++PUSH_RAMO = f"git push -u origin {RAMO}"
++PUBBLICA = [
++    # (comando, in scena, cambiati, file del push, messaggi del push, ramo attuale, atteso)
++    ("git commit -m 'C141: pagella'", "ricettario.js,docs/DA-FARE.md", "", "", "", RAMO, "deny"),
++    ("git commit -qm '[pubblica] v0.10.24: pagella'", "ricettario.js", "", "", "", RAMO, "passa"),
++    ("git commit --allow-empty -m '[Pubblica] foto ok di Mario, giro verde'", "", "", "", "", RAMO, "passa"),
++    ("git commit -m 'DA-FARE: C143'", "docs/DA-FARE.md", "", "", "", RAMO, "passa"),
++    ("git commit -m 'logo'", "media/logo-nuovo.png", "", "", "", RAMO, "deny"),
++    ("git commit -m 'sito'", "tools/sito.py", "", "", "", RAMO, "deny"),
++    ("git commit -m 'stima'", "tools/stima.py,tools/prova.js,docs/lavori-in-corso/c141.patch", "", "", "", RAMO, "passa"),
++    ("git commit -m 'x'", "ricettario.js", "", "", "", "scorta-prova", "passa"),
++    ("git add ricettario.js docs/x.md && git commit -m 'x'", "", "", "", "", RAMO, "deny"),
++    ("git add docs/ && git commit -m 'x'", "", "ricettario.js", "", "", RAMO, "passa"),
++    ("git add -A && git commit -qm 'consegne'", "", "docs/x.md,style.css", "", "", RAMO, "deny"),
++    ("git commit -am 'consegne'", "", "docs/x.md,app.js", "", "", RAMO, "deny"),
++    ("git add -A && git commit -qm 'consegne'", "", "docs/x.md,archivio/foto/a.png", "", "", RAMO, "passa"),
++    (PUSH_RAMO, "", "", "ricettario.js,docs/x.md", "C141: pagella\n\nConsegne #62", RAMO, "deny"),
++    (PUSH_RAMO, "", "", "wrangler.jsonc", "Cassetto KV", RAMO, "deny"),
++    (PUSH_RAMO, "", "", "ricettario.js,docs/x.md", "Consegne\n\n[pubblica] v0.10.24: pagella", RAMO, "passa"),
++    (PUSH_RAMO, "", "", "docs/DA-FARE.md,tools/stima.py", "DA-FARE", RAMO, "passa"),
++    ("git commit -m '[pubblica] urgenza: ordini' && " + PUSH_RAMO, "app.js", "", "app.js", "", RAMO, "passa"),
++    ("git push -u origin scorta-principale-x/" + RAMO, "", "", "app.js", "Scorta", RAMO, "passa"),
++    ("git push -u origin altro-ramo", "", "", "app.js", "x", "altro-ramo", "passa"),
++]
++for comando, scena, cambiati, spinti, messaggi, ramo, atteso in PUBBLICA:
++    avuto = decide("Bash", {"command": comando}, IN_SCENA_PROVA=scena, CAMBIATI_PROVA=cambiati, FILE_PUSH_PROVA=spinti,
++                   MESSAGGI_PUSH_PROVA=messaggi, RAMO_ATTUALE_PROVA=ramo, MERGE_A_META_PROVA="0")
++    if avuto != atteso:
++        errori += 1
++        print(f"✗ C143 «{comando}» (scena {scena} · cambiati {cambiati} · push {spinti}): atteso {atteso}, avuto {avuto}")
++GITHUB_PUBBLICA = [
++    ("mcp__github__push_files", {"branch": RAMO, "message": "C141", "files": [{"path": "ricettario.js", "content": "x"}]}, "deny"),
++    ("mcp__github__push_files", {"branch": RAMO, "message": "[pubblica] v0.10.24", "files": [{"path": "ricettario.js", "content": "x"}]}, "passa"),
++    ("mcp__github__push_files", {"branch": RAMO, "message": "Consegne", "files": [{"path": "docs/x.md", "content": "x"}]}, "passa"),
++    ("mcp__github__push_files", {"branch": "altro", "message": "x", "files": [{"path": "app.js", "content": "x"}]}, "passa"),
++    ("mcp__github__create_or_update_file", {"branch": RAMO, "message": "stile", "path": "style.css", "content": "x"}, "deny"),
++    ("mcp__github__create_or_update_file", {"branch": RAMO, "message": "nota", "path": "docs/a.md", "content": "x"}, "passa"),
++]
++for nome, ingresso, atteso in GITHUB_PUBBLICA:
++    avuto = decide(nome, ingresso)
++    if avuto != atteso:
++        errori += 1
++        print(f"✗ C143 {nome} {ingresso.get('message')}: atteso {atteso}, avuto {avuto}")
+ # Il matcher della guardia in .claude/settings.json deve mandarle TUTTI gli strumenti che controlla (C469 B7: C413 era spento).
+ impostazioni = json.load(open(os.path.join(QUI, ".claude", "settings.json"), encoding="utf-8"))
+ matcher = "|".join(h.get("matcher", "") for h in impostazioni["hooks"]["PreToolUse"]
+@@ -151,6 +200,6 @@
+     if s not in matcher.split("|"):
+         errori += 1
+         print(f"✗ {s} non arriva alla guardia (matcher di .claude/settings.json)")
+-totale = len(BASH) + len(ALTRI) + len(CORPI) + len(PR) + len(A_META) + len(STRUMENTI)
++totale = len(BASH) + len(ALTRI) + len(CORPI) + len(PR) + len(A_META) + len(PUBBLICA) + len(GITHUB_PUBBLICA) + len(STRUMENTI)
+ print(f"{totale - errori}/{totale} prove della guardia verdi" if errori == 0 else f"{errori} prove ROSSE su {totale}")
+ sys.exit(1 if errori else 0)
