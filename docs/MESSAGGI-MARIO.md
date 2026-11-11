@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 02:40 · 01QTFEqQ5ALf
-ma utilizza limiti di altri progetti?
-
-## 2026-11-08 02:49 · 01QTFEqQ92G5
-aggiungi in modo molto avanzato l'aiutante per monica per cambiare aggiungere funzioni ecc impostazioni ecc ecc con prima la visione e modifica potenzialo al massimo inventati quello che vuoi soluzioni geniali e innovative ultime uscite
-
 ## 2026-11-08 03:05 · 01QTFEqQ92G5
 per ora il menu in foto non c'è bisogno perché c'è l'app e il lucchetto tranquillo funziona potenzia l'ia come ti ho detto
 risponde alle sue domande e l'aiuta  nelle impostazioni app o le fa' in automatico ma prima visiona e conferma monica se ha fatto giusto l'ia poi inventati altre idee per ia
@@ -150,3 +144,9 @@ dimmi cosa devo fare
 
 ## 2026-11-11 06:13 · 01WTjqUwi3Ab
 ora?
+
+## 2026-11-11 06:16 · 01WTjqUwi3Ab
+Jurisdiction o standard?
+
+## 2026-11-11 06:17 · 01WTjqUwi3Ab
+fatto ora?
