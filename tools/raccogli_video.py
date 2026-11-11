@@ -17,7 +17,8 @@ from stima import stima_ricetta, norm
 RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE = os.path.join(RADICE, '.cache-stime')
 # Un canale = un riquadro nell'app. Per aggiungerne uno: nome come lo scrive lui, id del canale (UC…).
-CANALI = [('Massimo Pietrobon Gobbi', 'UCkQmObN7tBXzPQTQhlT704Q')]
+CANALI = [('Massimo Pietrobon Gobbi', 'UCkQmObN7tBXzPQTQhlT704Q'),
+          ('Beardedscara', 'UCWhoPXcEJRPWxtIwjSGgpug')]   # C145 (Mario 11/11 22:46 «aggiungi tutti i suoi video di ricette»)
 
 # Tipo della ricetta: la prima parola che compare (nome, hashtag, ingredienti) decide. Ordine = priorità.
 TIPI = [('Pancake', r'pancake'), ('Porridge', r'porridge|porridgemis|portidge|ba(?:c?k)e?d ?oats?'), ('Cheesecake', r'chee?r?s?e?cake'), ('Brownie', r'brownie'),
@@ -90,12 +91,12 @@ def numeri(riga):
         mm = [m for m in (re.search(r, t) for r in rx) if m]
         return float(min(mm, key=lambda m: m.start()).group(1)) if mm else None
     def dopo_prot(r):   # «… / 70.6 p / 30.6 g metà … 15.3 g»: i grassi senza nome sono il primo «N g» DOPO le proteine
-        mp = re.search(N + r'\s*g?\s*(?:prot\w*|p)\b', t)
+        mp = re.search(N + r'\s*g?\s*(?:pro\w*|p)\b', t)
         m = re.search(r, t[mp.end():] if mp else t)
         return float(m.group(1)) if m else None
     v = {'kcal': primo(N + r'\s*kcal', r'kcal\D{0,45}?' + N),
          'carb': primo(N + r'\s*g?\s*(?:carbo\w*|c)\b'),
-         'prot': primo(N + r'\s*g?\s*(?:prot\w*|p)\b'),
+         'prot': primo(N + r'\s*g?\s*(?:pro\w*|p)\b'),   # «42.4 g proteine», «70.6 p», «12g Pro» (C145)
          'grassi': primo(N + r'\s*g?\s*grass\w*') or dopo_prot(N + r'\s*g\b(?!\s*(?:carb|prot|c\b|p\b))')}
     if v['kcal'] is None and None not in (v['carb'], v['prot'], v['grassi']):
         v['kcal'] = round(4 * v['carb'] + 4 * v['prot'] + 9 * v['grassi'])   # «Per un gelato : 18 g carbo / 20 g proteine / 11 g»
@@ -104,6 +105,63 @@ def numeri(riga):
     if abs(4 * v['prot'] + 4 * v['carb'] + 9 * v['grassi'] - v['kcal']) > 0.2 * v['kcal'] + 30:
         return None   # i conti non tornano: la riga si legge male
     return v
+
+
+NUMERI_PAROLA = {'una': 1, 'uno': 1, 'un': 1, 'due': 2, 'tre': 3, 'quattro': 4, 'cinque': 5, 'sei': 6, 'otto': 8, 'dieci': 10}
+
+
+def sezioni(testo):
+    """C145: descrizioni a sezioni (Beardedscara): «🧾 Ingredienti per ~3 porzioni:», «👨‍🍳 Preparazione:» coi passi a trattino o pallino,
+    «🔥 Valori nutrizionali - per UNA porzione:», poi considerazioni e pubblicità (fuori). Esce ingredienti, passi, valori e porzioni
+    COME LI SCRIVE LUI (PT E25); «A 🔄 B» = «A (oppure B)»."""
+    pulisci = lambda l: re.sub(r'^[^\w~½¼¾(]+', '', re.sub(r'[\u200b-\u200f\u2060\ufeff]', '', l)).strip(' ;.,')
+    sez, sotto, ing, passi, val, testa_ing, testa_val = '', '', [], [], [], '', ''
+    ha_prep = re.search(r'(?im)^\W*(preparazione|procedimento)', testo)
+    for l in testo.split('\n'):
+        l0 = re.sub(r'[\u200b-\u200f\u2060\ufeff]', '', l).strip()
+        if not l0:
+            continue
+        b = norm(l0)
+        if b.startswith('ingredient') and len(b) < 90:   # «🧾 Ingredienti per ~3 porzioni:» (mai «unisci gli ingredienti»)
+            sez, testa_ing, sotto = 'ing', l0, ''; continue
+        if re.match(r'(preparazione|procedimento)\b', b) and len(b) < 60:
+            sez, sotto = 'passi', ''; continue
+        if b.startswith('valori') and len(b) < 80:
+            sez, testa_val = 'val', l0; continue
+        if re.search(r'consideraz|figata|grazie|link|clicca|ricettario|segui|#\w', b):
+            sez = 'fine'; continue
+        if sez in ('ing', 'passi') and l0.endswith(':') and len(b) < 40 and not re.search(r'\d', b):
+            sotto = pulisci(l0).rstrip(':'); continue   # «Per la base:», «Per il ripieno:»
+        if sez == 'ing' and not ha_prep and re.match(r'\s*-', l0) and not re.search(r'\d|q\.? ?b\b', b[:14]) and len(b.split()) >= 4:
+            sez = 'passi'   # passi a trattino subito dopo gli ingredienti, senza «Preparazione»
+        if sez == 'ing':
+            for pezzo in l0.split(';'):
+                t = pulisci(pezzo)
+                if t:
+                    alt = [x.strip(' ;.,') for x in re.split(r'\s*🔄\s*', t)]
+                    ing.append(alt[0] + (f" (oppure {' oppure '.join(pulisci(x) for x in alt[1:] if pulisci(x))})" if len(alt) > 1 and any(pulisci(x) for x in alt[1:]) else '')
+                               + (' (facoltativo)' if re.search(r'(?i)facoltativ', sotto) else ''))
+        elif sez == 'passi':
+            t = pulisci(l0)
+            if t:
+                t = (sotto + ': ' + t[0].lower() + t[1:]) if sotto else t
+                passi.append(t[0].upper() + t[1:])
+                sotto = ''
+        elif sez == 'val':
+            val.append(pulisci(l0))
+    m = re.search(r'(?i)per\s+~?\s*(\d+|' + '|'.join(NUMERI_PAROLA) + r')\b', testa_ing)
+    porz = int(m.group(1)) if m and m.group(1).isdigit() else NUMERI_PAROLA.get(m.group(1).lower(), 1) if m else 1
+    riga, nv = '', None
+    for i, v in enumerate(val):   # la prima riga con le kcal; se proteine, carboidrati e grassi sono sotto, una riga per uno, si uniscono
+        if re.search(r'(?i)kcal', v) and re.search(r'\d', v):
+            for r in (v, ' · '.join(val[i:i + 4])):
+                nv = numeri(r)
+                if nv:
+                    riga = r
+                    break
+            break
+    return {'ing': ing, 'passi': passi, 'riga': riga, 'nv': nv, 'porzioni': max(1, min(porz, 12)),
+            'a_porzione': bool(re.search(r'(?i)per\s+(una|un|uno|ogni)\b|a porzione|per porzione|\ba (fetta|biscotto|pezzo)', testa_val))}
 
 
 # Come si scrivono nell'app i cibi presi da hashtag e titoli (#pluncake → Plumcake). Il resto: prima lettera maiuscola.
