@@ -2,29 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 12:50 · 01WTjqUtxqaC
-Vai di consiglio e ti chiedo metti solo le ricette un pò piú severe per il fitness e mettimi tasto cerca per per ricerche fitness che mi cerca in automatico guarda in tante fonti  gold standard molto attendibili per le ricette fitness gym senza ingrassare e ipertrofia anche ricette dolci proteiche Snack primi secondi sfizio proteico light ricette rivisitate in chiave proteica light Ne vedo moltissime su anche instagram e YouTube influenzer e canali Fit
-Cerco anche ricette immediate un esempio stupido tipo la cioccolata la fà con le proteine in polvere al cioccolato con poca acqua ecc ecc ma è un esempio 
-al momento sembra che carichi solo ricette di GialloZafferano valutate per calorie e proteine  riverifica tutto
-
-### 10/11 ~13:40 (Principale 45, C125)
-intendo la ricerca che cerca nelle fonti alternative anche a giallozafferano le cerca e me ne carica un tasto manuale
-
-### 10/11 ~13:57 (Principale 46, C125-C126, foto `archivio/foto/2026-11-10-1356-proteiche-albumi.jpg`: Proteiche dopo «Albumi», «3 ricette: RicetteFit 2 · GialloZafferano 1», «Niente di nuovo con «albumi»: le 23 trovate le avevo già lette»)
-si ma perché ricerca solo in questo modo ricette fit è il meglio non aggiungiamo altre fonti? e poi 6 selezioni cosí sono troppo vincolato dividile al massimo per spuntino merenda pranzo cena dolce colazione post cena ecc no poi se voglio scelgo la fonte proteica ma mettine tante di fonti non cosí e altre funzioni e cerca e le aggiunge al meglio nelle mie ricette scritte bene chiare complete con foto video passo per passo ecc ecc
-
-### 10/11 ~14:10 (Principale 46, C126)
-se voglio fare una ricerca senza selezionare la proteina devo poterla fare e mi cerca tutto o anche senza aggiungere esempio pranzo cena dopo allenamento ecc ecc mi cerca tutto nei siti e le carica nell'app
-
-### 10/11 ~14:18 (Principale 46, C126, risposta alla 🛑 sulle fonti)
-2 ma metti una sezione a parte quelli con valori calcolati o segnami semplicemente la fonte nella ricetta e capisco
-
-### 10/11 ~14:21 (Principale 46, C126, foto `archivio/foto/2026-11-10-1420-proteiche-momenti.jpg`: Proteiche con le righe Tutte/Proteiche/Preferite/Sarde/Italiane/Le mie, 8 momenti, ⚡, portate)
-fammi multi scelta e fammi capire chiare se sono state caricate e fai ordine cè un pò di caos in tutta la pagina aggiungi funzioni utili e smart
-
-### 10/11 ~14:23 (Principale 46, C126, foto `archivio/foto/2026-11-10-1422-dopo-allenamento-niente-nuovo.jpg` e `…-1422-dopo-allenamento-cerco.jpg`: «15 ricette: RicetteFit 8 · GialloZafferano 7», «Ancora 1114 ricette da leggere: 10 ogni 10 minuti», «Niente di nuovo con «Dopo l'allenamento»: le 40 trovate le avevo già lette»)
-non c'è niente di nuovo ne ho pochissime come è possibile
-
 ## 2026-11-10 15:37 · 01WTjqUwbG8f
 è adesso come risolviamo?
 
@@ -144,3 +121,6 @@ ok vai avanti allora
 
 ## 2026-11-11 18:22 · 01WTjqUu7eAD
 nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta quanto è proteica calorica grassa zuccheri sale ecc ecc con i voti o inventati tu qualcosa di migliore ti dò carta bianca fai passare tutte le ricette proteiche
+
+## 2026-11-11 19:06 · 01WTjqUvCWdA
+devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito
