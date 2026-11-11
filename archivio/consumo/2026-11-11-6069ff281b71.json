@@ -1,0 +1,38 @@
+{
+"account": "108763",
+"sessione": "6069ff281b71",
+"giorno": "2026-11-11",
+"turni": 2,
+"peso": 3828423,
+"uscita": 110558,
+"contesto_max": 352355,
+"anomalie": [
+"4 uscite di strumento enormi (119 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"avvio pesante: 156k token dopo le letture d'avvio (tetto 130k)",
+"101k token scritti in un turno"
+],
+"remota": "01WTjqUup234",
+"aiutanti": 0,
+"strumenti": 107,
+"motori": {
+"opus": 3828423
+},
+"blocchi": {
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 5 · Foto e video (E240, E247;": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
+},
+"esempi_blocchi": {
+"Stop 8 · Promessa a Mario senza voce": [
+"20:00 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «I video nuovi del canale non arrivano da soli: li aggiungo io quando me lo chiedi.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove "
+],
+"Stop 5 · Foto e video (E240, E247;": [
+"20:00 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"20:00 · Ti fermi ad aspettare Mario con il contesto a 315k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+]
+},
+"memoria_scaduta": 1,
+"ricreati": 288274
+}
