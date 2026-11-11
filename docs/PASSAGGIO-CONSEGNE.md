@@ -51,7 +51,7 @@ Prima: 19:10 «come fa il progetto rvc» → risposta in chat (#64); 19:06 «dev
 Prima: 18:22 «nelle ricette aggiungile tutte quante e metti un voto…» → C141 (online, foto, 🛑).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C144; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C145; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
