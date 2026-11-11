@@ -23,3 +23,6 @@ cerca da varie fonti»
 - Momenti: dolci 13, spuntino 14, merenda 4, colazione 3 (dopo la correzione PT E65), dopo l'allenamento 50. Pochi dolci e colazioni: le soglie snack (zuccheri ≤ 20% delle kcal) li scartano → domanda a Mario.
 - v0.10.21: niente piatti salati in Colazione, Merenda, Dopo cena (PT E65).
 - Rifare/aggiungere: `node tools/raccogli-fit.mjs 200` (pagine in `.cache-fit/`), prova `SOLO=C139`, giro, push.
+
+## 11/11 #59 · Mario: «vai di consiglio» = DOMANDA 1 → 2
+Soglie di base snack e dolci: proteine ≥ 8 g (era 10), quota ≥ 20 % (era 30), zuccheri ≤ 30 % (era 20); in `ricettario.js` (`fitRic`, nota) e `opzioni.js`. Poi `node tools/raccogli-fit.mjs 200`.
