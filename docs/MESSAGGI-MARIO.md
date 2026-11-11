@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-08 02:40 · 01QTFEqQ5ALf
-ma utilizza limiti di altri progetti?
-
 ## 2026-11-08 02:49 · 01QTFEqQ92G5
 aggiungi in modo molto avanzato l'aiutante per monica per cambiare aggiungere funzioni ecc impostazioni ecc ecc con prima la visione e modifica potenzialo al massimo inventati quello che vuoi soluzioni geniali e innovative ultime uscite
 
@@ -150,3 +147,6 @@ dimmi cosa devo fare
 
 ## 2026-11-11 06:13 · 01WTjqUwi3Ab
 ora?
+
+## 2026-11-11 06:16 · 01WTjqUwi3Ab
+Jurisdiction o standard?
