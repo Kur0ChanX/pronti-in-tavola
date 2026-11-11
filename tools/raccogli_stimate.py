@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """C141 pezzo 3 (Mario 11/11 sera: «apriamo le porte… 500… 50% dolci… il cetriolo non fa parte dei dolci… dello youtuber
 qualche valore lo dice lui»). Raccoglie ricette proteiche da fonti FITNESS senza valori, li stima (tools/stima.py, tabella CREA)
-e scrive tools/dati/ricette-stimate.js (pezzo 4: diventa un file del sito, zero letture di Cloudflare).
+e scrive ricette-stimate.js, un file del sito (zero letture di Cloudflare).
 - Fonti: Cookpad Italia (ricerche proteiche; robots.txt permette), Blog di GialloZafferano (dalle ricerche di GZ),
   feed ufficiale YouTube di Massimo Pietrobon Gobbi (ultimi 15 video; i suoi valori, se li scrive, vincono sulla stima).
 - Della fonte si tengono nome, foto, porzioni e l'elenco ingredienti COSÌ COM'È (PT E25); i passi si leggono sulla fonte (link).
@@ -228,7 +228,7 @@ def main():
     scelte = scelte[:QUANTE]
     oggi = time.strftime('%d/%m/%Y')
     righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False) for x in scelte)
-    open(os.path.join(RADICE, 'tools', 'dati', 'ricette-stimate.js'), 'w', encoding='utf-8').write(
+    open(os.path.join(RADICE, 'ricette-stimate.js'), 'w', encoding='utf-8').write(
         f"""/* C141 · Ricette proteiche con VALORI STIMATI (non verificati), raccolte da Claude il {oggi} (Mario 11/11 sera «apriamo le porte…
    valori non verificati… 500… 50% dolci»). Scritto da tools/raccogli_stimate.py, NON a mano.
    Nome, foto, porzioni e ingredienti come sulla fonte (Cookpad, Blog di GialloZafferano, YouTube di Massimo Pietrobon Gobbi); passi sulla fonte.
