@@ -2,26 +2,27 @@
 "account": "108763",
 "sessione": "4b2ef3e140b8",
 "giorno": "2026-11-11",
-"turni": 3,
-"peso": 565744,
-"uscita": 9882,
-"contesto_max": 158798,
+"turni": 5,
+"peso": 761916,
+"uscita": 11486,
+"contesto_max": 172341,
 "anomalie": [],
 "remota": "01WTjqUwi3Ab",
 "aiutanti": 0,
-"strumenti": 20,
+"strumenti": 21,
 "motori": {
-"opus": 565744
+"opus": 761916
 },
-"memoria_scaduta": 2,
-"ricreati": 169973,
+"memoria_scaduta": 3,
+"ricreati": 287853,
 "blocchi": {
-"Stop 6 · Il turno finisce con una": 2
+"Stop 6 · Il turno finisce con una": 3
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
 "01:27 · Il turno finisce con una domanda o un passo a mano per Mario: scrivi in docs/DA-FARE.md, sezione «## 0. Aspetta Mario» in cima, una riga per ogni cosa che aspetta Mario («- 11/11 · <segno giallo> <Nom",
-"05:07 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> "
+"05:07 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
+"06:14 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
 ]
 }
 }
