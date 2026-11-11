@@ -68,7 +68,7 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal regis
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-11 13:54 · [AVVIO] Sessione #60 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-11 13:54 · [AVVIO] Sessione #60 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto, C139 v0.10.23, C135 cassetto acceso, consegne
 
 Ultimo, intero:
 > [AVVIO] Sessione #60 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
