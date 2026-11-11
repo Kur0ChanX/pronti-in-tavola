@@ -29,8 +29,9 @@ TIPI = [('Pancake', r'pancake'), ('Porridge', r'porridge|porridgemis|portidge|ba
 CIBO = r'(?i)\b(tort[ae]|tortin\w*|cheesecake|cheescake|pancake|bread|pane|pizz\w*|biscott\w*|muffin|crem[ae]|cremin\w*|gelat\w*|tiramis\w*|budin\w*|brownie|plumcake|frittat\w*|poll[oi]|tonno|salmon\w*|pasta|insalat\w*|burger|wrap|piadin\w*|toast|porridge\w*|overnight|yogurt|mousse|cookie|crepes?|waffle|ricett\w*|polpett\w*|cake|crostat\w*|ciambell\w*|focacc\w*|spumone|semifredd\w*|sorbett\w*|pudding|frullat\w*|smoothie|lattaiolo|brioss|muffins|nuggets|angel ?cake|ba(?:c?k)e?d ?oats?|pancakemis\w*|chersecake|portidge|pluncake|gelatofit|sushi|banana ?bread)\b'
 INTEGRATORI = r'(?i)melatonin|omega ?3|creatina|\beaa\b|beta ?alanin|\bvit\.? ?[cd]\b|\bzm[ab]'
 # Video di cibo che NON sono una ricetta (scherzi, saluti, giornate alimentari): letti a occhio l'11/11 con --elenco.
-NON_RICETTE = (r'(?i)non chiedetemi|è salvo|grazie ragazzi|cosa mangio|settimane (dalla|della) gara|in ogni situazione #gym #funny'
-               r'|full ?day ?of ?eating|allenamento|peak ?week|push day|pull day|leg day|\bbulk\b|weeks out|pasto libero|dopo mesi|vedo la luce|\d settimane -')
+NON_RICETTE = r'(?i)non chiedetemi|è salvo|grazie ragazzi|cosa mangio|settimane (dalla|della) gara|in ogni situazione #gym #funny'
+# …e questi mai, neanche con gli ingredienti scritti (una giornata intera di pasti non è una ricetta)
+MAI_RICETTE = (r'(?i)full ?day ?of ?eating|allenamento|peak ?week|push day|pull day|leg day|\bbulk\b|weeks out|pasto libero|dopo mesi|vedo la luce|\d settimane -')
 VUOTO = r'(?i)^\s*(codice|cod\.? sconto|sconto|usa il codice|link|http|www\.|@|seguimi|iscriviti|instagram|tiktok)'
 
 
@@ -229,12 +230,12 @@ def main():
     stimate = set()
     p = os.path.join(RADICE, 'ricette-stimate.js')
     if os.path.exists(p):
-        stimate = set(re.findall(r'"id":"(yt:[\w-]+)"', open(p, encoding='utf-8').read()))
+        stimate = set(re.findall(r'"id":\s*"(yt:[\w-]+)"', open(p, encoding='utf-8').read()))
     tutte, conti = [], {}
     for autore, canale in CANALI:
         video = leggi_canale(canale)
         c = conti.setdefault(autore, {'video': len(video), 'ricette': 0, 'suoi': 0, 'stimati': 0, 'senza': 0, 'scartati': 0, 'doppie': 0})
-        doppie = set()
+        doppie = {}
         for v in video:
             ing = ingredienti(v['testo'])
             if ing and re.search(INTEGRATORI, ' '.join(ing)):
@@ -242,7 +243,7 @@ def main():
             riga = riga_valori(v['titolo'] + '\n' + v['testo'])
             cibo = re.search(CIBO, v['titolo'] + ' ' + ' '.join(re.findall(r'#\w+', v['testo'])))
             nv = numeri(riga) if riga else None   # i suoi valori leggibili: li scrive solo sotto le ricette
-            ricetta = (len(ing) >= 2 or bool(cibo) or bool(nv)) and not re.search(NON_RICETTE, v['titolo'])
+            ricetta = (len(ing) >= 2 or ((cibo or nv) and not re.search(NON_RICETTE, v['titolo']))) and not re.search(MAI_RICETTE, v['titolo'])
             if re.fullmatch(r'\s*\d{1,2}\s+\w+\s+\d{4}\s*', v['titolo']) and len(ing) < 2:
                 ricetta = False
             if not ricetta:
@@ -256,13 +257,15 @@ def main():
             chiave2 = (autore, nv['kcal'], nv['carb'], nv['prot']) if nv else None   # stessi valori = stessa ricetta, anche senza ingredienti
             if chiave in doppie or (chiave2 and chiave2 in doppie):
                 c['doppie'] += 1
+                if 'yt:' + v['id'] in stimate:
+                    (doppie.get(chiave) or doppie[chiave2])['proteica'] = True   # la stessa ricetta, ripubblicata, è in «🏋️ Proteiche»
                 if elenco:
                     print('  DOP ', v['titolo'][:90].replace('\n', ' '))
                 continue
-            doppie.update([chiave, chiave2] if chiave2 else [chiave])
             x = {'id': 'yt:' + v['id'], 'nome': nome_pulito(v['titolo'], tipo, ing, v['data'], v['testo']), 'tipo': tipo, 'autore': autore,
                  'foto': v['img'] or f"https://i.ytimg.com/vi/{v['id']}/hqdefault.jpg", 'url': 'https://www.youtube.com/watch?v=' + v['id'],
                  'data': v['data'], 'ingredienti': ing, 'testo': testo_pulito(v['testo'])}
+            doppie.update({k: x for k in ([chiave, chiave2] if chiave2 else [chiave])})
             if x['id'] in stimate:
                 x['proteica'] = True   # è anche in «🏋️ Proteiche»: lì valori, pagella e voto
             if riga:

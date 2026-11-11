@@ -163,6 +163,16 @@ function caricaRicette() {
   if (typeof RICETTE_FIT === 'undefined') { const f = document.createElement('script'); f.src = 'ricette-fit.js'; f.onload = () => render(); f.onerror = () => f.remove(); document.head.appendChild(f); }
   /* C141 (Mario 11/11 «aggiungile tutte quante»): le proteiche coi VALORI STIMATI (Cookpad, blog di GialloZafferano, YouTube), file del sito */
   if (typeof RICETTE_STIMATE === 'undefined') { const f = document.createElement('script'); f.src = 'ricette-stimate.js'; f.onload = () => render(); f.onerror = () => f.remove(); document.head.appendChild(f); }
+  caricaVideo();
+}
+/* C144 (Mario 11/11 «tutti i video delle ricette dello youtuber… in una sezione a parte… dividi per il nome»): file del sito ricette-video.js */
+function caricaVideo() {
+  if (typeof RICETTE_VIDEO !== 'undefined' || RIC.video === 'carico') return;
+  RIC.video = 'carico';
+  const f = document.createElement('script'); f.src = 'ricette-video.js';
+  f.onload = () => { RIC.video = 'pronto'; render(); };
+  f.onerror = () => { RIC.video = 'errore'; f.remove(); if (/^ricvideo/.test(UI.vista)) render(); };
+  document.head.appendChild(f);
 }
 
 /* ---------- 📥 SCARICATE (Mario 08/11 «offline crea il motore… cercare e scaricare… in un click») ----------
@@ -334,12 +344,27 @@ function stimataRic(x) {
   return (STIMATE_CACHE[x.id] = { id: x.id, nome: x.nome, zona: 'italiana', categoria: x.dolce ? 'dolci' : '', foto: x.foto || '', totale: Number(x.totale) || 0, difficolta: '',
     nutr: x.nutr, stimata: true, url: x.url, autore: x.autore || '', porzioni: x.porzioni || 1, ingredienti: ing, passi: [], cerca: ing.map(i => i.nome).join(', ') });
 }
+/* C144: una ricetta video come le altre (ingredienti e testo come li scrive l'autore, valori suoi o «≈ stimati»); i passi sono nel video */
+const VIDEO_CACHE = {};
+function videoRic(x) {
+  if (VIDEO_CACHE[x.id]) return VIDEO_CACHE[x.id];
+  const ing = (x.ingredienti || []).map(ingRic).filter(i => i.nome);
+  return (VIDEO_CACHE[x.id] = { id: x.id, nome: x.nome, zona: '', categoria: '', foto: x.foto || '', totale: 0, difficolta: '', nutr: x.nutr || null, stimata: !!x.stimata,
+    valoriSuoi: x.suoi ? x.valoriSuoi || '' : '', video: true, tipo: x.tipo || 'Altro', data: x.data || '', proteica: !!x.proteica, url: x.url, autore: x.autore || '',
+    porzioni: x.porzioni || 1, ingredienti: ing, passi: [], intro: x.testo || '', cerca: ing.map(i => i.nome).join(', ') });
+}
+const videoDi = id => typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.find(x => x.id === id) : null;
+const dataIt = d => /^\d{4}-\d{2}-\d{2}$/.test(d || '') ? d.split('-').reverse().join('/') : '';
 const isStimata = id => /^(cp|yt):/.test(String(id || '')) || (typeof RICETTE_STIMATE !== 'undefined' && RICETTE_STIMATE.some(x => x.id === id));
 /* la ricetta completa: mia, già sul telefono, o da chiedere al server */
 function ricetta(id) {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (/^mia:/.test(id)) { const m = mieRic().find(x => x.id === id); return m ? daMia(m) : null; }
-  if (isStimata(id) && typeof RICETTE_STIMATE !== 'undefined') { const x = RICETTE_STIMATE.find(y => y.id === id); if (x) return stimataRic(x); }
+  if (isStimata(id)) {
+    const x = typeof RICETTE_STIMATE !== 'undefined' ? RICETTE_STIMATE.find(y => y.id === id) : null, xv = /^yt:/.test(id) ? videoDi(id) : null;
+    if (x) return xv ? Object.assign({}, stimataRic(x), { intro: xv.testo || '', valoriSuoi: xv.suoi ? xv.valoriSuoi || '' : '', video: true }) : stimataRic(x);   // anche in Proteiche: pagella stimata + i suoi valori
+    if (xv) return videoRic(xv);
+  }
   return cacheRic()[id] || RIC.scaricate[id] || null;
 }
 function apriGz(id) {
@@ -724,7 +749,9 @@ function vRicettario() {
   const mie = mieRic().map(daMia);
   const scar = RIC.scaricate, extra = Object.assign({}, scar, cache);
   const elenco = elencoRic();
-  const tutte = mie.concat(elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti, nutr: r.nutr || x.nutr || null }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
+  UI.ricVideoDa = '';   // C144: dal Ricettario, «Indietro» di una ricetta torna qui
+  const idsEl = new Set(elenco.map(r => r.id)), videoPref = typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.filter(x => pref.includes(x.id) && !idsEl.has(x.id)).map(videoRic) : [];
+  const tutte = mie.concat(videoPref, elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti, nutr: r.nutr || x.nutr || null }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
   let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && passaFit(r, f) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
@@ -745,6 +772,7 @@ function vRicettario() {
       ${typeof Riconosci !== 'undefined' && Riconosci && typeof ascoltaAI === 'function' ? `<button type="button" class="btn chiaro" data-a="ric-dico" aria-label="Cerca a voce">${AI.rec ? '⏹' : '🎙'}</button>` : ''}
       <button type="submit" class="btn pieno" aria-label="Cerca su GialloZafferano e RicetteFit">${ico('cerca')}</button></form>
     ${zoneRic(f)}
+    <button type="button" class="btn chiaro pieno ric-video-link" data-a="vai" data-v="ricvideo">🎬 Ricette video${typeof RICETTE_VIDEO !== 'undefined' ? ` <small>(${RICETTE_VIDEO.length})</small>` : ''}</button>
     ${f.zona === 'fit' ? sceltaFit(f) : ''}
     ${piuFiltriRic(f)}
     ${f.zona === 'fit' ? riquadroFit(f, tutte) : ''}
@@ -796,6 +824,43 @@ function vRicettario() {
   return h + '</main>';
 }
 
+/* 🎬 RICETTE VIDEO (C144): un riquadro per youtuber → le sue ricette, con i tipi (Pancake, Porridge…) per filtrare. Nuove in cima. */
+const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO : []).forEach(x => m.set(x.autore, (m.get(x.autore) || []).concat(x))); return [...m]; };
+const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
+    <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
+    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}</small>${r.nutr && r.nutr.kcal > 0
+      ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>` : ''}</span></button>`;
+function vRicVideo(id) {
+  if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
+  if (RIC.stato !== 'pronto') return attesaRic('Ricette video', 'ricettario');
+  if (typeof RICETTE_VIDEO === 'undefined') {
+    caricaVideo();
+    return testataMonica('Ricette video', 'ricettario') + `<main class="corpo"><section class="scheda">${RIC.video === 'errore'
+      ? '<p style="margin:0"><b>Non riesco ad aprire le ricette video.</b> La prima volta serve la rete: controllala e riprova.</p><button type="button" class="btn pieno" data-a="ric-video-riprova">Riprova</button>'
+      : '<p class="tenue" style="margin:0">Apro le ricette video…</p>'}</section></main>`;
+  }
+  const autori = autoriVideo(), k = Number(id), a = id !== '' && autori[k] ? autori[k] : null;
+  let h = testataMonica('Ricette video', a ? 'ricvideo' : 'ricettario') + '<main class="corpo">';
+  if (!a) {
+    UI.ricVideoDa = 'ricvideo';
+    h += `<div><h1>🎬 Ricette video</h1><p class="tenue" style="margin:4px 0 0">Ricette dai video di YouTube, divise per chi le fa. Ingredienti e valori sono qui; il video si apre su YouTube.</p></div>`;
+    h += autori.map(([nome, rr], i) => `<button type="button" class="riquadro ric-video-autore" data-a="vai" data-v="ricvideo:${i}">🎬<div><b>${esc(nome)}</b><small>${rr.length} ricette video · ${rr.filter(x => x.suoi).length} coi suoi valori · ${rr.filter(x => x.proteica).length} anche in Proteiche</small></div></button>`).join('');
+    h += `<p class="piccolo tenue" style="margin:0">${navigator.onLine === false ? 'Senza rete: vedi nomi, ingredienti e valori; i video e le copertine tornano con la rete.' : 'Nomi, ingredienti e valori come li scrive chi fa il video. Le aggiorna Claude.'}</p>`;
+    return h + '</main>';
+  }
+  UI.ricVideoDa = 'ricvideo:' + k;
+  const [nome, tutte] = a, pref = preferiteRic(), tipo = UI.ricVideoTipo && UI.ricVideoTipo.a === nome ? UI.ricVideoTipo.t : '';
+  const tipi = {}; tutte.forEach(x => { tipi[x.tipo] = (tipi[x.tipo] || 0) + 1; });
+  const ordine = Object.keys(tipi).sort((x, y) => (x === 'Altro') - (y === 'Altro') || tipi[y] - tipi[x] || x.localeCompare(y, 'it'));
+  const rr = tutte.filter(x => !tipo || x.tipo === tipo).map(videoRic);
+  const canale = typeof CANALI_VIDEO !== 'undefined' && CANALI_VIDEO[nome];
+  h += `<div><h1>${esc(nome)}</h1><p class="tenue" style="margin:4px 0 0">${tutte.length} ricette video${canale ? ` · <a href="${esc(canale)}" target="_blank" rel="noopener">Il suo canale YouTube ↗</a>` : ''}</p></div>
+    <div class="scelte ric-tipi-video" role="group" aria-label="Tipo">${[['', 'Tutte', tutte.length]].concat(ordine.map(t => [t, t, tipi[t]])).map(([v, t, n]) => `<button type="button" class="scelta" data-a="ric-video-tipo" data-v="${esc(v)}" aria-pressed="${tipo === v}">${esc(t)} · ${n}</button>`).join('')}</div>
+    <p class="piccolo ric-conta" style="margin:0"><b>${rr.length}</b> ${rr.length === 1 ? 'ricetta' : 'ricette'}, le più nuove in cima</p>
+    <div class="ric-elenco">${rr.map(r => cartaVideo(r, pref)).join('')}</div>`;
+  return h + '</main>';
+}
+
 function vRicetta(id) {
   if (RIC.stato !== 'pronto') return attesaRic('Ricetta', 'ricettario');
   const r = ricetta(id), v = voceElenco(id);
@@ -809,34 +874,35 @@ function vRicetta(id) {
       <section class="scheda"><p class="tenue" style="margin:0">Apro «${esc(v ? v.nome : 'la ricetta')}» da ${esc(fonteRic({ id }))}…</p></section></main>`;
   }
   const porz = (UI.ricPorz && UI.ricPorz[id]) || r.porzioni, spunte = (UI.ricSpunte && UI.ricSpunte[id]) || {}, pref = preferiteRic().includes(id);
-  let h = testataMonica('Ricetta', 'ricettario') + '<main class="corpo">';
+  let h = testataMonica('Ricetta', (r.video && UI.ricVideoDa) || 'ricettario') + '<main class="corpo">';
   // Mario 08/11: «il play come prima cosa nella ricetta»
   if (r.passi.length) h += `<button type="button" class="btn pieno ric-play" data-a="ric-play" data-v="${esc(id)}">▶️ Ascolta la ricetta passo passo</button>`;
   if (webRic(id) && !nelRicettario(id)) h += `<section class="scheda ric-aggiungi"><p style="margin:0"><b>Non è ancora nel tuo ricettario.</b> Ti piace? Aggiungila: la vedrete tu e Monica nell'elenco, con video, foto e voce.</p>
     <button type="button" class="btn pieno" data-a="ric-aggiungi" data-v="${esc(id)}">➕ Aggiungi al mio ricettario</button></section>`;
   else if ((RIC.scelte || []).some(x => x.id === id)) h += `<p class="piccolo tenue" style="margin:0">✓ Nel tuo ricettario · <button type="button" class="link" data-a="ric-togli" data-v="${esc(id)}">Togli</button></p>`;
   if (r.hls || r.mp4) h += `<div class="ric-video"><video id="ric-video" controls playsinline preload="none" poster="${esc(r.copertina || r.foto)}" data-hls="${esc(r.hls || '')}" data-mp4="${esc(r.mp4 || '')}"></video></div>`;
+  else if (r.foto && /^yt:/.test(id) && r.url) h += `<a class="ric-foto ric-yt" href="${esc(r.url)}" target="_blank" rel="noopener"><img src="${esc(r.foto)}" alt="${esc(r.nome)}" referrerpolicy="no-referrer"><span>▶️ Guarda il video su YouTube</span></a>`;   // C144
   else if (r.foto) h += `<figure class="ric-foto"><img src="${esc(r.foto)}" alt="${esc(r.nome)}" referrerpolicy="no-referrer"></figure>`;
   const info = [r.prep && 'Preparazione ' + durataRic(r.prep), r.cottura && 'Cottura ' + durataRic(r.cottura), !r.prep && r.totale && 'Tempo ' + durataRic(r.totale),
     r.difficolta && 'Difficoltà ' + r.difficolta.toLowerCase(), r.costo && 'Costo ' + r.costo.toLowerCase()].filter(Boolean).join(' · ');
   h += `<div><h1>${esc(r.nome)}</h1>${info ? `<p class="tenue" style="margin:4px 0 0">${esc(info)}</p>` : ''}</div>`;
   if (!r.mia) h += `<p class="piccolo ric-fonte-riga" style="margin:0">Fonte: <b>${esc(fonteRic(r))}</b>${r.url ? ` · <a href="${esc(r.url)}" target="_blank" rel="noopener">Apri l'originale ↗</a>` : ''}</p>`;   // C124
   h += valoriRic(r.nutr || (v && v.nutr), r);
-  if (r.intro) h += `<details class="ric-intro"><summary>${esc(r.intro.split('\n')[0].slice(0, 140))}${r.intro.length > 140 ? '…' : ''} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
+  if (r.intro) h += `<details class="ric-intro"><summary>${r.video ? '📝 Cosa scrive sotto il video ·' : esc(r.intro.split('\n')[0].slice(0, 140)) + (r.intro.length > 140 ? '…' : '')} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
   h += `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
       ${r.mia ? `<button type="button" class="btn chiaro" data-a="vai" data-v="ricmia:${esc(id)}">${ico('matita')}Cambia</button>` : ''}
       ${typeof S !== 'undefined' && S.piatti && !S.piatti.some(x => x.ricetta === id) ? `<button type="button" class="btn chiaro" data-a="ric-menu" data-v="${esc(id)}">➕ Metti nel menù</button>` : ''}</div>
-    <section class="scheda"><h2>Ingredienti</h2>
+    ${r.ingredienti.length ? `<section class="scheda"><h2>Ingredienti</h2>
       <div class="fila ric-porz"><span>Per <b>${porz}</b> ${porz === 1 ? 'persona' : 'persone'}</span>
         <button type="button" class="btn chiaro piccolo" data-a="ric-porz" data-v="-1" aria-label="Una persona in meno" ${porz <= 1 ? 'disabled' : ''}>−</button>
         <button type="button" class="btn chiaro piccolo" data-a="ric-porz" data-v="1" aria-label="Una persona in più" ${porz >= 60 ? 'disabled' : ''}>+</button></div>
       <p class="piccolo tenue" style="margin:0">Spunta quello che hai già: nella spesa va solo il resto.</p>
       <ul class="ric-ing">${r.ingredienti.map((i, k) => `<li><label><input type="checkbox" data-a="ric-spunta" data-v="${k}" ${spunte[k] ? 'checked' : ''}><span>${rigaIng(i, r.porzioni, porz)}</span></label></li>`).join('')}</ul>
-      <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${esc(id)}">${ico('carrello')}Metti nella lista della spesa</button></section>
+      <button type="button" class="btn chiaro pieno" data-a="ric-spesa" data-v="${esc(id)}">${ico('carrello')}Metti nella lista della spesa</button></section>` : ''}
     <section class="scheda"><h2>📝 Le tue note</h2><textarea id="ric-nota" data-ricnota="${esc(id)}" rows="2" maxlength="1000" placeholder="Es. metà zucchero; a Laura piace con più pecorino">${esc(notaRic(id))}</textarea>
       <p class="piccolo tenue" style="margin:0">Si salvano da sole su questo telefono e le rivedi nella cucina guidata.</p></section>
     ${r.passi.length ? `<section class="scheda"><h2>Passo passo</h2><ol class="ric-passi">${(fr => r.passi.map((p, k) => `<li><div>${fotoPasso(p, false, fr[k])}<span>${passoHtml(p.t)}</span></div></li>`).join(''))(fotoRicetta(r))}</ol></section>`
-      : r.url ? `<section class="scheda"><h2>Passo passo</h2><p style="margin:0">I passi sono su ${esc(fonteRic(r))}${/^yt:/.test(id) ? ', nel video e sotto il video' : ''}.</p><a class="btn pieno" href="${esc(r.url)}" target="_blank" rel="noopener">${/^yt:/.test(id) ? '▶️ Guarda il video' : '📖 Leggi i passi'} su ${esc(fonteRic(r))} ↗</a></section>` : ''}`;
+      : r.url ? `<section class="scheda"><h2>Passo passo</h2><p style="margin:0">${r.ingredienti.length ? 'I passi sono' : 'Ingredienti e passi sono'} su ${esc(fonteRic(r))}${/^yt:/.test(id) ? ', nel video e sotto il video' : ''}.</p><a class="btn pieno" href="${esc(r.url)}" target="_blank" rel="noopener">${/^yt:/.test(id) ? '▶️ Guarda il video' : '📖 Leggi i passi'} su ${esc(fonteRic(r))} ↗</a></section>` : ''}`;
   if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
   h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di ${esc(fonteRic(r))}${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
@@ -853,7 +919,8 @@ function valoriRic(n, r) {
     ${pagellaHtml(n)}
     <div class="ric-valori-griglia">${cella(Math.round(n.kcal), 'kcal')}${cella(g(n.prot), 'proteine')}${cella(g(n.carb), 'carboidrati')}${cella(g(n.grassi), 'grassi')}</div>
     ${sotto ? `<p class="piccolo" style="margin:0">${sotto}</p>` : ''}
-    ${r && r.stimata ? `<p class="piccolo ric-stimati" style="margin:0">≈ <b>Valori stimati</b> da Claude dagli ingredienti (tabella CREA ed etichette dei prodotti proteici), non verificati: possono sbagliare di circa il 10%, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p>` : `<p class="piccolo tenue" style="margin:0">Valori indicativi di ${esc(fonteRic(r))}${/^gz:/.test(r.id || '') ? ' (dati Edamam)' : /^rf:/.test(r.id || '') ? ' (tabelle CREA)' : /^bg:/.test(r.id || '') ? ' (calcolati dal blog)' : ''}, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p>`}</section>`;
+    ${r && r.valoriSuoi ? `<p class="piccolo ric-suoi" style="margin:0">🎬 <b>Valori scritti da ${esc(r.autore || 'chi fa il video')}</b> sotto il video: «${esc(r.valoriSuoi)}». Qui sopra: 1 porzione${r.porzioni > 1 ? ` di ${r.porzioni}` : ''}.</p>` : ''}
+    ${r && r.stimata ? `<p class="piccolo ric-stimati" style="margin:0">≈ <b>Valori stimati</b> da Claude dagli ingredienti (tabella CREA ed etichette dei prodotti proteici), non verificati: possono sbagliare di circa il 10%, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p>` : r && r.valoriSuoi ? '' : `<p class="piccolo tenue" style="margin:0">Valori indicativi di ${esc(fonteRic(r))}${/^gz:/.test(r.id || '') ? ' (dati Edamam)' : /^rf:/.test(r.id || '') ? ' (tabelle CREA)' : /^bg:/.test(r.id || '') ? ' (calcolati dal blog)' : ''}, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p>`}</section>`;
 }
 /* il video si gioca DENTRO l'app: Android/iPhone col lettore del telefono; dove serve, hls.js (si scarica solo allora) */
 function preparaVideo() {
@@ -1276,6 +1343,8 @@ Object.assign(A, {
       .catch(e => { RIC.cerca.stato = 'errore'; RIC.cerca.errore = navigator.onLine === false ? 'Senza rete non posso cercare: riprova quando torna.' : 'Ricerca non riuscita: ' + (e.message || e); })
       .finally(() => { if (UI.vista === 'ricettario') render(); });
   },
+  'ric-video-tipo'(el) { const a = autoriVideo()[Number(UI.vista.split(':')[1])]; UI.ricVideoTipo = { a: a ? a[0] : '', t: el.dataset.v }; render(); },   // C144
+  'ric-video-riprova'() { RIC.video = ''; caricaVideo(); render(); },
   'ric-pref'(el) {
     const id = el.dataset.v, p = preferiteRic(), i = p.indexOf(id);
     if (i < 0) p.push(id); else p.splice(i, 1);
