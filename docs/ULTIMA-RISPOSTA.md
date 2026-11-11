@@ -1,14 +1,15 @@
-# Ultima risposta di Claude (11/11/2026 06:31 ora italiana)
+# Ultima risposta di Claude (11/11/2026 06:33 ora italiana)
 
-✅ FATTO
-- Ho collegato il tuo cassetto e ho provato a pubblicare. Cloudflare ha rifiutato: «cassetto non trovato».
-- L'app non si è rotta: online c'è ancora la versione 0.10.18, controllata.
-- Ho tolto di nuovo il collegamento, così le prossime pubblicazioni non si bloccano. Il codice del cassetto è salvato.
+Ho capito: riparto dalla #56. Aspetto la tua foto per accendere la corsia d'emergenza (C135).
+
+🛑 Ti aspetta ancora la domanda decisiva di Salvagente 4: PC di casa come riserva (scegli 1, 2, 3 o 4).
 
 ───
-💡 PARERE
-Le cause possibili sono due, e per ora sono solo **ipotesi** (idee non ancora provate):
-1. Il cassetto è in un account Cloudflare diverso da quello del server.
-2. La chiave che GitHub usa per pubblicare non ha il permesso di usare i cassetti.
+✅ FATTO
+- Ho ricontrollato la pubblicazione che ha tolto di nuovo il cassetto: è riuscita.
+- L'app online è sempre la v0.10.18 e funziona.
 
-Una tua foto mi dice qual è …
+───
+👉 DA FARE TU
+**A cosa serve:** il **cassetto** (lo spazio di riserva su Cloudflare, dove l'app tiene una copia di avvisi e clienti) esiste, ma GitHub non riesce a vederlo. Con la tua foto capisco perché:
+- se nella pagina c'è «pronti-in-tavola», il …
