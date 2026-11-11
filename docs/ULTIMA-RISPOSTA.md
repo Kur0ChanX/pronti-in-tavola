@@ -1,13 +1,14 @@
-# Ultima risposta di Claude (11/11/2026 13:52 ora italiana)
+# Ultima risposta di Claude (11/11/2026 14:19 ora italiana)
 
-Ho capito: sei dentro Cloudflare e vuoi il passo 2.
+✅ **FATTO**
+La riserva degli avvisi (C135) è accesa: il server la vede con i 2 telefoni e i 3 clienti.
 
 ───
-👉 DA FARE TU
-A cosa serve: prima di creare il cassetto controlliamo di essere nell'account giusto. L'altra volta è stato creato nell'account sbagliato e non funzionava.
+👉 **DA FARE TU**
+A cosa serve: vedere con i tuoi occhi che la riserva funziona. Solo così chiudo questa voce.
+1. Chiudi e riapri l'app.
+2. Apri **Notifiche**.
+3. Deve esserci «🛟 Corsia d'emergenza pronta». Tocca «🧪 Prova»: il telefono deve suonare.
+4. Mandami una foto della schermata.
 
-2. Tocca il menù ☰ in alto a sinistra → **Compute** → **Workers & Pages**.
-3. Guarda l'elenco:
-   - c'è **pronti-in-tavola** → sei nell'account giusto, vai al passo 4;
-   - la pagina è vuota → in alto tocca il nome dell'account (con le freccine ⇕) e scegli l'altro. Se non c'è un altro account, mandami una foto e mi fermo.
-4. Menù ☰ → **Storage & databases** → **Workers …
+La raccolta delle ricette è a 500 pagine su 1.915, con 100 ricette buone finora.
