@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.19';
+const VERSIONE_APP = '0.10.20';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.20', data: '11/11/2026',
+    nuovo: ['Ricettario: 191 ricette proteiche nuove in «🏋️ Proteiche», scelte da Claude su RicetteFit e GialloZafferano (prima colazione, spuntini, dolci e dopo l\'allenamento, poi pranzi e cene). Sono un file del sito: non consumano niente del server. Ognuna rispetta le regole delle Proteiche; aprendola, dosi e passaggi arrivano dal sito d\'origine'] },
   { v: '0.10.19', data: '11/11/2026',
     migliorato: ['Ricettario: le ricette nuove dal web non partono più da sole. I tasti «🍽 Cena», «🍗 Pollo» e la ricerca scritta dentro «🏋️ Proteiche» filtrano solo le ricette già lette (zero consumo). Per cercarne di nuove: «🔍 Cerca altre», che prima chiede conferma',
       'Ricettario: «⚡ Carica altre», «🔄 Cerca adesso», «🔍 Controlla tutte» e «🔍 Cerca altre» chiedono conferma con un avviso: consumano i dati gratuiti di Cloudflare, e se finissero si fermerebbero anche gli avvisi a Monica e ai clienti',
