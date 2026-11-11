@@ -14,3 +14,4 @@ Foto `archivio/foto/2026-11-11-2254-mario-spumone-video.jpg` (sul suo telefono, 
 
 ## Stato
 - 11/11 #67 FATTO nella patch unica `docs/lavori-in-corso/c144-app.patch` (`apriVideoYt`, `chiudiVideoYt`, gesto indietro, aggiornamento che aspetta), prova C147 dentro `SOLO=C144` verde. Manca: foto a Mario e il suo «1»; prova sul telefono vero.
+- 12/11 #68 prova nel contenitore (pagina su localhost, non dal file): il lettore di YouTube del video di Beardedscara SENZA «autoplay» si vede pronto (copertina e ▶); CON «autoplay=1» (come nell'app) scrive «Video unavailable», anche su youtube.com. Il video è pubblico e incorporabile (API: `embeddable: true`). Ipotesi (PT E10): YouTube rifiuta la riproduzione dal contenitore (robot); sul telefono vero deve partire. Si decide col telefono di Mario: se lì non parte, togliere «autoplay» (un tocco in più sul ▶).

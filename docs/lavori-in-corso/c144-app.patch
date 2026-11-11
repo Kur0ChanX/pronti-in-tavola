@@ -37,7 +37,7 @@ index 1f38af40..8085a72b 100644
    if (!d) { d = document.createElement('div'); d.id = 'agg-avviso'; d.setAttribute('role', 'status'); document.body.appendChild(d); }
    d.innerHTML = `<span>🔄 C'è l'aggiornamento <b>${esc(nuovaVersione)}</b>. Finisci quello che stai facendo, poi tocca «Riavvia».</span>
 diff --git a/ricettario.js b/ricettario.js
-index ebc5396c..360e6c69 100644
+index ebc5396c..24a64346 100644
 --- a/ricettario.js
 +++ b/ricettario.js
 @@ -163,6 +163,16 @@ function caricaRicette() {
@@ -151,7 +151,7 @@ index ebc5396c..360e6c69 100644
 +  let h = testataMonica('Ricette video', a ? 'ricvideo' : 'ricettario') + '<main class="corpo">';
 +  if (!a) {
 +    UI.ricVideoDa = 'ricvideo';
-+    h += `<div><h1>🎬 Ricette video</h1><p class="tenue" style="margin:4px 0 0">Ricette dai video di YouTube, divise per chi le fa. Ingredienti e valori sono qui; il video si apre su YouTube.</p></div>`;
++    h += `<div><h1>🎬 Ricette video</h1><p class="tenue" style="margin:4px 0 0">Ricette dai video di YouTube, divise per chi le fa. Ingredienti, valori e video sono qui: tocca la foto e il video parte.</p></div>`;
 +    h += autori.map(([nome, rr], i) => `<button type="button" class="riquadro ric-video-autore" data-a="vai" data-v="ricvideo:${i}">🎬<div><b>${esc(nome)}</b><small>${rr.length} ricette video · ${rr.filter(x => x.suoi).length} coi suoi valori · ${rr.filter(x => x.proteica).length} anche in Proteiche</small></div></button>`).join('');
 +    h += `<p class="piccolo tenue" style="margin:0">${navigator.onLine === false ? 'Senza rete: vedi nomi, ingredienti e valori; i video e le copertine tornano con la rete.' : 'Nomi, ingredienti e valori come li scrive chi fa il video. Le aggiorna Claude.'}</p>`;
 +    return h + '</main>';
@@ -648,151 +648,6 @@ index 16de66b6..f314c1d0 100644
 +  {"id": "bg:cookking020/ricetta-frittata-di-patate-ripiena-con-prosciutto-e-formaggio-filante", "nome": "Frittata di patate ripiena con prosciutto e formaggio filante", "foto": "https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/frittata_copertina_1200x675.jpg", "url": "https://blog.giallozafferano.it/cookking020/ricetta-frittata-di-patate-ripiena-con-prosciutto-e-formaggio-filante/", "porzioni": 2, "ingredienti": ["300 g patate", "uova", "1 g prosciutto cotto", "100 g Mozzarella per pizza o scamorza", "10 g olio extravergine d'oliva", "q.b. sale", "q.b. pepe nero"], "totale": 30, "nutr": {"kcal": 315.3, "prot": 15.8, "carb": 24.4, "zuc": 1.9, "grassi": 17.3, "saturi": 4.7, "sodio": 152.4}, "dolce": false, "stimata": true, "passi": [{"t": "Per prima cosa, sbucciate le patate e lavatele accuratamente. Successivamente, tagliatele a fettine molto sottili con una mandolina, in modo da ottenere uno spessore uniforme.", "foto": ["https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/Affettare-patate-con-mandolina-960x720.png"]}, {"t": "A questo punto, versate un filo d'olio extravergine d'oliva in una padella antiaderente. Quindi sistemate le fettine di patate sul fondo, sovrapponendole leggermente. Lasciatele cuocere a fuoco medio-basso finché iniziano ad ammorbidirsi.", "foto": ["https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/Padella-con-olio-doliva-a-spirale-960x720.png", "https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/02_patate_in_padella.jpg"]}, {"t": "Nel frattempo, sbattete le uova in una ciotola con sale e pepe. Dopodiché, versatele sulle patate e distribuitele uniformemente. Continuate la cottura a fuoco dolce finché il composto comincia a rassodarsi.", "foto": ["https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/03_aggiunta_uova.jpg"]}, {"t": "Quando la base sarà abbastanza compatta, distribuite una parte del formaggio grattugiato sulla superficie. In questo modo, inizierà a sciogliersi durante la cottura. Successivamente, disponete il prosciutto cotto su una metà della frittata. Inoltre, aggiungete il formaggio rimasto per ottenere un ripieno ancora più filante.", "foto": ["https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/04_aggiunta_formaggio.jpg", "https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/05_prosciutto_e_formaggio.jpg"]}, {"t": "Infine, lasciate cuocere ancora qualche minuto a fuoco basso, girando delicatamente la frittata se necessario. Assicuratevi che le patate e le uova siano completamente cotte e che il formaggio sia sciolto.", "foto": ["https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/06_frittata_piegata.jpg"]}, {"t": "Una volta pronta, trasferite la frittata su un piatto da portata. Infine, tagliatela e servitela ancora calda, così da gustare tutto il suo ripieno filante.", "foto": ["https://blog.giallozafferano.it/cookking020/wp-content/uploads/2026/11/08_cuore_filante.jpg"]}]},
 +  {"id": "bg:ricettepanedolci/ciambelle-salate-da-antipasto-senza-lievito", "nome": "Ciambelle Salate da Antipasto Senza Lievito", "foto": "https://blog.giallozafferano.it/ricettepanedolci/wp-content/uploads/2026/10/Ciambelle-Salate-da-Antipasto-Senza-Lievito.png", "url": "https://blog.giallozafferano.it/ricettepanedolci/ciambelle-salate-da-antipasto-senza-lievito/", "porzioni": 6, "ingredienti": ["350 g farina 00", "150 g yogurt bianco naturale", "1 uovo", "60 ml latte", "40 ml olio di semi", "40 g parmigiano", "10 g lievito istantaneo per preparazioni salate", "6 g sale", "1 pizzico pepe", "1 tuorlo", "1 cucchiaio latte", "120 g prosciutto cotto", "100 g prosciutto crudo", "80 g salame", "100 g formaggio fresco spalmabile", "Qualche foglia rucola"], "totale": 40, "nutr": {"kcal": 477.4, "prot": 23.9, "carb": 43.8, "zuc": 2.7, "grassi": 23.9, "saturi": 7.5, "sodio": 915.5}, "dolce": false, "stimata": true, "passi": [{"t": "Versa lo yogurt bianco naturale in una ciotola capiente. Aggiungi l'uovo, il latte e l'olio di semi. Mescola con una forchetta o una frusta manuale fino a ottenere un composto omogeneo. Utilizza ingredienti non troppo freddi, così sarà più semplice amalgamarli.", "foto": []}, {"t": "Unisci il parmigiano grattugiato e, se desideri, un pizzico di pepe nero. Mescola ancora per distribuire il formaggio nel composto. Il parmigiano contribuisce a insaporire l'impasto, quindi non aumentare eccessivamente la quantità di sale.", "foto": []}, {"t": "Mescola la farina 00 con il lievito istantaneo per preparazioni salate. Aggiungili gradualmente nella ciotola, mescolando prima con una forchetta e poi con una spatola. Unisci il sale e continua a lavorare fino a quando gli ingredienti iniziano a compattarsi. Il composto deve risultare morbido, ma non liquido.", "foto": []}, {"t": "Trasferisci l'impasto su un piano leggermente infarinato. Impasta brevemente con le mani, soltanto fino a ottenere un panetto omogeneo. Evita di lavorarlo troppo a lungo: non devi sviluppare una maglia glutinica come quella del pane lievitato. Se risulta appena appiccicoso, lascia riposare il panetto per 10 minuti, coperto con una ciotola capovolta. Aggiungi altra farina soltanto se strettamente necessario, poca alla volta.", "foto": []}, {"t": "Spolverizza il piano con un velo di farina. Stendi il panetto con il mattarello fino a ottenere uno spessore di circa 1,5 cm. Cerca di mantenere uno spessore uniforme: in questo modo tutte le ciambelline cuoceranno nello stesso tempo. Non stendere la pasta troppo sottile, perché dopo la cottura deve esserci abbastanza mollica per tagliare e farcire le ciambelle.", "foto": []}, {"t": "Utilizza un coppapasta da 8–9 cm per ritagliare tanti dischi. Disponili sul piano di lavoro, lasciando un po' di spazio tra uno e l'altro. Raccogli i ritagli di impasto, compattali delicatamente e stendili nuovamente. Evita di reimpastare troppe volte gli scarti, perché potrebbero diventare più tenaci.", "foto": []}, {"t": "Prendi un coppapasta piccolo da circa 2–3 cm. Premilo al centro di ogni disco per ricavare la classica forma a ciambella. Allarga leggermente il foro con le dita, se necessario. Questo passaggio è importante perché durante la cottura l'impasto tende a gonfiarsi e il buco potrebbe restringersi.", "foto": []}, {"t": "Rivesti una teglia con carta forno. Sistema le ciambelline distanziandole di circa 3 cm. Controlla che mantengano una forma regolare e che il foro centrale non si sia chiuso durante lo spostamento. Non occorre aspettare che lievitino: il lievito istantaneo agirà con il calore del forno.", "foto": []}, {"t": "Sbatti il tuorlo con un cucchiaio di latte. Spennella delicatamente la superficie delle ciambelline, senza far colare troppo liquido lungo i bordi. Questo passaggio favorisce la formazione di una crosticina dorata e lucida, simile a quella della fotografia.", "foto": []}, {"t": "Preriscalda il forno statico a 180°C.Inforna la teglia sul ripiano centrale e cuoci per circa 18–22 minuti. Controlla la doratura negli ultimi minuti. Le ciambelle devono risultare gonfie, dorate e asciutte alla base. Se ne apri una per controllare, l'interno non deve presentare parti di impasto crudo. Non prolungare inutilmente la cottura, perché potrebbero diventare asciutte.", "foto": []}, {"t": "Sforna le ciambelle salate senza lievito di birra. Trasferiscile su una gratella e lasciale intiepidire completamente prima di farcirle. Non chiuderle subito in un contenitore quando sono ancora bollenti, perché il vapore potrebbe rendere umida la superficie.", "foto": []}, {"t": "Prendi una ciambellina completamente raffreddata. Tagliala orizzontalmente con un coltello seghettato, come faresti con un piccolo panino. Procedi delicatamente per non rompere la parte superiore. Ripeti l'operazione con tutte le ciambelle che desideri farcire.", "foto": []}, {"t": "Spalma, se desideri, un velo di formaggio fresco spalmabile sulla base. Disponi una o due fette di prosciutto cotto, ripiegandole leggermente per creare volume. Prepara altre ciambelle con prosciutto crudo oppure salame. Aggiungi qualche fogliolina di rucola soltanto se ti piace un tocco fresco. Non eccedere con le salse: una farcitura troppo umida potrebbe ammorbidire eccessivamente la mollica.", "foto": []}, {"t": "Sistema la parte superiore di ogni ciambella sulla farcitura. Premi appena con le dita, senza schiacciare il ripieno. Disponi le Ciambelle Salate da Antipasto Senza Lievito su un vassoio, alternando le farciture. Servile a temperatura ambiente, preferibilmente poco dopo averle assemblate.", "foto": []}]}
  ];
-diff --git a/style.css b/style.css
-index 6d4285cc..02ad4ac5 100644
---- a/style.css
-+++ b/style.css
-@@ -818,6 +818,23 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
- .ric-cerca .btn { flex: none; width: 52px; padding: 0; }
- .ric-video { border-radius: 18px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; }
- .ric-video video { width: 100%; height: 100%; display: block; }
-+/* C144 ricette video: copertina col ▶ (elenco) e copertina che apre YouTube (ricetta) */
-+.ric-mini-video { position: relative; flex: none; width: 76px; height: 76px; }
-+.ric-mini-video img { width: 76px; height: 76px; border-radius: 12px; object-fit: cover; display: block; background: var(--crema, #FBF4E8); }
-+.ric-mini-video i { position: absolute; inset: 0; margin: auto; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; font-style: normal; font-size: 14px; display: grid; place-items: center; }
-+.ric-video-autore { min-height: 0; }
-+.ric-video-autore small { display: block; margin-top: 4px; }
-+.ric-tipi-video { gap: 6px; }
-+.ric-tipi-video .scelta { min-height: 40px; padding: 6px 11px; display: inline-flex; flex-direction: row; white-space: nowrap; }
-+.ric-yt { position: relative; display: block; width: 100%; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; text-decoration: none; }
-+.ric-yt span { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: #C4302B; color: #fff; font-weight: 700; padding: 10px 16px; border-radius: 999px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
-+/* C147: il video di YouTube dentro l'app, grande sopra la ricetta */
-+.video-yt { position: fixed; inset: 0; z-index: 9000; background: #111; display: flex; flex-direction: column; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 12px max(14px, env(safe-area-inset-bottom)); }
-+.video-yt-barra { display: flex; justify-content: flex-end; }
-+.video-yt-player { flex: 1; min-height: 220px; }
-+.video-yt-player iframe { width: 100%; height: 100%; border: 0; border-radius: 12px; background: #000; display: block; }
-+.video-yt-fuori { color: #fff; text-align: center; font-size: .9rem; opacity: .85; }
-+body.con-video { overflow: hidden; }
- .ric-intro summary { cursor: pointer; line-height: 1.45; }
- .ric-intro summary b { color: var(--vino, #7B2318); }
- .ric-intro p { margin: 8px 0 0; }
-diff --git a/tools/prova.js b/tools/prova.js
-index 51be917d..e3448fe4 100644
---- a/tools/prova.js
-+++ b/tools/prova.js
-@@ -1837,17 +1837,95 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
-       window.__c141 = 0; RIC.chiedi = async c => { window.__c141++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
-       salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.db = null; RIC.scelteOra = Date.now();
-       const st = elencoRic().filter(x => x.stimata);
-+      /* C146 (Mario 11/11 «senza video ne passaggi non hanno senso»): una stimata senza passi e senza video non entra */
-+      RICETTE_STIMATE.push({ id: 'cp:prova-c146', nome: 'Prova senza passi C146', url: 'https://cookpad.com/it/ricette/1', porzioni: 1, ingredienti: ['100 g albume', '50 g avena'],
-+        nutr: { kcal: 250, prot: 25, carb: 30, zuc: 2, grassi: 3, saturi: 1, sodio: 200 }, dolce: true, stimata: true, passi: [] });
-+      const senza = elencoRic().some(x => x.id === 'cp:prova-c146'); RICETTE_STIMATE.pop();
-       return { file: RICETTE_STIMATE.length, st: st.length, tutteFit: st.every(x => fitRic(x.nutr) && pagellaRic(x.nutr)), dolci: st.filter(x => momentoRic(x, 'dolci')).length,
--        fonti: perFonte(st), conIng: st.every(x => x.ingredienti.length >= 2 && /^https:\/\//.test(x.url)), cp: (st.find(x => /^cp:/.test(x.id)) || {}).id };
-+        fonti: perFonte(st), conIng: st.every(x => x.ingredienti.length >= 2 && /^https:\/\//.test(x.url)), cp: (st.find(x => /^cp:/.test(x.id)) || {}).id,
-+        conPassi: st.every(x => x.passi.length || /^yt:/.test(x.id)), senza };
-     });
--    if (r.file < 150 || r.st !== r.file || !r.tutteFit || r.dolci < 60 || !/Cookpad/.test(r.fonti) || !/YouTube/.test(r.fonti) || !r.conIng || !r.cp) throw new Error('C141: file delle stimate sbagliato: ' + JSON.stringify(r));
-+    if (r.file < 150 || r.st !== r.file || !r.tutteFit || r.dolci < 60 || !/Cookpad/.test(r.fonti) || !/YouTube/.test(r.fonti) || !r.conIng || !r.cp || !r.conPassi || r.senza) throw new Error('C141/C146: file delle stimate sbagliato: ' + JSON.stringify(r));
-     await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, r.cp); await page.waitForTimeout(300);
-     const d = await page.evaluate(() => ({ stimati: !!document.querySelector('.ric-stimati'), pagella: !!document.querySelector('.ric-pagella'), play: !!document.querySelector('.ric-play'),
--      link: (document.querySelector('main a.btn[href^="https://cookpad.com/"]') || {}).textContent, ing: document.querySelectorAll('.ric-ing li').length, fonte: (document.querySelector('.ric-fonte-riga') || {}).innerText, server: window.__c141 }));
--    if (!d.stimati || !d.pagella || d.play || !/Leggi i passi su Cookpad/.test(d.link || '') || d.ing < 2 || !/Cookpad/.test(d.fonte || '') || d.server) throw new Error('C141: ricetta stimata aperta male: ' + JSON.stringify(d));
-+      passi: document.querySelectorAll('.ric-passi li').length, ing: document.querySelectorAll('.ric-ing li').length, fonte: (document.querySelector('.ric-fonte-riga') || {}).innerText, server: window.__c141 }));
-+    // C146: i passi dell'autore DENTRO l'app, con «Ascolta» (prima solo il link alla fonte)
-+    if (!d.stimati || !d.pagella || !d.play || d.passi < 1 || d.ing < 2 || !/Cookpad/.test(d.fonte || '') || d.server) throw new Error('C141/C146: ricetta stimata aperta male: ' + JSON.stringify(d));
-     await foto('48d-c141-ricetta-stimata');
-     await page.evaluate(() => { RICETTE_STIMATE.splice(0); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC141; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
-   });
-+  await passo('ricettario C144 ricette video: bottone, riquadro per youtuber, tipi, ricetta col video su YouTube e i valori dell\'autore, senza server', async () => {   // autonomo
-+    if (await page.evaluate(() => typeof RICETTE_VIDEO === 'undefined')) await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-video.js') });
-+    const n = await page.evaluate(() => {
-+      window.__primaC144 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
-+      window.__c144 = 0; RIC.chiedi = async c => { window.__c144++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
-+      salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-pref'); UI.ric = null; UI.ricVideoTipo = null; RIC.db = null; RIC.scelteOra = Date.now();
-+      UI.vista = 'ricettario'; render(); return RICETTE_VIDEO.length;
-+    });
-+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
-+    const b = await page.evaluate(() => (document.querySelector('.ric-video-link') || {}).textContent || '');
-+    if (n < 150 || !/Ricette video/.test(b) || !b.includes('(' + n + ')')) throw new Error('C144: bottone «🎬 Ricette video» assente o senza il numero: ' + JSON.stringify({ n, b }));
-+    await page.evaluate(() => { window.__c144 = 0; });   // il Ricettario parla col server (scelte, database); la sezione video no
-+    await clic('.ric-video-link');
-+    const au = await page.evaluate(() => ({ v: UI.vista, a: [...document.querySelectorAll('.ric-video-autore')].map(x => x.innerText),
-+      nP: RICETTE_VIDEO.filter(x => x.autore === 'Massimo Pietrobon Gobbi').length, nB: RICETTE_VIDEO.filter(x => x.autore === 'Beardedscara').length }));
-+    // C145: due youtuber, un riquadro ciascuno col suo numero
-+    if (au.v !== 'ricvideo' || au.a.length !== 2 || !/Massimo Pietrobon Gobbi/.test(au.a[0]) || !new RegExp(au.nP + ' ricette video').test(au.a[0])
-+      || !/Beardedscara/.test(au.a[1]) || au.nB < 50 || !new RegExp(au.nB + ' ricette video').test(au.a[1])) throw new Error('C144/C145: riquadri degli youtuber sbagliati: ' + JSON.stringify(au));
-+    await foto('48e-c144-video-youtuber');
-+    await clic('.ric-video-autore');
-+    const l = await page.evaluate(() => ({ v: UI.vista, carte: document.querySelectorAll('main .ric-elenco .ric-carta').length, tipi: [...document.querySelectorAll('[data-a="ric-video-tipo"]')].map(x => x.dataset.v),
-+      canale: (document.querySelector('main a[href^="https://www.youtube.com/channel/"]') || {}).href || '', nomiVuoti: [...document.querySelectorAll('main .ric-carta b')].filter(x => !x.textContent.trim()).length }));
-+    if (l.v !== 'ricvideo:0' || l.carte !== au.nP || l.tipi.length < 6 || !l.tipi.includes('Pancake') || !l.canale || l.nomiVuoti) throw new Error('C144: elenco dello youtuber sbagliato: ' + JSON.stringify(l));
-+    await foto('48f-c144-video-elenco');
-+    await clic('[data-a="ric-video-tipo"][data-v="Pancake"]');
-+    const pc = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta small:first-of-type')].map(x => x.textContent.split(' · ')[0]));
-+    if (!pc.length || pc.length >= au.nP || pc.some(t => t !== 'Pancake')) throw new Error('C144: il tipo «Pancake» non filtra: ' + JSON.stringify(pc.slice(0, 5)));
-+    // una coi valori dell'autore e senza ingredienti scritti: video su YouTube, «Valori scritti da…», niente Ingredienti; «Indietro» torna all'elenco
-+    const id1 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.suoi && !x.ingredienti.length && x.tipo === 'Pancake') || {}).id);
-+    await clic(`main .ric-carta[data-v="ricetta:${id1}"]`);
-+    const d1 = await page.evaluate(() => ({ yt: (document.querySelector('main button.ric-yt[data-a="video-yt"]') || {}).dataset?.v || '', suoi: (document.querySelector('.ric-suoi') || {}).innerText || '', ing: !!document.querySelector('.ric-ing'),
-+      kcal: (document.querySelector('.ric-valori-griglia b') || {}).textContent, passi: (document.querySelector('main .btn[data-a="video-yt"]') || {}).textContent || '', indietro: (document.querySelector('.testata .indietro') || {}).dataset.v, server: window.__c144 }));
-+    if (d1.yt !== id1 || !/Valori scritti da Massimo Pietrobon Gobbi/.test(d1.suoi) || d1.ing || !(Number(d1.kcal) > 0) || !/Guarda il video/.test(d1.passi) || d1.indietro !== 'ricvideo:0' || d1.server)
-+      throw new Error('C144: ricetta video (valori suoi) aperta male: ' + JSON.stringify(d1));
-+    await foto('48g-c144-ricetta-video');
-+    /* C147 (Mario 11/11 22:54 «metti i video che partono da lì»): tocco la foto → il video di YouTube parte DENTRO l'app, sopra la ricetta;
-+       un render() (un ordine che arriva) non lo ferma; «✕» e il gesto indietro lo chiudono */
-+    await clic('main button.ric-yt');
-+    const v1 = await page.evaluate(() => { const f = document.querySelector('#video-yt iframe'); render(); const f2 = document.querySelector('#video-yt iframe');
-+      return { src: f ? f.src : '', ref: f ? f.getAttribute('referrerpolicy') : '', stesso: f === f2, fuori: !document.querySelector('#app #video-yt'), blocco: document.body.classList.contains('con-video'),
-+        link: (document.querySelector('#video-yt a.video-yt-fuori') || {}).href || '' }; });
-+    if (!v1.src.startsWith('https://www.youtube-nocookie.com/embed/' + id1.slice(3) + '?') || !/playsinline=1/.test(v1.src) || v1.ref !== 'strict-origin-when-cross-origin' || !v1.stesso || !v1.fuori || !v1.blocco
-+      || !v1.link.endsWith(id1.slice(3))) throw new Error('C147: il video non parte dentro l\'app: ' + JSON.stringify(v1));
-+    await foto('48g2-c147-video-aperto');
-+    await clic('#video-yt [data-a="video-chiudi"]');
-+    if (await page.evaluate(() => !!document.querySelector('#video-yt') || UI.videoYt || document.body.classList.contains('con-video'))) throw new Error('C147: «✕ Chiudi il video» non lo chiude');
-+    await clic('main .btn[data-a="video-yt"]');
-+    const v2 = await page.evaluate(() => { const a = !!document.querySelector('#video-yt iframe'); window.dispatchEvent(new PopStateEvent('popstate')); return { a, chiuso: !document.querySelector('#video-yt'), vista: UI.vista }; });
-+    if (!v2.a || !v2.chiuso || !/^ricetta:/.test(v2.vista)) throw new Error('C147: il gesto indietro non chiude il video (o esce dalla ricetta): ' + JSON.stringify(v2));
-+    await page.evaluate(() => { const o = navigator.onLine; Object.defineProperty(navigator, 'onLine', { value: false, configurable: true }); window.__toastC147 = [];
-+      const m = mostraToast; window.mostraToast = t => window.__toastC147.push(t); try { apriVideoYt(UI.vista.slice(8)); } finally { window.mostraToast = m; Object.defineProperty(navigator, 'onLine', { value: o, configurable: true }); } });
-+    if (await page.evaluate(() => !!document.querySelector('#video-yt') || !/Senza rete/.test(window.__toastC147.join(' ')))) throw new Error('C147: senza rete il video si apre lo stesso o non avvisa');
-+    // una coi soli ingredienti (≈ stimati): ingredienti, spesa, scritta «stimati»
-+    const id2 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.stimata && !x.proteica && x.ingredienti.length >= 3) || {}).id);
-+    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id2); await page.waitForTimeout(200);
-+    const d2 = await page.evaluate(() => ({ ing: document.querySelectorAll('.ric-ing li').length, stimati: !!document.querySelector('.ric-stimati'), suoi: !!document.querySelector('.ric-suoi'), spesa: !!document.querySelector('[data-a="ric-spesa"]') }));
-+    if (d2.ing < 3 || !d2.stimati || d2.suoi || !d2.spesa) throw new Error('C144: ricetta video (stimata) aperta male: ' + JSON.stringify(d2));
-+    // C145: una di Beardedscara coi passi scritti sotto il video: «Passo passo», «Ascolta», i suoi valori e le sue considerazioni
-+    const id3 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.autore === 'Beardedscara' && x.suoi && (x.passi || []).length >= 4) || {}).id);
-+    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id3); await page.waitForTimeout(200);
-+    const d3 = await page.evaluate(() => ({ passi: document.querySelectorAll('.ric-passi li').length, play: !!document.querySelector('.ric-play'), suoi: (document.querySelector('.ric-suoi') || {}).innerText || '',
-+      ing: document.querySelectorAll('.ric-ing li').length, nome: (document.querySelector('main h1, main h2') || {}).textContent || '' }));
-+    if (d3.passi < 4 || !d3.play || !/Valori scritti da Beardedscara/.test(d3.suoi) || d3.ing < 2 || /[⤵\u{1F300}-\u{1FAFF}]/u.test(d3.nome)) throw new Error('C145: ricetta di Beardedscara aperta male: ' + JSON.stringify(d3));
-+    await foto('48g3-c145-ricetta-beardedscara');
-+    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id2); await page.waitForTimeout(200);
-+    // ⭐ preferita: la ritrovo nelle Preferite del Ricettario; dal Ricettario «Indietro» torna al Ricettario
-+    await clic('[data-a="ric-pref"]');
-+    await page.evaluate(() => { UI.ric = null; UI.ricZona = 'pref'; UI.vista = 'ricettario'; render(); });
-+    const pr = await page.evaluate(id => ({ c: !!document.querySelector(`main .ric-elenco .ric-carta[data-v="ricetta:${id}"]`), da: UI.ricVideoDa }), id2);
-+    if (!pr.c || pr.da) throw new Error('C144: la preferita video non è nelle Preferite: ' + JSON.stringify(pr));
-+    await page.evaluate(() => { localStorage.removeItem('pit-ric-pref'); RICETTE_VIDEO.splice(0); Object.keys(VIDEO_CACHE).forEach(k => delete VIDEO_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC144; UI.ric = null; UI.ricVideoTipo = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
-+  });
-   await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
-     await page.evaluate(() => {
-       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
-diff --git a/tools/sito.py b/tools/sito.py
-index be7ebe35..877eff7e 100644
---- a/tools/sito.py
-+++ b/tools/sito.py
-@@ -19,7 +19,7 @@ from zoneinfo import ZoneInfo
- RADICE = pathlib.Path(__file__).resolve().parent.parent
- USCITA = RADICE / 'sito'
- FILE_APP = ['index.html', 'style.css', 'data.js', 'dati.js', 'opzioni.js', 'lucchetto.js', 'vapore.js', 'guida-iphone.js', 'app.js',
--            'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'foto-ai.js', 'ricettario.js', 'ricette.js', 'ricette-fit.js', 'ricette-stimate.js', 'sw.js', 'manifest.webmanifest']
-+            'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'foto-ai.js', 'ricettario.js', 'ricette.js', 'ricette-fit.js', 'ricette-stimate.js', 'ricette-video.js', 'sw.js', 'manifest.webmanifest']
- MEDIA = re.compile(r'media/[A-Za-z0-9._-]+\.(?:png|jpg|jpeg|webp|svg|ico|onnx)')   # .onnx: il modello di «✨ Migliora con l'AI» (C119)
- 
- 
 diff --git a/ricette-video.js b/ricette-video.js
 new file mode 100644
 index 00000000..4b7afefa
@@ -1074,3 +929,148 @@ index 00000000..4b7afefa
 +  {"id":"yt:qGkIYIt4dpw","nome":"Gelato banana & cioccolato","tipo":"Gelati e freddi","autore":"Beardedscara","foto":"https://i.ytimg.com/vi/qGkIYIt4dpw/hqdefault.jpg","url":"https://www.youtube.com/watch?v=qGkIYIt4dpw","data":"2026-02-03","ingredienti":["2 banane","50g cioccolato fondente","15g olio di cocco"],"testo":"Considerazioni:\nIngredienti “ottimi”\nUna porzione non sazia\nDoppia porzione diventa TROPPA roba\nNon bilanciato in proteine per una merenda\nUtile pre-allenamento\nPossibile dolce post-pasto se quel pasto è stato scarico di carboidrati\nGusto INCREDIBILE","passi":["Congela due banane (meglio se a pezzi)","Frullale in un mixer (può essere necessario aggiungere 30mL di latte)","Sciogliere il cioccolato a bagnomaria","Versarlo sul gelato e far solidificare","Frullare a “scatti”","Godere"],"valoriSuoi":"295 kcal · 2,7g Proteine · 41,8g Carboidrati · 15,4g Grassi","nutr":{"kcal":295.0,"carb":41.8,"prot":2.7,"grassi":15.4},"porzioni":2,"suoi":true},
 +  {"id":"yt:17IHDssg6yA","nome":"Mousse cacao e chia","tipo":"Budini e creme","autore":"Beardedscara","foto":"https://i.ytimg.com/vi/17IHDssg6yA/hqdefault.jpg","url":"https://www.youtube.com/watch?v=17IHDssg6yA","data":"2026-01-31","ingredienti":["250g yogurt greco 0%","30g semi di chia","30g cacao amaro o burro di arachidi in polvere","20g miele o crema di datteri"],"testo":"Considerazioni:\nA prova di incompetente ai fornelli 🙋♂️è un bel “pastone”\nSuper proteico\nMolte fibre solubili\nToglierei 10g di semi e 10g di cacao (o burro d’arachidi) in modo da abbassare grassi e calorie\nAggiungerei frutta fresca, tipo mirtilli\nSe siete attivi, anche dei cereali o dell’avena","passi":["Mescola tutti gli ingredienti assieme","Lascia in frigorifero per almeno 2h","Consuma entro 2 giorni"],"valoriSuoi":"452 kcal · 37,4g Proteine · 29g Carboidrati · 15,8g Grassi","nutr":{"kcal":452.0,"carb":29.0,"prot":37.4,"grassi":15.8},"porzioni":1,"suoi":true}
 +];
+diff --git a/style.css b/style.css
+index 6d4285cc..02ad4ac5 100644
+--- a/style.css
++++ b/style.css
+@@ -818,6 +818,23 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
+ .ric-cerca .btn { flex: none; width: 52px; padding: 0; }
+ .ric-video { border-radius: 18px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; }
+ .ric-video video { width: 100%; height: 100%; display: block; }
++/* C144 ricette video: copertina col ▶ (elenco) e copertina che apre YouTube (ricetta) */
++.ric-mini-video { position: relative; flex: none; width: 76px; height: 76px; }
++.ric-mini-video img { width: 76px; height: 76px; border-radius: 12px; object-fit: cover; display: block; background: var(--crema, #FBF4E8); }
++.ric-mini-video i { position: absolute; inset: 0; margin: auto; width: 30px; height: 30px; border-radius: 50%; background: rgba(0,0,0,.6); color: #fff; font-style: normal; font-size: 14px; display: grid; place-items: center; }
++.ric-video-autore { min-height: 0; }
++.ric-video-autore small { display: block; margin-top: 4px; }
++.ric-tipi-video { gap: 6px; }
++.ric-tipi-video .scelta { min-height: 40px; padding: 6px 11px; display: inline-flex; flex-direction: row; white-space: nowrap; }
++.ric-yt { position: relative; display: block; width: 100%; padding: 0; border: 0; background: none; font: inherit; cursor: pointer; text-decoration: none; }
++.ric-yt span { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); background: #C4302B; color: #fff; font-weight: 700; padding: 10px 16px; border-radius: 999px; white-space: nowrap; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
++/* C147: il video di YouTube dentro l'app, grande sopra la ricetta */
++.video-yt { position: fixed; inset: 0; z-index: 9000; background: #111; display: flex; flex-direction: column; gap: 10px; padding: max(10px, env(safe-area-inset-top)) 12px max(14px, env(safe-area-inset-bottom)); }
++.video-yt-barra { display: flex; justify-content: flex-end; }
++.video-yt-player { flex: 1; min-height: 220px; }
++.video-yt-player iframe { width: 100%; height: 100%; border: 0; border-radius: 12px; background: #000; display: block; }
++.video-yt-fuori { color: #fff; text-align: center; font-size: .9rem; opacity: .85; }
++body.con-video { overflow: hidden; }
+ .ric-intro summary { cursor: pointer; line-height: 1.45; }
+ .ric-intro summary b { color: var(--vino, #7B2318); }
+ .ric-intro p { margin: 8px 0 0; }
+diff --git a/tools/prova.js b/tools/prova.js
+index 51be917d..e3448fe4 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -1837,17 +1837,95 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+       window.__c141 = 0; RIC.chiedi = async c => { window.__c141++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
+       salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.db = null; RIC.scelteOra = Date.now();
+       const st = elencoRic().filter(x => x.stimata);
++      /* C146 (Mario 11/11 «senza video ne passaggi non hanno senso»): una stimata senza passi e senza video non entra */
++      RICETTE_STIMATE.push({ id: 'cp:prova-c146', nome: 'Prova senza passi C146', url: 'https://cookpad.com/it/ricette/1', porzioni: 1, ingredienti: ['100 g albume', '50 g avena'],
++        nutr: { kcal: 250, prot: 25, carb: 30, zuc: 2, grassi: 3, saturi: 1, sodio: 200 }, dolce: true, stimata: true, passi: [] });
++      const senza = elencoRic().some(x => x.id === 'cp:prova-c146'); RICETTE_STIMATE.pop();
+       return { file: RICETTE_STIMATE.length, st: st.length, tutteFit: st.every(x => fitRic(x.nutr) && pagellaRic(x.nutr)), dolci: st.filter(x => momentoRic(x, 'dolci')).length,
+-        fonti: perFonte(st), conIng: st.every(x => x.ingredienti.length >= 2 && /^https:\/\//.test(x.url)), cp: (st.find(x => /^cp:/.test(x.id)) || {}).id };
++        fonti: perFonte(st), conIng: st.every(x => x.ingredienti.length >= 2 && /^https:\/\//.test(x.url)), cp: (st.find(x => /^cp:/.test(x.id)) || {}).id,
++        conPassi: st.every(x => x.passi.length || /^yt:/.test(x.id)), senza };
+     });
+-    if (r.file < 150 || r.st !== r.file || !r.tutteFit || r.dolci < 60 || !/Cookpad/.test(r.fonti) || !/YouTube/.test(r.fonti) || !r.conIng || !r.cp) throw new Error('C141: file delle stimate sbagliato: ' + JSON.stringify(r));
++    if (r.file < 150 || r.st !== r.file || !r.tutteFit || r.dolci < 60 || !/Cookpad/.test(r.fonti) || !/YouTube/.test(r.fonti) || !r.conIng || !r.cp || !r.conPassi || r.senza) throw new Error('C141/C146: file delle stimate sbagliato: ' + JSON.stringify(r));
+     await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, r.cp); await page.waitForTimeout(300);
+     const d = await page.evaluate(() => ({ stimati: !!document.querySelector('.ric-stimati'), pagella: !!document.querySelector('.ric-pagella'), play: !!document.querySelector('.ric-play'),
+-      link: (document.querySelector('main a.btn[href^="https://cookpad.com/"]') || {}).textContent, ing: document.querySelectorAll('.ric-ing li').length, fonte: (document.querySelector('.ric-fonte-riga') || {}).innerText, server: window.__c141 }));
+-    if (!d.stimati || !d.pagella || d.play || !/Leggi i passi su Cookpad/.test(d.link || '') || d.ing < 2 || !/Cookpad/.test(d.fonte || '') || d.server) throw new Error('C141: ricetta stimata aperta male: ' + JSON.stringify(d));
++      passi: document.querySelectorAll('.ric-passi li').length, ing: document.querySelectorAll('.ric-ing li').length, fonte: (document.querySelector('.ric-fonte-riga') || {}).innerText, server: window.__c141 }));
++    // C146: i passi dell'autore DENTRO l'app, con «Ascolta» (prima solo il link alla fonte)
++    if (!d.stimati || !d.pagella || !d.play || d.passi < 1 || d.ing < 2 || !/Cookpad/.test(d.fonte || '') || d.server) throw new Error('C141/C146: ricetta stimata aperta male: ' + JSON.stringify(d));
+     await foto('48d-c141-ricetta-stimata');
+     await page.evaluate(() => { RICETTE_STIMATE.splice(0); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC141; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
+   });
++  await passo('ricettario C144 ricette video: bottone, riquadro per youtuber, tipi, ricetta col video su YouTube e i valori dell\'autore, senza server', async () => {   // autonomo
++    if (await page.evaluate(() => typeof RICETTE_VIDEO === 'undefined')) await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-video.js') });
++    const n = await page.evaluate(() => {
++      window.__primaC144 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
++      window.__c144 = 0; RIC.chiedi = async c => { window.__c144++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
++      salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-pref'); UI.ric = null; UI.ricVideoTipo = null; RIC.db = null; RIC.scelteOra = Date.now();
++      UI.vista = 'ricettario'; render(); return RICETTE_VIDEO.length;
++    });
++    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
++    const b = await page.evaluate(() => (document.querySelector('.ric-video-link') || {}).textContent || '');
++    if (n < 150 || !/Ricette video/.test(b) || !b.includes('(' + n + ')')) throw new Error('C144: bottone «🎬 Ricette video» assente o senza il numero: ' + JSON.stringify({ n, b }));
++    await page.evaluate(() => { window.__c144 = 0; });   // il Ricettario parla col server (scelte, database); la sezione video no
++    await clic('.ric-video-link');
++    const au = await page.evaluate(() => ({ v: UI.vista, a: [...document.querySelectorAll('.ric-video-autore')].map(x => x.innerText),
++      nP: RICETTE_VIDEO.filter(x => x.autore === 'Massimo Pietrobon Gobbi').length, nB: RICETTE_VIDEO.filter(x => x.autore === 'Beardedscara').length }));
++    // C145: due youtuber, un riquadro ciascuno col suo numero
++    if (au.v !== 'ricvideo' || au.a.length !== 2 || !/Massimo Pietrobon Gobbi/.test(au.a[0]) || !new RegExp(au.nP + ' ricette video').test(au.a[0])
++      || !/Beardedscara/.test(au.a[1]) || au.nB < 50 || !new RegExp(au.nB + ' ricette video').test(au.a[1])) throw new Error('C144/C145: riquadri degli youtuber sbagliati: ' + JSON.stringify(au));
++    await foto('48e-c144-video-youtuber');
++    await clic('.ric-video-autore');
++    const l = await page.evaluate(() => ({ v: UI.vista, carte: document.querySelectorAll('main .ric-elenco .ric-carta').length, tipi: [...document.querySelectorAll('[data-a="ric-video-tipo"]')].map(x => x.dataset.v),
++      canale: (document.querySelector('main a[href^="https://www.youtube.com/channel/"]') || {}).href || '', nomiVuoti: [...document.querySelectorAll('main .ric-carta b')].filter(x => !x.textContent.trim()).length }));
++    if (l.v !== 'ricvideo:0' || l.carte !== au.nP || l.tipi.length < 6 || !l.tipi.includes('Pancake') || !l.canale || l.nomiVuoti) throw new Error('C144: elenco dello youtuber sbagliato: ' + JSON.stringify(l));
++    await foto('48f-c144-video-elenco');
++    await clic('[data-a="ric-video-tipo"][data-v="Pancake"]');
++    const pc = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta small:first-of-type')].map(x => x.textContent.split(' · ')[0]));
++    if (!pc.length || pc.length >= au.nP || pc.some(t => t !== 'Pancake')) throw new Error('C144: il tipo «Pancake» non filtra: ' + JSON.stringify(pc.slice(0, 5)));
++    // una coi valori dell'autore e senza ingredienti scritti: video su YouTube, «Valori scritti da…», niente Ingredienti; «Indietro» torna all'elenco
++    const id1 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.suoi && !x.ingredienti.length && x.tipo === 'Pancake') || {}).id);
++    await clic(`main .ric-carta[data-v="ricetta:${id1}"]`);
++    const d1 = await page.evaluate(() => ({ yt: (document.querySelector('main button.ric-yt[data-a="video-yt"]') || {}).dataset?.v || '', suoi: (document.querySelector('.ric-suoi') || {}).innerText || '', ing: !!document.querySelector('.ric-ing'),
++      kcal: (document.querySelector('.ric-valori-griglia b') || {}).textContent, passi: (document.querySelector('main .btn[data-a="video-yt"]') || {}).textContent || '', indietro: (document.querySelector('.testata .indietro') || {}).dataset.v, server: window.__c144 }));
++    if (d1.yt !== id1 || !/Valori scritti da Massimo Pietrobon Gobbi/.test(d1.suoi) || d1.ing || !(Number(d1.kcal) > 0) || !/Guarda il video/.test(d1.passi) || d1.indietro !== 'ricvideo:0' || d1.server)
++      throw new Error('C144: ricetta video (valori suoi) aperta male: ' + JSON.stringify(d1));
++    await foto('48g-c144-ricetta-video');
++    /* C147 (Mario 11/11 22:54 «metti i video che partono da lì»): tocco la foto → il video di YouTube parte DENTRO l'app, sopra la ricetta;
++       un render() (un ordine che arriva) non lo ferma; «✕» e il gesto indietro lo chiudono */
++    await clic('main button.ric-yt');
++    const v1 = await page.evaluate(() => { const f = document.querySelector('#video-yt iframe'); render(); const f2 = document.querySelector('#video-yt iframe');
++      return { src: f ? f.src : '', ref: f ? f.getAttribute('referrerpolicy') : '', stesso: f === f2, fuori: !document.querySelector('#app #video-yt'), blocco: document.body.classList.contains('con-video'),
++        link: (document.querySelector('#video-yt a.video-yt-fuori') || {}).href || '' }; });
++    if (!v1.src.startsWith('https://www.youtube-nocookie.com/embed/' + id1.slice(3) + '?') || !/playsinline=1/.test(v1.src) || v1.ref !== 'strict-origin-when-cross-origin' || !v1.stesso || !v1.fuori || !v1.blocco
++      || !v1.link.endsWith(id1.slice(3))) throw new Error('C147: il video non parte dentro l\'app: ' + JSON.stringify(v1));
++    await foto('48g2-c147-video-aperto');
++    await clic('#video-yt [data-a="video-chiudi"]');
++    if (await page.evaluate(() => !!document.querySelector('#video-yt') || UI.videoYt || document.body.classList.contains('con-video'))) throw new Error('C147: «✕ Chiudi il video» non lo chiude');
++    await clic('main .btn[data-a="video-yt"]');
++    const v2 = await page.evaluate(() => { const a = !!document.querySelector('#video-yt iframe'); window.dispatchEvent(new PopStateEvent('popstate')); return { a, chiuso: !document.querySelector('#video-yt'), vista: UI.vista }; });
++    if (!v2.a || !v2.chiuso || !/^ricetta:/.test(v2.vista)) throw new Error('C147: il gesto indietro non chiude il video (o esce dalla ricetta): ' + JSON.stringify(v2));
++    await page.evaluate(() => { const o = navigator.onLine; Object.defineProperty(navigator, 'onLine', { value: false, configurable: true }); window.__toastC147 = [];
++      const m = mostraToast; window.mostraToast = t => window.__toastC147.push(t); try { apriVideoYt(UI.vista.slice(8)); } finally { window.mostraToast = m; Object.defineProperty(navigator, 'onLine', { value: o, configurable: true }); } });
++    if (await page.evaluate(() => !!document.querySelector('#video-yt') || !/Senza rete/.test(window.__toastC147.join(' ')))) throw new Error('C147: senza rete il video si apre lo stesso o non avvisa');
++    // una coi soli ingredienti (≈ stimati): ingredienti, spesa, scritta «stimati»
++    const id2 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.stimata && !x.proteica && x.ingredienti.length >= 3) || {}).id);
++    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id2); await page.waitForTimeout(200);
++    const d2 = await page.evaluate(() => ({ ing: document.querySelectorAll('.ric-ing li').length, stimati: !!document.querySelector('.ric-stimati'), suoi: !!document.querySelector('.ric-suoi'), spesa: !!document.querySelector('[data-a="ric-spesa"]') }));
++    if (d2.ing < 3 || !d2.stimati || d2.suoi || !d2.spesa) throw new Error('C144: ricetta video (stimata) aperta male: ' + JSON.stringify(d2));
++    // C145: una di Beardedscara coi passi scritti sotto il video: «Passo passo», «Ascolta», i suoi valori e le sue considerazioni
++    const id3 = await page.evaluate(() => (RICETTE_VIDEO.find(x => x.autore === 'Beardedscara' && x.suoi && (x.passi || []).length >= 4) || {}).id);
++    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id3); await page.waitForTimeout(200);
++    const d3 = await page.evaluate(() => ({ passi: document.querySelectorAll('.ric-passi li').length, play: !!document.querySelector('.ric-play'), suoi: (document.querySelector('.ric-suoi') || {}).innerText || '',
++      ing: document.querySelectorAll('.ric-ing li').length, nome: (document.querySelector('main h1, main h2') || {}).textContent || '' }));
++    if (d3.passi < 4 || !d3.play || !/Valori scritti da Beardedscara/.test(d3.suoi) || d3.ing < 2 || /[⤵\u{1F300}-\u{1FAFF}]/u.test(d3.nome)) throw new Error('C145: ricetta di Beardedscara aperta male: ' + JSON.stringify(d3));
++    await foto('48g3-c145-ricetta-beardedscara');
++    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id2); await page.waitForTimeout(200);
++    // ⭐ preferita: la ritrovo nelle Preferite del Ricettario; dal Ricettario «Indietro» torna al Ricettario
++    await clic('[data-a="ric-pref"]');
++    await page.evaluate(() => { UI.ric = null; UI.ricZona = 'pref'; UI.vista = 'ricettario'; render(); });
++    const pr = await page.evaluate(id => ({ c: !!document.querySelector(`main .ric-elenco .ric-carta[data-v="ricetta:${id}"]`), da: UI.ricVideoDa }), id2);
++    if (!pr.c || pr.da) throw new Error('C144: la preferita video non è nelle Preferite: ' + JSON.stringify(pr));
++    await page.evaluate(() => { localStorage.removeItem('pit-ric-pref'); RICETTE_VIDEO.splice(0); Object.keys(VIDEO_CACHE).forEach(k => delete VIDEO_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC144; UI.ric = null; UI.ricVideoTipo = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
++  });
+   await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
+     await page.evaluate(() => {
+       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
+diff --git a/tools/sito.py b/tools/sito.py
+index be7ebe35..877eff7e 100644
+--- a/tools/sito.py
++++ b/tools/sito.py
+@@ -19,7 +19,7 @@ from zoneinfo import ZoneInfo
+ RADICE = pathlib.Path(__file__).resolve().parent.parent
+ USCITA = RADICE / 'sito'
+ FILE_APP = ['index.html', 'style.css', 'data.js', 'dati.js', 'opzioni.js', 'lucchetto.js', 'vapore.js', 'guida-iphone.js', 'app.js',
+-            'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'foto-ai.js', 'ricettario.js', 'ricette.js', 'ricette-fit.js', 'ricette-stimate.js', 'sw.js', 'manifest.webmanifest']
++            'spesa.js', 'aiutante.js', 'voce-clienti.js', 'voce-piper.js', 'voce-kokoro.js', 'foto-ai.js', 'ricettario.js', 'ricette.js', 'ricette-fit.js', 'ricette-stimate.js', 'ricette-video.js', 'sw.js', 'manifest.webmanifest']
+ MEDIA = re.compile(r'media/[A-Za-z0-9._-]+\.(?:png|jpg|jpeg|webp|svg|ico|onnx)')   # .onnx: il modello di «✨ Migliora con l'AI» (C119)
+ 
+ 

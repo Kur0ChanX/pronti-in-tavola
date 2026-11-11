@@ -11,6 +11,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟡 Principale 68 | C144-C147 foto mandate, DOMANDA 5 🛑 (aspetta «1»); patch ritoccata | `docs/lavori-in-corso/c144-app.patch` · `archivio/foto/2026-11-12-0014-c144-c147-*.png` · `docs/DA-FARE.md` | 12/11 |
 | 🔴 Principale 63 | chiusa 11/11 ~20:10 (attesa oltre 180k): giro 95/95, C142 chiusa, C143 patch (aspetta ok), C140 progetto pubblico, DOMANDE 1-2; alla 64 | `tools/prova.js` · `docs/lavori-in-corso/c143-guardia.patch` · `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md` · `docs/DA-FARE.md` | 11/11 |
 | 🔴 Principale 62 | chiusa 11/11 ~18:52 (oltre 180k in attesa delle foto): C141 pagella + 207 stimate ONLINE (PT E69), foto mandate, DOMANDA 1 🛑; alla 63 | `ricettario.js` · `opzioni.js` · `aiutante.js` · `style.css` · `ricette-stimate.js` · `tools/raccogli_stimate.py` · `tools/stima.py` · `tools/prova.js` | 11/11 18:10 |
 | 🔴 Principale 58 | chiusa 11/11 ~12:55 (attesa oltre 180k): C139 191 proteiche v0.10.20-22 online, PT E65; C140 domanda; alla 59 | `ricette-fit.js` · `tools/raccogli-fit.mjs` · `ricettario.js` · `data.js` · `tools/prova.js` · `tools/sito.py` | 11/11 |

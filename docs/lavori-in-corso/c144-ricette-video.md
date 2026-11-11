@@ -25,3 +25,4 @@
 - Scelte: video aperto su YouTube (link), non dentro l'app (niente iframe: meno rischi su iPhone e senza rete); `ricette-video.js` NON nel GUSCIO di `sw.js` come `ricette-stimate.js` (solo per chi gestisce; la copia la fa `primaRete` al primo uso).
 - Da guardare dopo (C141): «Fulldayofeating in scarica a 2000 kcal» è fra le Proteiche stimate ma è una giornata di pasti, non una ricetta (qui esclusa da `MAI_RICETTE`).
 - 11/11 #67: la patch ora contiene anche C145 (Beardedscara, 67 ricette), C146 (passi delle stimate) e C147 (video dentro l'app). Prove `SOLO=C14` verdi. Foto vecchie superate: servono foto nuove per C144-C147 insieme.
+- 12/11 #68: foto nuove di C144-C147 `archivio/foto/2026-11-12-0014-c144-c147-1..3.png` mandate (DOMANDA 5 🛑). Patch ritoccata: il testo in cima diceva «il video si apre su YouTube», ora «tocca la foto e il video parte» (PT E17). Prova `SOLO=C14` verde.
