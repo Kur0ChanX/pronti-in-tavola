@@ -20,6 +20,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C147 | (Mario 11/11 22:54, foto dello «Spumone» di YouTube: «metti i video che partono da lì») Il video parte toccando la foto, dentro l'app (grande sopra la ricetta, «✕» per chiudere): `docs/lavori-in-corso/c147-video-dalla-foto.md`. 👁 Lo vedi: Proteiche → «Spumone» → tocchi la foto e il video parte · prova: tua foto | Claude | 🔴 |
 | C146 | (Mario 11/11 22:50, foto di «Pancake proteici» di Cookpad: «si ma senza video ne passaggi non hanno senso») Ogni ricetta coi passi nell'app o col video: `docs/lavori-in-corso/c146-ricette-con-passi-o-video.md`. 👁 Lo vedi: Proteiche → una ricetta di Cookpad con «Passo passo» e «▶️ Ascolta» · prova: tua foto | Claude | 🔴 |
 | C145 | (Mario 11/11 ~22:47, foto del reel «beardedscara»: «aggiungi tutti i suoi video di ricette») Secondo youtuber in «🎬 Ricette video»: canale YouTube «Beardedscara ScaraLegacy®», 205 video: `docs/lavori-in-corso/c145-ricette-video-beardedscara.md`. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → riquadro «Beardedscara» con le sue ricette · prova: tua foto | Claude | 🟡 |
 | C144 | (Mario 11/11 sera «tutti i video delle ricette dello youtuber») «🎬 Ricette video»: `docs/lavori-in-corso/c144-ricette-video.md`. Manca: tuo «1» sulle foto, poi patch e pubblicazione. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → «Massimo Pietrobon Gobbi» con tutte le sue ricette video, ognuna col video e le informazioni · prova: tua foto | Claude | 🟡 |
