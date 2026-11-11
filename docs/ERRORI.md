@@ -56,20 +56,21 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E49** Un dato che arriva da più strade si traduce in un punto solo (`catRic`); le prove usano il dato vero del server.
 - **PT E50** «Cerca ancora» ricorda dove è arrivato; tetti dopo aver tolto le già lette; guardare il ritmo vero di ogni fonte.
 - **PT E51** Prima di dare un nome a un'azione (`data-a`) cercarlo in tutti i file (prova «nessun nome definito due volte»).
-- **PT E52** Lavoro che si ripete da solo: misurarlo PRIMA contro il limite gratuito; `node --input-type=module --check < worker.js`.
-- **PT E65** Filtro a parole (momenti, categorie): provarlo su un elenco vero e grande e guardare cosa entra; «yogurt» metteva il pollo a colazione (prova C139 con controesempio).
+- **PT E52** Lavoro che si ripete da solo: misurarlo PRIMA contro il limite gratuito.
+- **PT E65** Filtro a parole: provarlo su un elenco vero e grande e guardare cosa entra («yogurt» metteva il pollo a colazione).
 - **PT E53** All'avviso di un limite PRIMA si ferma la fonte (interruttore), poi si corregge; il freno vale per tutto il server.
 - **PT E54** Per un mio errore la soluzione è gratis e nel codice, mai i soldi di Mario; consumo alto = avviso, mai una persona ferma.
 - **PT E55** Una seconda strada per una cosa che esiste: controllarla contro ogni lettore dello stato; «è cambiato?» su insiemi ordinati.
 - **PT E56** Prova di un avviso: registrare TUTTI gli avvisi (spia su `mostraToast`); «a volte» si indaga subito.
 - **PT E57** Permessi di un token: provati dal vivo; risorsa nuova su Cloudflare = passo chiaro di Mario, non a sorpresa nel deploy.
 - **PT E58** Foto fatte da me: controllo coi numeri nello script; se serve l'occhio, copia a 1x ≤400 px JPEG, mai l'originale 2x.
-- **PT E59** `git rev-parse --short` vuole UNA revisione: con due dà «Needed a single revision» e sembra un push fallito; usare `git rev-parse HEAD origin/<ramo>`.
-- **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse: il testo lungo di una voce aperta va come elenco, mai come riga `| C…`; dopo ogni ritocco di Da fare `promesse.py --controlla` prima del commit.
-- **PT E61** Sessione nata solo per aspettare Mario: avvio leggero (il contesto parte da ~85k; oltre 180k al primo stop l'attesa lunga fa rifare le consegne). Solo i passi scritti nelle consegne, pensieri corti, niente indagini né uscite lunghe (`list_triggers`, file interi) se non servono.
-- **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓» (lì il controllo vuole la domanda intera: «📌 Di cosa parliamo», scelte «1 · …», foto; sennò fa riscrivere e Mario legge due volte).
+- **PT E59** `git rev-parse --short` con due revisioni dà «Needed a single revision»: usare `git rev-parse HEAD origin/<ramo>`.
+- **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse (mai righe `| C…` di voci aperte); dopo ogni ritocco di Da fare `promesse.py --controlla`.
+- **PT E61** Sessione nata solo per aspettare Mario: avvio leggero, solo i passi delle consegne, niente indagini né uscite lunghe (storia).
+- **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓».
 - **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
-- **PT E64** Risorsa creata a mano su Cloudflare: prima di dare il passo, far scegliere a Mario l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); errore 10041 = account sbagliato (provato 11/11).
+- **PT E64** Risorsa a mano su Cloudflare: prima l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); 10041 = account sbagliato.
+- **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
 - **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.

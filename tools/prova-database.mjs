@@ -600,7 +600,7 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   oggetto._lg = { g, n: 2000001 };
   await W.default.scheduled({ cron: '*/10 * * * *' }, cfg, contesto); await finisci();
   const st = await ponte.statoDb();
-  prova('C130 oltre il tetto il cron non legge niente e l\'app lo sa', richieste.length === prima && st.letture && st.letture.freno === true && st.letture.oggi > 2000000 && st.letture.tetto === 2000000);
+  prova('C130 oltre il tetto il cron non legge niente e l\'app lo sa', richieste.length === prima && st.letture && st.letture.freno === true && st.letture.oggi > st.letture.tetto && st.letture.tetto === 1000000);
   await ponte.turboAvvia(5); await oggetto.alarm(); const t = (await ponte.statoDb()).turbo;
   prova('C130 oltre il tetto il carico veloce si ferma da solo, segnato', richieste.length === prima && t.attivo === false && t.freno === true);
   const salvato = JSON.parse(oggetto.leggi1('letture') || 'null');
@@ -739,6 +739,17 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   prova('C135 senza copia: resta l\'errore vero (letture gratuite), mai una chiave inventata', senza.status === 200 && /letture gratuite/.test(senza2.errore || ''));
   console.log(`MISURA C135 scritture KV in tutta la prova: ${kvScritte} (limite gratuito 1.000 al giorno)`);
   globalThis.fetch = prima;
+}
+/* C139: Blog di GialloZafferano («bg:<blog>/<ricetta>»): indirizzi solo di blog.giallozafferano.it, id e ritorno, ricerca e valori */
+{ const { urlBg, idBg, urlDaIdBg, bgCerca, gzRicetta } = await import(pathToFileURL(join(radice, 'gz.mjs')).href);
+  const u = 'https://blog.giallozafferano.it/annatorte/ricetta-muffin-fit-proteici/';
+  prova('Blog GZ: id «bg:» e ritorno all\'indirizzo', idBg(u.slice(0, -1)) === 'bg:annatorte/ricetta-muffin-fit-proteici' && urlDaIdBg('bg:annatorte/ricetta-muffin-fit-proteici') === u && urlBg(u.replace('annatorte', 'AnnaTorte')) === u);
+  prova('Blog GZ: mai un proxy aperto (altri siti, http, community, percorsi strani)', !urlBg('https://evil.it/a/b/') && !urlBg('http://blog.giallozafferano.it/a/b/') && !urlBg('https://blog.giallozafferano.it/community/x/') && !urlBg('https://blog.giallozafferano.it/a/b/c/') && !urlDaIdBg('bg:../x') && !urlDaIdBg('bg:a'));
+  const ricerca = `<a href="${u}">x</a><a href="${u}">doppio</a><a href="https://blog.giallozafferano.it/community/">c</a><a href="https://ricette.giallozafferano.it/Pasta.html">gz</a>`;
+  prova('Blog GZ: dalla ricerca di GZ solo le ricette dei blog, senza doppioni', JSON.stringify(bgCerca(ricerca)) === JSON.stringify([u]));
+  const ld = { '@context': 'https://schema.org', '@type': 'Recipe', name: 'Muffin fit', image: 'https://blog.giallozafferano.it/annatorte/wp-content/uploads/2026/01/m.jpg', recipeIngredient: ['100 g di avena'], recipeInstructions: [{ '@type': 'HowToStep', text: 'Mescola tutto.' }], nutrition: { '@type': 'NutritionInformation', calories: '200 kcal', proteinContent: '15 g', sugarContent: '6 g' } };
+  const r = gzRicetta(`<html><script type="application/ld+json">${JSON.stringify(ld)}</script></html>`, u);
+  prova('Blog GZ: la ricetta del blog ha id «bg:», passi e valori per porzione', r && r.id === 'bg:annatorte/ricetta-muffin-fit-proteici' && r.passi.length === 1 && r.nutr && r.nutr.kcal === 200 && r.nutr.prot === 15);
 }
 console.log(`${ok} OK, ${no} NO`);
 process.exit(no ? 1 : 0);

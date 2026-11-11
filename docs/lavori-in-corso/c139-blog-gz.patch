@@ -1,0 +1,184 @@
+diff --git a/gz.mjs b/gz.mjs
+index 6628a990..d9be4417 100644
+--- a/gz.mjs
++++ b/gz.mjs
+@@ -14,6 +14,20 @@ export function urlGz(u) {
+     return SITO_GZ + x.pathname.slice(1);
+   } catch (e) { return ''; }
+ }
++/* C139 (Mario 11/11 «cerca dei siti o portali famosi con ricette fitness»): Blog di GialloZafferano, id «bg:<blog>/<ricetta>».
++   Stesse pagine (JSON-LD Recipe, valori per porzione quando il blogger li calcola): le legge gzRicetta. Solo blog.giallozafferano.it. */
++export const SITO_BG = 'https://blog.giallozafferano.it/';
++export function urlBg(u) {
++  try {
++    const x = new URL(String(u || '')), m = /^\/([a-z0-9-]+)\/([\w%-]+)\/?$/i.exec(x.pathname);
++    if (x.protocol !== 'https:' || x.hostname !== 'blog.giallozafferano.it' || !m || /^(community|wp-content|tag|category)$/.test(m[1])) return '';
++    return SITO_BG + m[1].toLowerCase() + '/' + m[2] + '/';
++  } catch (e) { return ''; }
++}
++export const idBg = u => { const x = urlBg(u); return x ? 'bg:' + x.slice(SITO_BG.length, -1) : ''; };
++export const urlDaIdBg = id => /^bg:[a-z0-9-]+\/[\w%-]+$/i.test(String(id || '')) ? urlBg(SITO_BG + String(id).slice(3) + '/') : '';
++/* le ricette dei blog che la ricerca di GialloZafferano mostra fra le sue (senza doppioni) */
++export const bgCerca = html => [...new Set([...String(html || '').matchAll(/href="(https:\/\/blog\.giallozafferano\.it\/[^"#?]+)"/g)].map(m => urlBg(m[1])).filter(Boolean))];
+ 
+ const ENT = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ', egrave: 'è', eacute: 'é', agrave: 'à', ograve: 'ò', ugrave: 'ù', igrave: 'ì', deg: '°', rsquo: '’', lsquo: '‘', hellip: '…',
+   Egrave: 'È', Eacute: 'É', Agrave: 'À', Ograve: 'Ò', Ugrave: 'Ù', Igrave: 'Ì', ldquo: '“', rdquo: '”', laquo: '«', raquo: '»', ndash: '–', mdash: '—', euro: '€',
+@@ -106,7 +120,7 @@ export function gzRicetta(html, url) {
+   const porzioni = parseInt(String([].concat(ld.recipeYield || '')[0]).replace(/\D+/g, ' ').trim(), 10) || 4;
+   return {
+     v: 4,   // 4 = C83 (niente domande né pubblicità nell'ultimo passo, lettere accentate); 3 = passi coi numerini delle foto e tutti i paragrafi (C72): le copie vecchie sui telefoni si rileggono
+-    id: 'gz:' + url.replace(SITO_GZ, '').replace(/\.html$/, ''),
++    id: urlBg(url) ? idBg(url) : 'gz:' + url.replace(SITO_GZ, '').replace(/\.html$/, ''),   // C139: anche i Blog di GialloZafferano
+     url, nome: testo(ld.name), intro: (sezione(html, 'PRESENTAZIONE') || testo(ld.description)).split(/\n(?=Ecco|Scopri|Leggi|Prova anche|Se ti piac)/)[0].trim(),
+     foto: assoluto(primaFoto(ld.image)), categoria: testo([].concat(ld.recipeCategory || '')[0]),
+     porzioni, prep: minutiIso(ld.prepTime), cottura: minutiIso(ld.cookTime), totale: minutiIso(ld.totalTime),
+diff --git a/opzioni.js b/opzioni.js
+index c75b0680..f333ea19 100644
+--- a/opzioni.js
++++ b/opzioni.js
+@@ -92,11 +92,11 @@ const OPZIONI = [
+   /* C125 (Mario 10/11 «un po' più severe… anche ricette dolci proteiche, snack»): chi non passa come pasto può entrare come snack o dolce */
+   { k: 'fitSnackKcal', g: 'mario', nome: 'Proteiche: snack e dolci fino a', tipo: 'numero', min: 100, max: 600, def: 300, unita: 'kcal a porzione', parole: /protei|palestr|\bfit|snack|dolc/,
+     aiuto: 'Fino a queste calorie una ricetta che non passa come pasto può entrare come snack o dolce proteico, con le regole qui sotto. 300: stima di Claude.' },
+-  { k: 'fitSnackProt', g: 'mario', nome: 'Proteiche: snack e dolci, proteine minime', tipo: 'numero', min: 5, max: 40, def: 10, unita: 'g a porzione', parole: /protei|palestr|\bfit|snack|dolc/,
++  { k: 'fitSnackProt', g: 'mario', nome: 'Proteiche: snack e dolci, proteine minime', tipo: 'numero', min: 5, max: 40, def: 8, unita: 'g a porzione', parole: /protei|palestr|\bfit|snack|dolc/,
+     aiuto: 'Snack e dolci: almeno queste proteine a porzione. 10 g: stima di Claude.' },
+-  { k: 'fitSnackPerc', g: 'mario', nome: 'Proteiche: snack e dolci, quota di proteine', tipo: 'numero', min: 10, max: 70, def: 30, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc/,
++  { k: 'fitSnackPerc', g: 'mario', nome: 'Proteiche: snack e dolci, quota di proteine', tipo: 'numero', min: 10, max: 70, def: 20, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc/,
+     aiuto: 'Snack e dolci: almeno questa parte delle calorie dalle proteine (più severo del pasto: le porzioni sono piccole). 30%: stima di Claude; la regola UE «alto contenuto» è 20%.' },
+-  { k: 'fitSnackZuc', g: 'mario', nome: 'Proteiche: snack e dolci, zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 20, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc|zucche/,
++  { k: 'fitSnackZuc', g: 'mario', nome: 'Proteiche: snack e dolci, zuccheri massimi', tipo: 'numero', min: 3, max: 40, def: 30, unita: '% delle calorie', parole: /protei|palestr|\bfit|snack|dolc|zucche/,
+     aiuto: 'Snack e dolci: zuccheri in parte delle calorie. 20%: scelta di Mario, misurata su 250 ricette vere (contano anche quelli della frutta).' },
+   { k: 'fitSnackSodio', g: 'mario', nome: 'Proteiche: snack e dolci, sodio massimo', tipo: 'numero', min: 100, max: 1500, def: 500, unita: 'mg a porzione', parole: /protei|palestr|\bfit|snack|dolc|\bsale\b|sodio/,
+     aiuto: 'Snack e dolci: sodio massimo a porzione. 500 mg: scelta di Mario, misurata su 250 ricette vere.' },
+diff --git a/ricettario.js b/ricettario.js
+index 1e927a0c..4c910462 100644
+--- a/ricettario.js
++++ b/ricettario.js
+@@ -60,7 +60,7 @@ function fitRic(n) {
+   const quota = n.prot * 400 / n.kcal, zuc = n.zuc * 400 / n.kcal;
+   if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 13)) return false;
+   if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 15) && n.sodio <= sogliaFit('fitSodio', 800)) return 'pasto';
+-  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 10) && quota >= sogliaFit('fitSnackPerc', 30) && zuc <= sogliaFit('fitSnackZuc', 20) && n.sodio <= sogliaFit('fitSnackSodio', 500) ? 'snack' : false;
++  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 8) && quota >= sogliaFit('fitSnackPerc', 20) && zuc <= sogliaFit('fitSnackZuc', 30) && n.sodio <= sogliaFit('fitSnackSodio', 500) ? 'snack' : false;
+ }
+ const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
+ const numIt = x => String(Math.round(x * 10) / 10).replace('.', ',');
+@@ -68,7 +68,7 @@ const saleRic = n => n && n.sodio != null ? Math.round(n.sodio * 2.5 / 100) / 10
+ /* «perché è qui»: es. «💪 32 g proteine · 410 kcal · sale 0,9 g» */
+ const rigaFit = n => n && n.kcal > 0 ? `💪 ${n.prot != null ? numIt(n.prot) + ' g proteine · ' : ''}${Math.round(n.kcal)} kcal${saleRic(n) != null ? ' · sale ' + numIt(saleRic(n)) + ' g' : ''}${fitRic(n) === 'snack' ? ' · snack o dolce' : ''}` : '';
+ /* C124 (Mario 10/11 «le ricette di GialloZafferano segnale… e segnami la fonte»): da dove viene ogni ricetta */
+-const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit' };
++const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit', bg: 'Blog di GialloZafferano' };   // C139: bg = Blog di GialloZafferano
+ const fonteRic = r => r.mia ? 'Ricetta tua' : FONTI_RIC[String(r.id || '').split(':')[0]] || 'GialloZafferano';
+ /* C125 pezzo 4 (Mario 10/11 «sembra che carichi solo ricette di GialloZafferano»): quante per fonte, es. «GialloZafferano 9 · RicetteFit 3» */
+ const perFonte = rr => { const n = {}; rr.forEach(r => { if (!r.mia) { const f = fonteRic(r); n[f] = (n[f] || 0) + 1; } }); return Object.keys(n).sort((a, b) => n[b] - n[a] || a.localeCompare(b)).map(f => `${f} ${n[f]}`).join(' · '); };
+@@ -98,11 +98,11 @@ function piuFiltriRic(f) {
+       + riga('Tempo', 'ric-tempo', [[30, '⏱ Fino a 30 min'], [60, '⏱ Fino a 1 ora']], k => f.tempo === k) + riga('Ordina', 'ric-ordine', ORDINI_RIC, k => (f.ordine || '') === k) : ''}`;
+ }
+ const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
+-const URL_GZ = 'https://ricette.giallozafferano.it/', URL_RF = 'https://www.ricettefit.it/ricetta/';
++const URL_GZ = 'https://ricette.giallozafferano.it/', URL_RF = 'https://www.ricettefit.it/ricetta/', URL_BG = 'https://blog.giallozafferano.it/';
+ /* C124 passo 8: ricette prese da un sito (GialloZafferano «gz:», RicetteFit «rf:»), il loro indirizzo e il ritorno dall'indirizzo all'id */
+ const webRic = id => /^(?:gz|rf):[\w%-]+$/.test(String(id || ''));
+-const urlRic = id => /^rf:/.test(id) ? URL_RF + id.slice(3) + '/' : URL_GZ + id.slice(3) + '.html';
+-const idDaUrl = u => { u = String(u || ''); return u.startsWith(URL_RF) ? 'rf:' + u.slice(URL_RF.length).replace(/\/$/, '') : 'gz:' + u.replace(URL_GZ, '').replace(/\.html$/, ''); };
++const urlRic = id => /^rf:/.test(id) ? URL_RF + id.slice(3) + '/' : /^bg:/.test(id) ? URL_BG + id.slice(3) + '/' : URL_GZ + id.slice(3) + '.html';
++const idDaUrl = u => { u = String(u || ''); return u.startsWith(URL_RF) ? 'rf:' + u.slice(URL_RF.length).replace(/\/$/, '') : u.startsWith(URL_BG) ? 'bg:' + u.slice(URL_BG.length).replace(/\/$/, '') : 'gz:' + u.replace(URL_GZ, '').replace(/\.html$/, ''); };
+ /* portata dal nome del sito («Primi piatti», «Lievitati»…) alla chiave dei filtri: prima le ricette del motore non uscivano mai coi filtri */
+ const catRic = c => { const t = senzaAccenti(c).trim(); return !t ? '' : CAT_RIC.some(([k]) => k && k === t) ? t : /antipast|stuzzich|aperitiv/.test(t) ? 'antipasti' : /^primi/.test(t) ? 'primi'
+   : /^second/.test(t) ? 'secondi' : /contorn/.test(t) ? 'contorni' : /dolc|dessert/.test(t) ? 'dolci' : /pane|pizz|lievitat|focacc/.test(t) ? 'pane' : ''; };
+@@ -150,7 +150,7 @@ async function dbRic(modo, fai) {
+ function caricaScaricate() {
+   dbRic('readonly', st => st.getAll()).then(tt => { (tt || []).forEach(r => { RIC.scaricate[r.id] = r; }); if (/^(ricettario|ricetta:)/.test(UI.vista)) render(); autoScarica(); }).catch(() => {});
+ }
+-const fotoDi = r => [r.foto, r.copertina, ...(r.passi || []).flatMap(p => p.foto || [])].filter(f => /^https:\/\/(?:www\.giallozafferano\.it\/images|www\.ricettefit\.it\/wp-content\/uploads)\//.test(f || ''));
++const fotoDi = r => [r.foto, r.copertina, ...(r.passi || []).flatMap(p => p.foto || [])].filter(f => /^https:\/\/(?:www\.giallozafferano\.it\/images|www\.ricettefit\.it\/wp-content\/uploads|blog\.giallozafferano\.it\/[a-z0-9-]+\/wp-content\/uploads)\//.test(f || ''));
+ async function scaricaUna(id) {
+   if (RIC.scaricate[id]) return false;
+   const j = await chiediRic({ u: urlRic(id) });
+@@ -407,7 +407,7 @@ function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente b
+ /* C124: «🏋️ Proteiche» spiegata in una riga, con le soglie di adesso (cambiano da Impostazioni) e i valori ancora da leggere */
+ function notaFit() {
+   const g = (k, x) => sogliaFit(k, x);
+-  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Per palestra e definizione. <b>Pasti</b>: almeno ${g('fitProt', 25)} g di proteine a porzione (il ${g('fitProtPerc', 25)}% delle calorie), al massimo ${g('fitKcal', 550)} kcal. <b>Snack e dolci</b>: fino a ${g('fitSnackKcal', 300)} kcal, almeno ${g('fitSnackProt', 10)} g di proteine (il ${g('fitSnackPerc', 30)}%). Sempre pochi grassi saturi, zuccheri e sale. Prima quelle con più proteine per caloria. Valori per porzione di GialloZafferano e RicetteFit.</p>`;
++  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Per palestra e definizione. <b>Pasti</b>: almeno ${g('fitProt', 25)} g di proteine a porzione (il ${g('fitProtPerc', 25)}% delle calorie), al massimo ${g('fitKcal', 550)} kcal. <b>Snack e dolci</b>: fino a ${g('fitSnackKcal', 300)} kcal, almeno ${g('fitSnackProt', 8)} g di proteine (il ${g('fitSnackPerc', 20)}%). Sempre pochi grassi saturi, zuccheri e sale. Prima quelle con più proteine per caloria. Valori per porzione di GialloZafferano e RicetteFit.</p>`;
+ }
+ /* C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca per ricerche fitness che mi cerca in automatico… tante fonti»): qui sopra filtra
+    le proteiche già lette; il tasto chiede al server di cercare su GialloZafferano e RicetteFit e di leggere SUBITO le nuove (5 ogni 30 s).
+@@ -806,7 +806,7 @@ function valoriRic(n, r) {
+     ${fitRic(n) ? `<p class="ric-fit-si" style="margin:0">🏋️ <b>Proteica</b>: ${esc(rigaFit(n).replace(/^💪 /, ''))}</p>` : ''}
+     <div class="ric-valori-griglia">${cella(Math.round(n.kcal), 'kcal')}${cella(g(n.prot), 'proteine')}${cella(g(n.carb), 'carboidrati')}${cella(g(n.grassi), 'grassi')}</div>
+     ${sotto ? `<p class="piccolo" style="margin:0">${sotto}</p>` : ''}
+-    <p class="piccolo tenue" style="margin:0">Valori indicativi di ${esc(fonteRic(r))}${/^gz:/.test(r.id || '') ? ' (dati Edamam)' : /^rf:/.test(r.id || '') ? ' (tabelle CREA)' : ''}, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p></section>`;
++    <p class="piccolo tenue" style="margin:0">Valori indicativi di ${esc(fonteRic(r))}${/^gz:/.test(r.id || '') ? ' (dati Edamam)' : /^rf:/.test(r.id || '') ? ' (tabelle CREA)' : /^bg:/.test(r.id || '') ? ' (calcolati dal blog)' : ''}, per 1 porzione${r.porzioni > 1 ? ` (la ricetta è per ${r.porzioni})` : ''}.</p></section>`;
+ }
+ /* il video si gioca DENTRO l'app: Android/iPhone col lettore del telefono; dove serve, hls.js (si scarica solo allora) */
+ function preparaVideo() {
+@@ -1011,6 +1011,7 @@ document.addEventListener('submit', e => {
+   const link = /ricette\.giallozafferano\.it\/([\w%-]+)\.html/.exec(q), lrf = /ricettefit\.it\/ricetta\/([\w%-]+)/.exec(q);   // incollato un link di GialloZafferano o RicetteFit: si apre qui dentro
+   if (link) { UI.ric.q = ''; vai('ricetta:gz:' + link[1]); return; }
+   if (lrf) { UI.ric.q = ''; vai('ricetta:rf:' + lrf[1]); return; }
++  const lbg = /blog\.giallozafferano\.it\/([a-z0-9-]+\/[\w%-]+)/i.exec(q); if (lbg && !/^(community|wp-content)\//.test(lbg[1])) { UI.ric.q = ''; vai('ricetta:bg:' + lbg[1].replace(/^[^/]+/, b => b.toLowerCase())); return; }   // C139: link di un Blog di GialloZafferano
+   if (q.length >= 2) { if (UI.ric.zona === 'fit') render(); else A['ric-cerca-gz'](); }   // dentro Proteiche filtra le già lette; sul web solo col tasto «Cerca» e la conferma (Mario 11/11)
+ });
+ 
+diff --git a/sw.js b/sw.js
+index 3bf5a3b5..ea739f59 100644
+--- a/sw.js
++++ b/sw.js
+@@ -94,7 +94,7 @@ self.addEventListener('fetch', e => {
+   if (r.method !== 'GET') return;
+   if (fisso(r.url)) { e.respondWith(caches.match(r).then(m => m || fetch(r).then(x => metti(r, x)))); return; }
+   // foto delle ricette scaricate (ricettario «📥 Scarica»): dalla copia sul telefono, così si vedono senza rete
+-  if (/^https:\/\/(?:www\.giallozafferano\.it\/images|www\.ricettefit\.it\/wp-content\/uploads)\//.test(r.url)) { e.respondWith(caches.open('gz-foto').then(c => c.match(r.url)).then(m => m || fetch(r))); return; }
++  if (/^https:\/\/(?:www\.giallozafferano\.it\/images|www\.ricettefit\.it\/wp-content\/uploads|blog\.giallozafferano\.it\/[a-z0-9-]+\/wp-content\/uploads)\//.test(r.url)) { e.respondWith(caches.open('gz-foto').then(c => c.match(r.url)).then(m => m || fetch(r))); return; }
+   if (new URL(r.url).origin !== location.origin) return;
+   if (/\.onnx$/.test(new URL(r.url).pathname)) return;   // (C119) il modello dell'AI delle foto (5 MB) lo tiene foto-ai.js nella sua memoria: niente seconda copia
+   e.respondWith(primaRete(r));
+diff --git a/worker.js b/worker.js
+index de68e87c..6b328163 100644
+--- a/worker.js
++++ b/worker.js
+@@ -22,7 +22,7 @@
+    Le chiavi le crea l'oggetto «Avvisi» la prima volta e le tiene lui: nessun segreto nel codice né in chat.
+    Notifica senza contenuto (niente cifratura): il testo lo scrive sw.js. Così nessuno può mandare testi finti. */
+ import { DurableObject } from 'cloudflare:workers';
+-import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta, gzSoloNutr } from './gz.mjs';
++import { gzRicetta, gzCerca, gzVideo, gzProssima, urlGz, UA_GZ, esaminaRicetta, gzSoloNutr, urlBg, idBg, urlDaIdBg } from './gz.mjs';
+ import { rfRicetta, rfElenco, rfTrova, radiciRf, urlRf, idRf, urlDaIdRf, MAPPA_RF } from './rf.mjs';
+ import { ascolta } from './ascolta.mjs';   // «ascolto preciso» dei clienti (C105): due Whisper + correttore col menù
+ /* catalogo per portata: le sezioni di GialloZafferano (ricette-cat/<nome>/) */
+@@ -318,7 +318,7 @@ async function leggiGz(u) {
+ /* C124 passo 8: RicetteFit (rf.mjs). leggiWeb = la ricetta dal sito giusto (GialloZafferano o RicetteFit) */
+ async function leggiRf(u) { return rfRicetta(await paginaGz(u, 'RicetteFit'), u); }
+ const leggiWeb = u => urlRf(u) ? leggiRf(urlRf(u)) : leggiGz(u);
+-const urlDaId = id => /^rf:/.test(String(id || '')) ? urlDaIdRf(id) : urlGz('https://ricette.giallozafferano.it/' + String(id || '').slice(3) + '.html');
++const urlDaId = id => /^rf:/.test(String(id || '')) ? urlDaIdRf(id) : /^bg:/.test(String(id || '')) ? urlDaIdBg(id) : urlGz('https://ricette.giallozafferano.it/' + String(id || '').slice(3) + '.html');
+ /* C125 (Mario 10/11 13:40 «la ricerca… nelle fonti alternative anche a giallozafferano»): ricette di RicetteFit con le parole
+    cercate, dal loro elenco (1 richiesta al giorno, poi la cache). Spenta dalla pagina Database o RicetteFit giù = nessuna, senza errori. */
+ const FIT_TUTTO = ['ricette proteiche', 'ricette light', 'secondi proteici', 'dolci proteici'];   // C126 «🔍 Cerca tutto» su GialloZafferano
+@@ -450,12 +450,12 @@ async function ricettaGz(b, cfg, ctx) {
+     if (db && ricette.length) poi(db.inCoda(ricette.map(x => x.url)));   // quello che si scorre entra in coda per il database
+     return { ricette: rf.concat(ricette), rf: rf.length, prossima: ricette.length ? gzProssima(html, u, ricette.length) : '' };
+   }
+-  const u = urlGz(b && b.u) || urlRf(b && b.u);
++  const u = urlGz(b && b.u) || urlRf(b && b.u) || urlBg(b && b.u);   // C139: anche i Blog di GialloZafferano
+   if (!u) return { errore: 'indirizzo non valido' };
+   let r = null, err = null;
+   try { r = await leggiWeb(u); } catch (e) { err = e; }
+   if (r) { if (db) poi(db.salva(r)); return { ricetta: r }; }   // ogni ricetta aperta: salvata per sempre
+-  const salvata = db ? await db.una(urlRf(u) ? idRf(u) : 'gz:' + u.replace('https://ricette.giallozafferano.it/', '').replace(/\.html$/, '')).catch(() => null) : null;
++  const salvata = db ? await db.una(urlRf(u) ? idRf(u) : urlBg(u) ? idBg(u) : 'gz:' + u.replace('https://ricette.giallozafferano.it/', '').replace(/\.html$/, '')).catch(() => null) : null;
+   if (salvata) return { ricetta: salvata, dalDb: true };   // GialloZafferano giù o cambiato: la copia del database
+   if (err) throw err;
+   return { errore: 'ricetta non trovata nella pagina' };
+@@ -1221,7 +1221,7 @@ export class Ricettario extends DurableObject {
+       return x;
+     }); }
+   aggiungi(x) {
+-    if (!x || !/^(?:gz|rf):[\w%-]+$/.test(x.id || '') || !x.nome) return false;
++    if (!x || !(/^(?:gz|rf):[\w%-]+$/.test(x.id || '') || urlDaIdBg(x.id)) || !x.nome) return false;
+     const pulito = (v, n) => String(v || '').slice(0, n);
+     this.sql.exec('INSERT OR IGNORE INTO scelte (id, url, nome, zona, categoria, foto, aggiunta) VALUES (?, ?, ?, ?, ?, ?, ?)', x.id, urlDaId(x.id),
+       pulito(x.nome, 120), ['sarda', 'gallura', 'italiana'].includes(x.zona) ? x.zona : 'italiana', pulito(x.categoria, 40), /^https:\/\/(?:[\w.-]+\.giallozafferano\.it|www\.ricettefit\.it\/wp-content\/uploads)\//.test(x.foto || '') ? pulito(x.foto, 300) : '', Date.now());
