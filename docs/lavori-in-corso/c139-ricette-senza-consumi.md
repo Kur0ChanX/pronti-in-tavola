@@ -26,3 +26,6 @@ cerca da varie fonti»
 
 ## 11/11 #59 · Mario: «vai di consiglio» = DOMANDA 1 → 2
 Soglie di base snack e dolci: proteine ≥ 8 g (era 10), quota ≥ 20 % (era 30), zuccheri ≤ 30 % (era 20); in `ricettario.js` (`fitRic`, nota) e `opzioni.js`. Poi `node tools/raccogli-fit.mjs 200`.
+Mario 13:42 (nella #58): «2 dolci ancora leggeri e proteici. Puoi cercare dei siti o portali famosi con ricette fitness con inventiva e fantasia cerca bene ovunque nel web se hai blocchi per carcare dimmelo».
+Ricerca siti nuovi (#59, 11/11): **Blog di GialloZafferano** (blog.giallozafferano.it, migliaia di blog italiani) = JSON-LD `nutrition` per porzione completo (kcal, proteine, zuccheri, saturi, sodio; calcolato da CREA), provato dal contenitore (301 → pagina, 200). Scartati: Melarossa (solo kcal a porzione), My-personaltrainer (valori per 100 g), Starbene (nessun valore), negozi (Fitporn, MinceurDiscount: prodotti, non ricette). Inglesi (BBC Food, Eating Bird Food) hanno i valori ma vanno tradotti = testo scritto da me (PT E25): no.
+Prossimo: terza fonte «blog GZ» in `tools/raccogli-fit.mjs` (trovare l'elenco delle ricette proteiche dei blog).
