@@ -1,6 +1,6 @@
 # C144 · Ricette video (sezione a parte, divise per youtuber)
 
-## Parole di Mario (11/11 ~19:34, Principale 65, intere)
+## Parole di Mario (11/11 ~19:33, Principale 65, intere)
 «mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazioni che hai in una sezione a parte esempio ricette video e dividi per il nome che dici? occupiamo teoppo spazio limiti ecc?»
 
 ## Fatti (11/11)
