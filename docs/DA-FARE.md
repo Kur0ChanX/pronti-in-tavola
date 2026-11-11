@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 11/11 · 🛑 · 🟢 Principale 66 · C144 «🎬 Ricette video» (201 ricette di Massimo Pietrobon Gobbi, divise per tipo): foto `archivio/foto/2026-11-11-1956-c144-ricette-video-*.png` mandate. Rispondi 1 = va bene, la pubblico · 2 = cambia (dimmi cosa). A cosa serve: pubblicarla come la vuoi tu.
 - 11/11 · 🟢 Principale 65 · C143 + kit: scrivi «ok» e accendo la difesa (ferma i push che pubblicherebbero l'app senza il tuo ok) e aggiorno il kit da 38.16 a 38.26 (serve al PC di casa). File degli hook: serve il tuo ok scritto. A cosa serve: l'errore della #62 non ricapita e il PC di casa entra nei giri.
 - 11/11 · 🟢 Principale 65 · C140 passo 1 a mano: rendi privato il progetto (1 minuto, passi in chat). A cosa serve: nomi dei clienti e tuoi messaggi non più pubblici; il PC di casa diventa sicuro per i giri.
 - 11/11 · 🛑 · 🟡 Principale 62 · C141 pagella delle Proteiche (GIÀ online per errore, PT E69): foto `archivio/foto/2026-11-11-1930-c141-pagella-*.png` mandate. Rispondi 1 = va bene, la tengo · 2 = cambia (dimmi cosa).
@@ -18,7 +19,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C144 | (Mario 11/11 sera «tutti i video delle ricette dello youtuber… sezione a parte… dividi per il nome») Sezione «🎬 Ricette video»: `docs/lavori-in-corso/c144-ricette-video.md`. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → «Massimo Pietrobon Gobbi» con tutte le sue ricette video, ognuna col video e le informazioni · prova: tua foto | Claude | 🟡 |
+| C144 | (Mario 11/11 sera «tutti i video delle ricette dello youtuber… sezione a parte… dividi per il nome») Sezione «🎬 Ricette video»: `docs/lavori-in-corso/c144-ricette-video.md`. Manca: tuo «1» sulle foto, poi patch `c144-app.patch`, giro completo e pubblicazione. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → «Massimo Pietrobon Gobbi» con tutte le sue ricette video, ognuna col video e le informazioni · prova: tua foto | Claude | 🟡 |
 | C141 | (Mario 11/11 sera; 19:24 «500?») Pagella e stimate: `docs/lavori-in-corso/c141-proteiche-stimate.md`. Manca: tuo «1» sulle foto; più stimate (298 scartate per ingredienti sconosciuti). 👁 Lo vedi: Ricettario → «🏋️ Proteiche»: voto e semaforo su ogni ricetta, più ricette «≈ stimati» · prova: tua foto | Claude | 🟡 |
 | C143 | (PT E69, 11/11 #62) Hook: fermare commit e push dei file del sito (i `paths` di `sito.yml`) sul ramo senza «[pubblica]» nel messaggio (= foto approvata + giro verde). Manca: l'ok scritto di Mario per `.claude/` (RVC E59), poi `git apply docs/lavori-in-corso/c143-guardia.patch` (prove verdi nella #63). 👁 Lo vedi: in chat la prova dell'hook che ferma un commit finto · prova: uscita della prova | Claude | 🔴 |
 | C140 | (Mario 11/11; 19:24 «3») Privato + PC di casa, poi GitHub: `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`. 👁 Lo vedi: lucchetto «Private», giri delle prove (e pubblicazioni se i minuti salgono) sul PC di casa, mio avviso prima che i minuti finiscano · prova: tua foto delle Actions | Claude + Mario | 🟡 |

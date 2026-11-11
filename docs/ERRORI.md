@@ -72,6 +72,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓».
 - **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
 - **PT E64** Risorsa a mano su Cloudflare: prima l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); 10041 = account sbagliato.
+- **PT E71** Prima immagine della sessione (foto di prova comprese): PRIMA la skill `foto`; ogni immagine che apro porta la scritta in alto (E314: «DI LAVORO» se è per me).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
