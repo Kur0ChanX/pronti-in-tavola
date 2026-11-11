@@ -7,4 +7,4 @@
 - Trovato: in Proteiche un tocco su un momento (🍽 Cena…) o su una fonte (🍗 Pollo…) e l'invio della ricerca facevano partire DA SOLI una ricerca sul web e un carico (C126). Ora filtrano solo le già lette.
 - Doppia conferma (tocco + «OK», `okConsumo` in `ricettario.js`) con avviso tecnico (Durable Objects SQLite, 5 milioni di righe al giorno per tutta l'app, stima ricette, letture di oggi): «⚡ Carica altre», «🔄 Cerca adesso», «🔍 Controlla tutte», «🔍 Cerca altre».
 - Freno del ricettario (`LETTURE_FONDO`) da 2 milioni a 1 milione (un quinto del gratis).
-- Proposta a Mario (aspetta risposta): ricette proteiche scelte da Claude in un file del sito (zero letture del server).
+- v0.10.19 online 11/11 (prove 92 su 92, `okConsumo` nel sito vero). Aspetta Mario: strada 1-3 per le ricette nuove (file del sito scritto da Claude = zero letture).
