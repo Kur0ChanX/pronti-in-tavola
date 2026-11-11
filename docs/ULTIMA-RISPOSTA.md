@@ -1,16 +1,18 @@
-# Ultima risposta di Claude (11/11/2026 06:40 ora italiana)
+# Ultima risposta di Claude (11/11/2026 10:58 ora italiana)
 
-Ho capito: hai aperto il menù del profilo 👤.
-
-───
-✅ FATTO
-- La foto spiega tutto. Sei entrato con **info.prontiintavola@gmail.com**: questo login ha solo l'account vuoto, quello del cassetto.
-- Il sito invece l'hai creato il 6/11 con un **altro login**. Dagli appunti dovrebbe essere la tua email personale, **mario.miscera@gmail.com**.
-- Ho aggiornato la guida e ho salvato le foto.
+Ho capito: il ricettario non deve mai più bloccare Cloudflare. Prima vengono ordini, avvisi e risposte fra te, Monica e i clienti.
 
 ───
-👉 DA FARE TU
-**A cosa serve:** entrare nel login dove c'è il sito. Solo lì il cassetto funziona.
+✅ FATTO (v0.10.19, già online)
+- **Ho trovato la causa della crescita.** In Proteiche bastava toccare «🍽 Cena» o «🍗 Pollo», o cercare una parola, e il server partiva da solo a cercare e caricare ricette dal web. Adesso quei tasti filtrano solo le ricette già lette: non consumano niente.
+- **Doppia conferma** su «⚡ Carica altre», «🔄 Cerca adesso», «🔍 Controlla tutte» e «🔍 Cerca altre». Prima di partire esce un avviso con la parte tecnica: consumano le …
 
-1. Nel menù che hai aperto tocca **Log out**.
-2. Rientra con **mario.miscera@gmail.com**. Se non va, usa …
+## Domande a Mario
+
+❓ DOMANDE
+**DOMANDA 1** · Da dove arrivano le ricette proteiche nuove?
+1. Le cerco io quando me lo chiedi e le metto in un file del sito. Zero consumi. (consiglio)
+2. Solo dall'app, con la conferma di adesso.
+3. Tutte e due.
+
+Rispondi col numero.
