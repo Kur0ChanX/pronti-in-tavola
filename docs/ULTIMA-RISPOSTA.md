@@ -1,16 +1,14 @@
-# Ultima risposta di Claude (11/11/2026 06:40 ora italiana)
+# Ultima risposta di Claude (11/11/2026 11:00 ora italiana)
 
-Ho capito: hai aperto il menù del profilo 👤.
+Ho capito: sessione #58 avviata. Riprendo da dove si era fermata la #57.
 
-───
 ✅ FATTO
-- La foto spiega tutto. Sei entrato con **info.prontiintavola@gmail.com**: questo login ha solo l'account vuoto, quello del cassetto.
-- Il sito invece l'hai creato il 6/11 con un **altro login**. Dagli appunti dovrebbe essere la tua email personale, **mario.miscera@gmail.com**.
-- Ho aggiornato la guida e ho salvato le foto.
+- L'app online è aggiornata alla versione 0.10.19, quella che chiede la doppia conferma prima di cercare ricette nuove (l'ho verificato sul sito vero).
+- Ho segnato questa sessione nel registro delle chat e l'ho salvata su GitHub.
+- Gli altri passi da fare dipendono tutti dalle tue risposte.
 
-───
-👉 DA FARE TU
-**A cosa serve:** entrare nel login dove c'è il sito. Solo lì il cassetto funziona.
+## Domande a Mario
 
-1. Nel menù che hai aperto tocca **Log out**.
-2. Rientra con **mario.miscera@gmail.com**. Se non va, usa …
+❓ DOMANDE
+🛑 Decisive, prima di tutto:
+1. **Corsia d'emergenza degli avvisi (chiamata C135).** A cosa serve: tiene una copia degli avvisi, così le notifiche a Monica e ai clienti partono anche se il server ha un guasto. Il **cassetto** (un piccolo archivio di Cloudflare dove sta la copia) è nell'account sbagliato, quello di `info.prontiintavola`. Devi uscire (Log out), rientrare con l'account del sito (probabilmente `mario.miscera`), aprire «Pronti in Tavola» e ricreare il cassetto `pronti-in-tavola-riserva`. Poi mandami l'indirizzo della pagina del cassetto. Se vuoi ti guido tocco per tocco. …
