@@ -21,3 +21,6 @@ Prima (stessa sera): «Per i dolci cerca diversi dolci con la crema proteica, ma
 
 ## Stato
 - 11/11 #61: specifica scritta. In parallelo gira la raccolta dei valori ufficiali con +50 parole (patch `c139-dolci-parole.patch`), per sapere quanti dolci «verificati» esistono.
+- 11/11 #61 sera: pezzo 1 `tools/tabella_crea.py` (832 alimenti, scarico in corso, lento: ~1 pagina ogni 7 s) e pezzo 2 `tools/stima.py` scritti e salvati. Prova: «cetriolo + yogurt» = salato, «Cremini» di Pietrobon = dolce; la stima aspetta la tabella (uova = CREA).
+- YouTube Pietrobon: il feed ufficiale (`youtube.com/feeds/videos.xml?channel_id=UCkQmObN7tBXzPQTQhlT704Q`) dà gli ultimi 15 video con ingredienti e i SUOI valori («Kcal totali… Per metà tortino: 335 kcal / 33,5 carbo / 23,5 prot / 13 grassi»). Le pagine dei video dal contenitore → controllo anti-robot di Google: NON si aggira (bloccato anche dalla guardia). Strada pulita per tutti gli 881: chiave gratuita «YouTube Data API v3» di Mario (request_credential, host www.googleapis.com).
+- Raccolta dei valori ufficiali con +50 parole: 2.994 candidate, lenta (GialloZafferano risponde piano).
