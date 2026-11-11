@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 15:37 · 01WTjqUwbG8f
-è adesso come risolviamo?
-
 ## 2026-11-10 15:55 · 01WTjqUwbG8f
 Secondo te le regole per le ricette per la palestra sono valide o taglia tantissime ricette, oppure è giusto che sia così?
 
@@ -124,3 +121,6 @@ nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta
 
 ## 2026-11-11 19:06 · 01WTjqUvCWdA
 devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito
+
+## 2026-11-11 19:20 · 01WTjqUvhRwD
+se lo rendiamo privato e mettiamo il mio PC?
