@@ -1,31 +1,25 @@
-# Ultima risposta di Claude (11/11/2026 19:22 ora italiana)
+# Ultima risposta di Claude (11/11/2026 19:30 ora italiana)
 
-Ho capito: proponi di rendere privato Pronti in Tavola e di fare le prove sul tuo PC.
+Ho capito: hai scelto la 3 (progetto privato + il tuo PC, poi GitHub) e chiedi se ci sono tutte le ricette dello youtuber, cioè 500.
+
+🛑 Foto della pagella (C141, già online): 1 = va bene · 2 = cambia qualcosa.
+🛑 Salvagente 4: il PC di casa come riserva del server, scegli 1-4.
+🧠 Continuo con Opus 5.5 · Extra, come la sessione precedente.
 
 ───
-✅ FATTO
-- Ho scritto la tua proposta nel lavoro C140 ed è salvata su GitHub (commit `d59b6f4c`).
+✅ **FATTO**
 
-───
-💡 PARERE
-È una buona idea e te la consiglio.
+**Le ricette.** Non sono 500: sono 207 nuove. Hai scritto «aggiungile tutte quante», quindi ho messo tutte quelle che passano la regola delle proteine.
 
-| Cosa | Oggi (pubblico) | Privato |
-|---|---|---|
-| Chi vede codice e documenti | tutti | solo tu e Claude |
-| Prove sul tuo PC | rischioso | sicuro (lo consiglia anche GitHub) |
-| Minuti di GitHub | senza limite | 2.000 al mese gratis |
-| App di Monica e dei clienti | — | non cambia niente |
-
-- Ho controllato: nessun pezzo dell'app legge i file da GitHub. …
+| Fonte | Nuove |
+|---|---|
+| Cookpad | 135 |
+| YouTube (Pietrobon) | 44 |
+| Blog …
 
 ## Domande a Mario
 
-❓ DOMANDE
-🛑 DOMANDA 1 · C140, dove facciamo le prove?
-A cosa serve: decidere dove si fanno le prove prima di pubblicare l'app.
-1. Resta pubblico, prove solo su GitHub gratis.
-2. Resta pubblico, prove sul tuo PC. Rischio: un estraneo può far girare il suo codice sul tuo PC.
-3. Diventa privato, prove prima sul tuo PC e poi su GitHub (consiglio).
-
-Se scegli 3 ti mando i passi. Prima rendi privato il progetto, ci vogliono un paio di minuti. Poi installiamo il motore sul PC.
+❓ **DOMANDE**
+**DOMANDA 1** · Ok per i file delle regole (`.claude/`)
+A cosa serve: con un solo ok accendo la difesa C143 (blocca i push che pubblicano l'app senza il tuo ok) e aggiorno il kit da 38.16 a 38.26. Il kit nuovo sa già mandare i giri al PC di casa.
+1 = ok (consiglio) · 2 = aspetta.
