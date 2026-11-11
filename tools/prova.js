@@ -1830,6 +1830,24 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await foto('48c-c139-proteiche-del-file');
     await page.evaluate(() => { RICETTE_FIT.splice(0); [P.ruolo, UI.devCliente] = window.__primaC139; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C141: le proteiche coi valori stimati (ricette-stimate.js) entrano con pagella, scritta «stimati» e passi sulla fonte, senza server', async () => {   // autonomo
+    await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-stimate.js') });
+    const r = await page.evaluate(() => {
+      window.__primaC141 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
+      window.__c141 = 0; RIC.chiedi = async c => { window.__c141++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
+      salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.db = null; RIC.scelteOra = Date.now();
+      const st = elencoRic().filter(x => x.stimata);
+      return { file: RICETTE_STIMATE.length, st: st.length, tutteFit: st.every(x => fitRic(x.nutr) && pagellaRic(x.nutr)), dolci: st.filter(x => momentoRic(x, 'dolci')).length,
+        fonti: perFonte(st), conIng: st.every(x => x.ingredienti.length >= 2 && /^https:\/\//.test(x.url)), cp: (st.find(x => /^cp:/.test(x.id)) || {}).id };
+    });
+    if (r.file < 150 || r.st !== r.file || !r.tutteFit || r.dolci < 60 || !/Cookpad/.test(r.fonti) || !/YouTube/.test(r.fonti) || !r.conIng || !r.cp) throw new Error('C141: file delle stimate sbagliato: ' + JSON.stringify(r));
+    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, r.cp); await page.waitForTimeout(300);
+    const d = await page.evaluate(() => ({ stimati: !!document.querySelector('.ric-stimati'), pagella: !!document.querySelector('.ric-pagella'), play: !!document.querySelector('.ric-play'),
+      link: (document.querySelector('main a.btn[href^="https://cookpad.com/"]') || {}).textContent, ing: document.querySelectorAll('.ric-ing li').length, fonte: (document.querySelector('.ric-fonte-riga') || {}).innerText, server: window.__c141 }));
+    if (!d.stimati || !d.pagella || d.play || !/Leggi i passi su Cookpad/.test(d.link || '') || d.ing < 2 || !/Cookpad/.test(d.fonte || '') || d.server) throw new Error('C141: ricetta stimata aperta male: ' + JSON.stringify(d));
+    await foto('48d-c141-ricetta-stimata');
+    await page.evaluate(() => { RICETTE_STIMATE.splice(0); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC141; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;

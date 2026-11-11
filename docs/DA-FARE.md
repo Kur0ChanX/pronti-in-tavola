@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 11/11 · 🟢 Principale 62 · C141 pagella delle Proteiche: foto `archivio/foto/2026-11-11-1930-c141-pagella-*.png` mandate. Rispondi 1 = va bene, la pubblico · 2 = cambia (dimmi cosa).
 - 11/11 · 🟢 Principale 58 · C140 giri prima sul PC di casa, poi Blacksmith, poi GitHub: DOMANDE 1 il motore di casa è già collegato (foto Impostazioni → Actions → Runners)? 2 un motore per progetto (consiglio) o organizzazione · `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`.
 - 10/11 · 🛑 · 💛 Salvagente 4 · PC di casa come riserva di Cloudflare e Firebase: scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente. Schemi mandati 19:02: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png` `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`. A cosa serve: scrivere il piano.
 - 10/11 · 🟢 Principale 51 · C130 contatore vero di Cloudflare, gratis: crei una chiave di sola lettura «Account Analytics» (ti guido) e il server vede le letture di tutto l'account. 1 · sì · 2 · no. A cosa serve: l'avviso ti arriva anche per letture che il mio contatore non vede.
@@ -16,7 +17,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
-| C141 | (Mario 11/11 sera, risposta 1) 500 proteiche con valori stimati, metà dolci/merende/snack, fonti fitness (blog GZ, Cookpad, YouTube Pietrobon: chiave in YOUTUBE_API_KEY, provata 11/11, leggerla col trim), niente cetriolo nei dolci: `docs/lavori-in-corso/c141-proteiche-stimate.md`. 👁 Lo vedi: Proteiche → «🧪 Valori stimati» con ~500 ricette, ~250 dolci · prova: tua foto | Claude | 🟡 |
+| C141 | (Mario 11/11 sera, risposta 1) 500 proteiche con valori stimati, metà dolci/merende/snack, fonti fitness (blog GZ, Cookpad, YouTube Pietrobon: chiave in YOUTUBE_API_KEY, provata 11/11, leggerla col trim), niente cetriolo nei dolci: `docs/lavori-in-corso/c141-proteiche-stimate.md`. 👁 Lo vedi: Ricettario → «🏋️ Proteiche»: ~400 ricette (207 coi valori stimati, «≈ … stimati»), ognuna con «Voto N» e semaforo; dentro la ricetta la pagella · prova: tua foto | Claude | 🟡 |
 | C142 | (11/11 #62) Prova rossa «ricettario (C55)»: il riquadro Ricettario della Home non si clicca nella prova (rossa anche prima di C141). 👁 Lo vedi: in chat «prove del ricettario tutte verdi» · prova: uscita di `node tools/prova.js` | Claude | 🔴 |
 | C140 | (Mario 11/11 ~11:45) Giri di prova: PC di casa → Blacksmith → GitHub, pubblici sempre GitHub, per tutti i progetti: `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`. 👁 Lo vedi: un giro che parte sul PC di casa e, col PC occupato, su Blacksmith · prova: tua foto delle Actions | Claude | 🟡 |
 | C139 | (Mario 11/11) Ricette senza consumi + 200 proteiche nel file del sito: `docs/lavori-in-corso/c139-ricette-senza-consumi.md`. 👁 Lo vedi: Proteiche → «🔍 Cerca altre» chiede conferma con «Cloudflare»; Home → Proteiche ~200 in più, coi momenti Dolci (~20+), Spuntino, Merenda, Colazione, Dopo l'allenamento · prova: foto di Mario | Claude |
