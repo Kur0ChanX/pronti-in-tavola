@@ -1804,6 +1804,27 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (dbf.m !== 'GialloZafferano 35 · RicetteFit 5' || !/Ricette proteiche: 3\s*GialloZafferano 2 · RicetteFit 1/.test(dbf.f)) throw new Error('Database: numeri per fonte sbagliati: ' + JSON.stringify(dbf));
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC125; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
+  await passo('ricettario C139: le proteiche del file del sito (ricette-fit.js) entrano in Proteiche e nei momenti, senza chiedere niente al server', async () => {   // autonomo
+    await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-fit.js') });
+    const r = await page.evaluate(() => {
+      window.__primaC139 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
+      const doppia = Object.assign({}, RICETTE_FIT[0], { nome: 'Copia mia prova' });   // una già nel ricettario resta la sua, mai due volte
+      window.__c139 = 0; RIC.chiedi = async c => { if (c.db === 'cercaFit' || c.db === 'turbo') window.__c139++; return c.db === 'mie' ? { scelte: [doppia] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
+      salvaScelte([doppia]); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.cerca = { stato: '', risultati: [] }; RIC.db = null; RIC.dbOra = 0; RIC.scelteOra = Date.now();
+      const tt = elencoRic(), fit = tt.filter(x => x.fit), stessa = tt.filter(x => x.id === doppia.id);
+      const mom = {}; ['dolci', 'spuntino', 'merenda', 'colazione', 'allenamento', 'pranzo', 'cena'].forEach(m => { mom[m] = fit.filter(x => momentoRic(x, m)).length; });
+      return { file: RICETTE_FIT.length, fit: fit.length, tutteFit: fit.every(x => fitRic(x.nutr)), stessa: stessa.map(x => x.nome), mom, fonti: perFonte(fit), conLink: fit.every(x => /^(gz|rf):[\w%-]+$/.test(x.id) && x.foto) };
+    });
+    if (r.file < 150 || r.fit !== r.file - 1 || !r.tutteFit || JSON.stringify(r.stessa) !== '["Copia mia prova"]' || !r.conLink) throw new Error('C139: file delle proteiche sbagliato: ' + JSON.stringify(r));
+    if (!(r.mom.dolci >= 20 && r.mom.colazione >= 10 && r.mom.spuntino >= 20 && r.mom.merenda >= 10 && r.mom.allenamento >= 10) || !/GialloZafferano \d+ · RicetteFit \d+|RicetteFit \d+ · GialloZafferano \d+/.test(r.fonti)) throw new Error('C139: momenti di Mario o fonti scarsi: ' + JSON.stringify(r));
+    await page.evaluate(() => { UI.ricZona = 'fit'; UI.vista = 'ricettario'; render(); });
+    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    await clic('[data-a="ric-fit-tipo"][data-v="dolci"]');
+    const v = await page.evaluate(() => ({ carte: document.querySelectorAll('main .ric-elenco .ric-carta').length, server: window.__c139 }));
+    if (v.carte < 10 || v.server) throw new Error('C139: «🍰 Dolci» senza le proteiche del file, o ha chiesto al server: ' + JSON.stringify(v));
+    await foto('48c-c139-proteiche-del-file');
+    await page.evaluate(() => { RICETTE_FIT.splice(0); [P.ruolo, UI.devCliente] = window.__primaC139; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
+  });
   await passo('ricettario C125 cerca fit: parole pronte, tasto e invio cercano su GZ e RicetteFit, esito detto, errore detto, fuori da Proteiche la ricerca di sempre', async () => {   // autonomo
     await page.evaluate(() => {
       window.__primaC125c = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; UI.modifica = null; S.impostazioni.ricettario = true;
