@@ -15,11 +15,13 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   page.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) errori.push('console: ' + m.text()); });
   const foto = async n => page.screenshot({ path: `${OUT}/${n}.png` });
   const clic = async (sel, opz) => { await page.locator(sel).first().click(opz); await page.waitForTimeout(250); };
-  const passo = async (nome, fn) => { if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test(nome)) return; try { await Promise.race([fn(), new Promise((_, no) => setTimeout(() => no(new Error('BLOCCATA oltre 120 s (la prova non deve mai restare appesa)')), 120000))]); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(0, 3).join(' | ')); } };
+  const passo = async (nome, fn) => { if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test(nome)) return; try { await Promise.race([fn(), new Promise((_, no) => setTimeout(() => no(new Error('BLOCCATA oltre 120 s (la prova non deve mai restare appesa)')), 120000).unref())]); console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(0, 3).join(' | ')); } };
 
   await page.goto(FILE);
   await page.waitForTimeout(1300); await foto('01-apertura');
   await page.waitForTimeout(5200);
+  // C142: con SOLO la prova del vapore (che aspetta la fine dell'apertura) può non girare: il vapore copriva i tocchi delle altre
+  if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test('vapore')) await page.locator('.vapore').waitFor({ state: 'detached', timeout: 12000 }).catch(() => {});
   await passo('vapore dopo l\'apertura anche per i clienti (C115)', async () => {
     await page.locator('.vapore').waitFor({ state: 'attached', timeout: 4000 });
     await page.locator('.vapore').waitFor({ state: 'detached', timeout: 6000 });
