@@ -60,7 +60,7 @@ function fitRic(n) {
   const quota = n.prot * 400 / n.kcal, zuc = n.zuc * 400 / n.kcal;
   if (n.saturi * 900 / n.kcal > sogliaFit('fitSaturi', 13)) return false;
   if (n.prot >= sogliaFit('fitProt', 25) && quota >= sogliaFit('fitProtPerc', 25) && n.kcal <= sogliaFit('fitKcal', 550) && zuc <= sogliaFit('fitZuc', 15) && n.sodio <= sogliaFit('fitSodio', 800)) return 'pasto';
-  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 10) && quota >= sogliaFit('fitSnackPerc', 30) && zuc <= sogliaFit('fitSnackZuc', 20) && n.sodio <= sogliaFit('fitSnackSodio', 500) ? 'snack' : false;
+  return n.kcal <= sogliaFit('fitSnackKcal', 300) && n.prot >= sogliaFit('fitSnackProt', 8) && quota >= sogliaFit('fitSnackPerc', 20) && zuc <= sogliaFit('fitSnackZuc', 30) && n.sodio <= sogliaFit('fitSnackSodio', 500) ? 'snack' : false;
 }
 const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
 const numIt = x => String(Math.round(x * 10) / 10).replace('.', ',');
@@ -407,7 +407,7 @@ function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente b
 /* C124: «🏋️ Proteiche» spiegata in una riga, con le soglie di adesso (cambiano da Impostazioni) e i valori ancora da leggere */
 function notaFit() {
   const g = (k, x) => sogliaFit(k, x);
-  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Per palestra e definizione. <b>Pasti</b>: almeno ${g('fitProt', 25)} g di proteine a porzione (il ${g('fitProtPerc', 25)}% delle calorie), al massimo ${g('fitKcal', 550)} kcal. <b>Snack e dolci</b>: fino a ${g('fitSnackKcal', 300)} kcal, almeno ${g('fitSnackProt', 10)} g di proteine (il ${g('fitSnackPerc', 30)}%). Sempre pochi grassi saturi, zuccheri e sale. Prima quelle con più proteine per caloria. Valori per porzione di GialloZafferano e RicetteFit.</p>`;
+  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Per palestra e definizione. <b>Pasti</b>: almeno ${g('fitProt', 25)} g di proteine a porzione (il ${g('fitProtPerc', 25)}% delle calorie), al massimo ${g('fitKcal', 550)} kcal. <b>Snack e dolci</b>: fino a ${g('fitSnackKcal', 300)} kcal, almeno ${g('fitSnackProt', 8)} g di proteine (il ${g('fitSnackPerc', 20)}%). Sempre pochi grassi saturi, zuccheri e sale. Prima quelle con più proteine per caloria. Valori per porzione di GialloZafferano e RicetteFit.</p>`;
 }
 /* C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca per ricerche fitness che mi cerca in automatico… tante fonti»): qui sopra filtra
    le proteiche già lette; il tasto chiede al server di cercare su GialloZafferano e RicetteFit e di leggere SUBITO le nuove (5 ogni 30 s).

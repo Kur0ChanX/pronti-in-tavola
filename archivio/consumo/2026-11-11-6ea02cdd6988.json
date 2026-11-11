@@ -2,15 +2,15 @@
 "account": "108763",
 "sessione": "6ea02cdd6988",
 "giorno": "2026-11-11",
-"turni": 1,
-"peso": 129917,
-"uscita": 2742,
-"contesto_max": 108000,
+"turni": 2,
+"peso": 318053,
+"uscita": 7304,
+"contesto_max": 131632,
 "anomalie": [],
 "remota": "01WTjqUwA2q2",
 "aiutanti": 0,
-"strumenti": 5,
+"strumenti": 15,
 "motori": {
-"opus": 129917
+"opus": 318053
 }
 }
