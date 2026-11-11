@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 11/11 · 🟢 Principale 58 · C140 giri prima sul PC di casa, poi Blacksmith, poi GitHub: DOMANDE 1 il motore di casa è già collegato (foto Impostazioni → Actions → Runners)? 2 un motore per progetto (consiglio) o organizzazione · `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`.
 - 10/11 · 🛑 · 💛 Salvagente 4 · PC di casa come riserva di Cloudflare e Firebase: scegli 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente. Schemi mandati 19:02: `archivio/foto/2026-11-10-1900-c138-scelta-1-officina.png` `archivio/foto/2026-11-10-1900-c138-scelta-2-gemello.png`. A cosa serve: scrivere il piano.
 - 11/11 · 🛑 · 🟡 Principale 57 · C135 il cassetto è nell'account sbagliato (Workers & Pages vuoto, foto 06:37, PT E64): il login `info.prontiintavola` non ha il sito (foto 06:39): Mario fa Log out ed entra col login del sito (probabilmente mario.miscera), account «Pronti in Tavola», ricrea il cassetto `pronti-in-tavola-riserva` dove c'è «pronti-in-tavola» e manda l'indirizzo della pagina del cassetto.
 - 11/11 · 🟢 Principale 58 · C139 v0.10.19 online: prova Proteiche → «🔍 Cerca altre» (avviso con Cloudflare): una foto.
