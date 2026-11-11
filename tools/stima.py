@@ -37,9 +37,12 @@ PRODOTTI = {
     'proteine vegane': (380, 72, 8, 2, 8, 1.5, 900),
     'farina proteica': (360, 35, 40, 4, 5, 1, 50),
     'cacao amaro': (355, 20, 11.5, 0.5, 25.6, 15, 20),
+    'caffè (bevanda)': (2, 0.1, 0.3, 0, 0, 0, 2),   # CREA «caffè tostato» è la polvere: 150 ml di caffè non sono 150 g di polvere
 }
 # parole della riga → prodotto (o nome CREA); le prime che combaciano vincono
 SINONIMI = [
+    (r'\bcaff[eè]\b(?! (solubile|in polvere|macinato))', 'caffè (bevanda)'),
+    (r'\bproteine?\s+(al|alla|alle|allo|gusto)\b', 'proteine in polvere'),
     (r'\b(whey|proteine? in polvere|proteine (alla |al gusto )?(vaniglia|cioccolato|cacao|fragola|biscotto)|scoop|misurin|isolat[eo]|protein powder)', 'proteine in polvere'),
     (r'\bproteine? vegan', 'proteine vegane'), (r'farina proteica|protein flour', 'farina proteica'),
     (r'philadelphia.*prote|philadelphia protein', 'philadelphia protein'), (r'\bskyr\b', 'skyr'),
@@ -164,6 +167,8 @@ def stima_ricetta(ingredienti, n_porzioni):
         g, resto = grammi(riga)
         if re.search(r'\b(sale|acqua|ghiaccio|lievito|bicarbonato|aroma|scorza|buccia|vanillina|cannella|spezie)\b', norm(riga)) and (g is None or g <= 10):
             continue   # pesano poco o niente (il sale lo conta il sodio solo se ha i grammi)
+        if re.search(r'^(\d+\s*(ml|g)?\s*(di\s+)?)?(acqua|ghiaccio)\b|\b(pepe|goccio)\b', norm(riga)):
+            continue   # acqua e ghiaccio: zero calorie anche a 300 ml; pepe e «un goccio» non contano
         if g is None and re.search(r'dolcific|eritrit|stevia|sucralos|q\.?b|a piacere|qualche|gocce di limone|succo di limone', norm(riga)):
             continue   # senza quantità e quasi senza calorie
         if g is None:

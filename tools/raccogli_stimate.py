@@ -9,7 +9,7 @@ e scrive tools/dati/ricette-stimate.js (pezzo 4: diventa un file del sito, zero 
 - Metà dolci (dolce_o_salato: nessun ingrediente salato, almeno uno dolce), metà il resto.
 Uso: python3 -I tools/raccogli_stimate.py [quante=500]   (pagine in .cache-stime/; rilanciarlo non rilegge i siti) """
 import hashlib, html, json, os, re, subprocess, sys, time
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from stima import stima_ricetta, dolce_o_salato, porzioni, norm
@@ -123,22 +123,54 @@ def da_ricetta(chi, url):
             'totale': minuti(r.get('totalTime')) or minuti(r.get('cookTime')) + minuti(r.get('prepTime'))}
 
 
-def pietrobon():
-    out = []
+def video_pietrobon():
+    """Tutti i video (~880) con la chiave YouTube Data API (variabile d'ambiente YOUTUBE_API_KEY, 1 unità ogni 50 video);
+    senza chiave solo gli ultimi 15 dal feed. Cache in .cache-stime/yt.json. La chiave non si stampa mai."""
+    f = os.path.join(CACHE, 'yt.json')
+    if os.path.exists(f):
+        return json.load(open(f, encoding='utf-8'))
+    chiave, out, tok = os.environ.get('YOUTUBE_API_KEY', '').strip(), [], ''
+    while chiave:
+        q = {'part': 'snippet', 'playlistId': 'UUkQmObN7tBXzPQTQhlT704Q', 'maxResults': 50, 'key': chiave}
+        if tok:
+            q['pageToken'] = tok
+        try:
+            d = json.loads(subprocess.run(['curl', '-sS', '-m', '25', 'https://www.googleapis.com/youtube/v3/playlistItems?' + urlencode(q)],
+                                          capture_output=True, timeout=35).stdout or b'{}')
+        except Exception:
+            d = {}
+        for i in d.get('items', []):
+            sn = i['snippet']
+            out.append({'id': sn['resourceId']['videoId'], 'titolo': sn['title'], 'testo': sn.get('description', ''),
+                        'img': ((sn.get('thumbnails') or {}).get('high') or {}).get('url', '')})
+        tok = d.get('nextPageToken')
+        if not tok:
+            break
+    if out:
+        json.dump(out, open(f, 'w', encoding='utf-8'), ensure_ascii=False)
+        return out
     t = pagina('https://www.youtube.com/feeds/videos.xml?channel_id=UCkQmObN7tBXzPQTQhlT704Q')
     for e in re.findall(r'<entry>(.*?)</entry>', t, re.S):
         vid = re.search(r'<yt:videoId>(.*?)</yt:videoId>', e)
         tit = re.search(r'<title>(.*?)</title>', e)
         d = re.search(r'<media:description>(.*?)</media:description>', e, re.S)
         img = re.search(r'<media:thumbnail url="([^"]+)"', e)
-        if not (vid and tit and d):
-            continue
-        testo = html.unescape(d.group(1))
+        if vid and tit and d:
+            out.append({'id': vid.group(1), 'titolo': html.unescape(tit.group(1)), 'testo': html.unescape(d.group(1)), 'img': img.group(1) if img else ''})
+    return out
+
+
+def pietrobon():
+    out = []
+    for v in video_pietrobon():
+        testo = v['testo']
         ing = [l.strip(' -•').strip() for l in testo.split('\n') if re.match(r'\s*[-•]\s*\S', l) and not re.search(r'(?i)codice|kcal|@|#', l)]
-        if len(ing) < 2:
-            continue
-        x = {'id': 'yt:' + vid.group(1), 'nome': html.unescape(tit.group(1)).strip(), 'foto': img.group(1) if img else '',
-             'url': 'https://www.youtube.com/watch?v=' + vid.group(1), 'porzioni': 1, 'ingredienti': ing, 'totale': 0, 'autore': 'Massimo Pietrobon Gobbi'}
+        if re.fullmatch(r'\s*\d{1,2}\s+\w+\s+\d{4}\s*', v['titolo']):
+            continue   # titolo = una data, non il nome di una ricetta
+        if len(ing) < 2 or re.search(r'(?i)melatonin|omega ?3|creatina|\beaa\b|beta ?alanin|\bvit\.? ?[cd]\b|\bzm[ab]', ' '.join(ing)):
+            continue   # niente ricetta, o è la lista degli integratori
+        x = {'id': 'yt:' + v['id'], 'nome': v['titolo'].strip(), 'foto': v['img'],
+             'url': 'https://www.youtube.com/watch?v=' + v['id'], 'porzioni': 1, 'ingredienti': ing, 'totale': 0, 'autore': 'Massimo Pietrobon Gobbi'}
         tot = re.search(r'(?i)kcal totali\s*:?\s*(\d+)\s*/\s*([\d.,]+)\s*g?\s*carbo\w*\s*/\s*([\d.,]+)\s*g?\s*prot\w*\s*/\s*([\d.,]+)\s*g?\s*grass', testo)
         due = re.search(r'(?i)(due|2) (pasti|porzioni|persone)|per met', testo)
         x['porzioni'] = 2 if due else 1
@@ -176,7 +208,10 @@ def main():
         if not v:
             scarti['stima'] += 1; continue
         if x.get('suoi'):   # Pietrobon: i suoi valori (ricetta intera) vincono; zuccheri, saturi e sale dalla stima
-            v.update({k2: round(val / x['porzioni'], 1) for k2, val in x.pop('suoi').items()})
+            suoi = {k2: round(val / x['porzioni'], 1) for k2, val in x.pop('suoi').items()}
+            r = suoi['grassi'] / v['grassi'] if v['grassi'] else 1   # saturi in proporzione ai SUOI grassi (sennò i nostri, più alti, la scartano)
+            v['saturi'] = round(min(suoi['grassi'], v['saturi'] * r), 1)
+            v.update(suoi)
         if not (40 <= v['kcal'] <= 900) or not fit(v):
             scarti['regola'] += 1; continue
         nomi.add(k)

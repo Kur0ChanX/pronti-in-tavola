@@ -11,6 +11,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 62 | C141 pezzo 3+ (raccolta stimate: GZ, Cookpad, YouTube con chiave); la 61 si ferma (messaggio 11/11 18:10) | `tools/raccogli_stimate.py` · `ricette-stimate.js` | 11/11 18:10 |
 | 🔴 Principale 58 | chiusa 11/11 ~12:55 (attesa oltre 180k): C139 191 proteiche v0.10.20-22 online, PT E65; C140 domanda; alla 59 | `ricette-fit.js` · `tools/raccogli-fit.mjs` · `ricettario.js` · `data.js` · `tools/prova.js` · `tools/sito.py` | 11/11 |
 | 🔴 Principale 57 | chiusa 11/11 ~10:58 (attesa oltre 180k): C135 causa trovata (login sbagliato, PT E64), C139 v0.10.19 online; alla 58 | `ricettario.js` · `worker.js` · `data.js` · `tools/prova.js` · `docs/GUIDE-GIUSTE.md` | 11/11 |
 | 🔴 Principale 56 | chiusa 11/11 ~06:35 (attesa lunga): cassetto creato da Mario, deploy rosso 10041, aspetta foto Workers; alla 57. C135 corsia d'emergenza: aspetta l'ID del cassetto KV da Mario, poi `wrangler.jsonc` e pubblicazione; sveglia 01:05 (server ripartito) | `wrangler.jsonc` · `docs/DA-FARE.md` · `docs/PASSAGGIO-CONSEGNE.md` | 10/11 |
