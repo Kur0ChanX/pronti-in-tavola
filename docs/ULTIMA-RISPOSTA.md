@@ -1,10 +1,15 @@
-# Ultima risposta di Claude (10/11/2026 19:24 ora italiana)
+# Ultima risposta di Claude (11/11/2026 01:27 ora italiana)
 
-🛑 Prima la scelta decisiva della chat Salvagente 3: usare il PC di casa come riserva. Rispondi 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente.
+🛑 Ancora aperta la scelta della chat Salvagente 4 (PC di casa come riserva): 1 officina · 2 più gemello silenzioso · 3 più server pubblico · 4 niente.
+
+🧠 Opus · Extra
 
 ───
 ✅ FATTO
-- Sessione 56 aperta (5ª su 8 di fila). Online c'è la versione 0.10.18, controllata adesso.
-- Il server resta fermo fino all'01:00: Cloudflare ha finito le letture gratis di oggi. Era previsto, riparte da solo.
-- Ho messo la mia **sveglia** (un promemoria che mi riaccende da sola) alle 01:05, per controllare che sia ripartito.
-- La sveglia della sessione 55 non ho potuto cancellarla: il permesso automatico me …
+- Il server è ripartito alle 01:26 e le notifiche funzionano di nuovo. Ho controllato: risponde, con 2 telefoni iscritti.
+- Cloudflare ha sbloccato 26 minuti dopo le 01:00. Ho scritto la lezione nel diario degli errori: le prossime sveglie partono alle 01:35 e ricontrollano ogni minuto.
+- La corsia d'emergenza è ancora spenta: manca il cassetto.
+
+───
+👉 DA FARE TU (domattina, con calma)
+A cosa serve: senza il …
