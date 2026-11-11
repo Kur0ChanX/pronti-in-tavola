@@ -65,7 +65,7 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal regis
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-11 12:56 · [AVVIO] Sessione #59 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio
+- 2026-11-11 12:56 · [AVVIO] Sessione #59 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto, scorta unita
 - 2026-11-11 13:36 · vai di consiglio e procediamo con la guida cassetto → C139 = 2 (patch), guida C135
 - 2026-11-11 13:43 · scusa e la regola dei link? perché l'hai saltata quella cliccabile se devo entra… → PT E66
 - 2026-11-11 13:50 · che dici se integriamo questo per le ricerche ? → parere no (foto in archivio)
