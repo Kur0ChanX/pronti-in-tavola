@@ -1,3 +1,4 @@
-# Ultimo messaggio di Mario (11/11/2026 10:39 ora italiana)
+# Ultimo messaggio di Mario (11/11/2026 11:25 ora italiana)
 
-Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non vorrei che si ricreasse assolutamente quel problema di bloccare Claude Flare. Evitalo assolutamente, al massimo le ricette le aggiungiamo da Claude, ti dico di fare una ricerca e di aggiungerle tu manualmente, oppure dall'app, ma con doppia richiesta, con doppio clic, che magari esce un avviso che dice potrebbero consumare i dati di, e mi metti la cosa tecnica. Insomma, per le cose superflue facciamo attenzione ai consumi di tutta l'app. Deve funzionare bene io, Monica, e i clienti dobbiamo comunicare bene, con notifiche, risposte, tutto il funzionamento dell'app fatto bene, tutto il resto è superfluo.
+Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto 
+cerca da varie fonti

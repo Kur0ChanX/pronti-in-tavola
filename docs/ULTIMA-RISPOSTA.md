@@ -1,16 +1,16 @@
-# Ultima risposta di Claude (11/11/2026 06:40 ora italiana)
+# Ultima risposta di Claude (11/11/2026 10:59 ora italiana)
 
-Ho capito: hai aperto il menù del profilo 👤.
 
-───
-✅ FATTO
-- La foto spiega tutto. Sei entrato con **info.prontiintavola@gmail.com**: questo login ha solo l'account vuoto, quello del cassetto.
-- Il sito invece l'hai creato il 6/11 con un **altro login**. Dagli appunti dovrebbe essere la tua email personale, **mario.miscera@gmail.com**.
-- Ho aggiornato la guida e ho salvato le foto.
 
-───
-👉 DA FARE TU
-**A cosa serve:** entrare nel login dove c'è il sito. Solo lì il cassetto funziona.
+## Domande a Mario
 
-1. Nel menù che hai aperto tocca **Log out**.
-2. Rientra con **mario.miscera@gmail.com**. Se non va, usa …
+❓ DOMANDE
+**DOMANDA 1** · Da dove arrivano le ricette proteiche nuove?
+📌 Di cosa parliamo: le ricette nuove di «🏋️ Proteiche» nel Ricettario. Oggi arrivano solo se dai la conferma. Adesso va decisa la strada per il futuro, così non torna il blocco di Cloudflare.
+1 · Le cerco io quando me lo chiedi e le metto in un file del sito. L'app le mostra senza usare il server: zero consumi. (consiglio)
+2 · Solo dall'app, con la conferma di adesso. Consumano un po', ma il freno le ferma prima del limite.
+3 · Tutte e due: io le metto nel file e tu puoi anche cercarne dall'app.
+
+Rispondi col numero.
+
+Ho …
