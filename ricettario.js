@@ -51,7 +51,7 @@ async function chiediRic(corpo) {
   }
 }
 const riquadroRisparmio = () => inRisparmio() ? `<div class="avviso" id="ric-risparmio"><div><b>🛟 Modalità risparmio fino alle ${oraRisparmio()}</b><br><span class="piccolo">${RIC.risparmio.perche === 'bloccato'
-  ? 'Cloudflare ha fermato la memoria del server per oggi' : 'Il server ha usato quasi metà delle letture gratuite di oggi'}: fino ad allora il ricettario non cerca e non carica ricette nuove, così le letture restano per le cose importanti. Funzionano come sempre: il tuo ricettario, le ricette salvate sul telefono, ordini, menù, clienti e avvisi.</span></div></div>` : '';
+  ? 'Cloudflare ha fermato la memoria del server per oggi' : 'Il server ha usato un quinto delle letture gratuite di oggi'}: fino ad allora il ricettario non cerca e non carica ricette nuove, così le letture restano per le cose importanti. Funzionano come sempre: il tuo ricettario, le ricette salvate sul telefono, ordini, menù, clienti e avvisi.</span></div></div>` : '';
 /* C125 (Mario 10/11 «un po' più severe… anche dolci proteici e snack»): 'pasto' (regole piene) o 'snack' (poche calorie, più quota di proteine);
    false = non è proteica. Soglie in Impostazioni → Sviluppatore. */
 const valoriPieni = n => !!n && n.kcal > 0 && [n.prot, n.saturi, n.zuc, n.sodio].every(x => x != null);
@@ -430,10 +430,21 @@ function riquadroFit(f, tutte) {
     <button type="button" class="btn chiaro piccolo ric-regole" data-a="ric-regole" aria-expanded="${!!UI.ricRegole}">ℹ️ Le regole</button>
     ${UI.ricRegole ? notaFit() : ''}</section>`;
 }
+/* Mario 11/11 «non vorrei che si ricreasse assolutamente quel problema di bloccare Cloudflare… dall'app, ma con doppia richiesta… un avviso
+   che dice potrebbero consumare i dati… e mi metti la cosa tecnica»: ogni tasto che fa cercare o caricare ricette NUOVE al server chiede prima
+   conferma (tocco + «OK»), col consumo stimato. I filtri (momenti, fonti, parole) guardano solo le ricette già lette: zero consumo. */
+function okConsumo(cosa, n) {
+  const l = RIC.db && RIC.db.letture, num = x => Number(x || 0).toLocaleString('it-IT');
+  return confirm(`⚠️ ${cosa}\n\nConsuma i dati gratuiti di Cloudflare: le «letture» della memoria del server (Durable Objects SQLite, 5 milioni di righe al giorno per TUTTA l'app).`
+    + (n ? ` Stima: fino a ${n} ricette lette dal web e salvate.` : '')
+    + (l && l.tetto ? ` Oggi usate ${num(l.oggi)} righe; il ricettario si ferma da solo a ${num(l.tetto)}.` : '')
+    + `\nSe finissero, si fermerebbero anche gli avvisi a Monica e ai clienti.\n\nContinuo?`);
+}
 function cercaFit(q, qq, tutto) {   // qq: le parole dei momenti o delle fonti proteiche; tutto: «… su tutti i siti» (C126)
   q = String(q || '').trim(); const k = q.toLowerCase(), mom = chiaveFit(UI.ric), testo = q;
   if (q.length < 2 || (RIC.fitCerca && RIC.fitCerca.q === k && RIC.fitCerca.stato === 'carico')) return;   // niente doppio tocco
   if (!navigator.onLine) { RIC.fitCerca = { q: k, mom, testo, stato: 'errore', errore: 'Senza rete non posso cercare: le proteiche già lette sono qui sotto.' }; render(); return; }
+  if (!okConsumo(tutto ? 'Cerco ricette proteiche nuove su tutti i siti.' : `Cerco sul web ricette proteiche nuove: «${testo}».`, nCarico())) return;
   RIC.fitCerca = { q: k, mom, testo, stato: 'carico' }; render();
   chiediRic(Object.assign({ db: 'cercaFit', q, n: nCarico() }, tutto ? { tutto: true } : Array.isArray(qq) ? { qq } : {})).then(j => {
     if (!j || j.errore) throw new Error(j && j.errore || 'il server non risponde');
@@ -450,7 +461,7 @@ function aggiornaFit(n) {
 /* C125 (Mario 10/11 «dolci proteici, snack, primi, secondi… ricette immediate»): dentro «🏋️ Proteiche» Pasti, Snack e dolci, «⚡ Pronte in N minuti»
    (N da Impostazioni → Sviluppatore, fitVeloci; usa il filtro del tempo, quindi «✕ Azzera i filtri» toglie anche questo) */
 /* C126 (Mario 10/11 13:57 «6 selezioni così sono troppo vincolato, dividile per spuntino merenda pranzo cena dolce colazione post cena»):
-   momenti della giornata. Un tocco = filtra le proteiche di quel momento E cerca su tutte le fonti le sue parole (al massimo 4).
+   momenti della giornata. Un tocco = filtra le proteiche di quel momento; sul web le sue parole (al massimo 4) solo con «Cerca altre» e la conferma (Mario 11/11).
    Il momento di una ricetta si decide qui sola (come catRic, PT E49): profilo (pasto o snack), portata e parole del NOME. */
 const MOMENTI_FIT = [
   ['colazione', '🌅 Colazione', ['colazione proteica', 'pancake proteici', 'porridge proteico', 'overnight oats']],
@@ -992,7 +1003,7 @@ document.addEventListener('submit', e => {
   const link = /ricette\.giallozafferano\.it\/([\w%-]+)\.html/.exec(q), lrf = /ricettefit\.it\/ricetta\/([\w%-]+)/.exec(q);   // incollato un link di GialloZafferano o RicetteFit: si apre qui dentro
   if (link) { UI.ric.q = ''; vai('ricetta:gz:' + link[1]); return; }
   if (lrf) { UI.ric.q = ''; vai('ricetta:rf:' + lrf[1]); return; }
-  if (q.length >= 2) { if (UI.ric.zona === 'fit') cercaFit(q); else A['ric-cerca-gz'](); }   // C125: dentro Proteiche cerca le ricette fit
+  if (q.length >= 2) { if (UI.ric.zona === 'fit') render(); else A['ric-cerca-gz'](); }   // dentro Proteiche filtra le già lette; sul web solo col tasto «Cerca» e la conferma (Mario 11/11)
 });
 
 /* schermo sempre acceso mentre si cucina (Wake Lock: Chrome su Android sì, alcuni telefoni no → nessun errore) */
@@ -1042,10 +1053,10 @@ Object.assign(A, {
   'ric-zona'(el) { const f = UI.ric; f.zona = el.dataset.v; UI.ricAltre = false; if (f.zona !== 'fit') { f.fit = ''; f.prot = ''; if (f.tempo === sogliaFit('fitVeloci', 10)) f.tempo = 0; } salvaFiltri(); render(); },   // C125: Pasti/Snack e «⚡» valgono solo dentro Proteiche
   'ric-cat'(el) { UI.ric.cat = el.dataset.v; salvaFiltri(); render(); },
   /* C127: tocco che accende = filtra e cerca le parole di quel momento o di quella fonte; tocco che spegne = solo filtra */
-  'ric-prot'(el) { const f = UI.ric, g = giraSel(f.prot, el.dataset.v, fonteProt), x = fonteProt(el.dataset.v); f.prot = g.v; salvaFiltri(); if (g.su && x) cercaFit(nomeSel(x[1]), [x[3]]); else render(); },
+  'ric-prot'(el) { const f = UI.ric, g = giraSel(f.prot, el.dataset.v, fonteProt), x = fonteProt(el.dataset.v); f.prot = g.v; salvaFiltri(); render(); },   // solo filtro: sul web col tasto «Cerca altre» (Mario 11/11)
   'ric-cerca-fit-tutto'() { const f = UI.ric, q = (f.q || '').trim(), s = selFit(f); if (q.length >= 2) cercaFit(q); else if (s) cercaFit(s.testo, s.parole); else cercaFit('tutti i siti', null, true); },   // C127 «🔍 Cerca altre»
   'ric-cerca-fit'(el) { const v = el.dataset.v || (UI.ric.q || '').trim(); if (v.length < 2) return; UI.ric.q = v; cercaFit(v); },   // C125
-  'ric-fit-tipo'(el) { const f = UI.ric, g = giraSel(f.fit, el.dataset.v, momentoFit), m = momentoFit(el.dataset.v); f.fit = g.v; salvaFiltri(); if (g.su && m) cercaFit(nomeSel(m[1]), m[2]); else render(); },
+  'ric-fit-tipo'(el) { const f = UI.ric, g = giraSel(f.fit, el.dataset.v, momentoFit), m = momentoFit(el.dataset.v); f.fit = g.v; salvaFiltri(); render(); },   // solo filtro: sul web col tasto «Cerca altre» (Mario 11/11)
   'ric-tempo'(el) { const v = Number(el.dataset.v); UI.ric.tempo = UI.ric.tempo === v ? 0 : v; salvaFiltri(); render(); },
   'ric-diff'(el) { UI.ric.diff = UI.ric.diff === el.dataset.v ? '' : el.dataset.v; salvaFiltri(); render(); },
   'ric-fit-base'() { salvaParoleFit('', true); },
@@ -1094,7 +1105,7 @@ Object.assign(A, {
   },
   'ric-dico'() {   // detti il piatto o gli ingredienti: si cerca su tutto GialloZafferano
     if (AI.rec) { AI.rec.stop(); return; }
-    ascoltaAI(detto => { const q = String(detto || '').replace(/[.!?]+$/, '').trim(); UI.ric.q = q; if (q.length >= 2) { if (UI.ric.zona === 'fit') cercaFit(q); else A['ric-cerca-gz'](q); } else render(); }, {});
+    ascoltaAI(detto => { const q = String(detto || '').replace(/[.!?]+$/, '').trim(); UI.ric.q = q; if (q.length >= 2 && UI.ric.zona !== 'fit') A['ric-cerca-gz'](q); else render(); }, {});
     mostraToast('Ti ascolto: di\' il piatto o gli ingredienti.'); render();
   },
   'ric-menu'(el) {   // dalla ricetta un piatto nuovo: nome e portata già scritti, Monica sceglie come lo vende e il prezzo
@@ -1147,11 +1158,12 @@ Object.assign(A, {
   },
   'ric-db-turbo'() {   // Mario 08/11 «… caricale»; C136 «a manuale poco alla volta»: N ricette (Solo per te, Mario), il server le legge anche a telefono chiuso e si ferma da solo
     if (RIC.db && RIC.db.turbo && RIC.db.turbo.attivo) return;
+    if (!okConsumo(`Carico ${nCarico()} ricette nuove nell'archivio.`, nCarico())) return;
     chiediRic({ db: 'turbo', n: nCarico() }).then(j => { if (j && j.turbo) { RIC.db = Object.assign({}, RIC.db, { turbo: j.turbo }); mostraToast(`⚡ Parto: carico ${j.turbo.obiettivo} ricette complete, sarde per prime. Ci vogliono pochi minuti; puoi chiudere l'app.`); } else mostraToast('Non riuscito: ' + ((j && j.errore) || 'riprova tra poco')); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e))).finally(() => { RIC.dbOra = 0; render(); });
   },
   'ric-db-cerca'() {
-    if (RIC.dbCerco) return; RIC.dbCerco = true; render();
+    if (RIC.dbCerco || !okConsumo('Cerco adesso ricette nuove per l\'archivio.', 2)) return; RIC.dbCerco = true; render();
     chiediRic({ db: 'cerca' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); RIC.dbUltime = null; mostraToast(j.nuove ? `🔄 Trovate ${j.nuove} ricette nuove.` : '🔄 Giro fatto: niente di nuovo in questa pagina, riprova.'); })
       .catch(e => mostraToast('Non riuscito: ' + (e.message || e)))
       .finally(() => { RIC.dbCerco = false; RIC.dbOra = 0; render(); });
@@ -1163,7 +1175,7 @@ Object.assign(A, {
     else box.scrollIntoView({ behavior: 'instant', block: 'start' });
   },
   'ric-db-controlla'() {
-    if (RIC.dbControllo) return; RIC.dbControllo = true; render();
+    if (RIC.dbControllo || !okConsumo('Rileggo dai siti le ricette dell\'archivio per controllarle (legge anche tutto l\'archivio).', 10)) return; RIC.dbControllo = true; render();
     chiediRic({ db: 'controlla' }).then(j => { RIC.db = j.db; RIC.dbOra = Date.now(); const c = j.controllo; const nO = c.nOriginali || 0, daFare = (c.nMale || 0) + (c.mancanti || 0);
       // C123: niente «ci penso io» finto (PT E17): l'avviso dice cosa è successo davvero, l'elenco col perché è nel riquadro
       mostraToast(daFare ? `🔍 ${c.ok} a posto${nO ? `, ${nO} uguali all'originale` : ''}, ${daFare} ancora da rileggere: ${RIC.db && RIC.db.auto ? 'lo faccio da solo' : 'tocca di nuovo per rileggerne altre 10'}. L'elenco col perché è nel riquadro del database.` : nO ? `✅ ${c.ok} a posto e ${nO} uguali all'originale: su GialloZafferano sono così. L'elenco col perché è nel riquadro del database.` : `✅ Tutte le ${c.totale} ricette sono a posto.`); })
