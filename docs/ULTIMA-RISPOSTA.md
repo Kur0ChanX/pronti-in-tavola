@@ -1,13 +1,11 @@
-# Ultima risposta di Claude (11/11/2026 13:52 ora italiana)
+# Ultima risposta di Claude (11/11/2026 14:48 ora italiana)
 
-Ho capito: sei dentro Cloudflare e vuoi il passo 2.
+La prima raccolta, con le regole nuove, è finita: 200 ricette proteiche, contro le 191 di prima.
 
-───
-👉 DA FARE TU
-A cosa serve: prima di creare il cassetto controlliamo di essere nell'account giusto. L'altra volta è stato creato nell'account sbagliato e non funzionava.
+| Momento | Prima | Adesso |
+|---|---|---|
+| Dolci | 13 | 22 |
+| Merenda | 4 | 23 |
+| Colazione | 3 | 16 |
 
-2. Tocca il menù ☰ in alto a sinistra → **Compute** → **Workers & Pages**.
-3. Guarda l'elenco:
-   - c'è **pronti-in-tavola** → sei nell'account giusto, vai al passo 4;
-   - la pagina è vuota → in alto tocca il nome dell'account (con le freccine ⇕) e scegli l'altro. Se non c'è un altro account, mandami una foto e mi fermo.
-4. Menù ☰ → **Storage & databases** → **Workers …
+Adesso sto rifacendo la raccolta aggiungendo i Blog di GialloZafferano e altre parole da dolce. Quando finisce, faccio il giro delle prove, pubblico e ti mando la foto.
