@@ -69,6 +69,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E61** Sessione nata solo per aspettare Mario: avvio leggero (il contesto parte da ~85k; oltre 180k al primo stop l'attesa lunga fa rifare le consegne). Solo i passi scritti nelle consegne, pensieri corti, niente indagini né uscite lunghe (`list_triggers`, file interi) se non servono.
 - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓» (lì il controllo vuole la domanda intera: «📌 Di cosa parliamo», scelte «1 · …», foto; sennò fa riscrivere e Mario legge due volte).
 - **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
+- **PT E64** Risorsa creata a mano su Cloudflare: prima di dare il passo, far scegliere a Mario l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); errore 10041 = account sbagliato (provato 11/11).
 
 ## Lezioni ereditate da RVC
 - **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.
