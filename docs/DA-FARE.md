@@ -2,7 +2,6 @@
 
 ## 0. Aspetta Mario
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
-- 11/11 · 🟢 Principale 66 · Consegne ferme (controllo FALSO: la mia copia automatica ha il codice C144 non pubblicato, identico alla patch salvata). Scrivi «vai» e apro la #67. A cosa serve: la regola bloccata vuole il tuo ok quando un controllo è falso.
 - 11/11 · 🛑 · 🟢 Principale 66 · C144 «🎬 Ricette video» (201 ricette di Massimo Pietrobon Gobbi, divise per tipo): foto `archivio/foto/2026-11-11-1956-c144-ricette-video-*.png` mandate. Rispondi 1 = va bene, la pubblico · 2 = cambia (dimmi cosa). A cosa serve: pubblicarla come la vuoi tu.
 - 11/11 · 🟢 Principale 65 · C143 + kit: scrivi «ok» e accendo la difesa (ferma i push che pubblicherebbero l'app senza il tuo ok) e aggiorno il kit da 38.16 a 38.26 (serve al PC di casa). File degli hook: serve il tuo ok scritto. A cosa serve: l'errore della #62 non ricapita e il PC di casa entra nei giri.
 - 11/11 · 🟢 Principale 65 · C140 passo 1 a mano: rendi privato il progetto (1 minuto, passi in chat). A cosa serve: nomi dei clienti e tuoi messaggi non più pubblici; il PC di casa diventa sicuro per i giri.
@@ -21,6 +20,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C146 | (Mario 11/11 22:50, foto di «Pancake proteici» di Cookpad: «si ma senza video ne passaggi non hanno senso») Ogni ricetta coi passi nell'app o col video: `docs/lavori-in-corso/c146-ricette-con-passi-o-video.md`. 👁 Lo vedi: Proteiche → una ricetta di Cookpad con «Passo passo» e «▶️ Ascolta» · prova: tua foto | Claude | 🔴 |
 | C145 | (Mario 11/11 ~22:47, foto del reel «beardedscara»: «aggiungi tutti i suoi video di ricette») Secondo youtuber in «🎬 Ricette video»: canale YouTube «Beardedscara ScaraLegacy®», 205 video: `docs/lavori-in-corso/c145-ricette-video-beardedscara.md`. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → riquadro «Beardedscara» con le sue ricette · prova: tua foto | Claude | 🟡 |
 | C144 | (Mario 11/11 sera «tutti i video delle ricette dello youtuber») «🎬 Ricette video»: `docs/lavori-in-corso/c144-ricette-video.md`. Manca: tuo «1» sulle foto, poi patch e pubblicazione. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → «Massimo Pietrobon Gobbi» con tutte le sue ricette video, ognuna col video e le informazioni · prova: tua foto | Claude | 🟡 |
 | C141 | (Mario 11/11 sera; 19:24 «500?») Pagella e stimate: `docs/lavori-in-corso/c141-proteiche-stimate.md`. Manca: tuo «1» sulle foto; più stimate (298 scartate per ingredienti sconosciuti). 👁 Lo vedi: Ricettario → «🏋️ Proteiche»: voto e semaforo su ogni ricetta, più ricette «≈ stimati» · prova: tua foto | Claude | 🟡 |

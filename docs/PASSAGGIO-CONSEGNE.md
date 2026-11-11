@@ -4,7 +4,7 @@ Sessione attuale: #67 (dopo la #66 `session_01WTjqUup234iNMuPGR7huag`, chiusa al
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (11/11 #66, 22:47):** 1) C145: «aggiungi tutti i suoi video di ricette» di **Beardedscara** (canale YouTube trovato, 205 video: `docs/lavori-in-corso/c145-ricette-video-beardedscara.md`), nella stessa sezione di C144; 2) 🛑 foto di C144 «🎬 Ricette video» (mandate 19:57, non ancora risposto); 3) C140 = 3: passo 1 (rendere privato) e ok per `.claude/`; 4) 🛑 pagella C141.
+- **Cosa preme a Mario adesso (11/11 #66, 22:50):** 1) C146: «senza video né passaggi non hanno senso» (foto di una stimata di Cookpad): passi dalla fonte dentro l'app, le altre fuori (`docs/lavori-in-corso/c146-ricette-con-passi-o-video.md`); 2) C145 Beardedscara (205 video) nella sezione di C144; 3) 🛑 foto di C144 (non ancora risposto); 4) C140 passo 1 e ok `.claude/`; 5) 🛑 pagella C141.
 
 ## Stato (11/11 22:47 ora italiana)
 - Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261111-01WTjqUup234/claude/pronti-ramo-definitivo.
@@ -39,6 +39,7 @@ Sessione attuale: #67 (dopo la #66 `session_01WTjqUup234iNMuPGR7huag`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
+00. Avvio: Mario 22:50 «si» letto come «vai» (DOMANDA 2): la #66 ha aperto la #67 con la scorta = patch C144 (controllo FALSO accettato). Dirlo a Mario in una riga. Poi C146 per primo (Mario lo boccia così com'è: «non hanno senso»), poi C145, poi una sola serie di foto per C144+C145+C146.
 0b. C145 (Mario 22:47): `CANALI` + rilancio con `--elenco` e lettura a occhio del suo canale; `ricette-video.js` nuovo dentro la patch di C144 (rifarla), foto in più col secondo riquadro; una domanda sola a Mario per C144+C145.
 0. Consegne FERME alla fase 4 (`consegne.py controlla`: «scorta non unita» FALSO; la scorta della #66 ha il codice C144 = patch, 6 file su 6 identici, controllato in una copia di lavoro). DOMANDA 2 a Mario: «1/vai» → la #66 apre la #67 con `create_session`; «2» → la #66 pubblica al «1» delle foto e poi passa. DOMANDA 3: «1» → `tools/consegne.py`: una scorta i cui file diversi sono uguali a HEAD + una patch di `docs/lavori-in-corso/` conta come salvata (prova nuova).
 1. 🛑 Mario risponde sulle foto C144: «1» → `git apply docs/lavori-in-corso/c144-app.patch`, `python3 -I tools/anteprima.py`, giro completo `node tools/prova.js` (0 «NO»), commit e push (pubblica), `curl` di `ricette-video.js` dal sito, `git rm` della patch, v0.10.24 con le novità; «2» → cambiare quello che dice, nuove foto.
@@ -47,11 +48,11 @@ Sessione attuale: #67 (dopo la #66 `session_01WTjqUup234iNMuPGR7huag`, chiusa al
 4. Foto della pagella (C141): «1» → più stimate (`tools/stima.py`, ingredienti sconosciuti) e togliere «Fulldayofeating» dalle Proteiche (giornata di pasti, non ricetta); «2» → cambiare.
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 15; 🛑 foto C144 e C141). Controllo Da fare: 1 voce aggiunta (C145, Mario 22:47).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 14; 🛑 foto C144 e C141). Controllo Da fare: 2 voci aggiunte (C145 22:46, C146 22:50).
 
 ## Ultimo messaggio di Mario
-11/11 ~22:47, parola per parola (con una foto in chat, non salvata: storia Instagram con un reel di «beardedscara», Kürtőskalács): «aggiungi tutti  i suoi video di ricette» → C145. Non ha ancora risposto alle DOMANDE 1-3 della #66 (foto C144, «vai», controllo scorta).
-Prima: 19:33 «mettimi se puoi tutti i video delle ricette dello youtuber…» → C144.
+11/11 22:50, parola per parola (con 2 foto del suo telefono, v0.10.23, «Pancake proteici» di Cookpad: ingredienti e valori con pagella, `archivio/foto/2026-11-11-2250-mario-stimata-cookpad-*.jpg`): «si ma senza video ne passaggi non hanno senso» → C146; «si» = «vai» per la #67.
+Prima: 22:46 «aggiungi tutti  i suoi video di ricette» (foto del reel di «beardedscara») → C145.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C146; prossimo M libero: M1.
@@ -63,7 +64,8 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
 - 2026-11-11 19:42 · [AVVIO] Sessione #66 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; C144 pezzi 1-3 (commit 0980c080, 8df758ba)
 - 2026-11-11 22:46 · aggiungi tutti i suoi video di ricette → C145 (canale YouTube di Beardedscara trovato; piano per la #67)
+- 2026-11-11 22:50 · si ma senza video ne passaggi non hanno senso → C146 (piano per la #67); «si» = «vai», #67 aperta
 
 Ultimo, intero:
-> aggiungi tutti  i suoi video di ricette
+> si ma senza video ne passaggi non hanno senso
 
