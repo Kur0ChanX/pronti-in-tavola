@@ -1,16 +1,15 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:35 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
-
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
+Ho capito: vuoi creare la chiave per leggere tutte le ricette di Pietrobon.
 
 ───
-✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
+👉 DA FARE TU
+A cosa serve: con la chiave leggo tutti i suoi 881 video, non solo gli ultimi 15. È gratis: Google dà 10.000 letture al giorno e a me ne servono circa 20.
 
-───
-💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+1. Apri questo link e accedi col tuo account Google: [console.cloud.google.com/projectcreate](https://console.cloud.google.com/projectcreate)
+2. Come nome del progetto scrivi:
+```
+pronti-in-tavola
+```
+Poi tocca «Crea» e aspetta qualche secondo.
+3. Apri questo link e tocca «Abilita»: [YouTube Data API …
