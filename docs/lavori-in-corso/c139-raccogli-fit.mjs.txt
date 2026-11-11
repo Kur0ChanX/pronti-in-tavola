@@ -22,7 +22,8 @@ const PAROLE_GZ = ['dolci proteici', 'pancake proteici', 'torta proteica', 'muff
   'cheesecake proteica', 'brownies proteici', 'biscotti proteici', 'porridge proteico', 'overnight oats', 'yogurt greco', 'skyr',
   'ricotta light', 'frullato proteico', 'mousse proteica', 'gelato proteico', 'plumcake proteico', 'crepes proteiche',
   'colazione proteica', 'snack proteici', 'merenda proteica', 'albumi', 'fiocchi di latte', 'ricette proteiche', 'secondi proteici',
-  'pollo light', 'tacchino light', 'pesce light', 'ricette light'];
+  'pollo light', 'tacchino light', 'pesce light', 'ricette light',
+  'dolci senza zucchero', 'dolci light', 'dolci con albumi', 'dolci con ricotta', 'dolci con yogurt', 'crema di ricotta', 'semifreddo yogurt', 'frittelle di albumi', 'muffin salati', 'snack salati light'];
 fs.mkdirSync(CACHE, { recursive: true });
 
 /* la regola dell'app, presa dal codice vero (un posto solo: se Mario cambia le soglie di base, questo le segue) */
@@ -74,6 +75,7 @@ for (const [u, chi] of cand) {
   const h = pagina(u); if (!h) continue;
   let r = null; try { r = chi === 'rf' ? rfRicetta(h, u) : gzRicetta(h, u); } catch (e) { continue; }
   if (!r || !r.id || !r.nome || giaApp.has(r.id)) continue;
+  if (/^(fondo|brodo|salsa|dado|marinatura|besciamella)\b/i.test(r.nome.trim())) continue;   // basi di cucina, non piatti da mangiare (es. «Fondo bruno»)
   if (!r.nutr) { senzaValori++; continue; }
   const nu = r.nutr, nutr = { kcal: nu.kcal, prot: nu.prot, carb: nu.carb, zuc: nu.zuc, saturi: nu.saturi, sodio: nu.sodio };
   const tipo = R.fitRic(nutr); if (!tipo) { nonFit++; continue; }
