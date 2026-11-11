@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #59 (dopo la #58 `session_01WTjqUtkYeeZHD4f7DVbw4V`, chiusa alla soglia 11/11 12:55; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
+Sessione attuale: #59 (dopo la #58 `session_01WTjqUtkYeeZHD4f7DVbw4V`, chiusa alla soglia 11/11 12:55; la apre la #58 con `create_session`: `session_01WTjqUwA2q291z3N1uEMDoL`, catena 7 di 8).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
