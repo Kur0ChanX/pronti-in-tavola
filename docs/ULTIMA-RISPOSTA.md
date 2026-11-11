@@ -1,16 +1,7 @@
-# Ultima risposta di Claude (11/11/2026 16:45 ora italiana)
+# Ultima risposta di Claude (11/11/2026 17:56 ora italiana)
 
-Ho capito: nelle Proteiche vedi sempre le stesse ricette e pochissimi dolci.
+Ho aperto una sessione di prova («📗 Aiuto 11»). Questa non legge la chiave, quella nuova sì.
 
-🧠 Continuo con Opus 5.5 · Medio, come la sessione precedente.
+Fa una sola domanda a YouTube e mi manda la risposta. Non mostra mai la chiave.
 
-───
-✅ FATTO
-- È normale: il tuo telefono ha ancora la **v0.10.22**. Si legge in alto nella Home: «v0.10.22 14:06».
-- La versione nuova **v0.10.23** è andata online alle 15:20, cioè dopo le tue foto delle 15:05.
-- L'ho controllato sul sito vero: ora c'è la v0.10.23, con 200 proteiche e circa 20 dolci.
-- Ho salvato la tua foto in `archivio/foto/` su GitHub.
-
-───
-💡 PARERE
-- I dolci passano da 4-5 a circa 20 perché si applica la regola «2» che hai scelto: …
+Appena arriva l'esito ti dico se la chiave funziona. Tu non devi fare niente.
