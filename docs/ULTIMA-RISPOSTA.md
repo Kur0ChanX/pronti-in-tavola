@@ -1,12 +1,26 @@
-# Ultima risposta di Claude (12/11/2026 18:26 ora italiana)
+# Ultima risposta di Claude (12/11/2026 18:45 ora italiana)
 
-🧠 Continuo con Opus 5.5 · impegno Extra, come la sessione precedente (controllato).
+Ho capito: vuoi i video dentro l'app, col lettore vero di YouTube, e una lista di altri creatori di ricette fitness da cui prendere ricette.
+🧠 Opus · Extra
 
-🛑 DOMANDA 5: le ricette video e le proteiche coi passi (C144-C147) vanno online solo col tuo «1».
-🛑 Pagella delle Proteiche (C141): è già online e aspetta il tuo «1» sulle foto.
-🛑 Salvagente 4: per il PC di casa come riserva scegli 1, 2, 3 o 4.
+🛑 DOMANDA 5 aspetta ancora il tuo «1»: il lettore che chiedi è lì dentro.
 
 ───
 ✅ **FATTO**
-- Sessione 69 avviata. Il ramo è pari a GitHub e nessuna sveglia è rimasta da sistemare.
-- La lista dei lavori era oltre il limite di grandezza: da 42,8 a 38,8 KB. Ho tolto la storia di 25 voci aperte e l'ho spostata nell'archivio, senza perdere …
+- **Il lettore video si può fare, ed è già pronto.** È il lettore vero di YouTube, dentro la finestra dell'app, senza aprire altre pagine. Ha i suoi tasti: sottotitoli, qualità e schermo intero. Va online col tuo «1» alla DOMANDA 5.
+- L'app non blocca la rotazione del telefono. Quindi lo schermo intero dovrebbe funzionare sia in orizzontale sia in …
+
+## Domande a Mario
+
+❓ **DOMANDE**
+
+🛑 **DOMANDA 6 · Quali creatori aggiungo?**
+A cosa serve: tante ricette proteiche nuove, coi passi, accanto a Pietrobon e Beardedscara.
+
+| N | Chi | Dove prendo le ricette | Quanto è grande | Lingua |
+|---|---|---|---|---|
+| 1 | Giuseppe Healthy | sito con ricette scritte | 3,7 milioni di follower | 🇮🇹 |
+| 2 | Fit with Fun | sito, sezione «Ricette Proteiche» | 10 anni di ricette | 🇮🇹 |
+| 3 | Cotto al Dente | YouTube | 1.800 video | 🇮🇹 |
+| 4 | Iamfitandsweet | sito, soprattutto dolci fit | 267 mila su Instagram | 🇮🇹 |
+| 5 | 2foodfitlovers | YouTube (tante recensioni) | 1.900 …
