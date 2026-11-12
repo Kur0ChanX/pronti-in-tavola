@@ -48,7 +48,7 @@ Sessione attuale: #69 (dopo la #68 `session_01WTjqUvnPKs9PdHZ3iDVS3f`, chiusa al
 4. DOMANDA 1 della #65 «1» → patch C143 (`git apply docs/lavori-in-corso/c143-guardia.patch && python3 -I tools/test-guardia.py`) e kit 38.26.
 4b. Se Mario scrive che una ricetta di RicetteFit si apre vuota: il server la legge con `leggiRf` (`worker.js`, `rf.mjs`); il lettore funziona dal contenitore (2 ricette vere, #68), quindi guardare la lettura del server.
 5. Foto della pagella (C141): «1» → più stimate e togliere «Fulldayofeating» dalle Proteiche.
-6. `docs/DA-FARE.md` è 42 KB (tetto 40): spostare le voci chiuse in `docs/DA-FARE-FATTE.md`.
+6. FATTO #69 (commit d2c446cf): `docs/DA-FARE.md` 42,8 → 38,8 KB; voci chiuse non ce n'erano, tolta la storia di 25 voci aperte (in fondo a `docs/DA-FARE-FATTE.md`).
 
 ## Domande aperte
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 14; 🛑 foto C144 e C141). Controllo Da fare: 0 voci aggiunte (Mario 18:13 è dentro C146).
