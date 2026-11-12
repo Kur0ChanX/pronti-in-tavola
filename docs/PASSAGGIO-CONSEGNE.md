@@ -68,6 +68,7 @@ Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o
 - 2026-11-12 18:41 (nella #68) · Una domanda, non puoi mettere un play nei video… → C147 (nota, commit 73fe8662), C148 lista e DOMANDA 6 (commit 3a09295d)
 - 2026-11-12 18:54 (nella #68) · solo ricette con i passi o con un video mettili… → risposta alla DOMANDA 6 (C148), consegne aggiornate dalla #69
 - 2026-11-12 20:00 · sono italiani tutti direi → risposta alla DOMANDA 6: i creatori italiani (C148), consegne aggiornate dalla #69
+- 2026-11-12 ~20:05 · solo → messaggio di una parola, forse tagliato: chiesto a Mario cosa intendeva (PT E3); se non risponde, vale la scelta di prima (C148, 5 italiani)
 
 Ultimo, intero:
 > [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
