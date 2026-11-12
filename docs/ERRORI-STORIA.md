@@ -118,3 +118,9 @@ Con le 191 proteiche nuove la foto di «🌅 Colazione» mostrava «Pollo allo y
 
 ## PT E72 (12/11, #68)
 Mario 18:13 «falle accuratamente una per una»: nel controllo delle 206 stimate due ricette avevano nei passi frasi di pubblicità copiate dal sito (link a un'altra ricetta su Cookpad; pagina Facebook e profilo Instagram di un blog). Causa: `passi_ld` copiava i passi così come sono. Difesa: `senza_pubblicita` in `tools/raccogli_stimate.py` (anche `--pulisci`, senza rete) e la prova C141 che ferma link e social nei passi.
+
+## PT E33 (riga corta dalla #69)
+Ricapitato (#63 «~20:06» alle 19:06): `consegne.py controlla` ferma i «gg/mm ~HH:MM» nel futuro.
+
+## PT E73 (12/11, #69)
+DOMANDA 6 (C148): nella scelta 1 «i 6 italiani» c'era MattsfitChef, italiano ma con le ricette in inglese; Mario ha risposto «sono italiani tutti direi». Difesa: prima di mandare scelte numerate, ricontrollare ogni nome con la tabella.

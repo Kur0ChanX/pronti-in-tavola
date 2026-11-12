@@ -39,7 +39,7 @@ Sessione attuale: #70 (dopo la #69 `session_01WTjqUxxnTzNis39N5xRv3s`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-00. Aspettare Mario: DOMANDA 5 (patch c144, anche il lettore che chiede alle 18:41) e DOMANDA 6 (C148, creatori). Non rifarle finché non scrive (hook delle domande ripetute).
+00. Aspettare Mario: DOMANDA 5 (patch c144, anche il lettore che chiede alle 18:41). DOMANDA 6 risolta (20:00): C148 si può fare subito (passo 6). Non rifarle finché non scrive (hook delle domande ripetute).
 ⛔ NON unire le scorte `scorta-principale-20261111-01WTjqUup234` (#66) e quella della #67 (`01WTjqUwz4`): contengono codice dell'app NON approvato (= `c144-app.patch`); unirle e fare push PUBBLICA l'app (PT E69).
 1. FATTO #68 (12/11 00:14 e 18:20): foto `archivio/foto/2026-11-12-0014-c144-c147-1..3.png` mandate, DOMANDA 5 🛑 a Mario; patch ritoccata (testo «tocca la foto e il video parte»), `SOLO=C14` verde. Video: nel contenitore «autoplay» non parte (ipotesi robot, `c147-video-dalla-foto.md`), la prova è sull'Android di Mario.
 2. Al «1» di Mario: `git apply` della patch, anteprima, giro completo `node tools/prova.js` (0 «NO»), commit e push (pubblica), `curl` di `ricette-video.js` e `ricette-stimate.js` dal sito, `git rm` della patch, v0.10.24 con le novità; Mario prova C147 sul suo Android (YouTube dentro l'app).
@@ -47,14 +47,14 @@ Sessione attuale: #70 (dopo la #69 `session_01WTjqUxxnTzNis39N5xRv3s`, chiusa al
 4. DOMANDA 1 della #65 «1» → patch C143 (`git apply docs/lavori-in-corso/c143-guardia.patch && python3 -I tools/test-guardia.py`) e kit 38.26.
 4b. Se Mario scrive che una ricetta di RicetteFit si apre vuota: il server la legge con `leggiRf` (`worker.js`, `rf.mjs`); il lettore funziona dal contenitore (2 ricette vere, #68), quindi guardare la lettura del server.
 5. Foto della pagella (C141): «1» → più stimate e togliere «Fulldayofeating» dalle Proteiche.
-6. DOMANDA 6 (C148): Mario 18:54 «mettili» con 2 condizioni (solo coi passi o col video; ricerca per youtuber o per sito, anche in Proteiche e stimate). Prima una riga: «tutti e 9 o i 6 italiani?». Poi → per ogni creatore scelto: regole del sito (robots.txt, condizioni d'uso) e grammi negli ingredienti; sito → come `tools/raccogli_stimate.py`, YouTube → come `tools/raccogli_video.py` (API); patch in `docs/lavori-in-corso/`, foto a Mario prima di pubblicare (PT E69).
+6. C148 (Mario 18:54 e 20:00): i 5 creatori italiani (Giuseppe Healthy, Fit with Fun, Cotto al Dente, Iamfitandsweet, 2foodfitlovers). Per ognuno: regole del sito (robots.txt, condizioni d'uso), solo ricette coi passi o col video; sito → come `tools/raccogli_stimate.py`, YouTube → come `tools/raccogli_video.py` (API); ricerca per youtuber o per sito anche in Proteiche e stimate; patch in `docs/lavori-in-corso/`, foto a Mario prima di pubblicare (PT E69). Indipendente dalla DOMANDA 5, ma tocca gli stessi file della patch c144: lavorare sopra la patch.
 7. Dopo il «1» alla DOMANDA 5, sull'Android di Mario: schermo intero orizzontale e verticale e zoom con due dita dentro il lettore (ipotesi: lo zoom potrebbe mancare).
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 15; 🛑 DOMANDA 5, DOMANDA 6, C141). Controllo Da fare: 1 voce aggiunta (C148, Mario 18:41; la parte del lettore è C147).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 14; 🛑 DOMANDA 5, C141). Controllo Da fare: 1 voce aggiunta (C148, Mario 18:41; la parte del lettore è C147).
 
 ## Ultimo messaggio di Mario
-12/11 18:54, scritto nella #68 (passato alla #69 dopo le consegne), parola per parola: «solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito» → risposta alla DOMANDA 6 (C148): solo ricette coi passi o col video, ricerca per youtuber o per sito; manca «tutti e 9 o 1+2+3?» (una riga, PT E3). Prima, 18:41: lettore YouTube (C147) e lista creatori (C148), testo intero in `docs/lavori-in-corso/c148-lista-creatori-fitness.md`.
+12/11 20:00, scritto nella #69 dopo le consegne, parola per parola: «sono italiani tutti direi» → DOMANDA 6 risolta: scelta 1, i creatori italiani (5, MattsfitChef fuori perché in inglese, PT E73). Prima, 18:54: «solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito». Tutto in `docs/lavori-in-corso/c148-lista-creatori-fitness.md`.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C149; prossimo M libero: M1.
@@ -67,6 +67,7 @@ Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o
 - 2026-11-12 18:22 · [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; Da fare snellito (commit d2c446cf)
 - 2026-11-12 18:41 (nella #68) · Una domanda, non puoi mettere un play nei video… → C147 (nota, commit 73fe8662), C148 lista e DOMANDA 6 (commit 3a09295d)
 - 2026-11-12 18:54 (nella #68) · solo ricette con i passi o con un video mettili… → risposta alla DOMANDA 6 (C148), consegne aggiornate dalla #69
+- 2026-11-12 20:00 · sono italiani tutti direi → risposta alla DOMANDA 6: i creatori italiani (C148), consegne aggiornate dalla #69
 
 Ultimo, intero:
 > [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
