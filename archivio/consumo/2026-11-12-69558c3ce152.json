@@ -2,20 +2,21 @@
 "account": "108763",
 "sessione": "69558c3ce152",
 "giorno": "2026-11-12",
-"turni": 2,
-"peso": 859512,
-"uscita": 33808,
-"contesto_max": 242183,
+"turni": 3,
+"peso": 995736,
+"uscita": 37141,
+"contesto_max": 281260,
 "anomalie": [],
 "remota": "01WTjqUxxnTz",
 "aiutanti": 0,
-"strumenti": 42,
+"strumenti": 45,
 "motori": {
-"opus": 859512
+"opus": 995736
 },
 "blocchi": {
 "Stop 5 · Foto e video (E240, E247;": 1,
-"Stop 12 · Ti fermi ad aspettare Mario": 1
+"Stop 12 · Ti fermi ad aspettare Mario": 1,
+"Stop 5 · Domanda a Mario poco chiara": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Foto e video (E240, E247;": [
@@ -23,6 +24,9 @@
 ],
 "Stop 12 · Ti fermi ad aspettare Mario": [
 "18:45 · Ti fermi ad aspettare Mario con il contesto a 242k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"18:55 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
 ]
 }
 }

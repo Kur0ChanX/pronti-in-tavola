@@ -2,11 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 17:02 · 01WTjqUv8dDc
-Devo pagare io i tuoi sbagli? ti sei matto
-ti avevo detto di non mettere blocchi ma se qualcosa segnava piú del dovuto dovevi avvisarmi ora metti i blocchi cosí è facile oppure che devo pagare.... non va bene cosí
-L'app deve funzionare risolvi ora io non ho soldi ti avviso
-
 ## 2026-11-10 17:05 · 01WTjqUv8dDc
 Aggiungiamo un account inventato qualcosa ho l'app fermaaaaaaaaaaa
 
@@ -124,3 +119,6 @@ Una domanda, non puoi mettere un play nei video e mette un player sempre che gua
 
 ## 2026-11-12 18:54 · 01WTjqUvnPKs
 solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito
+
+## 2026-11-12 20:00 · 01WTjqUxxnTz
+sono italiani tutti direi
