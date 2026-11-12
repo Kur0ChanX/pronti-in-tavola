@@ -2,16 +2,16 @@
 "account": "108763",
 "sessione": "69558c3ce152",
 "giorno": "2026-11-12",
-"turni": 2,
-"peso": 859512,
-"uscita": 33808,
-"contesto_max": 242183,
+"turni": 3,
+"peso": 995736,
+"uscita": 37141,
+"contesto_max": 281260,
 "anomalie": [],
 "remota": "01WTjqUxxnTz",
 "aiutanti": 0,
-"strumenti": 42,
+"strumenti": 45,
 "motori": {
-"opus": 859512
+"opus": 995736
 },
 "blocchi": {
 "Stop 5 · Foto e video (E240, E247;": 1,
