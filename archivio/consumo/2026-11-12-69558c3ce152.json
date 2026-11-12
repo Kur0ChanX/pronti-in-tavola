@@ -2,16 +2,16 @@
 "account": "108763",
 "sessione": "69558c3ce152",
 "giorno": "2026-11-12",
-"turni": 5,
-"peso": 1130801,
-"uscita": 39041,
-"contesto_max": 307316,
+"turni": 6,
+"peso": 1628623,
+"uscita": 41807,
+"contesto_max": 312732,
 "anomalie": [],
 "remota": "01WTjqUxxnTz",
 "aiutanti": 0,
-"strumenti": 48,
+"strumenti": 51,
 "motori": {
-"opus": 1130801
+"opus": 1628623
 },
 "blocchi": {
 "Stop 5 · Foto e video (E240, E247;": 1,
@@ -32,5 +32,7 @@
 "Stop 8 · Promessa a Mario senza voce": [
 "20:02 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «MattsfitChef lo aggiungo solo se me lo dici, perché le sue ricette andrebbero tradotte». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <d"
 ]
-}
+},
+"memoria_scaduta": 1,
+"ricreati": 309752
 }
