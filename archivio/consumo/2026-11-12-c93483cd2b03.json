@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "c93483cd2b03",
 "giorno": "2026-11-12",
-"turni": 2,
-"peso": 1212334,
-"uscita": 32536,
-"contesto_max": 226344,
+"turni": 3,
+"peso": 1347190,
+"uscita": 34845,
+"contesto_max": 269558,
 "anomalie": [
 "1 uscite di strumento enormi (75 KB la più grande): leggere a pezzi (grep -n, sed -n)",
 "32k token scritti in un turno"
@@ -28,9 +28,9 @@
 },
 "remota": "01WTjqUvnPKs",
 "aiutanti": 0,
-"strumenti": 46,
+"strumenti": 49,
 "motori": {
-"opus": 1212334
+"opus": 1347190
 },
 "memoria_scaduta": 1,
 "ricreati": 112665

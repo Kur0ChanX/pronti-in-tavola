@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 16:54 · 01WTjqUv8dDc
-trovami ler forza adesso soluzioni per far funzionare l'app al 100% me lo merito per i tuoi errori
-
 ## 2026-11-10 17:02 · 01WTjqUv8dDc
 Devo pagare io i tuoi sbagli? ti sei matto
 ti avevo detto di non mettere blocchi ma se qualcosa segnava piú del dovuto dovevi avvisarmi ora metti i blocchi cosí è facile oppure che devo pagare.... non va bene cosí
@@ -124,3 +121,6 @@ Perché in messa è scritto solo le ricette di giallo zafferano e quelle proteic
 
 ## 2026-11-12 18:41 · 01WTjqUvnPKs
 Una domanda, non puoi mettere un play nei video e mette un player sempre che guarda non in locale, però che guarda direttamente il video su YouTube direttamente da quel player, senza che mi apra un'altra pagina che posso mettere magari schermo intero, magari mi interessa. Schermo intero e sottotitoli, il classico banner di YouTube, sottotitoli, la qualità della risoluzione, le classiche cose di YouTube, però che mi apre un player direttamente lì, direttamente in quella finestra. Io posso cliccare, zoomare, fare schermo intero in orizzontale o schermo intero in verticale. Puoi farlo. E poi dimmi se ci sono altri influencer, youtuber, tiktoker che fanno tantissime ricette fitness, che si inventano molte ricette. Fammi una lista e valutiamo chi possiamo inserire, quale di questi possiamo inserire per prenderli le ricette e portarcele da noi.
+
+## 2026-11-12 18:54 · 01WTjqUvnPKs
+solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito
