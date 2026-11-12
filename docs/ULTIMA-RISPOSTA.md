@@ -1,12 +1,14 @@
-# Ultima risposta di Claude (12/11/2026 18:55 ora italiana)
+# Ultima risposta di Claude (12/11/2026 20:02 ora italiana)
 
+Ho capito: metto i creatori italiani.
 
+Ho salvato la tua risposta nelle consegne su GitHub. Passa alla sessione nuova, che la troverà appena la apri coi passi di prima.
 
-## Domande a Mario
+⚠️ Errore mio nella domanda: tra gli italiani avevo messo MattsfitChef. Lui è italiano, ma sul suo sito le ricette sono in inglese. Quindi entrano in 5:
+- Giuseppe Healthy
+- Fit with Fun
+- Cotto al Dente
+- Iamfitandsweet
+- 2foodfitlovers
 
-❓ **DOMANDA 6 · Quanti creatori aggiungo?**
-📌 Di cosa parliamo: le ricette dei creatori fitness della lista di prima, da mettere nel Ricettario. Entrano solo quelle coi passi o col video, e potrai cercarle per youtuber o per sito. Mi serve sapere quanti metterne prima di partire.
-
-1 · I 6 italiani: Giuseppe Healthy, Fit with Fun, Cotto al Dente, Iamfitandsweet, 2foodfitlovers, MattsfitChef. Ricette subito in italiano, nessuna traduzione. **(consiglio)**
-2 · Tutti e 9, anche i 3 inglesi. Più ricette, ma vanno tradotte, e nella traduzione si possono sbagliare dosi e passi.
-3 · Solo 1 + 2 + 3: …
+MattsfitChef lo aggiungo solo se me lo dici, perché le sue ricette andrebbero tradotte. Ho scritto la lezione nel diario degli errori: prima di mandarti delle scelte ricontrollo ogni nome.

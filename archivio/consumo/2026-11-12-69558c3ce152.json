@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "69558c3ce152",
 "giorno": "2026-11-12",
-"turni": 3,
+"turni": 4,
 "peso": 995736,
 "uscita": 37141,
-"contesto_max": 281260,
+"contesto_max": 304128,
 "anomalie": [],
 "remota": "01WTjqUxxnTz",
 "aiutanti": 0,
@@ -16,7 +16,8 @@
 "blocchi": {
 "Stop 5 · Foto e video (E240, E247;": 1,
 "Stop 12 · Ti fermi ad aspettare Mario": 1,
-"Stop 5 · Domanda a Mario poco chiara": 1
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 8 · Promessa a Mario senza voce": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Foto e video (E240, E247;": [
@@ -27,6 +28,9 @@
 ],
 "Stop 5 · Domanda a Mario poco chiara": [
 "18:55 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"20:02 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «MattsfitChef lo aggiungo solo se me lo dici, perché le sue ricette andrebbero tradotte». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <d"
 ]
 }
 }
