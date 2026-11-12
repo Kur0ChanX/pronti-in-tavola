@@ -20,6 +20,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C148 | (Mario 12/11 18:41 «dimmi se ci sono altri influencer, youtuber, tiktoker che fanno tantissime ricette fitness… fammi una lista e valutiamo») Lista da valutare: `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. 👁 Lo vedi: in chat la lista; poi i creatori scelti in «🎬 Ricette video» · prova: tua scelta, poi tua foto | Claude | 🟡 |
 | C147 | (Mario 11/11 22:54, foto dello «Spumone» di YouTube: «metti i video che partono da lì») Foto delle novità dei video (C144-C147 insieme) e una sola domanda per pubblicarle: dalla Principale 68. Video dalla foto, dentro l’app: `docs/lavori-in-corso/c147-video-dalla-foto.md`. 👁 Lo vedi: Proteiche → «Spumone» → tocchi la foto e il video parte · prova: tua foto | Claude | 🔴 |
 | C146 | (Mario 11/11 22:50, foto di «Pancake proteici» di Cookpad: «si ma senza video ne passaggi non hanno senso») Passi nell'app o video: `docs/lavori-in-corso/c146-ricette-con-passi-o-video.md`. 12/11: controllate una per una (#68), nella DOMANDA 5. 👁 Lo vedi: Proteiche → una ricetta di Cookpad con «Passo passo» e «▶️ Ascolta» · prova: tua foto | Claude | 🔴 |
 | C145 | (Mario 11/11 ~22:47, foto del reel «beardedscara»: «aggiungi tutti i suoi video di ricette») Secondo youtuber in «🎬 Ricette video»: canale YouTube «Beardedscara ScaraLegacy®», 205 video: `docs/lavori-in-corso/c145-ricette-video-beardedscara.md`. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → riquadro «Beardedscara» con le sue ricette · prova: tua foto | Claude | 🟡 |
