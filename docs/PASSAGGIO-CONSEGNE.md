@@ -47,14 +47,14 @@ Sessione attuale: #70 (dopo la #69 `session_01WTjqUxxnTzNis39N5xRv3s`, chiusa al
 4. DOMANDA 1 della #65 «1» → patch C143 (`git apply docs/lavori-in-corso/c143-guardia.patch && python3 -I tools/test-guardia.py`) e kit 38.26.
 4b. Se Mario scrive che una ricetta di RicetteFit si apre vuota: il server la legge con `leggiRf` (`worker.js`, `rf.mjs`); il lettore funziona dal contenitore (2 ricette vere, #68), quindi guardare la lettura del server.
 5. Foto della pagella (C141): «1» → più stimate e togliere «Fulldayofeating» dalle Proteiche.
-6. C148 (Mario 18:54 e 20:00): i 5 creatori italiani (Giuseppe Healthy, Fit with Fun, Cotto al Dente, Iamfitandsweet, 2foodfitlovers). Per ognuno: regole del sito (robots.txt, condizioni d'uso), solo ricette coi passi o col video; sito → come `tools/raccogli_stimate.py`, YouTube → come `tools/raccogli_video.py` (API); ricerca per youtuber o per sito anche in Proteiche e stimate; patch in `docs/lavori-in-corso/`, foto a Mario prima di pubblicare (PT E69). Indipendente dalla DOMANDA 5, ma tocca gli stessi file della patch c144: lavorare sopra la patch.
+6. C148 (Mario 18:54, 20:00, 21:27): tutti i creatori italiani (Giuseppe Healthy, Fit with Fun, Cotto al Dente, Iamfitandsweet, 2foodfitlovers, MattsfitChef); gli inglesi solo se la traduzione viene bene (prova su poche, foto a Mario). Per ognuno: regole del sito (robots.txt, condizioni d'uso), solo ricette coi passi o col video; sito → come `tools/raccogli_stimate.py`, YouTube → come `tools/raccogli_video.py` (API); ricerca per youtuber o per sito anche in Proteiche e stimate; patch in `docs/lavori-in-corso/`, foto a Mario prima di pubblicare (PT E69). Indipendente dalla DOMANDA 5, ma tocca gli stessi file della patch c144: lavorare sopra la patch.
 7. Dopo il «1» alla DOMANDA 5, sull'Android di Mario: schermo intero orizzontale e verticale e zoom con due dita dentro il lettore (ipotesi: lo zoom potrebbe mancare).
 
 ## Domande aperte
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 14; 🛑 DOMANDA 5, C141). Controllo Da fare: 1 voce aggiunta (C148, Mario 18:41; la parte del lettore è C147).
 
 ## Ultimo messaggio di Mario
-12/11 20:00, scritto nella #69 dopo le consegne, parola per parola: «sono italiani tutti direi» → DOMANDA 6 risolta: scelta 1, i creatori italiani (5, MattsfitChef fuori perché in inglese, PT E73). Prima, 18:54: «solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito». Tutto in `docs/lavori-in-corso/c148-lista-creatori-fitness.md`.
+12/11 21:27, scritto nella #69 dopo le consegne, parola per parola: «solo tutti italiani e se si traducono bene metti anche quelle inglesi» → C148: tutti gli italiani (anche MattsfitChef) e gli inglesi se la traduzione viene bene (prova su poche ricette, foto a Mario). Prima: 20:00 «sono italiani tutti direi», 18:54 «solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito». Tutto in `docs/lavori-in-corso/c148-lista-creatori-fitness.md`.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C149; prossimo M libero: M1.
@@ -69,6 +69,7 @@ Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o
 - 2026-11-12 18:54 (nella #68) · solo ricette con i passi o con un video mettili… → risposta alla DOMANDA 6 (C148), consegne aggiornate dalla #69
 - 2026-11-12 20:00 · sono italiani tutti direi → risposta alla DOMANDA 6: i creatori italiani (C148), consegne aggiornate dalla #69
 - 2026-11-12 20:02 · solo → messaggio di una parola, forse tagliato: chiesto a Mario cosa intendeva (PT E3); se non risponde, vale la scelta di prima (C148, 5 italiani)
+- 2026-11-12 21:27 · solo tutti italiani e se si traducono bene metti anche quelle inglesi → C148 scelta finale, consegne aggiornate dalla #69
 
 Ultimo, intero:
 > [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).

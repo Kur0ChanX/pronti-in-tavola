@@ -35,3 +35,6 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
 - 12/11 20:00 Mario (nella #69, dopo le consegne), alla DOMANDA 6 riscritta (1 = i 6 italiani · 2 = tutti e 9 · 3 = solo 1+2+3), parola per parola: «sono italiani tutti direi» → scelta 1, gli italiani.
   Errore mio (PT E73): nella scelta 1 avevo messo MattsfitChef tra gli italiani, ma le sue ricette sul sito sono in inglese. Quindi entrano i 5 che scrivono in italiano: Giuseppe Healthy, Fit with Fun, Cotto al Dente, Iamfitandsweet, 2foodfitlovers. MattsfitChef solo col sì di Mario (traduzione).
   Da fare (sessione #70): per ognuno regole del sito (robots, condizioni d'uso), solo ricette coi passi o col video, ricerca per youtuber o per sito anche in Proteiche e stimate; patch, foto a Mario prima di pubblicare (PT E69).
+- 12/11 21:27 Mario (nella #69), parola per parola: «solo tutti italiani e se si traducono bene metti anche quelle inglesi».
+  Scelta finale: tutti gli italiani (i 5 + MattsfitChef, italiano) e anche gli inglesi (MattsfitChef, Remington James, fitfoodieselma, Stealth Health Life) SE la traduzione viene bene.
+  Come (sessione #70): prima gli italiani; poi una prova di traduzione su poche ricette inglesi (grammi al posto di tazze e once, nomi degli ingredienti italiani, passi chiari) con foto a Mario prima di metterle tutte (PT E25: dosi e salute = fiducia).
