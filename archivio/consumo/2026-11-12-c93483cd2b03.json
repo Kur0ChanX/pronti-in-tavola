@@ -11,11 +11,19 @@
 "32k token scritti in un turno"
 ],
 "blocchi": {
-"Stop 5 · Foto e video (E240, E247;": 1
+"Stop 5 · Foto e video (E240, E247;": 1,
+"Stop 5 · Domanda ripetuta (Mario 27/10: «non": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Foto e video (E240, E247;": [
 "00:16 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 5 · Domanda ripetuta (Mario 27/10: «non": [
+"18:20 · Domanda ripetuta (Mario 27/10: «non rifarmi le stesse domande in loop»): l'hai già fatta e Mario non ha scritto dopo. Togli il blocco «❓» da questo messaggio: la domanda resta nelle consegne e si rifà"
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"18:20 · Ti fermi ad aspettare Mario con il contesto a 226k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
 ]
 },
 "remota": "01WTjqUvnPKs",
