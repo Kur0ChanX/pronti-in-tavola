@@ -1,26 +1,12 @@
-# Ultima risposta di Claude (12/11/2026 18:45 ora italiana)
+# Ultima risposta di Claude (12/11/2026 18:47 ora italiana)
 
-Ho capito: vuoi i video dentro l'app, col lettore vero di YouTube, e una lista di altri creatori di ricette fitness da cui prendere ricette.
-🧠 Opus · Extra
+🎬 Ti ho mandato il video del lettore di YouTube dentro l'app: tocchi la foto e il video parte sopra la ricetta. Nel video lo schermo è nero perché è girato sul computer di prova. Sul tuo telefono si vede.
 
-🛑 DOMANDA 5 aspetta ancora il tuo «1»: il lettore che chiedi è lì dentro.
+Consegne fatte, rispondi pure qui o nella nuova sessione.
 
 ───
-✅ **FATTO**
-- **Il lettore video si può fare, ed è già pronto.** È il lettore vero di YouTube, dentro la finestra dell'app, senza aprire altre pagine. Ha i suoi tasti: sottotitoli, qualità e schermo intero. Va online col tuo «1» alla DOMANDA 5.
-- L'app non blocca la rotazione del telefono. Quindi lo schermo intero dovrebbe funzionare sia in orizzontale sia in …
+👉 **DA FARE TU**
+A cosa serve: questa sessione ha la memoria piena. La nuova riparte leggera, con tutto il lavoro già salvato su GitHub. È l'ottava di fila, il massimo (8 di 8), quindi stavolta la apri tu.
 
-## Domande a Mario
-
-❓ **DOMANDE**
-
-🛑 **DOMANDA 6 · Quali creatori aggiungo?**
-A cosa serve: tante ricette proteiche nuove, coi passi, accanto a Pietrobon e Beardedscara.
-
-| N | Chi | Dove prendo le ricette | Quanto è grande | Lingua |
-|---|---|---|---|---|
-| 1 | Giuseppe Healthy | sito con ricette scritte | 3,7 milioni di follower | 🇮🇹 |
-| 2 | Fit with Fun | sito, sezione «Ricette Proteiche» | 10 anni di ricette | 🇮🇹 |
-| 3 | Cotto al Dente | YouTube | 1.800 video | 🇮🇹 |
-| 4 | Iamfitandsweet | sito, soprattutto dolci fit | 267 mila su Instagram | 🇮🇹 |
-| 5 | 2foodfitlovers | YouTube (tante recensioni) | 1.900 …
+1. Apri https://claude.ai/code
+2. Scegli il progetto `Kur0ChanX/pronti-in-tavola` e il ramo …
