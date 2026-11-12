@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 15:55 · 01WTjqUwbG8f
-Secondo te le regole per le ricette per la palestra sono valide o taglia tantissime ricette, oppure è giusto che sia così?
-
-## 2026-11-10 16:15 · 01WTjqUwbG8f
-vai di consiglio
-
-## 2026-11-10 16:47 · 01WTjqUv8dDc
-Quello che ho voluto sempre evitare dall'inizio di questo progetto, alla fine non siamo riusciti a renderlo inevitabile.
-
 ## 2026-11-10 16:52 · 01WTjqUv8dDc
 non sei stato per niente bravo in questo
 
@@ -127,3 +118,9 @@ se lo rendiamo privato e mettiamo il mio PC?
 
 ## 2026-11-11 19:24 · 01WTjqUvhRwD
 hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo
+
+## 2026-11-11 19:33 · 01WTjqUumr4n
+mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazioni che hai in una sezione a parte esempio ricette video e dividi per il nome che dici? occupiamo teoppo spazio limiti ecc?
+
+## 2026-11-12 18:13 · 01WTjqUumr4n
+Perché in messa è scritto solo le ricette di giallo zafferano e quelle proteiche dentro non c'è nulla? Perché nessuna ricetta, non c'è praticamente nulla, solo quelle di giallo zafferano? Vedi che qualcosa c'è dentro, tu mi hai messo solo gli ingredienti. Dai, fai un lavoro fatto bene sulle ricette proteiche, per piacere, falle accuratamente una per una.

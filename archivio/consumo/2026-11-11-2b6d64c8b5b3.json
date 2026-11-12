@@ -1,0 +1,35 @@
+{
+"account": "108763",
+"sessione": "2b6d64c8b5b3",
+"giorno": "2026-11-11",
+"turni": 4,
+"peso": 1294251,
+"uscita": 47385,
+"contesto_max": 310074,
+"anomalie": [
+"avvio pesante: 144k token dopo le letture d'avvio (tetto 130k)",
+"36k token scritti in un turno"
+],
+"remota": "01WTjqUumr4n",
+"aiutanti": 0,
+"strumenti": 50,
+"motori": {
+"opus": 1294251
+},
+"blocchi": {
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 5 · «👉 DA FARE TU» senza": 1
+},
+"esempi_blocchi": {
+"Stop 8 · Promessa a Mario senza voce": [
+"19:30 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Per questo il PC di casa farà i giri di prova, e se serve anche le pubblicazioni». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la"
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"19:30 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: C143. Risc"
+],
+"Stop 5 · «👉 DA FARE TU» senza": [
+"19:42 · «👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del blocco «A cosa serve: …» (cosa ottiene Mario, l'app o il lavoro). Riscrivi solo quel blocco."
+]
+}
+}
