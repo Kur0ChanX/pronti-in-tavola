@@ -2,11 +2,14 @@
 "account": "108763",
 "sessione": "c93483cd2b03",
 "giorno": "2026-11-12",
-"turni": 1,
-"peso": 0,
-"uscita": 0,
-"contesto_max": 153167,
-"anomalie": [],
+"turni": 2,
+"peso": 1212334,
+"uscita": 32536,
+"contesto_max": 226344,
+"anomalie": [
+"1 uscite di strumento enormi (75 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"32k token scritti in un turno"
+],
 "blocchi": {
 "Stop 5 · Foto e video (E240, E247;": 1
 },
@@ -17,5 +20,10 @@
 },
 "remota": "01WTjqUvnPKs",
 "aiutanti": 0,
-"strumenti": 0
+"strumenti": 46,
+"motori": {
+"opus": 1212334
+},
+"memoria_scaduta": 1,
+"ricreati": 112665
 }

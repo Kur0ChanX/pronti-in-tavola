@@ -1,13 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #68 (dopo la #67 `session_01WTjqUwz4Kr6fArhFSzcogf`, chiusa alla soglia 11/11 23:06; la apre la #67 con `create_session` (catena 6 di 8)).
+Sessione attuale: #69 (dopo la #68 `session_01WTjqUvnPKs9PdHZ3iDVS3f`, chiusa alla soglia 12/11 18:20; la apre la #68 con `create_session` (catena 7 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (11/11 #67, 22:54):** 1) vedere C144-C147 insieme: «🎬 Ricette video» con Beardedscara (C145), passi delle stimate (C146), video che parte dalla foto dentro l'app (C147, Mario 22:54 «metti i video che partono da lì»); 2) C140 passo 1 e ok `.claude/`; 3) 🛑 pagella C141.
 
-## Stato (11/11 23:06 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261111-01WTjqUwz4Kr/claude/pronti-ramo-definitivo.
+## Stato (12/11 18:20 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261112-01WTjqUvnPKs/claude/pronti-ramo-definitivo.
 - ⚠️ **PT E69**: i push della #62 di `ricettario.js`, `opzioni.js`, `aiutante.js`, `style.css`, `ricette-stimate.js`, `tools/sito.py` hanno PUBBLICATO il sito (`sito.yml`) senza foto approvata né giro completo. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/ricettario.js | grep -c pagellaRic` → 5; `…/ricette-stimate.js` → 200. Giro completo dopo: 95/95 verde (#63).
 - **C141 nell'app (online)**: Proteiche = ogni ricetta «ricca di proteine» (UE: ≥ 20 % delle calorie, ≥ 8 g; `fitRic` in `ricettario.js`), **pagella** `pagellaRic` (voto 1-10, semaforo proteine/calorie/saturi/zuccheri/sale in % del fabbisogno UE, proteine doppie), ordine per voto; soglie in `opzioni.js` (`fitEntraPerc`, `pagVerde`, `pagGiallo`, `fitProtPerc` = verde proteine, `fitProt` = pasto da, `fitSnackProt` = minimo); tolte `fitKcal/Saturi/Zuc/Sodio/SnackPerc/SnackZuc/SnackSodio`. `ricette-stimate.js` (207: Cookpad 135, blog GZ 28, YouTube 44; 114 dolci) → Proteiche 407 (147 dolci). Stimate: «≈ … stimati», niente «Ascolta», passi con link alla fonte.
 - **Raccolta**: `python3 -I tools/raccogli_stimate.py` (cache `.cache-stime/` solo nel contenitore: rilanciarla rilegge i siti, ~1 h). YouTube con `YOUTUBE_API_KEY` (variabile d'ambiente, spazio in fondo → trim; solo nelle sessioni nuove). Scarti: 298 stima (ingredienti sconosciuti in `tools/stima.py`), 386 sotto il 20 %. #65: raccolta rilanciata in sottofondo (log nel contenitore della #65, perso): rilanciarla se serve.
@@ -60,17 +60,16 @@ Sessione attuale: #68 (dopo la #67 `session_01WTjqUwz4Kr6fArhFSzcogf`, chiusa al
 11/11 22:54, parola per parola (con la foto del suo telefono, v0.10.23, «Spumone» di YouTube con la copertina ferma, `archivio/foto/2026-11-11-2254-mario-spumone-video.jpg`): «metti i video che partono da lì» → C147.
 
 ## Numeri liberi
-Prossimo E libero: E1 (PT: E73); prossimo C libero: C148; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C148; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-11 22:52 · [AVVIO] Sessione #67 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; C146, C145 nella patch c144 (commit b4c9f0b0, d5b11e04)
-- 2026-11-11 22:54 · metti i video che partono da lì → C147 (patch c144, prova verde; foto alla #68)
-- 2026-11-12 00:08 · ok consiglio → risposta alla DOMANDA 4 («1»): #68 aperta
+- 2026-11-12 00:09 · [AVVIO] Sessione #68 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
 
 Ultimo, intero:
-> metti i video che partono da lì
+> [AVVIO] Sessione #68 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
+> ⛔ NON unire le scorte 01WTjqUup234 e 01WTjqUwz4Kr (codice C144-C147 non approvato = c144-app.patch: pubblicherebbe, PT E69). Leggi CLAUDE.md, docs/ERRORI.md e docs/PASSAGGIO-CONSEGNE.md; continua da sola dai «Prossimi passi».
 
