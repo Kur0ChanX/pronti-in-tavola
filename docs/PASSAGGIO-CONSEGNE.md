@@ -47,14 +47,14 @@ Sessione attuale: #70 (dopo la #69 `session_01WTjqUxxnTzNis39N5xRv3s`, chiusa al
 4. DOMANDA 1 della #65 «1» → patch C143 (`git apply docs/lavori-in-corso/c143-guardia.patch && python3 -I tools/test-guardia.py`) e kit 38.26.
 4b. Se Mario scrive che una ricetta di RicetteFit si apre vuota: il server la legge con `leggiRf` (`worker.js`, `rf.mjs`); il lettore funziona dal contenitore (2 ricette vere, #68), quindi guardare la lettura del server.
 5. Foto della pagella (C141): «1» → più stimate e togliere «Fulldayofeating» dalle Proteiche.
-6. DOMANDA 6 (C148) numeri di Mario → per ogni creatore scelto: regole del sito (robots.txt, condizioni d'uso) e grammi negli ingredienti; sito → come `tools/raccogli_stimate.py`, YouTube → come `tools/raccogli_video.py` (API); patch in `docs/lavori-in-corso/`, foto a Mario prima di pubblicare (PT E69).
+6. DOMANDA 6 (C148): Mario 18:54 «mettili» con 2 condizioni (solo coi passi o col video; ricerca per youtuber o per sito, anche in Proteiche e stimate). Prima una riga: «tutti e 9 o i 6 italiani?». Poi → per ogni creatore scelto: regole del sito (robots.txt, condizioni d'uso) e grammi negli ingredienti; sito → come `tools/raccogli_stimate.py`, YouTube → come `tools/raccogli_video.py` (API); patch in `docs/lavori-in-corso/`, foto a Mario prima di pubblicare (PT E69).
 7. Dopo il «1» alla DOMANDA 5, sull'Android di Mario: schermo intero orizzontale e verticale e zoom con due dita dentro il lettore (ipotesi: lo zoom potrebbe mancare).
 
 ## Domande aperte
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 15; 🛑 DOMANDA 5, DOMANDA 6, C141). Controllo Da fare: 1 voce aggiunta (C148, Mario 18:41; la parte del lettore è C147).
 
 ## Ultimo messaggio di Mario
-12/11 18:41, scritto nella #68 (passato alla #69 con `send_message`), parola per parola: «Una domanda, non puoi mettere un play nei video e mette un player sempre che guarda non in locale, però che guarda direttamente il video su YouTube direttamente da quel player, senza che mi apra un'altra pagina che posso mettere magari schermo intero, magari mi interessa. Schermo intero e sottotitoli, il classico banner di YouTube, sottotitoli, la qualità della risoluzione, le classiche cose di YouTube, però che mi apre un player direttamente lì, direttamente in quella finestra. Io posso cliccare, zoomare, fare schermo intero in orizzontale o schermo intero in verticale. Puoi farlo. E poi dimmi se ci sono altri influencer, youtuber, tiktoker che fanno tantissime ricette fitness, che si inventano molte ricette. Fammi una lista e valutiamo chi possiamo inserire, quale di questi possiamo inserire per prenderli le ricette e portarcele da noi.» → C147 (già nella patch, DOMANDA 5) e C148 (lista, DOMANDA 6).
+12/11 18:54, scritto nella #68 (passato alla #69 dopo le consegne), parola per parola: «solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito» → risposta alla DOMANDA 6 (C148): solo ricette coi passi o col video, ricerca per youtuber o per sito; manca «tutti e 9 o 1+2+3?» (una riga, PT E3). Prima, 18:41: lettore YouTube (C147) e lista creatori (C148), testo intero in `docs/lavori-in-corso/c148-lista-creatori-fitness.md`.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C149; prossimo M libero: M1.
@@ -66,6 +66,7 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
 - 2026-11-12 18:22 · [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; Da fare snellito (commit d2c446cf)
 - 2026-11-12 18:41 (nella #68) · Una domanda, non puoi mettere un play nei video… → C147 (nota, commit 73fe8662), C148 lista e DOMANDA 6 (commit 3a09295d)
+- 2026-11-12 18:54 (nella #68) · solo ricette con i passi o con un video mettili… → risposta alla DOMANDA 6 (C148), consegne aggiornate dalla #69
 
 Ultimo, intero:
 > [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).

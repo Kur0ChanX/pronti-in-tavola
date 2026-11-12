@@ -29,3 +29,6 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
 
 ## Stato
 - 12/11 #69: lista fatta, DOMANDA 6 🛑 a Mario (scelga i numeri).
+- 12/11 18:54 Mario (scritto nella #68), risposta alla DOMANDA 6, parola per parola: «solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito».
+  Scelte: 1) entrano SOLO ricette coi passi scritti o col video (come C146); 2) nell'app si cercano per youtuber o per sito (filtro per fonte: oggi c'è solo in «🎬 Ricette video» per youtuber; Proteiche e stimate non l'hanno).
+  Dubbio (PT E3): «mettili» = tutti e 9 o i consigliati 1+2+3? Una riga a Mario prima di partire; consiglio: i 6 italiani subito, gli inglesi solo col suo sì (traduzione = rischio errori, PT E25).
