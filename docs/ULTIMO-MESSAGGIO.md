@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (12/11/2026 20:00 ora italiana)
+# Ultimo messaggio di Mario (12/11/2026 21:27 ora italiana)
 
-sono italiani tutti direi
+solo tutti italiani e se si traducono bene metti anche quelle inglesi
