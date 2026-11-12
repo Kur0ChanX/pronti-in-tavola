@@ -12,5 +12,17 @@
 "strumenti": 42,
 "motori": {
 "opus": 859512
+},
+"blocchi": {
+"Stop 5 · Foto e video (E240, E247;": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Foto e video (E240, E247;": [
+"18:45 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"18:45 · Ti fermi ad aspettare Mario con il contesto a 242k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+]
 }
 }

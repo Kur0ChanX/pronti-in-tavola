@@ -1,7 +1,12 @@
-# Ultima risposta di Claude (12/11/2026 18:42 ora italiana)
+# Ultima risposta di Claude (12/11/2026 18:47 ora italiana)
 
-Ho passato il tuo messaggio, parola per parola, alla sessione nuova: la **Principale 69**. Ti risponde lei, con la lista di youtuber e tiktoker di ricette fitness da valutare.
+🎬 Ti ho mandato il video del lettore di YouTube dentro l'app: tocchi la foto e il video parte sopra la ricetta. Nel video lo schermo è nero perché è girato sul computer di prova. Sul tuo telefono si vede.
 
-💡 Il lettore che chiedi è in gran parte già pronto: è quello del video che parte toccando la foto (DOMANDA 5, non ancora pubblicato). È il lettore di YouTube dentro l'app, con schermo intero, sottotitoli e qualità. La #69 controlla lo schermo intero in orizzontale e in verticale e lo zoom.
+Consegne fatte, rispondi pure qui o nella nuova sessione.
 
-⚠️ ATTENZIONE: in questa sessione ho riletto le foto in formato grande (fino a 75 KB ciascuna, circa 38.000 token), e ogni …
+───
+👉 **DA FARE TU**
+A cosa serve: questa sessione ha la memoria piena. La nuova riparte leggera, con tutto il lavoro già salvato su GitHub. È l'ottava di fila, il massimo (8 di 8), quindi stavolta la apri tu.
+
+1. Apri https://claude.ai/code
+2. Scegli il progetto `Kur0ChanX/pronti-in-tavola` e il ramo …
