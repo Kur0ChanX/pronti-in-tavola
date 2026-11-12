@@ -68,11 +68,11 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E58 E71** Foto fatte da me: PRIMA la skill `foto`; controllo coi numeri nello script; se serve l'occhio, copia ≤400 px JPEG con la scritta «DI LAVORO» in alto (E314).
 - **PT E59** `git rev-parse --short` con due revisioni dà «Needed a single revision»: usare `git rev-parse HEAD origin/<ramo>`.
 - **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse (mai righe `| C…` di voci aperte); dopo ogni ritocco di Da fare `promesse.py --controlla`.
-- **PT E61** Sessione nata solo per aspettare Mario: avvio leggero, solo i passi delle consegne, niente indagini né uscite lunghe (storia).
+- **PT E61** Sessione nata solo per aspettare Mario: avvio leggero, solo i passi delle consegne, niente indagini né uscite lunghe.
 - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓».
 - **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
 - **PT E64** Risorsa a mano su Cloudflare: prima l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); 10041 = account sbagliato.
-- **PT E73** Scelte numerate: ogni nome ricontrollato con la tabella (lingua, numeri) prima di mandarle (C148).
+- **PT E73** Scelte numerate: ogni nome controllato con la tabella (lingua, numeri) prima di mandarle (C148).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
