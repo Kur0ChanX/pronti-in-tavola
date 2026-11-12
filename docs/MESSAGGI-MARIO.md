@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 17:05 · 01WTjqUv8dDc
-Aggiungiamo un account inventato qualcosa ho l'app fermaaaaaaaaaaa
-
 ## 2026-11-10 17:10 · 01WTjqUv8dDc
 Kit si le regole attiva su rvc quelle selezionate da me con i controlli richiesti
 
@@ -122,3 +119,6 @@ solo ricette con i passi o con un video mettili che posso anche cercarli per you
 
 ## 2026-11-12 20:00 · 01WTjqUxxnTz
 sono italiani tutti direi
+
+## 2026-11-12 20:02 · 01WTjqUxxnTz
+solo
