@@ -2,6 +2,7 @@
 
 ## 0. Aspetta Mario
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
+- 12/11 · 🛑 · 🟡 Principale 69 · DOMANDA 6 · C148 creatori di ricette fitness da aggiungere: scrivi i numeri della lista (consiglio 1 + 2 + 3: Giuseppe Healthy, Fit with Fun, Cotto al Dente). A cosa serve: tante ricette proteiche nuove, italiane, coi passi.
 - 12/11 · 🛑 · 🟡 Principale 68 · DOMANDA 5 · C144-C147 insieme («🎬 Ricette video» con Pietrobon 201 e Beardedscara 67, passi delle stimate di Cookpad, video che parte dalla foto): foto `archivio/foto/2026-11-12-0014-c144-c147-1..3.png` mandate. Rispondi 1 = va bene, le pubblico · 2 = cambia (dimmi cosa). A cosa serve: pubblicarle come le vuoi tu; il video dalla foto lo provi tu sul tuo Android (nel contenitore YouTube non fa partire i video).
 - 11/11 · 🟢 Principale 65 · C143 + kit: scrivi «ok» e accendo la difesa (ferma i push che pubblicherebbero l'app senza il tuo ok) e aggiorno il kit da 38.16 a 38.26 (serve al PC di casa). File degli hook: serve il tuo ok scritto. A cosa serve: l'errore della #62 non ricapita e il PC di casa entra nei giri.
 - 11/11 · 🟢 Principale 65 · C140 passo 1 a mano: rendi privato il progetto (1 minuto, passi in chat). A cosa serve: nomi dei clienti e tuoi messaggi non più pubblici; il PC di casa diventa sicuro per i giri.
