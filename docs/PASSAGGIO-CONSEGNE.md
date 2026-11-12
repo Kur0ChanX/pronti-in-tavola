@@ -20,6 +20,8 @@ Sessione attuale: #68 (dopo la #67 `session_01WTjqUwz4Kr6fArhFSzcogf`, chiusa al
 - Chat parallela **Salvagente 4** (C138, solo documenti): i suoi file non si toccano; la sua scorta non si unisce (E97).
 - Kit: 38.26 disponibile (ha il caso «casa» per il PC): si aggiorna con l'ok di Mario per `.claude/` (DOMANDA 1 della #65, insieme a C143). Verifica: `cat docs/kit-progetto/VERSIONE`.
 
+- **12/11 #68 (Mario 18:13 «falle accuratamente una per una», dalla #65)**: stimate controllate tutte (`c146-ricette-con-passi-o-video.md` «Controllo una per una»): pubblicità tolta in 2 (PT E72), foto rifiutate nascoste, prova C141 più severa; tutto nella patch c144 (prova `SOLO=C14` verde). Risposta a Mario: è la DOMANDA 5.
+
 ## Riferimenti
 - C141: `docs/lavori-in-corso/c141-proteiche-stimate.md` (parole di Mario, specifica, stato). Foto: `archivio/foto/2026-11-11-1930-c141-pagella-*.png`.
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
@@ -58,7 +60,7 @@ Sessione attuale: #68 (dopo la #67 `session_01WTjqUwz4Kr6fArhFSzcogf`, chiusa al
 11/11 22:54, parola per parola (con la foto del suo telefono, v0.10.23, «Spumone» di YouTube con la copertina ferma, `archivio/foto/2026-11-11-2254-mario-spumone-video.jpg`): «metti i video che partono da lì» → C147.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C148; prossimo M libero: M1.
+Prossimo E libero: E1 (PT: E73); prossimo C libero: C148; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).

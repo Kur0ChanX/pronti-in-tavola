@@ -28,7 +28,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E22** Proponendo un servizio: guida e testo pronto nello stesso messaggio; dopo ogni pubblicazione «chiudi e riapri l'app».
 - **PT E23** Funzioni di un altro file con `typeof … === 'function'`; la prova «sito vero» apre i file separati.
 - **PT E24** (bis) Un dato che Mario vuole «vedere chiaramente» va nella pagina principale, non in una sottopagina.
-- **PT E25** Contenuti di fiducia (ricette, dosi, salute, leggi): fonte ufficiale, mai scritti da me; prima l'aspetto a Mario.
+- **PT E25** Contenuti di fiducia (ricette, dosi, salute, leggi): fonte ufficiale, mai scritti da me; prima l'aspetto a Mario. Dai siti via pubblicità e link (PT E72, prova C141).
 - **PT E25** (bis) Ogni scarico da un sito esterno si prova dal sito vero (Hugging Face rifiuta *.workers.dev).
 - **PT E26** Voce per persone vere: tono 1.0, frasi corte, sigle per intero; ascoltarla prima di consegnarla.
 - **PT E27** Pochi comandi raggruppati, prova del solo pezzo, giro completo una volta prima del push.

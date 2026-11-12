@@ -115,3 +115,6 @@ Con le 191 proteiche nuove la foto di «🌅 Colazione» mostrava «Pollo allo y
 - Sintomo: `SOLO=C55 node tools/prova.js` rossa («.ric-home» non si tocca), nel giro completo verde (95/95).
 - Causa provata (log intero di Playwright): `#guida` del primo avvio di Monica («Avanti») copriva la Home; nel giro la chiude prima «Monica: notifica e guida». Il vapore dell'apertura NON era la causa (provato).
 - Difesa: la C55 mette `P.guida = true` nella sua preparazione. In più: i timer da 120 s di `passo` ora hanno `.unref()` (prima il giro restava acceso ~2 minuti a vuoto dopo l'ultima prova).
+
+## PT E72 (12/11, #68)
+Mario 18:13 «falle accuratamente una per una»: nel controllo delle 206 stimate due ricette avevano nei passi frasi di pubblicità copiate dal sito (link a un'altra ricetta su Cookpad; pagina Facebook e profilo Instagram di un blog). Causa: `passi_ld` copiava i passi così come sono. Difesa: `senza_pubblicita` in `tools/raccogli_stimate.py` (anche `--pulisci`, senza rete) e la prova C141 che ferma link e social nei passi.

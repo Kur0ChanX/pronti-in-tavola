@@ -8,7 +8,8 @@ e scrive ricette-stimate.js, un file del sito (zero letture di Cloudflare).
 - Entra solo chi passa la regola «🏋️ Proteiche» (soglie di base di fitRic in ricettario.js, copiate qui sotto) sui valori stimati.
 - Metà dolci (dolce_o_salato: nessun ingrediente salato, almeno uno dolce), metà il resto.
 Uso: python3 -I tools/raccogli_stimate.py [quante=500]   (pagine in .cache-stime/; rilanciarlo non rilegge i siti)
-     python3 -I tools/raccogli_stimate.py --passi   (C146: solo i passi delle ricette già nel file) """
+     python3 -I tools/raccogli_stimate.py --passi   (C146: solo i passi delle ricette già nel file)
+     python3 -I tools/raccogli_stimate.py --pulisci (12/11: toglie la pubblicità dai passi già nel file, senza rete) """
 import hashlib, html, json, os, re, subprocess, sys, time
 from urllib.parse import quote, urlencode
 
@@ -97,6 +98,27 @@ def passi_ld(r):
         attesa = []
     for p in out:
         p['foto'] = list(dict.fromkeys(p['foto']))[:3]
+    return senza_pubblicita(out)
+
+
+PUBBLICITA = re.compile(r'https?://|www\.|facebook|instagram|tiktok|telegram|iscriv|seguimi|seguitemi|mi trovate|vi aspetto|vi lascio il link|codice sconto', re.I)
+
+
+def senza_pubblicita(passi):
+    """Mario 12/11 18:13 «falle accuratamente una per una»: dai passi tolgo le frasi di pubblicità (link, social, «vi aspetto»),
+    mai la ricetta (PT E30). Un passo che era quasi tutto pubblicità (resta meno del 40 % o meno di 25 lettere) sparisce e le sue foto
+    vanno al passo prima."""
+    out = []
+    for p in passi:
+        if not PUBBLICITA.search(p['t']):
+            out.append(p)
+            continue
+        frasi = re.split(r'(?<=[.!?…])\s+', p['t'])
+        resto = ' '.join(f for f in frasi if not PUBBLICITA.search(f)).strip()
+        if len(resto) >= 25 and len(resto) >= 0.4 * len(p['t']):
+            out.append({'t': resto, 'foto': p['foto']})
+        elif out:
+            out[-1]['foto'] = list(dict.fromkeys(out[-1]['foto'] + p['foto']))[:3]
     return out
 
 
@@ -315,5 +337,21 @@ def solo_passi():
                       'tolte': [x['id'] + ' ' + x['nome'] for x in tolte]}, ensure_ascii=False))
 
 
+def pulisci():
+    """--pulisci: toglie la pubblicità dai passi GIÀ nel file, senza rileggere i siti (resto uguale)."""
+    t = open(os.path.join(RADICE, 'ricette-stimate.js'), encoding='utf-8').read()
+    vecchie = json.loads('[' + t.split('const RICETTE_STIMATE = [', 1)[1].rsplit('];', 1)[0] + ']')
+    cambiate = []
+    for x in vecchie:
+        if x.get('passi'):
+            nuovi = senza_pubblicita(x['passi'])
+            if nuovi != x['passi']:
+                cambiate.append(x['id'])
+                x['passi'] = nuovi
+    righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False) for x in vecchie)   # testa del file (data della raccolta) uguale
+    open(os.path.join(RADICE, 'ricette-stimate.js'), 'w', encoding='utf-8').write(t.split('const RICETTE_STIMATE = [', 1)[0] + 'const RICETTE_STIMATE = [\n' + righe + '\n];\n')
+    print(json.dumps({'ricette': len(vecchie), 'cambiate': cambiate}, ensure_ascii=False))
+
+
 if __name__ == '__main__':
-    solo_passi() if '--passi' in sys.argv else main()
+    pulisci() if '--pulisci' in sys.argv else solo_passi() if '--passi' in sys.argv else main()
