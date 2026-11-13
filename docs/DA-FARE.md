@@ -19,6 +19,7 @@
 
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
+| C149 | (Mario 13/11 09:38, foto «Ricette video»: «metti i voti anche fuori… logica palestra… ipertrofia senza ingrassare») Voto palestra su tutte le carte: `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. 👁 Lo vedi: Ricettario → «🎬 Ricette video» e «🏋️ Proteiche»: ogni carta col «Voto N» prima di entrare · prova: tua foto | Claude | 🟡 |
 | C148 | (Mario 12/11 18:41-21:27) Tutti i creatori italiani e, se tradotti bene, anche gli inglesi; solo ricette coi passi o col video, ricerca per youtuber o sito: `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. 👁 Lo vedi: le loro ricette nel Ricettario · prova: tua foto | Claude | 🟢 |
 | C147 | (Mario 11/11 22:54, foto dello «Spumone» di YouTube: «metti i video che partono da lì») 13/11 #70: pubblicata in v0.10.24 (tuo «vai avanti» delle 09:08); manca la tua prova sull'Android. Video dalla foto, dentro l’app: `docs/lavori-in-corso/c147-video-dalla-foto.md`. 👁 Lo vedi: Proteiche → «Spumone» → tocchi la foto e il video parte · prova: tua foto | Claude | 🔴 |
 | C146 | (Mario 11/11 22:50, foto di «Pancake proteici» di Cookpad: «si ma senza video ne passaggi non hanno senso») Passi nell'app o video: `docs/lavori-in-corso/c146-ricette-con-passi-o-video.md`. 12/11: controllate una per una (#68); 13/11 #70 pubblicate in v0.10.24. 👁 Lo vedi: Proteiche → una ricetta di Cookpad con «Passo passo» e «▶️ Ascolta» · prova: tua foto | Claude | 🔴 |
