@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #83 (dopo la #82 `session_01WTjqUw66Sp3RKvg5PPmefK`, chiusa alla soglia 13/11 22:45; la apre la #82 con `create_session` (catena 5 di 8)).
+Sessione attuale: #84 (dopo la #83 `session_01WTjqUuVK9QyrnrAkWZod36`, chiusa alla soglia 13/11 23:25; la apre la #83 con `create_session` (catena 6 di 8)).
 
 **#83: la apre la #82 (catena 5 di 8).** #82: **C158 FATTA** (avvio legge tutti i messaggi della precedente anche dalla sua scorta, «messaggi» al posto di «vecchia», `prendi-messaggi`, `.gitattributes`; PT E85; 2 messaggi delle 21:18 recuperati). C161 controllo regole: 11 proposte, aspetta «1»/«2». C159 (Monica vista cliente) e C160 (costo ricetta): parole intere in `docs/lavori-in-corso/c159-*` e `c160-*`; C159 aspetta DOMANDA 1 gesto e DOMANDA 2 tocchi.
 
@@ -9,8 +9,8 @@ Sessione attuale: #83 (dopo la #82 `session_01WTjqUw66Sp3RKvg5PPmefK`, chiusa al
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (13/11 22:35, #82):** ordine di Mario: C158 (FATTA) → controllo regole C161 (aspetta 1/2) → C159 Monica vista cliente (7 tocchi sulla firma, gesto, chiusa a ogni rientro, ordini di prova: «Sto solo provando l'app» c'è già, `sceltaProva` in app.js) → C160 costo ricetta (prima guardare cosa c'è: ingredienti, `spesa.js`; poi domande). Prima di OGNI modifica dell'app: una riga a Mario e il suo ok.
 
-## Stato (13/11 22:45 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUw66Sp/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
+## Stato (13/11 23:25 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUuVK9Q/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -55,9 +55,11 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 21:25 · [AVVIO] Sessione #82 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, titolo, PT E85 trovata, DOMANDA C158
-- 2026-11-13 22:35 · Sì, guarda se l'hai studiata meglio, rifletti bene e vai come consiglio. Poi ti … → C158 fatta (scorta.py, avvio-check.py, .gitattributes), C161 tabella, C159 domande, C160 in Da fare
+- 2026-11-13 22:48 · [AVVIO] Sessione #83 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-13 23:07 · aggiungi anche KG e CL ed Etti → 
+- 2026-11-13 23:17 · per il resto va bene → 
+- 2026-11-13 23:23 · Ricordati che se monica mette stò provando l'app nell' invio dell 'ordine non vi… → 
 
 Ultimo, intero:
-> Sì, guarda se l'hai studiata meglio, rifletti bene e vai come consiglio. Poi ti chiedo un'altra cosa da mettere in priorità, scusami, due cose. Prima fai questa cosa che abbiamo detto adesso, poi questa cosa delle regole. Poi cosa facciamo? Abilitiamo Monica alla modalità sviluppatore, però in che senso? Voglio che anche Monica vede come vedono i clienti, però voglio che ci sia solo lo swipe verso l'alto come ce l'ho io, e ogni volta che rientra nell'app si chiude, cioè lo deve riswappare per andare nella modalità cliente. E poi così può provare lei gli ordini, che si può fare gli ordini da sola, però tu dirai cosa se ne fa a farsi gli ordini da sola, giusto per provare l'app. Quindi ci sarà, prima di ordinare sto solo provando l'app quando va a ordinare, oppure sto ordinando davvero, ma sto ordinando davvero non lo farà mai, quasi mai, però glielo lasciamo questa opzione. Verifica che ci sia, sto solo facendo una prova, come mi sembra l'abbiamo già implementato, e così abilitiamo anche Monica a far vedere l'app come il cliente, che anche lì deve vedere come lo vede il cliente, ecco. Quindi evitiamo di, non lo so, facciamo magari mettiamo 5 tocchi la prima volta per entrare, come lo faccio io, 5 tocchi in modalità mi sembra la 5 tocchi dove c'è sotto i noi la scritta, sotto in basso nella pagina principale, e poi lei fa lo swipe su in alto, lì si abilita. Ogni volta che rientra nell'app però questa se la ritroverà chiusa, perché non è bellissima da vedere. Poi un'altra cosa da implementare è il costo per cioè quanto spende lei per creare una ricetta. Quindi mi sembra che abbiamo già implementato che Monica carica tutti gli ingredienti, mette le quantità che usa nella ricetta e poi mettiamo una parte di quanto lei lo paga. Nel senso, mette monica le sue quantita e poi aggiungiamo la quantita esempio kg litri ecc del prodotto acquistato con il prezzo caricato da Monica cosi puoi calcolare quanto gli costa fare quella ricetta e carica i prodotti nella lista spesa che dici fai un bel lavoro con logica
+> Ricordati che se monica mette stò provando l'app nell' invio dell 'ordine non viene conteggiato nell'ordine vero
 
