@@ -384,6 +384,32 @@ def con_dosi(ing):
     return sum(bool(re.search(r'\d', i)) for i in ing) >= 2
 
 
+def cibo_chiave(i):
+    """«150 ml di albume (montato)» → «albume»: la prima parola di cibo, per riconoscere lo stesso ingrediente scritto e detto."""
+    t = norm(re.sub(r'\(.*?\)', ' ', i))
+    t = re.sub(r'\b\d+([.,]\d+)?\s*(g|gr|grammi|ml|kg|cl|l)?\b', ' ', t)
+    parole = [w for w in t.split() if len(w) > 2 and w not in ('di', 'del', 'della', 'dei', 'delle', 'con', 'per', 'qb', 'circa', 'uno', 'una', 'cucchiaio', 'cucchiai', 'cucchiaino', 'cucchiaini', 'pizzico', 'spicchio', 'spicchi', 'fette', 'fetta', 'bustina', 'mezzo', 'mezza', 'intere', 'intero')]
+    return parole[0][:5] if parole else ''
+
+
+def unisci_ingredienti(scritti, detti):
+    """C154: lo scritto dell'autore resta com'è; si aggiungono gli ingredienti DETTI nel video che non sono scritti, e la dose
+    detta va al posto di uno scritto senza dose («Frutti di bosco» + «50 g di frutti di bosco»)."""
+    out = list(scritti)
+    chiavi = [cibo_chiave(i) for i in out]
+    for d in detti:
+        k = cibo_chiave(d)
+        if not k:
+            continue
+        if k in chiavi:
+            j = chiavi.index(k)
+            if not re.search(r'\d', out[j]) and re.search(r'\d', d):
+                out[j] = d
+            continue
+        out.append(d); chiavi.append(k)
+    return out
+
+
 def col_parlato(x, par):
     """C150 (Mario 13/11 «dalle parole che dicono… ci fai la ricetta»): dosi e passi dal parlato del video (tools/trascrivi_video.py).
     Lo scritto dell'autore vince: ai video con le dosi scritte solo i passi che mancano. Fuori: risposte con numeri non sentiti nel
@@ -392,6 +418,7 @@ def col_parlato(x, par):
     p = par.get(x['id'])
     if not p or 'ingredienti' not in p or p.get('dubbi'):
         return False
+    x['controllata'] = True   # C154 (Mario 13/11 «fai un check a tutti e trascrivi bene tutti gli ingredienti»): confrontata col video
     cambia = not con_dosi(x.get('ingredienti') or [])
     if cambia and x.get('suoi') and (p.get('porzioni') or 1) != (x.get('porzioni') or 1):
         cambia = False   # i suoi valori sono per altre porzioni: le dosi del parlato li confonderebbero
@@ -399,6 +426,10 @@ def col_parlato(x, par):
         x['ingredienti'] = p['ingredienti']; x['parlato'] = 'dosi'
         if not x.get('suoi'):
             x['porzioni'] = p.get('porzioni') or 1
+    elif (p.get('porzioni') or 1) == (x.get('porzioni') or 1):
+        unite = unisci_ingredienti(x.get('ingredienti') or [], p['ingredienti'])   # C154: lo scritto resta, il detto aggiunge ciò che manca
+        if unite != x.get('ingredienti'):
+            x['ingredienti'] = unite; x['parlato'] = 'dosi'; cambia = True
     if not x.get('passi') and p.get('passi'):
         x['passi'] = p['passi']; x.setdefault('parlato', 'passi')
     m = re.fullmatch(r'(.*?) del \d{1,2} \w+ \d{4}( · [\d/]+)?', x['nome'])

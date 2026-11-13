@@ -13,3 +13,10 @@ Dopo la correzione, 771 ricette: complete ~423 · qualche ingrediente senza dose
 Script dei conti: da rifare (in scratchpad #76: `conta2.js`): portarlo in `tools/` se Mario sceglie «solo complete».
 
 ## Domanda 🛑 a Mario (#76): vedi «0. Aspetta Mario»
+
+## Mario 13/11 ~15:40 (parola per parola)
+«mettile online» → v0.10.28 (C152 + correzione C154), giro completo in locale, poi `[pubblica]`.
+«e nei video fai un check a tutti e trascrivi bene tutti gli ingredienti almeno puoi dare un voto vero»
+→ trascrizione di TUTTI i video (753 da fare, ~17,4 ore di video misurate da YouTube; limite gratis ~8 ore al giorno → ~3 giorni, stima).
+→ `col_parlato`: ogni ricetta trascritta = `controllata`; lo scritto resta, il detto AGGIUNGE gli ingredienti mancanti (`unisci_ingredienti`) e la dose a quelli scritti senza; poi stima e voto ricalcolati.
+Da fare: a trascrizione finita (o a blocchi ogni giorno) rigenerare, controllo a campione, versione nuova; nell'app «✅ controllata col video» (con la scelta di Mario 1/2).
