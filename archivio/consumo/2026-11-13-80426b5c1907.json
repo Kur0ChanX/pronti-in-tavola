@@ -1,0 +1,18 @@
+{
+"account": "108763",
+"sessione": "80426b5c1907",
+"giorno": "2026-11-13",
+"turni": 1,
+"peso": 332342,
+"uscita": 11843,
+"contesto_max": 107604,
+"anomalie": [],
+"remota": "01WTjqUwHBw1",
+"aiutanti": 0,
+"strumenti": 10,
+"motori": {
+"opus": 332342
+},
+"memoria_scaduta": 1,
+"ricreati": 89446
+}
