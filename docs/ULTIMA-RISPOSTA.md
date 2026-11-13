@@ -1,13 +1,8 @@
-# Ultima risposta di Claude (13/11/2026 23:28 ora italiana)
+# Ultima risposta di Claude (13/11/2026 23:38 ora italiana)
 
-Ho capito: sessione 84 aperta. Riparto da dove si era fermata la 83 e aspetto le tue risposte.
+📌 **Di cosa parliamo:** il costo di ogni piatto, nella schermata della spesa di Monica (le 4 foto sopra). È pronto ma non ancora online: manca solo il tuo ok.
 
-✅ **FATTO**
-- Ho letto i tuoi 3 ultimi messaggi interi. Il «Sto provando l'app» l'ho controllato già ieri sera, e la domanda è qui sotto.
-- Il costo della ricetta (C160) è pronto, ma non è online. Ho controllato adesso: le modifiche si applicano ancora senza errori.
-- Il lavoro è tutto salvato su GitHub. Non ho cambiato niente nell'app.
-- 🧠 Continuo con Opus 5.5 · Extra, come la sessione precedente (l'ho controllato).
+1 · Vanno bene → lo metto online nell'app. Monica vedrà quanto le costa ogni piatto e quanto le resta (**consiglio**).
+2 · Cambia qualcosa → dimmi cosa. Correggo e ti rimando le foto prima di metterlo online.
 
-───
-💡 **PARERE**
-Se rispondi «1» a tutte e due le prime domande, metto online …
+Aspetto il tuo numero.

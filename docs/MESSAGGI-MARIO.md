@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 12:50 · 01WTjqUw4QVb
-riordina la pagina oltre a non trovare nulla c'è un casino in questa pagina 3000 tastine filtri ok servono ma non si capisce nulla
-
 ## 2026-11-13 12:53 · 01WTjqUw4QVb
 è uno scherzo verooooooo????
 
@@ -126,3 +123,6 @@ Ricordati che se monica mette stò provando l'app nell' invio dell 'ordine non v
 
 ## 2026-11-13 23:37 · 01WTjqUwbEtu
 rifammi la domanda
+
+## 2026-11-13 23:44 · 01WTjqUwbEtu
+va bene come consiglio
