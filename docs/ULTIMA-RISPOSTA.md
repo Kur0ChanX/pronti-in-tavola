@@ -1,14 +1,13 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 19:16 ora italiana)
 
+Ho capito: nella tua foto il tasto verde «Scrivimi» copre il microfono e «Dettami l'ordine». Mi chiedi se è normale e se qualche regola mi confonde.
 
+───
+✅ **Cosa sto facendo adesso**
+- «Scrivimi» non sarà più un tasto verde fisso. Diventa una riga piccola in fondo al menù: «Hai una domanda? Scrivi a Monica».
+- Così niente si copre, e ordinare torna la cosa principale, come volevi tu.
+- Il giro completo delle prove è in corso. Prima di metterla online ti mando la foto coi caratteri grandi, come li usi tu, e aspetto il tuo ok.
 
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
-
-Rispondi col numero.
+───
+💡 **PARERE: è normale? No.**
+- Lo sbaglio è mio: ho …
