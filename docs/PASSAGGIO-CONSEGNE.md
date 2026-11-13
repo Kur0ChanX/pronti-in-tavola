@@ -38,7 +38,7 @@ Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa al
 
 ## Prossimi passi
 ⛔ NON unire le scorte `01WTjqUup234` (#66) e `01WTjqUwz4Kr` (#67): vecchie, superate dalla v0.10.24.
-1. 🛑 DOMANDA 2 (C149) «1» → `git apply docs/lavori-in-corso/c149-app.patch docs/lavori-in-corso/c148-app.patch docs/lavori-in-corso/c148-video.patch` (in quest'ordine; c148-app = «Da chi» in Proteiche, prova `ricettario C148`, foto `archivio/foto/2026-11-13-c148-da-chi.png`), `python3 -I tools/anteprima.py`, giro completo `node tools/prova.js` (0 «NO»), versione 0.10.25 in `data.js` (novità: voto palestra, profilo, 2 canali nuovi), commit `[pubblica]` e push, `curl` del sito, `git rm` delle due patch. Prima una foto della pagina «🎬 Ricette video» con 4 riquadri (PT E69). «2» → cambiare quello che dice.
+1. FATTO #71: v0.10.25 online (C149 voto palestra + C148 «Da chi», giro 97/97). Resta `c148-video.patch`: foto della pagina «🎬 Ricette video» con 4 riquadri a Mario, poi versione.
 2. C148 siti: `python3 -I tools/raccogli_stimate.py --creatori` in sottofondo (~1.400 pagine, ~1 s l'una; salva prima una copia di `ricette-stimate.js`); poi conti per creatore, controllo a occhio di 10 ricette, patch, foto. Mela, ecc. sconosciute a `tools/stima.py` scartano molte ricette: valutare sinonimi nuovi in `SINONIMI`/`CODICI`.
 3. FATTO #71 (patch `c148-app.patch`): «Da chi» in Proteiche e `FONTI_RIC` con `fw`, `fs`, `gh`.
 4. Altri creatori della tabella #70 (Ricette di Alice, HSN, Sergio Chisari): robots e lettura; poi inglesi (MattsfitChef ecc.) con prova di traduzione e foto.
