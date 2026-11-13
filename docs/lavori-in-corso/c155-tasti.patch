@@ -37,9 +37,18 @@ index cf08a16c..a5f4e2f0 100644
  
  /* «Sono qui sotto» con l'app aperta: schermata della suoneria (C51) */
 diff --git a/tools/prova.js b/tools/prova.js
-index 443b30f6..999e155f 100644
+index 443b30f6..48eab443 100644
 --- a/tools/prova.js
 +++ b/tools/prova.js
+@@ -552,7 +552,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     await page.evaluate(() => { UI.vista = 'home'; render(); });
+   });
+   await passo('cliente: «Scrivimi» capisce gli ordini (C155) e manda le domande su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
+-    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
++    await page.evaluate(() => { try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ } document.querySelectorAll('.vapore').forEach(v => v.remove()); P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
+     await page.waitForTimeout(1500);
+     await page.evaluate(() => { $('#toast').innerHTML = ''; }); await foto('36-scrivi-monica');
+     // 1) il messaggio vero di una cliente (13/11): ordine scritto nel testo → carrello, con la scelta della parmigiana
 @@ -665,7 +665,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
    });
    await passo('cliente: tasto «Scrivimi»; Monica: «Sono qui» squilla con l\'app aperta e si ferma con «Ho visto» (C51)', async () => {
