@@ -5,5 +5,21 @@
 
 Ho capito: per ogni ingrediente della ricetta Monica ha già la quantità usata; aggiungiamo il prodotto comprato (confezione: kg, litri, pezzi…) col prezzo che mette lei; l'app calcola il costo della ricetta (e a porzione) e porta i prodotti nella lista della spesa. ❓ da confermare (Mario).
 
+## Cosa c'è già (controllato #83, 13/11 23:10)
+- Scheda del piatto → «Dosi e costo» (`sezioneDosi` in `spesa.js`): dosi per la teglia piccola (le altre calcolate), poi «Quanto ti costa»: per formato «ti costa X · vendi a Y · ti restano Z» (`costoPiatto`), tasti degli ingredienti senza prezzo.
+- Foglio dell'ingrediente (`foglioSpesaIng`): «Quanto lo paghi», «La confezione che compri» (solo in grammi, millilitri o pezzi), «Si misura in», reparto. Dati su Firebase `impostazioni/spesa` (solo gestori, C15).
+- Lista della spesa: dagli ordini, in confezioni intere («2 × 250 g»).
+- Foto: `archivio/foto/2026-11-13-2310-c160-oggi-1-costo.png`, `…-oggi-2-prezzo.png`.
+
+## Buchi trovati e proposte (DOMANDA 1 della #83, aspetta «tutti» o numeri)
+1. Confezione in kg e litri (oggi «1000 grammi»): scelta g/kg, ml/l, pezzi; l'app converte.
+2. Prima la confezione, poi il prezzo, con la prova «= 10,00 € al kg».
+3. Ingredienti del piatto senza dose: oggi non contano e non si vedono → «manca la dose, non conta».
+4. Gusti con ingredienti in più: `costoPiatto` chiama `costoDosi(p)` senza gusto → costo di ogni gusto («+ 0,80 €»).
+5. Altre spese per teglia (vaschetta, carta, gas): una casella per formato, entra nel costo.
+6. Costo anche in «I miei piatti», una riga sotto ogni piatto (solo Monica).
+7. Lista della spesa: «Spenderai circa N €» dai prezzi delle confezioni (senza prezzo: «N cose senza prezzo»).
+- Occhio critico: i clienti non vedono mai costi (dati solo gestori); Mario e Monica insieme sullo stesso prezzo = vince l'ultimo (come oggi per tutta la spesa); senza rete: memoria del telefono, poi Firebase.
+
 ## Stato
-- Dopo C158, controllo regole e C159 (ordine di Mario). Prima: guardare cosa c'è già (ingredienti, spesa.js), domande e specifica, poi codice.
+- Aspetta DOMANDA 1. Poi: codice in patch, prova `SOLO=dosi`, foto, ok di Mario, giro, online.
