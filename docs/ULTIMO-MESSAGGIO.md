@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 19:47 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:15 ora italiana)
 
-Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
+Aspetta, quindi significa che è un problema di passaggio di consegna? L'ha accorciato così tanto che è letto a metà? Rispondimi, perché sennò devo modificare la regola.
