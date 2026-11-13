@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 12:50 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 12:55 ora italiana)
 
-riordina la pagina oltre a non trovare nulla c'è un casino in questa pagina 3000 tastine filtri ok servono ma non si capisce nulla
+magari cose utili cosí lasciale visto che c'è ma una sezione a parte
