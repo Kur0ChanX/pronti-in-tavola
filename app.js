@@ -334,7 +334,7 @@ function waTesta() {
   const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '';
   return `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${chi ? ` Sono ${chi}.` : ''}`;
 }
-const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi" aria-label="Scrivimi">${ico('chat')}<span>Scrivimi</span></button>` : '';
+const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi">${ico('chat')}<span>Hai una domanda? Scrivi a Monica</span></button>` : '';
 /* «Scrivimi» capisce gli ordini (C155, Mario 13/11 «voglio automatismo»: una cliente aveva scritto l'ordine nel messaggio WhatsApp e a Monica
    non era arrivato niente). Il cliente scrive QUI; se nel testo ci sono piatti del menù l'app propone di metterli nel carrello (l'ordine
    arriva vero tra gli Ordini, col messaggio nella nota); se no, o se il cliente vuole, si apre WhatsApp col testo già scritto.
