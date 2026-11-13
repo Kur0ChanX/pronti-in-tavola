@@ -1,13 +1,20 @@
-# Ultima risposta di Claude (13/11/2026 23:28 ora italiana)
+# Ultima risposta di Claude (13/11/2026 23:38 ora italiana)
 
-Ho capito: sessione 84 aperta. Riparto da dove si era fermata la 83 e aspetto le tue risposte.
+Ho capito: vuoi di nuovo la domanda sul costo della ricetta (C160), con le foto.
+🧠 Opus · Extra
 
 ✅ **FATTO**
-- Ho letto i tuoi 3 ultimi messaggi interi. Il «Sto provando l'app» l'ho controllato già ieri sera, e la domanda è qui sotto.
-- Il costo della ricetta (C160) è pronto, ma non è online. Ho controllato adesso: le modifiche si applicano ancora senza errori.
-- Il lavoro è tutto salvato su GitHub. Non ho cambiato niente nell'app.
-- 🧠 Continuo con Opus 5.5 · Extra, come la sessione precedente (l'ho controllato).
+Ti ho rimandato qui sopra le 4 foto di come apparirà. Il contenitore si era riavviato: niente è andato perso, è tutto salvato su GitHub.
 
-───
-💡 **PARERE**
-Se rispondi «1» a tutte e due le prime domande, metto online …
+## Domande a Mario
+
+❓ **DOMANDA 1 · C160 costo della ricetta** 🛑
+
+A cosa serve: è l'ultimo ok che manca prima di mettere online le modifiche. Così Monica vede quanto le costa ogni piatto.
+
+Cosa cambia per Monica:
+1. La confezione si scrive in g, kg, ml, cl, l, etti o pezzi. Il conto lo fa l'app.
+2. Prima scrive la confezione, poi il prezzo. Sotto le compare per esempio «Cioè 18,00 € al kg».
+3. Un ingrediente senza dose ora si vede: «Senza dose (non conta)».
+4. Per i gusti che usano ingredienti in più, vede quanto costano in più (es. «+ 0,80 €»).
+5. Per ogni misura di teglia c'è una casella «Altre spese» …
