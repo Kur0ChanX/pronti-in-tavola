@@ -33,3 +33,4 @@ Aspetta l'ok di Mario sulle foto; poi giro completo, pubblicazione, «chiudi e r
 - NON provato: se Lisa ha prima provato il carrello e si è fermata. Possibili inciampi: tasto «Invia» grigio finché non sceglie il giorno (la «prossima settimana» va scelta a mano fra i giorni), scelta «ordini davvero o stai provando?», ordine minimo, «parmigiana al posto della pasta al forno» che nel carrello non si può dire senza nota. Oppure ordine segnato «di prova».
 - Da qui non leggo i dati veri (nessuna chiave, giusto così): serve Monica (Ordini, anche quelli di prova) o Lisa (cosa ha toccato).
 - Il gusto «ricotta e spinaci» nella patch: Mario non l'ha chiesto → da togliere dalla patch.
+- Ipotesi «ordine da approvare» (suggerita dalla #77): poco probabile. Il numero di Monica, e quindi «Scrivimi», arriva solo ai clienti già approvati (`impostazioni/approvati`, dati.js:46 e 207). Gli ordini «da approvare» Monica li vede comunque (STATO_MONICA, app.js:231).
