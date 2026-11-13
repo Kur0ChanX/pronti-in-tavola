@@ -43,7 +43,7 @@ Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa al
 
 ## Prossimi passi
 ⛔ NON unire le scorte `01WTjqUup234` (#66) e `01WTjqUwz4Kr` (#67): vecchie; né `01WTjqUvtoJC` (#70): ha `ricette-stimate.js` (file del sito = pubblicherebbe C148, già nella patch).
-1. Al «1» di Mario (riga 🛑 C148+C150 in «Aspetta Mario»): versione 0.10.26 → `git apply` di `c148-stimate.patch` e `c148-video.patch`, `python3 -I tools/raccogli_video.py --parlato-su ricette-video.js`, `git apply docs/lavori-in-corso/c150-app.patch`, versione in `data.js`, giro completo `node tools/prova.js` (tutto verde), commit `[pubblica]`, push, `curl` del sito, `git rm` delle 3 patch, novità. Poi a Mario: «chiudi e riapri l'app».
+1. SUBITO (Mario «manda online tutto»): versione 0.10.26 → `git apply` di `c148-stimate.patch` e `c148-video.patch`, `python3 -I tools/raccogli_video.py --parlato-su ricette-video.js`, `git apply docs/lavori-in-corso/c150-app.patch`, versione in `data.js`, giro completo `node tools/prova.js` (tutto verde), commit `[pubblica]`, push, `curl` del sito, `git rm` delle 3 patch, novità. Poi a Mario: «chiudi e riapri l'app».
 2. Ogni mattina dopo le 9:00 (limite azzerato): `git show HEAD:ricette-video.js` + `git apply --include=ricette-video.js docs/lavori-in-corso/c148-video.patch` in una cartella dello scratchpad (finché C148 non è online), poi `python3 -I tools/trascrivi_video.py --da <quel file>` in sottofondo; controllo a occhio a campione e delle righe `dubbi`; commit del json. Una sveglia `send_later` alle 9:10 per questo.
 3. A fine giro: rifare i primi video senza «nome» (togliere le loro voci senza nome dal json e rilanciare), poi nuove versioni coi video trascritti.
 4. Il controllo della foto (hook 5) scatta sulla parola «video» anche quando nell'app non si muove niente (2 volte nella #72): segnarlo per il kit.
@@ -53,7 +53,7 @@ Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 16; 🛑 C148+C150 online, 🛑 C150 foto, 🛑 C141 pagella, idee C149).
 
 ## Ultimo messaggio di Mario
-13/11 11:36, parola per parola: «hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto» → risposta: non è online apposta (PT E69); foto C148 mandate, domanda 🛑 «1 = metti online C148 e C150 insieme».
+13/11 11:41, parola per parola: «manda online tutto» (dopo l'handoff, nella #72) = «1» alle due domande 🛑 (C148 + C150 online): righe tolte da «Aspetta Mario». → la #73 fa SUBITO il passo 1 (versione 0.10.26).
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C151; prossimo M libero: M1.
