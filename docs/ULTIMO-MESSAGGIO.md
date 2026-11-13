@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 19:47 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:19 ora italiana)
 
-Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
+Mi puoi rinviare il link di Lisa in questa sessione?

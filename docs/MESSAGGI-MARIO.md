@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 09:55 · 01WTjqUvtoJC
-palestra pubblica a cosa ti serve saperlo?!?!?
-
 ## 2026-11-13 10:24 · 01WTjqUvRgtB
 va bene come Consiglio
 
@@ -126,3 +123,6 @@ Sì, ok, ma non farla troppo stretta perché te l'ho detto io, no? Cerca di rimp
 
 ## 2026-11-13 19:47 · 01WTjqUu3oyB
 Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
+
+## 2026-11-13 20:19 · 01WTjqUu3oyB
+Mi puoi rinviare il link di Lisa in questa sessione?
