@@ -396,14 +396,15 @@ function stimataRic(x) {
     passi: (x.passi || []).map(p => typeof p === 'string' ? { t: p, foto: [] } : { t: String(p.t || ''), foto: (p.foto || []).filter(f => /^https:\/\//.test(f)) }).filter(p => p.t), cerca: ing.map(i => i.nome).join(', ') });
 }
 const conPassiStimata = r => r.passi.length > 0 || /^yt:/.test(r.id);   // C146
-/* C144: una ricetta video come le altre (ingredienti e testo come li scrive l'autore, valori suoi o «≈ stimati»); i passi sono nel video */
+/* C144: una ricetta video come le altre (ingredienti e testo come li scrive l'autore, valori suoi o «≈ stimati»); C150: senza dosi scritte,
+   dosi e passi detti nel video («parlato»: 'dosi' o 'passi', tools/trascrivi_video.py) */
 const VIDEO_CACHE = {};
 function videoRic(x) {
   if (VIDEO_CACHE[x.id]) return VIDEO_CACHE[x.id];
   const ing = (x.ingredienti || []).map(ingRic).filter(i => i.nome);
   return (VIDEO_CACHE[x.id] = { id: x.id, nome: x.nome, zona: '', categoria: '', foto: x.foto || '', totale: 0, difficolta: '', nutr: x.nutr || null, stimata: !!x.stimata,
     valoriSuoi: x.suoi ? x.valoriSuoi || '' : '', video: true, tipo: x.tipo || 'Altro', data: x.data || '', proteica: !!x.proteica, url: x.url, autore: x.autore || '',
-    porzioni: x.porzioni || 1, ingredienti: ing, passi: (x.passi || []).map(t => ({ t: String(t || ''), foto: [] })).filter(p => p.t),   // C145: i passi scritti sotto il video
+    porzioni: x.porzioni || 1, ingredienti: ing, passi: (x.passi || []).map(t => ({ t: String(t || ''), foto: [] })).filter(p => p.t), parlato: x.parlato || '',   // C145: i passi scritti sotto il video
     intro: x.testo || '', cerca: ing.map(i => i.nome).join(', ') });
 }
 const videoDi = id => typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.find(x => x.id === id) : null;
@@ -891,7 +892,7 @@ function vRicettario() {
 const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO : []).forEach(x => m.set(x.autore, (m.get(x.autore) || []).concat(x))); return [...m]; };
 const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
-    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}</small>${r.nutr && r.nutr.kcal > 0
+    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}${r.parlato ? ' · 🎙️ ' + (r.parlato === 'dosi' ? 'dosi' : 'passi') + ' dal video' : ''}</small>${r.nutr && r.nutr.kcal > 0
       ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;   // C149: il voto anche fuori
 function vRicVideo(id) {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
@@ -950,6 +951,7 @@ function vRicetta(id) {
     r.difficolta && 'Difficoltà ' + r.difficolta.toLowerCase(), r.costo && 'Costo ' + r.costo.toLowerCase()].filter(Boolean).join(' · ');
   h += `<div><h1>${esc(r.nome)}</h1>${info ? `<p class="tenue" style="margin:4px 0 0">${esc(info)}</p>` : ''}</div>`;
   if (!r.mia) h += `<p class="piccolo ric-fonte-riga" style="margin:0">Fonte: <b>${esc(fonteRic(r))}</b>${r.url ? ` · <a href="${esc(r.url)}" target="_blank" rel="noopener">Apri l'originale ↗</a>` : ''}</p>`;   // C124
+  if (r.parlato) h += `<p class="piccolo ric-parlato" style="margin:0">🎙️ <b>${r.parlato === 'dosi' ? 'Dosi e passi detti' : 'Passi detti'} nel video</b>: li ha ascoltati Claude, con l'aiuto di Google, da quello che dice ${esc(r.autore || 'chi fa il video')}. Possono avere errori: nel dubbio guarda il video.</p>`;   // C150
   h += valoriRic(r.nutr || (v && v.nutr), r);
   if (r.intro) h += `<details class="ric-intro"><summary>${r.video ? '📝 Cosa scrive sotto il video ·' : esc(r.intro.split('\n')[0].slice(0, 140)) + (r.intro.length > 140 ? '…' : '')} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
   h += `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
