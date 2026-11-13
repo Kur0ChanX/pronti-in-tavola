@@ -2,11 +2,13 @@
 "account": "108763",
 "sessione": "20f92a69726c",
 "giorno": "2026-11-13",
-"turni": 1,
-"peso": 0,
-"uscita": 0,
-"contesto_max": 147607,
-"anomalie": [],
+"turni": 2,
+"peso": 1295668,
+"uscita": 40106,
+"contesto_max": 230334,
+"anomalie": [
+"40k token scritti in un turno"
+],
 "blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": 1,
 "Stop 6 · Il turno finisce con una": 1
@@ -21,5 +23,10 @@
 },
 "remota": "01WTjqUw66Sp",
 "aiutanti": 0,
-"strumenti": 0
+"strumenti": 42,
+"motori": {
+"opus": 1295668
+},
+"memoria_scaduta": 1,
+"ricreati": 153683
 }
