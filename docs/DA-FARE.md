@@ -2,7 +2,6 @@
 
 ## 0. Aspetta Mario
 - 13/11 · 🛑 · 🟡 Principale 83 · C159 ordini di prova: già fuori da incassi e spesa, ma 2 buchi: tolgono le porzioni «pronti subito» vere e occupano le teglie della settimana. 1 = correggo (consiglio) · 2 = lascia così.
-- 13/11 · 🛑 · 🟡 Principale 83 · C160 costo della ricetta (tutti i 7 punti, patch `c160-unita.patch`): 4 foto `archivio/foto/2026-11-13-2340-c160-dopo-*.png`. 1 = vanno bene, metto online nell'app · 2 = cambia (dimmi cosa).
 - 13/11 · 🟢 Principale 82 · C161 controllo delle regole: 11 proposte in `docs/lavori-in-corso/c161-controllo-regole.md` (3 conflitti, 6 doppioni, 2 morte). 1 = le faccio tutte · 2 = dimmi i numeri da non fare.
 - 13/11 · 🛑 · 🟢 Principale 82 · C159 vista cliente di Monica, 2 domande: DOMANDA 1 gesto per aprirla (1 = come il tuo: dito verso destra in alto a sinistra · 2 = verso l'alto) · DOMANDA 2 tocchi la prima volta (1 = 7 sulla firma come te · 2 = 5). A cosa serve: Monica prova l'app come un cliente.
 - 13/11 · 🟡 Principale 81 · v0.10.30 ONLINE (C155 barra «Chiedi o ordina» + C157 misura della teglia): chiudi e riapri l'app, guarda il menù da cliente; una foto quando puoi.

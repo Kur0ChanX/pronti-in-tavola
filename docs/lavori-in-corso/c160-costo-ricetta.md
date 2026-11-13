@@ -5,6 +5,7 @@
 
 - 13/11 23:07 (dopo la DOMANDA 1 della #83): «aggiungi anche KG e CL ed Etti»
 - 13/11 ~23:25: «per il resto va bene» (= punti 2-7)
+- 13/11 23:44 (#84, dopo le 4 foto rimandate): «va bene come consiglio» (= 1, metto online)
 
 Ho capito: per ogni ingrediente della ricetta Monica ha già la quantità usata; aggiungiamo il prodotto comprato (confezione: kg, litri, pezzi…) col prezzo che mette lei; l'app calcola il costo della ricetta (e a porzione) e porta i prodotti nella lista della spesa. ❓ da confermare (Mario).
 
@@ -39,4 +40,4 @@ Ho capito: per ogni ingrediente della ricetta Monica ha già la quantità usata;
 - Prova `C160 costo della ricetta…` in `tools/prova.js`. Foto: `archivio/foto/2026-11-13-2340-c160-dopo-1..4.png`.
 
 ## Stato
-- Tutti i 7 punti in patch, giro completo locale 102/102 verde (#83); aspetta l'ok di Mario sulle 4 foto, poi giro completo e online.
+- #84: ok di Mario sulle foto; patch applicata, v0.10.31, giro completo in corso, poi online.
