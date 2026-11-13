@@ -22,3 +22,5 @@ Consiglio: 1. Raggiungibile dal contenitore (13/11: Google risponde 403 senza ch
 
 ## Stato
 - 13/11 #71: ricerca e strade; DOMANDA 1 🛑 a Mario (strada e chiave). Chiave: variabile `GEMINI_API_KEY` nelle impostazioni dell'ambiente (come `YOUTUBE_API_KEY`), mai in chat.
+- 13/11 #71 Mario, parola per parola: «prendiamo l'audio da ogni video e prendi il testo tranquillo tanto lo guardo solo io non è publico di dò il permesso» (= strada 3).
+  Risposta (Claude): la 3 no. Il permesso dei video è di YouTube e dei creatori, non di Mario; dal contenitore YouTube blocca lo scarico, e girarci intorno vuol dire aggirare i controlli anti-robot (#68: rifiutato dal controllo della sessione). «Non è pubblico» non è vero oggi: progetto pubblico (C140) e `ricette-video.js` si legge dal sito. La strada 1 fa la stessa cosa (Google ascolta l'audio e dà il testo intero) in modo ufficiale: DOMANDA 1 riscritta (1 = Gemini con la chiave · 2 = niente).
