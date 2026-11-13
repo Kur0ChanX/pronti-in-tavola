@@ -202,7 +202,8 @@ const nomeBreve = n => String(n || '').split(' ')[0];
 /* ---------- ordini ---------- */
 const ATTIVI = ['nuovo', 'proposta', 'accettato', 'pronto'];
 /* teglie che un ordine occupa nella sua settimana (i «pronti» e gli ordini chiusi no) */
-const teglieOrdine = o => (!o.pronto && ATTIVI.includes(o.stato) ? o.righe.filter(r => r.tipo === 'teglia' || r.tipo === 'intera').reduce((a, r) => a + r.qta, 0) : 0);
+/* (C159) un ordine di PROVA non occupa le teglie della settimana */
+const teglieOrdine = o => (!o.pronto && !o.prova && ATTIVI.includes(o.stato) ? o.righe.filter(r => r.tipo === 'teglia' || r.tipo === 'intera').reduce((a, r) => a + r.qta, 0) : 0);
 function teglieSettimana(sett, escludi) {
   /* il cliente vero non vede gli ordini degli altri: conta il documento settimane/ */
   if (S.motore === 'firebase' && P.ruolo !== 'monica') {
@@ -2361,7 +2362,7 @@ const A = {
       S.ordini.push(o);
     };
     if (dopo.length) nuovo(dopo, UI.entro, false);
-    if (pronti.length) { nuovo(pronti, oggi(), true); pronti.forEach(r => { const p = piatto(r.piatto); p.pronto.qta = arrot(p.pronto.qta - r.qta); }); }
+    if (pronti.length) { nuovo(pronti, oggi(), true); if (!(UI.prova === true && puoProvare())) pronti.forEach(r => { const p = piatto(r.piatto); p.pronto.qta = arrot(p.pronto.qta - r.qta); }); }   // (C159) la prova non toglie porzioni vere
     P.carrello = []; UI.entro = null; UI.nota = ''; UI.prova = undefined; salva(); salvaP(); vai('inviato');
   },
   modifica(el) { const o = ordine(el.dataset.id); UI.modifica = { ordine: o.id, righe: JSON.parse(JSON.stringify(o.righe)) }; vai('modifica'); },
@@ -2416,7 +2417,7 @@ const A = {
   'tutti-prova-si'() {
     if (!puoSviluppare()) return;
     const oo = S.ordini.filter(o => !diProva(o)); UI.foglio = null;
-    cambia(`${oo.length} ${oo.length === 1 ? 'ordine segnato' : 'ordini segnati'} come PROVA: non contano più negli incassi né nella spesa`, () => { oo.forEach(o => { o.prova = true; }); });
+    cambia(`${oo.length} ${oo.length === 1 ? 'ordine segnato' : 'ordini segnati'} come PROVA: non contano più negli incassi né nella spesa`, () => { oo.forEach(o => { if (ATTIVI.includes(o.stato)) rimettiPronti(o); o.prova = true; }); });
   },
   'dev-vapore'(el) { P.vapore = el.dataset.v; salvaP(); render(); Vapore.parti(P.vapore); },
   'dev-tutte'() { UI.devTutte = true; render(); },
@@ -2450,7 +2451,7 @@ const A = {
     const id = el.dataset.id;
     if (UI.provaSi !== id) { UI.provaSi = id; render(); clearTimeout(A._prova); A._prova = setTimeout(() => { if (UI.provaSi === id) { UI.provaSi = null; render(); } }, 4000); return; }
     UI.provaSi = null; const o = ordine(id);
-    cambia(FINITI.includes(o.stato) ? 'Spostato negli ordini di prova (in fondo allo Storico)' : 'Segnato come PROVA: non conta negli incassi né nella spesa', () => { o.prova = true; });
+    cambia(FINITI.includes(o.stato) ? 'Spostato negli ordini di prova (in fondo allo Storico)' : 'Segnato come PROVA: non conta negli incassi né nella spesa', () => { if (ATTIVI.includes(o.stato)) rimettiPronti(o); o.prova = true; });
   },
   'arch-prova'(el) {
     const id = el.dataset.id;
@@ -2463,7 +2464,7 @@ const A = {
   'disarch'(el) { const o = ordine(el.dataset.id); if (o) cambia('Prova ripristinata', () => { o.archiviato = false; }); },
   'ord-vero'(el) {
     const o = ordine(el.dataset.id);
-    cambia('Rimesso tra gli ordini veri', () => { o.prova = false; o.provaCliente = false; if (o.stato !== 'prova') return; o.stato = o.statoPrima || 'ritirato'; delete o.statoPrima; if (!FINITI.includes(o.stato)) riprendiPronti(o); });
+    cambia('Rimesso tra gli ordini veri', () => { o.prova = false; o.provaCliente = false; if (o.stato !== 'prova') { if (ATTIVI.includes(o.stato)) riprendiPronti(o); return; } o.stato = o.statoPrima || 'ritirato'; delete o.statoPrima; if (!FINITI.includes(o.stato)) riprendiPronti(o); });
   },
   'annulla-ordine'(el) { const o = ordine(el.dataset.id); cambia('Ordine annullato', () => { o.stato = 'annullato'; rimettiPronti(o); }); },
   'proposta-si'(el) { const o = ordine(el.dataset.id); cambia('Perfetto, giorno confermato', () => { o.entro = o.proposta; o.proposta = null; o.stato = 'accettato'; }, false); avvisaGestori('risposta'); },
@@ -2628,13 +2629,14 @@ function decidiProva(r, si) {
   if (!id) { id = 'c' + Date.now().toString(36); S.clienti.push({ id, nome: r.nome, da: oggi() }); }
   if (!o || !(o.stato === 'daApprovare' || (o.stato === 'rifiutato' && !o.cliente))) return;
   o.stato = 'nuovo'; o.cliente = id;
-  if (!o.pronto) return;
+  if (!o.pronto || o.prova) return;
   const ci = o.righe.every(x => { const p = piatto(x.piatto); return p && p.pronto && p.pronto.giorno === oggi() && p.pronto.qta >= x.qta; });
   if (ci) o.righe.forEach(x => { const p = piatto(x.piatto); p.pronto.qta = arrot(p.pronto.qta - x.qta); });
   else o.pronto = false;
 }
-function riprendiPronti(o) { if (!o.pronto) return; o.righe.forEach(r => { const p = piatto(r.piatto); if (p && p.pronto && p.pronto.giorno === oggi()) p.pronto.qta = Math.max(0, arrot(p.pronto.qta - r.qta)); }); }
-function rimettiPronti(o) { if (!o.pronto) return; o.righe.forEach(r => { const p = piatto(r.piatto); if (p && p.pronto && p.pronto.giorno === oggi()) p.pronto.qta = arrot(p.pronto.qta + r.qta); }); }
+/* (C159) gli ordini di PROVA non toccano le porzioni pronte vere */
+function riprendiPronti(o) { if (!o.pronto || o.prova) return; o.righe.forEach(r => { const p = piatto(r.piatto); if (p && p.pronto && p.pronto.giorno === oggi()) p.pronto.qta = Math.max(0, arrot(p.pronto.qta - r.qta)); }); }
+function rimettiPronti(o) { if (!o.pronto || o.prova) return; o.righe.forEach(r => { const p = piatto(r.piatto); if (p && p.pronto && p.pronto.giorno === oggi()) p.pronto.qta = arrot(p.pronto.qta + r.qta); }); }
 function segnaPronto(p, d) {
   const fId = p.pronto ? p.pronto.formato : p.formati[0].id, f = p.formati.find(x => x.id === fId) || p.formati[0];
   const q = p.pronto && p.pronto.giorno === oggi() ? p.pronto.qta : 0;
