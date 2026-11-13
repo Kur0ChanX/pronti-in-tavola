@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.30';
+const VERSIONE_APP = '0.10.31';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.31', data: '13/11/2026',
+    nuovo: ['Spesa: in «I miei piatti» sotto ogni piatto vedi quanto ti costa e quanto ti resta', 'Lista della spesa: «Spenderai circa N €» dai prezzi delle confezioni', 'Costo del piatto: casella «Altre spese» per vaschetta, carta e gas, per ogni misura'],
+    migliorato: ['Ingredienti: confezione in g, etti, kg, ml, cl, l o pezzi; prima la confezione, poi il prezzo, con «Cioè … € al kg»', 'Costo dei gusti con ingredienti in più; gli ingredienti senza dose si vedono e non contano'] },
   { v: '0.10.30', data: '13/11/2026',
     migliorato: ['Clienti: in cima al menù una barra sola «Chiedi o ordina», che resta in vista mentre scorri: scrivi o tocca il microfono a destra per chiedere di allergie e prezzi o per ordinare', '«Scrivi a Monica» è nella barra in basso, accanto a Menù e I miei ordini', 'Teglie: se l’ordine arriva senza misura, il cliente la sceglie nel carrello (da 6 o da 8) prima di inviare'] },
   { v: '0.10.29', data: '13/11/2026',

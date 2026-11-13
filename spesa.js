@@ -65,7 +65,7 @@ const lottoDi = p => Math.min(200, Math.max(1, Math.round(Number((SPESA.lotti ||
 const CHIAVE_SPESA = 'pit-spesa-v1';
 
 function spesaVuota() {
-  return { versione: 1, dosi: JSON.parse(JSON.stringify(DOSI_INIZIALI)), ing: {}, casa: {}, presi: {}, giorni: 2, anche: false, mia: [], usati: {} };
+  return { versione: 1, dosi: JSON.parse(JSON.stringify(DOSI_INIZIALI)), ing: {}, casa: {}, presi: {}, giorni: 2, anche: false, mia: [], usati: {}, extra: {} };
 }
 let SPESA = (() => {
   try { const s = JSON.parse(localStorage.getItem(CHIAVE_SPESA)); if (s && s.versione === 1) return Object.assign(spesaVuota(), s); }
@@ -142,14 +142,34 @@ function quanto(q, u) {
   if (q >= 1000) return `${NUM.format(Math.ceil(q / 100 - 1e-9) / 10)} ${grande}`;
   return `${Math.max(10, Math.ceil(q / 10 - 1e-9) * 10)} ${u}`;
 }
-/* la confezione com'è scritta sul pacco, senza arrotondare (es. 75 g, 1,5 l) */
-const misura = (q, u) => u !== 'pz' && q >= 1000 ? `${NUM.format(q / 1000)} ${u === 'g' ? 'kg' : 'l'}` : `${NUM.format(q)} ${u}`;
+/* confezione in grammi, etti, kg · ml, cl, litri · pezzi (C160, Mario 13/11 23:07 «aggiungi anche KG e CL ed Etti»):
+   in memoria resta in g, ml o pz (conti e dati di prima uguali); «cu» è solo l'unità con cui Monica la scrive */
+const MISURE_CONF = { g: [['g', 1, 'grammi'], ['hg', 100, 'etti'], ['kg', 1000, 'kg']], ml: [['ml', 1, 'ml'], ['cl', 10, 'cl'], ['l', 1000, 'litri']], pz: [['pz', 1, 'pezzi']] };
+function unitaConf(inf) {   // [sigla, quanti g/ml per 1, nome]
+  const tt = MISURE_CONF[inf.u] || MISURE_CONF.g;
+  return tt.find(x => x[0] === inf.cu) || (inf.conf >= 1000 && tt[2] ? tt[2] : tt[0]);
+}
+/* la prova del prezzo (C160 punto 2): «Cioè 10,00 € al kg», così un numero sbagliato si vede subito */
+const alKg = inf => !(inf.prezzo > 0 && inf.conf > 0) || (inf.u === 'pz' && inf.conf === 1) ? ''
+  : `Cioè ${euro(inf.u === 'pz' ? inf.prezzo / inf.conf : inf.prezzo / inf.conf * 1000)} ${inf.u === 'pz' ? 'al pezzo' : inf.u === 'g' ? 'al kg' : 'al litro'}`;
+function aggiornaPrezzoFoglio(id) {   // senza rifare la pagina: solo le due scritte
+  const inf = infoIng(id), per = document.getElementById('sp-per'), kg = document.getElementById('sp-alkg');
+  if (per) per.textContent = prezzoPer(inf);
+  if (kg) kg.textContent = alKg(inf);
+}
+const prezzoPer = inf => `€ ${inf.conf > 0 ? `per ${misura(inf.conf, inf.u, inf.cu)}` : inf.u === 'pz' ? 'al pezzo' : inf.u === 'g' ? 'al kg' : 'al litro'}`;
+/* la confezione com'è scritta sul pacco, senza arrotondare (es. 75 g, 3 etti, 75 cl, 1,5 l) */
+function misura(q, u, cu) {
+  const x = (MISURE_CONF[u] || []).find(m => m[0] === cu && m[1] > 1);
+  if (x) { const v = +(q / x[1]).toFixed(3); return x[0] === 'hg' ? `${NUM.format(v)} ${v === 1 ? 'etto' : 'etti'}` : `${NUM.format(v)} ${x[0]}`; }
+  return u !== 'pz' && q >= 1000 ? `${NUM.format(q / 1000)} ${u === 'g' ? 'kg' : 'l'}` : `${NUM.format(q)} ${u}`;
+}
 function daComprare(id, serve) {
   const inf = infoIng(id), casa = casaDi(id), manca = Math.max(0, serve - casa);
   if (!manca) return null;
   if (inf.conf > 0) {
     const n = Math.ceil(manca / inf.conf - 1e-9);
-    return { testo: inf.u === 'pz' && inf.conf === 1 ? `${n} pz` : `${n} × ${misura(inf.conf, inf.u)}`, manca };
+    return { testo: inf.u === 'pz' && inf.conf === 1 ? `${n} pz` : `${n} × ${misura(inf.conf, inf.u, inf.cu)}`, manca };
   }
   return { testo: quanto(manca, inf.u), manca };
 }
@@ -194,6 +214,8 @@ function vSpesaOrdini({ oo, c, fino, ids, compra }) {
     ${c.mancano.map(([id, ii]) => `<div class="fila" style="margin-top:8px"><button type="button" class="chip" data-a="vai" data-v="piatto:${id}">${ico('matita')}${esc(piatto(id).nome)}</button>
       <small>senza dose: ${esc(ii.map(i => ING(i).n.toLowerCase()).join(', '))}</small></div>`).join('')}</div></div>`;
   if (compra.length) {
+    const st = spesaStimata(compra);
+    if (st.tot) h += `<div class="avviso verde">${ico('carrello')}<div>Spenderai circa <b>${euro(st.tot)}</b>${st.senza ? ` (più ${st.senza} ${st.senza === 1 ? 'cosa' : 'cose'} senza prezzo: tocca la matita per scriverlo)` : ''}.</div></div>`;
     h += `<p class="tenue" style="margin:0" aria-live="polite">Nel carrello: <b>${presi}</b> di ${compra.length}. Tocca il cerchio quando prendi una cosa.</p>`;
     REPARTI.forEach(rep => {
       const qui = compra.filter(([id]) => infoIng(id).rep === rep);
@@ -217,16 +239,18 @@ function vSpesaOrdini({ oo, c, fino, ids, compra }) {
 }
 
 function foglioSpesaIng() {
-  const id = UI.foglio.id, inf = infoIng(id), casa = casaDi(id);
+  const id = UI.foglio.id, inf = infoIng(id), casa = casaDi(id), uc = unitaConf(inf);
   const serve = calcolaSpesa(ordiniSpesa()).tot[id] || 0;
   return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>${esc(ING(id).n)}</h1>
     <p class="tenue" style="margin:0">${serve ? `Per gli ordini scelti ti servono <b>${quanto(serve, inf.u)}</b>.` : 'Per gli ordini scelti non serve.'}</p>
     <span class="etichetta" style="font-weight:800">Ce l'hai già in casa</span>
     <div class="fila">${passo('sp-casa', casa ? quanto(casa, inf.u) : '0', `data-ing="${id}"`)}<span class="tenue">${casa ? 'Lo tolgo dalla lista.' : 'Niente in casa.'}</span></div>
-    <span class="etichetta" style="font-weight:800">Quanto lo paghi (se vuoi)</span>
-    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.prezzo" data-ing="${id}" value="${inf.prezzo || ''}" placeholder="0,00" aria-label="Prezzo in euro"><span class="tenue">€ ${inf.conf > 0 ? `per ${misura(inf.conf, inf.u)}` : inf.u === 'pz' ? 'al pezzo' : inf.u === 'g' ? 'al kg' : 'al litro'}</span></div>
     <span class="etichetta" style="font-weight:800">La confezione che compri</span>
-    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.conf" data-ing="${id}" value="${inf.conf || ''}" placeholder="sfuso, a peso" aria-label="Confezione in ${UNITA[inf.u]}"><span class="tenue">${UNITA[inf.u]}</span></div>
+    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.conf" data-ing="${id}" value="${inf.conf ? +(inf.conf / uc[1]).toFixed(3) : ''}" placeholder="${inf.u === 'pz' ? 'sfusi' : 'sfuso, a peso'}" aria-label="Confezione in ${uc[2]}"><span class="tenue">${uc[2]}</span></div>
+    ${inf.u === 'pz' ? '' : `<div class="scelte">${(MISURE_CONF[inf.u] || MISURE_CONF.g).map(([k, , n]) => `<button type="button" class="chip" data-a="sp-cu" data-ing="${id}" data-v="${k}" aria-pressed="${uc[0] === k}">${n}</button>`).join('')}</div>`}
+    <span class="etichetta" style="font-weight:800">Quanto la paghi (se vuoi)</span>
+    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.prezzo" data-ing="${id}" value="${inf.prezzo || ''}" placeholder="0,00" aria-label="Prezzo in euro"><span class="tenue" id="sp-per">${prezzoPer(inf)}</span></div>
+    <span class="tenue piccolo" id="sp-alkg">${alKg(inf)}</span>
     <span class="etichetta" style="font-weight:800">Si misura in</span>
     <div class="scelte">${Object.entries(UNITA).map(([k, n]) => `<button type="button" class="chip" data-a="sp-unita" data-ing="${id}" data-v="${k}" aria-pressed="${inf.u === k}">${n}</button>`).join('')}</div>
     <span class="etichetta" style="font-weight:800">Reparto del negozio</span>
@@ -272,8 +296,18 @@ function salvaCampoSpesa(el) {
   }
   if (c === 'sp.vn' || c === 'sp.vq') { salvaVoce(el); return; }
   if (c === 'sp.anche') { SPESA.anche = el.checked; salvaSpesa(); render(); return; }
-  if (c === 'sp.prezzo') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { prezzo: num(el.value) }); salvaSpesa(); salvatoOk(); return; }
-  if (c === 'sp.conf') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { conf: num(el.value) }); salvaSpesa(); render(); }
+  /* prezzo e confezione: niente render mentre si esce dal campo (C160): la pagina rifatta sotto il dito perdeva il tocco su «kg» o «Fatto» */
+  if (c === 'sp.prezzo') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { prezzo: num(el.value) }); salvaSpesa(); aggiornaPrezzoFoglio(id); return; }
+  if (c === 'sp.extra') {   // altre spese del formato: si aggiornano solo le righe del costo (il campo resta dov'è)
+    const pid = el.dataset.p, e = SPESA.extra = Object.assign({}, SPESA.extra), v = num(el.value);
+    e[pid] = Object.assign({}, e[pid]); if (v) e[pid][el.dataset.f] = v; else delete e[pid][el.dataset.f];
+    salvaSpesa();
+    const r = document.getElementById('costo-righe'), pp = typeof piatto === 'function' ? piatto(pid) : null;
+    if (r && pp) r.innerHTML = righeCosto(pp);
+    return;
+  }
+  if (c === 'sp.conf') { const uc = unitaConf(infoIng(id)); SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { conf: arrot(num(el.value) * uc[1]), cu: uc[0] }); salvaSpesa();
+    aggiornaPrezzoFoglio(id); }
 }
 function cambiaIng(id, campi) { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], campi); salvaSpesa(); render(); }
 
@@ -288,7 +322,15 @@ Object.assign(A, {
     if (!SPESA.casa[id]) delete SPESA.casa[id];
     salvaSpesa(); render();
   },
-  'sp-unita'(el) { cambiaIng(el.dataset.ing, { u: el.dataset.v }); },
+  'sp-unita'(el) { cambiaIng(el.dataset.ing, { u: el.dataset.v, cu: null }); },
+  'sp-cu'(el) {
+    const id = el.dataset.ing, inf = infoIng(id), dopo = (MISURE_CONF[inf.u] || []).find(x => x[0] === el.dataset.v);
+    if (!dopo) return;
+    /* il numero che Monica vede nel campo (anche se non ha ancora finito di scrivere), nell'unità appena toccata */
+    const campo = document.querySelector(`.foglio [data-campo="sp.conf"][data-ing="${id}"]`);
+    const visto = campo ? Math.max(0, Number(String(campo.value).replace(',', '.')) || 0) : inf.conf / unitaConf(inf)[1];
+    cambiaIng(id, { cu: dopo[0], conf: arrot(visto * dopo[1]) });
+  },
   'sp-rep'(el) { cambiaIng(el.dataset.ing, { rep: el.dataset.v }); },
   'sp-fatta'() {   /* le cose spuntate vanno «in casa» (le confezioni intere che hai preso), la lista si svuota da sola */
     const prima = JSON.stringify(SPESA), c = calcolaSpesa(ordiniSpesa());
@@ -460,21 +502,66 @@ function prezzoUnita(id) {   // euro per 1 g, 1 ml o 1 pezzo
   return inf.conf > 0 ? inf.prezzo / inf.conf : inf.prezzo / (inf.u === 'pz' ? 1 : 1000);
 }
 function costoDosi(p, variante) {
-  const pezzi = [SPESA.dosi[p.id] || {}, variante ? SPESA.dosi[p.id + ':' + variante] || {} : {}];
-  let tot = 0; const senza = [];
-  pezzi.forEach(d => Object.keys(d).forEach(id => { const u = prezzoUnita(id); if (u == null) senza.push(id); else tot += d[id] * u; }));
-  return { tot, senza: [...new Set(senza)] };
+  /* solo gli ingredienti del piatto (e del gusto): una dose rimasta di un ingrediente tolto non conta più */
+  const pezzi = [[SPESA.dosi[p.id] || {}, p.ing]];
+  const v = variante && p.varianti.find(x => x.id === variante);
+  if (v) pezzi.push([SPESA.dosi[p.id + ':' + v.id] || {}, v.ing || []]);
+  let tot = 0; const senza = [], senzaDose = [];
+  pezzi.forEach(([d, ii]) => ii.forEach(id => {
+    if (d[id] == null || d[id] === '') { senzaDose.push(id); return; }   // 0 scritto da Monica = «niente», non manca
+    const u = prezzoUnita(id); if (u == null) senza.push(id); else tot += Number(d[id]) * u;
+  }));
+  return { tot, senza: [...new Set(senza)], senzaDose: [...new Set(senzaDose)] };
 }
-function costoPiatto(p) {
-  const { tot, senza } = costoDosi(p);
-  if (!Object.keys(SPESA.dosi[p.id] || {}).length) return '';
-  const quante = f => f.tipo === 'teglia' ? (f.porzioni || (f.id === 't8' ? 8 : 6)) : 1;   // come basiRiga
-  let h = `<span class="etichetta" style="font-weight:800">Quanto ti costa</span>`;
+const porzioniDi = f => f.tipo === 'teglia' ? (f.porzioni || (f.id === 't8' ? 8 : 6)) : 1;   // come basiRiga
+const extraDi = (p, f) => Number(((SPESA.extra || {})[p.id] || {})[f.id]) || 0;
+const costoFormato = (p, f, tot) => tot * porzioniDi(f) + extraDi(p, f);
+function rigaCostoFormato(nome, c, prezzo) {
+  const resta = (prezzo || 0) - c;
+  return `<div class="fila" style="justify-content:space-between"><span>${esc(nome)}: ti costa <b>${euro(c)}</b></span><span class="${resta < 0 ? 'allarme' : 'tenue'}">vendi a ${euro(prezzo)} · ti restano <b>${euro(resta)}</b></span></div>`;
+}
+/* le righe di «Quanto ti costa» (C7, C160): formati, gusti, cosa manca */
+function righeCosto(p) {
+  const base = costoDosi(p), f0 = p.formati[0], senza = new Set(base.senza), senzaDose = base.senzaDose.map(i => ING(i).n);
+  const conExtra = p.formati.some(f => extraDi(p, f));
   /* prezzi scritti QUI, senza cercare la matita nella spesa (Mario 08/11 ~15:20 «la matita dov'è?»): un tasto per ogni ingrediente senza prezzo apre lo stesso foglio della spesa */
   const tasti = ids => `<div class="fila" style="flex-wrap:wrap;gap:6px;margin-top:6px">${ids.map(i => `<button type="button" class="chip" data-a="sp-ing" data-ing="${esc(i)}">${ico('matita')}${esc(ING(i).n)}</button>`).join('')}</div>`;
-  if (!tot) return h + `<span class="tenue piccolo">Tocca un ingrediente e scrivi quanto lo paghi: qui vedi quanto ti costa e quanto ti resta.</span>${tasti(senza)}`;
-  h += p.formati.map(f => { const c = tot * quante(f), resta = (f.prezzo || 0) - c;
-    return `<div class="fila" style="justify-content:space-between"><span>${esc(f.nome)}: ti costa <b>${euro(c)}</b></span><span class="${resta < 0 ? 'allarme' : 'tenue'}">vendi a ${euro(f.prezzo)} · ti restano <b>${euro(resta)}</b></span></div>`; }).join('');
-  if (senza.length) h += `<span class="tenue piccolo">Senza prezzo (non contano ancora), tocca per scriverlo:</span>${tasti(senza)}`;
+  /* gusti con ingredienti in più o prezzo diverso: costo sulla prima misura (come il prezzo del gusto); cosa manca anche dei gusti */
+  const gusti = [];
+  if (f0) p.varianti.forEach(v => {
+    const cv = costoDosi(p, v.id), prezzoV = (v.prezzi && v.prezzi[f0.id]) || f0.prezzo;
+    cv.senza.forEach(i => senza.add(i));
+    cv.senzaDose.filter(i => (v.ing || []).includes(i)).forEach(i => senzaDose.push(`${ING(i).n} (gusto ${v.nome})`));
+    if (cv.tot > base.tot || prezzoV !== f0.prezzo) gusti.push(rigaCostoFormato(`Gusto ${v.nome} (${f0.nome.toLowerCase()})`, costoFormato(p, f0, cv.tot), prezzoV));
+  });
+  let h = '';
+  if (base.tot || conExtra) h += p.formati.map(f => rigaCostoFormato(f.nome, costoFormato(p, f, base.tot), f.prezzo)).join('') + gusti.join('');
+  else h += `<span class="tenue piccolo">Tocca un ingrediente e scrivi quanto lo paghi: qui vedi quanto ti costa e quanto ti resta.</span>`;
+  if (senzaDose.length) h += `<span class="tenue piccolo">Senza dose (non contano): <b>${esc([...new Set(senzaDose)].join(', '))}</b>. Scrivila qui sopra.</span>`;
+  if (senza.size) h += `<span class="tenue piccolo">Senza prezzo (non contano ancora), tocca per scriverlo:</span>${tasti([...senza])}`;
   return h;
+}
+function costoPiatto(p) {
+  if (!p.ing.length) return '';
+  const altre = p.formati.map(f => `<div class="formato-riga"><b>${esc(f.nome)}</b><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.extra" data-p="${esc(p.id)}" data-f="${esc(f.id)}" value="${extraDi(p, f) || ''}" placeholder="0,00" aria-label="Altre spese per ${esc(f.nome)} in euro"><span class="tenue">€</span></div>`).join('');
+  return `<span class="etichetta" style="font-weight:800">Quanto ti costa</span><div id="costo-righe" style="display:flex;flex-direction:column;gap:6px">${righeCosto(p)}</div>
+    <span class="etichetta" style="font-weight:800">Altre spese (vaschetta, carta, gas…)</span><span class="tenue piccolo" style="margin-top:-6px">Quanto spendi in più per ogni ${p.formati.length > 1 ? 'misura' : 'pezzo venduto'}: entra nel costo.</span>${altre}`;
+}
+/* una riga in «I miei piatti» (C160 punto 6): costo e guadagno della prima misura */
+function rigaCosto(p) {
+  const f0 = p.formati[0]; if (!f0 || !p.ing.length) return '';
+  const { tot, senza, senzaDose } = costoDosi(p), c = costoFormato(p, f0, tot);
+  if (!c) return '';
+  const resta = (f0.prezzo || 0) - c, manca = senza.length + senzaDose.length;
+  return `<span class="piccolo ${resta < 0 ? 'allarme' : 'tenue'}">${p.formati.length > 1 ? esc(f0.nome) + ': ' : ''}ti costa ${euro(c)} · ti restano ${euro(resta)}${manca ? ` · ${manca} ${manca === 1 ? 'ingrediente' : 'ingredienti'} senza prezzo o dose` : ''}</span>`;
+}
+/* quanto costa la spesa da fare (C160 punto 7): confezioni intere × prezzo, sfuso a peso */
+function spesaStimata(compra) {
+  let tot = 0, senza = 0;
+  compra.forEach(([id, d]) => {
+    const inf = infoIng(id);
+    if (!inf.prezzo) { senza++; return; }
+    tot += inf.conf > 0 ? Math.ceil(d.manca / inf.conf - 1e-9) * inf.prezzo : d.manca * prezzoUnita(id);
+  });
+  return { tot, senza };
 }
