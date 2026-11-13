@@ -45,3 +45,7 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
 - 1) Siti: modalità `--creatori` di `tools/raccogli_stimate.py` che AGGIUNGE a `ricette-stimate.js` (non rifà Cookpad/GZ: la cache non c'è più), stessi filtri (passi o video, regola Proteiche, stima; i loro valori vincono), campo `fonte` col nome del creatore.
 - 2) YouTube: Cotto al Dente e 2foodfitlovers in `CANALI` di `tools/raccogli_video.py`, controllo a occhio con `--elenco` (2foodfitlovers fa molte recensioni: fuori).
 - 3) App: filtro «per creatore o sito» anche in Proteiche; prova; foto a Mario prima di pubblicare (PT E69). Poi gli inglesi: prova di traduzione su poche, foto.
+
+## Mario 13/11 09:38 (#70, con foto dell'elenco Ricette video), parola per parola
+> stai andando bene metti i voti anche fuori in vista prima di entrare valuta se tutti i tuoi voti vanno bene con la logita palestra fitness ipertrofia senza ingrassare e aggiungi gli altri youtuber influenzer video cercane tanti altri e aggiungi voglio un catalogo immenso proteico in priorità a GialloZafferano lo facciamo andare avanti piano piano alla volta giallo ma le ricette proteiche e video sono importanti se vuoi dammi anche qualche idea intelligente e geniale
+- Da fare: voto visibile nelle carte degli elenchi; ricontrollo della pagella con la logica «muscoli senza ingrassare»; tanti creatori in più (cercarne altri); proteiche e video prima di GialloZafferano; idee.
