@@ -2,19 +2,20 @@
 "account": "108763",
 "sessione": "5da0cf407c87",
 "giorno": "2026-11-13",
-"turni": 1,
-"peso": 630965,
-"uscita": 23836,
-"contesto_max": 166490,
+"turni": 2,
+"peso": 1319836,
+"uscita": 52148,
+"contesto_max": 220204,
 "anomalie": [
 "2 uscite di strumento enormi (43 KB la più grande): leggere a pezzi (grep -n, sed -n)",
-"avvio pesante: 131k token dopo le letture d'avvio (tetto 130k)"
+"avvio pesante: 131k token dopo le letture d'avvio (tetto 130k)",
+"28k token scritti in un turno"
 ],
 "remota": "01WTjqUuVK9Q",
 "aiutanti": 0,
-"strumenti": 33,
+"strumenti": 57,
 "motori": {
-"opus": 630965
+"opus": 1319836
 },
 "blocchi": {
 "Stop 6 · Segno delle domande nel titolo": 1
