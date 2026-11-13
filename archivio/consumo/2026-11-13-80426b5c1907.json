@@ -1,0 +1,34 @@
+{
+"account": "108763",
+"sessione": "80426b5c1907",
+"giorno": "2026-11-13",
+"turni": 5,
+"peso": 1683021,
+"uscita": 70461,
+"contesto_max": 213592,
+"anomalie": [],
+"remota": "01WTjqUwHBw1",
+"aiutanti": 0,
+"strumenti": 58,
+"motori": {
+"opus": 1683021
+},
+"memoria_scaduta": 2,
+"ricreati": 199900,
+"blocchi": {
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 5 · «👉 DA FARE TU» senza": 1,
+"Stop 8 · Promessa a Mario senza voce": 1
+},
+"esempi_blocchi": {
+"Stop 6 · Il turno finisce con una": [
+"10:52 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 5 · «👉 DA FARE TU» senza": [
+"10:52 · «👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del blocco «A cosa serve: …» (cosa ottiene Mario, l'app o il lavoro). Riscrivi solo quel blocco."
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"11:12 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Li farò rifare a fine giro, così prendono il nome vero: costa solo 14 video della quota gratis.». Nella sua voce (o in una nuova) scrivi «👁 Lo"
+]
+}
+}
