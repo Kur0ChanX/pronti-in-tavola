@@ -2,6 +2,20 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
+## 2026-11-10 16:54 · 01WTjqUv8dDc
+trovami ler forza adesso soluzioni per far funzionare l'app al 100% me lo merito per i tuoi errori
+
+## 2026-11-10 17:02 · 01WTjqUv8dDc
+Devo pagare io i tuoi sbagli? ti sei matto
+ti avevo detto di non mettere blocchi ma se qualcosa segnava piú del dovuto dovevi avvisarmi ora metti i blocchi cosí è facile oppure che devo pagare.... non va bene cosí
+L'app deve funzionare risolvi ora io non ho soldi ti avviso
+
+## 2026-11-10 17:05 · 01WTjqUv8dDc
+Aggiungiamo un account inventato qualcosa ho l'app fermaaaaaaaaaaa
+
+## 2026-11-10 17:10 · 01WTjqUv8dDc
+Kit si le regole attiva su rvc quelle selezionate da me con i controlli richiesti
+
 ## 2026-11-10 17:15 · 01WTjqUuJHcT
 è normale che funziona?
 
@@ -102,23 +116,11 @@ se lo rendiamo privato e mettiamo il mio PC?
 ## 2026-11-11 19:24 · 01WTjqUvhRwD
 hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo
 
-## 2026-11-11 19:33 · 01WTjqUumr4n
-mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazioni che hai in una sezione a parte esempio ricette video e dividi per il nome che dici? occupiamo teoppo spazio limiti ecc?
+## 2026-11-11 22:54 · 01WTjqUwz4Kr
+metti i video che partono da lì
 
-## 2026-11-12 18:13 · 01WTjqUumr4n
-Perché in messa è scritto solo le ricette di giallo zafferano e quelle proteiche dentro non c'è nulla? Perché nessuna ricetta, non c'è praticamente nulla, solo quelle di giallo zafferano? Vedi che qualcosa c'è dentro, tu mi hai messo solo gli ingredienti. Dai, fai un lavoro fatto bene sulle ricette proteiche, per piacere, falle accuratamente una per una.
+## 2026-11-12 00:08 · 01WTjqUwz4Kr
+ok consiglio
 
-## 2026-11-12 18:41 · 01WTjqUvnPKs
-Una domanda, non puoi mettere un play nei video e mette un player sempre che guarda non in locale, però che guarda direttamente il video su YouTube direttamente da quel player, senza che mi apra un'altra pagina che posso mettere magari schermo intero, magari mi interessa. Schermo intero e sottotitoli, il classico banner di YouTube, sottotitoli, la qualità della risoluzione, le classiche cose di YouTube, però che mi apre un player direttamente lì, direttamente in quella finestra. Io posso cliccare, zoomare, fare schermo intero in orizzontale o schermo intero in verticale. Puoi farlo. E poi dimmi se ci sono altri influencer, youtuber, tiktoker che fanno tantissime ricette fitness, che si inventano molte ricette. Fammi una lista e valutiamo chi possiamo inserire, quale di questi possiamo inserire per prenderli le ricette e portarcele da noi.
-
-## 2026-11-12 18:54 · 01WTjqUvnPKs
-solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito
-
-## 2026-11-12 20:00 · 01WTjqUxxnTz
-sono italiani tutti direi
-
-## 2026-11-12 20:02 · 01WTjqUxxnTz
-solo
-
-## 2026-11-12 21:27 · 01WTjqUxxnTz
-solo tutti italiani e se si traducono bene metti anche quelle inglesi
+## 2026-11-13 09:08 · 01WTjqUwz4Kr
+Vai avanti con le ricette proteiche, vai avanti, il lavoro che stavi iniziando continualo e caricamele, quelle che abbiamo detto, quelle che abbiamo segnalato, i nuovi youtuber, blogger, i video, la scelta dei video che abbiamo fatto, che mi fa vedere i passaggi del player, che clicchi e me lo fa vedere lì, che non mi manda nessuna pagina, insomma tutto quello che abbiamo deciso, continualo.
