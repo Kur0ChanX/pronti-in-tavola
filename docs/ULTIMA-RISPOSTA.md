@@ -1,8 +1,15 @@
-# Ultima risposta di Claude (13/11/2026 23:38 ora italiana)
+# Ultima risposta di Claude (13/11/2026 23:45 ora italiana)
 
-📌 **Di cosa parliamo:** il costo di ogni piatto, nella schermata della spesa di Monica (le 4 foto sopra). È pronto ma non ancora online: manca solo il tuo ok.
+Mario, il giro completo delle prove sta girando (stima: circa 15 minuti). Quando finisce mi riattivo da sola e ti scrivo.
 
-1 · Vanno bene → lo metto online nell'app. Monica vedrà quanto le costa ogni piatto e quanto le resta (**consiglio**).
-2 · Cambia qualcosa → dimmi cosa. Correggo e ti rimando le foto prima di metterlo online.
+✅ **FATTO**
+- Ho capito: «va bene come consiglio» = metto online il costo della ricetta.
+- 🧠 Opus · Medio
+- Le modifiche sono applicate nella versione 0.10.31. Le 3 prove del costo sono verdi.
+- La tua risposta è segnata, e la domanda è tolta dalla lista di cosa aspetta te.
 
-Aspetto il tuo numero.
+───
+💡 **PARERE**
+Gli ordini di prova di Monica (non devono contare come ordini veri) restano fuori da questa versione: lì aspetto ancora la tua risposta. Te la rifaccio quando il costo è online.
+
+👉 …
