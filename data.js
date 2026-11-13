@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.26';
+const VERSIONE_APP = '0.10.27';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.27', data: '13/11/2026',
+    nuovo: ['Ricettario: un solo tasto «🎛️ Filtri» con tutti i filtri dentro; i filtri accesi come etichette con la ✕', 'Ricettario: la ricerca trova le ricette anche fuori dalla scheda accesa (anche le ricette video)', 'Ricette video: sezione «💡 Consigli, allenamenti e altro» per i video utili che non sono ricette'],
+    migliorato: ['Ricettario: schede Tutte, Proteiche, Video e Preferite; Sarde, Italiane e Le mie dentro Filtri'] },
   { v: '0.10.26', data: '13/11/2026',
     nuovo: ['Ricettario, Proteiche: 316 ricette nuove da Fit with Fun, Giuseppe Healthy e Iamfitandsweet',
       'Ricettario, «🎬 Ricette video»: 2 youtuber nuovi, Cotto al Dente e 2foodfitlovers (529 ricette)',
