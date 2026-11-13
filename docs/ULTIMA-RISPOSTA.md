@@ -1,14 +1,11 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 19:36 ora italiana)
 
+Il link di Lisa funziona ancora: puoi mandarlo adesso. Le correzioni di oggi non lo toccano.
 
+Sto facendo il giro completo delle prove con le modifiche nuove:
+- «Scrivi a Monica» è la terza voce nella barra bianca in basso;
+- le allergie stanno in una striscia più piccola, che resta in cima mentre scorri. È ancora facile da toccare: alta come un tasto normale.
 
-## Domande a Mario
+Il microfono e «Dettami l'ordine» li sposto in alto in un secondo momento. Toccano la parte della voce, che ha molte prove sue: non voglio rompere niente stasera. Intanto restano dove sono, ma senza il tasto verde che li copriva.
 
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
-
-Rispondi col numero.
+Tra …
