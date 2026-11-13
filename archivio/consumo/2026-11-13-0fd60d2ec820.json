@@ -2,19 +2,19 @@
 "account": "108763",
 "sessione": "0fd60d2ec820",
 "giorno": "2026-11-13",
-"turni": 7,
-"peso": 1947906,
-"uscita": 51130,
-"contesto_max": 285496,
+"turni": 8,
+"peso": 2366866,
+"uscita": 57326,
+"contesto_max": 295414,
 "anomalie": [
 "25k token scritti in un turno",
 "2 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ],
 "remota": "01WTjqUw4QVb",
 "aiutanti": 0,
-"strumenti": 73,
+"strumenti": 86,
 "motori": {
-"opus": 1947906
+"opus": 2366866
 },
 "blocchi": {
 "Stop 6 · Il turno finisce con una": 1,
