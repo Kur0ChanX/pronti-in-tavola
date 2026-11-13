@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 20:20 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:33 ora italiana)
 
-E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.
+Mi serve veloce il link di Lisa con, l'ho detto 3 volte, con i ravioli e la parmigiana senza la quantità.
