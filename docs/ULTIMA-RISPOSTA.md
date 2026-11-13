@@ -1,13 +1,11 @@
-# Ultima risposta di Claude (13/11/2026 19:49 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:35 ora italiana)
 
-Ho capito: il link a Lisa lo mandi solo quando il menù ordinato è online.
+Sì, il link è giusto, proprio perché non sappiamo se è da 6 o da 8:
+- il link mette nel carrello **solo i ravioli** (2 kg);
+- la parmigiana **non c'è** nel link. Lisa la aggiunge dal menù e l'app le chiede «da 6» o «da 8»: la sceglie lei.
 
-✅ **FATTO**
-- La versione 0.10.29 è online. Il link per Lisa funziona.
-- Il menù ordinato (versione 0.10.30) è pronto e salvato su GitHub, ma **non è ancora online**. Nella foto di controllo la barra in basso andava su due righe e «Scrivi a Monica» finiva sotto. L'ho corretta, ma devo ancora rifare la foto per controllarla.
+Ho solo precisato nel messaggio «1 teglia», così Lisa sa quante metterne:
 
-───
-⚠️ **ATTENZIONE**
-La memoria di questa sessione è piena e devo chiuderla.
-È l'ottava sessione di fila, il massimo: la nuova la devi aprire tu.
-Appena parte, la nuova sessione controlla la …
+```
+Ciao Lisa! 😊 Grazie mille per l'ordine!
+Così non si perde, ti ho già messo i ravioli nell'app: tocca il link qui sotto, poi aggiungi dal menù 1 teglia di parmigiana scegliendo tu la misura (da 6 o da 8), scegli il giorno e premi «Invia l'ordine a Monica». 💛 …
