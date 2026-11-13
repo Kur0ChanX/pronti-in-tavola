@@ -183,9 +183,13 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.25';
+const VERSIONE_APP = '0.10.26';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.26', data: '13/11/2026',
+    nuovo: ['Ricettario, Proteiche: 316 ricette nuove da Fit with Fun, Giuseppe Healthy e Iamfitandsweet',
+      'Ricettario, «🎬 Ricette video»: 2 youtuber nuovi, Cotto al Dente e 2foodfitlovers (529 ricette)',
+      'Ricettario, ricette video «🎙️ dosi dal video»: ingredienti con le dosi e passi presi da quello che dice lo youtuber'] },
   { v: '0.10.25', data: '13/11/2026',
     nuovo: ['Ricettario: voto palestra su ogni ricetta, già sulla carta: dose di proteine, proteine per calorie, grassi, zuccheri e sale',
       'Ricettario, Proteiche: «Da chi» mostra solo le ricette di un sito o di uno youtuber, anche più di uno'],
