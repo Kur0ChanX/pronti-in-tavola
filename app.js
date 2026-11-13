@@ -1165,7 +1165,7 @@ function barraCliente() {
 }
 
 /* ================= MONICA ================= */
-const NOMI_VISTE = { home: 'Home', ricettario: 'Ricettario', ricdb: 'Database ricette', ricetta: 'Ricetta', cucina: 'Cucina guidata', ricmia: 'La tua ricetta', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
+const NOMI_VISTE = { home: 'Home', ricettario: 'Ricettario', ricdb: 'Database ricette', ricvideo: 'Ricette video', ricetta: 'Ricetta', cucina: 'Cucina guidata', ricmia: 'La tua ricetta', ordini: 'Ordini', piatti: 'I miei piatti', piatto: 'Modifica piatto', nuovo: 'Nuovo piatto', clienti: 'Clienti', impostazioni: 'Impostazioni', spesa: 'Lista della spesa' };
 function testataMonica(titolo, indietro) {
   const vista = UI.vista.split(':')[0];
   const aiuto = wa(S.impostazioni.mario, `Ciao Mario, sono bloccata in Pronti in Tavola, nella schermata «${NOMI_VISTE[vista] || vista}». Mi aiuti?`);
@@ -1859,6 +1859,7 @@ function vistaMonica() {
     case 'aiutante': return typeof vAiutante === 'function' ? vAiutante() : vHome();
     case 'ricettario': return typeof vRicettario === 'function' ? vRicettario() : vHome();
     case 'ricdb': return typeof vRicDb === 'function' ? vRicDb() : vHome();   // ricettario.js arriva dopo app.js (PT E23)
+    case 'ricvideo': return typeof vRicVideo === 'function' ? vRicVideo(id) : vHome();   // C144
     case 'ricetta': return typeof vRicetta === 'function' ? vRicetta(id) : vHome();
     case 'cucina': return typeof vCucina === 'function' ? vCucina(id) : vHome();
     case 'ricmia': return typeof vRicMia === 'function' ? vRicMia(id) : vHome();
@@ -3169,6 +3170,7 @@ if (window.top === window) {
   mettiGuardia();
   window.addEventListener('popstate', () => {
     if ($('.apertura')) { mettiGuardia(); return; }
+    if (UI.videoYt && typeof chiudiVideoYt === 'function') { mettiGuardia(); chiudiVideoYt(); return; }   // C147: prima si chiude il video
     if (UI.foglio) { mettiGuardia(); UI.foglio = null; render(); return; }
     const ind = $('#app .testata .indietro');
     if (ind) { mettiGuardia(); ind.click(); return; }
@@ -3198,7 +3200,7 @@ async function controllaAggiornamento() {
    Avviso fisso in basso, fuori da #app (render non lo cancella); il riavvio parte SOLO dal tocco su «Riavvia». */
 function riavviaQuandoPuoi() {
   clearTimeout(tRiavvio);
-  if ($('.apertura')) { tRiavvio = setTimeout(riavviaQuandoPuoi, 5000); return; }
+  if ($('.apertura') || UI.videoYt) { tRiavvio = setTimeout(riavviaQuandoPuoi, 5000); return; }   // C147: mai sopra un video che gira
   let d = $('#agg-avviso');
   if (!d) { d = document.createElement('div'); d.id = 'agg-avviso'; d.setAttribute('role', 'status'); document.body.appendChild(d); }
   d.innerHTML = `<span>🔄 C'è l'aggiornamento <b>${esc(nuovaVersione)}</b>. Finisci quello che stai facendo, poi tocca «Riavvia».</span>
