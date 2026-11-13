@@ -2,21 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 17:15 · 01WTjqUuJHcT
-è normale che funziona?
-
-## 2026-11-10 17:34 · 01WTjqUuJHcT
-mandami una foto prima e dopo
-
-## 2026-11-10 17:39 · 01WTjqUuJHcT
-2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordini
-
-## 2026-11-10 17:41 · 01WTjqUuJHcT
-cmq bisogna mettere un blocco al ritardo se tutto il consumo era quello che non vada sempre in automatico a manuale poco alla volta
-
-## 2026-11-10 17:41 · 01WTjqUuJHcT
-volevo scrivere un blocco al ricettario
-
 ## 2026-11-10 17:44 · 01WTjqUuJHcT
 Ok mi dici che cosa consiste questo canale di emergenza quando durerebbe in fatti alla mano e i clienti ricevono le notifiche se monica gli sposta la data di consegna?
 
@@ -123,15 +108,19 @@ solo
 ## 2026-11-12 21:27 · 01WTjqUxxnTz
 solo tutti italiani e se si traducono bene metti anche quelle inglesi
 
-## 2026-11-13 09:38 · 01WTjqUvtoJC
-stai andando bene metti i voti anche fuori in vista prima di entrare valuta se tutti i tuoi voti vanno bene con la logita palestra fitness ipertrofia senza ingrassare e aggiungi gli altri youtuber influenzer video cercane tanti altri e aggiungi voglio un catalogo immenso proteico in priorità a GialloZafferano lo facciamo andare avanti piano piano alla volta giallo ma le ricette proteiche e video sono importanti se vuoi dammi anche qualche idea intelligente e geniale
-(foto: archivio/foto/2026-11-13-0938-mario-ricette-video-elenco.jpg, elenco «Ricette video» v0.10.24)
+## 2026-11-13 09:12 · 01WTjqUvtoJC
+https://claude.ai/connect-github
 
-## 2026-11-13 09:4x · 01WTjqUvtoJC
+## 2026-11-13 09:23 · 01WTjqUvtoJC
+Rinomina la sessione, rinomina la sessione, rinomina la sessioneeeeeeeeee
+
+## 2026-11-13 09:41 · 01WTjqUvtoJC
+stai andando bene metti i voti anche fuori in vista prima di entrare valuta se tutti i tuoi voti vanno bene con la logita palestra fitness ipertrofia senza ingrassare e aggiungi gli altri youtuber influenzer video cercane tanti altri e aggiungi voglio un catalogo immenso proteico in priorità a GialloZafferano lo facciamo andare avanti piano piano alla volta giallo ma le ricette proteiche e video sono importanti se vuoi dammi anche qualche idea intelligente e geniale
+
+## 2026-11-13 09:42 · 01WTjqUvtoJC
 Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resource dall'app. Per me l'idea sarebbe che me le cerchi in automatico dall'app, ma non so quanto sia performante, e me le carica. Solo che mi ha fatto consumare tutti i token e mi aveva bloccato l'applicazione, quindi per questo voglio evitarlo. Li faccio cercare e caricare a te.
 
-## 2026-11-13 ~09:50 · 01WTjqUvtoJC
+## 2026-11-13 09:46 · 01WTjqUvtoJC
 nel mio utente Mario mette i voti per me invece per monica valuta in modo generico
 
-io mi chiamo mario ho [età] anni alto [altezza] vado in palestra sala pesi dalle 3 alle 5 volte a settimana per scopo addominali in vista e molta ipertrofia
-(età e altezza coperte: il progetto è pubblico, C140; i numeri Mario li scrive nel suo profilo dentro l'app)
+io mi chiamo mario ho 36 anni alto 178 vado in palestra sala pesi dalle 3 alle 5 volte a settimana per scopo addominali in vista e molta ipertrofia
