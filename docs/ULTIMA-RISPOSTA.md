@@ -1,14 +1,5 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 19:03 ora italiana)
 
+Il link per Lisa è pronto e passa le prove. Adesso gira il **giro completo** delle prove (tutta l'app, circa 10 minuti, stima). Se è tutto a posto lo metto online e ti mando il link con il messaggio WhatsApp per Lisa.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
-
-Rispondi col numero.
+Il riquadro dentro l'app l'ho tolto, come hai chiesto. Ho anche spento il fumetto «Puoi parlarmi!» per chi arriva dal link: copriva il carrello.

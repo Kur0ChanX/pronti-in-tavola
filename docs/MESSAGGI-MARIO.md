@@ -2,36 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 19:24 · 01WTjqUvhRwD
-hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo
-
-## 2026-11-11 19:33 · 01WTjqUumr4n
-mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazioni che hai in una sezione a parte esempio ricette video e dividi per il nome che dici? occupiamo teoppo spazio limiti ecc?
-
-## 2026-11-12 18:13 · 01WTjqUumr4n
-Perché in messa è scritto solo le ricette di giallo zafferano e quelle proteiche dentro non c'è nulla? Perché nessuna ricetta, non c'è praticamente nulla, solo quelle di giallo zafferano? Vedi che qualcosa c'è dentro, tu mi hai messo solo gli ingredienti. Dai, fai un lavoro fatto bene sulle ricette proteiche, per piacere, falle accuratamente una per una.
-
-## 2026-11-12 18:41 · 01WTjqUvnPKs
-Una domanda, non puoi mettere un play nei video e mette un player sempre che guarda non in locale, però che guarda direttamente il video su YouTube direttamente da quel player, senza che mi apra un'altra pagina che posso mettere magari schermo intero, magari mi interessa. Schermo intero e sottotitoli, il classico banner di YouTube, sottotitoli, la qualità della risoluzione, le classiche cose di YouTube, però che mi apre un player direttamente lì, direttamente in quella finestra. Io posso cliccare, zoomare, fare schermo intero in orizzontale o schermo intero in verticale. Puoi farlo. E poi dimmi se ci sono altri influencer, youtuber, tiktoker che fanno tantissime ricette fitness, che si inventano molte ricette. Fammi una lista e valutiamo chi possiamo inserire, quale di questi possiamo inserire per prenderli le ricette e portarcele da noi.
-
-## 2026-11-12 18:54 · 01WTjqUvnPKs
-solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito
-
-## 2026-11-12 20:00 · 01WTjqUxxnTz
-sono italiani tutti direi
-
-## 2026-11-12 20:02 · 01WTjqUxxnTz
-solo
-
-## 2026-11-12 21:27 · 01WTjqUxxnTz
-solo tutti italiani e se si traducono bene metti anche quelle inglesi
-
-## 2026-11-13 09:12 · 01WTjqUvtoJC
-https://claude.ai/connect-github
-
-## 2026-11-13 09:23 · 01WTjqUvtoJC
-Rinomina la sessione, rinomina la sessione, rinomina la sessioneeeeeeeeee
-
 ## 2026-11-13 09:41 · 01WTjqUvtoJC
 stai andando bene metti i voti anche fuori in vista prima di entrare valuta se tutti i tuoi voti vanno bene con la logita palestra fitness ipertrofia senza ingrassare e aggiungi gli altri youtuber influenzer video cercane tanti altri e aggiungi voglio un catalogo immenso proteico in priorità a GialloZafferano lo facciamo andare avanti piano piano alla volta giallo ma le ricette proteiche e video sono importanti se vuoi dammi anche qualche idea intelligente e geniale
 
@@ -125,3 +95,36 @@ Voglio tutto tracciato nell app cosí non c'è l'ordine spingi i clienti a ordin
 
 ## 2026-11-13 18:39 · 01WTjqUwuvHs
 ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+
+## 2026-11-13 18:46 · 01WTjqUu3oyB
+Cioè, stai rispondendo a quello che ti ho detto dopo 20 e passa minuti? È un'altra sessione? Boh, non capisco cosa stai sbagliando proprio il modo di pensare, di lavorare, stai proprio sbagliando. Te l'ho scritto dall'inizio e tu mi hai provato a correggere un problema che non ti ho detto e mi rispondi al messaggio dopo una sessione. Mai successo. Sicuramente hai qualche bug, qualche problema grave.
+
+## 2026-11-13 18:48 · 01WTjqUu3oyB
+Se ascolti quello che dico nei messaggi, ti ho detto che Monica non lo visualizza degli ordini. Non capisco. Se te l'ho detto, hai un bug, hai un problema grave. Non leggi neanche i miei messaggi e non mi rispondi. Non è il tuo modo di pensare questo.
+
+Quando ti ho mandato questo messaggio non è a fine sessione, quindi non prendermi per il culo.
+
+## 2026-11-13 18:49 · 01WTjqUu3oyB
+Come puoi da questo messaggio correggere i gusti dei cibi? Cioè, sei pazzo. Hai bug.
+
+## 2026-11-13 18:50 · 01WTjqUu3oyB
+No, non è che non ti avevo chiesto se è una correzione, è una correzione, ma non so se è una correzione perché non so cosa stavi facendo. Cioè, mi è scappata la situazione fuori controllo perché ti sei messo a fare cose che non ti ho chiesto e ti scrivevo messaggi dopo e tu non li leggevi e tu hai quasi fatto partire una correzione che poteva essere qualcosa di gravissimo.
+
+## 2026-11-13 18:53 · 01WTjqUu3oyB
+Io voglio che sia tutto tracciato, voglio spingere il cliente a ordinare dall'app, quindi cercherei un sistema che non lo so, che non è la prima cosa che vede, scrivi a Monica, ecco, perché sennò bypassa tutto il lavoro che facciamo dell'app. Se non mi spieghi che cosa l'abbiamo fatto l'app, se poi il cliente manda un messaggino su WhatsApp, quindi dobbiamo spingere il cliente a ordinare dall'app. Poi se vuole chiedere qualcos'altro, quello lì passa in secondo piano, però la prima cosa è cercare di far ordinare e che sia tutto tracciato dall'applicazione. Tutto il resto è superfluo, i messaggi a Monica di WhatsApp, anche perché è controproducente per l'app. Inventati qualcosa di intelligente per farti anche scusare dell'errore che hai fatto, quindi impegnati di più e non metterci una vita.
+
+## 2026-11-13 18:54 · 01WTjqUu3oyB
+Mi raccomando, questo errore che è appena successo non deve capitare in tutto l'account e non solo in pronti in tavola. Questa cosa che lavori per conto tuo, pubblichi, senza che ascolti e leggi i miei messaggi.
+
+## 2026-11-13 18:56 · 01WTjqUu3oyB
+1 vai di consiglio 
+Riusciamo a metterlo dentro l'ordine? Almeno rimane tracciato questo primo ordine che gli stanno facendo dall'app. Cioè, se noi iniziamo proprio male, vorrei questo primo ordine dall'app. Come possiamo fare? Inventati qualcosa.
+
+## 2026-11-13 18:59 · 01WTjqUu3oyB
+1 VAI E DAMMI IL LINK PER LISA CON CARRELLO GIà PRONTO DOPO AGGIORNAMENTO DA APP
+
+## 2026-11-13 19:01 · 01WTjqUu3oyB
+Puoi mettere qualcosa di carino per scocciare i clienti, qualcosa, qualche, nella foto, qualche cosa tipo un messaggio carino, cosa ne so, per dirgli per aiutare nell'app a perfezionarsi, se può dare magari una mano a cliccare il link e fare l'ordine da questo link. Cioè, in poche parole, non voglio che si scocciano con l'app, che se si scocciano ordinano sempre meno possibile. Voglio qualcosa di veramente semplice che l'aiuti, ecco, che aiuti il cliente, perché se si scoccia che deve entrare più volte e non ordina più nell'applicazione.
+
+## 2026-11-13 19:02 · 01WTjqUu3oyB
+Non nell'app non so come sia possibile un messaggio carino. Cioè, voglio su WhatsApp che l'invita a ricliccare il link e rifare l'ordine da lì. Se no si scocciola, sta già facendo 2 volte. Già era entrato, non era pratica. Questa è già la terza volta.

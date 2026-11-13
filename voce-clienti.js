@@ -131,7 +131,14 @@ function piattiVoce(tok, usatiQta, scelte, sin) {
     });
     if (!forte) return;
     let gusto = null;
-    (p.varianti || []).forEach(v => { if (gusto) return; paroleMenu(v.nome, sin).forEach(w => { tok.forEach((x, i) => { if (!gusto && !usatiQta.has(i) && x.length >= 4 && simileVoce(x, w) >= 0.85) gusto = { id: v.id, nome: v.nome, i }; }); }); });
+    /* il gusto col nome detto; a parità vince chi ha detti più ingredienti («ricotta e spinaci» → Spinaci, che ha anche la ricotta; C155) */
+    let bestG = 0;
+    (p.varianti || []).forEach(v => {
+      let g = null; paroleMenu(v.nome, sin).forEach(w => { tok.forEach((x, i) => { if (!g && !usatiQta.has(i) && x.length >= 4 && simileVoce(x, w) >= 0.85) g = { id: v.id, nome: v.nome, i }; }); });
+      if (!g) return;
+      const extra = new Set((v.ing || []).flatMap(n => paroleMenu(n, sin)).filter(w => tok.some((x, i) => !usatiQta.has(i) && x.length >= 4 && simileVoce(x, w) >= 0.85)));
+      if (1 + extra.size > bestG) { bestG = 1 + extra.size; gusto = g; }
+    });
     let punti = somma / parole.length;
     if (gusto) { punti += 0.5; pos.push(gusto.i); }
     cand.push({ p, punti, pos: [...new Set(pos)].sort((a, b) => a - b), gusto, esatto: !gusto && punti >= 1 && parole.length === pos.length });
@@ -636,7 +643,7 @@ function disegnaVC() {
   const fab = fabVisibile(), su = fab || ascoltoInCorso() || VC.stato === 'capito';   // C110: anche nella pagina Aiutante (su iPad sembrava che non partisse)
   box.hidden = !su; document.body.classList.toggle('vc-su', fab);
   if (!su) return;
-  const st = VC.stato, primo = fab && !st && (() => { try { return !localStorage.getItem('pit-vc-visto'); } catch (e) { return false; } })();
+  const st = VC.stato, primo = fab && !st && !UI.linkCiao && (() => { try { return !localStorage.getItem('pit-vc-visto'); } catch (e) { return false; } })();
   const suggerimento = VC.perSi != null ? 'Di\' «sì» oppure «no»' : VC.dettato ? 'Dimmi piatti, quantità e giorno, tutto in una frase' : 'Parla pure: mi fermo da sola quando finisci';
   const chiave = [fab, st, primo, ascoltoInCorso(), UI.vista === 'aiuto'].join('|');
   const attesa = VC.sento ? 'Ti sento! Quando finisci mi fermo da sola.' : suggerimento;
