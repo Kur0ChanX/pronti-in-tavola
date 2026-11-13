@@ -1,0 +1,27 @@
+{
+"account": "108763",
+"sessione": "5ae591fa9724",
+"giorno": "2026-11-14",
+"turni": 2,
+"peso": 602604,
+"uscita": 13529,
+"contesto_max": 212441,
+"anomalie": [],
+"remota": "01WTjqUwbEtu",
+"aiutanti": 0,
+"strumenti": 19,
+"motori": {
+"opus": 602604
+},
+"memoria_scaduta": 1,
+"ricreati": 110717,
+"blocchi": {
+"Stop 13 · There are uncommitted changes in": 2
+},
+"esempi_blocchi": {
+"Stop 13 · There are uncommitted changes in": [
+"00:57 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"00:57 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+]
+}
+}

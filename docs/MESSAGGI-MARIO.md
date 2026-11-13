@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 12:55 · 01WTjqUw4QVb
-magari cose utili cosí lasciale visto che c'è ma una sezione a parte
-
 ## 2026-11-13 12:57 · 01WTjqUw4QVb
 hai altre ricette da aggiungere?
 
@@ -126,3 +123,6 @@ va bene come consiglio
 
 ## 2026-11-14 00:52 · 01WTjqUuVK9Q
 1 ok come consiglio
+
+## 2026-11-14 00:56 · 01WTjqUwbEtu
+Lisa è la vera numero 1 puoi modificarlo?  solo il numero  non fare danno all'ordine
