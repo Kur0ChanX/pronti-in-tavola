@@ -2,7 +2,7 @@
 
 Sessione attuale: #75 (dopo la #74 `session_01WTjqUw4QVbXHnpAg1txmfs`, chiusa alla soglia 13/11 13:09; la apre la #74 con `create_session` (catena 5 di 8)).
 
-**#75 aperta dalla #74 (13/11 ~13:25, ferma ad aspettare Mario oltre 180k, C455).** v0.10.27 ONLINE (#74, Mario «va bene metti online»): C151 Ricettario riordinato + «💡 Consigli, allenamenti e altro» (18 video). Aspetta la foto di Mario (chiudi e riapri l'app).
+**#75 aperta dalla #74 (13/11, ferma ad aspettare Mario oltre 180k, C455).** v0.10.27 ONLINE (#74, Mario «va bene metti online»): C151 Ricettario riordinato + «💡 Consigli, allenamenti e altro» (18 video). Aspetta la foto di Mario (chiudi e riapri l'app).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
@@ -26,7 +26,7 @@ Sessione attuale: #75 (dopo la #74 `session_01WTjqUw4QVbXHnpAg1txmfs`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-1. Foto di Mario su v0.10.27 (Ricettario: un tasto «Filtri», «cloud bread» trovato; Ricette video → «Consigli, allenamenti e altro»): chiudere 👁 C151. Mario 13:1x «caricarle io 30 per volta non consumo limiti?» → risposto: poco, e le carico io in automatico (da fare: RicetteFit 459/905 senza tocchi di Mario).
+1. Foto di Mario su v0.10.27 (Ricettario: un tasto «Filtri», «cloud bread» trovato; Ricette video → «Consigli, allenamenti e altro»): chiudere 👁 C151. Mario 13:11 «caricarle io 30 per volta non consumo limiti?» → risposto: poco, e le carico io in automatico (da fare: RicetteFit 459/905 senza tocchi di Mario).
 2. Poi «altre ricette» (risposta a Mario #74): prima le ~300 scartate da `tools/stima.py` (ingredienti sconosciuti), poi Ricette di Alice, HSN, Sergio Chisari.
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67) e `01WTjqUvtoJC` (#70): vecchie (C148 ormai online).
 3. Foto di v0.10.26 (C148, C150): «798» visto da Mario 12:49; «🎙️ dosi» da vedere dopo C151 (cloud bread si trova). Poi chiudere le 👁. Era: quando Mario manda la foto di v0.10.26 (Ricette video con Cotto al Dente e 2foodfitlovers, «Cloud bread» con «🎙️ dosi dal video»): chiudere le 👁 di C148 e C150 se va bene; se Mario scrive altro, prima quello.
@@ -38,7 +38,7 @@ Sessione attuale: #75 (dopo la #74 `session_01WTjqUw4QVbXHnpAg1txmfs`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 16; 🛑 C148+C150 online, 🛑 C150 foto, 🛑 C141 pagella, idee C149).
 
 ## Ultimo messaggio di Mario
-13/11 ~13:15, parola per parola: «va bene metti online ma caricarle io 30 per volta non consumo limiti?» → v0.10.27 online; risposta sui limiti in chat. Prima: 13/11 12:57, parola per parola: «hai altre ricette da aggiungere?» → risposta in chat (tabella: ~450 RicetteFit dal server, ~300 scartate da `stima.py`, 3 creatori, dosi dei video ogni mattina; consiglio: prima C151, poi le 300, poi i creatori). Prima, 12:53 «è uno scherzo verooooooo????» e 12:54 «magari cose utili cosí lasciale visto che c'è ma una sezione a parte» → C151.
+13/11 13:11, parola per parola: «va bene metti online ma caricarle io 30 per volta non consumo limiti?» → v0.10.27 online; risposta sui limiti in chat. Prima: 13/11 12:57, parola per parola: «hai altre ricette da aggiungere?» → risposta in chat (tabella: ~450 RicetteFit dal server, ~300 scartate da `stima.py`, 3 creatori, dosi dei video ogni mattina; consiglio: prima C151, poi le 300, poi i creatori). Prima, 12:53 «è uno scherzo verooooooo????» e 12:54 «magari cose utili cosí lasciale visto che c'è ma una sezione a parte» → C151.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C152; prossimo M libero: M1.
@@ -53,7 +53,8 @@ Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o
 - 2026-11-13 12:53 · è uno scherzo verooooooo???? → PT E78; video non ricette
 - 2026-11-13 12:55 · magari cose utili cosí lasciale visto che c'è ma una sezione a parte → C151 sezione «Consigli, allenamenti e altro» (18 video)
 - 2026-11-13 12:57 · hai altre ricette da aggiungere? → risposta in chat (tabella); prossimi passi 2
+- 2026-11-13 13:11 · va bene metti online ma caricarle io 30 per volta non consumo limiti? → v0.10.27 online (C151); risposta sui limiti
 
 Ultimo, intero:
-> hai altre ricette da aggiungere?
+> va bene metti online ma caricarle io 30 per volta non consumo limiti?
 
