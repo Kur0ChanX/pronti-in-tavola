@@ -552,7 +552,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { UI.vista = 'home'; render(); });
   });
   await passo('cliente: «Scrivimi» capisce gli ordini (C155) e manda le domande su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
-    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
+    await page.evaluate(() => { try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ } document.querySelectorAll('.vapore').forEach(v => v.remove()); P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
     await page.waitForTimeout(1500);
     await page.evaluate(() => { $('#toast').innerHTML = ''; }); await foto('36-scrivi-monica');
     // 1) il messaggio vero di una cliente (13/11): ordine scritto nel testo → carrello, con la scelta della parmigiana
@@ -595,6 +595,26 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { P.carrello = []; UI.nota = ''; UI.ordineLink = 'ciao, a che ora aprite?'; carrelloDaLink(); render(); });   // niente piatti: «Scrivi a Monica» col testo
     if (!(await page.evaluate(() => UI.foglio && UI.foglio.tipo === 'scrivimi' && UI.foglio.testo.includes('a che ora')))) throw new Error('senza piatti non apre «Scrivi a Monica»');
     await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
+  });
+  await passo('cliente: link senza misura della teglia → la sceglie il cliente nel carrello, «Invia» fermo finché non la sceglie (C157)', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.linkFatti = []; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = false; render(); });
+    await page.evaluate(t => { UI.ordineLink = t; carrelloDaLink(); render(); }, '2 kg di ravioli ricotta e spinaci\n1 teglia di melanzane alla parmigiana');
+    await page.waitForTimeout(400);
+    const a = await page.evaluate(() => ({ v: UI.vista, r: P.carrello.map(r => `${r.piatto}${r.daScegliere ? '?' : ''}`).join(',') }));
+    if (a.v !== 'carrello' || a.r !== 'ravioli,parmigiana?') throw new Error('misura non lasciata da scegliere: ' + JSON.stringify(a));
+    if (await page.locator('.misura-scegli [data-a="c-misura"]').count() !== 2) throw new Error('mancano i due tasti «Teglia da 6» e «Teglia da 8»');
+    const g = await page.locator('.giorno:not([disabled])').first(); await g.click(); await page.waitForTimeout(200);
+    if (!(await page.locator('[data-a="invia"]').isDisabled())) throw new Error('«Invia» acceso senza misura');
+    if (!(await page.locator('#app').innerText()).includes('Scegli prima la misura')) throw new Error('manca «Scegli prima la misura»');
+    await foto('36c-carrello-misura-da-scegliere');
+    await clic('[data-a="c-misura"][data-v="t8"]'); await page.waitForTimeout(300);
+    const b = await page.evaluate(() => P.carrello.map(r => `${r.piatto}:${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
+    if (b !== 'ravioli:kg,parmigiana:t8') throw new Error('scelta della misura: ' + b);
+    if (await page.locator('[data-a="invia"]').isDisabled()) throw new Error('«Invia» ancora spento dopo la scelta');
+    await page.evaluate(() => { P.carrello = []; P.linkFatti = []; UI.ordineLink = '1 teglia da 8 di melanzane alla parmigiana'; carrelloDaLink(); render(); });   // misura detta: niente scelta
+    const c = await page.evaluate(() => P.carrello.map(r => `${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
+    if (c !== 't8') throw new Error('misura detta nel link non presa: ' + c);
+    await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = undefined; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
   });
   await passo('Monica: l\'aiutante capisce il senso, le parole sono solo indizi; senza AI chiede «Intendi…?» (C102)', async () => {   // autonoma
     await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; AI.attesa = false; UI.aiQui = null; UI.foglio = null; window._chiediVero = window._chiediVero || chiediAiutante; vai('aiutante'); });
@@ -665,7 +685,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   });
   await passo('cliente: tasto «Scrivimi»; Monica: «Sono qui» squilla con l\'app aperta e si ferma con «Ho visto» (C51)', async () => {
     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
-    if (!(await page.locator('.wa-monica', { hasText: 'Scrivimi' }).count())) throw new Error('il tasto non dice «Scrivimi»');
+    if (!(await page.locator('.wa-monica', { hasText: 'Scrivi a Monica' }).count())) throw new Error('manca «Scrivi a Monica»');
     await page.evaluate(() => { S.impostazioni.whatsapp = ''; P.ruolo = 'monica'; UI.vista = 'home'; render(); });
     const n = await page.evaluate(() => S.ordini.find(o => !o.archiviato).n);
     await page.evaluate(n => suoneria({ nome: 'Laura Rossi', n }), n);
@@ -1516,19 +1536,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     fs.writeFileSync(`${OUT}/frasi.txt`, err.join('\n'));
     if (err.length) throw new Error(err.length + ' su ' + casi.length + ' sbagliate:\n' + err.join('\n'));
   });
-  await passo('voce dei clienti: microfono fisso nel menù, frase detta (alternativa con più senso), «sì» a voce → carrello e giorno (C105)', async () => {
+  await passo('voce dei clienti: microfono nella barra «Chiedi o ordina» del menù, frase detta (alternativa con più senso), «sì» a voce → carrello e giorno (C105)', async () => {
     await page.evaluate(() => { P.ruolo = 'cliente'; UI.devCliente = false; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; AIC.msgs = []; UI.entro = ''; delete S.impostazioni.aiClienti; delete S.impostazioni.voceClientiMotore; S.impostazioni.voceClientiRisponde = false; S.impostazioni.whatsapp = '3331234567';
       try { localStorage.removeItem('pit-vc-visto'); } catch (e) { /* niente */ }
       window.SpeechRecognition = class { start() { setTimeout(() => { const alts = window.__frasi.shift() || ['']; const r = alts.map(t => ({ transcript: t })); r.isFinal = true; r.length = alts.length; this.onresult({ resultIndex: 0, results: [r] }); setTimeout(() => this.onend(), 40); }, 60); } stop() {} abort() {} };
       window.__frasi = [['due teglie di la sagne al ragu per sabato', 'due teglie di lasagne al ragù per sabato'], ['sì']];
       render(); });
     const sab = await page.evaluate(() => { for (let i = 1; i <= 7; i++) { const g = piuGiorni(oggi(), i); if (daIso(g).getDay() === 6) return g; } });
-    if (!(await page.locator('.vc-fab').count())) throw new Error('manca il microfono fisso nel menù');
-    if (!(await page.locator('.vc-primo').count())) throw new Error('manca «Puoi parlarmi!» la prima volta');
-    const pos = await page.evaluate(() => { const a = document.querySelector('.vc-fab').getBoundingClientRect(), b = document.querySelector('.wa-monica').getBoundingClientRect(); return { sx: a.left < window.innerWidth / 2, dx: b.left > window.innerWidth / 2, sovra: a.right > b.left && a.top < b.bottom && a.bottom > b.top }; });
-    if (!pos.sx || !pos.dx || pos.sovra) throw new Error('microfono e «Scrivimi» mal messi: ' + JSON.stringify(pos));
+    const mic = await page.evaluate(() => ({ barra: document.querySelectorAll('.ai-cliente .ai-mic').length, tondo: document.querySelectorAll('.vc-fab').length, tutti: document.querySelectorAll('#app .ai-mic').length, vista: UI.vista, vis: aiClientiVisibile(), barre: document.querySelectorAll('.ai-cliente').length, mod: !!UI.modifica, rec: !!(window.SpeechRecognition || window.webkitSpeechRecognition), mr: !!window.MediaRecorder }));
+    if (mic.barra !== 1 || mic.tondo || mic.tutti !== 1) throw new Error('nel menù serve UN microfono solo, nella barra «Chiedi o ordina» (Mario 13/11): ' + JSON.stringify(mic));
+    const pos = await page.evaluate(() => { const bar = document.querySelector('.ai-cliente'), a = bar.querySelector('.ai-apri').getBoundingClientRect(), m = bar.querySelector('.ai-mic').getBoundingClientRect(), b = document.querySelector('.wa-monica'); return { ferma: getComputedStyle(bar).position === 'sticky', riga: Math.abs(a.top - m.top) < 12, dx: m.left > a.left, alta: bar.getBoundingClientRect().height, fisso: !!b && getComputedStyle(b).position === 'fixed' }; });
+    if (!pos.ferma || !pos.riga || !pos.dx || pos.alta > 70 || pos.fisso) throw new Error('barra «Chiedi o ordina»: una riga ferma in cima, microfono a destra, bassa; «Scrivi a Monica» non fisso (Mario 13/11): ' + JSON.stringify(pos));
     await page.waitForTimeout(2600); await foto('40-voce-clienti');   // dopo il toast «Ecco il menù»
-    await page.locator('.vc-fab').click(); await page.waitForTimeout(1500);
+    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(1500);
     const r = await page.evaluate(() => ({ vista: UI.vista, msgs: AIC.msgs.map(m => m.t), carr: P.carrello.map(x => [x.piatto, x.qta]), entro: UI.entro, esito: (AIC.msgs[1] || {}).esito }));
     if (r.msgs[0] !== 'due teglie di lasagne al ragù per sabato') throw new Error('non ha scelto la frase con più senso: ' + JSON.stringify(r.msgs));
     if (JSON.stringify(r.carr) !== JSON.stringify([['lasagne-ragu', 2]])) throw new Error('dopo il «sì» a voce il carrello è ' + JSON.stringify(r));
@@ -1542,8 +1562,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/webm'; } start() { this.state = 'recording'; } stop() { this.state = 'inactive'; this.ondataavailable({ data: new Blob([new Uint8Array(3000)]) }); this.onstop(); } static isTypeSupported() { return true; } };
       window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'un chilo di polpette di carne per domani', motore: 'finto' }; };
       render(); });
-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
-    const st = await page.evaluate(() => [VC.stato, !!VC.media, !!document.querySelector('.vc-pannello'), !!document.querySelector('.vc-fab.acceso')]);
+    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
+    const st = await page.evaluate(() => [VC.stato, !!VC.media, !!document.querySelector('.vc-pannello'), !!document.querySelector('.ai-cliente .ai-mic.acceso')]);
     if (st[0] !== 'registro' || !st[1] || !st[2] || !st[3]) throw new Error('ascolto preciso non partito: ' + JSON.stringify(st));
     await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(900);
     const r = await page.evaluate(() => ({ piatti: (window.__mandato || {}).piatti, audio: ((window.__mandato || {}).audio || '').length, msgs: AIC.msgs.map(m => m.t), az: ((AIC.msgs[1] || {}).piano || []).map(x => x.a), vista: UI.vista, giorno: (AIC.msgs[1] || {}).giorno }));
@@ -1552,12 +1572,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r.giorno !== await page.evaluate(() => piuGiorni(oggi(), 1))) throw new Error('«per domani» non capito: ' + r.giorno);
     if (await page.evaluate(() => (window.__mandato || {}).comeCliente) !== false) throw new Error('cliente vero: «comeCliente» deve essere false');
     await page.evaluate(() => { S.impostazioni.voceClientiMotore = 'telefono'; window.__frasi = [['quanto costa il tiramisù']]; UI.vista = 'menu'; AIC.msgs = []; render(); });
-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
+    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
     const r2 = await page.evaluate(() => ({ media: !!VC.media, msgs: AIC.msgs.map(m => m.t) }));
     if (r2.media || r2.msgs[0] !== 'quanto costa il tiramisù' || !/tiramis/i.test(r2.msgs[1] || '')) throw new Error('«solo telefono» non va: ' + JSON.stringify(r2));
   });
   await passo('voce dei clienti: «Dettami l\'ordine» con tre piatti e il giorno → tre righe dopo Conferma (C105)', async () => {
-    await page.evaluate(() => { UI.vista = 'menu'; P.carrello = []; AIC.msgs = []; UI.entro = ''; S.impostazioni.voceClientiMotore = 'auto'; S.impostazioni.voceClientiRisponde = false;
+    await page.evaluate(() => { UI.vista = 'carrello'; P.carrello = []; AIC.msgs = []; UI.entro = ''; S.impostazioni.voceClientiMotore = 'auto'; S.impostazioni.voceClientiRisponde = false;
       window.ascoltaServerFinto = async () => ({ testo: 'due teglie di lasagne al ragù, un chilo di polpette di carne e un tiramisù per sabato', motore: 'finto' }); render(); });
     if (!(await page.locator('.vc-detta').count())) throw new Error('manca la pillola «Dettami l\'ordine»');
     await page.locator('.vc-detta').click(); await page.waitForTimeout(700);
@@ -1583,7 +1603,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'due teglie di lasagne al ragù per sabato', motore: 'finto' }; };
       render(); });
     await page.setViewportSize({ width: 1024, height: 600 });   // iPad in orizzontale: schermo basso
-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
+    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
     const st = await page.evaluate(() => ({ stato: VC.stato, media: !!VC.media, partito: window.__partito, si: vocePuoSentireSi(), bene: telefonoAscoltaBene(), pann: (document.querySelector('.vc-pannello b') || {}).textContent }));
     if (st.stato !== 'registro' || !st.media || st.partito || st.si || st.bene || !/attenzione/.test(st.pann || '')) throw new Error('su iPad non parte subito l\'ascolto preciso: ' + JSON.stringify(st));
     const stesso = await page.evaluate(() => { const p = document.querySelector('.vc-pannello'); p.__mio = 1; render(); render(); statoVC('registro', ''); return (document.querySelector('.vc-pannello') || {}).__mio === 1; });
@@ -1690,7 +1710,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       navigator.mediaDevices.getUserMedia = async () => ({ getTracks: () => [] });
       window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/webm'; } start() { this.state = 'recording'; } stop() { this.state = 'inactive'; this.ondataavailable({ data: new Blob([new Uint8Array(3000)]) }); this.onstop(); } static isTypeSupported() { return true; } };
       window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'un chilo di polpette di carne per domani', motore: 'groq:whisper-large-v3+deepgram → qwen/qwen3.8-27b' }; }; render(); });
-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
+    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
     const st = await page.evaluate(() => [VC.stato, !!VC.media]);
     if (st[0] !== 'registro' || !st[1]) throw new Error('guarda come cliente: ascolto preciso non partito: ' + JSON.stringify(st));
     await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(900);
