@@ -1,0 +1,21 @@
+{
+"account": "108763",
+"sessione": "20f92a69726c",
+"giorno": "2026-11-13",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 147607,
+"anomalie": [],
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"21:28 · Domanda a Mario poco chiara (C233, E145): mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: C158. Riscrivi SOLO la domanda, col contesto in 1-2 righe e cosa cambia con ogni scelta (n"
+]
+},
+"remota": "01WTjqUw66Sp",
+"aiutanti": 0,
+"strumenti": 0
+}
