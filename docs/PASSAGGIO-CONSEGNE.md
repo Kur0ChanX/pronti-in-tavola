@@ -2,7 +2,7 @@
 
 Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa alla soglia 13/11 11:38; la apre la #72 con `create_session` (catena 3 di 8)).
 
-**#73 aperta dalla #72 alla soglia (13/11 ~11:55).** La #71 è chiusa (scorta già unita). Mario aspetta il «sì» per mettere online C148 + C150 (🛑 in «Aspetta Mario»).
+**#73 aperta dalla #72 alla soglia (13/11 11:39).** La #71 è chiusa (scorta già unita). Mario aspetta il «sì» per mettere online C148 + C150 (🛑 in «Aspetta Mario»).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
