@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 13/11 · 🟢 Principale 80 · DOMANDA 2 passaggio di consegne (C158): leggere le frasi intere di Mario di TUTTE le sessioni non chiuse, non solo l'ultima: 1 = sì (consiglio) · 2 = lascia com'è.
+- 13/11 · 🟢 Principale 81 · C158 (Mario 13/11 ~21:20 «facciamo della precedente… valuta tu qual è il sistema migliore»): proposta = l'hook d'avvio legge le parole intere della sessione PRECEDENTE anche dalla sua scorta (messaggi scritti dopo l'handoff), consegne corte come ora: 1 = ok, la faccio dopo la 0.10.30 · 2 = no.
 - 13/11 · 🟢 Principale 79 · DOMANDA 2 controllo delle regole (conflitti, doppioni, regole morte; tabella tengo/unisco/tolgo, decide Mario): 1 = dopo i tasti (consiglio) · 2 = subito. A cosa serve: Mario teme regole in conflitto.
 - 13/11 · 🟢 Principale 77 · C154 velocità della trascrizione: Gemini gratis fa ~25 video al giorno, ne restano 765 (~4 settimane). 1 = resto gratis, vado ogni mattina (consiglio) · 2 = piano a pagamento di Google, tutto in ~1 giorno, stima 10-40 € una volta sola. A cosa serve: decidi tu se spendere.
 - 13/11 · 🟢 Principale 76 · C154 scritte «✅ controllata con Gemini» / «⚠️ non controllata» (foto `archivio/foto/2026-11-13-c154-48*.png` mandate, patch `c154-etichette.patch`): 1 = vanno bene, metto online nell'app · 2 = cambia qualcosa. A cosa serve: senza il tuo ok non pubblico.
