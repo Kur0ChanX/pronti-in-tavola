@@ -1,0 +1,29 @@
+# C150 · Ricette dal parlato dei video (trascrizione)
+
+## Parole di Mario (13/11/2026, sessione #71), parola per parola
+> Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici nel video e fai la ricetta, perché altre intelligenze artificiali riescono, quindi magari dalle parole che dicono ti prendi il testo e ci fai la ricetta, anche perché nei video dicono spesso le quantità, quindi a te le quantità servono. Quindi puoi farlo per ogni singolo video, caricare magari un programmino che lo fa, non so, una skill, un MCP, un qualcosa da collegarlo, e ti trascrivi tutto quello che dicono e da lì prendi quello che ti serve, no? Per ogni singolo video.
+
+## Numeri di oggi (#71, con la patch C148)
+- 798 ricette video: 140 senza dosi scritte (Pietrobon 103, 2foodfitlovers 23, Cotto al Dente 12, Beardedscara 2); 403 senza valori; nessuna coi passi scritti (sono nel video).
+
+## Strade (ricerca Parallel Search 13/11/2026, pagine ufficiali)
+| N | Strada | Pro | Contro |
+|---|---|---|---|
+| 1 | Gemini API di Google col link di YouTube (ai.google.dev/gemini-api/docs/video-understanding, 13/10/2026) | ufficiale; «in prova, gratis»; ascolta e guarda il video (anche le dosi scritte a schermo); 8 ore di video al giorno gratis | serve una chiave di Mario (Google AI Studio, progetto senza carta); col piano gratis Google usa le richieste per migliorarsi (qui solo video pubblici, niente dati di Monica); «in prova»: prezzi e limiti possono cambiare |
+| 2 | Sottotitoli di YouTube | gratis | API ufficiale: solo il proprietario del video (captions.download, 403); librerie non ufficiali bloccate dai server cloud e contro le regole di YouTube |
+| 3 | Scaricare l'audio e trascriverlo (Whisper) | preciso | scaricare da YouTube è contro le sue regole; bloccato dai server cloud |
+| 4 | Servizi a pagamento di trascrizioni | pronti | soldi; leggono YouTube in modo non ufficiale |
+Consiglio: 1. Raggiungibile dal contenitore (13/11: Google risponde 403 senza chiave = rete aperta).
+
+## Come (strada 1, quando c'è la chiave)
+- `tools/trascrivi_video.py` gira nelle sessioni di Claude (mai il server dell'app, Mario 13/11 ~09:45): per ogni video chiede a Gemini in JSON porzioni, ingredienti con grammi, passi, valori se li dice; «null» se non li dice, mai inventare (PT E25). Prima le 403 senza valori.
+- Dosi del video → `tools/stima.py` → valori «≈ stimati»; scritta «📝 dal video» e link al video; 10 ricette controllate a occhio contro il video, foto a Mario prima di metterle online.
+- Tempo (stima): ~800 video, 1-10 minuti l'uno → circa 5-9 giorni col limite gratis di 8 ore al giorno.
+
+## Stato
+- 13/11 #71: ricerca e strade; DOMANDA 1 🛑 a Mario (strada e chiave). Chiave: variabile `GEMINI_API_KEY` nelle impostazioni dell'ambiente (come `YOUTUBE_API_KEY`), mai in chat.
+- 13/11 #71 Mario, parola per parola: «prendiamo l'audio da ogni video e prendi il testo tranquillo tanto lo guardo solo io non è publico di dò il permesso» (= strada 3).
+  Risposta (Claude): la 3 no. Il permesso dei video è di YouTube e dei creatori, non di Mario; dal contenitore YouTube blocca lo scarico, e girarci intorno vuol dire aggirare i controlli anti-robot (#68: rifiutato dal controllo della sessione). «Non è pubblico» non è vero oggi: progetto pubblico (C140) e `ricette-video.js` si legge dal sito. La strada 1 fa la stessa cosa (Google ascolta l'audio e dà il testo intero) in modo ufficiale: DOMANDA 1 riscritta (1 = Gemini con la chiave · 2 = niente).
+- 13/11 #71 Mario, parola per parola: «1 faccio la chiave» → strada 1 (Gemini). Mario crea la chiave (variabile `GEMINI_API_KEY`, la legge solo una sessione nuova).
+- 13/11 #71: `tools/trascrivi_video.py` scritto (non è un file del sito): Flash più nuovo dall'elenco dei modelli, link del video a Gemini, JSON con testo, porzioni, ingredienti, passi, valori; entra solo con ≥2 dosi e un passo; esce `tools/dati/video-dal-parlato.json` (salvato a ogni video, riparte da dove era); testo intero solo in `.cache-stime/gemini/`. Provato: `--finto` (5 video, ripresa ok) e chiave finta → Google risponde «API key not valid» (l'header arriva). Manca: prova vera con la chiave su 10 video, controllo a occhio, poi `raccogli_video.py` usa dosi e passi del parlato (scritta «📝 dal video»), foto a Mario.
+- 13/11 #71 Mario: «fatto messa nell'ambiente» → `get_environment` mostra `GEMINI_API_KEY` (la legge solo la sessione nuova). Prossimo: nella #72 `python3 -I tools/trascrivi_video.py --quanti 10` sulle 798 (prima `git apply` di `c148-video.patch` in una cartella di prova o `--da` su quel file), controllo a occhio contro i video, poi foto a Mario.

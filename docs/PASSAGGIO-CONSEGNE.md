@@ -2,6 +2,8 @@
 
 Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa alla soglia 13/11 10:00; la apre la #70 con `create_session` (catena 1 di 8)).
 
+**#72 aperta in parallelo dalla #71 (13/11 ~09:45; Mario: «lavorate in 2 sessione fino a quando non la chiudi questa e comunicate quello che vi serve»)**: la #72 fa SOLO C150 (`docs/lavori-in-corso/c150-ricette-dal-parlato.md`, ultima riga) finché la #71 è aperta; la #71 finisce C148 e poi le manda le consegne con `send_message`. Scorta della #71: NON unirla finché la #71 è aperta (E97).
+
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (13/11 09:38-09:55, #70):** «catalogo immenso proteico in priorità a GialloZafferano» (GZ piano piano): voto palestra su tutte le carte (C149, patch pronta, 🛑 DOMANDA 2 «1 = mettilo nell'app»), tanti creatori in più (C148), le ricette le carica Claude, MAI il motore dell'app (consumava tutto e bloccava l'app, Mario ~09:45).
@@ -38,9 +40,9 @@ Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa al
 
 ## Prossimi passi
 ⛔ NON unire le scorte `01WTjqUup234` (#66) e `01WTjqUwz4Kr` (#67): vecchie, superate dalla v0.10.24.
-1. 🛑 DOMANDA 2 (C149) «1» → `git apply docs/lavori-in-corso/c149-app.patch docs/lavori-in-corso/c148-video.patch`, `python3 -I tools/anteprima.py`, giro completo `node tools/prova.js` (0 «NO»), versione 0.10.25 in `data.js` (novità: voto palestra, profilo, 2 canali nuovi), commit `[pubblica]` e push, `curl` del sito, `git rm` delle due patch. Prima una foto della pagina «🎬 Ricette video» con 4 riquadri (PT E69). «2» → cambiare quello che dice.
+1. FATTO #71: v0.10.25 online (C149 voto palestra + C148 «Da chi», giro 97/97). Resta `c148-video.patch`: foto della pagina «🎬 Ricette video» con 4 riquadri a Mario, poi versione.
 2. C148 siti: `python3 -I tools/raccogli_stimate.py --creatori` in sottofondo (~1.400 pagine, ~1 s l'una; salva prima una copia di `ricette-stimate.js`); poi conti per creatore, controllo a occhio di 10 ricette, patch, foto. Mela, ecc. sconosciute a `tools/stima.py` scartano molte ricette: valutare sinonimi nuovi in `SINONIMI`/`CODICI`.
-3. App: filtro «per creatore o sito» anche in Proteiche (Mario 12/11 18:54); `FONTI_RIC` in `ricettario.js` coi prefissi nuovi `fw`, `fs`, `gh` (sennò la fonte dice «GialloZafferano»!).
+3. FATTO #71 (patch `c148-app.patch`): «Da chi» in Proteiche e `FONTI_RIC` con `fw`, `fs`, `gh`.
 4. Altri creatori della tabella #70 (Ricette di Alice, HSN, Sergio Chisari): robots e lettura; poi inglesi (MattsfitChef ecc.) con prova di traduzione e foto.
 5. Idee C149 (DOMANDA 1, consiglio 1 e 4) quando Mario risponde.
 6. Vecchi: C140 privato (passo di Mario), C143 + kit 38.26 (DOMANDA 1 della #65), pagella C141, Android: schermo intero e zoom del lettore.
@@ -52,7 +54,7 @@ Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa al
 13/11 09:55, parola per parola: «palestra pubblica a cosa ti serve saperlo?!?!?» → malinteso: «1 = pubblica» della DOMANDA 2 letto come «palestra pubblica»; domanda riscritta («1 · Mettilo nell'app»), PT E76.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C150; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C151; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
