@@ -50,13 +50,33 @@ with tempfile.TemporaryDirectory() as tmp:
     controlla(r.returncode == 0 and uscita != "", f"esce sempre con un avviso valido (uscita {r.returncode})")
     controlla(durata < 10, f"entro il tetto, non dopo i tentativi del fetch ({durata:.0f} s)")
     controlla(uscita.startswith("ATTENZIONE avvio lento") and "ramo fermato" in uscita
-              and "non controllati: scorte, messaggi di Mario, Aspetta Mario, promesse" in uscita,
+              and "non controllati: scorte, messaggi di Mario, parole intere, Aspetta Mario, promesse" in uscita,
               "dice quale passo si è fermato e cosa non ha controllato: " + uscita[:120])
     controlla("python3 -I .claude/hooks/avvio-check.py" in uscita, "dice come rifarlo")
     controlla(not os.path.exists(os.path.join(repo, ".git", "avvio-in-corso")), "segno «avvio-in-corso» tolto")
     controlla(git(repo, "config", "--get", "merge.scorta.driver") == "cp %B %A", "driver della scorta detto lo stesso")
     controlla(git(repo, "config", "--get", "merge.impostazioni.driver") == "python3 -I tools/unisci-json.py %O %A %B",
               "driver delle impostazioni detto lo stesso (E325)")
+
+# PT E84 (Mario 13/11): l'avvio indica le righe ESATTE dei messaggi interi della sessione precedente della catena
+with tempfile.TemporaryDirectory() as tmp:
+    git(tmp, "init", "-q", "-b", "claude/prova")
+    git(tmp, "config", "user.email", "prova@example.com")
+    git(tmp, "config", "user.name", "prova")
+    os.makedirs(os.path.join(tmp, "docs"))
+    with open(os.path.join(tmp, "docs", "PASSAGGIO-CONSEGNE.md"), "w") as f:
+        f.write("Sessione attuale: #2 (dopo la #1 `session_01AAAAAAAAAAxyz`)\n")
+    with open(os.path.join(tmp, "docs", "MESSAGGI-MARIO.md"), "w") as f:
+        f.write("# Registro\n\n## 2026-11-13 10:00 · 01ZZZZZZZZZZ\nvecchio\n\n## 2026-11-13 11:00 · 01AAAAAAAAAA\n"
+                "metti il bannerino stretto\n\n## 2026-11-13 11:05 · 01AAAAAAAAAA\ntogli il microfono\n")
+    git(tmp, "add", "-A")
+    git(tmp, "commit", "-q", "-m", "primo")
+    codice = ("import importlib.util as u, sys; s = u.spec_from_file_location('a', sys.argv[1]); m = u.module_from_spec(s); "
+              "s.loader.exec_module(m); print(m.parole_intere('01BBBBBBBBBB'))")
+    r = subprocess.run([sys.executable, "-I", "-c", codice, HOOK], cwd=tmp, capture_output=True, text=True, timeout=60,
+                       env=dict(os.environ, CLAUDE_PROJECT_DIR=tmp))
+    controlla("PAROLE INTERE DI MARIO" in r.stdout and "(01AAAAAAAAAA) ha 2 messaggi" in r.stdout
+              and "righe 6-10" in r.stdout, "avvio: righe esatte dei messaggi della sessione precedente: " + r.stdout[:160] + r.stderr[-200:])
 
 print(f"ERRORI: {errori}")
 sys.exit(1 if errori else 0)
