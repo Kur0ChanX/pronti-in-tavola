@@ -1,8 +1,5 @@
-# Ultima risposta di Claude (13/11/2026 23:38 ora italiana)
+# Ultima risposta di Claude (13/11/2026 23:45 ora italiana)
 
-📌 **Di cosa parliamo:** il costo di ogni piatto, nella schermata della spesa di Monica (le 4 foto sopra). È pronto ma non ancora online: manca solo il tuo ok.
+Le modifiche dell'app non le mando ancora su GitHub, ed è voluto. Mandarle sul ramo vuol dire metterle online subito, e prima deve finire il giro delle prove (regola PT E69). Intanto la copia automatica di sicurezza le tiene al sicuro.
 
-1 · Vanno bene → lo metto online nell'app. Monica vedrà quanto le costa ogni piatto e quanto le resta (**consiglio**).
-2 · Cambia qualcosa → dimmi cosa. Correggo e ti rimando le foto prima di metterlo online.
-
-Aspetto il tuo numero.
+Il giro è a 11 prove verdi, nessun errore finora. Quando finisce ti scrivo.
