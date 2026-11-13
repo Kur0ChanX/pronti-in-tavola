@@ -30,7 +30,7 @@ Sessione attuale: #75 (dopo la #74 `session_01WTjqUw4QVbXHnpAg1txmfs`, chiusa al
 2. Poi «altre ricette» (risposta a Mario #74): prima le ~300 scartate da `tools/stima.py` (ingredienti sconosciuti), poi Ricette di Alice, HSN, Sergio Chisari.
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67) e `01WTjqUvtoJC` (#70): vecchie (C148 ormai online).
 3. Foto di v0.10.26 (C148, C150): «798» visto da Mario 12:49; «🎙️ dosi» da vedere dopo C151 (cloud bread si trova). Poi chiudere le 👁. Era: quando Mario manda la foto di v0.10.26 (Ricette video con Cotto al Dente e 2foodfitlovers, «Cloud bread» con «🎙️ dosi dal video»): chiudere le 👁 di C148 e C150 se va bene; se Mario scrive altro, prima quello.
-4. Ogni mattina dopo le 9:00 (limite azzerato): `python3 -I tools/trascrivi_video.py --da ricette-video.js` in sottofondo (C148 ormai nel file: niente patch); controllo a occhio a campione e delle righe `dubbi`; commit del json. Sveglia `send_later` 14/11 9:10 (`trig_01JKS2CJhRPjxHBXxR1GXhxu`, della #74; quella della #73 cancellata): rifarla ogni giorno.
+4. Ogni mattina dopo le 9:00 (limite azzerato): `python3 -I tools/trascrivi_video.py --da ricette-video.js` in sottofondo (C148 ormai nel file: niente patch); controllo a occhio a campione e delle righe `dubbi`; commit del json. Sveglia `send_later` 14/11 9:10 (`trig_01FAfgW9U1vqEGG7YDS9uLyZ`, della #75; quella della #74 cancellata): rifarla ogni giorno.
 5. A fine giro: rifare i primi video senza «nome» (togliere le loro voci senza nome dal json e rilanciare), poi nuove versioni coi video trascritti.
 6. Altri creatori della tabella #70 (Ricette di Alice, HSN, Sergio Chisari); idee C149 quando Mario risponde. Vecchi: C140 privato, C143 + kit 38.26, pagella C141, Android schermo intero.
 
