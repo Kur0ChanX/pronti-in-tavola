@@ -411,11 +411,11 @@ const Dati = (() => {
     io.utente = u; io.letto = true; avvisaCambio();
   }
 
-  // Quanto prende un ordine dai «pronti» (per piatto) e dalle teglie della settimana.
+  // Quanto prende un ordine dai «pronti» (per piatto) e dalle teglie della settimana. Un ordine di PROVA niente (C159).
   const fuori = ['annullato', 'rifiutato', 'daApprovare', 'prova'];
   function presi(o) {
     const m = {};
-    if (o && o.pronto && !fuori.includes(o.stato)) o.righe.forEach(r => { m[r.piatto] = (m[r.piatto] || 0) + r.qta; });
+    if (o && o.pronto && !o.prova && !fuori.includes(o.stato)) o.righe.forEach(r => { m[r.piatto] = (m[r.piatto] || 0) + r.qta; });
     return m;
   }
   function teglie(o) { const m = {}; if (o && !fuori.includes(o.stato)) { const n = op.teglieOrdine(o); if (n) m[op.settimana(o.entro)] = n; } return m; }

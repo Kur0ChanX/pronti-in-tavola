@@ -2,6 +2,9 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
+## 2026-11-13 12:53 · 01WTjqUw4QVb
+è uno scherzo verooooooo????
+
 ## 2026-11-13 12:55 · 01WTjqUw4QVb
 magari cose utili cosí lasciale visto che c'è ma una sezione a parte
 
@@ -123,6 +126,3 @@ rifammi la domanda
 
 ## 2026-11-13 23:44 · 01WTjqUwbEtu
 va bene come consiglio
-
-## 2026-11-14 00:52 · 01WTjqUuVK9Q
-1 ok come consiglio
