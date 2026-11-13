@@ -1,12 +1,10 @@
-# Ultima risposta di Claude (13/11/2026 15:54 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:21 ora italiana)
 
+Ho capito: vuoi sapere, passo per passo, perché il messaggio della cliente non è diventato un ordine.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA 1 · Velocità del controllo dei video. Rispondi 1 o 2:
-  1 = resto gratis: circa 4 settimane, un pezzo ogni mattina (mio consiglio).
-  2 = piano a pagamento di Google: tutto in circa 1 giorno, stima 10-40 € una volta sola.
-  Se non rispondi, vado con la 1.
-- Qui non c'è niente che si muove, quindi non ti mando un video: si tratta di una scelta di tempi e costi. Le foto delle scritte te le ho già mandate.
+───
+✅ COSA È SUCCESSO
+1. La cliente ha aperto l'app e ha toccato il tasto verde **«Scrivimi»** in basso. L'abbiamo messo l'8/11 (voce C49) per le domande a Monica.
+2. L'app ha aperto WhatsApp con un **testo precompilato** (scritto in anticipo dall'app, la persona lo continua). Era: «Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola. Sono … Volevo chiederti:».
+3. Dopo «Volevo chiederti:» la cliente ha scritto l'ordine (2 kg di ravioli, 1 parmigiana, la prossima settimana) e l'ha mandato.
+4. …
