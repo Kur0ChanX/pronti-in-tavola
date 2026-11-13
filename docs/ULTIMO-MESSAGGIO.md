@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 18:39 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 18:54 ora italiana)
 
-ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+Mi raccomando, questo errore che è appena successo non deve capitare in tutto l'account e non solo in pronti in tavola. Questa cosa che lavori per conto tuo, pubblichi, senza che ascolti e leggi i miei messaggi.
