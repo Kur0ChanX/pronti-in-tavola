@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 13/11 · 🟡 Principale 74 · v0.10.27 (C151): chiudi e riapri l'app, Ricettario: manda una foto (un tasto «Filtri», cerca «cloud bread»). A cosa serve: chiudo la promessa C151.
 - 13/11 · 🛑 · 🟡 Principale 74 · v0.10.26 (C148 + C150): chiudi e riapri l'app, Ricettario → Ricette video; manda una foto con la versione 0.10.26 (Cotto al Dente, 2foodfitlovers, «🎙️ dosi dal video»). A cosa serve: chiudo le promesse C148 e C150.
 - 13/11 · 🟢 Principale 70 · C149 idee: scegli i numeri (1 obiettivo proteine · 2 svuota frigo · 3 prima/dopo allenamento · 4 «+1 voto»); consiglio 1 e 4.
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
