@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 18:39 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 19:47 ora italiana)
 
-ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
