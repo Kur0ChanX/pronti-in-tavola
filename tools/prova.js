@@ -1694,7 +1694,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     /* C141: entra anche la troppo salata (col 🔴 nella pagella); fuori la carbonara (16% di proteine) e quella senza valori; prima il voto più alto */
     if (JSON.stringify(fit.nomi.filter(n => /prova$/.test(n))) !== '["Merluzzo fit prova","Pollo fit prova","Salata prova"]') throw new Error('Proteiche: ricette o ordine sbagliati (carbonara 16% di proteine, senza valori: fuori; ordine per voto): ' + JSON.stringify(fit.nomi));
     const pagCarte = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta')].filter(c => /prova/.test(c.innerText)).map(c => (c.querySelector('.ric-pagella-riga') || {}).textContent));
-    if (JSON.stringify(pagCarte) !== '["Voto 10 🟢🟢🟢🟢🟢","Voto 8 🟢🟡🟢🟢🟡","Voto 8 🟢🟡🟢🟢🔴"]') throw new Error('C141 pagella sulle carte sbagliata: ' + JSON.stringify(pagCarte));
+    if (JSON.stringify(pagCarte) !== '["Voto 10 🟢🟢🟢🟢🟢🟢","Voto 9 🟢🟢🟢🟢🟢🟡","Voto 9 🟢🟢🟢🟢🟢🔴"]') throw new Error('C141 pagella sulle carte sbagliata: ' + JSON.stringify(pagCarte));
     if (fit.riga !== '💪 27 g proteine · 300 kcal · sale 0,9 g' || !fit.nota || fit.fonte !== 'GialloZafferano') throw new Error('Proteiche: riga dei valori, nota o fonte sbagliate: ' + JSON.stringify(fit));
     await foto('47-c124-proteiche');
     /* difficoltà in vista (Facili comprende «Molto facile», Difficili «Molto difficile») */
@@ -1735,6 +1735,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!ai || ai.voce !== 'ricettario-fit' || ai.vai !== 'ricettario' || !ai.ui || ai.ui.ricZona !== 'fit') throw new Error('aiutante: «ricette proteiche» non porta alla sezione: ' + JSON.stringify(ai));
     const aiv = await page.evaluate(() => { const c = capisciDove('dove sono le ricette dei video di youtube?'); return c && c[0] && Object.assign({ voce: c[0].voce }, controllaAI(c[0])); });
     if (!aiv || aiv.voce !== 'ricettario-video' || aiv.vai !== 'ricvideo') throw new Error('aiutante: «ricette video» non porta alla sezione: ' + JSON.stringify(aiv));
+    const aip = await page.evaluate(() => { const c = capisciDove('dove metto il mio peso per il voto per te?'); return c && c[0] && Object.assign({ voce: c[0].voce }, controllaAI(c[0])); });
+    if (!aip || aip.voce !== 'imp-palestra' || aip.vai !== 'impostazioni') throw new Error('aiutante: «profilo palestra» non porta alle Impostazioni: ' + JSON.stringify(aip));
+    /* C149: il profilo palestra nelle Impostazioni si salva da solo e dà le quote */
+    await page.evaluate(() => { localStorage.removeItem('pit-profilo-pal'); UI.sez = null; vai('impostazioni'); });
+    await page.locator('#pal-profilo [data-pal="peso"]').fill('80'); await page.locator('#pal-profilo [data-pal="peso"]').dispatchEvent('change'); await page.waitForTimeout(200);
+    const pp = await page.evaluate(() => ({ s: localStorage.getItem('pit-profilo-pal'), t: (document.querySelector('#pal-profilo') || {}).innerText || '' }));
+    if (pp.s !== '{"peso":80}' || !/Per te: 160 g di proteine/.test(pp.t)) throw new Error('C149: profilo palestra non salvato o quote sbagliate: ' + JSON.stringify(pp));
+    await foto('48z-c149-profilo-palestra');
+    await page.evaluate(() => { localStorage.removeItem('pit-profilo-pal'); UI.vista = 'home'; render(); });
     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC124; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
   });
   await passo('ricettario C125: Proteiche con Pasti, Snack e dolci, «⚡ Pronte in 10 minuti», nota con le due regole', async () => {   // autonomo
@@ -1885,6 +1894,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       canale: (document.querySelector('main a[href^="https://www.youtube.com/channel/"]') || {}).href || '', nomiVuoti: [...document.querySelectorAll('main .ric-carta b')].filter(x => !x.textContent.trim()).length }));
     if (l.v !== 'ricvideo:0' || l.carte !== au.nP || l.tipi.length < 6 || !l.tipi.includes('Pancake') || !l.canale || l.nomiVuoti) throw new Error('C144: elenco dello youtuber sbagliato: ' + JSON.stringify(l));
     await foto('48f-c144-video-elenco');
+    /* C149 (Mario 13/11 «metti i voti anche fuori»): ogni carta coi valori ha il voto */
+    const vv = await page.evaluate(() => { const c = [...document.querySelectorAll('main .ric-elenco .ric-carta')].filter(x => x.querySelector('.ric-valori-riga')); return { n: c.length, senza: c.filter(x => !/Voto \d/.test((x.querySelector('.ric-pagella-riga') || {}).textContent || '')).length }; });
+    if (!vv.n || vv.senza) throw new Error('C149: carte video coi valori ma senza voto: ' + JSON.stringify(vv));
     await clic('[data-a="ric-video-tipo"][data-v="Pancake"]');
     const pc = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta small:first-of-type')].map(x => x.textContent.split(' · ')[0]));
     if (!pc.length || pc.length >= au.nP || pc.some(t => t !== 'Pancake')) throw new Error('C144: il tipo «Pancake» non filtra: ' + JSON.stringify(pc.slice(0, 5)));
@@ -2071,7 +2083,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (JSON.stringify(prof) !== '["pasto","pasto","snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto","pasto","pasto"]') throw new Error('C141 regola d\'entrata: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
     const pag = await page.evaluate(() => [{ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }, { kcal: 458, prot: 24.4, saturi: 6.5, zuc: 2.8, sodio: 463 }, { kcal: 150, prot: 10, saturi: 0.5, zuc: 2, sodio: 100 }, { kcal: 300, prot: 12, saturi: 1, zuc: 5, sodio: 100 }]
       .map(n => { const p = pagellaRic(n); return p.voto + ':' + p.voci.map(x => x.c).join('') + ':' + fitRic(n); }));
-    if (JSON.stringify(pag) !== '["8:vgvvg:pasto","5:ggrvg:pasto","10:vvvvv:snack","7:rvvvv:false"]') throw new Error('C141 pagella: voti o semafori sbagliati: ' + JSON.stringify(pag));
+    if (JSON.stringify(pag) !== '["9:vvvvvg:pasto","6:vrvrvg:pasto","8:ggvvvv:snack","6:grvvvv:false"]') throw new Error('C141 pagella: voti o semafori sbagliati: ' + JSON.stringify(pag));
+    /* C149 (Mario 13/11): voto palestra; i soli kcal e proteine (video) danno un voto «≈»; col profilo di Mario il «Voto per te» sulla sua quota */
+    const pal = await page.evaluate(() => { const v = pagellaRic({ kcal: 670, prot: 47 }); localStorage.setItem('pit-profilo-pal', JSON.stringify({ peso: 80, altezza: 178, eta: 36, giorni: 4, obiettivo: 'ricomp' }));
+      const t = pagellaRic({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }), riga = rigaPagella({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }); localStorage.removeItem('pit-profilo-pal');
+      return [v.voto, v.parziale, v.voci.length, t.voto, t.perTe, t.quote.prot, t.quote.protPasto, t.quote.kcal, t.quote.kcalPasto, /Voto per te 9/.test(riga), !!pagellaRic({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }).perTe]; });
+    if (JSON.stringify(pal) !== '[8,true,3,9,true,160,40,2290,570,true,false]') throw new Error('C149 voto palestra o voto per te sbagliati: ' + JSON.stringify(pal));
+    const palG = await page.evaluate(() => { localStorage.setItem('pit-profilo-pal', JSON.stringify({ peso: 80, giorni: 4, grasso: 13 })); const q = quotePal(profiloPal()); localStorage.removeItem('pit-profilo-pal'); return [q.prot, q.kcal]; });
+    if (JSON.stringify(palG) !== '[160,2470]') throw new Error('C149 profilo con la % di grasso: quote sbagliate: ' + JSON.stringify(palG));
     /* portata del motore («Primi piatti») sotto il filtro «Primi»; la carta di RicetteFit col suo nome */
     await page.evaluate(() => { UI.ric.cat = 'primi'; render(); });
     let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$|rf$/.test(n)));
