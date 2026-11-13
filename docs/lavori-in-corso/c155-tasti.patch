@@ -74,10 +74,36 @@ index 5a0ec4a9..d9c09c8a 100644
    const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
    const attivo = document.activeElement && document.activeElement.id;
    /* file che scorrono di lato: restano dove erano (C31); C127: ritrovate per nome (classe + aria-label), non per posizione, così una riga che compare sopra non le scambia */
+diff --git a/data.js b/data.js
+index 869648f3..5d97d185 100644
+--- a/data.js
++++ b/data.js
+@@ -183,9 +183,11 @@ function statoIniziale() {
+ }
+ 
+ /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
+-const VERSIONE_APP = '0.10.29';
++const VERSIONE_APP = '0.10.30';
+ /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
+ const NOVITA = [
++  { v: '0.10.30', data: '13/11/2026',
++    migliorato: ['Clienti: menù più ordinato. «Scrivi a Monica» è nella barra in basso, accanto a Menù e I miei ordini; le allergie stanno in una striscia piccola che resta in cima mentre scorri'] },
+   { v: '0.10.29', data: '13/11/2026',
+     nuovo: ['Clienti: «Scrivimi» capisce gli ordini. Se nel messaggio ci sono piatti del menù (es. «2 kg di ravioli»), l\'app li mette nel carrello e l\'ordine arriva vero a Monica, col messaggio nella nota. Le domande vanno su WhatsApp come prima', 'Monica può mandare a un cliente un link col carrello già pronto: il cliente sceglie il giorno e invia'],
+     migliorato: ['Ordini detti o scritti: «ricotta e spinaci» sceglie il gusto giusto'] },
 diff --git a/style.css b/style.css
-index cf08a16c..5572c1b8 100644
+index cf08a16c..54492322 100644
 --- a/style.css
 +++ b/style.css
+@@ -69,7 +69,7 @@ body.con-barra #app { padding-bottom: 72px; }
+   background: var(--foglio); border-top: 1px solid var(--riga);
+   padding-bottom: env(safe-area-inset-bottom);
+ }
+-.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(2, 1fr); }
++.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr));   /* 2 o 3 voci (C155: «Scrivi a Monica») sempre su una riga */ }
+ .barra button {
+   border: 0; background: none; padding: 8px 4px 10px; min-height: 62px;
+   display: flex; flex-direction: column; align-items: center; gap: 2px;
 @@ -699,16 +699,13 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
  .ai-foto-pronta { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; background: var(--foglio); border: 1px dashed var(--grano); }
  .ai-foto-pronta img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
