@@ -34,7 +34,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E27** Pochi comandi raggruppati, prova del solo pezzo, giro completo una volta prima del push.
 - **PT E28/E68** Modulo sicuro solo dal PC (`origin` di `get_session`: android = telefono). Chiavi Google (`X-Goog-Api-Key`): rifiutate, a mano nell'ambiente.
 - **PT E69** Push di file del sito sul ramo = app pubblicata (`sito.yml`): senza foto approvata e giro verde solo patch; prima leggo «Stato» delle consegne. Difesa: C143.
-- **PT E70** Ogni prova prepara da sola il suo stato (guida chiusa, ruolo, vista): rossa da sola e verde nel giro = dipende dalla prima; file con `const` già caricato da una prova prima: riempirlo, mai ricaricarlo (#71, C148).
+- **PT E70** Ogni prova prepara da sola il suo stato (guida chiusa, ruolo, vista): rossa da sola e verde nel giro = dipende dalla prima.
 - **PT E29** Ogni indirizzo esterno si prova dal vivo; un giro automatico non resta mai fermo sullo stesso errore.
 - **PT E30** «Migliora» una ricetta ufficiale = completare ciò che manca, mai aggiungere; nel dubbio un esempio prima.
 - **PT E31** Misure chieste come le usa chi cucina (teglie); i conti li fa l'app.

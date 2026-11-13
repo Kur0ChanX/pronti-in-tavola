@@ -124,3 +124,5 @@ Ricapitato (#63 «~20:06» alle 19:06): `consegne.py controlla` ferma i «gg/mm 
 
 ## PT E73 (12/11, #69)
 DOMANDA 6 (C148): nella scelta 1 «i 6 italiani» c'era MattsfitChef, italiano ma con le ricette in inglese; Mario ha risposto «sono italiani tutti direi». Difesa: prima di mandare scelte numerate, ricontrollare ogni nome con la tabella.
+
+- **PT E70 (#71, 13/11, C148)**: la prova nuova ricaricava `ricette-stimate.js` (`const`) già caricato e svuotato dalla prova C141 → nel giro elenco vuoto, da sola verde. Difesa: se il file c'è già, la prova lo riempie dal disco.
