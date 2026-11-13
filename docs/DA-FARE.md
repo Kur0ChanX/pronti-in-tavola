@@ -1,7 +1,6 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 13/11 · 🛑 · 🟡 Principale 80 · DOMANDA 1 foto barra nuova `archivio/foto/2026-11-13-c155-barra-{1,2}.png` (barra «Chiedi o ordina» + microfono a destra, una riga, ferma in cima; via microfoni galleggianti nel menù; in basso Menù · I miei ordini · Scrivi a Monica): 1 = ok, online insieme a C157 · 2 = cambia. Patch `docs/lavori-in-corso/c155-c157-tutto.patch`.
 - 13/11 · 🟢 Principale 80 · DOMANDA 2 passaggio di consegne (C158): leggere le frasi intere di Mario di TUTTE le sessioni non chiuse, non solo l'ultima: 1 = sì (consiglio) · 2 = lascia com'è.
 - 13/11 · 🟢 Principale 79 · DOMANDA 2 controllo delle regole (conflitti, doppioni, regole morte; tabella tengo/unisco/tolgo, decide Mario): 1 = dopo i tasti (consiglio) · 2 = subito. A cosa serve: Mario teme regole in conflitto.
 - 13/11 · 🟢 Principale 77 · C154 velocità della trascrizione: Gemini gratis fa ~25 video al giorno, ne restano 765 (~4 settimane). 1 = resto gratis, vado ogni mattina (consiglio) · 2 = piano a pagamento di Google, tutto in ~1 giorno, stima 10-40 € una volta sola. A cosa serve: decidi tu se spendere.
