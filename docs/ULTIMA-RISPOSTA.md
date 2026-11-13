@@ -1,3 +1,11 @@
-# Ultima risposta di Claude (12/11/2026 20:02 ora italiana)
+# Ultima risposta di Claude (13/11/2026 09:32 ora italiana)
 
-Mi è arrivato solo «solo»: forse il messaggio si è tagliato. Cosa volevi scrivere? Intanto è salvato nelle consegne e lo vedrà anche la sessione nuova. Se non aggiungi altro, valgono i 5 creatori italiani.
+Ho capito: all'inizio della sessione volevi il nome cambiato subito, e io l'ho fatto in ritardo. Hai ragione, scusa.
+
+✅ **FATTO**
+- La sessione ora si chiama «🟢 🍝 Principale 70
+
+## Domande a Mario
+
+❓13 · v0.10.24 online».
+- La 0.10.24 è online, con le ricette video e il video che parte dentro l'app.
