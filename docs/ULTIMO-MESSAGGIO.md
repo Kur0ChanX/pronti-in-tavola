@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 20:19 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:33 ora italiana)
 
-Mi puoi rinviare il link di Lisa in questa sessione?
+Ci sono 3 sessioni che non riescono a inviarmi questo link. Fai tu veloce, inviami il link dei ravioli e della parmigiana senza quantità, veloce.
