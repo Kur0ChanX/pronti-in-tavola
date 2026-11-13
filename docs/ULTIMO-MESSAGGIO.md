@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 11:36 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 12:50 ora italiana)
 
-hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto
+riordina la pagina oltre a non trovare nulla c'è un casino in questa pagina 3000 tastine filtri ok servono ma non si capisce nulla
