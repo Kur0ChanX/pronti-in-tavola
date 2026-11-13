@@ -24,7 +24,7 @@ DOMANDA = """Questo è un video di una ricetta. Guardalo e ascoltalo tutto.
    - «ingredienti»: uno per riga, con la quantità come la dice, in grammi o millilitri se li dice (es. «100 g di albume», «1 uovo», «5 g di cacao»).
      Se di un ingrediente non dice la quantità, scrivi solo il nome. Niente attrezzi.
    - «passi»: i passaggi in italiano semplice, frasi corte, nell'ordine del video, con tempi e temperature se li dice.
-   - «valori»: kcal, proteine, carboidrati, grassi in grammi PER PORZIONE solo se li dice o li mostra scritti; sennò null.
+     Nei passi niente ingredienti, alternative o attrezzi che non dice o non mostra. Un'alternativa detta («albume o yogurt greco») scrivila così.
 NON inventare niente: quello che non dice o non mostra resta null o fuori. Non aggiungere consigli tuoi."""
 
 SCHEMA = {'type': 'OBJECT', 'properties': {
@@ -32,16 +32,12 @@ SCHEMA = {'type': 'OBJECT', 'properties': {
     'testo': {'type': 'STRING'},
     'porzioni': {'type': 'INTEGER', 'nullable': True},
     'ingredienti': {'type': 'ARRAY', 'items': {'type': 'STRING'}},
-    'passi': {'type': 'ARRAY', 'items': {'type': 'STRING'}},
-    'valori': {'type': 'OBJECT', 'nullable': True, 'properties': {
-        'kcal': {'type': 'NUMBER', 'nullable': True}, 'prot': {'type': 'NUMBER', 'nullable': True},
-        'carb': {'type': 'NUMBER', 'nullable': True}, 'grassi': {'type': 'NUMBER', 'nullable': True}}}},
+    'passi': {'type': 'ARRAY', 'items': {'type': 'STRING'}}},
     'required': ['ricetta', 'testo', 'ingredienti', 'passi']}
 
 FINTO = {'ricetta': True, 'testo': 'Oggi facciamo dei pancake proteici: 100 grammi di albume, 40 grammi di farina di avena…',
          'porzioni': 1, 'ingredienti': ['100 g di albume', '40 g di farina di avena', '1 cucchiaino di lievito'],
-         'passi': ['Frulla albume, avena e lievito.', 'Cuoci in padella antiaderente 2 minuti per lato.'],
-         'valori': {'kcal': 210, 'prot': 16, 'carb': 26, 'grassi': 3}}
+         'passi': ['Frulla albume, avena e lievito.', 'Cuoci in padella antiaderente 2 minuti per lato.']}
 
 
 def chiave():
@@ -89,6 +85,23 @@ def con_dosi(x):
 
 def ordine(vv):
     return sorted(vv, key=lambda x: (bool(x.get('nutr')), con_dosi(x)))   # prima senza valori, poi senza dosi
+
+
+PAROLE = {'un': 1, 'uno': 1, 'una': 1, 'mezzo': 0.5, 'due': 2, 'tre': 3, 'quattro': 4, 'cinque': 5, 'sei': 6, 'sette': 7, 'otto': 8,
+          'nove': 9, 'dieci': 10, 'quindici': 15, 'venti': 20, 'trenta': 30, 'quaranta': 40, 'cinquanta': 50, 'cento': 100}
+
+
+def numeri(s):
+    return {float(n.replace(',', '.')) for n in re.findall(r'\d+(?:[.,]\d+)?', s)}
+
+
+def dubbi(r):
+    """Righe di ingredienti e passi con un numero che nel parlato non c'è (né somma di due detti, es. 100 + 20 ml di latte):
+    da guardare a occhio (PT E25; 13/11 #72). Il parlato non ha le scritte a schermo: un dubbio non è per forza un errore."""
+    t = r.get('testo') or ''
+    noti = numeri(t) | {v for k, v in PAROLE.items() if re.search(r'\b' + k + r'\b', t, re.I)}
+    noti |= {a + b for a in noti for b in noti}
+    return [s for s in (r.get('ingredienti') or []) + (r.get('passi') or []) if isinstance(s, str) and numeri(s) - noti]
 
 
 def buona(r):
@@ -145,19 +158,19 @@ def main():
             time.sleep(4)   # gentile coi limiti al minuto del piano gratis
         conti['chiesti'] += 1
         modello = modelli[m]
-        json.dump({'url': url, 'modello': modello, 'risposta': r}, open(os.path.join(CACHE, x['id'].replace(':', '_') + '.json'), 'w', encoding='utf-8'), ensure_ascii=False)
-        if buona(r):
-            v = r.get('valori') or {}
+        if not finto:   # la prova finta non tocca la cache vera (13/11 #72: aveva coperto 2 risposte vere)
+            json.dump({'url': url, 'modello': modello, 'risposta': r}, open(os.path.join(CACHE, x['id'].replace(':', '_') + '.json'), 'w', encoding='utf-8'), ensure_ascii=False)
+        if buona(r):   # valori: mai dal video (13/11 #72: 2 su 3 sbagliati), li calcola tools/stima.py dalle dosi
             fatti[x['id']] = {'porzioni': r.get('porzioni') or None, 'ingredienti': [i.strip() for i in r['ingredienti'] if i.strip()],
-                              'passi': [p.strip() for p in r['passi'] if p.strip()],
-                              'valori': {k: v[k] for k in ('kcal', 'prot', 'carb', 'grassi') if v.get(k) is not None} or None,
+                              'passi': [p.strip() for p in r['passi'] if p.strip()], 'dubbi': dubbi(r),
                               'modello': modello, 'data': time.strftime('%Y-%m-%d')}
             conti['ricette'] += 1
         else:
             fatti[x['id']] = {'scartato': 'non è una ricetta' if isinstance(r, dict) and r.get('ricetta') is False else 'senza dosi o passi',
                               'modello': modello, 'data': time.strftime('%Y-%m-%d')}
             conti['scartati'] += 1
-        json.dump(fatti, open(uscita, 'w', encoding='utf-8'), ensure_ascii=False, indent=0, sort_keys=True)   # salvo a ogni video
+        json.dump(fatti, open(uscita + '.tmp', 'w', encoding='utf-8'), ensure_ascii=False, indent=0, sort_keys=True)   # salvo a ogni video,
+        os.replace(uscita + '.tmp', uscita)   # in un colpo: la scorta automatica non prende mai un file a metà
     print(json.dumps(conti, ensure_ascii=False))
 
 

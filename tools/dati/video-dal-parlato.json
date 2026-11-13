@@ -1,0 +1,209 @@
+{
+"yt:-suyFvtSL6k": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"300 ml di albume",
+"300 ml di latte",
+"caffè",
+"cannella",
+"flavdrops pastel de nata (facoltativo)",
+"40 g di avena istantanea",
+"fragole",
+"mirtilli",
+"protein puffs",
+"burro d'arachidi"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Versare in un pentolino l'albume, il latte, il caffè, la cannella, i flavdrops e l'avena istantanea.",
+"Cuocere a fiamma bassa per qualche minuto mescolando continuamente fino a ottenere una crema.",
+"Versare la crema in una ciotola.",
+"Guarnire a piacere con fragole, mirtilli, protein puffs e burro d'arachidi e servire subito oppure far raffreddare in frigo."
+],
+"porzioni": null
+},
+"yt:2mEw_ETzMZg": {
+"data": "2026-11-13",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
+},
+"yt:DTLzaexdJAk": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"20 g di crema di riso al biscotto",
+"30 g di crema di riso neutra",
+"120 ml di latte",
+"200 ml di acqua",
+"30 ml di caffè",
+"150 g di yogurt greco",
+"2 gocce di flavdrops alla vaniglia",
+"10 g di cacao amaro",
+"10 g di proteine al cioccolato bianco",
+"Banana",
+"10 g di cioccolato fondente",
+"10 g di burro di arachidi",
+"Cioccolato bianco"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"In una ciotola unire 20 g di crema di riso al biscotto e 30 g di crema di riso neutra.",
+"Aggiungere 100 ml di latte, 200 ml di acqua e 20 ml di caffè, mescolando subito energeticamente per evitare grumi.",
+"In una tazza mescolare 150 g di yogurt greco con 2 gocce di flavdrops alla vaniglia.",
+"In un'altra tazza mescolare 10 g di cacao amaro, 10 g di proteine al cioccolato bianco, 20 ml di latte e 10 ml di caffè fino a formare una cremina al cioccolato.",
+"Versare lo yogurt greco sopra la crema di riso, poi aggiungere lo strato di crema al cioccolato.",
+"Decorare in superficie con pezzetti di banana, 10 g di cioccolato fondente tritato, 10 g di burro di arachidi e qualche goccia di cioccolato bianco."
+],
+"porzioni": null
+},
+"yt:Hz26Yk57Yko": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"50 g di crema di riso",
+"250 ml di latte",
+"un goccio di caffè",
+"150 g di yogurt greco",
+"cannella",
+"dolcificante pastel de nata",
+"10 g di cacao amaro",
+"5 g di proteine al cioccolato bianco",
+"10 g di burro d'arachidi in polvere",
+"40 ml di latte"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Unire in un barattolo 50 g di crema di riso, 250 ml di latte e un goccio di caffè, quindi mescolare per 30-40 secondi.",
+"A parte, mescolare 150 g di yogurt greco con la cannella e il dolcificante.",
+"In una tazza a parte, unire 10 g di cacao amaro, 5 g di proteine al cioccolato bianco, 10 g di burro d'arachidi in polvere e 40 ml di latte.",
+"Versare lo strato di yogurt greco sopra la base di crema di riso e poi coprire con il composto al cacao.",
+"Consumare subito oppure riporre in frigorifero."
+],
+"porzioni": null
+},
+"yt:T4MW0tsy4BM": {
+"data": "2026-11-13",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
+"yt:oZ1xgCirJgY": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"100 ml d'albume",
+"30 g di eritritolo",
+"10 g di amido di mais",
+"5 g di palline di cioccolato"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Versare in una ciotola l'albume, l'eritritolo e l'amido di mais.",
+"Montare il composto a neve ben ferma con lo sbattitore elettrico.",
+"Trasferire il composto a cucchiaiate su una teglia rivestita di carta forno dando una forma a cupola.",
+"Cospargere la superficie con le palline di cioccolato.",
+"Cuocere in forno a 160° per circa 25 minuti."
+],
+"porzioni": null
+},
+"yt:rg85C4FP8PA": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"2 albumi",
+"40 g di farina d'avena aromatizzata torta al limone",
+"40 g di farina d'avena istantanea alla vaniglia",
+"30 ml di latte",
+"2-3 g di idrolitina",
+"acqua",
+"2 tuorli",
+"100 ml di latte",
+"10 g di fecola di patate",
+"cannella",
+"scorza di limone",
+"2 gocce di dolcificante alla vaniglia",
+"caffè",
+"10 g di cacao amaro",
+"5 g di proteine in polvere al cioccolato",
+"15 ml di latte",
+"palline di cioccolato bianco",
+"burro di arachidi al cioccolato bianco"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Separare i tuorli dagli albumi di 2 uova e tenere da parte i tuorli per la crema.",
+"Unire agli albumi 40 g di farina d'avena al limone, 40 g di farina d'avena istantanea alla vaniglia e 30 ml di latte, mescolando bene con una frusta.",
+"Aggiungere 2-3 g di idrolitina con un goccio d'acqua per attivarla e incorporarla nell'impasto.",
+"Scaldare bene una padella antiaderente, abbassare la fiamma e versare l'impasto formando 3 pancake uguali.",
+"Coprire con il coperchio e cuocere circa 2 minuti per lato, quindi tenere i pancake da parte.",
+"Preparare la crema mescolando in una tazza i 2 tuorli, 100 ml di latte, 10 g di fecola di patate, una punta di cannella e la scorza di limone.",
+"Cuocere la crema nel microonde per circa 2 minuti complessivi, mescolando ogni 30 secondi fino a farla addensare.",
+"Unire alla crema 2 gocce di dolcificante alla vaniglia e amalgamare.",
+"Preparare la copertura al cacao mescolando 10 g di cacao amaro, 5 g di proteine in polvere al cioccolato e 15 ml di latte.",
+"Comporre il dessert in un barattolo alternando pancake inzuppati nel caffè e strati di crema pasticcera fit.",
+"Decorare la superficie con la cremina al cacao, palline di cioccolato bianco e burro di arachidi."
+],
+"porzioni": 1
+},
+"yt:uXrxN4Jzs0M": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"40 g di farina d'avena al gusto caffè e caramello",
+"40 g di fiocchi d'avena",
+"200 ml di latte di mandorla (+ 15 ml per la cremina)",
+"100 ml di acqua",
+"10 g di cacao amaro (+ 5 g per la cremina)",
+"20 ml di caffè",
+"150 g di yogurt greco",
+"2 gocce di flavdrops alla vaniglia",
+"5 g di proteine in polvere gusto cioccolato e nocciola",
+"Palline di cioccolato bianco",
+"Burro di arachidi al cioccolato bianco"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"In una ciotola per microonde unire 40 g di farina d'avena, 40 g di fiocchi d'avena, 200 ml di latte di mandorla, 100 ml di acqua, 10 g di cacao amaro e 20 ml di caffè, quindi mescolare bene.",
+"Cuocere nel forno a microonde alla massima potenza per circa 6-8 minuti, tirando fuori la ciotola ogni minuto (e ogni 30 secondi verso la fine) per dare una mescolata e controllare la densità del porridge.",
+"In un contenitore a parte, amalgamare 150 g di yogurt greco con 2 gocce di flavdrops alla vaniglia.",
+"In un bicchiere preparare la cremina al cioccolato mescolando 5 g di cacao amaro, 5 g di proteine in polvere e 15 ml di latte di mandorla.",
+"Assemblare il dolce a strati in una ciotola versando sul fondo il porridge cotto, stendendo sopra lo yogurt greco aromatizzato e coprendo infine con la cremina di proteine e cacao.",
+"Guarnire la superficie con due palline di cioccolato bianco e un filo di burro d'arachidi al cioccolato bianco."
+],
+"porzioni": 1
+},
+"yt:wbyC8HyvWD4": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"2 uova",
+"100 ml di albume",
+"50 g di farina d'avena al cioccolato",
+"50 g di farina d'avena Lemon Pie",
+"60 ml di latte",
+"10 g di cacao amaro",
+"2-3 g di idrolitina",
+"acqua",
+"200 g di yogurt greco",
+"flavdrops alla vaniglia",
+"10 g di cacao",
+"25 ml di latte",
+"5 g di proteine alla stracciatella",
+"palline di cioccolato bianco",
+"burro d'arachidi"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"In una ciotola unire le uova, l'albume, le farine d'avena, 60 ml di latte e 10 g di cacao amaro, poi mescolare.",
+"Aggiungere l'idrolitina sulla superficie e attivarla con un goccio d'acqua, poi incorporarla all'impasto.",
+"Versare l'impasto in una padella scaldata, coprire con il coperchio e cuocere a fiamma minima per 5-6 minuti.",
+"Preparare il ripieno mescolando in una tazza lo yogurt greco con le flavdrops alla vaniglia.",
+"In un bicchiere unire 10 g di cacao, 25 ml di latte e le proteine in polvere per creare la crema di copertura.",
+"Girare il pancake dall'altro lato e cuocere per altri 2-3 minuti.",
+"Tagliare a metà il pancake in senso orizzontale.",
+"Farcire il disco di base con lo yogurt, coprire con la seconda metà e stendere in superficie la crema al cioccolato.",
+"Decorare a piacere con palline di cioccolato bianco e burro d'arachidi."
+],
+"porzioni": 2
+}
+}
