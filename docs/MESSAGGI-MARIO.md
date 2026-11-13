@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:24 · 01WTjqUvRgtB
-va bene come Consiglio
-
 ## 2026-11-13 10:26 · 01WTjqUvRgtB
 Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici nel video e fai la ricetta, perché altre intelligenze artificiali riescono, quindi magari dalle parole che dicono ti prendi il testo e ci fai la ricetta, anche perché nei video dicono spesso le quantità, quindi a te le quantità servono. Quindi puoi farlo per ogni singolo video, caricare magari un programmino che lo fa, non so, una skill, un MCP, un qualcosa da collegarlo, e ti trascrivi tutto quello che dicono e da lì prendi quello che ti serve, no? Per ogni singolo video.
 
@@ -126,3 +123,6 @@ Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no ri
 
 ## 2026-11-13 20:19 · 01WTjqUu3oyB
 Mi puoi rinviare il link di Lisa in questa sessione?
+
+## 2026-11-13 20:26 · 01WTjqUu3oyB
+Lisa ha ordinato  2kg di ravioli ricotta e spinaci e una parmigiana da 6 e basta controlla se ci sono precompilati solo questi 2
