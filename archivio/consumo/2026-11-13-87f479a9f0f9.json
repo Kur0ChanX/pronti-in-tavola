@@ -1,0 +1,47 @@
+{
+"account": "108763",
+"sessione": "87f479a9f0f9",
+"giorno": "2026-11-13",
+"turni": 6,
+"peso": 886535,
+"uscita": 22479,
+"contesto_max": 204779,
+"anomalie": [
+"2 uscite di strumento enormi (56 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+],
+"remota": "01WTjqUwF3CY",
+"aiutanti": 0,
+"strumenti": 43,
+"motori": {
+"opus": 886535
+},
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 13 · There are uncommitted changes in": 2,
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 6 · Segno delle domande nel titolo": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"20:33 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: #79. Riscr"
+],
+"Stop 6 · Il turno finisce con una": [
+"20:34 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 13 · There are uncommitted changes in": [
+"20:42 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"20:44 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"20:44 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «La misura obbligatoria della parmigiana è pronta, la metto online insieme ai tasti.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove"
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"20:44 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 80 ❓20 · foto barra» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avviso "
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"20:44 · Ti fermi ad aspettare Mario con il contesto a 204k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+]
+}
+}
