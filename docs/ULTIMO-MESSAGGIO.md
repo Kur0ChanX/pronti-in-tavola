@@ -1,3 +1,5 @@
-# Ultimo messaggio di Mario (13/11/2026 20:20 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:42 ora italiana)
 
-E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.
+Allora, questa cosa dei ravioli l'ha fatta il cliente, è entrato dentro e è riuscito a ordinare. Allora, come prima cosa miglioriamo quella cosa del tasto che ti ho detto. Se ho capito bene, mandami prima delle foto, quella del microfono e quella della ricerca sopra, di togliere il doppio microfono e la ricerca sopra solo col microfono, che fa tutto, sia allergie sia per ordinare dall'app. Mettila larga al massimo e che segua un po' lo scroll, non farla troppo grossa, nel senso troppo alta, ecco. Se riesci a farci stare tutto in una riga, magari col pulsante a destra del microfono, e sotto il tasto scrivimi.
+Poi dimmi se hai migliorato questa cosa, questo problema che abbiamo avuto nel passaggio di consegna, che non hai capito, che lo miglioriamo, che facciamo che leggi tutto quello della sessione precedente, gli ultimi messaggi, oppure fai in modo che non si perda lucidità nel passaggio di consegna, a discapito magari di qualche piccolo token in più.
+Ma poi io non capisco questa cosa dei caratteri grandi che stai dicendo, secondo me hai capito male. Cioè non per forza... Cioè quello dei caratteri grandi è un pulsante che attivi e disattivi. Non capisco questa cosa che mi vuoi far vedere con i caratteri grandi, cioè non l'ho capito. Quello è solo per la gente che vede poco.
