@@ -61,36 +61,83 @@ function fitRic(n) {
   if (!valoriPieni(n) || n.prot < sogliaFit('fitSnackProt', 8) || n.prot * 400 / n.kcal < sogliaFit('fitEntraPerc', 20)) return false;
   return n.prot >= sogliaFit('fitProt', 25) || n.kcal > sogliaFit('fitSnackKcal', 300) ? 'pasto' : 'snack';
 }
-/* PAGELLA (C141): semaforo come sulle etichette per proteine, calorie, grassi saturi, zuccheri e sale, e un VOTO da 1 a 10.
-   Calorie, saturi, zuccheri e sale in parte del fabbisogno di un giorno (assunzioni di riferimento UE, Reg. UE 1169/2011: 2000 kcal,
-   20 g saturi, 90 g zuccheri, 6 g sale): 🟢 fino al pagVerde% (15), 🟡 fino al pagGiallo% (30), 🔴 oltre. Proteine in parte delle calorie:
-   🟢 dal fitProtPerc% (25, scelta di Mario 10/11), 🟡 dal fitEntraPerc% (20, regola UE), 🔴 sotto. Voto: 🟢 2 punti, 🟡 1, 🔴 0,
-   le proteine contano doppio (12 punti = 10). Soglie in Impostazioni → «Solo per te, Mario». */
+/* PAGELLA PALESTRA (C141, rifatta C149: Mario 13/11 «valuta se tutti i tuoi voti vanno bene con la logica palestra fitness ipertrofia senza
+   ingrassare… nel mio utente mette i voti per me, per Monica in modo generico»). Sei voci col semaforo e un VOTO da 1 a 10:
+   💪 Proteine nel piatto (la DOSE: per i muscoli conta quanta ne mangi in un pasto) · ⚡ Proteine ogni 100 kcal (la DENSITÀ: più è alta, più
+   muscolo con meno calorie = senza ingrassare) · 🔥 Calorie (giudicate per il tipo: pasto o snack) · 🧈 Grassi saturi · 🍬 Zuccheri · 🧂 Sale
+   (questi tre in parte del fabbisogno di un giorno, assunzioni UE Reg. 1169/2011: 20 g saturi, 90 g zuccheri, 6 g sale; 🟢 fino al pagVerde% 15,
+   🟡 fino al pagGiallo% 30). Dose e densità contano doppio. Valori che mancano (es. i soli kcal e proteine del video): la voce non c'è e il voto
+   si fa sulle altre. Per Mario (solo sul suo telefono) le soglie di dose e calorie vengono dal SUO profilo palestra (Impostazioni → «Solo per te,
+   Mario»); per tutti gli altri valgono quelle generiche. Soglie generiche in «Solo per te, Mario». */
 const RI_UE = { kcal: 2000, saturi: 20, zuc: 90, sale: 6 };
 const PAROLE_PAG = { prot: { v: 'tante', g: 'buone', r: 'poche' }, altro: { v: 'poche', g: 'medie', r: 'tante' } };
-function pagellaRic(n) {
-  if (!valoriPieni(n)) return null;
-  const quota = n.prot * 400 / n.kcal, ve = sogliaFit('pagVerde', 15) / 100, gi = Math.max(ve, sogliaFit('pagGiallo', 30) / 100), sale = n.sodio * 2.5 / 1000;
-  const col = x => x <= ve ? 'v' : x <= gi ? 'g' : 'r';
-  const voci = [
-    { k: 'prot', ico: '💪', nome: 'Proteine', val: numIt(n.prot) + ' g', c: quota >= sogliaFit('fitProtPerc', 25) ? 'v' : quota >= sogliaFit('fitEntraPerc', 20) ? 'g' : 'r' },
-    { k: 'kcal', ico: '🔥', nome: 'Calorie', val: Math.round(n.kcal) + ' kcal', c: col(n.kcal / RI_UE.kcal) },
-    { k: 'saturi', ico: '🧈', nome: 'Grassi saturi', val: numIt(n.saturi) + ' g', c: col(n.saturi / RI_UE.saturi) },
-    { k: 'zuc', ico: '🍬', nome: 'Zuccheri', val: numIt(n.zuc) + ' g', c: col(n.zuc / RI_UE.zuc) },
-    { k: 'sale', ico: '🧂', nome: 'Sale', val: numIt(sale) + ' g', c: col(sale / RI_UE.sale) }];
-  voci.forEach(x => { x.parola = (x.k === 'prot' ? PAROLE_PAG.prot : PAROLE_PAG.altro)[x.c]; });
-  const punti = voci.reduce((t, x, i) => t + { v: 2, g: 1, r: 0 }[x.c] * (i ? 1 : 2), 0);
-  return { voci, voto: Math.max(1, Math.round(punti * 10 / 12)) };
+/* profilo palestra di Mario: solo su questo telefono (dato sulla salute, come le allergie), mai sul server */
+const OBIETTIVI_PAL = { ricomp: { nome: 'Addominali in vista e muscoli (ricomposizione)', kcal: 0.85 }, massa: { nome: 'Più muscoli, poco grasso (massa pulita)', kcal: 1.08 }, defin: { nome: 'Perdere grasso tenendo i muscoli (definizione)', kcal: 0.78 } };
+function profiloPal() {
+  if (typeof puoSviluppare !== 'function' || !puoSviluppare()) return null;
+  try { const p = JSON.parse(localStorage.getItem('pit-profilo-pal') || 'null'); return p && p.peso >= 35 && p.peso <= 250 ? p : null; } catch (e) { return null; }
 }
+/* quote di Mario: Mifflin-St Jeor × attività (3-5 giorni di pesi = 1,55; 6-7 = 1,725; 1-2 = 1,375) × obiettivo; proteine 2 g/kg al giorno
+   (studi sull'ipertrofia: 1,6-2,2), divise in 4 pasti; snack = metà di un pasto */
+function quotePal(p) {
+  if (!p) return null;
+  const bmr = 10 * p.peso + 6.25 * (p.altezza || 175) - 5 * (p.eta || 35) + (p.donna ? -161 : 5);
+  const att = (p.giorni || 4) >= 6 ? 1.725 : (p.giorni || 4) >= 3 ? 1.55 : 1.375, ob = OBIETTIVI_PAL[p.obiettivo] || OBIETTIVI_PAL.ricomp;
+  const kcal = Math.round(bmr * att * ob.kcal / 10) * 10, prot = Math.round(p.peso * 2);
+  return { kcal, prot, protPasto: Math.round(prot / 4), kcalPasto: Math.round(kcal / 4 / 10) * 10 };
+}
+const tipoPiatto = n => n.prot >= sogliaFit('fitProt', 25) || n.kcal > sogliaFit('fitSnackKcal', 300) ? 'pasto' : 'snack';
+function pagellaRic(n) {
+  if (!n || !(n.kcal > 0) || n.prot == null) return null;
+  const q = quotePal(profiloPal()), snack = tipoPiatto(n) === 'snack', ve = sogliaFit('pagVerde', 15) / 100, gi = Math.max(ve, sogliaFit('pagGiallo', 30) / 100);
+  const col = x => x <= ve ? 'v' : x <= gi ? 'g' : 'r';
+  const dens = n.prot * 100 / n.kcal;
+  /* dose: per Mario la sua quota a pasto (snack metà); per gli altri 25 g a pasto, 15 g a snack */
+  const dose = q ? (snack ? q.protPasto / 2 : q.protPasto) : (snack ? sogliaFit('palDoseSnack', 15) : sogliaFit('palDosePasto', 25));
+  const tettoKcal = q ? (snack ? q.kcalPasto / 2 : q.kcalPasto) : (snack ? sogliaFit('fitSnackKcal', 300) : sogliaFit('palKcalPasto', 650));
+  const voci = [
+    { k: 'prot', ico: '💪', nome: 'Proteine', val: numIt(n.prot) + ' g', c: n.prot >= dose * 0.9 ? 'v' : n.prot >= dose * 0.6 ? 'g' : 'r', peso: 2 },
+    { k: 'dens', ico: '⚡', nome: 'Proteine ogni 100 kcal', val: numIt(dens) + ' g', c: dens >= sogliaFit('palDensVerde', 8) ? 'v' : dens >= sogliaFit('palDensGiallo', 6) ? 'g' : 'r', peso: 2 },
+    { k: 'kcal', ico: '🔥', nome: 'Calorie', val: Math.round(n.kcal) + ' kcal', c: n.kcal <= tettoKcal * 1.1 ? 'v' : n.kcal <= tettoKcal * 1.4 ? 'g' : 'r', peso: 1 }];
+  if (n.saturi != null) voci.push({ k: 'saturi', ico: '🧈', nome: 'Grassi saturi', val: numIt(n.saturi) + ' g', c: col(n.saturi / RI_UE.saturi), peso: 1 });
+  if (n.zuc != null) voci.push({ k: 'zuc', ico: '🍬', nome: 'Zuccheri', val: numIt(n.zuc) + ' g', c: col(n.zuc / RI_UE.zuc), peso: 1 });
+  if (n.sodio != null) { const sale = n.sodio * 2.5 / 1000; voci.push({ k: 'sale', ico: '🧂', nome: 'Sale', val: numIt(sale) + ' g', c: col(sale / RI_UE.sale), peso: 1 }); }
+  voci.forEach(x => { x.parola = (x.k === 'prot' || x.k === 'dens' ? PAROLE_PAG.prot : PAROLE_PAG.altro)[x.c]; });
+  const max = voci.reduce((t, x) => t + 2 * x.peso, 0), punti = voci.reduce((t, x) => t + { v: 2, g: 1, r: 0 }[x.c] * x.peso, 0);
+  return { voci, voto: Math.max(1, Math.round(punti * 10 / max)), perTe: !!q, parziale: voci.length < 6, quote: q, snack };
+}
+/* C149: «🏋️ Il mio profilo palestra» in Impostazioni → «Solo per te, Mario». Si salva da solo a ogni cambio, solo su questo telefono. */
+function profiloPalHtml() {
+  let p = {}; try { p = JSON.parse(localStorage.getItem('pit-profilo-pal') || '{}') || {}; } catch (e) { p = {}; }
+  const q = quotePal(profiloPal());
+  const campo = (k, t, min, max, u) => `<label class="pal-campo"><span>${t}</span><input type="number" inputmode="decimal" min="${min}" max="${max}" step="1" data-pal="${k}" value="${p[k] != null ? esc(String(p[k])) : ''}" aria-label="${t}"> <small>${u}</small></label>`;
+  return `<div class="pal-profilo" id="pal-profilo"><p style="margin:0"><b>🏋️ Il mio profilo palestra</b><br><small class="tenue">Solo su questo telefono, mai sul server. Con il peso, nel Ricettario vedi il «Voto per te»; Monica e i clienti vedono il voto palestra di tutti.</small></p>
+    <div class="pal-campi">${campo('peso', 'Peso', 35, 250, 'kg')}${campo('altezza', 'Altezza', 120, 230, 'cm')}${campo('eta', 'Età', 14, 99, 'anni')}${campo('giorni', 'Pesi a settimana', 0, 7, 'volte')}</div>
+    <label class="etichetta" for="pal-obiettivo">Obiettivo</label>
+    <select id="pal-obiettivo" data-pal="obiettivo">${Object.entries(OBIETTIVI_PAL).map(([k, o]) => `<option value="${k}"${(p.obiettivo || 'ricomp') === k ? ' selected' : ''}>${o.nome}</option>`).join('')}</select>
+    <p class="piccolo" style="margin:6px 0 0">${q ? `Per te: <b>${q.prot} g di proteine</b> e circa <b>${q.kcal} kcal</b> al giorno; a pasto ${q.protPasto} g e ${q.kcalPasto} kcal (4 pasti).` : 'Scrivi almeno il peso per avere il «Voto per te».'}</p>
+    <p class="piccolo tenue" style="margin:2px 0 0">Calcolo: formula Mifflin-St Jeor, proteine 2 g per kg. È un'indicazione, non un parere medico.</p></div>`;
+}
+function salvaPal(k, v) {
+  let p = {}; try { p = JSON.parse(localStorage.getItem('pit-profilo-pal') || '{}') || {}; } catch (e) { p = {}; }
+  if (k === 'obiettivo') p.obiettivo = OBIETTIVI_PAL[v] ? v : 'ricomp';
+  else { const x = Number(String(v).replace(',', '.')); if (v === '' || !Number.isFinite(x)) delete p[k]; else p[k] = x; }
+  try { localStorage.setItem('pit-profilo-pal', JSON.stringify(p)); } catch (e) { mostraToast('Questo telefono non riesce a salvarlo.'); return; }
+  if (typeof salvatoOk === 'function') salvatoOk();
+  render();
+}
+document.addEventListener('change', e => { if (e.target && e.target.dataset && e.target.dataset.pal) salvaPal(e.target.dataset.pal, e.target.value); });
 const votoRic = r => { const p = pagellaRic(r && r.nutr); return p ? p.voto : 0; };
 const PALLINO = { v: '🟢', g: '🟡', r: '🔴' };
 const colVoto = v => v >= 8 ? 'v' : v >= 5 ? 'g' : 'r';
 /* sulla carta: «Voto 8 · 🟢🟢🟡🟢🟢» (stesso ordine della pagella) */
-const rigaPagella = n => { const p = pagellaRic(n); return p ? `<small class="ric-pagella-riga"><b class="ric-voto ${colVoto(p.voto)}">Voto ${p.voto}</b> <span aria-label="${esc(p.voci.map(x => x.nome + ' ' + x.parola).join(', '))}">${p.voci.map(x => PALLINO[x.c]).join('')}</span></small>` : ''; };
+const rigaPagella = n => { const p = pagellaRic(n); return p ? `<small class="ric-pagella-riga"><b class="ric-voto ${colVoto(p.voto)}">${p.parziale ? '≈ ' : ''}Voto ${p.perTe ? 'per te ' : ''}${p.voto}</b> <span aria-label="${esc(p.voci.map(x => x.nome + ' ' + x.parola).join(', '))}">${p.voci.map(x => PALLINO[x.c]).join('')}</span></small>` : ''; };
 /* nella ricetta: il voto grande e una riga per voce, con la parola (tante, medie, poche) */
 function pagellaHtml(n) {
   const p = pagellaRic(n); if (!p) return '';
-  return `<div class="ric-pagella"><p class="ric-pagella-voto"><b class="ric-voto ${colVoto(p.voto)}">Voto ${p.voto}/10</b> <span class="piccolo">pagella fit${fitRic(n) ? '' : ' · non entra in Proteiche'}</span></p>
+  const chi = p.perTe ? `voto per te: ${p.snack ? 'snack' : 'pasto'} sulla tua quota (${p.snack ? Math.round(p.quote.protPasto / 2) : p.quote.protPasto} g di proteine, ${p.snack ? p.quote.kcalPasto / 2 : p.quote.kcalPasto} kcal)` : `pagella palestra · ${p.snack ? 'snack' : 'pasto'}`;
+  return `<div class="ric-pagella"><p class="ric-pagella-voto"><b class="ric-voto ${colVoto(p.voto)}">${p.parziale ? '≈ ' : ''}Voto ${p.voto}/10</b> <span class="piccolo">${chi}${fitRic(n) ? '' : ' · non entra in Proteiche'}</span></p>
+    ${p.parziale ? '<p class="piccolo tenue" style="margin:0 0 4px">≈ Mancano alcuni valori (grassi saturi, zuccheri o sale): il voto è fatto sugli altri.</p>' : ''}
     <ul>${p.voci.map(x => `<li>${PALLINO[x.c]} ${x.ico} ${x.nome} <b>${x.val}</b> <span class="tenue">${x.parola}</span></li>`).join('')}</ul></div>`;
 }
 const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
@@ -835,7 +882,7 @@ const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'unde
 const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
     <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}</small>${r.nutr && r.nutr.kcal > 0
-      ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>` : ''}</span></button>`;
+      ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;   // C149: il voto anche fuori
 function vRicVideo(id) {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (RIC.stato !== 'pronto') return attesaRic('Ricette video', 'ricettario');
