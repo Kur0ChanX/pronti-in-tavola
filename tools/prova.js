@@ -551,12 +551,28 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(p => { S.impostazioni.anticipo = p; }, prima);
     await page.evaluate(() => { UI.vista = 'home'; render(); });
   });
-  await passo('cliente: «Scrivimi» su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
-    await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
+  await passo('cliente: «Scrivimi» capisce gli ordini (C155) e manda le domande su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
     await page.waitForTimeout(1500);
-    const h = decodeURIComponent(await page.locator('.wa-monica').getAttribute('href'));
-    if (!h.includes('Ti scrivo dall\'app Pronti in Tavola') || !h.includes('Volevo chiederti:')) throw new Error('messaggio: ' + h);
     await page.evaluate(() => { $('#toast').innerHTML = ''; }); await foto('36-scrivi-monica');
+    // 1) il messaggio vero di una cliente (13/11): ordine scritto nel testo → carrello, con la scelta della parmigiana
+    await clic('.wa-monica');
+    await page.fill('#scrivimi-testo', 'Volevo chiederti:\n2kg di ravioli ricotta e spinaci\n1 parmigiana al posto della pasta al forno\nVa bene la prossima settimana.\nAvvisami tu quando sono pronte');
+    await clic('[data-a="scrivimi-invia"]');
+    await page.locator('[data-a="scrivimi-scegli"]', { hasText: 'Melanzane' }).click();
+    if (!(await page.locator('.foglio').innerText()).includes('2 kg di Ravioli freschi spinaci')) throw new Error('ordine non capito: ' + await page.locator('.foglio').innerText());
+    await clic('[data-a="scrivimi-ordina"]');
+    const c = await page.evaluate(() => ({ v: UI.vista, r: P.carrello.map(r => `${r.qta} ${r.piatto} ${r.variante}`).join(', '), n: UI.nota }));
+    if (c.v !== 'carrello' || c.r !== '2 ravioli spinaci, 1 parmigiana ' || !c.n.includes('al posto della pasta al forno')) throw new Error('carrello: ' + JSON.stringify(c));
+    // 2) una domanda: niente carrello, WhatsApp con «Ciao Monica…» e la domanda, una volta sola
+    await page.evaluate(() => { P.carrello = []; UI.nota = ''; UI.vista = 'menu'; render(); });
+    const quante = [], conta = p => quante.push(p.url()); ctx.on('page', conta);
+    await clic('.wa-monica'); await page.fill('#scrivimi-testo', 'Domani siete aperti?'); await clic('[data-a="scrivimi-invia"]');
+    await page.waitForTimeout(1500); ctx.off('page', conta);
+    for (const p of ctx.pages()) if (p !== page) await p.close();
+    const h = decodeURIComponent((quante[0] || '').replace(/\+/g, ' '));
+    if (quante.length !== 1 || !h.includes('Ti scrivo dall\'app Pronti in Tavola') || !h.includes('Domani siete aperti?')) throw new Error('WhatsApp: ' + quante.length + ' ' + h);
+    if (!page.url().startsWith('file:')) throw new Error('la pagina dell\'app è andata via');
     await page.evaluate(() => { UI.vista = 'ordini'; UI.ordAperto = (S.ordini.find(o => o.cliente === P.cliente && !['rifiutato', 'annullato'].includes(o.stato)) || {}).id; render(); });
     await page.waitForTimeout(300);
     if (!decodeURIComponent(await page.locator('.wa-ordine').first().getAttribute('href')).includes('per l\'ordine n.')) throw new Error('manca il numero dell\'ordine nel messaggio');
