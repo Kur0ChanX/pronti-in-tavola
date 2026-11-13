@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 16:45 · 01WTjqUuVtcn
-È normale che non vedo ancora le ricette caricate, vedo sempre le stesse sulle proteine. Guarda i numeri, vedo tipo nei dolci ne vedo solo pochissime, 4 o 5 ricette proteiche.
-
-## 2026-11-11 17:16 · 01WTjqUuVtcn
-Per i dolci cerca diversi dolci con la crema proteica, magari fatta con lo shake, con gli shaker, ricette con albumi, con yogurt greco, con magari Philadelphia proteica, insomma con tutte questi prodotti proteici, magari fare che cercare un 200 ricette così. Ti avevo mandato anche un link di uno youtuber, non mi hai più risposto.
-
-## 2026-11-11 17:44 · 01WTjqUu7eAD
-chiave
-
 ## 2026-11-11 17:47 · 01WTjqUu7eAD
 chiave sono al pc
 
@@ -123,3 +114,12 @@ fatto messa nell'ambiente
 
 ## 2026-11-13 10:45 · 01WTjqUvRgtB
 si lavorate in 2 sessione fino a quando non la chiudi questa e comunicate quello vhe vi serve
+
+## 2026-11-13 11:32 · 01WTjqUwHBw1
+si chiamano diversamente ora gemini ha aggiornato i motori verifica
+
+## 2026-11-13 11:35 · 01WTjqUwHBw1
+il lite fà un pò schifo
+
+## 2026-11-13 11:36 · 01WTjqUwHBw1
+hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto
