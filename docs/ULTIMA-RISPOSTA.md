@@ -1,20 +1,25 @@
-# Ultima risposta di Claude (13/11/2026 15:23 ora italiana)
+# Ultima risposta di Claude (13/11/2026 15:45 ora italiana)
 
-Ho capito: nel Cloud bread mancano ingredienti, e manca qualcosa anche nelle altre ricette video.
-
-───
-✅ FATTO
-- La versione 0.10.27 si vede bene: Cloud bread trovato. Ho chiuso il riordino del Ricettario.
-- **Causa:** Pietrobon scrive alcune dosi dentro il procedimento, non nell'elenco. Per esempio «aggiungete **150 ml di albume** e montatelo». Il programma leggeva solo l'elenco.
-- Corretto: ora prende anche quelle dosi, nell'ordine in cui le scrive lui. Recupera ingredienti in 13 ricette, e il Cloud bread passa da 3 a 5 ingredienti (foto qui sopra). Le prove automatiche sono verdi.
+Ho capito: su ogni ricetta video vuoi la scritta «controllata con Gemini» o «non controllata», e vuoi sapere se esiste un'alternativa gratuita a Gemini.
 
 ───
-💡 …
+✅ **FATTO**
+- **0.10.28 è online**: ci sono le 70 proteiche nuove e gli ingredienti ritrovati nelle ricette video. Ho controllato il sito vero.
+- **Scritte nuove pronte** (nelle 3 foto): sotto ogni ricetta video c'è «✅ controllata con Gemini» oppure «⚠️ non controllata». Le prove sono passate. Non sono ancora online: aspettano il tuo ok.
+- Per ora le controllate sono solo 12. Il numero sale con la trascrizione.
+
+───
+💡 **PARERE**
+- …
 
 ## Domande a Mario
 
-❓ DOMANDE
-**DOMANDA 1** · A cosa serve: senza il tuo ok non pubblico nulla.
-Guarda la foto: a sinistra com'è oggi, a destra con gli ingredienti in più. Se mi dai l'ok, pubblico anche le 70 ricette proteiche nuove.
-1. Va bene: metto online nell'app ingredienti in più e 70 ricette nuove (consiglio)
-2. No, qualcosa non va (dimmi cosa)
+❓ **DOMANDE**
+**DOMANDA 1 · Scritte «controllata» nelle ricette video**
+📌 Di cosa parliamo: le scritte ✅ e ⚠️ delle foto 1-3. Si vedono nel Ricettario → Ricette video. Servono perché Monica sappia di quali ricette fidarsi.
+1 · Vanno bene, le metto online nell'app ⭐ consiglio
+2 · Cambia qualcosa (dimmi cosa)
+
+⚠️ Aspettano te: 16 · scritte video, foto 0.10.26, pagella, PC di casa…
+
+Fonti: [api.market](https://api.market/blog/magicapi/youtube-transcript/top-youtube-transcript-apis) · [supadata.ai](https://supadata.ai/youtube-transcript-api) · …
