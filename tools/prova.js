@@ -391,6 +391,65 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.formato-riga', { hasText: 'teglia da 8: 800 g' }).count())) throw new Error('teglia da 8 non ricalcolata');
     await page.evaluate(() => { UI.vista = 'piatti'; render(); });   // resta in «I miei piatti»: la prova dopo parte da una schermata interna
   });
+  await passo('C160 confezione in grammi, etti, kg, ml, cl, litri', async () => {
+    // Mario 13/11 23:07 «aggiungi anche KG e CL ed Etti»: scrive il numero del pacco e tocca l'unità; in memoria resta in g o ml
+    await page.evaluate(() => { window._c160 = JSON.stringify([SPESA.ing.mascarpone, SPESA.ing.latte]);
+      SPESA.ing.mascarpone = { prezzo: 2.5 }; SPESA.ing.latte = { prezzo: 1.2 };
+      P.ruolo = 'monica'; UI.vista = 'piatto:tiramisu'; UI.foglio = { tipo: 'spesa-ing', id: 'mascarpone' }; render(); });
+    const conf = page.locator('.foglio [data-campo="sp.conf"]'), testo = () => page.locator('.foglio').innerText();
+    if (await conf.inputValue() !== '250' || !(await page.locator('.foglio [data-a="sp-cu"][data-v="g"][aria-pressed="true"]').count())) throw new Error('mascarpone di partenza: ' + await conf.inputValue());
+    await conf.fill('1'); await conf.dispatchEvent('change'); await clic('.foglio [data-a="sp-cu"][data-v="kg"]');
+    let m = await page.evaluate(() => SPESA.ing.mascarpone);
+    if (m.conf !== 1000 || m.cu !== 'kg' || !/per 1 kg/.test(await testo())) throw new Error('«1» + kg: ' + JSON.stringify(m));
+    await conf.fill('3'); await conf.dispatchEvent('change'); await clic('.foglio [data-a="sp-cu"][data-v="hg"]');
+    m = await page.evaluate(() => SPESA.ing.mascarpone);
+    if (m.conf !== 300 || !/per 3 etti/.test(await testo()) || await conf.inputValue() !== '3') throw new Error('«3» + etti: ' + JSON.stringify(m));
+    if (await page.evaluate(() => prezzoUnita('mascarpone')) !== 2.5 / 300) throw new Error('prezzo al grammo sbagliato coi 3 etti');
+    await page.evaluate(() => { UI.foglio = { tipo: 'spesa-ing', id: 'latte' }; render(); });
+    // latte da 1000 ml: si vede «1 litri»; scrive 75 e tocca «cl» = 75 cl (il numero resta, cambia l'unità)
+    if (await conf.inputValue() !== '1' || !(await page.locator('.foglio [data-a="sp-cu"][data-v="l"][aria-pressed="true"]').count())) throw new Error('latte di partenza: ' + await conf.inputValue());
+    await conf.fill('75'); await conf.dispatchEvent('change');
+    await clic('.foglio [data-a="sp-cu"][data-v="cl"]');
+    if (await page.evaluate(() => SPESA.ing.latte.conf) !== 750 || !/per 75 cl/.test(await testo())) throw new Error('«75» + cl: ' + await page.evaluate(() => JSON.stringify(SPESA.ing.latte)));
+    if (await page.evaluate(() => misura(1500, 'ml', 'l') + ' · ' + misura(100, 'g', 'hg') + ' · ' + misura(1500, 'g')) !== '1,5 l · 1 etto · 1,5 kg') throw new Error('misura: ' + await page.evaluate(() => misura(1500, 'ml', 'l') + ' · ' + misura(100, 'g', 'hg')));
+    await clic('.foglio [data-a="sp-unita"][data-v="pz"]');   // cambia «si misura in»: l'unità della confezione torna quella giusta
+    if (await page.evaluate(() => SPESA.ing.latte.cu) !== null || await page.locator('.foglio [data-a="sp-cu"]').count()) throw new Error('a pezzi restano cl o i tasti');
+    await page.evaluate(() => { const [a, b] = JSON.parse(window._c160); if (a) SPESA.ing.mascarpone = a; else delete SPESA.ing.mascarpone; if (b) SPESA.ing.latte = b; else delete SPESA.ing.latte; UI.foglio = null; UI.vista = 'piatti'; render(); });
+  });
+  await passo('C160 costo della ricetta: prezzo al kg, dose che manca, gusti, altre spese, «I miei piatti», spenderai circa', async () => {
+    // Mario 13/11 23:07-23:20 «per il resto va bene»: punti 2-7 della DOMANDA 1 (docs/lavori-in-corso/c160-costo-ricetta.md)
+    await page.evaluate(() => { window._c160b = JSON.stringify({ ing: SPESA.ing, dosi: SPESA.dosi, extra: SPESA.extra || {} });
+      SPESA.ing = Object.assign({}, SPESA.ing, { mascarpone: { prezzo: 2.5 } }); SPESA.extra = {};
+      P.ruolo = 'monica'; UI.vista = 'piatto:tiramisu'; UI.sez = 'dosi'; UI.foglio = { tipo: 'spesa-ing', id: 'mascarpone' }; render(); });
+    const campi = await page.evaluate(() => [...document.querySelectorAll('.foglio [data-campo]')].map(e => e.dataset.campo).join(','));
+    if (!/sp\.conf,sp\.prezzo/.test(campi)) throw new Error('punto 2, prima la confezione poi il prezzo: ' + campi);
+    if (!/Cioè 10,00\s€ al kg/.test(await page.locator('#sp-alkg').innerText())) throw new Error('punto 2, 2,50 € per 250 g: ' + await page.locator('#sp-alkg').innerText());
+    const pr = page.locator('.foglio [data-campo="sp.prezzo"]'); await pr.fill('5'); await pr.dispatchEvent('change');
+    if (!/Cioè 20,00\s€ al kg/.test(await page.locator('#sp-alkg').innerText())) throw new Error('punto 2, la scritta non segue il prezzo: ' + await page.locator('#sp-alkg').innerText());
+    // punto 3: un ingrediente senza dose si vede (prima spariva e il costo sembrava più basso)
+    await page.evaluate(() => { const p = piatto('tiramisu'); p.ing.forEach(id => { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { prezzo: SPESA.ing[id] && SPESA.ing[id].prezzo || 2 }); });
+      const d = Object.assign({}, SPESA.dosi.tiramisu); delete d.cacao; SPESA.dosi = Object.assign({}, SPESA.dosi, { tiramisu: d }); UI.foglio = null; render(); });
+    const righe = page.locator('#costo-righe'); await righe.scrollIntoViewIfNeeded();
+    if (!/Senza dose \(non contano\): Cacao/.test(await righe.innerText())) throw new Error('punto 3: ' + await righe.innerText());
+    // punto 5: altre spese della prima teglia, entrano nel costo senza rifare la pagina
+    const ex = page.locator('[data-campo="sp.extra"]').first(); await ex.fill('0.6'); await ex.dispatchEvent('change');
+    const atteso = await page.evaluate(() => { const p = piatto('tiramisu'), f = p.formati[0]; return [SPESA.extra.tiramisu[f.id], euro(costoDosi(p).tot * porzioniDi(f) + 0.6)]; });
+    if (atteso[0] !== 0.6 || !(await righe.innerText()).includes('ti costa ' + atteso[1])) throw new Error('punto 5: ' + JSON.stringify(atteso) + ' · ' + await righe.innerText());
+    // punto 4: costo di ogni gusto (lasagne con gorgonzola e noci)
+    await page.evaluate(() => { piatto('lasagne-particolari').ing.forEach(id => { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { prezzo: 2 }); }); Object.assign(SPESA.ing, { gorgonzola: { prezzo: 3 }, noci: { prezzo: 4 } }); SPESA.dosi['lasagne-particolari:noci'] = { gorgonzola: 20, noci: 10 };
+      UI.vista = 'piatto:lasagne-particolari'; UI.sez = 'dosi'; render(); });
+    const g = await page.evaluate(() => { const p = piatto('lasagne-particolari'), v = p.varianti.find(x => x.id === 'noci'); return [v.nome, costoDosi(p, 'noci').tot > costoDosi(p).tot]; });
+    if (!g[1] || !(await page.locator('#costo-righe').innerText()).includes('Gusto ' + g[0])) throw new Error('punto 4: ' + await page.locator('#costo-righe').innerText());
+    // punto 6: il costo anche in «I miei piatti»
+    await page.evaluate(() => { UI.vista = 'piatti'; render(); });
+    if (!/ti costa .* ti restano/.test(await page.locator('.piatto-riga', { hasText: 'Tiramisù' }).first().innerText())) throw new Error('punto 6: ' + await page.locator('.piatto-riga', { hasText: 'Tiramisù' }).first().innerText());
+    // punto 7: «Spenderai circa»: confezioni intere × prezzo, sfuso a peso, senza prezzo contati a parte
+    const st = await page.evaluate(() => { SPESA.ing.zucchine = { prezzo: 2 }; SPESA.ing.tonno = {}; return spesaStimata([['mascarpone', { manca: 300 }], ['zucchine', { manca: 500 }], ['tonno', { manca: 80 }]]); });
+    if (Math.abs(st.tot - 11) > 1e-9 || st.senza !== 1) throw new Error('punto 7, 2 × 5 € + 0,5 kg a 2 €/kg = 11 €: ' + JSON.stringify(st));
+    const vista = await page.evaluate(() => { const so = spesaOrdini(); return so.compra.length ? (so.compra.forEach(([id]) => { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { prezzo: 1 }); }), /Spenderai circa/.test(vSpesaOrdini(spesaOrdini()))) : 'nessun ordine'; });
+    if (vista === false) throw new Error('punto 7: «Spenderai circa» non c\'è nella spesa per gli ordini');
+    await page.evaluate(() => { const o = JSON.parse(window._c160b); SPESA.ing = o.ing; SPESA.dosi = o.dosi; SPESA.extra = o.extra; UI.foglio = null; UI.sez = null; UI.vista = 'piatti'; render(); });
+  });
   await passo('foto del menù: Monica ne carica 2 e le può mandare, i clienti per ora no', async () => {
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
     while (await page.locator('.indietro').count()) { await clic('.indietro'); await page.waitForTimeout(150); }
