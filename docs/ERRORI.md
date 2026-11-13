@@ -1,19 +1,17 @@
 # Diario degli errori (lezioni)
 
 Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (cosa è successo, date, parole di Mario) in `docs/ERRORI-STORIA.md`.
-**Impara dagli errori** (C122): ogni errore (correzione di Mario, prova rossa, difetto o guida sbagliata trovati da me) → causa vera provata e difesa: riga qui, testo lungo nella storia, e se si può una prova o un hook. Prove: `.claude/rules/prove.md`; codice: `.claude/rules/codice.md`.
+Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-STORIA.md`, se si può prova o hook (kit «Impara dagli errori»). Prove: `.claude/rules/prove.md`; codice: `.claude/rules/codice.md`.
 
 ## Pronti in Tavola
 - **PT E1** Logo YNOY = 4 lune (`media/ynoy-firma.png`, come Jona); mai i loghi vecchi di `archivio/loghi/` di RVC.
 - **PT E2** L'apertura animata si vede a ogni apertura (un tocco la salta), parte a pagina visibile e immagini pronte; logo grande.
 - **PT E3** «Se clicchi salta» = un tocco ovunque. Frase di Mario dubbia → una riga di domanda prima di cambiare.
-- **PT E4** Un'informazione che non è nella sessione né nel repo: dirlo una volta e chiedere tutto insieme.
 - **PT E5** Servizi su account solo dell'app: mai i limiti gratuiti condivisi con altre app di Mario.
 - **PT E6** Guida a mano sbagliata → subito quella giusta in `docs/GUIDE-GIUSTE.md`; la leggo prima di rifarla.
 - **PT E7** Funzione nuova a Mario: prima un esempio con una persona vera, poi il nome nelle sue parole, poi le scelte.
 - **PT E8** Prima di «non lo trovo»: sinonimi e voci di Da fare («carrello» = lista della spesa); proporre la più probabile.
 - **PT E9** Collegare servizi: subito bug noti e forum, link provati; dopo 2 giri uguali cambiare strada.
-- **PT E10** Una causa si dice solo con un esperimento che la conferma; sennò «ipotesi».
 - **PT E11** Etichette a colori, mai bianco e nero; prima di un modo di stampa chiedere se il colore serve.
 - **PT E12** Errore in un passo a mano: dire subito dove va ogni cosa e quale casella è sbagliata.
 - **PT E13** Nomi di persona sempre dai dati (`gestori/<UID>.nome`), mai scritti nel codice.
@@ -31,7 +29,6 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E25** Contenuti di fiducia (ricette, dosi, salute, leggi): fonte ufficiale, mai scritti da me; prima l'aspetto a Mario. Dai siti via pubblicità e link (PT E72, prova C141).
 - **PT E25** (bis) Ogni scarico da un sito esterno si prova dal sito vero (Hugging Face rifiuta *.workers.dev).
 - **PT E26** Voce per persone vere: tono 1.0, frasi corte, sigle per intero; ascoltarla prima di consegnarla.
-- **PT E27** Pochi comandi raggruppati, prova del solo pezzo, giro completo una volta prima del push.
 - **PT E28/E68** Modulo sicuro solo dal PC (`origin` di `get_session`: android = telefono). Chiavi Google (`X-Goog-Api-Key`): rifiutate, a mano nell'ambiente.
 - **PT E69** Push di file del sito sul ramo = app pubblicata (`sito.yml`): senza foto approvata e giro verde solo patch; prima leggo «Stato» delle consegne. Difesa: C143.
 - **PT E70** Ogni prova prepara da sola il suo stato (guida chiusa, ruolo, vista): rossa da sola e verde nel giro = dipende dalla prima.
@@ -42,12 +39,10 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E33** Orari, date e numeri noti alla macchina li prende la macchina, mai scritti a mano.
 - **PT E34** Domanda di verifica: in cima SÌ/NO, quante, contro cosa, cosa resta fuori; se il controllo manca, lo faccio subito.
 - **PT E35** Controllo nuovo dentro una classe esistente: foto sul telefono prima di consegnarlo.
-- **PT E36** Ogni cosa che chiedo a Mario dice prima «A cosa serve».
 - **PT E37** Interruttore che chiude la porta ai clienti: conferma, avviso rosso con «Riapri», nome non perso; nel dubbio leggere il server.
 - **PT E38** File nuovo dell'app: in `FILE_APP` di `tools/sito.py`, `GUSCIO` di `sw.js` e anteprima; dopo il push `curl` del file.
 - **PT E39** Funzioni del telefono: cercare i bug WebKit noti e provarle nell'app installata su iPhone/iPad.
 - **PT E40** Riconoscimento vocale: provato con frasi vere e reso robusto; non basta che risponda.
-- **PT E41** Mai limiti che fermano una persona: tetto ampio che avvisa chi gestisce; limiti per persona solo col sì di Mario.
 - **PT E42** Ogni stato di attesa si prova sul percorso più lento (iPad dalla Home, server lento).
 - **PT E43** Cambia un passaggio (chi è accettato, quando) → ricontrollare ogni funzione che dipende da quello stato.
 - **PT E44** Identità che deve sopravvivere all'installazione su iPhone: anche in un cookie; prova con SOLO i cookie.
@@ -75,22 +70,15 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E73** Scelte numerate: ogni nome controllato con la tabella (lingua, numeri) prima di mandarle (C148).
 - **PT E74** Prova «senza rete» finta: alla fine `delete navigator.onLine` (controllo in `passo` di `tools/prova.js`).
 - **PT E75** Avvio: titolo della sessione PER PRIMO, anche se il primo messaggio di Mario parla d'altro; una sua richiesta diretta si fa subito, prima del lavoro in corso.
-- **PT E76** Scelte con parole ambigue («1 = pubblica» accanto a «palestra» letto come «palestra pubblica»): scrivere «metto online nell'app» e dire cosa vede Mario.
-- **PT E77** Servizio con più modelli (Gemini): mai uno solo; su 503 «pieno» riprova una volta, poi il modello precedente; anche al 429 (limite per modello). Difesa nel codice di `tools/trascrivi_video.py`.
+- **PT E76** Scelte ambigue («1 = pubblica» letto «palestra pubblica»): scrivere «metto online nell'app» e cosa vede Mario.
+- **PT E77** Gemini: mai un modello solo; 503 «pieno» → riprova, poi il Flash precedente (anche al 429): `tools/trascrivi_video.py`.
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
-- **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.
-- **RVC E7** Prima di chiedere a Mario o scrivere a un aiutante: `grep` in documenti e archivio.
-- **RVC E11** La sessione nuova la apre Claude (`create_session`, catena di 8); a 8 Mario, con repo e ramo esatti.
 - **RVC E19** «unrelated histories» dopo uno squash: `git fetch --unshallow origin`, poi merge normale.
 - **RVC E20** Mai `prove … | grep … && git commit`: prima l'esito, poi il commit.
 - **RVC E21** Mai inventare un pulsante; selettore: medium «Medio», high «Alto», xhigh «Extra».
 - **RVC E23 E32 E33 E36** Prima `grep -n`, poi le righe utili; all'avvio niente `list_sessions` completo, `actions_list`, `list_events`, `Artifact read`.
-- **RVC E24** Un solo ramo di lavoro.
-- **RVC E28** Mai `add_repo` di un secondo repo: spegne gli hook.
-- **RVC E29** Segreti mai in chat né nel repo: nelle impostazioni dell'ambiente.
-- **RVC E30** Mai «non è successo» senza una prova che lo possa vedere.
 - **RVC E31** Dopo lo squash: unire `main` prima di ogni altro commit.
 - **RVC E37 E48 E49** Foto: io un'anteprima ≤1000 px; a Mario un telefono e una schermata per foto, pezzi alti ≤1100 px.
 - **RVC E59** File di `.claude/`: ok scritto di Mario nella chat di quella sessione.

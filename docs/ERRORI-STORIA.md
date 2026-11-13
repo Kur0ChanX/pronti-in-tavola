@@ -129,3 +129,17 @@ DOMANDA 6 (C148): nella scelta 1 «i 6 italiani» c'era MattsfitChef, italiano m
 
 ## PT E77 · 13/11/2026 (#72) · Gemini pieno
 Primo giro vero di C150: `trascrivi_video.py` usava solo il Flash più nuovo (gemini-3.8-flash). 5 video su 5 → 503 «This model is currently experiencing high demand», il tool si è fermato senza una ricetta. Causa vera: un modello solo, nessuna riprova né ripiego. Difesa: elenco dei Flash dal più nuovo; 503 → attesa 30 s e una riprova, poi il Flash precedente; 429 (limite gratis, è per modello) → il precedente; fermo solo quando sono finiti tutti.
+
+## Righe tolte da ERRORI.md perché già regole del kit (sempre caricato) · 13/11/2026 #72
+- **PT E27** Pochi comandi raggruppati, prova del solo pezzo, giro completo una volta prima del push.
+- **PT E36** Ogni cosa che chiedo a Mario dice prima «A cosa serve».
+- **PT E41** Mai limiti che fermano una persona: tetto ampio che avvisa chi gestisce; limiti per persona solo col sì di Mario.
+- **RVC E1** Solo Claude Code; file ricevuti subito in `archivio/` con commit.
+- **RVC E7** Prima di chiedere a Mario o scrivere a un aiutante: `grep` in documenti e archivio.
+- **RVC E11** La sessione nuova la apre Claude (`create_session`, catena di 8); a 8 Mario, con repo e ramo esatti.
+- **RVC E24** Un solo ramo di lavoro.
+- **RVC E28** Mai `add_repo` di un secondo repo: spegne gli hook.
+- **RVC E29** Segreti mai in chat né nel repo: nelle impostazioni dell'ambiente.
+- **RVC E30** Mai «non è successo» senza una prova che lo possa vedere.
+- **PT E4** Un'informazione che non è nella sessione né nel repo: dirlo una volta e chiedere tutto insieme.
+- **PT E10** Una causa si dice solo con un esperimento che la conferma; sennò «ipotesi».
