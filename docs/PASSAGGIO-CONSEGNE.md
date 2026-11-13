@@ -19,7 +19,7 @@ Sessione attuale: #76 (dopo la #75 `session_01WTjqUtr7kgfPr9chcd8gX1`, chiusa al
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
 
 ## Sessione appena chiusa (#75)
-- Avvio; sveglia C150 spostata (`trig_01FAfgW9U1vqEGG7YDS9uLyZ`, 14/11 9:10, della #75: la nuova la rifà sua e cancella questa).
+- Avvio; sveglia C150 14/11 9:10 rifatta dalla #76 (`trig_01AeWzak3U9TaJYRmrQaDu7k`), quella della #75 cancellata.
 - C152: `--ignoti` (scarti per stima 293 → 136), stima migliorata (q b, erbe, attrezzi, pezzi, 9 prodotti, 20 codici CREA; bug cipollotti=pollo, pomodorini 100 g, peperoncino 150 g), `--aggiungi`: +70. Una tolta (nome «Kcal totali…»).
 - C153: foto di Mario del Cloud bread con 3 ingredienti → dosi nel procedimento (solo Pietrobon: gli altri raccontano, provato: rumore).
 - Controllo Da fare: 2 voci aggiunte (C152, C153); C151 chiusa in DA-FARE-FATTE.
