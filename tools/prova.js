@@ -1922,9 +1922,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await clic('.ric-video-link');
     const au = await page.evaluate(() => ({ v: UI.vista, a: [...document.querySelectorAll('.ric-video-autore')].map(x => x.innerText),
       nP: RICETTE_VIDEO.filter(x => x.autore === 'Massimo Pietrobon Gobbi').length, nB: RICETTE_VIDEO.filter(x => x.autore === 'Beardedscara').length }));
-    // C145: due youtuber, un riquadro ciascuno col suo numero
-    if (au.v !== 'ricvideo' || au.a.length !== 2 || !/Massimo Pietrobon Gobbi/.test(au.a[0]) || !new RegExp(au.nP + ' ricette video').test(au.a[0])
-      || !/Beardedscara/.test(au.a[1]) || au.nB < 50 || !new RegExp(au.nB + ' ricette video').test(au.a[1])) throw new Error('C144/C145: riquadri degli youtuber sbagliati: ' + JSON.stringify(au));
+    // C145: un riquadro per youtuber col suo numero, Pietrobon primo; cercati per nome (C148: 4 youtuber, Beardedscara non più secondo)
+    const iB = au.a.findIndex(s => /Beardedscara/.test(s));
+    if (au.v !== 'ricvideo' || au.a.length < 2 || !/Massimo Pietrobon Gobbi/.test(au.a[0]) || !new RegExp(au.nP + ' ricette video').test(au.a[0])
+      || iB < 1 || au.nB < 50 || !new RegExp(au.nB + ' ricette video').test(au.a[iB])) throw new Error('C144/C145: riquadri degli youtuber sbagliati: ' + JSON.stringify(au));
     await foto('48e-c144-video-youtuber');
     await clic('.ric-video-autore');
     const l = await page.evaluate(() => ({ v: UI.vista, carte: document.querySelectorAll('main .ric-elenco .ric-carta').length, tipi: [...document.querySelectorAll('[data-a="ric-video-tipo"]')].map(x => x.dataset.v),

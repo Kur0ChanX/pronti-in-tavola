@@ -82,6 +82,38 @@
 ],
 "porzioni": 1
 },
+"yt:FiRMxtsssl0": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"40 g di fette biscottate",
+"10 g di farina d'avena al caffè e caramello",
+"20 ml di caffè",
+"120 ml di latte",
+"200 g di yogurt greco",
+"5 g di proteine in polvere al cioccolato bianco",
+"20 g di cacao amaro",
+"10 g di cioccolato fondente",
+"10 g di burro d'arachidi",
+"palline di cioccolato bianco"
+],
+"modello": "gemini-3.6-flash",
+"nome": "Cheesecake fit",
+"passi": [
+"Tritare finemente le fette biscottate con le mani all'interno di una ciotola.",
+"Aggiungere alle fette biscottate la farina d'avena, il caffè e 80 ml di latte, quindi mescolare fino a ottenere un composto omogeneo per la base.",
+"In un'altra ciotola, unire lo yogurt greco con le proteine in polvere e mescolare bene.",
+"In un bicchiere, unire il cacao amaro con i restanti 40 ml di latte e mescolare fino a formare una crema di cacao.",
+"Posizionare uno stampo ad anello al centro di un piatto e versare la base di fette biscottate, schiacciandola e livellandola bene sul fondo.",
+"Versare lo strato di yogurt greco sopra la base e livellarne la superficie.",
+"Aggiungere la crema al cacao come ultimo strato e spalmarla delicatamente in modo uniforme.",
+"Mettere la cheesecake in frigorifero per tutta la notte.",
+"La mattina seguente, estrarre delicatamente la cheesecake dallo stampo ad anello.",
+"Tritare il cioccolato fondente con un coltello e distribuirlo sulla superficie.",
+"Aggiungere il burro d'arachidi e le palline di cioccolato bianco prima di servire."
+],
+"porzioni": null
+},
 "yt:HHC4gPJcFaY": {
 "data": "2026-11-13",
 "dubbi": [],
@@ -155,6 +187,38 @@
 "modello": "gemini-3.6-flash",
 "scartato": "senza dosi o passi"
 },
+"yt:V9Ow6TEam4Q": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"40 g di fiocchi d'avena",
+"20 g di farina d'avena",
+"10 g di proteine in polvere",
+"100 g di yogurt greco",
+"130 ml di latte",
+"20 ml di caffè",
+"5 g di cacao",
+"5 g di semi di chia",
+"20 g di burro di arachidi",
+"banana",
+"cioccolato fondente",
+"burro di arachidi al cocco"
+],
+"modello": "gemini-3.6-flash",
+"nome": "Overnight porridge",
+"passi": [
+"Versa 40 g di fiocchi d'avena in un barattolo di vetro.",
+"Aggiungi 20 g di farina d'avena aromatizzata e 10 g di proteine in polvere.",
+"Unisci 100 g di yogurt greco.",
+"Aggiungi 130 ml di latte e 20 ml di caffè espresso.",
+"Mescola bene gli ingredienti.",
+"Aggiungi 5 g di cacao amaro e 5 g di semi di chia, poi mescola di nuovo.",
+"Unisci 20 g di burro di arachidi e mescola fino a incorporarlo al composto.",
+"Chiudi il barattolo e mettilo in frigorifero per tutta la notte.",
+"Al mattino estrai il porridge dal frigo e guarnisci con fette di banana, scaglie di cioccolato fondente e un filo di burro di arachidi al cocco."
+],
+"porzioni": null
+},
 "yt:ZU-lUjW28mQ": {
 "data": "2026-11-13",
 "dubbi": [
@@ -219,6 +283,41 @@
 "Aggiungere l'idrolitina attivata con un goccio d'acqua e amalgamare il tutto.",
 "Scaldare bene una padella e versarvi il composto.",
 "Cuocere a fiamma medio-bassa con coperchio per qualche minuto, poi girare il pancake e ultimare la cottura."
+],
+"porzioni": null
+},
+"yt:mtMQr96ER1g": {
+"data": "2026-11-13",
+"dubbi": [
+"100 g di yogurt Fage",
+"120 ml di latte di mandorla",
+"30 g di fiocchi di avena",
+"20 g di farina di avena al cioccolato",
+"5 g di cacao amaro",
+"5 g di semi di chia",
+"15 g di proteine al cioccolato",
+"15 g di burro di arachidi",
+"5 g di cioccolato fondente al 95%"
+],
+"ingredienti": [
+"100 g di yogurt Fage",
+"120 ml di latte di mandorla",
+"30 g di fiocchi di avena",
+"20 g di farina di avena al cioccolato",
+"caffè",
+"5 g di cacao amaro",
+"5 g di semi di chia",
+"15 g di proteine al cioccolato",
+"15 g di burro di arachidi",
+"5 g di cioccolato fondente al 95%",
+"protein puffies"
+],
+"modello": "gemini-3.6-flash",
+"nome": "Overnight porridge",
+"passi": [
+"In un barattolo unire lo yogurt Fage, il latte di mandorla, i fiocchi di avena, la farina di avena al cioccolato, il caffè, il cacao amaro, i semi di chia e le proteine al cioccolato e mescolare.",
+"Riporre in frigo per qualche ora o per tutta la notte.",
+"Guarnire con il burro di arachidi, il cioccolato fondente e i protein puffies."
 ],
 "porzioni": null
 },
