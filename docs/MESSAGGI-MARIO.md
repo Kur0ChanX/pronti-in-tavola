@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:36 · 01WTjqUvRgtB
-mandami la finestra che la incollo la chiave
-
 ## 2026-11-13 10:37 · 01WTjqUvRgtB
 non va nega la metto su ambiente
 
@@ -126,3 +123,6 @@ miglioralo Miglioralo che deve leggere tutto quello che scrivo nei passaggi di c
 
 ## 2026-11-13 20:20 · 01WTjqUvRMYe
 E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.
+
+## 2026-11-13 21:12 · 01WTjqUwJ4nE
+Allora, le foto secondo me per ora vanno bene. Cosa resta in sospeso? La questione del passaggio di consegna e poi cos'altro abbiamo lasciato in sospeso di cose che ti ho chiesto.
