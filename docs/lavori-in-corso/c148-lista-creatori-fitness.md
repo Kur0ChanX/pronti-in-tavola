@@ -70,3 +70,4 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
   | Sergio Chisari | YouTube (ricette dietetiche, allenamento) | da vedere se scrive gli ingredienti |
   | Thomas Hungry (Marenduzzo) | YouTube 760 mila | NO: sfide ipercaloriche, non ricette fit |
   | Luca Romano (@lucaromano.food) | Instagram | NO per ora: solo Instagram (#59) |
+- 13/11 #71: «Da chi» in Proteiche (Mario 12/11 18:54 «cercarli per youtuber o per sito»): riga di scelte sotto «Fonte proteica», a scelta multipla e ricordata (`f.chi` 'A|B'); chi = youtuber o creatore (campo autore), sennò il sito. `FONTI_RIC` con `fw`, `fs`, `gh` (prima dicevano «GialloZafferano»); riga «Ricetta di …» senza nome doppio. Prova `ricettario C148` in `tools/prova.js`. Patch `docs/lavori-in-corso/c148-app.patch` (si applica DOPO `c149-app.patch`). Raccolta `--creatori` rilanciata in sottofondo (log nel contenitore #71).
