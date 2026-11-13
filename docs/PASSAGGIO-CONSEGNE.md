@@ -1,15 +1,15 @@
 # Passaggio di consegne
 
-Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa alla soglia 13/11 11:38; la apre la #72 con `create_session` (catena 3 di 8)).
+Sessione attuale: #74 (dopo la #73 `session_01WTjqUwNfLsrFL7eH88xpWc`, chiusa alla soglia 13/11 11:51; la apre la #73 con `create_session` (catena 4 di 8)).
 
-**#73 aperta dalla #72 alla soglia (13/11 11:39).** Mario 11:41 «manda online tutto» → **v0.10.26 ONLINE (#73, 13/11 ~11:55)**: C148 + C150, giro locale 98/98 verde, patch C148/C150 tolte.
+**#74 aperta dalla #73 (13/11 ~11:55, ferma ad aspettare Mario oltre 180k, C455).** v0.10.26 ONLINE (#73): C148 + C150. Mario deve chiudere e riaprire l'app e mandare una foto (👁 C148, C150): passi già in chat nella #73.
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (13/11, #73):** vedere nell'app le ricette nuove (v0.10.26: «chiudi e riapri l'app»); catalogo proteico immenso; trascrizione dei video coi SOLI Flash (Mario: «il lite fà un pò schifo»).
 
-## Stato (13/11 11:38 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwHBw1/claude/pronti-ramo-definitivo.
+## Stato (13/11 11:51 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwNfLs/claude/pronti-ramo-definitivo.
 - ⚠️ **PT E69**: i push della #62 di `ricettario.js`, `opzioni.js`, `aiutante.js`, `style.css`, `ricette-stimate.js`, `tools/sito.py` hanno PUBBLICATO il sito (`sito.yml`) senza foto approvata né giro completo. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/ricettario.js | grep -c pagellaRic` → 5; `…/ricette-stimate.js` → 200. Giro completo dopo: 95/95 verde (#63).
 - **C141 nell'app (online)**: Proteiche = ogni ricetta «ricca di proteine» (UE: ≥ 20 % delle calorie, ≥ 8 g; `fitRic` in `ricettario.js`), **pagella** `pagellaRic` (voto 1-10, semaforo proteine/calorie/saturi/zuccheri/sale in % del fabbisogno UE, proteine doppie), ordine per voto; soglie in `opzioni.js` (`fitEntraPerc`, `pagVerde`, `pagGiallo`, `fitProtPerc` = verde proteine, `fitProt` = pasto da, `fitSnackProt` = minimo); tolte `fitKcal/Saturi/Zuc/Sodio/SnackPerc/SnackZuc/SnackSodio`. `ricette-stimate.js` (207: Cookpad 135, blog GZ 28, YouTube 44; 114 dolci) → Proteiche 407 (147 dolci). Stimate: «≈ … stimati», niente «Ascolta», passi con link alla fonte.
 - **Raccolta**: `python3 -I tools/raccogli_stimate.py` (cache `.cache-stime/` solo nel contenitore: rilanciarla rilegge i siti, ~1 h). YouTube con `YOUTUBE_API_KEY` (variabile d'ambiente, spazio in fondo → trim; solo nelle sessioni nuove). Scarti: 298 stima (ingredienti sconosciuti in `tools/stima.py`), 386 sotto il 20 %. #65: raccolta rilanciata in sottofondo (log nel contenitore della #65, perso): rilanciarla se serve.
@@ -30,9 +30,11 @@ Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa al
 - C141: `docs/lavori-in-corso/c141-proteiche-stimate.md` (parole di Mario, specifica, stato). Foto: `archivio/foto/2026-11-11-1930-c141-pagella-*.png`.
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#72)
-- C150: prova sui 10 video (8 buone, 2 scarti giusti; dosi giuste 8 su 8 controllate a occhio), strumento corretto 3 volte (PT E77: 503, 429 al minuto, 404 del 2.5), integrazione in `raccogli_video.py`, patch dell'app, foto a Mario. Modelli verificati (Mario: «si chiamano diversamente»). C148: foto a Mario. `ERRORI.md` sotto 10 KB (12 righe doppie del kit nella storia).
-- Controllo Da fare: 0 voci aggiunte (C150 aggiornata: 🎙️, nomi, nuove a ogni versione); in «Aspetta Mario» 2 righe nuove 🛑 (C150 foto, C148 online); DOMANDA 2 velocità tolta (risposta «il lite fà un pò schifo» = solo Flash).
+## Sessione appena chiusa (#73)
+- v0.10.26 online (Mario 11:41 «manda online tutto»): patch C148 (stimate + video) e C150, `raccogli_video.py --parlato-su`, giro locale 98/98 verde (prima serve `python3 -I tools/anteprima.py` in un contenitore nuovo), commit `[pubblica]`, sito vero controllato (798 video, 12 «parlato», 241 Fit with Fun). Patch tolte.
+- Trascrizione C150: limite gratis di oggi finito su tutti i Flash (1 video scartato, 1 scaduto a 300 s); sveglia 14/11 9:10 `trig_01Wapuvfnb4GS8RpzVWzvWyJ` (persistent_session = #73: la #74 la rifà sua e cancella questa).
+- `docs/PER-IL-KIT.md`: difetto del controllo foto («video» = movimento). `pulisci-scorte.py --unite --cancella`: «Cancellate 0 di 1» (non indagato).
+- Controllo Da fare: 0 voci aggiunte (C148, C150 aggiornate: online v0.10.26; storia in `DA-FARE-FATTE.md`).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - #72: **Flash-Lite** per trascrivere (500 al giorno gratis) → no: meno preciso, crema di riso contata due volte; Mario «il lite fà un pò schifo». **Gemini Omni** (`gemini-omni-1.2-flash`) → no: CREA video, niente generateContent né piano gratis. **gemini-2.5-flash** → 404 per gli utenti nuovi dall'11/11. Valori nutrizionali detti nel video → no: 2 su 3 sbagliati, si stimano dalle dosi. `--finto` scriveva nella cache vera → corretto.
@@ -43,17 +45,17 @@ Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa al
 
 ## Prossimi passi
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67) e `01WTjqUvtoJC` (#70): vecchie (C148 ormai online).
-1. FATTO (#73): v0.10.26 online. Manca la foto di Mario (👁 C148, C150).
+1. Quando Mario manda la foto di v0.10.26 (Ricette video con Cotto al Dente e 2foodfitlovers, «Cloud bread» con «🎙️ dosi dal video»): chiudere le 👁 di C148 e C150 se va bene; se Mario scrive altro, prima quello.
 2. Ogni mattina dopo le 9:00 (limite azzerato): `python3 -I tools/trascrivi_video.py --da ricette-video.js` in sottofondo (C148 ormai nel file: niente patch); controllo a occhio a campione e delle righe `dubbi`; commit del json. Sveglia `send_later` 14/11 9:10 (`trig_01Wapuvfnb4GS8RpzVWzvWyJ`): rifarla ogni giorno.
 3. A fine giro: rifare i primi video senza «nome» (togliere le loro voci senza nome dal json e rilanciare), poi nuove versioni coi video trascritti.
-4. Il controllo della foto (hook 5) scatta sulla parola «video» anche quando nell'app non si muove niente (2 volte nella #72): segnarlo per il kit.
+4. FATTO (#73): difetto «video» del controllo foto scritto in `docs/PER-IL-KIT.md` (lo porta la sessione del kit).
 5. Altri creatori della tabella #70 (Ricette di Alice, HSN, Sergio Chisari); idee C149 quando Mario risponde. Vecchi: C140 privato, C143 + kit 38.26, pagella C141, Android schermo intero.
 
 ## Domande aperte
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 16; 🛑 C148+C150 online, 🛑 C150 foto, 🛑 C141 pagella, idee C149).
 
 ## Ultimo messaggio di Mario
-13/11 11:41, parola per parola: «manda online tutto» (dopo l'handoff, nella #72) = «1» alle due domande 🛑 (C148 + C150 online): righe tolte da «Aspetta Mario». → la #73 fa SUBITO il passo 1 (versione 0.10.26).
+13/11 11:41, parola per parola: «manda online tutto» (dopo l'handoff, nella #72) = «1» alle due domande 🛑 (C148 + C150 online): righe tolte da «Aspetta Mario». → fatto dalla #73: v0.10.26 online; a Mario «chiudi e riapri l'app» + foto (versione 0.10.26).
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C151; prossimo M libero: M1.
@@ -63,11 +65,9 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 10:46 · [AVVIO] Sessione #72 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → C150 fatta fino alle foto
-- 2026-11-13 11:32 · si chiamano diversamente ora gemini ha aggiornato i motori verifica → verificato: Omni crea video, 2.5 spento; c150 diario
-- 2026-11-13 11:35 · il lite fà un pò schifo → DOMANDA 2 = solo Flash
-- 2026-11-13 11:36 · hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto → foto C148, domanda 🛑 online
+- 2026-11-13 11:41 · [AVVIO] Sessione #73 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; v0.10.26 online
 
 Ultimo, intero:
-> hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto
+> [AVVIO] Sessione #73 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
+> Leggi CLAUDE.md, docs/ERRORI.md e docs/PASSAGGIO-CONSEGNE.md; continua da sola dai «Prossimi passi».
 
