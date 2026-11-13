@@ -2,18 +2,18 @@
 "account": "108763",
 "sessione": "df0bc0d80949",
 "giorno": "2026-11-13",
-"turni": 10,
-"peso": 2265891,
-"uscita": 58811,
-"contesto_max": 248751,
+"turni": 11,
+"peso": 2973900,
+"uscita": 69296,
+"contesto_max": 336922,
 "anomalie": [
 "2 uscite di strumento enormi (259 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ],
 "remota": "01WTjqUvtoJC",
 "aiutanti": 0,
-"strumenti": 100,
+"strumenti": 118,
 "motori": {
-"opus": 2265891
+"opus": 2973900
 },
 "blocchi": {
 "Stop 13 · There are uncommitted changes in": 1,
