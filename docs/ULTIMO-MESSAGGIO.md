@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 19:47 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:13 ora italiana)
 
-Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
+No, non vanno bene per niente. Cioè, non capisco perché non mi capisci quando parlo. Cioè, ma ultimamente, prima mi capivi sempre. Non ho neanche voglia di rispiegartelo. Quando mi dici, hai una domanda, allergia, quello lì io prima ti ho detto di metterlo più piccolo, stretto, non stretto in lunghezza, ma in larghezza, e di farlo che segue la pagina. E non ho capito perché hai fatto di testa tua. Sotto ti ho detto di togliere il pulsante del microfono, di lasciarlo lì. Hai una domanda, allergia, prezzi, cosa prendere? Lì facciamo tutto insieme, sia detta l'ordine sia hai una domanda. Vedi che ci sono due tasti, ma perché non te ne accorgi? Sono gemelli. E ti ho detto di toglierlo quello in mezzo, perché l'hai lasciato? Ma non risolvere il problema, spiegami come stai ragionando.
