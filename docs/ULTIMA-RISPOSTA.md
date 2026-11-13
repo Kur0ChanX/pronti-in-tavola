@@ -1,21 +1,20 @@
-# Ultima risposta di Claude (13/11/2026 20:30 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:42 ora italiana)
 
-Ho capito: per la parmigiana e le lasagne il cliente deve scegliere la misura per forza, sennò l'ordine non parte.
-
-Ho ricevuto la tua richiesta dalla sessione di prima.
+✅ FATTO
+- Nel carrello di Lisa la parmigiana ha il riquadro rosso «Scegli la misura», con Teglia da 6 e Teglia da 8.
+- Finché Lisa non sceglie, «Invia» resta spento e il totale dice «scegli la misura».
+- Ravioli: restano 2 kg. Se nel link c'è già «da 8», non chiede niente.
+- La prova di questo pezzo è passata. Modifica e foto sono salvate su GitHub, l'app online non è ancora cambiata.
 
 ───
 💡 PARERE
-- **Il problema è più grande di quanto sembra.** Quando l'ordine arriva dal link, da «Scrivimi» o dalla voce, l'app prende da sola la prima misura della teglia. Lisa non se ne accorge.
-- **Anche dal menù normale** la prima misura è già scelta in partenza. Il cliente può toccare «Aggiungi» senza guardarla.
-- Proposta: la riga nel carrello resta rossa con scritto «Scegli la misura». Il tasto «Invia l'ordine a …
+- Le foto usano il menù di prova, con prezzi finti. Sul menù vero di Monica i nomi e i prezzi sono i suoi.
+- La scelta obbligatoria vale per link, «Scrivimi» e microfono. Dal menù normale la prima …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-DOMANDA 3: anche dal menù normale il cliente deve scegliere la misura da solo?
-📌 Di cosa parliamo: oggi, quando apri un piatto con più misure, la prima è già selezionata. Con la scelta 1, all'inizio nessuna misura è selezionata e «Aggiungi» non va finché il cliente non ne tocca una.
-1 · Sì, la misura sempre da scegliere, da tutte le strade (consiglio: nessuno ordina la teglia sbagliata senza accorgersene)
-2 · No, solo per gli ordini dal link, da «Scrivimi» e dalla voce
-
-Restano aperte la DOMANDA 1 (tasti del menù: ho capito bene?) e la DOMANDA 2 (controllo delle regole: dopo i …
+**DOMANDA 1 · foto del carrello di Lisa** 🛑
+📌 Di cosa parliamo: le 2 foto qui sopra, coi caratteri grandi. È il carrello che Lisa vede quando apre il link. Serve adesso per poterle mandare il link.
+1 · Vanno bene → metto online e ti do il link (mio consiglio).
+2 · Da cambiare → dimmi cosa, e non metto online niente.
