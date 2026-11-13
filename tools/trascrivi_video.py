@@ -61,10 +61,11 @@ def chiama(metodo, percorso, corpo=None, attesa=300):
     return int(codice or 0), testo
 
 
-def scegli_modello():
-    """Il Flash più nuovo che il progetto può usare (niente lite, anteprime, immagini o voce); GEMINI_MODELLO lo forza."""
+def modelli_flash():
+    """I Flash che il progetto può usare, dal più nuovo (niente lite, anteprime, immagini o voce); GEMINI_MODELLO ne forza uno.
+    Più di uno perché il più nuovo a volte è pieno (503 «high demand», 13/11 #72: 5 su 5 col 3.8) e il limite gratis è per modello."""
     if os.environ.get('GEMINI_MODELLO'):
-        return os.environ['GEMINI_MODELLO']
+        return [os.environ['GEMINI_MODELLO']]
     c, t = chiama('GET', 'models?pageSize=200', attesa=30)
     if c != 200:
         sys.exit(f'Elenco dei modelli rifiutato da Google (codice {c}): {t[:300]}')
@@ -72,7 +73,7 @@ def scegli_modello():
     flash = [n for n in nomi if re.fullmatch(r'gemini-(\d+(?:\.\d+)?)-flash', n)]
     if not flash:
         sys.exit('Nessun modello «gemini-N-flash» fra: ' + ', '.join(nomi[:30]))
-    return max(flash, key=lambda n: float(re.search(r'(\d+(?:\.\d+)?)', n).group(1)))
+    return sorted(flash, key=lambda n: float(re.search(r'(\d+(?:\.\d+)?)', n).group(1)), reverse=True)
 
 
 def leggi_video(f):
@@ -106,10 +107,11 @@ def main():
     uscita = os.environ.get('VIDEO_PARLATO', USCITA)
     os.makedirs(CACHE, exist_ok=True); os.makedirs(os.path.dirname(uscita), exist_ok=True)
     fatti = json.load(open(uscita, encoding='utf-8')) if os.path.exists(uscita) else {}
-    modello = a[a.index('--modello') + 1] if '--modello' in a else ('finto' if finto else scegli_modello())
+    modelli = [a[a.index('--modello') + 1]] if '--modello' in a else (['finto'] if finto else modelli_flash())
+    m = 0   # indice del modello in uso: su 503 ripetuti o 429 si passa al Flash precedente
     da_fare = [x for x in ordine(leggi_video(da)) if x['id'] not in fatti][:quanti]
     conti = {'chiesti': 0, 'ricette': 0, 'scartati': 0, 'errori': 0}
-    print(f'modello {modello} · da fare {len(da_fare)} · già fatti {len(fatti)}', file=sys.stderr)
+    print(f'modelli {", ".join(modelli)} · da fare {len(da_fare)} · già fatti {len(fatti)}', file=sys.stderr)
     for x in da_fare:
         url = x['url']
         corpo = {'contents': [{'parts': [{'file_data': {'file_uri': url}}, {'text': DOMANDA}]}],
@@ -117,9 +119,17 @@ def main():
         if finto:
             c, r = 200, dict(FINTO)
         else:
-            c, t = chiama('POST', f'models/{modello}:generateContent', corpo)
+            prove = 0
+            while True:
+                c, t = chiama('POST', f'models/{modelli[m]}:generateContent', corpo)
+                if c == 503 and prove == 0:          # pieno: aspetto e riprovo una volta
+                    prove = 1; time.sleep(30); continue
+                if c in (503, 429) and m + 1 < len(modelli):   # ancora pieno o limite di oggi: Flash precedente
+                    print(f'{modelli[m]}: codice {c}, passo a {modelli[m + 1]}', file=sys.stderr)
+                    m += 1; prove = 0; continue
+                break
             if c == 429:
-                print('Limite gratuito di oggi raggiunto (429): mi fermo, il resto domani.', file=sys.stderr)
+                print('Limite gratuito di oggi raggiunto su tutti i modelli (429): mi fermo, il resto domani.', file=sys.stderr)
                 break
             if c != 200:
                 conti['errori'] += 1
@@ -134,6 +144,7 @@ def main():
                 conti['errori'] += 1; continue
             time.sleep(4)   # gentile coi limiti al minuto del piano gratis
         conti['chiesti'] += 1
+        modello = modelli[m]
         json.dump({'url': url, 'modello': modello, 'risposta': r}, open(os.path.join(CACHE, x['id'].replace(':', '_') + '.json'), 'w', encoding='utf-8'), ensure_ascii=False)
         if buona(r):
             v = r.get('valori') or {}

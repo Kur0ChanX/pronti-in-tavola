@@ -126,3 +126,6 @@ Ricapitato (#63 «~20:06» alle 19:06): `consegne.py controlla` ferma i «gg/mm 
 DOMANDA 6 (C148): nella scelta 1 «i 6 italiani» c'era MattsfitChef, italiano ma con le ricette in inglese; Mario ha risposto «sono italiani tutti direi». Difesa: prima di mandare scelte numerate, ricontrollare ogni nome con la tabella.
 
 - **PT E70 (#71, 13/11, C148)**: la prova nuova ricaricava `ricette-stimate.js` (`const`) già caricato e svuotato dalla prova C141 → nel giro elenco vuoto, da sola verde. Difesa: se il file c'è già, la prova lo riempie dal disco.
+
+## PT E77 · 13/11/2026 (#72) · Gemini pieno
+Primo giro vero di C150: `trascrivi_video.py` usava solo il Flash più nuovo (gemini-3.8-flash). 5 video su 5 → 503 «This model is currently experiencing high demand», il tool si è fermato senza una ricetta. Causa vera: un modello solo, nessuna riprova né ripiego. Difesa: elenco dei Flash dal più nuovo; 503 → attesa 30 s e una riprova, poi il Flash precedente; 429 (limite gratis, è per modello) → il precedente; fermo solo quando sono finiti tutti.
