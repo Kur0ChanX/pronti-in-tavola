@@ -46,7 +46,7 @@ Sessione attuale: #74 (dopo la #73 `session_01WTjqUwNfLsrFL7eH88xpWc`, chiusa al
 ## Prossimi passi
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67) e `01WTjqUvtoJC` (#70): vecchie (C148 ormai online).
 1. Quando Mario manda la foto di v0.10.26 (Ricette video con Cotto al Dente e 2foodfitlovers, «Cloud bread» con «🎙️ dosi dal video»): chiudere le 👁 di C148 e C150 se va bene; se Mario scrive altro, prima quello.
-2. Ogni mattina dopo le 9:00 (limite azzerato): `python3 -I tools/trascrivi_video.py --da ricette-video.js` in sottofondo (C148 ormai nel file: niente patch); controllo a occhio a campione e delle righe `dubbi`; commit del json. Sveglia `send_later` 14/11 9:10 (`trig_01Wapuvfnb4GS8RpzVWzvWyJ`): rifarla ogni giorno.
+2. Ogni mattina dopo le 9:00 (limite azzerato): `python3 -I tools/trascrivi_video.py --da ricette-video.js` in sottofondo (C148 ormai nel file: niente patch); controllo a occhio a campione e delle righe `dubbi`; commit del json. Sveglia `send_later` 14/11 9:10 (`trig_01JKS2CJhRPjxHBXxR1GXhxu`, della #74; quella della #73 cancellata): rifarla ogni giorno.
 3. A fine giro: rifare i primi video senza «nome» (togliere le loro voci senza nome dal json e rilanciare), poi nuove versioni coi video trascritti.
 4. FATTO (#73): difetto «video» del controllo foto scritto in `docs/PER-IL-KIT.md` (lo porta la sessione del kit).
 5. Altri creatori della tabella #70 (Ricette di Alice, HSN, Sergio Chisari); idee C149 quando Mario risponde. Vecchi: C140 privato, C143 + kit 38.26, pagella C141, Android schermo intero.
