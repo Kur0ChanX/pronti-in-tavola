@@ -1,14 +1,17 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 19:27 ora italiana)
 
-
+✅ **FATTO**
+- Ti ho mandato 2 foto, fatte coi caratteri grandi:
+  - foto 1: in basso restano solo «Dettami l'ordine» e il microfono. Non si copre più niente.
+  - foto 2: alla fine del menù c'è la riga piccola «Hai una domanda? Scrivi a Monica».
+- Le prove di questi pezzi sono passate. Non è ancora online: aspetto il tuo ok sulle foto.
 
 ## Domande a Mario
 
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
+❓ **DOMANDE**
+DOMANDA 6
+📌 Di cosa parliamo: i tasti in basso nel menù dei clienti, quelli delle 2 foto.
+1 · va bene: faccio il giro completo delle prove e la metto online nell'app
+2 · cambia qualcosa (dimmi cosa)
 
-Rispondi col numero.
+⚠️ Aspettano te: 18 · foto tasti, foto ordine Lisa, v0.10.26, pagella, trascrizione, altre 13
