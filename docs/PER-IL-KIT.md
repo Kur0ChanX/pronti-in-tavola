@@ -82,3 +82,7 @@ Controlli fatti dalla Principale 52 sul kit 38.16 (REGOLE.md, skill, Preferenze 
 ## Promemoria di una 🛑 all'avvio: il blocco «❓» corto fa riscrivere la domanda (Salvagente 4, 10/11, PT E62)
 - Fatto provato (`difetti()` di `domande-chiare.py` sui due testi): il promemoria scritto come blocco «❓ DOMANDE» senza «📌» e con le scelte «1.» → fine del turno bloccata, domanda riscritta, Mario riceve due messaggi; lo stesso promemoria come riga semplice che parte da «🛑» → nessun difetto.
 - Proposta, da valutare nel kit (non provata): nell'avviso «🛑 DECISIVE» di `avvio-check.py` dire «una riga ciascuna, fuori dal blocco ❓».
+
+## Hook `domande-chiare.py`: «video» scambiato per movimento (Principale 72-73, 13/11)
+- Difetto: `MOVIMENTO` contiene `video`; una domanda su «ricette video» o «dal video» (contenuti, niente che si muove) chiede un video a Mario. Successo 2 volte nella #72 (C148, C150).
+- Correzione per il kit: togliere `video` da `MOVIMENTO` (il caso «mandami un video» resta coperto da `animazion|transizion|si muove|movimento`), o ignorarlo quando segue «ricett» o «dal ». Prova: «ricette video nuove» → nessun avviso; «l'animazione del video» → avviso.
