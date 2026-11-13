@@ -1,0 +1,24 @@
+{
+"account": "108763",
+"sessione": "df0bc0d80949",
+"giorno": "2026-11-13",
+"turni": 2,
+"peso": 459116,
+"uscita": 10625,
+"contesto_max": 138805,
+"anomalie": [],
+"remota": "01WTjqUvtoJC",
+"aiutanti": 0,
+"strumenti": 28,
+"motori": {
+"opus": 459116
+},
+"blocchi": {
+"Stop 13 · There are uncommitted changes in": 1
+},
+"esempi_blocchi": {
+"Stop 13 · There are uncommitted changes in": [
+"09:14 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+]
+}
+}
