@@ -11,7 +11,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
-| 🟢 Principale 73 | C148 + C150 online al «1» di Mario (versione 0.10.26); trascrizione dei video ogni mattina dopo le 9:00 | `tools/trascrivi_video.py` · `tools/raccogli_video.py` · `tools/dati/` · `docs/lavori-in-corso/c148-*` · `docs/lavori-in-corso/c150-*` · `ricette-stimate.js` · `ricette-video.js` · `ricettario.js` · `aiutante.js` | 13/11 |
+| 🟢 Principale 73 | C148 + C150 online in v0.10.26 (Mario 11:41 «manda online tutto»); trascrizione dei video ogni mattina dopo le 9:00 | `tools/trascrivi_video.py` · `tools/raccogli_video.py` · `tools/dati/` · `docs/lavori-in-corso/c148-*` · `docs/lavori-in-corso/c150-*` · `ricette-stimate.js` · `ricette-video.js` · `ricettario.js` · `aiutante.js` | 13/11 |
 | 🔴 Principale 71 | chiusa 13/11 ~10:55 (soglia): v0.10.25 online, C150 chiave pronta, C148 patch verificata (identica alla #70); tutto alla #72 | `docs/PASSAGGIO-CONSEGNE.md` · `tools/trascrivi_video.py` · `tools/prova.js` | 13/11 |
 | 🔴 Principale 68 | chiusa 12/11 ~18:25 (attesa oltre 180k): foto e video C144-C147, DOMANDA 5 🛑; proteiche controllate una per una (PT E72); alla 69 | `docs/lavori-in-corso/c144-app.patch` · `archivio/foto/2026-11-12-0014-c144-c147-*.png` · `docs/DA-FARE.md` | 12/11 |
 | 🔴 Principale 63 | chiusa 11/11 ~20:10 (attesa oltre 180k): giro 95/95, C142 chiusa, C143 patch (aspetta ok), C140 progetto pubblico, DOMANDE 1-2; alla 64 | `tools/prova.js` · `docs/lavori-in-corso/c143-guardia.patch` · `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md` · `docs/DA-FARE.md` | 11/11 |
