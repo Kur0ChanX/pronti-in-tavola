@@ -51,7 +51,7 @@ Sessione attuale: #80 (dopo la #79 `session_01WTjqUvRMYeAzAnDtr3mSfk`, chiusa al
 Prossimo E libero: E1; prossimo C libero: C158; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
-Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
+Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `get_session` alla chiusura; Mario lo cambia spesso dal selettore): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
