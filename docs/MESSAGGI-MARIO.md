@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 19:24 · 01WTjqUvhRwD
-hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo
-
 ## 2026-11-11 19:33 · 01WTjqUumr4n
 mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazioni che hai in una sezione a parte esempio ricette video e dividi per il nome che dici? occupiamo teoppo spazio limiti ecc?
 
@@ -125,3 +122,6 @@ Voglio tutto tracciato nell app cosí non c'è l'ordine spingi i clienti a ordin
 
 ## 2026-11-13 18:39 · 01WTjqUwuvHs
 ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+
+## 2026-11-13 18:46 · 01WTjqUu3oyB
+Cioè, stai rispondendo a quello che ti ho detto dopo 20 e passa minuti? È un'altra sessione? Boh, non capisco cosa stai sbagliando proprio il modo di pensare, di lavorare, stai proprio sbagliando. Te l'ho scritto dall'inizio e tu mi hai provato a correggere un problema che non ti ho detto e mi rispondi al messaggio dopo una sessione. Mai successo. Sicuramente hai qualche bug, qualche problema grave.
