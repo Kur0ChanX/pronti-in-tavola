@@ -9,7 +9,8 @@ e scrive ricette-stimate.js, un file del sito (zero letture di Cloudflare).
 - Metà dolci (dolce_o_salato: nessun ingrediente salato, almeno uno dolce), metà il resto.
 Uso: python3 -I tools/raccogli_stimate.py [quante=500]   (pagine in .cache-stime/; rilanciarlo non rilegge i siti)
      python3 -I tools/raccogli_stimate.py --passi   (C146: solo i passi delle ricette già nel file)
-     python3 -I tools/raccogli_stimate.py --pulisci (12/11: toglie la pubblicità dai passi già nel file, senza rete) """
+     python3 -I tools/raccogli_stimate.py --pulisci (12/11: toglie la pubblicità dai passi già nel file, senza rete)
+     python3 -I tools/raccogli_stimate.py --creatori (C148: AGGIUNGE le ricette di Fit with Fun, Iamfitandsweet, Giuseppe Healthy) """
 import hashlib, html, json, os, re, subprocess, sys, time
 from urllib.parse import quote, urlencode
 
@@ -353,5 +354,161 @@ def pulisci():
     print(json.dumps({'ricette': len(vecchie), 'cambiate': cambiate}, ensure_ascii=False))
 
 
+
+# ---------- C148 (Mario 12/11 «tutti i creatori italiani»; 13/11 «li faccio cercare e caricare a te»): siti dei creatori fitness ----------
+# --creatori: AGGIUNGE a ricette-stimate.js le ricette dei siti qui sotto (le vecchie restano uguali; la cache di Cookpad e GZ non serve).
+# Regole dei siti controllate il 13/11 (robots.txt: pagine delle ricette permesse). Stessi filtri: passi o video, regola Proteiche, stima;
+# i valori del creatore (se li scrive) vincono sulla stima. Campo «autore» = il nome del creatore (si cerca per creatore nell'app).
+CREATORI = {'fw': 'Fit with Fun', 'fs': 'Iamfitandsweet', 'gh': 'Giuseppe Healthy'}
+GH_API = 'https://www.giuseppehealthy.it/wp-content/themes/hello-elementor-child/api/async-ricetta.php'
+GH_CATEGORIE = ('36', '21', '19', '49')   # aperitivo, cena, colazione, pranzo (data-current-category delle pagine /it/ricette/…/)
+AFFILIATI = re.compile(r'\s*\((?:[^()]*\b(?:trovi|link|qui|amazon|sconto|codice|acquist)\b[^()]*)?\)', re.I)
+
+
+def post_wp(url):
+    """Elenco degli articoli di un sito WordPress dalla sua mappa (post-sitemap*.xml)."""
+    out, k = [], 1
+    while k < 20:
+        t = pagina(url + ('post-sitemap.xml' if k == 1 else f'post-sitemap{k}.xml'))
+        locs = re.findall(r'<loc>([^<]+)</loc>', t)
+        if not locs:
+            break
+        out += [u for u in locs if not re.search(r'\.(jpe?g|png|webp)$', u)]
+        k += 1
+    return out
+
+
+def gh_elenco():
+    out = []
+    for c in GH_CATEGORIE:
+        off = 0
+        while off < 3000:
+            corpo = json.dumps({'offset': off, 'lang': 'Italian', 'current-category': c})
+            f = os.path.join(CACHE, hashlib.sha1((GH_API + corpo).encode()).hexdigest() + '.html')
+            if os.path.exists(f):
+                t = open(f, encoding='utf-8', errors='replace').read()
+            else:
+                t = subprocess.run(['curl', '-s', '-m', '25', '-A', UA, '-X', 'POST', '-H', 'Content-Type: text/html', '--data', corpo, GH_API],
+                                   capture_output=True, text=True).stdout
+                open(f, 'w', encoding='utf-8').write(t)
+                time.sleep(0.5)
+            u = list(dict.fromkeys(re.findall(r'https://www\.giuseppehealthy\.it/it/ricetta/[\w-]+', t)))
+            if not u:
+                break
+            out += u
+            off += len(u)
+    return list(dict.fromkeys(out))
+
+
+def pulito(s):
+    return re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', s))).replace('​', '').strip()
+
+
+def da_gh(url):
+    """Giuseppe Healthy: pagina sua (niente ld+json). Nome, foto, ingredienti (le righe dell'elenco), passi (i paragrafi), porzioni, video."""
+    t = pagina(url.rstrip('/') + '/')
+    nome = re.search(r'<h1[^>]*>(.*?)</h1>', t, re.S)
+    ing = re.search(r'article-ingredienti(.*?)</div>', t, re.S)
+    prep = re.search(r'article-preparazione(.*?)</div>', t, re.S)
+    if not (nome and ing and prep):
+        return None
+    righe = [pulito(x) for x in re.findall(r'<li[^>]*>(.*?)</li>', ing.group(1), re.S)]
+    righe = [AFFILIATI.sub('', r).strip() for r in righe if r and not re.search(ATTREZZI, norm(r))]
+    passi = [{'t': pulito(x), 'foto': []} for x in re.findall(r'<p[^>]*>(.*?)</p>', prep.group(1), re.S)]
+    passi = senza_pubblicita([x for x in passi if len(x['t']) >= 10])
+    pers = re.search(r'Persone:\s*<strong>\s*(\d+)', t) or re.search(r'(?i)per (\d+) (?:porzion|person|pezz|pancake|muffin|biscott|fett)', pulito(ing.group(1)))
+    p = int(pers.group(1)) if pers else 0
+    if not p or not righe:
+        return None
+    img = re.search(r'jumbotron-ricetta.*?<img src="([^"]+)"', t, re.S)
+    vid = re.search(r'youtube\.com/embed/([\w-]{6,})', t)
+    tm = sum(int(x) for x in re.findall(r'(?:Preparazione|cottura):\s*<strong>\s*(\d+)\s*min', t))
+    nm = pulito(nome.group(1))
+    if nm.isupper():
+        nm = nm.capitalize()
+    x = {'id': 'gh:' + url.rstrip('/').split('/')[-1], 'nome': nm, 'foto': img.group(1) if img else '', 'url': url.rstrip('/') + '/',
+         'porzioni': p, 'ingredienti': righe, 'totale': tm, 'passi': passi, 'autore': CREATORI['gh']}
+    if vid:
+        x['video'] = 'https://www.youtube.com/watch?v=' + vid.group(1)
+    return x
+
+
+def num(v):
+    m = re.search(r'[\d]+(?:[.,]\d+)?', str(v or ''))
+    return float(m.group(0).replace(',', '.')) if m else None
+
+
+def da_ld_creatore(chi, url):
+    t = pagina(url)
+    r = ld_ricetta(t)
+    if not r or not r.get('recipeIngredient') or not r.get('name'):
+        return None
+    ing = [AFFILIATI.sub('', re.sub(r'\s+', ' ', html.unescape(str(i))).replace('​', '')).strip() for i in r['recipeIngredient']]
+    ing = [i for i in ing if i and not re.search(ATTREZZI, norm(i)) and not re.match(r'(?i)si conserva|per (la|il) ', i)]
+    p = porzioni(r.get('recipeYield'))
+    if not p:
+        return None
+    nm = re.sub(r'\s+', ' ', re.sub(r'[\U0001F300-\U0001FAFF☀-➿]', '', html.unescape(r['name']))).strip(' -·:')
+    x = {'id': chi + ':' + url.rstrip('/').split('/')[-1], 'nome': nm.capitalize() if nm.isupper() else nm, 'foto': foto(r), 'url': url,
+         'porzioni': p, 'ingredienti': ing, 'totale': minuti(r.get('totalTime')) or minuti(r.get('cookTime')) + minuti(r.get('prepTime')),
+         'passi': passi_ld(r), 'autore': CREATORI[chi]}
+    n = r.get('nutrition') or {}
+    suoi = {'kcal': num(n.get('calories')), 'prot': num(n.get('proteinContent')), 'carb': num(n.get('carbohydrateContent')), 'grassi': num(n.get('fatContent')),
+            'saturi': num(n.get('saturatedFatContent')), 'zuc': num(n.get('sugarContent')), 'sodio': num(n.get('sodiumContent'))}
+    if suoi['kcal'] and suoi['prot'] is not None:   # i SUOI valori per porzione (WP Recipe Maker): vincono sulla stima
+        x['suoiPorz'] = {k: v for k, v in suoi.items() if v is not None}
+    return x
+
+
+def creatori():
+    t = open(os.path.join(RADICE, 'ricette-stimate.js'), encoding='utf-8').read()
+    testa, corpo = t.split('const RICETTE_STIMATE = [', 1)
+    vecchie = json.loads('[' + corpo.rsplit('];', 1)[0] + ']')
+    gia = {norm(x['nome']) for x in vecchie} | {x['id'] for x in vecchie}
+    for f in ('ricette-fit.js', 'ricette.js'):
+        pf = os.path.join(RADICE, f)
+        if os.path.exists(pf):
+            gia |= {norm(n) for n in re.findall(r'"nome":"([^"]+)"', open(pf, encoding='utf-8').read())}
+    cand = [('fw', u) for u in post_wp('https://fitwithfun.it/')] + [('fs', u) for u in post_wp('https://iamfitandsweet.com/')] + [('gh', u) for u in gh_elenco()]
+    print(f'candidati: {len(cand)}', file=sys.stderr)
+    nuove, scarti, per = [], {'lettura': 0, 'senza passi': 0, 'doppione': 0, 'stima': 0, 'regola': 0}, {k: 0 for k in CREATORI}
+    for i, (chi, url) in enumerate(cand):
+        if i % 100 == 0:
+            print(f'… {i}/{len(cand)} lette {lette}', file=sys.stderr)
+        try:
+            x = da_gh(url) if chi == 'gh' else da_ld_creatore(chi, url)
+        except Exception:
+            x = None
+        if not x:
+            scarti['lettura'] += 1; continue
+        if not (any(len(p['t']) >= 10 for p in x.get('passi') or []) or x.get('video')):
+            scarti['senza passi'] += 1; continue
+        k = norm(x['nome'])
+        if k in gia or x['id'] in gia:
+            scarti['doppione'] += 1; continue
+        v, _, q = stima_ricetta(x['ingredienti'], x['porzioni'])
+        suoi = x.pop('suoiPorz', None)
+        if suoi:
+            v = dict(v or {}); v.update(suoi)
+            for k2 in ('saturi', 'zuc', 'sodio', 'carb', 'grassi'):
+                if k2 not in v:
+                    v = None; break
+            if v:
+                x['valoriSuoi'] = True
+        if not v:
+            scarti['stima'] += 1; continue
+        v['zuc'] = round(min(v['zuc'], v['carb']), 1); v['saturi'] = round(min(v['saturi'], v['grassi']), 1)
+        if abs(4 * v['prot'] + 4 * v['carb'] + 9 * v['grassi'] - v['kcal']) > 0.35 * v['kcal'] + 20:
+            scarti['stima'] += 1; continue
+        if not (40 <= v['kcal'] <= 900) or not fit(v):
+            scarti['regola'] += 1; continue
+        gia.add(k); gia.add(x['id'])
+        tipo, _ = dolce_o_salato(x['nome'], x['ingredienti'])
+        x.update(nutr={a: round(b, 1) for a, b in v.items()}, dolce=tipo == 'dolce', stimata=not x.get('valoriSuoi'))
+        nuove.append(x); per[x['id'].split(':')[0]] += 1
+    righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False) for x in vecchie + nuove)
+    open(os.path.join(RADICE, 'ricette-stimate.js'), 'w', encoding='utf-8').write(testa + 'const RICETTE_STIMATE = [\n' + righe + '\n];\n')
+    print(json.dumps({'prima': len(vecchie), 'aggiunte': len(nuove), 'per': per, 'candidati': len(cand), 'lette': lette, 'scarti': scarti}, ensure_ascii=False))
+
 if __name__ == '__main__':
-    pulisci() if '--pulisci' in sys.argv else solo_passi() if '--passi' in sys.argv else main()
+    creatori() if '--creatori' in sys.argv else pulisci() if '--pulisci' in sys.argv else solo_passi() if '--passi' in sys.argv else main()
