@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 06:17 · 01WTjqUwi3Ab
-fatto ora?
-
-## 2026-11-11 06:20 · 01WTjqUwi3Ab
-https://dash.cloudflare.com/[segreto tolto dalla scorta]/workers/kv/namespaces/[segreto tolto dalla scorta]/settings
-
-## 2026-11-11 10:39 · 01WTjqUuGgdE
-Una cosa, le ricette della palestra, quelle proteiche stanno crescendo, ma non vorrei che si ricreasse assolutamente quel problema di bloccare Claude Flare. Evitalo assolutamente, al massimo le ricette le aggiungiamo da Claude, ti dico di fare una ricerca e di aggiungerle tu manualmente, oppure dall'app, ma con doppia richiesta, con doppio clic, che magari esce un avviso che dice potrebbero consumare i dati di, e mi metti la cosa tecnica. Insomma, per le cose superflue facciamo attenzione ai consumi di tutta l'app. Deve funzionare bene io, Monica, e i clienti dobbiamo comunicare bene, con notifiche, risposte, tutto il funzionamento dell'app fatto bene, tutto il resto è superfluo.
-
 ## 2026-11-11 11:25 · 01WTjqUuGgdE
 Aggiungi 200 ricette proteiche specialmente dolci snack merenda colazione dopo allenamento poi il resto 
 cerca da varie fonti
@@ -124,3 +115,12 @@ valuta tu la percentuale
 
 ## 2026-11-13 09:55 · 01WTjqUvtoJC
 palestra pubblica a cosa ti serve saperlo?!?!?
+
+## 2026-11-13 10:24 · 01WTjqUvRgtB
+va bene come Consiglio
+
+## 2026-11-13 10:26 · 01WTjqUvRgtB
+Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici nel video e fai la ricetta, perché altre intelligenze artificiali riescono, quindi magari dalle parole che dicono ti prendi il testo e ci fai la ricetta, anche perché nei video dicono spesso le quantità, quindi a te le quantità servono. Quindi puoi farlo per ogni singolo video, caricare magari un programmino che lo fa, non so, una skill, un MCP, un qualcosa da collegarlo, e ti trascrivi tutto quello che dicono e da lì prendi quello che ti serve, no? Per ogni singolo video.
+
+## 2026-11-13 10:33 · 01WTjqUvRgtB
+prendiamo l'audio da ogni video e prendi il testo tranquillo tanto lo guardo solo io non è publico di dò il permesso
