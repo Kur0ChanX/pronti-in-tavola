@@ -161,6 +161,8 @@ Cosa era già stato fatto, parola per parola; la voce resta aperta in `docs/DA-F
 - **C56**: (Mario 08/11 ~07:00 «prosegui da solo aggiungendo ricette e funzioni») v0.9.18-0.9.23: cosa cucino con quello che ho, note, più timer con barretta in alto, ricerca a voce, viste di recente, «➕ Metti nel menù», «🎲 Cosa cucino oggi?». Prove 47 OK.
 - **C51**: (Mario 08/11 ~03:25) «Scrivimi» e «Sono qui sotto» che fa SUONARE il telefono di Monica: fatti dalla #22 (v0.9.9; squillo forte con l'app aperta, notifica che squilla ogni 5 s per 1 minuto). Con l'app chiusa il suono lo decide Android. NON provato dal vivo.
 - **C39**: (Mario 07/11) Impostazioni di Monica a prova di stupido senza togliere funzioni: scheda del piatto a voci (una aperta alla volta, valore di adesso sotto) fatta dalla #18; Impostazioni allo stesso modo fatte il 07/11 22:05 (4c353ea, voci «di tutti i giorni» e «si cambiano di rado»).
+- C148 · 13/11 #73 (Mario 11:41 «manda online tutto»): v0.10.26 online, 316 dai siti (Fit with Fun 241, Giuseppe Healthy 56, Iamfitandsweet 19) + video Cotto al Dente 52 e 2foodfitlovers 477.
+- C150 · 13/11 #73: v0.10.26 online con 12 ricette «🎙️ dosi dal video»; trascrizione ogni mattina dopo le 9 (~20-60 al giorno coi soli Flash); i primi 14 video da rifare per il nome.
 
 ## Chi fa cosa: righe delle sessioni chiuse (spostate dalla #71)
 | 🔴 Principale 58 | chiusa 11/11 ~12:55 (attesa oltre 180k): C139 191 proteiche v0.10.20-22 online, PT E65; C140 domanda; alla 59 | `ricette-fit.js` · `tools/raccogli-fit.mjs` · `ricettario.js` · `data.js` · `tools/prova.js` · `tools/sito.py` | 11/11 |
