@@ -1,14 +1,9 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:45 ora italiana)
 
+Ho capito: Lisa dice di aver ordinato dall'app, ma a Monica è arrivato solo il messaggio WhatsApp. Nell'app non c'è niente. E io sono partito a testa bassa sui gusti, che nessuno aveva chiesto. Hai ragione, scusa.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
-
-Rispondi col numero.
+───
+✅ **FATTO: cosa ho capito dal testo, con prova**
+- Quel messaggio parte solo da un tasto **«Scrivimi»** che non è legato a nessun ordine: quello verde in basso, oppure quello nella scheda «Dove ritiri».
+- Se fosse partito da un ordine, direbbe «per l'ordine n. …». Il suo non lo dice. Quindi in quel momento Lisa non era dentro un ordine.
+- Ho scritto tutto nel file del lavoro, …
