@@ -53,7 +53,7 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 15:25 · [AVVIO] Sessione #76 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-13 15:25 · [AVVIO] Sessione #76 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; C154 causa trovata
 - 2026-11-13 15:35 · mettile online → v0.10.28 online (C152 + C154)
 - 2026-11-13 15:37 · e nei video fai un check a tutti e trascrivi bene tutti gli ingredienti almeno p… → C154 trascrizione di tutti + `unisci_ingredienti`
 - 2026-11-13 15:42 · Metti nei video ricetta controllata con Gemini, fai ricetta non controllata nei … → C154 scritte in patch + foto, ricerca alternative, DOMANDA 1
