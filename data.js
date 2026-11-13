@@ -183,9 +183,13 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.24';
+const VERSIONE_APP = '0.10.25';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.25', data: '13/11/2026',
+    nuovo: ['Ricettario: voto palestra su ogni ricetta, già sulla carta: dose di proteine, proteine per calorie, grassi, zuccheri e sale',
+      'Ricettario, Proteiche: «Da chi» mostra solo le ricette di un sito o di uno youtuber, anche più di uno'],
+    migliorato: ['Ricettario: voto anche sulle ricette video'] },
   { v: '0.10.24', data: '13/11/2026',
     nuovo: ['Ricettario: «🎬 Ricette video», 268 ricette di Pietrobon e Beardedscara, divise per youtuber',
       'Ricettario: tocchi la foto della ricetta e il video di YouTube parte dentro l\'app (schermo intero, sottotitoli)'],
