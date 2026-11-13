@@ -2,23 +2,26 @@
 "account": "108763",
 "sessione": "80426b5c1907",
 "giorno": "2026-11-13",
-"turni": 5,
-"peso": 1683021,
-"uscita": 70461,
-"contesto_max": 213592,
-"anomalie": [],
+"turni": 8,
+"peso": 2369535,
+"uscita": 87951,
+"contesto_max": 333012,
+"anomalie": [
+"2 uscite di strumento enormi (81 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+],
 "remota": "01WTjqUwHBw1",
 "aiutanti": 0,
-"strumenti": 58,
+"strumenti": 80,
 "motori": {
-"opus": 1683021
+"opus": 2369535
 },
 "memoria_scaduta": 2,
 "ricreati": 199900,
 "blocchi": {
 "Stop 6 · Il turno finisce con una": 1,
 "Stop 5 · «👉 DA FARE TU» senza": 1,
-"Stop 8 · Promessa a Mario senza voce": 1
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 5 · Foto e video (E240, E247;": 2
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
@@ -29,6 +32,10 @@
 ],
 "Stop 8 · Promessa a Mario senza voce": [
 "11:12 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Li farò rifare a fine giro, così prendono il nome vero: costa solo 14 video della quota gratis.». Nella sua voce (o in una nuova) scrivi «👁 Lo"
+],
+"Stop 5 · Foto e video (E240, E247;": [
+"11:32 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid",
+"11:35 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
 ]
 }
 }
