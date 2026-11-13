@@ -1,3 +1,7 @@
-# Ultima risposta di Claude (13/11/2026 10:48 ora italiana)
+# Ultima risposta di Claude (13/11/2026 10:52 ora italiana)
 
-Mi fermo un attimo: la raccolta finisce tra pochi minuti e mi avvisa da sola. Poi preparo le foto delle ricette nuove.
+Titolo verde impostato (continuo a lavorare). Aspetto la fine del run.
+
+Correzione al blocco di prima: «👉 DA FARE TU — niente adesso» (A cosa serve: niente da fare a mano ora; il run gira da solo).
+
+Trascrizione in corso.
