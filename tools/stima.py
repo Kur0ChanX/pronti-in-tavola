@@ -37,7 +37,17 @@ PRODOTTI = {
     'proteine vegane': (380, 72, 8, 2, 8, 1.5, 900),
     'farina proteica': (360, 35, 40, 4, 5, 1, 50),
     'cacao amaro': (355, 20, 11.5, 0.5, 25.6, 15, 20),
-    'caffè (bevanda)': (2, 0.1, 0.3, 0, 0, 0, 2),   # CREA «caffè tostato» è la polvere: 150 ml di caffè non sono 150 g di polvere
+    'caffè (bevanda)': (2, 0.1, 0.3, 0, 0, 0, 2),
+    # C152: ingredienti che CREA non ha (valori medi d'etichetta, prodotti venduti in Italia)
+    'kefir': (52, 3.3, 4, 4, 2.5, 1.6, 40),
+    'pangrattato': (395, 13, 72, 6, 5, 1.1, 700),
+    'semi di chia': (450, 21, 8, 0.5, 31, 3.3, 15),
+    'semi di lino': (520, 20, 2, 1.5, 42, 3.7, 30),
+    'semi di sesamo': (580, 18, 12, 0.3, 50, 7, 11),
+    'pasta sfoglia': (410, 6, 38, 2, 25, 12, 450),
+    'gallette di riso': (385, 8, 81, 0.5, 2.8, 0.6, 5),
+    'pancarrè': (270, 8, 48, 4, 4.5, 0.6, 450),
+    'hummus': (250, 7, 14, 0.5, 18, 2, 400),   # CREA «caffè tostato» è la polvere: 150 ml di caffè non sono 150 g di polvere
 }
 # parole della riga → prodotto (o nome CREA); le prime che combaciano vincono
 SINONIMI = [
@@ -54,14 +64,17 @@ SINONIMI = [
     (r'farina d[i ]* ?avena|avena (frullat|tritat|macinat)|fiocchi d[i ]* ?avena|avena', 'farina di avena'),
     (r'cioccolato fondente (85|90|99)', 'cioccolato fondente 85'), (r'gocce di cioccolato.*(senza zucc|sugar free)', 'gocce di cioccolato senza zucchero'),
     (r'latte di mandorl|bevanda (alla |di )?mandorl', 'latte di mandorla'), (r'bevanda (vegetale|di soia|di riso|d avena)', 'bevanda vegetale'),
-    (r'amido di mais|maizena|fecola', 'amido di mais'), (r'cacao amaro|cacao in polvere|\bcacao\b', 'cacao amaro'),
+    (r'amido di mais|maizena|fecola', 'amido di mais'),
+    (r'\bkefir\b', 'kefir'), (r'pangrattat|pane grattugiat', 'pangrattato'), (r'\bchia\b', 'semi di chia'), (r'semi di lino|\blino\b', 'semi di lino'),
+    (r'sesamo(?! olio)', 'semi di sesamo'), (r'pasta sfoglia|\bsfoglia\b', 'pasta sfoglia'), (r'gallett', 'gallette di riso'),
+    (r'pancarr|pan carr|pane in cassetta|pane per toast|fette di pane bianco', 'pancarrè'), (r'hummus', 'hummus'), (r'cacao amaro|cacao in polvere|\bcacao\b', 'cacao amaro'),
 ]
 # ingredienti comuni → codice CREA esatto (prima della ricerca per parole, che sbaglia: «uova» prendeva le uova di anatra)
 CODICI = [
     (r'\buov[ao]\b|\buova\b', '181100'), (r'tuorl', '181100'), (r'latte .*scremat|latte .*parz|latte light', '135020'), (r'latte di cocco', '007520'),
     (r'\blatte\b(?! di )', '135010'), (r'ricotta', '166820'), (r'burro d[i ]* ?arachid|burro di arachidi|crema di arachidi', '009010'),
     (r'\bburro\b', '190010'), (r'zucchero', '201500'), (r'miele', '210010'), (r'farina integrale', '000240'), (r'farina (di frumento|00|0\b|tipo)|\bfarina\b(?! di)', '000220'),
-    (r'banan', '007510'), (r'fragol', '007730'), (r'mirtill|frutti di bosco|lampon', '007760'), (r'olio', '009210'), (r'petto di pollo|pollo', '106500'),
+    (r'banan', '007510'), (r'fragol', '007730'), (r'mirtill|frutti di bosco|lampon', '007760'), (r'olio', '009210'), (r'petto di pollo|\bpollo', '106500'),
     (r'tacchino|fesa', '106850'), (r'tonno .*natural|tonno al natur|tonno in salamoia', '123550'), (r'tonno', '123610'), (r'mandorl', '008540'),
     (r'nocciol', '008550'), (r'arachid', '008500'), (r'philadelphia light|spalmabile light|formaggio spalmabile light', '170510'),
     (r'philadelphia|spalmabile', '162050'), (r'mozzarella', '164820'), (r'parmigian', '166000'), (r'grana', '162410'), (r'pecorin', '166050'),
@@ -70,17 +83,24 @@ CODICI = [
     (r'mascarpone', '164800'), (r'panna', '140300'), (r'yogurt .*(scremat|magro|0)', '152000'), (r'yogurt', '151000'),
     (r'manzo|bovino|macinato', '101160'), (r'merluzz|nasello', '121410'), (r'gamber', '128100'), (r'ceci', '004010'), (r'fagiol', '004100'),
     (r'zucchin', '005740'), (r'spinac', '005700'), (r'pomodor', '006600'), (r'cocco', '007530'), (r'datter', '007630'), (r'albicocc', '007000'),
-    (r'succo di limone|limone', '008040'), (r'arancia|arance', '008001'), (r'prosciutto cotto', '110400'), (r'bresaola', '110020'),
+    (r'succo di limone|limone', '008040'), (r'carot', '005150'), (r'patat', '006500'), (r'cipoll|scalogn|porro', '005300'),
+    (r'avocado', '007490'), (r'\bmel[ae]\b', '007120'), (r'\bpesc[ah]e?\b', '007290'), (r'\bkiwi\b', '007570'), (r'ananas', '007460'),
+    (r'\bmango\b', '007590'), (r'peperon[ei](?! piccant)', '005600'), (r'melanzan', '005500'), (r'rucola', '005460'), (r'lattug|insalata', '005410'),
+    (r'\bfunghi\b', '006000'), (r'\bzucca\b', '005720'), (r'quinoa', '000096'), (r'\bspeck\b', '110800'), (r'wurstel', '110906'),
+    (r'salsicc', '110710'), (r'prosciutto crudo', '110505'), (r'\bfeta\b', '162000'), (r'calamar', '127100'), (r'cavolfior', '005160'), (r'arancia|arance', '008001'), (r'prosciutto cotto', '110400'), (r'bresaola', '110020'),
 ]
 # pesi tipici (g) per le righe senza grammi
 PEZZI = [(r'\buov[ao]\b|\buova\b', 55), (r'album', 33), (r'tuorl', 18), (r'banan', 120), (r'mel[ae]\b', 150), (r'pera|pere\b', 150),
          (r'vasett', 125), (r'scoop|misurin', 30), (r'fett[ae] di pane', 30), (r'fett[ae] biscottat', 10), (r'datter', 8), (r'noc[ei]\b', 5),
-         (r'petto di pollo', 150), (r'filett', 150), (r'scatolett', 80), (r'tortill|piadin', 60), (r'limon', 0), (r'spicchi?', 3)]
-MISURE = [(r'cucchiain', 5), (r'cucchiai|cucchiaio', 15), (r'tazz', 200), (r'bicchier', 200), (r'pizzic|q\.?b|quanto basta|a piacere|un filo|spruzz', 0)]
+         (r'petto di pollo', 150), (r'filett', 150), (r'scatolett', 80), (r'tortill|piadin', 60), (r'limon', 0), (r'spicchi?', 3),
+         (r'carot', 80), (r'zucchin', 200), (r'patat', 150), (r'cipollott', 30), (r'cipoll', 100), (r'scalogn', 30), (r'avocado', 150), (r'fragol', 15),
+         (r'pomodorin|ciliegin|datterin', 15), (r'pomodor', 100), (r'peperon[ei]\b', 150), (r'melanzan', 250), (r'kiwi', 70), (r'pesc[ah]e?\b', 150), (r'fett[ae] (di )?pan ?carr|pancarr', 25),
+         (r'gallett', 8), (r'rotolo', 230), (r'\bolio\b', 10)]
+MISURE = [(r'cucchiain', 5), (r'cucchiai|cucchiaio', 15), (r'tazz', 200), (r'bicchier', 200), (r'pizzic|q\.?b|\bq b\b|quanto basta|a piacere|un filo|spruzz|manciat', 0)]
 
 # Mario: «il cetriolo non fa parte dei dolci». Dolce = almeno una parola dolce e NESSUNA salata (provato sull'elenco vero, PT E65).
 DOLCI = r'dolcific|eritrit|stevia|zucchero|miele|sciroppo|cacao|cioccolat|vanigl|cannella|marmellat|confettur|nutell|crema proteic|frutti di bosco|fragol|mirtill|lampon|banan|mela\b|mele\b|pera\b|pesc[ah]\b|albicocc|ananas|mango|datter|uvetta|cocco|nocciol|mandorl|pistacch|burro d[i ]* ?arachid|lievito per dolci|lievito vanigliato|biscott|savoiard|amaretti|caff[eè]\b'
-SALATI = r'cetriol|cipoll|aglio|scalogn|porr|tonno|salmon|pollo|tacchin|manzo|maiale|prosciutt|bresaol|speck|salam|pancett|wurstel|acciug|gamber|merluzz|pesce|carne|pomodor|passata|zucchin|melanzan|peperon|spinac|broccol|cavol|funghi|patat|insalat|rucola|lattug|olive\b|capperi|parmigian|grana\b|pecorin|mozzarell|feta|origano|rosmarin|basilic|prezzemol|pepe\b|curry|paprica|senape|maionese|ketchup|salsa di soia|brodo|dado|ceci|lenticch|fagiol|pasta\b|riso\b|spaghett|fusill|penne'
+SALATI = r'cetriol|cipoll|aglio|scalogn|\bporr[oi]\b|tonno|salmon|pollo|tacchin|manzo|maiale|prosciutt|bresaol|speck|salam|pancett|wurstel|acciug|gamber|merluzz|pesce|carne|pomodor|passata|zucchin|melanzan|peperon|spinac|broccol|cavol|funghi|patat|insalat|rucola|lattug|olive\b|capperi|parmigian|grana\b|pecorin|mozzarell|feta|origano|rosmarin|basilic|prezzemol|pepe\b|curry|paprica|senape|maionese|ketchup|salsa di soia|brodo|dado|ceci|lenticch|fagiol|pasta\b|(?<!gallette di )(?<!galletta di )(?<!farina di )(?<!latte di )(?<!bevanda di )(?<!crema di )riso\b|spaghett|fusill|penne'
 
 
 def _tabella():
@@ -158,6 +178,10 @@ def porzioni(resa):
     return max(1, min(20, int(m.group()))) if m else None
 
 
+ERBE = r'prezzemol|basilic|rosmarin|origan|timo\b|salvia|menta|erba cipollina|erbe aromatiche|aneto|paprika|curcuma|noce moscata|zenzero in polvere|aglio in polvere|peperoncin|curry|cumino|chiodi di garofano|alloro|agar|colla di pesce|brodo|lievitant|cremor tartaro|estratto di vaniglia|vaniglia'
+ATTREZZI_RIGA = r'^(\d+\s+)?(pentol|padell|tagliere|coltell|ciotol|mestol|frullator|teglia|stampo|forno|frusta|strumenti|utensili|spatola|carta forno)'
+
+
 def stima_ricetta(ingredienti, n_porzioni):
     """→ (valori per porzione, dettagli, quota di peso non riconosciuta) o (None, motivo, …)"""
     tot = dict.fromkeys(K, 0.0)
@@ -169,8 +193,12 @@ def stima_ricetta(ingredienti, n_porzioni):
             continue   # pesano poco o niente (il sale lo conta il sodio solo se ha i grammi)
         if re.search(r'^(\d+\s*(ml|g)?\s*(di\s+)?)?(acqua|ghiaccio)\b|\b(pepe|goccio)\b', norm(riga)):
             continue   # acqua e ghiaccio: zero calorie anche a 300 ml; pepe e «un goccio» non contano
-        if g is None and re.search(r'dolcific|eritrit|stevia|sucralos|q\.?b|a piacere|qualche|gocce di limone|succo di limone', norm(riga)):
+        if g is None and re.search(r'dolcific|eritrit|stevia|sucralos|q\.?b|\bq b\b|a piacere|qualche|gocce di limone|succo di limone', norm(riga)):
             continue   # senza quantità e quasi senza calorie
+        if (g is None or g <= 15) and re.search(ERBE, norm(riga)):
+            continue   # erbe e spezie: pochi grammi, calorie quasi zero (C152)
+        if re.search(ATTREZZI_RIGA, norm(riga)):
+            continue   # «1 pentolino», «strumenti»: non è un ingrediente (C152)
         if g is None:
             ignoto += 30; dett.append((riga, None, 'quantità?')); continue
         if g == 0:
