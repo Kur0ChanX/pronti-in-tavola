@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa alla soglia 13/11 11:38; la apre la #72 con `create_session` (catena 3 di 8)).
+Sessione attuale: #74 (dopo la #73 `session_01WTjqUwNfLsrFL7eH88xpWc`, chiusa alla soglia 13/11 11:51; la apre la #73 con `create_session` (catena 4 di 8)).
 
 **#73 aperta dalla #72 alla soglia (13/11 11:39).** Mario 11:41 «manda online tutto» → **v0.10.26 ONLINE (#73, 13/11 ~11:55)**: C148 + C150, giro locale 98/98 verde, patch C148/C150 tolte.
 
@@ -8,8 +8,8 @@ Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa al
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (13/11, #73):** vedere nell'app le ricette nuove (v0.10.26: «chiudi e riapri l'app»); catalogo proteico immenso; trascrizione dei video coi SOLI Flash (Mario: «il lite fà un pò schifo»).
 
-## Stato (13/11 11:38 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwHBw1/claude/pronti-ramo-definitivo.
+## Stato (13/11 11:51 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwNfLs/claude/pronti-ramo-definitivo.
 - ⚠️ **PT E69**: i push della #62 di `ricettario.js`, `opzioni.js`, `aiutante.js`, `style.css`, `ricette-stimate.js`, `tools/sito.py` hanno PUBBLICATO il sito (`sito.yml`) senza foto approvata né giro completo. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/ricettario.js | grep -c pagellaRic` → 5; `…/ricette-stimate.js` → 200. Giro completo dopo: 95/95 verde (#63).
 - **C141 nell'app (online)**: Proteiche = ogni ricetta «ricca di proteine» (UE: ≥ 20 % delle calorie, ≥ 8 g; `fitRic` in `ricettario.js`), **pagella** `pagellaRic` (voto 1-10, semaforo proteine/calorie/saturi/zuccheri/sale in % del fabbisogno UE, proteine doppie), ordine per voto; soglie in `opzioni.js` (`fitEntraPerc`, `pagVerde`, `pagGiallo`, `fitProtPerc` = verde proteine, `fitProt` = pasto da, `fitSnackProt` = minimo); tolte `fitKcal/Saturi/Zuc/Sodio/SnackPerc/SnackZuc/SnackSodio`. `ricette-stimate.js` (207: Cookpad 135, blog GZ 28, YouTube 44; 114 dolci) → Proteiche 407 (147 dolci). Stimate: «≈ … stimati», niente «Ascolta», passi con link alla fonte.
 - **Raccolta**: `python3 -I tools/raccogli_stimate.py` (cache `.cache-stime/` solo nel contenitore: rilanciarla rilegge i siti, ~1 h). YouTube con `YOUTUBE_API_KEY` (variabile d'ambiente, spazio in fondo → trim; solo nelle sessioni nuove). Scarti: 298 stima (ingredienti sconosciuti in `tools/stima.py`), 386 sotto il 20 %. #65: raccolta rilanciata in sottofondo (log nel contenitore della #65, perso): rilanciarla se serve.
@@ -63,11 +63,9 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 10:46 · [AVVIO] Sessione #72 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → C150 fatta fino alle foto
-- 2026-11-13 11:32 · si chiamano diversamente ora gemini ha aggiornato i motori verifica → verificato: Omni crea video, 2.5 spento; c150 diario
-- 2026-11-13 11:35 · il lite fà un pò schifo → DOMANDA 2 = solo Flash
-- 2026-11-13 11:36 · hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto → foto C148, domanda 🛑 online
+- 2026-11-13 11:41 · [AVVIO] Sessione #73 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
 
 Ultimo, intero:
-> hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto
+> [AVVIO] Sessione #73 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
+> Leggi CLAUDE.md, docs/ERRORI.md e docs/PASSAGGIO-CONSEGNE.md; continua da sola dai «Prossimi passi».
 
