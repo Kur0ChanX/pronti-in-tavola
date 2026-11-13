@@ -2,18 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:24 · 01WTjqUvRgtB
-va bene come Consiglio
-
-## 2026-11-13 10:26 · 01WTjqUvRgtB
-Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici nel video e fai la ricetta, perché altre intelligenze artificiali riescono, quindi magari dalle parole che dicono ti prendi il testo e ci fai la ricetta, anche perché nei video dicono spesso le quantità, quindi a te le quantità servono. Quindi puoi farlo per ogni singolo video, caricare magari un programmino che lo fa, non so, una skill, un MCP, un qualcosa da collegarlo, e ti trascrivi tutto quello che dicono e da lì prendi quello che ti serve, no? Per ogni singolo video.
-
-## 2026-11-13 10:33 · 01WTjqUvRgtB
-prendiamo l'audio da ogni video e prendi il testo tranquillo tanto lo guardo solo io non è publico di dò il permesso
-
-## 2026-11-13 10:34 · 01WTjqUvRgtB
-1 faccio la chiave
-
 ## 2026-11-13 10:36 · 01WTjqUvRgtB
 mandami la finestra che la incollo la chiave
 
@@ -126,3 +114,15 @@ Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no ri
 
 ## 2026-11-13 20:19 · 01WTjqUu3oyB
 Mi puoi rinviare il link di Lisa in questa sessione?
+
+## 2026-11-13 20:26 · 01WTjqUu3oyB
+Lisa ha ordinato  2kg di ravioli ricotta e spinaci e una parmigiana da 6 e basta controlla se ci sono precompilati solo questi 2
+
+## 2026-11-13 20:29 · 01WTjqUu3oyB
+Puoi fare in modo che le lasagne deve mettere la quantità, se no non parte l'ordine? Perché cos'erano le lasagne? Cos'erano le melanzane? Non mi ricordo. La parmigiana, scusami. Puoi mettere che non c'è quantità, deve metterla per forza?
+
+## 2026-11-13 20:30 · 01WTjqUu3oyB
+No, aspetta, no, le lasagne no, la parmigiana, ci sono la parmigiana e le ravioli. Le ravioli ti ho dato la quantità, la parmigiana che metti, che non capiamo quant'è la quantità, la deve mettere lei.
+
+## 2026-11-13 20:30 · 01WTjqUu3oyB
+ok, dammi il link nuovo quando è online
