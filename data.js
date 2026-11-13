@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.28';
+const VERSIONE_APP = '0.10.29';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.29', data: '13/11/2026',
+    nuovo: ['Clienti: «Scrivimi» capisce gli ordini. Se nel messaggio ci sono piatti del menù (es. «2 kg di ravioli»), l\'app li mette nel carrello e l\'ordine arriva vero a Monica, col messaggio nella nota. Le domande vanno su WhatsApp come prima'],
+    migliorato: ['Ordini detti o scritti: «ricotta e spinaci» sceglie il gusto giusto'] },
   { v: '0.10.28', data: '13/11/2026',
     nuovo: ['Ricettario: 70 ricette proteiche in più'],
     migliorato: ['Ricette video: ingredienti più completi (farina, cacao, proteine in polvere e dosi scritte nel procedimento ora non mancano più)'] },

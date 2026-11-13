@@ -1,12 +1,12 @@
-# Ultima risposta di Claude (13/11/2026 15:54 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:37 ora italiana)
 
+Ho capito: niente lavoro per Monica, tutto automatico. Prima di tutto vuoi l'ordine di Lisa dentro l'app, poi il fix.
+🧠 Opus · Alto
 
-
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA 1 · Velocità del controllo dei video. Rispondi 1 o 2:
-  1 = resto gratis: circa 4 settimane, un pezzo ogni mattina (mio consiglio).
-  2 = piano a pagamento di Google: tutto in circa 1 giorno, stima 10-40 € una volta sola.
-  Se non rispondi, vado con la 1.
-- Qui non c'è niente che si muove, quindi non ti mando un video: si tratta di una scelta di tempi e costi. Le foto delle scritte te le ho già mandate.
+───
+✅ FATTO
+- **Ordine di Lisa: da qui non posso inserirlo.** Il database accetta ordini solo dall'app di Monica o della cliente, con il loro accesso. Io non ho una chiave di amministratore, ed è giusto così.
+- **Fix scritto e provato nell'anteprima** con il messaggio vero di Lisa:
+  1. Il cliente tocca «Scrivimi» e scrive il messaggio dentro l'app.
+  2. L'app riconosce «2 kg di ravioli ricotta e spinaci» e chiede quale parmigiana intende.
+  3. Con «Metti nel …
