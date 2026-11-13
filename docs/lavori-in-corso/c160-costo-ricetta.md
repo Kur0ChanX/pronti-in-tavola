@@ -4,6 +4,7 @@
 - 13/11 22:35: «128-Sì, guarda se l'hai studiata meglio, rifletti bene e vai come consiglio. Poi ti chiedo un'altra cosa da mettere in priorità, scusami, due cose. Prima fai questa cosa che abbiamo detto adesso, poi questa cosa delle regole. Poi cosa facciamo? Abilitiamo Monica alla modalità sviluppatore, però in che senso? Voglio che anche Monica vede come vedono i clienti, però voglio che ci sia solo lo swipe verso l'alto come ce l'ho io, e ogni volta che rientra nell'app si chiude, cioè lo deve riswappare per andare nella modalità cliente. E poi così può provare lei gli ordini, che si può fare gli ordini da sola, però tu dirai cosa se ne fa a farsi gli ordini da sola, giusto per provare l'app. Quindi ci sarà, prima di ordinare sto solo provando l'app quando va a ordinare, oppure sto ordinando davvero, ma sto ordinando davvero non lo farà mai, quasi mai, però glielo lasciamo questa opzione. Verifica che ci sia, sto solo facendo una prova, come mi sembra l'abbiamo già implementato, e così abilitiamo anche Monica a far vedere l'app come il cliente, che anche lì deve vedere come lo vede il cliente, ecco. Quindi evitiamo di, non lo so, facciamo magari mettiamo 5 tocchi la prima volta per entrare, come lo faccio io, 5 tocchi in modalità mi sembra la 5 tocchi dove c'è sotto i noi la scritta, sotto in basso nella pagina principale, e poi lei fa lo swipe su in alto, lì si abilita. Ogni volta che rientra nell'app però questa se la ritroverà chiusa, perché non è bellissima da vedere. Poi un'altra cosa da implementare è il costo per cioè quanto spende lei per creare una ricetta. Quindi mi sembra che abbiamo già implementato che Monica carica tutti gli ingredienti, mette le quantità che usa nella ricetta e poi mettiamo una parte di quanto lei lo paga. Nel senso, mette monica le sue quantita e poi aggiungiamo la quantita esempio kg litri ecc del prodotto acquistato con il prezzo caricato da Monica cosi puoi calcolare quanto gli costa fare quella ricetta e carica i prodotti nella lista spesa che dici fai un bel lavoro con logica»
 
 - 13/11 23:07 (dopo la DOMANDA 1 della #83): «aggiungi anche KG e CL ed Etti»
+- 13/11 ~23:25: «per il resto va bene» (= punti 2-7)
 
 Ho capito: per ogni ingrediente della ricetta Monica ha già la quantità usata; aggiungiamo il prodotto comprato (confezione: kg, litri, pezzi…) col prezzo che mette lei; l'app calcola il costo della ricetta (e a porzione) e porta i prodotti nella lista della spesa. ❓ da confermare (Mario).
 
@@ -28,5 +29,14 @@ Ho capito: per ogni ingrediente della ricetta Monica ha già la quantità usata;
 - Trovato provando: uscendo dal campo, `salvatoOk()` rifaceva la pagina sotto il dito e il tocco su «kg» (o «Fatto») si perdeva → prezzo e confezione si salvano senza rifare la pagina; il tasto legge il numero dal campo.
 - Prova `C160 confezione…` in `tools/prova.js`. Patch: `docs/lavori-in-corso/c160-unita.patch`.
 
+## Punti 2-7 fatti in patch (#83, stessa patch)
+- 2: foglio dell'ingrediente: prima «La confezione che compri», poi «Quanto la paghi», sotto «Cioè 18,00 € al kg» (`alKg`, `aggiornaPrezzoFoglio`, senza rifare la pagina).
+- 3: `costoDosi` conta solo gli ingredienti del piatto/gusto; senza dose → «Senza dose (non contano): …» (0 scritto = niente, non manca).
+- 4: `righeCosto`: riga per ogni gusto con ingredienti in più o prezzo diverso, sulla prima misura; cosa manca anche dei gusti.
+- 5: `SPESA.extra[piatto][formato]` (privato come le dosi): «Altre spese (vaschetta, carta, gas…)», entra nel costo; si aggiornano solo le righe (`#costo-righe`).
+- 6: `rigaCosto` in «I miei piatti» (app.js, con `typeof`): «ti costa · ti restano · N ingredienti senza prezzo o dose».
+- 7: `spesaStimata`: «Spenderai circa N €» nella spesa per gli ordini (confezioni intere × prezzo, sfuso a peso; senza prezzo contate a parte).
+- Prova `C160 costo della ricetta…` in `tools/prova.js`. Foto: `archivio/foto/2026-11-13-2340-c160-dopo-1..4.png`.
+
 ## Stato
-- Punto 1: patch + foto, aspetta l'ok di Mario sulle foto. Punti 2-7: aspettano DOMANDA 1. Poi: codice in patch, prova `SOLO=dosi`, foto, ok di Mario, giro, online.
+- Tutti i 7 punti in patch, prove verdi; aspetta l'ok di Mario sulle 4 foto, poi giro completo e online.
