@@ -41,7 +41,7 @@ Sessione attuale: #75 (dopo la #74 `session_01WTjqUw4QVbXHnpAg1txmfs`, chiusa al
 13/11 13:11, parola per parola: «va bene metti online ma caricarle io 30 per volta non consumo limiti?» → v0.10.27 online; risposta sui limiti in chat. Prima: 13/11 12:57, parola per parola: «hai altre ricette da aggiungere?» → risposta in chat (tabella: ~450 RicetteFit dal server, ~300 scartate da `stima.py`, 3 creatori, dosi dei video ogni mattina; consiglio: prima C151, poi le 300, poi i creatori). Prima, 12:53 «è uno scherzo verooooooo????» e 12:54 «magari cose utili cosí lasciale visto che c'è ma una sezione a parte» → C151.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C153; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C154; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).

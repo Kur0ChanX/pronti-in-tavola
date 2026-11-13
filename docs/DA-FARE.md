@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 13/11 · 🟡 Principale 74 · v0.10.27 (C151): chiudi e riapri l'app, Ricettario: manda una foto (un tasto «Filtri», cerca «cloud bread»). A cosa serve: chiudo la promessa C151.
+- 13/11 · 🟡 Principale 75 · C152 + C153 (foto `archivio/foto/2026-11-13-c153-cloud-bread-ingredienti.png` mandata): 1 = va bene, metto online nell'app le 70 ricette nuove e gli ingredienti in più · 2 = no. A cosa serve: senza il tuo ok non pubblico.
 - 13/11 · 🛑 · 🟡 Principale 74 · v0.10.26 (C148 + C150): chiudi e riapri l'app, Ricettario → Ricette video; manda una foto con la versione 0.10.26 (Cotto al Dente, 2foodfitlovers, «🎙️ dosi dal video»). A cosa serve: chiudo le promesse C148 e C150.
 - 13/11 · 🟢 Principale 70 · C149 idee: scegli i numeri (1 obiettivo proteine · 2 svuota frigo · 3 prima/dopo allenamento · 4 «+1 voto»); consiglio 1 e 4.
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
@@ -24,8 +24,8 @@
 |---|---|---|---|
 | C149 | (Mario 13/11 09:38-09:50 «voti anche fuori… palestra») Voto palestra su tutte le carte; per Mario voto «per te» dal suo profilo palestra (Impostazioni): `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. 👁 Lo vedi: Impostazioni → «Il mio profilo palestra» col tuo peso; Ricettario → ogni carta col «Voto N» prima di entrare · prova: tua foto. v0.10.25 online (#71) | Claude | 🟡 |
 | C148 | (Mario 12/11 18:41-21:27; 13/11 «le carichi tu»: Claude, file del sito) Creatori italiani (inglesi se tradotti bene), solo con passi o video: `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. Online v0.10.26 (#73). 👁 Lo vedi: Proteiche → ricette di Fit with Fun, Giuseppe Healthy, Iamfitandsweet · prova: tua foto | Claude | 🟢 |
-| C151 | (Mario 13/11 12:50 «riordina la pagina… non si capisce nulla») Riordino del Ricettario, ricerca in tutto: `docs/lavori-in-corso/c151-riordino-ricettario.md`. 👁 Lo vedi: Ricettario ordinato, «cloud bread» trovato · prova: foto · [Claude] |
 | C152 | (Mario 13/11 12:57 «hai altre ricette da aggiungere?») +70 proteiche dalle scartate (stima migliorata), porridge fra i dolci: `docs/lavori-in-corso/c152-altre-ricette.md`. 👁 Lo vedi: Ricettario → Proteiche con 592 ricette (prima 522) · prova: foto · [Claude] |
+| C153 | (Mario 13/11 15:18 «mancano in tutti ingredienti») Dosi scritte nel procedimento di Pietrobon fra gli ingredienti (13 ricette, es. Cloud bread +150 ml albume): `docs/lavori-in-corso/c153-dosi-nel-procedimento.md`. 👁 Lo vedi: Cloud bread con 5 ingredienti · prova: foto · [Claude] |
 | C150 | (Mario 13/11) Ricette dal parlato di ogni video: dosi e passi trascritti, poi i valori: `docs/lavori-in-corso/c150-ricette-dal-parlato.md`. Online v0.10.26 (#73, prime 12). 👁 Lo vedi: dosi, passi e nome del piatto nelle ricette video («🎙️ dal video»; nuove a ogni versione) · prova: tua foto | Claude | 🟢 |
 | C147 | (Mario 11/11 22:54, foto dello «Spumone» di YouTube: «metti i video che partono da lì») 13/11 #70: pubblicata in v0.10.24 (tuo «vai avanti» delle 09:08); manca la tua prova sull'Android. Video dalla foto, dentro l’app: `docs/lavori-in-corso/c147-video-dalla-foto.md`. 👁 Lo vedi: Proteiche → «Spumone» → tocchi la foto e il video parte · prova: tua foto | Claude | 🔴 |
 | C146 | (Mario 11/11 22:50, foto di «Pancake proteici» di Cookpad: «si ma senza video ne passaggi non hanno senso») Passi nell'app o video: `docs/lavori-in-corso/c146-ricette-con-passi-o-video.md`. 12/11: controllate una per una (#68); 13/11 #70 pubblicate in v0.10.24. 👁 Lo vedi: Proteiche → una ricetta di Cookpad con «Passo passo» e «▶️ Ascolta» · prova: tua foto | Claude | 🔴 |
