@@ -39,4 +39,4 @@ Ho capito: per ogni ingrediente della ricetta Monica ha già la quantità usata;
 - Prova `C160 costo della ricetta…` in `tools/prova.js`. Foto: `archivio/foto/2026-11-13-2340-c160-dopo-1..4.png`.
 
 ## Stato
-- Tutti i 7 punti in patch, prove verdi; aspetta l'ok di Mario sulle 4 foto, poi giro completo e online.
+- Tutti i 7 punti in patch, giro completo locale 102/102 verde (#83); aspetta l'ok di Mario sulle 4 foto, poi giro completo e online.

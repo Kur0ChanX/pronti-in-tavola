@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 11:32 · 01WTjqUwHBw1
-si chiamano diversamente ora gemini ha aggiornato i motori verifica
-
-## 2026-11-13 11:35 · 01WTjqUwHBw1
-il lite fà un pò schifo
-
 ## 2026-11-13 11:36 · 01WTjqUwHBw1
 hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto
 
@@ -126,3 +120,9 @@ Sì, guarda se l'hai studiata meglio, rifletti bene e vai come consiglio. Poi ti
 
 ## 2026-11-13 23:07 · 01WTjqUuVK9Q
 aggiungi anche KG e CL ed Etti
+
+## 2026-11-13 23:17 · 01WTjqUuVK9Q
+per il resto va bene
+
+## 2026-11-13 23:23 · 01WTjqUuVK9Q
+Ricordati che se monica mette stò provando l'app nell' invio dell 'ordine non viene conteggiato nell'ordine vero
