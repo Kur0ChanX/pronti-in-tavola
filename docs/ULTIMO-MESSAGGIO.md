@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 15:18 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 15:35 ora italiana)
 
-mancano in tutti ingredienti
+mettile online
