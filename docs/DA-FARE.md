@@ -1,8 +1,8 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 14/11 · 🟡 Principale 84 · C162 ordine di Lisa da n. 2 a n. 1 (Mario 14/11 00:53, foto `archivio/foto/2026-11-14-0053-mario-lisa-n2-*.jpg`): passi a mano su Firebase (campo `n` dell'ordine, contatore `prossimo` a 2). Da qui niente chiave per scrivere nel database.
 - 13/11 · 🟡 Principale 84 · v0.10.31 ONLINE (C160 costo della ricetta): chiudi e riapri l'app, Spesa → un ingrediente (confezione e prezzo) e «I miei piatti» (costo sotto ogni piatto); una foto quando puoi. A cosa serve: chiudo la promessa C160.
-- 13/11 · 🛑 · 🟡 Principale 83 · C159 ordini di prova: già fuori da incassi e spesa, ma 2 buchi: tolgono le porzioni «pronti subito» vere e occupano le teglie della settimana. 1 = correggo (consiglio) · 2 = lascia così.
 - 13/11 · 🟢 Principale 82 · C161 controllo delle regole: 11 proposte in `docs/lavori-in-corso/c161-controllo-regole.md` (3 conflitti, 6 doppioni, 2 morte). 1 = le faccio tutte · 2 = dimmi i numeri da non fare.
 - 13/11 · 🛑 · 🟢 Principale 82 · C159 vista cliente di Monica, 2 domande: DOMANDA 1 gesto per aprirla (1 = come il tuo: dito verso destra in alto a sinistra · 2 = verso l'alto) · DOMANDA 2 tocchi la prima volta (1 = 7 sulla firma come te · 2 = 5). A cosa serve: Monica prova l'app come un cliente.
 - 13/11 · 🟡 Principale 81 · v0.10.30 ONLINE (C155 barra «Chiedi o ordina» + C157 misura della teglia): chiudi e riapri l'app, guarda il menù da cliente; una foto quando puoi.
