@@ -1,14 +1,10 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 19:16 ora italiana)
 
+Ho capito: il cliente deve ordinare dall'app, non scrivere a Monica su WhatsApp. E i tasti in basso così sono brutti. Hai ragione su tutte e due.
 
+✅ **Cosa cambia con la correzione in prova**
+- Il tasto verde «Scrivimi» sparisce dal fondo dello schermo.
+- In basso restano solo i tasti per ordinare: «Dettami l'ordine» e il microfono.
+- Le domande a Monica diventano una riga piccola alla fine del menù.
 
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
-
-Rispondi col numero.
+Il giro delle prove sta finendo. Poi ti mando la foto del fondo dello schermo coi caratteri grandi, come sul tuo telefono. Se non ti piace ancora, la sistemo prima di metterla online.
