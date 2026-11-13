@@ -32,10 +32,10 @@ index 8085a72b..35cfb154 100644
      ${listaSez(OPZIONI.filter(o => o.g === 'mario').map(sezOpz))}
      ${provaAIhtml()}
 diff --git a/ricettario.js b/ricettario.js
-index d70b7b3f..3cdb0206 100644
+index d70b7b3f..09005855 100644
 --- a/ricettario.js
 +++ b/ricettario.js
-@@ -61,36 +61,83 @@ function fitRic(n) {
+@@ -61,36 +61,85 @@ function fitRic(n) {
    if (!valoriPieni(n) || n.prot < sogliaFit('fitSnackProt', 8) || n.prot * 400 / n.kcal < sogliaFit('fitEntraPerc', 20)) return false;
    return n.prot >= sogliaFit('fitProt', 25) || n.kcal > sogliaFit('fitSnackKcal', 300) ? 'pasto' : 'snack';
  }
@@ -64,9 +64,11 @@ index d70b7b3f..3cdb0206 100644
 +   (studi sull'ipertrofia: 1,6-2,2), divise in 4 pasti; snack = metà di un pasto */
 +function quotePal(p) {
 +  if (!p) return null;
-+  const bmr = 10 * p.peso + 6.25 * (p.altezza || 175) - 5 * (p.eta || 35) + (p.donna ? -161 : 5);
++  /* con la % di grasso (Mario 13/11 «sono al 12-14% di grasso circa»): Katch-McArdle sulla massa magra, più precisa per chi si allena */
++  const magra = p.grasso >= 3 && p.grasso <= 50 ? p.peso * (1 - p.grasso / 100) : 0;
++  const bmr = magra ? 370 + 21.6 * magra : 10 * p.peso + 6.25 * (p.altezza || 175) - 5 * (p.eta || 35) + (p.donna ? -161 : 5);
 +  const att = (p.giorni || 4) >= 6 ? 1.725 : (p.giorni || 4) >= 3 ? 1.55 : 1.375, ob = OBIETTIVI_PAL[p.obiettivo] || OBIETTIVI_PAL.ricomp;
-+  const kcal = Math.round(bmr * att * ob.kcal / 10) * 10, prot = Math.round(p.peso * 2);
++  const kcal = Math.round(bmr * att * ob.kcal / 10) * 10, prot = Math.round(magra ? magra * 2.3 : p.peso * 2);   // 2,3 g per kg di massa magra ≈ 2 g per kg di peso
 +  return { kcal, prot, protPasto: Math.round(prot / 4), kcalPasto: Math.round(kcal / 4 / 10) * 10 };
 +}
 +const tipoPiatto = n => n.prot >= sogliaFit('fitProt', 25) || n.kcal > sogliaFit('fitSnackKcal', 300) ? 'pasto' : 'snack';
@@ -105,11 +107,11 @@ index d70b7b3f..3cdb0206 100644
 +  const q = quotePal(profiloPal());
 +  const campo = (k, t, min, max, u) => `<label class="pal-campo"><span>${t}</span><input type="number" inputmode="decimal" min="${min}" max="${max}" step="1" data-pal="${k}" value="${p[k] != null ? esc(String(p[k])) : ''}" aria-label="${t}"> <small>${u}</small></label>`;
 +  return `<div class="pal-profilo" id="pal-profilo"><p style="margin:0"><b>🏋️ Il mio profilo palestra</b><br><small class="tenue">Solo su questo telefono, mai sul server. Con il peso, nel Ricettario vedi il «Voto per te»; Monica e i clienti vedono il voto palestra di tutti.</small></p>
-+    <div class="pal-campi">${campo('peso', 'Peso', 35, 250, 'kg')}${campo('altezza', 'Altezza', 120, 230, 'cm')}${campo('eta', 'Età', 14, 99, 'anni')}${campo('giorni', 'Pesi a settimana', 0, 7, 'volte')}</div>
++    <div class="pal-campi">${campo('peso', 'Peso', 35, 250, 'kg')}${campo('altezza', 'Altezza', 120, 230, 'cm')}${campo('eta', 'Età', 14, 99, 'anni')}${campo('giorni', 'Pesi a settimana', 0, 7, 'volte')}${campo('grasso', 'Grasso (se lo sai)', 3, 50, '%')}</div>
 +    <label class="etichetta" for="pal-obiettivo">Obiettivo</label>
 +    <select id="pal-obiettivo" data-pal="obiettivo">${Object.entries(OBIETTIVI_PAL).map(([k, o]) => `<option value="${k}"${(p.obiettivo || 'ricomp') === k ? ' selected' : ''}>${o.nome}</option>`).join('')}</select>
 +    <p class="piccolo" style="margin:6px 0 0">${q ? `Per te: <b>${q.prot} g di proteine</b> e circa <b>${q.kcal} kcal</b> al giorno; a pasto ${q.protPasto} g e ${q.kcalPasto} kcal (4 pasti).` : 'Scrivi almeno il peso per avere il «Voto per te».'}</p>
-+    <p class="piccolo tenue" style="margin:2px 0 0">Calcolo: formula Mifflin-St Jeor, proteine 2 g per kg. È un'indicazione, non un parere medico.</p></div>`;
++    <p class="piccolo tenue" style="margin:2px 0 0">Calcolo: con la % di grasso formula Katch-McArdle e proteine 2,3 g per kg di massa magra; senza, Mifflin-St Jeor e 2 g per kg. È un'indicazione, non un parere medico.</p></div>`;
 +}
 +function salvaPal(k, v) {
 +  let p = {}; try { p = JSON.parse(localStorage.getItem('pit-profilo-pal') || '{}') || {}; } catch (e) { p = {}; }
@@ -136,7 +138,7 @@ index d70b7b3f..3cdb0206 100644
      <ul>${p.voci.map(x => `<li>${PALLINO[x.c]} ${x.ico} ${x.nome} <b>${x.val}</b> <span class="tenue">${x.parola}</span></li>`).join('')}</ul></div>`;
  }
  const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
-@@ -835,7 +882,7 @@ const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'unde
+@@ -835,7 +884,7 @@ const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'unde
  const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
      <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
      <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}</small>${r.nutr && r.nutr.kcal > 0
@@ -160,7 +162,7 @@ index 02ad4ac5..abb5c67c 100644
  .ric-voto { display: inline-block; border-radius: 999px; padding: 1px 9px; color: #fff; font-weight: 800; letter-spacing: 0; }
  .ric-voto.v { background: var(--basilico); } .ric-voto.g { background: #A86B00; } .ric-voto.r { background: var(--allarme); }
 diff --git a/tools/prova.js b/tools/prova.js
-index 1b84b6fa..b8e082af 100644
+index 1b84b6fa..d8c0d314 100644
 --- a/tools/prova.js
 +++ b/tools/prova.js
 @@ -1694,7 +1694,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
@@ -198,7 +200,7 @@ index 1b84b6fa..b8e082af 100644
      await clic('[data-a="ric-video-tipo"][data-v="Pancake"]');
      const pc = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta small:first-of-type')].map(x => x.textContent.split(' · ')[0]));
      if (!pc.length || pc.length >= au.nP || pc.some(t => t !== 'Pancake')) throw new Error('C144: il tipo «Pancake» non filtra: ' + JSON.stringify(pc.slice(0, 5)));
-@@ -2071,7 +2083,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+@@ -2071,7 +2083,14 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
      if (JSON.stringify(prof) !== '["pasto","pasto","snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto","pasto","pasto"]') throw new Error('C141 regola d\'entrata: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
      const pag = await page.evaluate(() => [{ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }, { kcal: 458, prot: 24.4, saturi: 6.5, zuc: 2.8, sodio: 463 }, { kcal: 150, prot: 10, saturi: 0.5, zuc: 2, sodio: 100 }, { kcal: 300, prot: 12, saturi: 1, zuc: 5, sodio: 100 }]
        .map(n => { const p = pagellaRic(n); return p.voto + ':' + p.voci.map(x => x.c).join('') + ':' + fitRic(n); }));
@@ -209,6 +211,8 @@ index 1b84b6fa..b8e082af 100644
 +      const t = pagellaRic({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }), riga = rigaPagella({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }); localStorage.removeItem('pit-profilo-pal');
 +      return [v.voto, v.parziale, v.voci.length, t.voto, t.perTe, t.quote.prot, t.quote.protPasto, t.quote.kcal, t.quote.kcalPasto, /Voto per te 9/.test(riga), !!pagellaRic({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }).perTe]; });
 +    if (JSON.stringify(pal) !== '[8,true,3,9,true,160,40,2290,570,true,false]') throw new Error('C149 voto palestra o voto per te sbagliati: ' + JSON.stringify(pal));
++    const palG = await page.evaluate(() => { localStorage.setItem('pit-profilo-pal', JSON.stringify({ peso: 80, giorni: 4, grasso: 13 })); const q = quotePal(profiloPal()); localStorage.removeItem('pit-profilo-pal'); return [q.prot, q.kcal]; });
++    if (JSON.stringify(palG) !== '[160,2470]') throw new Error('C149 profilo con la % di grasso: quote sbagliate: ' + JSON.stringify(palG));
      /* portata del motore («Primi piatti») sotto il filtro «Primi»; la carta di RicetteFit col suo nome */
      await page.evaluate(() => { UI.ric.cat = 'primi'; render(); });
      let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$|rf$/.test(n)));

@@ -135,3 +135,7 @@ nel mio utente Mario mette i voti per me invece per monica valuta in modo generi
 
 io mi chiamo mario ho [età] anni alto [altezza] vado in palestra sala pesi dalle 3 alle 5 volte a settimana per scopo addominali in vista e molta ipertrofia
 (età e altezza coperte: il progetto è pubblico, C140; i numeri Mario li scrive nel suo profilo dentro l'app)
+
+## 2026-11-13 ~10:00 · 01WTjqUvtoJC
+adesso forse sono o al [percentuale]% di grasso circa
+(numero coperto: progetto pubblico; Mario lo scrive nel suo profilo palestra)
