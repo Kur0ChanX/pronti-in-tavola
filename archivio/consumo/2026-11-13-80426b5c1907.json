@@ -1,0 +1,30 @@
+{
+"account": "108763",
+"sessione": "80426b5c1907",
+"giorno": "2026-11-13",
+"turni": 3,
+"peso": 849077,
+"uscita": 29019,
+"contesto_max": 145241,
+"anomalie": [],
+"remota": "01WTjqUwHBw1",
+"aiutanti": 0,
+"strumenti": 30,
+"motori": {
+"opus": 849077
+},
+"memoria_scaduta": 2,
+"ricreati": 199900,
+"blocchi": {
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 5 · «👉 DA FARE TU» senza": 1
+},
+"esempi_blocchi": {
+"Stop 6 · Il turno finisce con una": [
+"10:52 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 5 · «👉 DA FARE TU» senza": [
+"10:52 · «👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del blocco «A cosa serve: …» (cosa ottiene Mario, l'app o il lavoro). Riscrivi solo quel blocco."
+]
+}
+}
