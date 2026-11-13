@@ -1,28 +1,18 @@
-# Ultima risposta di Claude (13/11/2026 11:38 ora italiana)
+# Ultima risposta di Claude (13/11/2026 11:54 ora italiana)
 
-Hai ragione, nell'app non è cambiato niente: **non ho ancora messo online le ricette nuove**. È stato voluto: pubblico solo dopo il tuo ok sulle foto (PT E69).
+Ho capito: sono la sessione #74 e riprendo dalla #73. Aspetto la tua foto della versione 0.10.26.
+
+🛑 Pagella delle Proteiche (C141), già online: 1 = va bene · 2 = cambia.
+🛑 PC di casa come riserva (Salvagente 4): scegli fra 1, 2, 3 e 4.
+
+───
 
 ✅ FATTO
-- Le ricette nuove sono pronte e provate (prove verdi), ma ferme. Ora hai le foto di tutte e due le parti:
-  - **C148** (foto 1-3 qui sopra): 316 ricette da 3 siti (Fit with Fun, Iamfitandsweet, Giuseppe Healthy) e 2 youtuber nuovi (Cotto al Dente, 2foodfitlovers), cioè 798 ricette video invece di 268.
-  - **C150** (le 4 foto di prima): le dosi e i passi presi da quello che si dice nel video («🎙️ dal video»).
+- La versione 0.10.26 è online da stamattina: 798 ricette video invece di 268, e 12 con le dosi prese da quello che dicono nel video.
+- Domani alle 9:10 ho una sveglia per trascrivere altri video. Il limite gratis di oggi è finito.
+- Le promesse aperte sono 91. Le chiudo solo quando le vedi tu nell'app.
 
 ───
 
 💡 PARERE
-- …
-
-## Domande a Mario
-
-❓ DOMANDE
-🛑 **DOMANDA · metto online le ricette nuove?** (foto C148 1-3 e C150 1-4)
-A cosa serve: senza il tuo ok non pubblico.
-- 1 = sì, metti online C148 e C150 insieme
-- 2 = cambia qualcosa (dimmi cosa)
-
-Consiglio: **1**.
-
-⚠️ ATTENZIONE
-- Questa chat è al limite: se rispondi 1, la pubblicazione la fa la sessione nuova, a cui passo tutto subito.
-
-⚠️ Aspettano te: 16 · online C148+C150 🛑 · ricette dal video 🛑 · pagella C141 🛑 · PC di casa 🛑 · idee C149 · progetto privato C140 · difesa C143 + kit
+- Mancava la riga «manda la …
