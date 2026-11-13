@@ -1,13 +1,13 @@
 # Passaggio di consegne
 
-Sessione attuale: #70 (dopo la #69 `session_01WTjqUxxnTzNis39N5xRv3s`, chiusa alla soglia 12/11 18:46; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
+Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa alla soglia 13/11 10:00; la apre la #70 con `create_session` (catena 1 di 8)).
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (12/11 18:41, scritto nella #68):** il lettore di YouTube dentro l'app (schermo intero, sottotitoli, qualità) = C147, già nella patch c144 → DOMANDA 5 (NON rifarla finché non scrive); poi tanti creatori di ricette fitness: lista di 9 in `docs/lavori-in-corso/c148-lista-creatori-fitness.md` → DOMANDA 6 🛑 (consiglio 1+2+3). Le proteiche «una per una» (18:13) sono dentro la patch c144.
+- **Cosa preme a Mario adesso (13/11 09:38-10:09, #70):** «catalogo immenso proteico in priorità a GialloZafferano» (GZ piano piano): voto palestra su tutte le carte (C149, patch pronta, 🛑 DOMANDA 2 «1 = mettilo nell'app»), tanti creatori in più (C148), le ricette le carica Claude, MAI il motore dell'app (consumava tutto e bloccava l'app, Mario ~09:45).
 
-## Stato (12/11 18:46 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?.
+## Stato (13/11 10:00 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUvtoJC/claude/pronti-ramo-definitivo.
 - ⚠️ **PT E69**: i push della #62 di `ricettario.js`, `opzioni.js`, `aiutante.js`, `style.css`, `ricette-stimate.js`, `tools/sito.py` hanno PUBBLICATO il sito (`sito.yml`) senza foto approvata né giro completo. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/ricettario.js | grep -c pagellaRic` → 5; `…/ricette-stimate.js` → 200. Giro completo dopo: 95/95 verde (#63).
 - **C141 nell'app (online)**: Proteiche = ogni ricetta «ricca di proteine» (UE: ≥ 20 % delle calorie, ≥ 8 g; `fitRic` in `ricettario.js`), **pagella** `pagellaRic` (voto 1-10, semaforo proteine/calorie/saturi/zuccheri/sale in % del fabbisogno UE, proteine doppie), ordine per voto; soglie in `opzioni.js` (`fitEntraPerc`, `pagVerde`, `pagGiallo`, `fitProtPerc` = verde proteine, `fitProt` = pasto da, `fitSnackProt` = minimo); tolte `fitKcal/Saturi/Zuc/Sodio/SnackPerc/SnackZuc/SnackSodio`. `ricette-stimate.js` (207: Cookpad 135, blog GZ 28, YouTube 44; 114 dolci) → Proteiche 407 (147 dolci). Stimate: «≈ … stimati», niente «Ascolta», passi con link alla fonte.
 - **Raccolta**: `python3 -I tools/raccogli_stimate.py` (cache `.cache-stime/` solo nel contenitore: rilanciarla rilegge i siti, ~1 h). YouTube con `YOUTUBE_API_KEY` (variabile d'ambiente, spazio in fondo → trim; solo nelle sessioni nuove). Scarti: 298 stima (ingredienti sconosciuti in `tools/stima.py`), 386 sotto il 20 %. #65: raccolta rilanciata in sottofondo (log nel contenitore della #65, perso): rilanciarla se serve.
@@ -16,22 +16,20 @@ Sessione attuale: #70 (dopo la #69 `session_01WTjqUxxnTzNis39N5xRv3s`, chiusa al
 - **C140 = 3** (Mario 19:24): privato + PC di casa, poi GitHub. Passo 1 a Mario (rendere privato, passi in chat 19:30, guida in `docs/GUIDE-GIUSTE.md`); verifica: `gh api -X GET search/repositories -f q='repo:Kur0ChanX/pronti-in-tavola' --jq '.items[0].visibility'` (oggi `public`). Minuti misurati: ~40 al giorno di pubblicazioni → ~1.200 al mese su 2.000 (stima). Piano: `docs/lavori-in-corso/c140-giri-casa-blacksmith-github.md`.
 - Il push di `*.js`, `*.css`, `*.html`, `wrangler.jsonc`, `*.mjs`, `tools/sito.py` pubblica da solo (`sito.yml`): codice non approvato = patch in `docs/lavori-in-corso/`, mai commit dei `.js`.
 - C135 riserva accesa, C139 200 proteiche RicetteFit/GZ (righe vecchie: verifica `curl -s …/api/stato`). Sveglie: nessuna mia.
-- **C144-C147 PRONTI come UNA patch** `docs/lavori-in-corso/c144-app.patch` (7 file: `app.js`, `ricettario.js`, `style.css`, `ricette-stimate.js` coi passi, `ricette-video.js` nuovo 268 ricette = Pietrobon 201 + Beardedscara 67, `tools/prova.js`, `tools/sito.py`); prova `SOLO=C14` VERDE (#68, con la pubblicità tolta dai passi e le foto rifiutate nascoste). Verifica: `git apply --check docs/lavori-in-corso/c144-app.patch`. Strumenti in commit: `tools/raccogli_stimate.py --passi`, `tools/raccogli_video.py` (`sezioni()`, `A_SEZIONI`). Dettagli: `docs/lavori-in-corso/c144-ricette-video.md`, `c145-…`, `c146-…`, `c147-video-dalla-foto.md`.
-- **C148 (#69)**: lista di 9 creatori (6 italiani con sito o YouTube, 3 inglesi; esclusi i solo TikTok/Instagram, #59) in `docs/lavori-in-corso/c148-lista-creatori-fitness.md`, DOMANDA 6 🛑 in «Aspetta Mario». Verifica: `grep -c '^| [1-9] |' docs/lavori-in-corso/c148-lista-creatori-fitness.md` → 9.
+- **v0.10.24 ONLINE (#70)**: C144-C147 (268 ricette video, passi, video dentro l'app) + voce `ricettario-video` dell'aiutante; giro 96/96. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"`.
+- **C149 PRONTO come patch** `docs/lavori-in-corso/c149-app.patch` (`ricettario.js`, `app.js`, `aiutante.js`, `worker.js`, `style.css`, `tools/prova.js`): voto palestra a 6 voci (dose, densità g/100 kcal, calorie per tipo, saturi, zuccheri, sale; voto «≈» coi soli kcal e proteine), voto sulle carte video, «🏋️ Il mio profilo palestra» in «Solo per te, Mario» (solo localStorage `pit-profilo-pal`, anche % di grasso → Katch-McArdle), «Voto per te». Prove C124/C141/C144/C100 verdi. Foto `archivio/foto/2026-11-13-c149-*.png` mandate. Verifica: `git apply --check docs/lavori-in-corso/c149-app.patch`.
+- **C148 dati (#70)**: `docs/lavori-in-corso/c148-video.patch` = `ricette-video.js` con 798 ricette (Pietrobon 202, Beardedscara 67, Cotto al Dente 52, 2foodfitlovers 477; recensioni e ristoranti tolti); strumenti già su GitHub (`tools/raccogli_video.py` CANALI, `tools/raccogli_stimate.py --creatori` per Fit with Fun, Iamfitandsweet, Giuseppe Healthy: 298 ricette GH trovate). La raccolta `--creatori` NON è finita (lenta nel contenitore #70): rilanciarla in sottofondo. Verifica: `git apply --check docs/lavori-in-corso/c148-video.patch`.
 - `docs/DA-FARE.md` 39,5 KB (tetto 40, #69): la storia delle voci aperte va in fondo a `docs/DA-FARE-FATTE.md` («Storia delle voci ancora aperte»). Verifica: `wc -c docs/DA-FARE.md`.
 - Chat parallela **Salvagente 4** (C138, solo documenti): i suoi file non si toccano; la sua scorta non si unisce (E97).
 - Kit: 38.26 disponibile (ha il caso «casa» per il PC): si aggiorna con l'ok di Mario per `.claude/` (DOMANDA 1 della #65, insieme a C143). Verifica: `cat docs/kit-progetto/VERSIONE`.
-- **12/11 #68 (Mario 18:13 «falle accuratamente una per una», dalla #65)**: stimate controllate tutte (`c146-ricette-con-passi-o-video.md` «Controllo una per una»): pubblicità tolta in 2 (PT E72), foto rifiutate nascoste, prova C141 più severa; tutto nella patch c144 (prova `SOLO=C14` verde). Risposta a Mario: è la DOMANDA 5.
 
 ## Riferimenti
 - C141: `docs/lavori-in-corso/c141-proteiche-stimate.md` (parole di Mario, specifica, stato). Foto: `archivio/foto/2026-11-11-1930-c141-pagella-*.png`.
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#69)
-- Avvio leggero (PT E61); `docs/DA-FARE.md` da 42,8 a 38,8 KB (storia di 25 voci aperte in `DA-FARE-FATTE.md`); riavvio del contenitore, scorta mia unita; messaggio di Mario 18:41 (dalla #68): lettore = C147 già nella patch (nota in `c147-video-dalla-foto.md`), video #68 rimandato; C148 ricerca e lista di 9 creatori, DOMANDA 6 🛑; consegne a 242k (attesa oltre 180k).
-
-## Sessione prima (#68)
-- Foto e video C144-C147 (DOMANDA 5); le 206 stimate controllate una per una (`c146-ricette-con-passi-o-video.md`), pubblicità tolta (PT E72).
+## Sessione appena chiusa (#70)
+- v0.10.24 pubblicata (C144-C147); prova C144 rimetteva male `navigator.onLine` → corretta + controllo in `passo` (PT E74). PT E75 (titolo per primo), PT E76 («pubblica» ambiguo). C149 voto palestra e profilo (patch, foto, DOMANDA 2 🛑). C148: canali e siti nuovi, ricerca altri creatori (tabella in `c148-lista-creatori-fitness.md`). Messaggi di Mario con età, altezza e % di grasso: numeri coperti nel registro (progetto pubblico).
+- Controllo Da fare: 2 voci aggiunte (C149; riga C149 idee e DOMANDA 2 in «Aspetta Mario»). Offerta non ancora accettata: «Quanti addominali vedi?» al posto della % (Mario deve scrivere «sì addominali»).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - #69: creatori solo TikTok o Instagram (Marta Ponzini, Melissa «ginni_fit») → fuori dalla lista: non si leggono in automatico (#59). Greg Doucette → fuori: oggi quasi niente ricette. Snellire Da fare spostando «voci chiuse» → non ce n'erano (sono tutte promesse aperte): tolta solo la storia.
@@ -39,39 +37,47 @@ Sessione attuale: #70 (dopo la #69 `session_01WTjqUxxnTzNis39N5xRv3s`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-00. Mario 13/11 ~09:08 (scritto nella #67 chiusa, parola per parola): «Vai avanti con le ricette proteiche, vai avanti, il lavoro che stavi iniziando continualo e caricamele, quelle che abbiamo detto, quelle che abbiamo segnalato, i nuovi youtuber, blogger, i video, la scelta dei video che abbiamo fatto, che mi fa vedere i passaggi del player, che clicchi e me lo fa vedere lì, che non mi manda nessuna pagina, insomma tutto quello che abbiamo deciso, continualo.» → letto come «1» alla DOMANDA 5: PUBBLICA C144-C147 (passo 2) e poi C148 (passo 6), senza richiedere.
-⛔ NON unire le scorte `scorta-principale-20261111-01WTjqUup234` (#66) e quella della #67 (`01WTjqUwz4`): contengono codice dell'app NON approvato (= `c144-app.patch`); unirle e fare push PUBBLICA l'app (PT E69).
-1. FATTO #68 (12/11 00:14 e 18:20): foto `archivio/foto/2026-11-12-0014-c144-c147-1..3.png` mandate, DOMANDA 5 🛑 a Mario; patch ritoccata (testo «tocca la foto e il video parte»), `SOLO=C14` verde. Video: nel contenitore «autoplay» non parte (ipotesi robot, `c147-video-dalla-foto.md`), la prova è sull'Android di Mario.
-2. Al «1» di Mario: `git apply` della patch, anteprima, giro completo `node tools/prova.js` (0 «NO»), commit e push (pubblica), `curl` di `ricette-video.js` e `ricette-stimate.js` dal sito, `git rm` della patch, v0.10.24 con le novità; Mario prova C147 sul suo Android (YouTube dentro l'app).
-3. Mario «fatto» sul passo 1 di C140 → controllo `visibility: private` e il prossimo giro di `sito.yml`; poi il passo 2 (motore sul PC).
-4. DOMANDA 1 della #65 «1» → patch C143 (`git apply docs/lavori-in-corso/c143-guardia.patch && python3 -I tools/test-guardia.py`) e kit 38.26.
-4b. Se Mario scrive che una ricetta di RicetteFit si apre vuota: il server la legge con `leggiRf` (`worker.js`, `rf.mjs`); il lettore funziona dal contenitore (2 ricette vere, #68), quindi guardare la lettura del server.
-5. Foto della pagella (C141): «1» → più stimate e togliere «Fulldayofeating» dalle Proteiche.
-6. C148 (Mario 18:54, 20:00, 21:27): tutti i creatori italiani (Giuseppe Healthy, Fit with Fun, Cotto al Dente, Iamfitandsweet, 2foodfitlovers, MattsfitChef); gli inglesi solo se la traduzione viene bene (prova su poche, foto a Mario). Per ognuno: regole del sito (robots.txt, condizioni d'uso), solo ricette coi passi o col video; sito → come `tools/raccogli_stimate.py`, YouTube → come `tools/raccogli_video.py` (API); ricerca per youtuber o per sito anche in Proteiche e stimate; patch in `docs/lavori-in-corso/`, foto a Mario prima di pubblicare (PT E69). Indipendente dalla DOMANDA 5, ma tocca gli stessi file della patch c144: lavorare sopra la patch.
-7. Dopo il «1» alla DOMANDA 5, sull'Android di Mario: schermo intero orizzontale e verticale e zoom con due dita dentro il lettore (ipotesi: lo zoom potrebbe mancare).
+⛔ NON unire le scorte `01WTjqUup234` (#66) e `01WTjqUwz4Kr` (#67): vecchie, superate dalla v0.10.24.
+1. 🛑 DOMANDA 2 (C149) «1» → `git apply docs/lavori-in-corso/c149-app.patch docs/lavori-in-corso/c148-video.patch`, `python3 -I tools/anteprima.py`, giro completo `node tools/prova.js` (0 «NO»), versione 0.10.25 in `data.js` (novità: voto palestra, profilo, 2 canali nuovi), commit `[pubblica]` e push, `curl` del sito, `git rm` delle due patch. Prima una foto della pagina «🎬 Ricette video» con 4 riquadri (PT E69). «2» → cambiare quello che dice.
+2. C148 siti: `python3 -I tools/raccogli_stimate.py --creatori` in sottofondo (~1.400 pagine, ~1 s l'una; salva prima una copia di `ricette-stimate.js`); poi conti per creatore, controllo a occhio di 10 ricette, patch, foto. Mela, ecc. sconosciute a `tools/stima.py` scartano molte ricette: valutare sinonimi nuovi in `SINONIMI`/`CODICI`.
+3. App: filtro «per creatore o sito» anche in Proteiche (Mario 12/11 18:54); `FONTI_RIC` in `ricettario.js` coi prefissi nuovi `fw`, `fs`, `gh` (sennò la fonte dice «GialloZafferano»!).
+4. Altri creatori della tabella #70 (Ricette di Alice, HSN, Sergio Chisari): robots e lettura; poi inglesi (MattsfitChef ecc.) con prova di traduzione e foto.
+5. Idee C149 (DOMANDA 1, consiglio 1 e 4) quando Mario risponde.
+6. Vecchi: C140 privato (passo di Mario), C143 + kit 38.26 (DOMANDA 1 della #65), pagella C141, Android: schermo intero e zoom del lettore.
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 14; 🛑 DOMANDA 5, C141). Controllo Da fare: 1 voce aggiunta (C148, Mario 18:41; la parte del lettore è C147).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 15; 🛑 DOMANDA 2 C149, 🛑 C141, idee C149).
 
 ## Ultimo messaggio di Mario
-12/11 21:27, scritto nella #69 dopo le consegne, parola per parola: «solo tutti italiani e se si traducono bene metti anche quelle inglesi» → C148: tutti gli italiani (anche MattsfitChef) e gli inglesi se la traduzione viene bene (prova su poche ricette, foto a Mario). Prima: 20:00 «sono italiani tutti direi», 18:54 «solo ricette con i passi o con un video mettili che posso anche cercarli per youtuber o per sito». Tutto in `docs/lavori-in-corso/c148-lista-creatori-fitness.md`.
+13/11 ~10:09, parola per parola: «palestra pubblica a cosa ti serve saperlo?!?!?» → malinteso: «1 = pubblica» della DOMANDA 2 letto come «palestra pubblica»; domanda riscritta («1 · Mettilo nell'app»), PT E76.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C149; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C150; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
-Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
+Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-12 18:22 · [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; Da fare snellito (commit d2c446cf)
-- 2026-11-12 18:41 (nella #68) · Una domanda, non puoi mettere un play nei video… → C147 (nota, commit 73fe8662), C148 lista e DOMANDA 6 (commit 3a09295d)
-- 2026-11-12 18:54 (nella #68) · solo ricette con i passi o con un video mettili… → risposta alla DOMANDA 6 (C148), consegne aggiornate dalla #69
-- 2026-11-12 20:00 · sono italiani tutti direi → risposta alla DOMANDA 6: i creatori italiani (C148), consegne aggiornate dalla #69
-- 2026-11-12 20:02 · solo → messaggio di una parola, forse tagliato: chiesto a Mario cosa intendeva (PT E3); se non risponde, vale la scelta di prima (C148, 5 italiani)
-- 2026-11-12 21:27 · solo tutti italiani e se si traducono bene metti anche quelle inglesi → C148 scelta finale, consegne aggiornate dalla #69
+- 2026-11-13 09:12 · https://claude.ai/connect-github → GitHub controllato (get_me ok)
+- 2026-11-13 09:23 · Rinomina la sessione, rinomina la sessione, rinomina la sessioneeeeeeeeee → rinominata; PT E75
+- 2026-11-13 09:32 · [AVVIO] Sessione #70 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-13 09:38 · stai andando bene metti i voti anche fuori in vista prima di entrare valuta se t… → 
+- 2026-11-13 09:4x · Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resourc… → 
+- 2026-11-13 09:41 · stai andando bene metti i voti anche fuori in vista prima di entrare valuta se t… → 
+- 2026-11-13 09:42 · Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resourc… → 
+- 2026-11-13 09:46 · nel mio utente Mario mette i voti per me invece per monica valuta in modo generi… → 
+- 2026-11-13 ~09:50 · nel mio utente Mario mette i voti per me invece per monica valuta in modo generi… → 
+- 2026-11-13 09:52 · adesso forse sono o al 12% o 14% di grasso circa → 
+- 2026-11-13 09:54 · mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2 → 
+- 2026-11-13 09:54 · valuta tu la percentuale → stima 11-12 %, consiglio 12
+- 2026-11-13 09:55 · palestra pubblica a cosa ti serve saperlo?!?!? → PT E76, DOMANDA 2 riscritta
+- 2026-11-13 ~10:00 · adesso forse sono o al [percentuale]% di grasso circa (numero coperto: progetto … → 
+- 2026-11-13 ~10:05 · mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2 → 
+- 2026-11-13 ~10:07 · valuta tu la percentuale → stima 11-12 %, consiglio 12
+- 2026-11-13 ~10:09 · palestra pubblica a cosa ti serve saperlo?!?!? (malinteso: «1 = pubblica» della … → 
 
 Ultimo, intero:
-> [AVVIO] Sessione #69 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo claude/pronti-ramo-definitivo): git fetch origin claude/pronti-ramo-definitivo && git merge --ff-only origin/claude/pronti-ramo-definitivo (se «HEAD detached», prima git checkout claude/pronti-ramo-definitivo).
-> ⛔ NON unire le scorte 01WTjqUup234 e 01WTjqUwz4Kr (codice C144-C147 non approvato = c144-app.patch: pubblicherebbe, PT E69). Leggi CLAUDE.md, docs/ERRORI.md e docs/PASSAGGIO-CONSEGNE.md; continua da sola dai «Prossimi passi».
+> palestra pubblica a cosa ti serve saperlo?!?!?
+> (malinteso: «1 = pubblica» della DOMANDA 2 letto come «palestra pubblica»)
 
