@@ -146,3 +146,6 @@ Primo giro vero di C150: `trascrivi_video.py` usava solo il Flash più nuovo (ge
 
 ## PT E77 (bis) · 13/11/2026 (#72) · limite al minuto scambiato per limite del giorno
 Dopo il riavvio del contenitore il giro è ripartito: 429 su gemini-3.8, 3.7, 3.6, 3.5 in pochi secondi (il tool passava subito al modello successivo), poi 404 sul 2.5 («no longer available to new users») contato come errore del video → fermo dopo 5. Una chiamata dopo: 200. Causa vera: il 429 era il limite AL MINUTO, non del giorno; il tool non leggeva il motivo. Difesa: `limite()` legge quotaId e retryDelay di Google: al minuto aspetta e riprova lo stesso modello (max 3), al giorno passa al successivo; 404 «model» toglie il modello dalla lista.
+
+## PT E78 (13/11, #74)
+Mario 12:53 «è uno scherzo verooooooo????» con la foto di «GAG PARTE 4 | Gambe» (Cotto al Dente) fra le ricette video, ingredienti Manubri, Elastici, Tappetino. Causa: `raccogli_video.py` contava come ricetta ogni video con 2+ righe a elenco sotto il video, senza guardare se erano cibo. Difesa: `ATTREZZI` (attrezzi = allenamento, mai ricetta) e parole da allenamento in `MAI_RICETTE`; il video tolto da `ricette-video.js` (797), v0.10.27.
