@@ -1,13 +1,11 @@
-# Ultima risposta di Claude (13/11/2026 19:49 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:34 ora italiana)
 
-Ho capito: il link a Lisa lo mandi solo quando il menù ordinato è online.
+Ho capito: la teglia da 6 o da 8 la deve scegliere Lisa, e senza quella scelta l'ordine non deve partire. Giusto.
 
-✅ **FATTO**
-- La versione 0.10.29 è online. Il link per Lisa funziona.
-- Il menù ordinato (versione 0.10.30) è pronto e salvato su GitHub, ma **non è ancora online**. Nella foto di controllo la barra in basso andava su due righe e «Scrivi a Monica» finiva sotto. L'ho corretta, ma devo ancora rifare la foto per controllarla.
+Oggi però l'app online non lo fa. Col link la parmigiana entra con una teglia scelta dall'app, probabilmente quella da 6. Per obbligare Lisa a scegliere serve la correzione che sta facendo la sessione 79.
 
-───
-⚠️ **ATTENZIONE**
-La memoria di questa sessione è piena e devo chiuderla.
-È l'ottava sessione di fila, il massimo: la nuova la devi aprire tu.
-Appena parte, la nuova sessione controlla la …
+💡 **Strada che funziona già adesso**: nel link metto solo i ravioli. La parmigiana Lisa la aggiunge dal menù: quando la tocca, l'app le chiede «da 6» o «da 8», e la sceglie lei per forza.
+
+```
+Ciao Lisa! 😊 Grazie mille per l'ordine!
+Così non si perde, ti ho già messo i ravioli …
