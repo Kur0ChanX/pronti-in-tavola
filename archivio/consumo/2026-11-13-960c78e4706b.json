@@ -2,24 +2,46 @@
 "account": "108763",
 "sessione": "960c78e4706b",
 "giorno": "2026-11-13",
-"turni": 2,
-"peso": 348301,
-"uscita": 7674,
-"contesto_max": 143653,
-"anomalie": [],
+"turni": 5,
+"peso": 2399513,
+"uscita": 56138,
+"contesto_max": 246835,
+"anomalie": [
+"1 uscite di strumento enormi (74 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"2 uscite di strumento enormi (90 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"39k token scritti in un turno"
+],
 "remota": "01WTjqUwuvHs",
 "aiutanti": 0,
-"strumenti": 23,
+"strumenti": 96,
 "motori": {
-"opus": 348301
+"opus": 2399513
 },
 "blocchi": {
-"Stop 5 · Foto e video (E240, E247;": 2
+"Stop 5 · Foto e video (E240, E247;": 2,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 13 · There are uncommitted changes in": 1,
+"Stop 6 · Segno delle domande nel titolo": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Foto e video (E240, E247;": [
 "15:50 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid",
 "15:54 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"18:21 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"18:37 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Quando finisce rifaccio le foto con l'ultimo ritocco (margini del riquadro) e te le mando per l'ok.». Nella sua voce (o in una nuova) scrivi «"
+],
+"Stop 13 · There are uncommitted changes in": [
+"18:37 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"18:37 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
 ]
-}
+},
+"memoria_scaduta": 1,
+"ricreati": 159516
 }
