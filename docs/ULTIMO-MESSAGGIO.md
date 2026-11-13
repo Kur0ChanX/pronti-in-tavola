@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 19:47 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:17 ora italiana)
 
-Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
+miglioralo Miglioralo che deve leggere tutto quello che scrivo nei passaggi di consegna, perché ho paura che accorciandolo si perda qualche senso di quello che dico. Cerca di migliorarla perché è troppo importante, si fanno dei grossi caos.
