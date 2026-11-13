@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 17:15 · 01WTjqUuJHcT
-è normale che funziona?
-
-## 2026-11-10 17:34 · 01WTjqUuJHcT
-mandami una foto prima e dopo
-
 ## 2026-11-10 17:39 · 01WTjqUuJHcT
 2 non ci sono stratagemmi per far arrivare una notifica solo per chi fà gli ordini
 
@@ -122,3 +116,9 @@ solo
 
 ## 2026-11-12 21:27 · 01WTjqUxxnTz
 solo tutti italiani e se si traducono bene metti anche quelle inglesi
+
+## 2026-11-13 09:12 · 01WTjqUvtoJC
+https://claude.ai/connect-github
+
+## 2026-11-13 09:23 · 01WTjqUvtoJC
+Rinomina la sessione, rinomina la sessione, rinomina la sessioneeeeeeeeee
