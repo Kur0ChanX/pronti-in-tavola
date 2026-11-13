@@ -139,3 +139,6 @@ io mi chiamo mario ho [età] anni alto [altezza] vado in palestra sala pesi dall
 ## 2026-11-13 ~10:00 · 01WTjqUvtoJC
 adesso forse sono o al [percentuale]% di grasso circa
 (numero coperto: progetto pubblico; Mario lo scrive nel suo profilo palestra)
+
+## 2026-11-13 ~10:05 · 01WTjqUvtoJC
+mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2
