@@ -42,3 +42,8 @@ Aspetta l'ok di Mario sulle foto; poi giro completo, pubblicazione, «chiudi e r
 ## Sesto messaggio di Mario (13/11 ~18:57)
 «1 vai di consiglio. Riusciamo a metterlo dentro l'ordine? Almeno rimane tracciato questo primo ordine che gli stanno facendo dall'app … vorrei questo primo ordine dall'app. Come possiamo fare? Inventati qualcosa.»
 → «1» letto come DOMANDA 3 = 1 (piano tutto) e DOMANDA 4 = 1 (regola account con blocco). Proposto per Lisa: link col carrello pronto (aspetta ok).
+
+## Link «carrello pronto» (#78, Mario 13/11 «1 VAI E DAMMI IL LINK PER LISA CON CARRELLO GIà PRONTO DOPO AGGIORNAMENTO DA APP»)
+- `…/?ordine=<testo>` → `carrelloDaLink()` (app.js): capisce i piatti con `ordineDaMessaggio`, carrello + nota, apre il carrello; aperto due volte non raddoppia (`P.linkFatti`); niente piatti → «Scrivi a Monica» col testo. Niente consiglio del microfono sopra (`UI.linkCiao`, voce-clienti.js).
+- Mario (mid-turn): messaggio carino su WhatsApp che invita a toccare il link, NON nell'app («sta già facendo 2 volte … è già la terza volta»): riquadro nell'app tolto.
+- Menù vero non letto da qui (lettura di Firestore negata dal controllo di sicurezza): se «parmigiana» ha più varianti, l'app chiede a Lisa quale (un tocco).

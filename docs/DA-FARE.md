@@ -1,7 +1,6 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 13/11 · 🟢 Principale 78 · C155 ordine di Lisa nell'app: 1 = link col carrello già pronto che Monica manda a Lisa (consiglio) · 2 = Monica crea l'ordine dalla sua app. A cosa serve: senza il tuo ok non parto.
 - 13/11 · 🟢 Principale 77 · C154 velocità della trascrizione: Gemini gratis fa ~25 video al giorno, ne restano 765 (~4 settimane). 1 = resto gratis, vado ogni mattina (consiglio) · 2 = piano a pagamento di Google, tutto in ~1 giorno, stima 10-40 € una volta sola. A cosa serve: decidi tu se spendere.
 - 13/11 · 🟢 Principale 76 · C154 scritte «✅ controllata con Gemini» / «⚠️ non controllata» (foto `archivio/foto/2026-11-13-c154-48*.png` mandate, patch `c154-etichette.patch`): 1 = vanno bene, metto online nell'app · 2 = cambia qualcosa. A cosa serve: senza il tuo ok non pubblico.
 - 13/11 · 🛑 · 🟡 Principale 74 · v0.10.26 (C148 + C150): chiudi e riapri l'app, Ricettario → Ricette video; manda una foto con la versione 0.10.26 (Cotto al Dente, 2foodfitlovers, «🎙️ dosi dal video»). A cosa serve: chiudo le promesse C148 e C150.
