@@ -34,3 +34,7 @@ Aspetta l'ok di Mario sulle foto; poi giro completo, pubblicazione, «chiudi e r
 - Da qui non leggo i dati veri (nessuna chiave, giusto così): serve Monica (Ordini, anche quelli di prova) o Lisa (cosa ha toccato).
 - Il gusto «ricotta e spinaci» nella patch: Mario non l'ha chiesto → da togliere dalla patch.
 - Ipotesi «ordine da approvare» (suggerita dalla #77): poco probabile. Il numero di Monica, e quindi «Scrivimi», arriva solo ai clienti già approvati (`impostazioni/approvati`, dati.js:46 e 207). Gli ordini «da approvare» Monica li vede comunque (STATO_MONICA, app.js:231).
+
+## Quinto messaggio di Mario (13/11 ~19:05)
+«Io voglio che sia tutto tracciato, voglio spingere il cliente a ordinare dall'app … non è la prima cosa che vede, scrivi a Monica … sennò bypassa tutto il lavoro che facciamo dell'app … la prima cosa è cercare di far ordinare e che sia tutto tracciato dall'applicazione. Tutto il resto è superfluo, i messaggi a Monica di WhatsApp, anche perché è controproducente per l'app. Inventati qualcosa di intelligente … impegnati di più e non metterci una vita.»
+→ #78: piano «Messaggi dentro l'app» proposto, aspetta ok (modo di lavorare: prima ok, poi codice).
