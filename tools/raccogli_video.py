@@ -37,7 +37,9 @@ INTEGRATORI = r'(?i)melatonin|omega ?3|creatina|\beaa\b|beta ?alanin|\bvit\.? ?[
 # Video di cibo che NON sono una ricetta (scherzi, saluti, giornate alimentari): letti a occhio l'11/11 con --elenco.
 NON_RICETTE = r'(?i)non chiedetemi|è salvo|grazie ragazzi|cosa mangio|settimane (dalla|della) gara|in ogni situazione #gym #funny'
 # …e questi mai, neanche con gli ingredienti scritti (una giornata intera di pasti non è una ricetta)
-MAI_RICETTE = (r'(?i)recension|review|ristorante|michelin|\bhaul\b|cosa ho comprato|degustazion|full ?day ?of ?eating|allenamento|peak ?week|push day|pull day|leg day|\bbulk\b|weeks out|pasto libero|dopo mesi|vedo la luce|\d settimane -')
+MAI_RICETTE = (r'(?i)recension|review|ristorante|michelin|\bhaul\b|cosa ho comprato|degustazion|full ?day ?of ?eating|allenamento|peak ?week|push day|pull day|leg day|\bbulk\b|weeks out|pasto libero|dopo mesi|vedo la luce|\d settimane -|\bgag\b|lower body|upper body|total body|workout|\bhiit\b|tabata')
+# C151 (Mario 13/11 «è uno scherzo?»: «GAG parte 4 | Gambe» con ingredienti Manubri, Elastici, Tappetino): attrezzi da palestra = allenamento, mai ricetta
+ATTREZZI = r'(?i)\bmanubri|\belastic[io]\b|tappetin|kettlebell|bilanciere|fitball|\bpanca\b|cavigliere'
 VUOTO = r'(?i)^\s*(codice|cod\.? sconto|sconto|usa il codice|link|http|www\.|@|seguimi|iscriviti|instagram|tiktok)'
 
 
@@ -408,6 +410,8 @@ def main():
                 ricetta = len(ing) >= 2 and not re.search(MAI_RICETTE, v['titolo'])   # a sezioni (o C148): ricetta = ingredienti scritti
             if re.fullmatch(r'\s*\d{1,2}\s+\w+\s+\d{4}\s*', v['titolo']) and len(ing) < 2:
                 ricetta = False
+            if ing and re.search(ATTREZZI, ' '.join(ing)):
+                ricetta = False   # C151: è un allenamento
             if not ricetta:
                 c['scartati'] += 1
                 if elenco:

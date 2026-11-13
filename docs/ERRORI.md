@@ -27,7 +27,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E23** Funzioni di un altro file con `typeof … === 'function'`; la prova «sito vero» apre i file separati.
 - **PT E24** (bis) Un dato che Mario vuole «vedere chiaramente» va nella pagina principale, non in una sottopagina.
 - **PT E25** Contenuti di fiducia (ricette, dosi, salute, leggi): fonte ufficiale, mai scritti da me; prima l'aspetto a Mario. Dai siti via pubblicità e link (PT E72, prova C141).
-- **PT E25** (bis) Ogni scarico da un sito esterno si prova dal sito vero (Hugging Face rifiuta *.workers.dev).
+- **PT E25** (bis) Ogni scarico da un sito esterno si prova dal sito vero.
 - **PT E26** Voce per persone vere: tono 1.0, frasi corte, sigle per intero; ascoltarla prima di consegnarla.
 - **PT E28/E68** Modulo sicuro solo dal PC (`origin` di `get_session`: android = telefono). Chiavi Google (`X-Goog-Api-Key`): rifiutate, a mano nell'ambiente.
 - **PT E69** Push di file del sito sul ramo = app pubblicata (`sito.yml`): senza foto approvata e giro verde solo patch; prima leggo «Stato» delle consegne. Difesa: C143.
@@ -61,7 +61,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E56** Prova di un avviso: registrare TUTTI gli avvisi (spia su `mostraToast`); «a volte» si indaga subito.
 - **PT E57** Permessi di un token: provati dal vivo; risorsa nuova su Cloudflare = passo chiaro di Mario, non a sorpresa nel deploy.
 - **PT E58 E71** Foto fatte da me: PRIMA la skill `foto`; controllo coi numeri nello script; se serve l'occhio, copia ≤400 px JPEG con la scritta «DI LAVORO» in alto (E314).
-- **PT E59** `git rev-parse --short` con due revisioni dà «Needed a single revision»: usare `git rev-parse HEAD origin/<ramo>`.
+- **PT E59** due revisioni: `git rev-parse HEAD origin/<ramo>` (mai `--short`).
 - **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse (mai righe `| C…` di voci aperte); dopo ogni ritocco di Da fare `promesse.py --controlla`.
 - **PT E61** Sessione nata solo per aspettare Mario: avvio leggero, solo i passi delle consegne, niente indagini né uscite lunghe.
 - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓».
@@ -72,6 +72,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E75** Avvio: titolo della sessione PER PRIMO, anche se il primo messaggio di Mario parla d'altro; una sua richiesta diretta si fa subito, prima del lavoro in corso.
 - **PT E76** Scelte ambigue («1 = pubblica» letto «palestra pubblica»): scrivere «metto online nell'app» e cosa vede Mario.
 - **PT E77** Gemini: mai un modello solo; 503 → riprova, poi il Flash precedente; 429 al minuto → aspetta, al giorno → cambia; 404 → via.
+- **PT E78** Video con attrezzi al posto del cibo = allenamento: scartato (`ATTREZZI`).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC

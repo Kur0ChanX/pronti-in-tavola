@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.26';
+const VERSIONE_APP = '0.10.27';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.27', data: '13/11/2026',
+    corretto: ['Ricettario, ricette video: tolto un video di allenamento finito fra le ricette (attrezzi al posto degli ingredienti)'] },
   { v: '0.10.26', data: '13/11/2026',
     nuovo: ['Ricettario, Proteiche: 316 ricette nuove da Fit with Fun, Giuseppe Healthy e Iamfitandsweet',
       'Ricettario, «🎬 Ricette video»: 2 youtuber nuovi, Cotto al Dente e 2foodfitlovers (529 ricette)',
