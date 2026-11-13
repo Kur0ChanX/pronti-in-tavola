@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:37 · 01WTjqUvRgtB
-non va nega la metto su ambiente
-
-## 2026-11-13 10:38 · 01WTjqUvRgtB
-fatto messa nell'ambiente
-
 ## 2026-11-13 10:39 · 01WTjqUvRgtB
 1 metti online il voto palestra
 
@@ -126,3 +120,9 @@ E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mett
 
 ## 2026-11-13 21:12 · 01WTjqUwJ4nE
 Allora, le foto secondo me per ora vanno bene. Cosa resta in sospeso? La questione del passaggio di consegna e poi cos'altro abbiamo lasciato in sospeso di cose che ti ho chiesto.
+
+## 2026-11-13 21:18 · 01WTjqUwJ4nE
+Allora, spiegami cosa vuoi fare su / chiedi o ordina più misura della teglia. Qual è la tua idea?
+
+## 2026-11-13 21:18 · 01WTjqUwJ4nE
+Scusa, se facciamo da quella precedente e basta, non rimarranno mai indietro, perché alla fine quella dopo legge quella precedente. Di tutte mi sembra un po', forse un po' troppo dispendioso di token, di tutte quelle aperte. Facciamo della precedente. Perché non facciamo invece... risolviamo meglio che il passaggio di consegna, valuta tu se è meglio fare un passaggio di consegna più accurato oppure che la sessione dopo legge la sessione precedente. Qual è meglio, qual è il sistema migliore, più ottimale per lavorare meglio?
