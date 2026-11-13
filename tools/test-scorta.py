@@ -790,4 +790,46 @@ with tempfile.TemporaryDirectory() as t18:
               and git(r18, "rev-parse", "-q", "--verify", "refs/scorta-principale/claude/prova-1") == locale18,
               "voce 10: invio fallito → al giro dopo riparte, senza una scorta nuova")
 
+# 19. PT E85 (C158, Mario 13/11 «vai come consiglio»): scorta della sessione precedente con conflitto nelle consegne E
+#     messaggi di Mario che il ramo non ha → «messaggi» (prima «vecchia», da NON unire: 2 messaggi persi nel registro);
+#     prendi-messaggi porta SOLO i messaggi (consegne del ramo intatte); l'avvio conta i messaggi anche dalla scorta.
+with tempfile.TemporaryDirectory() as t19:
+    r19 = os.path.join(t19, "r")
+    os.makedirs(os.path.join(r19, "docs"))
+    git(t19, "init", "-q", r19)
+    for k, v in (("user.name", "P"), ("user.email", "p@example.com"), ("commit.gpgsign", "false")):
+        git(r19, "config", k, v)
+    git(r19, "checkout", "-q", "-b", "claude/prova-1")
+    reg = os.path.join(r19, "docs", "MESSAGGI-MARIO.md")
+    cons = os.path.join(r19, "docs", "PASSAGGIO-CONSEGNE.md")
+    open(reg, "w").write(sc9.scrivi_voci([("2026-11-13 21:12", "01AAAAAAAAAA", "foto ok")]))
+    open(cons, "w").write("# Consegne\nSessione attuale: #2 (dopo la #1 `session_01AAAAAAAAAAzz`)\nstato: a metà\n")
+    git(r19, "add", "-A"); git(r19, "commit", "-qm", "base")
+    git(r19, "checkout", "-q", "-b", "scorta")
+    open(reg, "w").write(sc9.scrivi_voci([("2026-11-13 21:12", "01AAAAAAAAAA", "foto ok"),
+                                          ("2026-11-13 21:18", "01AAAAAAAAAA", "facciamo della precedente")]))
+    open(cons, "w").write("# Consegne\nSessione attuale: #2 (dopo la #1 `session_01AAAAAAAAAAzz`)\nstato: scritto a metà\n")
+    git(r19, "commit", "-qam", "scorta automatica")
+    git(r19, "update-ref", "refs/remotes/origin/scorta-principale-20261113-01AAAAAAAAAA/claude/prova-1", "scorta")
+    git(r19, "checkout", "-q", "claude/prova-1")
+    open(cons, "w").write("# Consegne\nSessione attuale: #2 (dopo la #1 `session_01AAAAAAAAAAzz`)\nstato: consegne finite\n")
+    git(r19, "commit", "-qam", "consegne")
+    S19 = "origin/scorta-principale-20261113-01AAAAAAAAAA/claude/prova-1"
+    env19 = dict(os.environ, CLAUDE_PROJECT_DIR=r19)
+    esito = sh(sys.executable, "-I", "-c", f"import sys; sys.path.insert(0, {HOOKS!r}); import scorta; "
+               f"print(scorta.lavoro_della_scorta({S19!r}))", cwd=r19, env=env19)
+    controlla(esito == "messaggi", "PT E85: conflitto nelle consegne + messaggi nuovi → «messaggi», mai «vecchia»")
+    parole = sh(sys.executable, "-I", "-c", f"import sys, importlib.util as u; s = u.spec_from_file_location('a', "
+                f"{os.path.join(HOOKS, 'avvio-check.py')!r}); m = u.module_from_spec(s); s.loader.exec_module(m); "
+                "print(m.parole_intere('01BBBBBBBBBB'))", cwd=r19, env=env19)
+    controlla("ha 2 messaggi di Mario nella sua scorta" in parole and "1 non ancora nel ramo" in parole
+              and "prendi-messaggi" in parole, "PT E85: l'avvio conta i messaggi della precedente anche dalla sua scorta")
+    out = sh(sys.executable, "-I", os.path.join(HOOKS, "scorta.py"), "prendi-messaggi", S19, cwd=r19, env=env19)
+    controlla("1 nuovi" in out and "facciamo della precedente" in open(reg).read() and "foto ok" in open(reg).read()
+              and "consegne finite" in open(cons).read(), "PT E85: prendi-messaggi porta solo i messaggi, consegne intatte")
+    git(r19, "commit", "-qam", "messaggi presi")
+    esito = sh(sys.executable, "-I", "-c", f"import sys; sys.path.insert(0, {HOOKS!r}); import scorta; "
+               f"print(scorta.lavoro_della_scorta({S19!r}))", cwd=r19, env=env19)
+    controlla(esito == "vecchia", "PT E85: dopo prendi-messaggi la scorta torna «vecchia» (niente da prendere)")
+
 print(f"Scorta: {ok_n} controlli riusciti")
