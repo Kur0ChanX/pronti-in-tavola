@@ -66,11 +66,11 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal regis
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 11:52 · [AVVIO] Sessione #74 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
-- 2026-11-13 12:50 · riordina la pagina oltre a non trovare nulla c'è un casino in questa pagina 3000… → 
-- 2026-11-13 12:53 · è uno scherzo verooooooo???? → 
-- 2026-11-13 12:55 · magari cose utili cosí lasciale visto che c'è ma una sezione a parte → 
-- 2026-11-13 12:57 · hai altre ricette da aggiungere? → 
+- 2026-11-13 11:52 · [AVVIO] Sessione #74 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; sveglia C150 rifatta; riga foto v0.10.26
+- 2026-11-13 12:50 · riordina la pagina oltre a non trovare nulla c'è un casino in questa pagina 3000… → C151 riordino (patch + foto, DOMANDA 🛑)
+- 2026-11-13 12:53 · è uno scherzo verooooooo???? → PT E78; video non ricette
+- 2026-11-13 12:55 · magari cose utili cosí lasciale visto che c'è ma una sezione a parte → C151 sezione «Consigli, allenamenti e altro» (18 video)
+- 2026-11-13 12:57 · hai altre ricette da aggiungere? → risposta in chat (tabella); prossimi passi 2
 
 Ultimo, intero:
 > hai altre ricette da aggiungere?
