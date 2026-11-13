@@ -14,7 +14,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   page.on('pageerror', e => errori.push('ERRORE: ' + e.message));
   page.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) errori.push('console: ' + m.text()); });
   const foto = async n => page.screenshot({ path: `${OUT}/${n}.png` });
-  const clic = async (sel, opz) => { await page.locator(sel).first().click(opz); await page.waitForTimeout(250); };
+  /* C151: i filtri del Ricettario stanno nel pannello «🎛️ Filtri»: se il tasto cercato non c'è, si apre il pannello (come fa una persona) */
+  const apriFiltri = async () => { if (await page.locator('[data-a="ric-piu"][aria-expanded="false"]').count()) { await page.locator('[data-a="ric-piu"]').first().click(); await page.waitForTimeout(250); } };
+  const clic = async (sel, opz) => { if (!(await page.locator(sel).count()) && /ric-(fit-tipo|prot|chi|cat|diff|tempo|ordine|zona)|ric-(fit|prot|chi)-scelte/.test(sel)) await apriFiltri(); await page.locator(sel).first().click(opz); await page.waitForTimeout(250); };
   const passo = async (nome, fn) => { if (process.env.SOLO && !new RegExp(process.env.SOLO, 'i').test(nome)) return; try { await Promise.race([fn(), new Promise((_, no) => setTimeout(() => no(new Error('BLOCCATA oltre 120 s (la prova non deve mai restare appesa)')), 120000).unref())]); if (await page.evaluate(() => !!Object.getOwnPropertyDescriptor(navigator, 'onLine')).catch(() => false)) { await page.evaluate(() => { delete navigator.onLine; }).catch(() => {}); throw new Error('la prova lascia navigator.onLine finto: rimettilo con «delete navigator.onLine» (PT E74)'); } console.log('OK  ', nome); } catch (e) { console.log('NO  ', nome, '→', e.message.split('\n').slice(0, 3).join(' | ')); } };
 
   await page.goto(FILE);
@@ -977,7 +979,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const nomi = await page.locator('main .ric-elenco').last().innerText(); if (nomi.indexOf('Pasta veloce prova') > nomi.indexOf('Zuppa media prova')) throw new Error('«Più veloci» non ordina');
     if (!/^2 ricette/.test(await page.locator('.ric-conta').innerText())) throw new Error('numero dei risultati sbagliato: ' + await page.locator('.ric-conta').innerText());
     await foto('19-ricettario-filtri');
-    await clic('.ric-conta [data-a="ric-pulisci"]');
+    await clic('.ric-accesi [data-a="ric-pulisci"]');
     const dopo = await page.evaluate(() => [UI.ric.tempo, UI.ric.diff, JSON.parse(localStorage.getItem('pit-ric-filtri')).tempo]);
     if (dopo[0] || dopo[1] || dopo[2]) throw new Error('«Azzera» non azzera: ' + JSON.stringify(dopo));
     await page.evaluate(() => { UI.ric.q = 'zucchine ceci'; render(); });
@@ -1764,6 +1766,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const st0 = await page.evaluate(() => ({ nota: !!document.querySelector('.ric-nota-fit'), oggi: (document.querySelector('.ric-carica-oggi') || {}).innerText || '' }));
     if (st0.nota || !/Oggi \+3 entrate in Proteiche ✅ · 1 letta che non passa le regole/.test(st0.oggi)) throw new Error('Proteiche (C127): regole aperte da sole o «Oggi» sbagliato: ' + JSON.stringify(st0));
     await clic('[data-a="ric-regole"]');
+    await apriFiltri();   // C151
     const st = await page.evaluate(() => ({ scelte: [...document.querySelectorAll('.ric-fit-scelte .scelta')].map(b => b.textContent), nota: (document.querySelector('.ric-nota-fit') || {}).innerText || '' }));
     if (JSON.stringify(st.scelte) !== '["🌅 Colazione","🍎 Spuntino","🧃 Merenda","🍝 Pranzo","🍽 Cena","🌙 Dopo cena","🍰 Dolci","💪 Dopo l\'allenamento","⚡ Pronte in 10 minuti"]') throw new Error('Proteiche: momenti e ⚡ mancanti (C126): ' + JSON.stringify(st.scelte));
     if (!/almeno il 20% delle calorie dalle proteine, almeno 8 g/.test(st.nota) || !/voto da 1 a 10/.test(st.nota) || !/🟢 bene, 🟡 così così, 🔴 attento/.test(st.nota)) throw new Error('C141 Proteiche: nota senza regola d\'entrata o pagella: ' + st.nota);
@@ -1800,10 +1803,10 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (n.length) throw new Error('«🍰 Dolci» con pollo o albumi: nessuna (i due gruppi valgono insieme): ' + JSON.stringify(n));
     await clic('[data-a="ric-fit-tipo"][data-v="dolci"]'); await clic('[data-a="ric-prot"][data-v="pollo"]'); await clic('[data-a="ric-prot"][data-v="albumi"]');
     if (await page.evaluate(() => UI.ric.prot || UI.ric.fit)) throw new Error('ritoccare le fonti non le toglie');
-    /* «Altre ▾»: Sarde, Italiane, Le mie dentro; scelta una, il tasto dice quale */
-    await clic('[data-a="ric-zone-altre"]'); await clic('[data-a="ric-zona"][data-v="mie"]');
-    const al = await page.evaluate(() => ({ zona: UI.ric.zona, t: (document.querySelector('[data-a="ric-zone-altre"]') || {}).textContent, p: (document.querySelector('[data-a="ric-zone-altre"]') || {}).getAttribute('aria-pressed'), riga: !!document.querySelector('[aria-label="Altre"]') }));
-    if (al.zona !== 'mie' || al.t !== 'Le mie ▾' || al.p !== 'true' || al.riga) throw new Error('«Altre ▾» sbagliato: ' + JSON.stringify(al));
+    /* C151: Sarde, Italiane, Le mie dentro «🎛️ Filtri» → «Raccolta»; scelta una, compare l'etichetta con la ✕ */
+    await clic('[data-a="ric-zona"][data-v="mie"]');
+    const al = await page.evaluate(() => ({ zona: UI.ric.zona, chip: [...document.querySelectorAll('.ric-accesi .ric-chip')].map(b => b.textContent.trim()), schede: document.querySelectorAll('.ric-zone .scelta').length }));
+    if (al.zona !== 'mie' || !al.chip.includes('Le mie ✕') || al.schede !== 4) throw new Error('C151 «Raccolta» o schede sbagliate: ' + JSON.stringify(al));
     await clic('[data-a="ric-zona"][data-v="fit"]');
     await clic('.ric-fit-scelte [data-a="ric-tempo"]'); n = await nomi();
     if (JSON.stringify(n) !== '["Frittata albumi prova","Budino proteico prova"]') throw new Error('«⚡ Pronte in 10 minuti» sbagliato: ' + JSON.stringify(n));
@@ -1884,6 +1887,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     });
     if (r0.fw !== 'Fit with Fun' || r0.chiFw !== 'Fit with Fun' || r0.gh !== 'Giuseppe Healthy') throw new Error('C148: fonte dei siti dei creatori sbagliata (diceva «GialloZafferano»): ' + JSON.stringify(r0));
     await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
+    await apriFiltri();   // C151
     const chips = await page.evaluate(() => [...document.querySelectorAll('.ric-chi-scelte .scelta')].map(b => b.dataset.v));
     if (!chips.includes('Cookpad') || !chips.includes('Massimo Pietrobon Gobbi')) throw new Error('C148: «Da chi» senza Cookpad o senza lo youtuber: ' + JSON.stringify(chips));
     await clic('[data-a="ric-chi"][data-v="Cookpad"]');
@@ -1945,11 +1949,11 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
       window.__primaC144 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
       window.__c144 = 0; RIC.chiedi = async c => { window.__c144++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
       salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-pref'); UI.ric = null; UI.ricVideoTipo = null; RIC.db = null; RIC.scelteOra = Date.now();
-      UI.vista = 'ricettario'; render(); return RICETTE_VIDEO.length;
+      UI.vista = 'ricettario'; render(); return RICETTE_VIDEO.filter(x => !x.altro).length;   // C151: i non-ricette stanno a parte
     });
     await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
     const b = await page.evaluate(() => (document.querySelector('.ric-video-link') || {}).textContent || '');
-    if (n < 150 || !/Ricette video/.test(b) || !b.includes('(' + n + ')')) throw new Error('C144: bottone «🎬 Ricette video» assente o senza il numero: ' + JSON.stringify({ n, b }));
+    if (n < 150 || !/Video/.test(b) || !b.includes('(' + n + ')')) throw new Error('C144: bottone «🎬 Ricette video» assente o senza il numero: ' + JSON.stringify({ n, b }));
     await page.evaluate(() => { window.__c144 = 0; });   // il Ricettario parla col server (scelte, database); la sezione video no
     await clic('.ric-video-link');
     const au = await page.evaluate(() => ({ v: UI.vista, a: [...document.querySelectorAll('.ric-video-autore')].map(x => x.innerText),
