@@ -145,3 +145,7 @@ mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2
 
 ## 2026-11-13 ~10:07 · 01WTjqUvtoJC
 valuta tu la percentuale
+
+## 2026-11-13 ~10:09 · 01WTjqUvtoJC
+palestra pubblica a cosa ti serve saperlo?!?!?
+(malinteso: «1 = pubblica» della DOMANDA 2 letto come «palestra pubblica»)
