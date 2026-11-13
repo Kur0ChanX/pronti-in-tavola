@@ -155,7 +155,7 @@ index 5a0ec4a9..7e135559 100644
      if (opz('minimo') > 0 && totale(P.carrello) < opz('minimo')) { mostraToast(`L'ordine minimo è ${euro(opz('minimo'))}.`); return; }
      if (Dati.attivo) { inviaVero(); return; }
 diff --git a/data.js b/data.js
-index 869648f3..5d97d185 100644
+index 869648f3..a8fe4005 100644
 --- a/data.js
 +++ b/data.js
 @@ -183,9 +183,11 @@ function statoIniziale() {
@@ -167,7 +167,7 @@ index 869648f3..5d97d185 100644
  /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
  const NOVITA = [
 +  { v: '0.10.30', data: '13/11/2026',
-+    migliorato: ['Clienti: menù più ordinato. «Scrivi a Monica» è nella barra in basso, accanto a Menù e I miei ordini; le allergie stanno in una striscia piccola che resta in cima mentre scorri'] },
++    migliorato: ['Clienti: in cima al menù una barra sola «Chiedi o ordina», che resta in vista mentre scorri: scrivi o tocca il microfono a destra per chiedere di allergie e prezzi o per ordinare', '«Scrivi a Monica» è nella barra in basso, accanto a Menù e I miei ordini', 'Teglie: se l’ordine arriva senza misura, il cliente la sceglie nel carrello (da 6 o da 8) prima di inviare'] },
    { v: '0.10.29', data: '13/11/2026',
      nuovo: ['Clienti: «Scrivimi» capisce gli ordini. Se nel messaggio ci sono piatti del menù (es. «2 kg di ravioli»), l\'app li mette nel carrello e l\'ordine arriva vero a Monica, col messaggio nella nota. Le domande vanno su WhatsApp come prima', 'Monica può mandare a un cliente un link col carrello già pronto: il cliente sceglie il giorno e invia'],
      migliorato: ['Ordini detti o scritti: «ricotta e spinaci» sceglie il gusto giusto'] },
@@ -218,7 +218,7 @@ index cf08a16c..64934b44 100644
  /* «Sono qui sotto» con l'app aperta: schermata della suoneria (C51) */
  .squillo { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px; background: rgba(60, 20, 15, .82); animation: squillo-luce 1s ease-in-out infinite alternate; }
 diff --git a/tools/prova.js b/tools/prova.js
-index 443b30f6..d30bc75d 100644
+index 443b30f6..8e65860d 100644
 --- a/tools/prova.js
 +++ b/tools/prova.js
 @@ -552,7 +552,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
@@ -266,17 +266,77 @@ index 443b30f6..d30bc75d 100644
      await page.evaluate(() => { S.impostazioni.whatsapp = ''; P.ruolo = 'monica'; UI.vista = 'home'; render(); });
      const n = await page.evaluate(() => S.ordini.find(o => !o.archiviato).n);
      await page.evaluate(n => suoneria({ nome: 'Laura Rossi', n }), n);
-@@ -1525,8 +1545,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+@@ -1516,19 +1536,19 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     fs.writeFileSync(`${OUT}/frasi.txt`, err.join('\n'));
+     if (err.length) throw new Error(err.length + ' su ' + casi.length + ' sbagliate:\n' + err.join('\n'));
+   });
+-  await passo('voce dei clienti: microfono fisso nel menù, frase detta (alternativa con più senso), «sì» a voce → carrello e giorno (C105)', async () => {
+-    await page.evaluate(() => { P.ruolo = 'cliente'; UI.devCliente = false; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; AIC.msgs = []; UI.entro = ''; delete S.impostazioni.aiClienti; delete S.impostazioni.voceClientiMotore; S.impostazioni.voceClientiRisponde = false; S.impostazioni.whatsapp = '3331234567';
++  await passo('voce dei clienti: microfono nella barra «Chiedi o ordina» del menù, frase detta (alternativa con più senso), «sì» a voce → carrello e giorno (C105)', async () => {
++    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; UI.devCliente = false; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; AIC.msgs = []; UI.entro = ''; delete S.impostazioni.aiClienti; delete S.impostazioni.voceClientiMotore; S.impostazioni.voceClientiRisponde = false; S.impostazioni.whatsapp = '3331234567';
+       try { localStorage.removeItem('pit-vc-visto'); } catch (e) { /* niente */ }
+       window.SpeechRecognition = class { start() { setTimeout(() => { const alts = window.__frasi.shift() || ['']; const r = alts.map(t => ({ transcript: t })); r.isFinal = true; r.length = alts.length; this.onresult({ resultIndex: 0, results: [r] }); setTimeout(() => this.onend(), 40); }, 60); } stop() {} abort() {} };
+       window.__frasi = [['due teglie di la sagne al ragu per sabato', 'due teglie di lasagne al ragù per sabato'], ['sì']];
+       render(); });
      const sab = await page.evaluate(() => { for (let i = 1; i <= 7; i++) { const g = piuGiorni(oggi(), i); if (daIso(g).getDay() === 6) return g; } });
-     if (!(await page.locator('.vc-fab').count())) throw new Error('manca il microfono fisso nel menù');
-     if (!(await page.locator('.vc-primo').count())) throw new Error('manca «Puoi parlarmi!» la prima volta');
+-    if (!(await page.locator('.vc-fab').count())) throw new Error('manca il microfono fisso nel menù');
+-    if (!(await page.locator('.vc-primo').count())) throw new Error('manca «Puoi parlarmi!» la prima volta');
 -    const pos = await page.evaluate(() => { const a = document.querySelector('.vc-fab').getBoundingClientRect(), b = document.querySelector('.wa-monica').getBoundingClientRect(); return { sx: a.left < window.innerWidth / 2, dx: b.left > window.innerWidth / 2, sovra: a.right > b.left && a.top < b.bottom && a.bottom > b.top }; });
 -    if (!pos.sx || !pos.dx || pos.sovra) throw new Error('microfono e «Scrivimi» mal messi: ' + JSON.stringify(pos));
-+    const pos = await page.evaluate(() => { const b = document.querySelector('.wa-monica'); return { fisso: !!b && getComputedStyle(b).position === 'fixed', sx: document.querySelector('.vc-fab').getBoundingClientRect().left < window.innerWidth / 2 }; });
-+    if (pos.fisso || !pos.sx) throw new Error('«Scrivi a Monica» non deve essere un tasto fisso sopra il microfono (Mario 13/11): ' + JSON.stringify(pos));
++    const mic = await page.evaluate(() => ({ barra: document.querySelectorAll('.ai-cliente .ai-mic').length, tondo: document.querySelectorAll('.vc-fab').length, tutti: document.querySelectorAll('#app .ai-mic').length, vista: UI.vista, vis: aiClientiVisibile(), barre: document.querySelectorAll('.ai-cliente').length, mod: !!UI.modifica, rec: !!(window.SpeechRecognition || window.webkitSpeechRecognition), mr: !!window.MediaRecorder }));
++    if (mic.barra !== 1 || mic.tondo || mic.tutti !== 1) throw new Error('nel menù serve UN microfono solo, nella barra «Chiedi o ordina» (Mario 13/11): ' + JSON.stringify(mic));
++    const pos = await page.evaluate(() => { const bar = document.querySelector('.ai-cliente'), a = bar.querySelector('.ai-apri').getBoundingClientRect(), m = bar.querySelector('.ai-mic').getBoundingClientRect(), b = document.querySelector('.wa-monica'); return { ferma: getComputedStyle(bar).position === 'sticky', riga: Math.abs(a.top - m.top) < 12, dx: m.left > a.left, alta: bar.getBoundingClientRect().height, fisso: !!b && getComputedStyle(b).position === 'fixed' }; });
++    if (!pos.ferma || !pos.riga || !pos.dx || pos.alta > 70 || pos.fisso) throw new Error('barra «Chiedi o ordina»: una riga ferma in cima, microfono a destra, bassa; «Scrivi a Monica» non fisso (Mario 13/11): ' + JSON.stringify(pos));
      await page.waitForTimeout(2600); await foto('40-voce-clienti');   // dopo il toast «Ecco il menù»
-     await page.locator('.vc-fab').click(); await page.waitForTimeout(1500);
+-    await page.locator('.vc-fab').click(); await page.waitForTimeout(1500);
++    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(1500);
      const r = await page.evaluate(() => ({ vista: UI.vista, msgs: AIC.msgs.map(m => m.t), carr: P.carrello.map(x => [x.piatto, x.qta]), entro: UI.entro, esito: (AIC.msgs[1] || {}).esito }));
+     if (r.msgs[0] !== 'due teglie di lasagne al ragù per sabato') throw new Error('non ha scelto la frase con più senso: ' + JSON.stringify(r.msgs));
+     if (JSON.stringify(r.carr) !== JSON.stringify([['lasagne-ragu', 2]])) throw new Error('dopo il «sì» a voce il carrello è ' + JSON.stringify(r));
+@@ -1542,8 +1562,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+       window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/webm'; } start() { this.state = 'recording'; } stop() { this.state = 'inactive'; this.ondataavailable({ data: new Blob([new Uint8Array(3000)]) }); this.onstop(); } static isTypeSupported() { return true; } };
+       window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'un chilo di polpette di carne per domani', motore: 'finto' }; };
+       render(); });
+-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
+-    const st = await page.evaluate(() => [VC.stato, !!VC.media, !!document.querySelector('.vc-pannello'), !!document.querySelector('.vc-fab.acceso')]);
++    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
++    const st = await page.evaluate(() => [VC.stato, !!VC.media, !!document.querySelector('.vc-pannello'), !!document.querySelector('.ai-cliente .ai-mic.acceso')]);
+     if (st[0] !== 'registro' || !st[1] || !st[2] || !st[3]) throw new Error('ascolto preciso non partito: ' + JSON.stringify(st));
+     await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(900);
+     const r = await page.evaluate(() => ({ piatti: (window.__mandato || {}).piatti, audio: ((window.__mandato || {}).audio || '').length, msgs: AIC.msgs.map(m => m.t), az: ((AIC.msgs[1] || {}).piano || []).map(x => x.a), vista: UI.vista, giorno: (AIC.msgs[1] || {}).giorno }));
+@@ -1552,12 +1572,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     if (r.giorno !== await page.evaluate(() => piuGiorni(oggi(), 1))) throw new Error('«per domani» non capito: ' + r.giorno);
+     if (await page.evaluate(() => (window.__mandato || {}).comeCliente) !== false) throw new Error('cliente vero: «comeCliente» deve essere false');
+     await page.evaluate(() => { S.impostazioni.voceClientiMotore = 'telefono'; window.__frasi = [['quanto costa il tiramisù']]; UI.vista = 'menu'; AIC.msgs = []; render(); });
+-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
++    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
+     const r2 = await page.evaluate(() => ({ media: !!VC.media, msgs: AIC.msgs.map(m => m.t) }));
+     if (r2.media || r2.msgs[0] !== 'quanto costa il tiramisù' || !/tiramis/i.test(r2.msgs[1] || '')) throw new Error('«solo telefono» non va: ' + JSON.stringify(r2));
+   });
+   await passo('voce dei clienti: «Dettami l\'ordine» con tre piatti e il giorno → tre righe dopo Conferma (C105)', async () => {
+-    await page.evaluate(() => { UI.vista = 'menu'; P.carrello = []; AIC.msgs = []; UI.entro = ''; S.impostazioni.voceClientiMotore = 'auto'; S.impostazioni.voceClientiRisponde = false;
++    await page.evaluate(() => { UI.vista = 'carrello'; P.carrello = []; AIC.msgs = []; UI.entro = ''; S.impostazioni.voceClientiMotore = 'auto'; S.impostazioni.voceClientiRisponde = false;
+       window.ascoltaServerFinto = async () => ({ testo: 'due teglie di lasagne al ragù, un chilo di polpette di carne e un tiramisù per sabato', motore: 'finto' }); render(); });
+     if (!(await page.locator('.vc-detta').count())) throw new Error('manca la pillola «Dettami l\'ordine»');
+     await page.locator('.vc-detta').click(); await page.waitForTimeout(700);
+@@ -1583,7 +1603,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+       window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'due teglie di lasagne al ragù per sabato', motore: 'finto' }; };
+       render(); });
+     await page.setViewportSize({ width: 1024, height: 600 });   // iPad in orizzontale: schermo basso
+-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
++    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
+     const st = await page.evaluate(() => ({ stato: VC.stato, media: !!VC.media, partito: window.__partito, si: vocePuoSentireSi(), bene: telefonoAscoltaBene(), pann: (document.querySelector('.vc-pannello b') || {}).textContent }));
+     if (st.stato !== 'registro' || !st.media || st.partito || st.si || st.bene || !/attenzione/.test(st.pann || '')) throw new Error('su iPad non parte subito l\'ascolto preciso: ' + JSON.stringify(st));
+     const stesso = await page.evaluate(() => { const p = document.querySelector('.vc-pannello'); p.__mio = 1; render(); render(); statoVC('registro', ''); return (document.querySelector('.vc-pannello') || {}).__mio === 1; });
+@@ -1690,7 +1710,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+       navigator.mediaDevices.getUserMedia = async () => ({ getTracks: () => [] });
+       window.MediaRecorder = class { constructor() { this.state = 'inactive'; this.mimeType = 'audio/webm'; } start() { this.state = 'recording'; } stop() { this.state = 'inactive'; this.ondataavailable({ data: new Blob([new Uint8Array(3000)]) }); this.onstop(); } static isTypeSupported() { return true; } };
+       window.ascoltaServerFinto = async b => { window.__mandato = b; return { testo: 'un chilo di polpette di carne per domani', motore: 'groq:whisper-large-v3+deepgram → qwen/qwen3.8-27b' }; }; render(); });
+-    await page.locator('.vc-fab').click(); await page.waitForTimeout(700);
++    await page.locator('.ai-cliente .ai-mic').click(); await page.waitForTimeout(700);
+     const st = await page.evaluate(() => [VC.stato, !!VC.media]);
+     if (st[0] !== 'registro' || !st[1]) throw new Error('guarda come cliente: ascolto preciso non partito: ' + JSON.stringify(st));
+     await page.evaluate(() => fermaAscoltoCliente()); await page.waitForTimeout(900);
 diff --git a/voce-clienti.js b/voce-clienti.js
 index 7ac13ea4..c5587781 100644
 --- a/voce-clienti.js
