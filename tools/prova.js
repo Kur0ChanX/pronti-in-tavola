@@ -177,6 +177,27 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await page.locator('.ord-prove').count()) throw new Error('la lista delle prove non si svuota');
     if (!(await page.locator('.ord-aperto .ordine-carta', { hasText: 'Ordine n. ' + n }).count() + await fuori())) throw new Error('rimesso tra i veri: non torna nello storico');
   });
+  await passo('C159 ordine di prova: non toglie porzioni pronte né teglie; rimesso tra i veri conta di nuovo', async () => {
+    const r = await page.evaluate(() => {
+      const p = S.piatti.find(x => x.formati && x.formati.length), f = p.formati[0], prima = p.pronto;
+      const base = S.ordini.find(o => o.righe && o.righe.length) || S.ordini[0];
+      const fai = (id, pronto) => Object.assign(JSON.parse(JSON.stringify(base)), { id, n: 9000 + S.ordini.length, stato: 'nuovo', pronto, prova: false, provaCliente: false, archiviato: false, entro: oggi(), righe: [{ piatto: p.id, nome: p.nome, formato: f.id, tipo: pronto ? f.tipo : 'teglia', qta: 2, prezzo: 1 }] });
+      p.pronto = { formato: f.id, qta: 5, giorno: oggi() };
+      const op = fai('oC159p', true), ot = fai('oC159t', false); S.ordini.push(op, ot);
+      const q = () => p.pronto.qta, r = {};
+      r.teglieVero = teglieOrdine(ot); ot.prova = true; r.tegliaProva = teglieOrdine(ot);
+      riprendiPronti(op); r.presoVero = q();                        // ordine vero: prende 2 → 3
+      A['ord-prova']({ dataset: { id: 'oC159p' } }); A['ord-prova']({ dataset: { id: 'oC159p' } }); r.segnataProva = q();   // diventa prova: rimette → 5
+      rimettiPronti(op); r.annullaProva = q();                      // annullare una prova non aggiunge porzioni finte
+      A['ord-vero']({ dataset: { id: 'oC159p' } }); r.tornaVero = q();   // di nuovo vero: riprende → 3
+      S.ordini = S.ordini.filter(o => o !== op && o !== ot); p.pronto = prima; salva(); render();
+      return r;
+    });
+    const atteso = { teglieVero: 2, tegliaProva: 0, presoVero: 3, segnataProva: 5, annullaProva: 5, tornaVero: 3 };
+    if (JSON.stringify(r) !== JSON.stringify(atteso)) throw new Error('prova che conta come vera: ' + JSON.stringify(r));
+    const D = fs.readFileSync(require('path').join(__dirname, '..', 'dati.js'), 'utf8');
+    if (!/o\.pronto && !o\.prova && !fuori\.includes/.test(D)) throw new Error('server: presi() conta anche gli ordini di prova');
+  });
   await passo('Monica: modifica piatto e ingredienti nuovi', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await foto('12-piatti');
     await page.locator('.piatto-riga', { hasText: 'Tiramisù' }).locator('.apri').click(); await page.waitForTimeout(300);
