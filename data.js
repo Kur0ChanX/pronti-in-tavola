@@ -183,9 +183,13 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.23';
+const VERSIONE_APP = '0.10.24';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.24', data: '13/11/2026',
+    nuovo: ['Ricettario: «🎬 Ricette video», 268 ricette di Pietrobon e Beardedscara, divise per youtuber',
+      'Ricettario: tocchi la foto della ricetta e il video di YouTube parte dentro l\'app (schermo intero, sottotitoli)'],
+    migliorato: ['Ricettario, Proteiche: ogni ricetta ha i passi o il video; tolte pubblicità e foto sbagliate'] },
   { v: '0.10.23', data: '11/11/2026',
     nuovo: ['Ricettario: anche le ricette dei Blog di GialloZafferano (un link incollato nella ricerca si apre dentro l\'app)'],
     migliorato: ['Ricettario, Proteiche: dolci e snack un po\' più dolci ammessi (proteine almeno 8 g, zuccheri fino al 30%): più ricette in «🍰 Dolci», «🧃 Merenda» e «🌅 Colazione»'] },
