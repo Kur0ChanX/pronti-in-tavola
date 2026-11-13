@@ -46,7 +46,7 @@ Sessione attuale: #77 (dopo la #76 `session_01WTjqUy56yFQCWNDcwHsXB4`, chiusa al
 13/11 15:42, parola per parola: «Metti nei video ricetta controllata con Gemini, fai ricetta non controllata nei video e poi controlla se c'è un'altra soluzione. Per forza Gemini dobbiamo usare, non c'è nient'altro di performante a costo zero» → scritte in patch + foto, ricerca fatta, DOMANDA 1 (1 = online · 2 = cambia).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C155; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C156; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
