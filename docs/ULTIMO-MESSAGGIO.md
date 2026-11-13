@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (12/11/2026 21:27 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 09:12 ora italiana)
 
-solo tutti italiani e se si traducono bene metti anche quelle inglesi
+https://claude.ai/connect-github
