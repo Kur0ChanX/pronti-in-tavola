@@ -324,8 +324,9 @@ function rispostaLocale(e, menzioni, gruppi, t) {
         const qq = Math.max(min, Math.min(f.tipo === 'kg' ? 20 : 30, Math.round(q / st) * st));
         if (g && Math.abs(qq - q) > 0.01) nota += ` ${p.nome}: ${qtaVoce(f, qq)} è il minimo che Monica prepara.`;
         if (f.tipo === 'teglia' || f.tipo === 'intera') teglie += qq;
-        az.push({ azione: 'carrello', id: p.id, formato: f.id, qta: qq, gusto: m.gusto ? m.gusto.id : '' });
-        descr.push(`${qtaVoce(f, qq)} di ${p.nome}${m.gusto ? ' ' + m.gusto.nome.toLowerCase() : p.varianti.length > 1 ? ' (gusto da scegliere)' : ''}`);
+        const scegli = p.formati.length > 1 && !(g && (g.porz || g.grande || g.unita === 'kg' || g.unita === 'pz'));   // C157: misura non detta → la sceglie il cliente nel carrello
+        az.push({ azione: 'carrello', id: p.id, formato: f.id, qta: qq, gusto: m.gusto ? m.gusto.id : '', ...(scegli ? { scegli: true } : {}) });
+        descr.push(`${scegli ? `${qq} di ${p.nome} (misura da scegliere)` : `${qtaVoce(f, qq)} di ${p.nome}`}${m.gusto ? ' ' + m.gusto.nome.toLowerCase() : p.varianti.length > 1 ? ' (gusto da scegliere)' : ''}`);
       });
       let giorno = e.giorno;
       if (giorno) {
@@ -636,7 +637,7 @@ function dopoConfermaCliente(m) {
 }
 
 /* ================= C. MICROFONO FISSO E «HO CAPITO» ================= */
-const fabVisibile = () => P.ruolo !== 'monica' && typeof aiClientiVisibile === 'function' && aiClientiVisibile() && vcOpz('voceClientiFab', true) && ['menu', 'carrello'].includes(UI.vista) && !UI.foglio && !UI.modifica && !!(riconoscitore() || (navigator.mediaDevices && window.MediaRecorder));
+const fabVisibile = () => P.ruolo !== 'monica' && typeof aiClientiVisibile === 'function' && aiClientiVisibile() && vcOpz('voceClientiFab', true) && UI.vista === 'carrello' && !UI.foglio && !UI.modifica && !!(riconoscitore() || (navigator.mediaDevices && window.MediaRecorder));
 function disegnaVC() {
   let box = document.getElementById('vc');
   if (!box) { box = document.createElement('div'); box.id = 'vc'; document.body.appendChild(box); agganciaFab(box); }
