@@ -1,21 +1,10 @@
-# Ultima risposta di Claude (13/11/2026 20:30 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:36 ora italiana)
 
-Ho capito: per la parmigiana e le lasagne il cliente deve scegliere la misura per forza, sennò l'ordine non parte.
+Ho girato tutto alla sessione nuova (Principale 80), con la priorità più alta: prima il link di Lisa, poi tutto il resto.
 
-Ho ricevuto la tua richiesta dalla sessione di prima.
+Ti risponde lei con la stima e poi ti dà il link quando è online.
 
-───
-💡 PARERE
-- **Il problema è più grande di quanto sembra.** Quando l'ordine arriva dal link, da «Scrivimi» o dalla voce, l'app prende da sola la prima misura della teglia. Lisa non se ne accorge.
-- **Anche dal menù normale** la prima misura è già scelta in partenza. Il cliente può toccare «Aggiungi» senza guardarla.
-- Proposta: la riga nel carrello resta rossa con scritto «Scegli la misura». Il tasto «Invia l'ordine a …
+Per ora il link è questo:
+https://pronti-in-tavola.pronti-in-tavola.workers.dev/?ordine=2%20kg%20di%20ravioli%20ricotta%20e%20spinaci%0A1%20teglia%20di%20melanzane%20alla%20parmigiana
 
-## Domande a Mario
-
-❓ DOMANDE
-DOMANDA 3: anche dal menù normale il cliente deve scegliere la misura da solo?
-📌 Di cosa parliamo: oggi, quando apri un piatto con più misure, la prima è già selezionata. Con la scelta 1, all'inizio nessuna misura è selezionata e «Aggiungi» non va finché il cliente non ne tocca una.
-1 · Sì, la misura sempre da scegliere, da tutte le strade (consiglio: nessuno ordina la teglia sbagliata senza accorgersene)
-2 · No, solo per gli ordini dal link, da «Scrivimi» e dalla voce
-
-Restano aperte la DOMANDA 1 (tasti del menù: ho capito bene?) e la DOMANDA 2 (controllo delle regole: dopo i …
+⚠️ Non mandarlo ancora a Lisa: oggi l'app sceglie da sola la teglia da 6 o da 8. Diventa giusto quando la Principale 80 ti scrive che la modifica è online.

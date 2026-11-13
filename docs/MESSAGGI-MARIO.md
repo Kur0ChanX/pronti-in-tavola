@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:36 · 01WTjqUvRgtB
-mandami la finestra che la incollo la chiave
-
 ## 2026-11-13 10:37 · 01WTjqUvRgtB
 non va nega la metto su ambiente
 
@@ -126,3 +123,6 @@ miglioralo Miglioralo che deve leggere tutto quello che scrivo nei passaggi di c
 
 ## 2026-11-13 20:20 · 01WTjqUvRMYe
 E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.
+
+## 2026-11-13 20:33 · 01WTjqUvRMYe
+Mandami adesso veloce il link di Lisa che deve cliccare per caricare in automatico i ravioli che aveva messo e la parmigiana senza quantità perché la deve selezionare lei, se no non parte l'ordine. Cioè nel senso, se non parte l'ordine, nel senso che deve mettere una quantità prima di far partire l'ordine.
