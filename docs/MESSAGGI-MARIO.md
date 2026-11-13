@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 17:53 · 01WTjqUu7eAD
-fatto
-
 ## 2026-11-11 18:04 · 01WTjqUu7eAD
 ok vai avanti allora
 
@@ -123,3 +120,8 @@ va bene metti online ma caricarle io 30 per volta non consumo limiti?
 
 ## 2026-11-13 15:18 · 01WTjqUtr7kg
 mancano in tutti ingredienti
+
+## 2026-11-13 15:25 · 01WTjqUtr7kg
+mi sà che cancelliamo tutto cosí nom ha senso
+non posso riguardare il video perché ho paura che manchi qualcosa 
+chissà in quanti altre ricette video mancano gli ingredienti.......
