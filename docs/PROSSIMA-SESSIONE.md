@@ -8,7 +8,7 @@ Scritta da: #78 per la #79 · 13/11/2026 · la apre Mario (catena a 8 di 8, o ca
 - Motore: Opus 5.5 · impegno Alto (C474: uguali alla sessione che chiude; aperta da Mario: li sceglie lui così)
 
 ## Titolo
-🟢 🍝 Principale 79 · piano messaggi
+🟢 🍝 Principale 79 · tasti menù online
 
 ## Testo da incollare
 ```
