@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 20:19 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:26 ora italiana)
 
-Mi puoi rinviare il link di Lisa in questa sessione?
+Lisa ha ordinato  2kg di ravioli ricotta e spinaci e una parmigiana da 6 e basta controlla se ci sono precompilati solo questi 2

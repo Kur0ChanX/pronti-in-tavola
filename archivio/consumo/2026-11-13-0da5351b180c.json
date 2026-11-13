@@ -2,19 +2,19 @@
 "account": "108763",
 "sessione": "0da5351b180c",
 "giorno": "2026-11-13",
-"turni": 21,
-"peso": 4501971,
-"uscita": 82126,
-"contesto_max": 330097,
+"turni": 23,
+"peso": 4904839,
+"uscita": 86447,
+"contesto_max": 340419,
 "anomalie": [
 "1 uscite di strumento enormi (57 KB la più grande): leggere a pezzi (grep -n, sed -n)",
 "1 uscite di strumento enormi (56 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ],
 "remota": "01WTjqUu3oyB",
 "aiutanti": 0,
-"strumenti": 149,
+"strumenti": 158,
 "motori": {
-"opus": 4501971
+"opus": 4904839
 },
 "blocchi": {
 "Stop 8 · Promessa a Mario senza voce": 3,
