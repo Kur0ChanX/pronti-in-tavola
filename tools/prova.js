@@ -1911,35 +1911,36 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (c.chi) throw new Error('C148: uscendo da Proteiche «Da chi» resta acceso: ' + JSON.stringify(c));
     await page.evaluate(() => { RICETTE_STIMATE.splice(0); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC148; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
   });
-  await passo('ricettario C150 ricette video con dosi e passi detti nel video: «🎙️ dal video» nella carta e nella ricetta, ingredienti, passo passo e Ascolta', async () => {   // autonomo
+  await passo('ricettario C150 + C154 ricette video controllate col video: «✅ controllata con Gemini» o «⚠️ non controllata» nella carta e nella ricetta, ingredienti, passo passo e Ascolta', async () => {   // autonomo
     if (await page.evaluate(() => typeof RICETTE_VIDEO === 'undefined' || !RICETTE_VIDEO.length)) await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-video.js') });
     const x = await page.evaluate(() => {
       window.__primaC150 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
       RIC.chiedi = async c => c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] };
       UI.ric = null; UI.ricVideoTipo = null; Object.keys(VIDEO_CACHE).forEach(k => delete VIDEO_CACHE[k]);
-      let r = RICETTE_VIDEO.find(v => v.parlato === 'dosi' && v.passi && v.passi.length > 1), finta = false;
+      let r = RICETTE_VIDEO.find(v => v.controllata && v.parlato === 'dosi' && v.passi && v.passi.length > 1), finta = false;
       if (!r) {   // dati senza il parlato (ricette-video.js di oggi): una ricetta di prova, tolta alla fine (PT E70)
-        r = Object.assign({}, RICETTE_VIDEO.find(v => v.autore === 'Massimo Pietrobon Gobbi'), { id: 'yt:prova-c150', parlato: 'dosi', nome: 'Prova C150 crema di riso',
+        r = Object.assign({}, RICETTE_VIDEO.find(v => v.autore === 'Massimo Pietrobon Gobbi'), { id: 'yt:prova-c150', parlato: 'dosi', controllata: true, nome: 'Prova C150 crema di riso',
           ingredienti: ['50 g di crema di riso', '250 ml di latte', '150 g di yogurt greco'], passi: ['Mescola crema di riso e latte.', 'Copri con lo yogurt greco.'] });
         RICETTE_VIDEO.unshift(r); finta = true;
       }
-      const i = autoriVideo().findIndex(([a]) => a === r.autore), senza = RICETTE_VIDEO.find(v => v.autore === r.autore && !v.parlato);
+      const i = autoriVideo().findIndex(([a]) => a === r.autore), senza = RICETTE_VIDEO.find(v => v.autore === r.autore && !v.controllata && !v.altro);
       UI.vista = 'ricvideo:' + i; render();
       return { id: r.id, i, finta, autore: r.autore, ni: r.ingredienti.length, np: r.passi.length, senza: senza && senza.id };
     });
     const carta = await page.evaluate(id => (document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`) || {}).innerText || '', x.id);
-    if (!/🎙️ dosi dal video/.test(carta)) throw new Error('C150: la carta non dice «🎙️ dosi dal video»: ' + JSON.stringify({ x, carta }));
-    if (x.senza && /🎙️/.test(await page.evaluate(id => (document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`) || {}).innerText || '', x.senza))) throw new Error('C150: «🎙️» su una ricetta senza parlato');
+    if (!/✅ controllata con Gemini/.test(carta)) throw new Error('C154: la carta non dice «✅ controllata con Gemini»: ' + JSON.stringify({ x, carta }));
+    if (x.senza && !/⚠️ non controllata/.test(await page.evaluate(id => (document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`) || {}).innerText || '', x.senza))) throw new Error('C154: manca «⚠️ non controllata» su una ricetta non controllata');
     if (!x.finta) { await page.evaluate(id => document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`).scrollIntoView({ block: 'center' }), x.id); await page.waitForTimeout(800); await foto('48h-c150-carta-dal-video'); }   // l'attesa: senza, la carta non è ancora disegnata (foto vuota)
     await clic(`main .ric-carta[data-v="ricetta:${x.id}"]`);
     const d = await page.evaluate(() => ({ nota: (document.querySelector('.ric-parlato') || {}).innerText || '', ing: document.querySelectorAll('.ric-ing li').length,
       passi: document.querySelectorAll('.ric-passi li').length, play: !!document.querySelector('[data-a="ric-play"]') }));
-    if (!/Dosi e passi detti nel video/.test(d.nota) || !d.nota.includes(x.autore) || !/nel dubbio guarda il video/.test(d.nota) || d.ing !== x.ni || d.passi !== x.np || !d.play)
+    if (!/Controllata con Gemini/.test(d.nota) || !/ingredienti e le dosi che dice/.test(d.nota) || !d.nota.includes(x.autore) || !/nel dubbio guarda il video/.test(d.nota) || d.ing !== x.ni || d.passi !== x.np || !d.play)
       throw new Error('C150: ricetta dal parlato aperta male: ' + JSON.stringify({ x, d }));
     if (!x.finta) await page.screenshot({ path: `${OUT}/48i-c150-ricetta-dal-video.png`, fullPage: true });   // lunga: a Mario solo a pezzi (taglia-foto.py)
     if (x.senza) {
       await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, x.senza);
-      if (await page.evaluate(() => !!document.querySelector('.ric-parlato'))) throw new Error('C150: nota «detti nel video» su una ricetta senza parlato');
+      if (!x.finta) { await page.waitForTimeout(500); await foto('48j-c154-non-controllata'); }
+      if (!(await page.evaluate(() => /Non ancora controllata/.test((document.querySelector('.ric-non-controllata') || {}).innerText || '')))) throw new Error('C154: ricetta non controllata senza la nota «Non ancora controllata»');
     }
     await page.evaluate(f => { if (f) RICETTE_VIDEO.shift(); Object.keys(VIDEO_CACHE).forEach(k => delete VIDEO_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC150; UI.ric = null; UI.vista = 'home'; render(); }, x.finta);
   });
