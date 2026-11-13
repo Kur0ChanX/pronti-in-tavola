@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (13/11/2026 20:47 ora italiana)
+# Ultima risposta di Claude (13/11/2026 21:18 ora italiana)
 
-Ho aggiunto in Da fare (voce C155) la promessa della barra, così la vedi nell'app quando è online. Commit e push fatti.
+Il lavoro è salvato su GitHub come patch (non è ancora online). La promessa è già scritta in Da fare, voci C155 e C157.
