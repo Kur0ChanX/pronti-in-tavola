@@ -1,14 +1,15 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:43 ora italiana)
 
+Ho capito: le foto sono pronte e prima di fermarmi passo il lavoro a una sessione nuova, più leggera.
 
+───
+✅ FATTO
+- **Giro completo delle prove: 98 verdi su 98**, con «Scrivimi» che capisce gli ordini.
+- Le 4 foto che ti ho mandato sono quelle finali, con i margini corretti e la X per chiudere.
+- Ho aperto la **sessione 78** e le ho passato tutto. Le tue risposte scrivile lì.
 
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
-
-Rispondi col numero.
+───
+👉 DA FARE TU
+A cosa serve: senza il tuo ok la novità non va nell'app vera.
+1. Guarda le 4 foto e rispondi nella sessione 78: **1** = metti online · **2** = cambia qualcosa.
+2. Rispondi anche alla domanda «di chi …
