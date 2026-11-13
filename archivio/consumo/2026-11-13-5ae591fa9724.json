@@ -2,20 +2,21 @@
 "account": "108763",
 "sessione": "5ae591fa9724",
 "giorno": "2026-11-13",
-"turni": 2,
-"peso": 336657,
-"uscita": 8433,
-"contesto_max": 139330,
+"turni": 4,
+"peso": 471248,
+"uscita": 11553,
+"contesto_max": 164265,
 "anomalie": [],
 "remota": "01WTjqUwbEtu",
 "aiutanti": 0,
-"strumenti": 17,
+"strumenti": 24,
 "motori": {
-"opus": 336657
+"opus": 471248
 },
 "blocchi": {
 "Stop 6 · Il turno finisce con una": 1,
-"Stop 5 · Domanda a Mario poco chiara": 1
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 13 · There are uncommitted changes in": 1
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
@@ -23,6 +24,9 @@
 ],
 "Stop 5 · Domanda a Mario poco chiara": [
 "23:38 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: C159, C160"
+],
+"Stop 13 · There are uncommitted changes in": [
+"23:45 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
 ]
 }
 }
