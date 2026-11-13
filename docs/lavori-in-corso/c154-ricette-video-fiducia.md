@@ -20,3 +20,9 @@ Script dei conti: da rifare (in scratchpad #76: `conta2.js`): portarlo in `tools
 → trascrizione di TUTTI i video (753 da fare, ~17,4 ore di video misurate da YouTube; limite gratis ~8 ore al giorno → ~3 giorni, stima).
 → `col_parlato`: ogni ricetta trascritta = `controllata`; lo scritto resta, il detto AGGIUNGE gli ingredienti mancanti (`unisci_ingredienti`) e la dose a quelli scritti senza; poi stima e voto ricalcolati.
 Da fare: a trascrizione finita (o a blocchi ogni giorno) rigenerare, controllo a campione, versione nuova; nell'app «✅ controllata col video» (con la scelta di Mario 1/2).
+
+## Mario 13/11 ~15:45 (parola per parola)
+«Metti nei video ricetta controllata con Gemini, fai ricetta non controllata nei video e poi controlla se c'è un'altra soluzione. Per forza Gemini dobbiamo usare, non c'è nient'altro di performante a costo zero»
+→ v0.10.28 ONLINE (giro 98/98, curl: versione e «5g cacao» ok). Scritte ✅/⚠️ in patch `c154-etichette.patch` (ricettario.js, ricette-video.js con 12 controllate, prova C150+C154 verde), foto mandate.
+→ Alternative cercate 13/11: le API «transcript» leggono solo i sottotitoli già esistenti (bloccate dai server cloud o 100 crediti al mese: Supadata, TranscriptAPI); nessuna gratis che guardi e ascolti il video da un link come Gemini.
+→ Ritmo vero: ~2 video ogni 5 minuti (503 «troppo carico» sui Flash nuovi): da misurare ancora; idea: 2-3 trascrizioni insieme.

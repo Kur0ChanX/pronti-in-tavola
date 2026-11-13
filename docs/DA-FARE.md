@@ -1,7 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 13/11 · 🟢 Principale 76 · C154 (correzione ingredienti in prova v0.10.28, Mario «mettile online»): 1 = nel Ricettario solo le ricette video complete (~420), le altre quando il parlato le completa · 2 = tutte, con «⚠️ forse incompleta» sulle dubbie. A cosa serve: Monica vede solo ricette di cui fidarsi.
+- 13/11 · 🟢 Principale 76 · C154 scritte «✅ controllata con Gemini» / «⚠️ non controllata» (foto `archivio/foto/2026-11-13-c154-48*.png` mandate, patch `c154-etichette.patch`): 1 = vanno bene, metto online nell'app · 2 = cambia qualcosa. A cosa serve: senza il tuo ok non pubblico.
 - 13/11 · 🛑 · 🟡 Principale 74 · v0.10.26 (C148 + C150): chiudi e riapri l'app, Ricettario → Ricette video; manda una foto con la versione 0.10.26 (Cotto al Dente, 2foodfitlovers, «🎙️ dosi dal video»). A cosa serve: chiudo le promesse C148 e C150.
 - 13/11 · 🟢 Principale 70 · C149 idee: scegli i numeri (1 obiettivo proteine · 2 svuota frigo · 3 prima/dopo allenamento · 4 «+1 voto»); consiglio 1 e 4.
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
