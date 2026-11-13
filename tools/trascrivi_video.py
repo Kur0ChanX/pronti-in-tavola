@@ -20,6 +20,7 @@ DOMANDA = """Questo è un video di una ricetta. Guardalo e ascoltalo tutto.
 1. In «testo» scrivi parola per parola quello che dice chi parla (in italiano come lo dice).
 2. Poi, SOLO da quello che dice o che compare scritto nel video, compila gli altri campi:
    - «ricetta»: false se nel video non si prepara un piatto (recensione, prova di un prodotto, allenamento, chiacchiere).
+   - «nome»: il nome del piatto come lo dice o lo scrive (es. «pancake al cacao», «crema di riso al caffè»), max 5 parole; null se non lo dice.
    - «porzioni»: per quante porzioni o pezzi sono le dosi dette; null se non lo dice.
    - «ingredienti»: uno per riga, con la quantità come la dice, in grammi o millilitri se li dice (es. «100 g di albume», «1 uovo», «5 g di cacao»).
      Se di un ingrediente non dice la quantità, scrivi solo il nome. Niente attrezzi.
@@ -29,13 +30,14 @@ NON inventare niente: quello che non dice o non mostra resta null o fuori. Non a
 
 SCHEMA = {'type': 'OBJECT', 'properties': {
     'ricetta': {'type': 'BOOLEAN'},
+    'nome': {'type': 'STRING', 'nullable': True},
     'testo': {'type': 'STRING'},
     'porzioni': {'type': 'INTEGER', 'nullable': True},
     'ingredienti': {'type': 'ARRAY', 'items': {'type': 'STRING'}},
     'passi': {'type': 'ARRAY', 'items': {'type': 'STRING'}}},
     'required': ['ricetta', 'testo', 'ingredienti', 'passi']}
 
-FINTO = {'ricetta': True, 'testo': 'Oggi facciamo dei pancake proteici: 100 grammi di albume, 40 grammi di farina di avena…',
+FINTO = {'ricetta': True, 'nome': 'pancake proteici', 'testo': 'Oggi facciamo dei pancake proteici: 100 grammi di albume, 40 grammi di farina di avena…',
          'porzioni': 1, 'ingredienti': ['100 g di albume', '40 g di farina di avena', '1 cucchiaino di lievito'],
          'passi': ['Frulla albume, avena e lievito.', 'Cuoci in padella antiaderente 2 minuti per lato.']}
 
@@ -163,6 +165,7 @@ def main():
         if buona(r):   # valori: mai dal video (13/11 #72: 2 su 3 sbagliati), li calcola tools/stima.py dalle dosi
             fatti[x['id']] = {'porzioni': r.get('porzioni') or None, 'ingredienti': [i.strip() for i in r['ingredienti'] if i.strip()],
                               'passi': [p.strip() for p in r['passi'] if p.strip()], 'dubbi': dubbi(r),
+                              'nome': (r.get('nome') or '').strip()[:60] or None,   # il piatto come lo dice (nomi generici: «Ricetta del 4 giu»)
                               'modello': modello, 'data': time.strftime('%Y-%m-%d')}
             conti['ricette'] += 1
         else:

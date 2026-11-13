@@ -219,8 +219,8 @@ def principali(ing, base):
     """I due ingredienti che danno il nome («Pancake con albumi e avena»): nell'ordine in cui li scrive lui, senza i banali."""
     out, b = [], (norm(base).split() or [''])[0]
     for l in ing:
-        if re.search(PASSI, norm(l)):
-            continue   # è un passo scritto col trattino («separate gli albumi…»), non un ingrediente
+        if re.search(PASSI, norm(l)) or '(facoltativo)' in l:
+            continue   # è un passo scritto col trattino («separate gli albumi…»), non un ingrediente; o è facoltativo
         t = re.sub(r'^[\d/.,\s]*(g|gr|grammi|ml|cl|kg|scoop|misurin\w*|cucchiai\w*|cucchiain\w*|tazzin\w*|vasett\w*|fett[ae]\b|pizzico)?\.?\s*(di |d’|d\')?', '', l.lower().strip())
         t = re.split(r'[,(:;]|\b(?:o|io|ho|uso|oppure|al|alla|allo|ai|alle|gusto|tipo|circa|a occhio|q\.?b\.?)\b', t)[0].strip(' .-')
         if not t or re.search(BANALI, norm(t)) or (b and b in norm(t)):
@@ -230,7 +230,7 @@ def principali(ing, base):
                 t = nome
                 break
         else:
-            t = ' '.join(re.sub(AGGETTIVI, ' ', t).split()[:3])
+            t = re.sub(r'\s+(de|di|del|della|dei|al|alla|con|e|in)$', '', ' '.join(re.sub(AGGETTIVI, ' ', t).split()[:3]))   # niente «pastel de»
         if t and t not in out and not re.search(r'\d', t):
             out.append(t)
         if len(out) == 2:
@@ -297,8 +297,91 @@ def testo_pulito(testo):
     return '\n'.join(righe)[:600]
 
 
+PARLATO = os.path.join(RADICE, 'tools', 'dati', 'video-dal-parlato.json')
+
+
+def leggi_parlato():
+    return json.load(open(PARLATO, encoding='utf-8')) if os.path.exists(PARLATO) else {}
+
+
+def con_dosi(ing):
+    return sum(bool(re.search(r'\d', i)) for i in ing) >= 2
+
+
+def col_parlato(x, par):
+    """C150 (Mario 13/11 «dalle parole che dicono… ci fai la ricetta»): dosi e passi dal parlato del video (tools/trascrivi_video.py).
+    Lo scritto dell'autore vince: ai video con le dosi scritte solo i passi che mancano. Fuori: risposte con numeri non sentiti nel
+    parlato («dubbi», finché Claude non le guarda, PT E25) e dosi per porzioni diverse dai suoi valori scritti.
+    «parlato» = 'dosi' (ingredienti e passi) o 'passi': nell'app «📝 dal video». True se ha cambiato gli ingredienti."""
+    p = par.get(x['id'])
+    if not p or 'ingredienti' not in p or p.get('dubbi'):
+        return False
+    cambia = not con_dosi(x.get('ingredienti') or [])
+    if cambia and x.get('suoi') and (p.get('porzioni') or 1) != (x.get('porzioni') or 1):
+        cambia = False   # i suoi valori sono per altre porzioni: le dosi del parlato li confonderebbero
+    if cambia:
+        x['ingredienti'] = p['ingredienti']; x['parlato'] = 'dosi'
+        if not x.get('suoi'):
+            x['porzioni'] = p.get('porzioni') or 1
+    if not x.get('passi') and p.get('passi'):
+        x['passi'] = p['passi']; x.setdefault('parlato', 'passi')
+    m = re.fullmatch(r'(.*?) del \d{1,2} \w+ \d{4}( · [\d/]+)?', x['nome'])
+    senza_cibo = not re.search(CIBO, x['nome']) and p.get('nome')   # «In cucina con mio padre»: non dice il piatto
+    if x.get('parlato') and (m or generico(x['nome']) or senza_cibo):   # «Ricetta del 4 giu 2025» → il piatto come lo dice
+        if p.get('nome') and len(p['nome']) <= 40:
+            x['nome'] = p['nome'][0].upper() + p['nome'][1:]
+        elif cambia:
+            base = (m.group(1) if m else x['nome']).strip()
+            base = TIPO_UNO.get(x.get('tipo'), x.get('tipo') or 'Ricetta') if not base or re.match(r'(?i)ricett', base) else base
+            pp = principali(x['ingredienti'], base)
+            if pp:
+                x['nome'] = f"{base} con {' e '.join(pp)}"
+    return cambia
+
+
+def distingui(tutte):
+    """Nomi uguali dello stesso youtuber: si distinguono con la data del video."""
+    visti = {}
+    for x in tutte:
+        visti.setdefault((x['autore'], norm(x['nome'])), []).append(x)
+    for gruppo in visti.values():
+        if len(gruppo) > 1:
+            for x in gruppo:
+                if x['data'] and ' · ' not in x['nome']:
+                    x['nome'] += ' · ' + '/'.join(reversed(x['data'].split('-')))
+
+
+def stima_su(x):
+    """Valori «≈ stimati» dalle dosi (tools/stima.py), mai quelli detti nel video (13/11 #72: 2 su 3 sbagliati)."""
+    porz = x.get('porzioni') or 1
+    st, _, _ = stima_ricetta([re.sub(r'\s*\(oppure .*$', '', i) for i in x['ingredienti'] if '(facoltativo)' not in i], porz)
+    x.pop('nutr', None); x.pop('stimata', None)
+    if st and 40 <= st['kcal'] <= 1500:
+        x['nutr'] = st; x['porzioni'] = porz; x['stimata'] = True
+
+
+def su_file(f):
+    """--parlato-su FILE: il parlato su un ricette-video.js già fatto (es. con la patch C148), senza rileggere YouTube."""
+    t = open(f, encoding='utf-8').read()
+    i = t.index('const RICETTE_VIDEO = [') + len('const RICETTE_VIDEO = '); fine = t.index('\n];', i) + 2
+    tutte, par, c = json.loads(t[i:fine]), leggi_parlato(), {'dosi': 0, 'passi': 0, 'stimati': 0}
+    for x in tutte:
+        if col_parlato(x, par) and not x.get('suoi'):
+            stima_su(x); c['stimati'] += 'nutr' in x
+        if x.get('parlato'):
+            c[x['parlato']] += 1
+    distingui(tutte)
+    righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False, separators=(',', ':')) for x in tutte)
+    t = t[:i] + '[\n' + righe + '\n]' + t[fine:]
+    open(f, 'w', encoding='utf-8').write(t.replace('i passi sono nel video.', 'senza dosi sotto, dosi e passi dal parlato del video («parlato», C150).'))
+    print(json.dumps(c, ensure_ascii=False), file=sys.stderr)
+
+
 def main():
+    if '--parlato-su' in sys.argv:
+        return su_file(sys.argv[sys.argv.index('--parlato-su') + 1])
     elenco = '--elenco' in sys.argv
+    par = leggi_parlato()
     stimate = set()
     p = os.path.join(RADICE, 'ricette-stimate.js')
     if os.path.exists(p):
@@ -370,6 +453,8 @@ def main():
                 st, _, _ = stima_ricetta(ing_st, porz)
                 if st and 40 <= st['kcal'] <= 1500:
                     x['nutr'] = st; x['porzioni'] = porz; x['stimata'] = True; c['stimati'] += 1
+            if col_parlato(x, par) and not x.get('suoi'):
+                stima_su(x)   # C150: dosi dal parlato → «≈ stimati»
             if 'nutr' not in x:
                 c['senza'] += 1
             c['ricette'] += 1
@@ -378,15 +463,7 @@ def main():
                 n = x.get('nutr')
                 print('  SÌ  ', f"{x['tipo'][:12]:12} {x['nome'][:34]:34} ing {len(ing):2} {'suoi' if x.get('suoi') else 'stim' if x.get('stimata') else '----'}"
                       f" {round(n['kcal']) if n else '':>5} kcal {n['prot'] if n else '':>5} p  ← {v['titolo'][:50]!r}")
-    # nomi uguali dello stesso youtuber: si distinguono con la data del video
-    visti = {}
-    for x in tutte:
-        visti.setdefault((x['autore'], norm(x['nome'])), []).append(x)
-    for gruppo in visti.values():
-        if len(gruppo) > 1:
-            for x in gruppo:
-                if x['data']:
-                    x['nome'] += ' · ' + '/'.join(reversed(x['data'].split('-')))
+    distingui(tutte)
     tutte.sort(key=lambda x: (x['autore'], x['data']), reverse=True)
     canali = {a: 'https://www.youtube.com/channel/' + c for a, c in CANALI}
     oggi = time.strftime('%d/%m/%Y')
@@ -394,7 +471,7 @@ def main():
     open(os.path.join(RADICE, 'ricette-video.js'), 'w', encoding='utf-8').write(
         f"""/* C144 · Ricette video di YouTube, divise per youtuber, raccolte da Claude il {oggi} (Mario 11/11 «tutti i video delle
    ricette dello youtuber… in una sezione a parte»). Scritto da tools/raccogli_video.py, NON a mano.
-   Nome, ingredienti e testo come li scrive l'autore sotto il video (tolti hashtag, codici sconto e link); i passi sono nel video.
+   Nome, ingredienti e testo come li scrive l'autore sotto il video (tolti hashtag, codici sconto e link); senza dosi sotto, dosi e passi dal parlato del video («parlato», C150).
    Valori: quelli dell'autore se li scrive («suoi»), sennò «≈ stimati» dagli ingredienti (tabella CREA, tools/stima.py), sennò niente. */
 const CANALI_VIDEO = {json.dumps(canali, ensure_ascii=False)};
 const RICETTE_VIDEO = [

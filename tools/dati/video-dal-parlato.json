@@ -57,6 +57,52 @@
 ],
 "porzioni": null
 },
+"yt:F5silvkBhHo": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"2 uova intere",
+"50 g di farina di avena",
+"albume",
+"yogurt greco",
+"dolcificante neutro",
+"1 banana",
+"burro d'arachidi",
+"latte",
+"corn flakes",
+"sciroppo zero"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Versare nel frullatore la farina d'avena, le uova intere o l'albume, lo yogurt greco, la banana e il dolcificante neutro.",
+"Frullare bene fino ad ottenere una pastella omogenea.",
+"Versare l'impasto in una padella antiaderente ben calda, coprire con un coperchio e cuocere a fiamma bassa su entrambi i lati.",
+"Preparare una crema a parte mescolando yogurt greco con un po' di latte e burro d'arachidi.",
+"Farcire e guarnire il pancake con la crema, fette di banana, burro d'arachidi, sciroppo zero e corn flakes."
+],
+"porzioni": 1
+},
+"yt:HHC4gPJcFaY": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"2 uova intere",
+"Latte scremato senza lattosio",
+"70 g di farina d'avena",
+"10 g di proteine in polvere al cioccolato",
+"Cubetti di ghiaccio",
+"FlavDrops alla vaniglia"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Rompera due uova intere in una ciotola e aggiungere un goccio di latte.",
+"Mettere la ciotola nel microonde per 30 secondi.",
+"Versare le uova scaldate nel frullatore aggiungendo un altro po' di latte.",
+"Aggiungere 70 g di farina d'avena, 1 misurino di proteine in polvere al cioccolato, i cubetti di ghiaccio e qualche goccia di aroma alla vaniglia.",
+"Frullare tutto fino a ottenere un composto omogeneo."
+],
+"porzioni": 1
+},
 "yt:Hz26Yk57Yko": {
 "data": "2026-11-13",
 "dubbi": [],
@@ -82,10 +128,99 @@
 ],
 "porzioni": null
 },
+"yt:QIc3OUQ3iAg": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"2 uova intere",
+"50 ml di latte",
+"50 g di farina di avena al gusto torta al limone",
+"50 g di yogurt greco",
+"3 g di idrolitina",
+"acqua"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Versare in una ciotola le uova, il latte, lo yogurt greco e la farina di avena.",
+"Mescolare gli ingredienti con una frusta a mano fino ad ottenere un composto omogeneo.",
+"Aggiungere l'idrolitina e un goccio d'acqua, poi mescolare di nuovo.",
+"Scaldare bene un pentolino di 10 cm di diametro.",
+"Versare il composto nel pentolino e cuocere a fiamma minima su fornello piccolo, coperto con coperchio, per 20 minuti da un lato e 3 minuti dall'altro.",
+"Servire e guarnire a piacere."
+],
+"porzioni": null
+},
 "yt:T4MW0tsy4BM": {
 "data": "2026-11-13",
 "modello": "gemini-3.6-flash",
 "scartato": "senza dosi o passi"
+},
+"yt:ZU-lUjW28mQ": {
+"data": "2026-11-13",
+"dubbi": [
+"1 banana",
+"2 uova intere",
+"70 ml di latte di mandorla",
+"60 g di farina di avena istantanea al cioccolato",
+"10 g di cacao amaro",
+"3 g di idrolitina",
+"100 g di yogurt greco",
+"10 g di cioccolato fondente",
+"Cuocere nel microonde per 5 minuti."
+],
+"ingredienti": [
+"1 banana",
+"2 uova intere",
+"70 ml di latte di mandorla",
+"caffè",
+"60 g di farina di avena istantanea al cioccolato",
+"10 g di cacao amaro",
+"3 g di idrolitina",
+"acqua",
+"100 g di yogurt greco",
+"flavdrops alla vaniglia",
+"10 g di cioccolato fondente",
+"burro di arachidi al cioccolato bianco"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"Schiacciare la banana in una ciotola.",
+"Aggiungere le uova intere, il latte di mandorla, un po' di caffè, la farina di avena e il cacao amaro.",
+"Aggiungere l'idrolitina e un goccio d'acqua, poi mescolare bene con una frusta.",
+"Versare l'impasto negli stampi per ciambelle.",
+"Cuocere nel microonde per 5 minuti.",
+"Sformare le ciambelle e guarnirle con lo yogurt greco insaporito con le flavdrops alla vaniglia, il cioccolato fondente a pezzetti e il burro di arachidi al cioccolato bianco."
+],
+"porzioni": 6
+},
+"yt:e8piApMsrP0": {
+"data": "2026-11-13",
+"dubbi": [
+"2 uova intere",
+"100 ml di latte",
+"100 g di farina di avena istantanea al cioccolato",
+"30 g di yogurt greco",
+"10 g di cacao amaro",
+"2-3 g di idrolitina"
+],
+"ingredienti": [
+"2 uova intere",
+"100 ml di latte",
+"caffè",
+"100 g di farina di avena istantanea al cioccolato",
+"30 g di yogurt greco",
+"10 g di cacao amaro",
+"2-3 g di idrolitina",
+"acqua"
+],
+"modello": "gemini-3.6-flash",
+"passi": [
+"In una ciotola unire le uova, il latte, un po' di caffè, la farina di avena, lo yogurt greco e il cacao amaro, quindi mescolare con una frusta.",
+"Aggiungere l'idrolitina attivata con un goccio d'acqua e amalgamare il tutto.",
+"Scaldare bene una padella e versarvi il composto.",
+"Cuocere a fiamma medio-bassa con coperchio per qualche minuto, poi girare il pancake e ultimare la cottura."
+],
+"porzioni": null
 },
 "yt:oZ1xgCirJgY": {
 "data": "2026-11-13",
