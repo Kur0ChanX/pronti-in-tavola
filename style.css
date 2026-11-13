@@ -246,6 +246,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
 .riga-ord b { font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
 .riga-ord .prezzo { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
 .riga-ord .det { grid-column: 1 / -1; font-size: .88rem; color: var(--tenue); }
+.riga-ord .misura-scegli { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 2px solid var(--allarme); border-radius: 12px; }
+.riga-ord .misura-scegli .etichetta { color: var(--allarme); font-weight: 800; }
 .riga-ord .nota { grid-column: 1 / -1; font-size: .88rem; font-weight: 800; color: var(--cotto); }
 .riga-ord .azioni { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
 .riga-ord.aggiunta { background: #E7EFDB; border-radius: 10px; padding: 12px; }

@@ -596,6 +596,26 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.evaluate(() => UI.foglio && UI.foglio.tipo === 'scrivimi' && UI.foglio.testo.includes('a che ora')))) throw new Error('senza piatti non apre «Scrivi a Monica»');
     await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
   });
+  await passo('cliente: link senza misura della teglia → la sceglie il cliente nel carrello, «Invia» fermo finché non la sceglie (C157)', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.linkFatti = []; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = false; render(); });
+    await page.evaluate(t => { UI.ordineLink = t; carrelloDaLink(); render(); }, '2 kg di ravioli ricotta e spinaci\n1 teglia di melanzane alla parmigiana');
+    await page.waitForTimeout(400);
+    const a = await page.evaluate(() => ({ v: UI.vista, r: P.carrello.map(r => `${r.piatto}${r.daScegliere ? '?' : ''}`).join(',') }));
+    if (a.v !== 'carrello' || a.r !== 'ravioli,parmigiana?') throw new Error('misura non lasciata da scegliere: ' + JSON.stringify(a));
+    if (await page.locator('.misura-scegli [data-a="c-misura"]').count() !== 2) throw new Error('mancano i due tasti «Teglia da 6» e «Teglia da 8»');
+    const g = await page.locator('.giorno:not([disabled])').first(); await g.click(); await page.waitForTimeout(200);
+    if (!(await page.locator('[data-a="invia"]').isDisabled())) throw new Error('«Invia» acceso senza misura');
+    if (!(await page.locator('#app').innerText()).includes('Scegli prima la misura')) throw new Error('manca «Scegli prima la misura»');
+    await foto('36c-carrello-misura-da-scegliere');
+    await clic('[data-a="c-misura"][data-v="t8"]'); await page.waitForTimeout(300);
+    const b = await page.evaluate(() => P.carrello.map(r => `${r.piatto}:${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
+    if (b !== 'ravioli:kg,parmigiana:t8') throw new Error('scelta della misura: ' + b);
+    if (await page.locator('[data-a="invia"]').isDisabled()) throw new Error('«Invia» ancora spento dopo la scelta');
+    await page.evaluate(() => { P.carrello = []; P.linkFatti = []; UI.ordineLink = '1 teglia da 8 di melanzane alla parmigiana'; carrelloDaLink(); render(); });   // misura detta: niente scelta
+    const c = await page.evaluate(() => P.carrello.map(r => `${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
+    if (c !== 't8') throw new Error('misura detta nel link non presa: ' + c);
+    await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = undefined; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
+  });
   await passo('Monica: l\'aiutante capisce il senso, le parole sono solo indizi; senza AI chiede «Intendi…?» (C102)', async () => {   // autonoma
     await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; AI.attesa = false; UI.aiQui = null; UI.foglio = null; window._chiediVero = window._chiediVero || chiediAiutante; vai('aiutante'); });
     // 1) con l'AI: decide lei dal senso, anche se le parole portano altrove; le parole le arrivano come indizi
