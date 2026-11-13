@@ -28,6 +28,11 @@
 ],
 "porzioni": null
 },
+"yt:0gdy9DP-i9k": {
+"data": "2026-11-13",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
+},
 "yt:2mEw_ETzMZg": {
 "data": "2026-11-13",
 "modello": "gemini-3.6-flash",
@@ -547,5 +552,26 @@
 "Decorare a piacere con palline di cioccolato bianco e burro d'arachidi."
 ],
 "porzioni": 2
+},
+"yt:zgCPvxt-nLg": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"1 parte di quinoa",
+"2 parti di acqua (o 1 parte e mezza)",
+"sale"
+],
+"modello": "gemini-3.5-flash",
+"nome": "Cuocere la quinoa",
+"passi": [
+"Mettere la quinoa in un colino e lavarla sotto acqua corrente per rimuovere le saponine.",
+"Scolare bene la quinoa e trasferirla in un pentolino.",
+"Aggiungere l'acqua in proporzione (2 parti di acqua per 1 parte di quinoa, oppure 1 parte e mezza per averla più croccante).",
+"Accendere la fiamma a fuoco non troppo alto e portare a bollore.",
+"Abbassare la fiamma, coprire con un coperchio e lasciar cuocere per circa 12 minuti.",
+"Togliere il coperchio, mescolare la quinoa e trasferirla in un piatto.",
+"Aggiungere il sale solo al momento di condirla a piacere."
+],
+"porzioni": null
 }
 }
