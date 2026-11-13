@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 18:39 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 19:12 ora italiana)
 
-ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+è normale un lavoro cosí certosino guarda i tasti ...ti ho messo opus alto..... c'è qualche regola che ti manda in confusione o nel kot o nelle preferenze
