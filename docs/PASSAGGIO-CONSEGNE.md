@@ -38,9 +38,9 @@ Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa al
 
 ## Prossimi passi
 ⛔ NON unire le scorte `01WTjqUup234` (#66) e `01WTjqUwz4Kr` (#67): vecchie, superate dalla v0.10.24.
-1. 🛑 DOMANDA 2 (C149) «1» → `git apply docs/lavori-in-corso/c149-app.patch docs/lavori-in-corso/c148-video.patch`, `python3 -I tools/anteprima.py`, giro completo `node tools/prova.js` (0 «NO»), versione 0.10.25 in `data.js` (novità: voto palestra, profilo, 2 canali nuovi), commit `[pubblica]` e push, `curl` del sito, `git rm` delle due patch. Prima una foto della pagina «🎬 Ricette video» con 4 riquadri (PT E69). «2» → cambiare quello che dice.
+1. 🛑 DOMANDA 2 (C149) «1» → `git apply docs/lavori-in-corso/c149-app.patch docs/lavori-in-corso/c148-app.patch docs/lavori-in-corso/c148-video.patch` (in quest'ordine; c148-app = «Da chi» in Proteiche, prova `ricettario C148`, foto `archivio/foto/2026-11-13-c148-da-chi.png`), `python3 -I tools/anteprima.py`, giro completo `node tools/prova.js` (0 «NO»), versione 0.10.25 in `data.js` (novità: voto palestra, profilo, 2 canali nuovi), commit `[pubblica]` e push, `curl` del sito, `git rm` delle due patch. Prima una foto della pagina «🎬 Ricette video» con 4 riquadri (PT E69). «2» → cambiare quello che dice.
 2. C148 siti: `python3 -I tools/raccogli_stimate.py --creatori` in sottofondo (~1.400 pagine, ~1 s l'una; salva prima una copia di `ricette-stimate.js`); poi conti per creatore, controllo a occhio di 10 ricette, patch, foto. Mela, ecc. sconosciute a `tools/stima.py` scartano molte ricette: valutare sinonimi nuovi in `SINONIMI`/`CODICI`.
-3. App: filtro «per creatore o sito» anche in Proteiche (Mario 12/11 18:54); `FONTI_RIC` in `ricettario.js` coi prefissi nuovi `fw`, `fs`, `gh` (sennò la fonte dice «GialloZafferano»!).
+3. FATTO #71 (patch `c148-app.patch`): «Da chi» in Proteiche e `FONTI_RIC` con `fw`, `fs`, `gh`.
 4. Altri creatori della tabella #70 (Ricette di Alice, HSN, Sergio Chisari): robots e lettura; poi inglesi (MattsfitChef ecc.) con prova di traduzione e foto.
 5. Idee C149 (DOMANDA 1, consiglio 1 e 4) quando Mario risponde.
 6. Vecchi: C140 privato (passo di Mario), C143 + kit 38.26 (DOMANDA 1 della #65), pagella C141, Android: schermo intero e zoom del lettore.

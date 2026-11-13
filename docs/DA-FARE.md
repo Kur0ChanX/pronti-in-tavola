@@ -1,7 +1,8 @@
 # Da fare
 
 ## 0. Aspetta Mario
-- 13/11 · 🛑 · 🟢 Principale 70 · C149 voto palestra: foto `archivio/foto/2026-11-13-c149-*.png` mandate (DOMANDA 2): 1 = pubblica · 2 = cambia qualcosa.
+- 13/11 · 🛑 · 🟢 Principale 70 · C149 voto palestra: foto `archivio/foto/2026-11-13-c149-*.png` mandate (DOMANDA 2): 1 = mettilo nell'app (online) · 2 = cambia qualcosa (PT E76).
+- 13/11 · 🟢 Principale 71 · C148 «Da chi» in Proteiche: foto `archivio/foto/2026-11-13-c148-da-chi.png`; va online insieme al voto palestra se ti piace (1 = va bene · 2 = cambia).
 - 13/11 · 🟢 Principale 70 · C149 idee: scegli i numeri (1 obiettivo proteine · 2 svuota frigo · 3 prima/dopo allenamento · 4 «+1 voto»); consiglio 1 e 4.
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
 - 11/11 · 🟢 Principale 65 · C143 + kit: scrivi «ok» e accendo la difesa (ferma i push che pubblicherebbero l'app senza il tuo ok) e aggiorno il kit da 38.16 a 38.26 (serve al PC di casa). File degli hook: serve il tuo ok scritto. A cosa serve: l'errore della #62 non ricapita e il PC di casa entra nei giri.
@@ -22,7 +23,7 @@
 | N | Cosa | Chi | Urgenza |
 |---|---|---|---|
 | C149 | (Mario 13/11 09:38-09:50 «voti anche fuori… palestra») Voto palestra su tutte le carte; per Mario voto «per te» dal suo profilo palestra (Impostazioni): `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. 👁 Lo vedi: Impostazioni → «Il mio profilo palestra» col tuo peso; Ricettario → ogni carta col «Voto N» prima di entrare · prova: tua foto | Claude | 🟡 |
-| C148 | (Mario 12/11 18:41-21:27; 13/11 «le carichi tu»: Claude, file del sito) Tutti i creatori italiani e, se tradotti bene, anche gli inglesi; solo ricette coi passi o col video, ricerca per youtuber o sito: `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. 👁 Lo vedi: le loro ricette nel Ricettario · prova: tua foto | Claude | 🟢 |
+| C148 | (Mario 12/11 18:41-21:27; 13/11 «le carichi tu»: Claude, file del sito) Tutti i creatori italiani e, se tradotti bene, anche gli inglesi; solo ricette coi passi o col video, ricerca per youtuber o sito: `docs/lavori-in-corso/c148-lista-creatori-fitness.md`. #71: «Da chi» pronto (patch `c148-app.patch`, dopo la C149). 👁 Lo vedi: le loro ricette nel Ricettario · prova: tua foto | Claude | 🟢 |
 | C147 | (Mario 11/11 22:54, foto dello «Spumone» di YouTube: «metti i video che partono da lì») 13/11 #70: pubblicata in v0.10.24 (tuo «vai avanti» delle 09:08); manca la tua prova sull'Android. Video dalla foto, dentro l’app: `docs/lavori-in-corso/c147-video-dalla-foto.md`. 👁 Lo vedi: Proteiche → «Spumone» → tocchi la foto e il video parte · prova: tua foto | Claude | 🔴 |
 | C146 | (Mario 11/11 22:50, foto di «Pancake proteici» di Cookpad: «si ma senza video ne passaggi non hanno senso») Passi nell'app o video: `docs/lavori-in-corso/c146-ricette-con-passi-o-video.md`. 12/11: controllate una per una (#68); 13/11 #70 pubblicate in v0.10.24. 👁 Lo vedi: Proteiche → una ricetta di Cookpad con «Passo passo» e «▶️ Ascolta» · prova: tua foto | Claude | 🔴 |
 | C145 | (Mario 11/11 ~22:47, foto del reel «beardedscara»: «aggiungi tutti i suoi video di ricette») Secondo youtuber in «🎬 Ricette video»: canale YouTube «Beardedscara ScaraLegacy®», 205 video: `docs/lavori-in-corso/c145-ricette-video-beardedscara.md`. Online v0.10.24. 👁 Lo vedi: Ricettario → «🎬 Ricette video» → riquadro «Beardedscara» con le sue ricette · prova: tua foto | Claude | 🟡 |

@@ -1,0 +1,146 @@
+--- a/ricettario.js
++++ b/ricettario.js
+@@ -20,8 +20,8 @@
+ /* C124 (Mario 10/11 «metti anche filtro per difficoltà»): Facili comprende «Molto facile», Difficili «Molto difficile» */
+ const DIFF_RIC = [['', 'Tutte'], ['facile', 'Facili'], ['media', 'Medie'], ['difficile', 'Difficili']];
+ const diffRic = d => { const t = String(d || '').toLowerCase(); return /facil/.test(t) ? 'facile' : /medi/.test(t) ? 'media' : /diffic/.test(t) ? 'difficile' : ''; };
+-const filtriVuoti = () => ({ q: '', zona: 'tutte', cat: '', tempo: 0, diff: '', ordine: '', piu: false, fit: '', prot: '' });
+-const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.tempo || f.diff || f.fit || f.prot);
++const filtriVuoti = () => ({ q: '', zona: 'tutte', cat: '', tempo: 0, diff: '', ordine: '', piu: false, fit: '', prot: '', chi: '' });
++const filtriAttivi = f => !!(f.q.trim() || f.zona !== 'tutte' || f.cat || f.tempo || f.diff || f.fit || f.prot || f.chi);
+ /* C124 (Mario 10/11 «ricette gym… poche calorie e grassi cattivi… attenzione a sale e zuccheri… asciugarsi ma migliorare l'ipertrofia»):
+    regola «🏋️ Proteiche» sui valori PER PORZIONE di GialloZafferano. Soglie in Impostazioni → «Solo per te, Mario» (opzioni.js, fit*);
+    fonti delle soglie in docs/lavori-in-corso/c124-ricettario-proteico.md. Senza tutti i valori una ricetta non entra (meglio una in meno). */
+@@ -148,7 +148,7 @@
+ /* «perché è qui»: es. «💪 32 g proteine · 410 kcal · sale 0,9 g» */
+ const rigaFit = n => n && n.kcal > 0 ? `💪 ${n.prot != null ? numIt(n.prot) + ' g proteine · ' : ''}${Math.round(n.kcal)} kcal${saleRic(n) != null ? ' · sale ' + numIt(saleRic(n)) + ' g' : ''}${fitRic(n) === 'snack' ? ' · snack o dolce' : ''}` : '';
+ /* C124 (Mario 10/11 «le ricette di GialloZafferano segnale… e segnami la fonte»): da dove viene ogni ricetta */
+-const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit', bg: 'Blog di GialloZafferano', cp: 'Cookpad', yt: 'YouTube' };   // C141: cp, yt   // C139: bg = Blog di GialloZafferano
++const FONTI_RIC = { gz: 'GialloZafferano', rf: 'RicetteFit', bg: 'Blog di GialloZafferano', cp: 'Cookpad', yt: 'YouTube', fw: 'Fit with Fun', fs: 'Iamfitandsweet', gh: 'Giuseppe Healthy' };   // C141: cp, yt · C148: siti dei creatori fitness   // C139: bg = Blog di GialloZafferano
+ const fonteRic = r => r.mia ? 'Ricetta tua' : FONTI_RIC[String(r.id || '').split(':')[0]] || 'GialloZafferano';
+ /* C125 pezzo 4 (Mario 10/11 «sembra che carichi solo ricette di GialloZafferano»): quante per fonte, es. «GialloZafferano 9 · RicetteFit 3» */
+ const perFonte = rr => { const n = {}; rr.forEach(r => { if (!r.mia) { const f = fonteRic(r); n[f] = (n[f] || 0) + 1; } }); return Object.keys(n).sort((a, b) => n[b] - n[a] || a.localeCompare(b)).map(f => `${f} ${n[f]}`).join(' · '); };
+@@ -159,7 +159,7 @@
+   return { tutte: tt.length + mieRic().length, fit: fit.length, fonti: perFonte(fit) };
+ }
+ const minutiRic = r => Number(r.totale) || Number(r.minuti) || (Number(r.prep) || 0) + (Number(r.cottura) || 0) || 0;
+-function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!f.piu, zona: f.zona, cat: f.cat, tempo: f.tempo, diff: f.diff, ordine: f.ordine, fit: f.fit || '', prot: f.prot || '' }); }
++function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!f.piu, zona: f.zona, cat: f.cat, tempo: f.tempo, diff: f.diff, ordine: f.ordine, fit: f.fit || '', prot: f.prot || '', chi: f.chi || '' }); }
+ const ZONE_RIC = [['tutte', 'Tutte'], ['fit', '🏋️ Proteiche'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
+ /* C127 (Mario 10/11 «fai ordine», foto approvata 15:05): in vista Tutte, Proteiche, Preferite; le altre dentro «Altre ▾» */
+ const ZONE_ALTRE = ['sarda', 'italiana', 'mie'];
+@@ -643,6 +643,12 @@
+    Passa una ricetta di ALMENO UN momento scelto (proteica, se nessuno) che ha ALMENO UNA fonte scelta (qualsiasi, se nessuna). */
+ const listaSel = (v, ok) => [...new Set(String(v || '').split(',').filter(k => k && ok(k)))];
+ const fitSel = f => listaSel(f.fit, momentoFit), protSel = f => listaSel(f.prot, fonteProt);
++/* C148 (Mario 12/11 18:54 «che posso anche cercarli per youtuber o per sito»): in «🏋️ Proteiche» anche «Da chi», a scelta multipla.
++   Chi = lo youtuber o il creatore (campo autore), sennò il sito (GialloZafferano, RicetteFit, Cookpad…). Scelte salvate come 'A|B' (i nomi hanno spazi). */
++const chiRic = r => r.autore || fonteRic(r);
++const chiSel = f => String(f.chi || '').split('|').filter(Boolean);
++const passaChi = (r, f) => { const cc = chiSel(f); return !cc.length || cc.includes(chiRic(r)); };
++const contaChi = rr => { const m = new Map(); rr.forEach(r => { const k = chiRic(r); m.set(k, (m.get(k) || 0) + 1); }); return [...m].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'it')); };
+ const passaFit = (r, f) => { const mm = fitSel(f), pp = protSel(f); return (mm.length ? mm.some(m => momentoRic(r, m)) : !!fitRic(r.nutr)) && (!pp.length || pp.some(k => haFonteProt(r, k))); };
+ const giraSel = (v, k, ok) => { const l = listaSel(v, ok), i = l.indexOf(k); if (i < 0) l.push(k); else l.splice(i, 1); return { su: i < 0, v: l.join(',') }; };
+ const nomeSel = t => t.replace(/^\S+\s/, '');   // «🌅 Colazione» → «Colazione»
+@@ -654,12 +660,14 @@
+   return { testo: ll.map(x => x[0]).join(', '), parole };
+ }
+ const chiaveFit = f => { const k = f.q.trim().toLowerCase(); return k.length >= 2 ? 'q:' + k : f.fit || f.prot ? `s:${fitSel(f).join(',')}|${protSel(f).join(',')}` : '*'; };
+-function sceltaFit(f) {
++function sceltaFit(f, chi) {
+   const n = sogliaFit('fitVeloci', 10), mm = fitSel(f), pp = protSel(f), b = (a, v, t, si) => `<button type="button" class="scelta" data-a="${a}" data-v="${v}" aria-pressed="${si}">${t}</button>`;
+   return `<p class="ric-sel-tit"><b>Quando</b> <span class="tenue">· anche più di uno</span></p>
+     <div class="scelte scorri ric-fit-scelte" role="group" aria-label="Quando">${MOMENTI_FIT.map(([k, t]) => b('ric-fit-tipo', k, t, mm.includes(k))).join('')}${b('ric-tempo', n, `⚡ Pronte in ${n} minuti`, f.tempo === n)}</div>
+     <p class="ric-sel-tit"><b>Fonte proteica</b> <span class="tenue">· facoltativa, anche più di una</span></p>
+-    <div class="scelte scorri ric-prot-scelte" role="group" aria-label="Fonte proteica">${FONTI_PROT.map(([k, t]) => b('ric-prot', k, t, pp.includes(k))).join('')}</div>`;
++    <div class="scelte scorri ric-prot-scelte" role="group" aria-label="Fonte proteica">${FONTI_PROT.map(([k, t]) => b('ric-prot', k, t, pp.includes(k))).join('')}</div>
++    ${(chi = (chi || []).concat(chiSel(f).filter(k => !(chi || []).some(x => x[0] === k)).map(k => [k, 0]))).length > 1 || chiSel(f).length ? `<p class="ric-sel-tit"><b>Da chi</b> <span class="tenue">· youtuber o sito, anche più di uno</span></p>
++    <div class="scelte scorri ric-chi-scelte" role="group" aria-label="Da chi">${chi.map(([k, n]) => b('ric-chi', esc(k), `${esc(k)}&nbsp;<small class="tenue">(${n})</small>`, chiSel(f).includes(k))).join('')}</div>` : ''}`;
+ }
+ 
+ /* 🗄 DATABASE RICETTE (C60, C61; Mario 08/11 «quante ricette ho, quante nuove, quali, quali con la voce, dati offline»):
+@@ -807,7 +815,7 @@
+   UI.ricVideoDa = '';   // C144: dal Ricettario, «Indietro» di una ricetta torna qui
+   const idsEl = new Set(elenco.map(r => r.id)), videoPref = typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.filter(x => pref.includes(x.id) && !idsEl.has(x.id)).map(videoRic) : [];
+   const tutte = mie.concat(videoPref, elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti, nutr: r.nutr || x.nutr || null }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
+-  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && passaFit(r, f) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
++  let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && passaFit(r, f) && passaChi(r, f) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
+       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
+     && (!f.cat || r.categoria === f.cat)
+     && (!f.tempo || (minutiRic(r) > 0 && minutiRic(r) <= f.tempo)) && (!f.diff || diffRic(r.difficolta) === f.diff)
+@@ -828,7 +836,7 @@
+       <button type="submit" class="btn pieno" aria-label="Cerca su GialloZafferano e RicetteFit">${ico('cerca')}</button></form>
+     ${zoneRic(f)}
+     <button type="button" class="btn chiaro pieno ric-video-link" data-a="vai" data-v="ricvideo">🎬 Ricette video${typeof RICETTE_VIDEO !== 'undefined' ? ` <small>(${RICETTE_VIDEO.length})</small>` : ''}</button>
+-    ${f.zona === 'fit' ? sceltaFit(f) : ''}
++    ${f.zona === 'fit' ? sceltaFit(f, contaChi(tutte.filter(r => !r.mia && passaFit(r, f)))) : ''}
+     ${piuFiltriRic(f)}
+     ${f.zona === 'fit' ? riquadroFit(f, tutte) : ''}
+     <p class="piccolo ric-conta" style="margin:0"><b>${rr.length}</b> ${rr.length === 1 ? 'ricetta' : 'ricette'}${f.zona === 'fit' && rr.length ? `: ${perFonte(rr)}` : ''}${filtrato ? ` · <button type="button" class="link" data-a="ric-pulisci">✕ Azzera i filtri</button>` : ''}${f.tempo || f.diff ? '<br><span class="tenue">Tempo e difficoltà ci sono solo per le ricette già arrivate nell\'archivio: le altre compaiono dopo.</span>' : ''}</p>`;
+@@ -961,7 +969,7 @@
+         : `<a class="btn pieno" href="${esc(r.url)}" target="_blank" rel="noopener">📖 Leggi i passi su ${esc(fonteRic(r))} ↗</a>`}</section>` : ''}`;
+   if (r.conserva) h += `<section class="scheda"><h2>Conservazione</h2>${r.conserva.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
+   if (r.consiglio) h += `<section class="scheda"><h2>Consiglio</h2>${r.consiglio.split(/\n+/).map(p => `<p style="margin:0">${esc(p)}</p>`).join('')}</section>`;
+-  h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di ${esc(fonteRic(r))}${r.autore && r.autore !== 'GialloZafferano' ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
++  h += r.mia ? '' : `<p class="piccolo tenue" style="margin:0">Ricetta, foto e video di ${esc(fonteRic(r))}${r.autore && r.autore !== 'GialloZafferano' && r.autore !== fonteRic(r) ? ' · ' + esc(r.autore) : ''}. ${navigator.onLine === false ? 'Senza rete: vedi la copia salvata sul telefono.' : ''}</p>`;
+   return h + '</main>';
+ }
+ /* C124: valori PER PORZIONE (GialloZafferano, dati Edamam); se la ricetta è «🏋️ Proteiche» lo dice col perché */
+@@ -1252,9 +1260,10 @@
+   'ric-riapri'(el) { delete RIC.errore[el.dataset.v]; render(); },
+   'ric-zone-altre'() { UI.ricAltre = !UI.ricAltre; render(); },   // C127: «Altre ▾» apre Sarde, Italiane, Le mie
+   'ric-regole'() { UI.ricRegole = !UI.ricRegole; render(); },   // C127: «ℹ️ Le regole» di Proteiche
+-  'ric-zona'(el) { const f = UI.ric; f.zona = el.dataset.v; UI.ricAltre = false; if (f.zona !== 'fit') { f.fit = ''; f.prot = ''; if (f.tempo === sogliaFit('fitVeloci', 10)) f.tempo = 0; } salvaFiltri(); render(); },   // C125: Pasti/Snack e «⚡» valgono solo dentro Proteiche
++  'ric-zona'(el) { const f = UI.ric; f.zona = el.dataset.v; UI.ricAltre = false; if (f.zona !== 'fit') { f.fit = ''; f.prot = ''; f.chi = ''; if (f.tempo === sogliaFit('fitVeloci', 10)) f.tempo = 0; } salvaFiltri(); render(); },   // C125: Pasti/Snack e «⚡» valgono solo dentro Proteiche
+   'ric-cat'(el) { UI.ric.cat = el.dataset.v; salvaFiltri(); render(); },
+   /* C127: tocco che accende = filtra e cerca le parole di quel momento o di quella fonte; tocco che spegne = solo filtra */
++  'ric-chi'(el) { const f = UI.ric, k = el.dataset.v, cc = chiSel(f), j = cc.indexOf(k); if (j < 0) cc.push(k); else cc.splice(j, 1); f.chi = cc.join('|'); salvaFiltri(); render(); },   // C148: «Da chi» in Proteiche
+   'ric-prot'(el) { const f = UI.ric, g = giraSel(f.prot, el.dataset.v, fonteProt), x = fonteProt(el.dataset.v); f.prot = g.v; salvaFiltri(); render(); },   // solo filtro: sul web col tasto «Cerca altre» (Mario 11/11)
+   'ric-cerca-fit-tutto'() { const f = UI.ric, q = (f.q || '').trim(), s = selFit(f); if (q.length >= 2) cercaFit(q); else if (s) cercaFit(s.testo, s.parole); else cercaFit('tutti i siti', null, true); },   // C127 «🔍 Cerca altre»
+   'ric-cerca-fit'(el) { const v = el.dataset.v || (UI.ric.q || '').trim(); if (v.length < 2) return; UI.ric.q = v; cercaFit(v); },   // C125
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -8,7 +8,7 @@
+ 
+ (async () => {
+   const browser = await chromium.launch();
+-  const ctx = await browser.newContext({ ...devices['Pixel 7'], deviceScaleFactor: 1 });
++  const ctx = await browser.newContext({ ...devices['Pixel 7'], deviceScaleFactor: process.env.FOTO2 ? 2 : 1 });   // FOTO2=1: foto per Mario a 2x
+   const page = await ctx.newPage();
+   const errori = [];
+   page.on('pageerror', e => errori.push('ERRORE: ' + e.message));
+@@ -1870,6 +1870,34 @@
+     if (rotta !== 'none') throw new Error('foto rotta di un passo ancora visibile: ' + rotta);
+     await page.evaluate(() => { RICETTE_STIMATE.splice(0); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC141; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
+   });
++  await passo('ricettario C148: in Proteiche «Da chi» (youtuber o sito), scelta multipla e ricordata; fonti dei siti dei creatori', async () => {   // autonomo
++    /* PT E70: la prova C141 ha già dichiarato RICETTE_STIMATE (const: un secondo script fallirebbe) e l'ha svuotata → la riempio dal file */
++    const fileSt = require('fs').readFileSync(path.join(__dirname, '..', 'ricette-stimate.js'), 'utf8'), datiSt = JSON.parse('[' + fileSt.split('const RICETTE_STIMATE = [')[1].split('\n];')[0] + ']');
++    if (await page.evaluate(() => typeof RICETTE_STIMATE === 'undefined')) await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-stimate.js') });
++    else await page.evaluate(a => { RICETTE_STIMATE.splice(0, RICETTE_STIMATE.length, ...a); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); }, datiSt);
++    const r0 = await page.evaluate(() => {
++      window.__primaC148 = [P.ruolo, UI.devCliente]; P.ruolo = 'monica'; P.guida = true; P.homeNo = true; UI.devCliente = false; UI.foglio = null; S.impostazioni.ricettario = true;
++      window.__c148 = 0; RIC.chiedi = async c => { window.__c148++; return c.db === 'mie' ? { scelte: [] } : c.db ? { db: { ricette: 0, coda: 0 } } : { risultati: [] }; };
++      salvaScelte([]); localStorage.removeItem('pit-ric-filtri'); UI.ric = null; RIC.db = null; RIC.scelteOra = Date.now(); UI.ricZona = 'fit'; UI.vista = 'ricettario'; render();
++      const fw = { id: 'fw:prova', autore: 'Fit with Fun' }, gh = { id: 'gh:prova' };
++      return { fw: fonteRic(fw), chiFw: chiRic(fw), gh: fonteRic(gh), cp: RICETTE_STIMATE.filter(x => /^cp:/.test(x.id) && (x.passi || []).length).length };
++    });
++    if (r0.fw !== 'Fit with Fun' || r0.chiFw !== 'Fit with Fun' || r0.gh !== 'Giuseppe Healthy') throw new Error('C148: fonte dei siti dei creatori sbagliata (diceva «GialloZafferano»): ' + JSON.stringify(r0));
++    await page.waitForFunction(() => RIC.stato === 'pronto', null, { timeout: 30000 }); await page.evaluate(() => render());
++    const chips = await page.evaluate(() => [...document.querySelectorAll('.ric-chi-scelte .scelta')].map(b => b.dataset.v));
++    if (!chips.includes('Cookpad') || !chips.includes('Massimo Pietrobon Gobbi')) throw new Error('C148: «Da chi» senza Cookpad o senza lo youtuber: ' + JSON.stringify(chips));
++    await clic('[data-a="ric-chi"][data-v="Cookpad"]');
++    const a = await page.evaluate(() => ({ conta: (document.querySelector('.ric-conta') || {}).textContent || '', salvato: JSON.parse(localStorage.getItem('pit-ric-filtri')).chi, acceso: [...document.querySelectorAll('.ric-chi-scelte [aria-pressed="true"]')].map(b => b.dataset.v) }));
++    if (!/: Cookpad \d+/.test(a.conta) || /YouTube|GialloZafferano|RicetteFit/.test(a.conta) || a.salvato !== 'Cookpad' || JSON.stringify(a.acceso) !== '["Cookpad"]') throw new Error('C148: «Cookpad» non filtra o non è ricordato: ' + JSON.stringify(a));
++    await clic('[data-a="ric-chi"][data-v="Massimo Pietrobon Gobbi"]');
++    const b = await page.evaluate(() => ({ conta: (document.querySelector('.ric-conta') || {}).textContent || '', chi: UI.ric.chi }));
++    if (!/Cookpad \d+/.test(b.conta) || !/YouTube \d+/.test(b.conta) || b.chi !== 'Cookpad|Massimo Pietrobon Gobbi') throw new Error('C148: due scelte in «Da chi» (l\'una o l\'altra) sbagliate: ' + JSON.stringify(b));
++    await page.evaluate(() => document.querySelector('.ric-chi-scelte').scrollIntoView({ block: 'center' })); await foto('48e-c148-da-chi');
++    await clic('[data-a="ric-zona"][data-v="tutte"]');
++    const c = await page.evaluate(() => ({ chi: UI.ric.chi, server: window.__c148 }));
++    if (c.chi) throw new Error('C148: uscendo da Proteiche «Da chi» resta acceso: ' + JSON.stringify(c));
++    await page.evaluate(() => { RICETTE_STIMATE.splice(0); Object.keys(STIMATE_CACHE).forEach(k => delete STIMATE_CACHE[k]); [P.ruolo, UI.devCliente] = window.__primaC148; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); RIC.db = null; UI.vista = 'home'; render(); });
++  });
+   await passo('ricettario C144 ricette video: bottone, riquadro per youtuber, tipi, ricetta col video su YouTube e i valori dell\'autore, senza server', async () => {   // autonomo
+     if (await page.evaluate(() => typeof RICETTE_VIDEO === 'undefined')) await page.addScriptTag({ path: path.join(__dirname, '..', 'ricette-video.js') });
+     const n = await page.evaluate(() => {
