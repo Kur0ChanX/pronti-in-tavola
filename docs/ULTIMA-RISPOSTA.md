@@ -1,20 +1,21 @@
-# Ultima risposta di Claude (13/11/2026 15:23 ora italiana)
+# Ultima risposta di Claude (13/11/2026 15:50 ora italiana)
 
-Ho capito: nel Cloud bread mancano ingredienti, e manca qualcosa anche nelle altre ricette video.
+Ho capito: sessione 77, riprendo dai «Prossimi passi»: trascrizione di tutti i video ripartita.
+
+🛑 Aspettano te per prime:
+- 🛑 v0.10.26: chiudi e riapri l'app, Ricettario → Ricette video, mandami una foto.
+- 🛑 C141 pagella delle Proteiche: guarda le foto e dimmi ok o cosa cambiare.
+- 🛑 Salvagente: PC di casa come riserva, scegli 1, 2, 3 o 4.
 
 ───
 ✅ FATTO
-- La versione 0.10.27 si vede bene: Cloud bread trovato. Ho chiuso il riordino del Ricettario.
-- **Causa:** Pietrobon scrive alcune dosi dentro il procedimento, non nell'elenco. Per esempio «aggiungete **150 ml di albume** e montatelo». Il programma leggeva solo l'elenco.
-- Corretto: ora prende anche quelle dosi, nell'ordine in cui le scrive lui. Recupera ingredienti in 13 ricette, e il Cloud bread passa da 3 a 5 ingredienti (foto qui sopra). Le prove automatiche sono verdi.
-
-───
-💡 …
+- La trascrizione dei video con Gemini è ripartita in sottofondo. Ne restano 765. Stima: molte ore, finisce nei prossimi giorni.
+- Le 24 già fatte sono salvate su GitHub.
+- Ho rifatto mia la sveglia di domani alle 9:10, quella che fa …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-**DOMANDA 1** · A cosa serve: senza il tuo ok non pubblico nulla.
-Guarda la foto: a sinistra com'è oggi, a destra con gli ingredienti in più. Se mi dai l'ok, pubblico anche le 70 ricette proteiche nuove.
-1. Va bene: metto online nell'app ingredienti in più e 70 ricette nuove (consiglio)
-2. No, qualcosa non va (dimmi cosa)
+- 🛑 Le scritte nei video, «✅ controllata con Gemini» e «⚠️ non controllata», sono pronte (foto già mandate). Rispondi 1 o 2: 1 = le metto online nell'app · 2 = vuoi cambiarle.
+
+⚠️ Aspettano te: 16 · v0.10.26 foto, pagella Proteiche, scritte video, idee C149, progetto privato, difesa C143 + kit, Salvagente PC…
