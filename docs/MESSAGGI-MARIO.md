@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-10 17:15 · 01WTjqUuJHcT
-è normale che funziona?
-
 ## 2026-11-10 17:34 · 01WTjqUuJHcT
 mandami una foto prima e dopo
 
@@ -122,3 +119,6 @@ solo
 
 ## 2026-11-12 21:27 · 01WTjqUxxnTz
 solo tutti italiani e se si traducono bene metti anche quelle inglesi
+
+## 2026-11-13 09:12 · 01WTjqUvtoJC
+https://claude.ai/connect-github
