@@ -1,0 +1,304 @@
+diff --git a/aiutante.js b/aiutante.js
+index 0902011a..e8eae469 100644
+--- a/aiutante.js
++++ b/aiutante.js
+@@ -687,10 +687,11 @@ function controllaAIC(a) {
+       let q = numeroAI(a.qta); if (!(q > 0)) q = min;
+       q = Math.max(min, Math.min(f.tipo === 'kg' ? 20 : 30, Math.round(q / st) * st));
+       const r = { piatto: p.id, nome: p.nome, formato: f.id, formatoNome: f.nome, tipo: f.tipo, variante: v ? v.id : '', varianteNome: v ? v.nome : '', qta: arrot(q),
+-        prezzo: prezzoDi(p, f.id, v ? v.id : ''), note: [], testo: '', pronto: false, fritto: false, frittoPrezzo: 0, forno: false, fornoPrezzo: 0 };
++        prezzo: prezzoDi(p, f.id, v ? v.id : ''), note: [], testo: '', pronto: false, fritto: false, frittoPrezzo: 0, forno: false, fornoPrezzo: 0,
++        ...(a.scegli && p.formati.length > 1 ? { daScegliere: true } : {}) };   // C157: misura non detta → la sceglie il cliente nel carrello, «Invia» fermo
+       const n = quanti(P.carrello);
+       return { titolo: `Metto nel carrello: ${p.nome}`, nota0: n ? `Nel carrello hai già ${n} ${n === 1 ? 'cosa' : 'cose'}: restano.` : '',
+-        dopo: `${descRiga(r)} · ${euro(prezzoRiga(r))}`, nota: p.varianti.length > 1 && !p.varianti.some(x => x.id === a.gusto) ? 'Gusto da controllare nel carrello' : '',
++        dopo: r.daScegliere ? `${r.qta} · misura da scegliere nel carrello` : `${descRiga(r)} · ${euro(prezzoRiga(r))}`, nota: p.varianti.length > 1 && !p.varianti.some(x => x.id === a.gusto) ? 'Gusto da controllare nel carrello' : '',
+         campi: [['qta', 'number', f.tipo === 'kg' ? 'Quanti kg' : 'Quanti']], fai() { aggiungiRiga(P.carrello, r); salvaP(); } };
+     }
+     case 'piatto': return ok ? { titolo: p.nome, dopo: p.sotto || '', etichetta: 'Guarda il piatto', vai: 'piatto:' + p.id } : { no: 'Questo piatto adesso non è nel menù.' };
+@@ -758,8 +759,8 @@ function fondoAC() {
+ }
+ function barraAIC() {
+   if (!aiClientiVisibile()) return '';
+-  return `<div class="ai-barra ai-cliente"><button type="button" class="ai-apri" data-a="vai" data-v="aiuto">${ico('scintille')}<span>Hai una domanda? Allergie, prezzi, cosa prendere…</span></button>
+-    ${(Riconosci || window.MediaRecorder) ? `<button type="button" class="ai-mic" data-a="ac-detta" aria-label="Chiedi a voce">${ico('microfono')}</button>` : ''}</div>`;
++  return `<div class="ai-barra ai-cliente"><button type="button" class="ai-apri" data-a="vai" data-v="aiuto">${ico('scintille')}<span>Chiedi o ordina: allergie, prezzi…</span></button>
++    ${(Riconosci || window.MediaRecorder) ? `<button type="button" class="ai-mic" data-a="ac-detta" aria-label="Chiedi o ordina a voce">${ico('microfono')}</button>` : ''}</div>`;
+ }
+ function rigaAC(x, i, j, fermo) {
+   const c = controllaAIC(x.a), id = `${i}|${j}`;
+@@ -798,7 +799,7 @@ function vAiutoCliente() {
+     ${(Riconosci || window.MediaRecorder) ? `<button type="button" class="ai-mic ${asc ? 'acceso' : ''}" data-a="ac-detta" aria-label="${asc ? 'Smetti di ascoltare' : 'Chiedi a voce'}">${ico('microfono')}</button>` : ''}
+     <button type="button" class="btn" data-a="ac-invia" ${AIC.attesa ? 'disabled' : ''}>Invia</button></div>
+     <p class="tenue piccolo" style="margin:0">L'aiutante usa un'intelligenza artificiale: può sbagliare. Per allergie e intolleranze chiedi sempre conferma a Monica.</p>`;
+-  return h + tastoMonica() + '</main>';
++  return h + '</main>';   // «Scrivi a Monica» ora è nella barra in basso (C155)
+ }
+ const pianoAC = el => AIC.msgs[Number(el.dataset.i)];
+ Object.assign(A, {
+diff --git a/app.js b/app.js
+index 5a0ec4a9..7e135559 100644
+--- a/app.js
++++ b/app.js
+@@ -334,7 +334,6 @@ function waTesta() {
+   const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '';
+   return `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${chi ? ` Sono ${chi}.` : ''}`;
+ }
+-const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi" aria-label="Scrivimi">${ico('chat')}<span>Scrivimi</span></button>` : '';
+ /* «Scrivimi» capisce gli ordini (C155, Mario 13/11 «voglio automatismo»: una cliente aveva scritto l'ordine nel messaggio WhatsApp e a Monica
+    non era arrivato niente). Il cliente scrive QUI; se nel testo ci sono piatti del menù l'app propone di metterli nel carrello (l'ordine
+    arriva vero tra gli Ordini, col messaggio nella nota); se no, o se il cliente vuole, si apre WhatsApp col testo già scritto.
+@@ -953,7 +952,7 @@ function vMenu() {
+     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
+       <div class="voci">${visibili().filter(p => p.cat === k && p.disponibile).map(voce).join('')}</div></section>`;
+   });
+-  return h + tastoMonica() + '</main>';
++  return h + '</main>';
+ }
+ 
+ function apriPiatto(id, pronto, anteprima) {
+@@ -1026,6 +1025,13 @@ function sceltaProva() {
+     <button type="button" class="scelta" data-a="ordine-prova" data-v="1" aria-pressed="${UI.prova === true}">Sto solo provando l'app</button></div>
+     <span class="tenue piccolo">${UI.prova === undefined ? 'Scegli una delle due: serve per inviare.' : UI.prova ? 'Monica lo vede con la scritta PROVA e non lo cucina.' : 'Monica lo prepara per te.'}</span></section>`;
+ }
++/* C157 (Mario 13/11): piatto con più misure arrivato da link, «Scrivimi» o voce senza misura detta → la sceglie il cliente; senza, «Invia» non parte */
++const misuraManca = () => P.carrello.some(r => r.daScegliere);
++function sceltaMisura(r, i) {
++  const p = piatto(r.piatto), ff = p ? p.formati : [];
++  return `<div class="misura-scegli" role="group" aria-label="Scegli la misura di ${esc(r.nome)}"><span class="etichetta">Scegli la misura</span>
++    <div class="scelte">${ff.map(f => `<button type="button" class="chip" data-a="c-misura" data-i="${i}" data-v="${esc(f.id)}">${esc(f.nome)} · ${euro(prezzoDi(p, f.id, r.variante))}</button>`).join('')}</div></div>`;
++}
+ function vCarrello() {
+   const c = P.carrello;
+   let h = testataSemplice('Il tuo ordine', 'menu', 'Menù') + '<main class="corpo">';
+@@ -1033,8 +1039,8 @@ function vCarrello() {
+   const pronti = c.map((r, i) => [r, i]).filter(([r]) => r.pronto), dopo = c.map((r, i) => [r, i]).filter(([r]) => !r.pronto);
+   const imp = S.impostazioni, metodi = Object.keys(METODO).filter(m => imp.paga[m]);
+   if (!metodi.includes(UI.metodo)) UI.metodo = metodi[0] || 'contanti';
+-  const riga = ([r, i]) => `<div class="riga-ord"><b>${esc(r.nome)}</b><span class="prezzo">${euro(prezzoRiga(r))}</span>
+-    <span class="det">${esc(descRiga(r))}</span>
++  const riga = ([r, i]) => `<div class="riga-ord${r.daScegliere ? ' da-scegliere' : ''}"><b>${esc(r.nome)}</b><span class="prezzo">${r.daScegliere ? '—' : euro(prezzoRiga(r))}</span>
++    ${r.daScegliere ? sceltaMisura(r, i) : `<span class="det">${esc(descRiga(r))}</span>`}
+     ${r.note.length || r.testo ? `<span class="nota">${esc([...r.note, r.testo].filter(Boolean).join(' · '))}</span>` : ''}
+     <div class="azioni">${passo('c-qta', r.tipo === 'kg' ? NUM.format(r.qta) + ' kg' : r.qta, `data-i="${i}"`)}<button type="button" class="link" data-a="c-togli" data-i="${i}">Togli</button></div></div>`;
+   if (pronti.length && dopo.length) h += `<div class="avviso">${ico('orologio')}<div>Sono <b>due ritiri</b>: oggi i piatti già pronti, il resto nel giorno che scegli.</div></div>`;
+@@ -1053,9 +1059,9 @@ function vCarrello() {
+   if (opz('altroPagare')) h += `<p class="paga-riga">${ico('aiuto')}<span>Puoi pagare anche così: <b>${esc(opz('altroPagare'))}</b>. ${opz('notaClienti') ? 'Scrivilo nella nota.' : 'Diglielo quando ritiri.'}</span></p>`;   // C92
+   const minimo = opz('minimo'), sotto = minimo > 0 && totale(c) < minimo;   // ordine minimo (C88)
+   h += `    ${opz('notaClienti') ? `<div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica?</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>` : ''}${sotto ? `<div class="avviso">${ico('euro')}<div>L'ordine minimo è <b>${euro(minimo)}</b>: aggiungi ancora ${euro(minimo - totale(c))}.</div></div>` : ''}
+-    <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
+-    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() || sotto ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
+-    ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : sceltaManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima: ordini davvero o provi l\'app?</span>' : ''}`;
++    <div class="totale"><span>Totale</span><span>${misuraManca() ? 'scegli la misura' : euro(totale(c))}</span></div>
++    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() || misuraManca() || sotto ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
++    ${misuraManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima la misura.</span>' : dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : sceltaManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima: ordini davvero o provi l\'app?</span>' : ''}`;
+   return h + '</main>';
+ }
+ 
+@@ -1146,7 +1152,7 @@ function vOrdiniCliente() {
+       <div class="ord-lista">${oo.map(rigaCliente).join('')}</div></section>`).join('');
+     if (passati.length > (UI.ordQuanti || 40)) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri</button>`;
+   }
+-  return h + cartaNotifica() + tastoMonica() + '</main>';
++  return h + cartaNotifica() + '</main>';
+ }
+ /* «Sono qui» (Mario 07/11, idea presa dal ritiro in auto): il cliente sotto casa avvisa Monica con un tocco */
+ function sonoQui(o) {
+@@ -1198,7 +1204,9 @@ function barraCliente() {
+   const att = { menu: 'menu', carrello: 'menu', modifica: 'ordini', inviato: 'ordini' }[UI.vista] || UI.vista;
+   const avvisi = S.ordini.filter(o => o.cliente === P.cliente && (o.stato === 'proposta' || o.stato === 'pronto')).length;
+   const b = (v, n, t, extra = '') => `<button type="button" data-a="vai" data-v="${v}" ${att === v ? 'aria-current="page"' : ''}>${ico(n)}${t}${extra}</button>`;
+-  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}</nav>`;
++  /* (C155, Mario 13/11) terza voce «Scrivi a Monica»: le domande in secondo piano, niente tasti sospesi sopra il menù; solo ai clienti approvati */
++  const scrivi = S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi">${ico('chat')}Scrivi a Monica</button>` : '';
++  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}${scrivi}</nav>`;
+ }
+ 
+ /* ================= MONICA ================= */
+@@ -1911,6 +1919,7 @@ const POS = {}; let penultimaVista = '';
+ function render() {
+   applicaParti();   // parti del menù scelte da Monica (opzioni.js, C92)
+   document.documentElement.classList.toggle('grande', !!P.grande);
++  requestAnimationFrame(() => { const t = document.querySelector('.testata'); document.documentElement.style.setProperty('--alto-testata', (t ? t.offsetHeight : 0) + 'px'); });   // barra «Chiedi o ordina» ferma sotto la testata (C155)
+   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
+   const attivo = document.activeElement && document.activeElement.id;
+   /* file che scorrono di lato: restano dove erano (C31); C127: ritrovate per nome (classe + aria-label), non per posizione, così una riga che compare sopra non le scambia */
+@@ -1970,7 +1979,7 @@ function vai(v) {
+   UI.vista = v; UI.foglio = null; UI.salvato = false; render();
+ }
+ function aggiungiRiga(lista, r) {
+-  const k = x => [x.piatto, x.formato, x.variante, x.note.join(','), x.testo, !!x.pronto, !!x.fritto, !!x.forno].join('|');
++  const k = x => [x.piatto, x.formato, x.variante, x.note.join(','), x.testo, !!x.pronto, !!x.fritto, !!x.forno, !!x.daScegliere].join('|');
+   const c = lista.find(x => k(x) === k(r));
+   if (c) c.qta = arrot(c.qta + r.qta); else lista.push(r);
+ }
+@@ -2321,6 +2330,13 @@ const A = {
+     chiudiFoglio(() => { vola(da); mostraToast(`Nel carrello: ${p.nome}`); });
+   },
+   'c-qta'(el) { const r = P.carrello[el.dataset.i]; r.qta = cambiaQta(r, Number(el.dataset.d)); salvaP(); render(); },
++  'c-misura'(el) {   // C157: il cliente sceglie la misura (se la stessa riga c'è già, si sommano)
++    const i = Number(el.dataset.i), r = P.carrello[i], p = r && piatto(r.piatto), f = p && p.formati.find(x => x.id === el.dataset.v);
++    if (!f) return;
++    const { min } = passoDi(f), n = { ...r, formato: f.id, formatoNome: f.nome, tipo: f.tipo, prezzo: prezzoDi(p, f.id, r.variante), qta: Math.max(min, r.qta) };
++    delete n.daScegliere;
++    P.carrello.splice(i, 1); aggiungiRiga(P.carrello, n); salvaP(); render();
++  },
+   'c-togli'(el) {
+     const prima = JSON.stringify(P.carrello), r = P.carrello[el.dataset.i];
+     P.carrello.splice(Number(el.dataset.i), 1); salvaP(); render();
+@@ -2330,6 +2346,7 @@ const A = {
+   metodo(el) { UI.metodo = el.dataset.v; render(); },
+   invia() {
+     if (UI.devCliente && Dati.attivo) { P.carrello = []; UI.entro = null; UI.nota = ''; UI.prova = undefined; salvaP(); mostraToast('Modalità sviluppatore: ordine NON inviato a Monica. Per un ordine vero usa un altro telefono.'); vai('inviato'); return; }
++    if (misuraManca()) { mostraToast('Scegli prima la misura della teglia.'); return; }
+     if (sceltaManca()) { mostraToast('Scegli prima: ordini davvero o stai provando l\'app?'); return; }
+     if (opz('minimo') > 0 && totale(P.carrello) < opz('minimo')) { mostraToast(`L'ordine minimo è ${euro(opz('minimo'))}.`); return; }
+     if (Dati.attivo) { inviaVero(); return; }
+diff --git a/data.js b/data.js
+index 869648f3..5d97d185 100644
+--- a/data.js
++++ b/data.js
+@@ -183,9 +183,11 @@ function statoIniziale() {
+ }
+ 
+ /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
+-const VERSIONE_APP = '0.10.29';
++const VERSIONE_APP = '0.10.30';
+ /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
+ const NOVITA = [
++  { v: '0.10.30', data: '13/11/2026',
++    migliorato: ['Clienti: menù più ordinato. «Scrivi a Monica» è nella barra in basso, accanto a Menù e I miei ordini; le allergie stanno in una striscia piccola che resta in cima mentre scorri'] },
+   { v: '0.10.29', data: '13/11/2026',
+     nuovo: ['Clienti: «Scrivimi» capisce gli ordini. Se nel messaggio ci sono piatti del menù (es. «2 kg di ravioli»), l\'app li mette nel carrello e l\'ordine arriva vero a Monica, col messaggio nella nota. Le domande vanno su WhatsApp come prima', 'Monica può mandare a un cliente un link col carrello già pronto: il cliente sceglie il giorno e invia'],
+     migliorato: ['Ordini detti o scritti: «ricotta e spinaci» sceglie il gusto giusto'] },
+diff --git a/style.css b/style.css
+index cf08a16c..64934b44 100644
+--- a/style.css
++++ b/style.css
+@@ -69,7 +69,7 @@ body.con-barra #app { padding-bottom: 72px; }
+   background: var(--foglio); border-top: 1px solid var(--riga);
+   padding-bottom: env(safe-area-inset-bottom);
+ }
+-.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(2, 1fr); }
++.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr));   /* 2 o 3 voci (C155: «Scrivi a Monica») sempre su una riga */ }
+ .barra button {
+   border: 0; background: none; padding: 8px 4px 10px; min-height: 62px;
+   display: flex; flex-direction: column; align-items: center; gap: 2px;
+@@ -246,6 +246,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
+ .riga-ord b { font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
+ .riga-ord .prezzo { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+ .riga-ord .det { grid-column: 1 / -1; font-size: .88rem; color: var(--tenue); }
++.riga-ord .misura-scegli { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 2px solid var(--allarme); border-radius: 12px; }
++.riga-ord .misura-scegli .etichetta { color: var(--allarme); font-weight: 800; }
+ .riga-ord .nota { grid-column: 1 / -1; font-size: .88rem; font-weight: 800; color: var(--cotto); }
+ .riga-ord .azioni { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+ .riga-ord.aggiunta { background: #E7EFDB; border-radius: 10px; padding: 12px; }
+@@ -699,16 +701,16 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
+ .ai-foto-pronta { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; background: var(--foglio); border: 1px dashed var(--grano); }
+ .ai-foto-pronta img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+ .ai-foto-pronta span { flex: 1; font-weight: 700; color: var(--tenue); }
+-/* «Scrivi a Monica» per i clienti approvati (Mario 08/11): pulsante tondo in basso a destra, sopra la barra */
+-.wa-monica { position: fixed; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 30; display: flex; align-items: center; gap: 8px;
+-  padding: 0 18px 0 14px; min-height: 52px; border-radius: 999px; background: #1F8F4E; color: #FFF; font-weight: 800; text-decoration: none; border: 0; font-family: inherit; font-size: inherit; cursor: pointer;
+-  box-shadow: 0 8px 22px -8px rgba(20, 80, 40, .6); animation: wa-entra .5s .8s both cubic-bezier(.3, 1.4, .5, 1); }
+-.wa-monica svg { width: 24px; height: 24px; }
++/* (C155, Mario 13/11) clienti: barra «Chiedi o ordina» larga quanto la pagina, bassa, ferma in cima mentre scorri; il microfono a destra fa tutto */
++.ai-barra.ai-cliente { position: sticky; top: var(--alto-testata, 0px); z-index: 20; margin: 0 -16px; padding: 6px 16px; background: var(--carta); }
++.ai-cliente .ai-apri { min-height: 44px; padding: 0 14px; font-size: .95rem; min-width: 0; }
++.ai-cliente .ai-apri span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
++.ai-cliente .ai-apri svg { width: 20px; height: 20px; }
++.ai-cliente .ai-mic { width: 44px; height: 44px; }
++.ai-cliente .ai-mic svg { width: 22px; height: 22px; }
+ @keyframes wa-entra { from { opacity: 0; transform: translateY(20px) scale(.9); } }
+ .wa-ordine { display: inline-flex; align-items: center; gap: 6px; color: #1F8F4E; font-weight: 800; }
+ .wa-ordine svg { width: 20px; height: 20px; }
+-@media (prefers-reduced-motion: reduce) { .wa-monica { animation: none; } }
+-.corpo:has(> .wa-monica) { padding-bottom: 150px; }
+ 
+ /* «Sono qui sotto» con l'app aperta: schermata della suoneria (C51) */
+ .squillo { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px; background: rgba(60, 20, 15, .82); animation: squillo-luce 1s ease-in-out infinite alternate; }
+diff --git a/tools/prova.js b/tools/prova.js
+index 443b30f6..d30bc75d 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -552,7 +552,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     await page.evaluate(() => { UI.vista = 'home'; render(); });
+   });
+   await passo('cliente: «Scrivimi» capisce gli ordini (C155) e manda le domande su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
+-    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
++    await page.evaluate(() => { try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ } document.querySelectorAll('.vapore').forEach(v => v.remove()); P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
+     await page.waitForTimeout(1500);
+     await page.evaluate(() => { $('#toast').innerHTML = ''; }); await foto('36-scrivi-monica');
+     // 1) il messaggio vero di una cliente (13/11): ordine scritto nel testo → carrello, con la scelta della parmigiana
+@@ -596,6 +596,26 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     if (!(await page.evaluate(() => UI.foglio && UI.foglio.tipo === 'scrivimi' && UI.foglio.testo.includes('a che ora')))) throw new Error('senza piatti non apre «Scrivi a Monica»');
+     await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
+   });
++  await passo('cliente: link senza misura della teglia → la sceglie il cliente nel carrello, «Invia» fermo finché non la sceglie (C157)', async () => {   // autonoma
++    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.linkFatti = []; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = false; render(); });
++    await page.evaluate(t => { UI.ordineLink = t; carrelloDaLink(); render(); }, '2 kg di ravioli ricotta e spinaci\n1 teglia di melanzane alla parmigiana');
++    await page.waitForTimeout(400);
++    const a = await page.evaluate(() => ({ v: UI.vista, r: P.carrello.map(r => `${r.piatto}${r.daScegliere ? '?' : ''}`).join(',') }));
++    if (a.v !== 'carrello' || a.r !== 'ravioli,parmigiana?') throw new Error('misura non lasciata da scegliere: ' + JSON.stringify(a));
++    if (await page.locator('.misura-scegli [data-a="c-misura"]').count() !== 2) throw new Error('mancano i due tasti «Teglia da 6» e «Teglia da 8»');
++    const g = await page.locator('.giorno:not([disabled])').first(); await g.click(); await page.waitForTimeout(200);
++    if (!(await page.locator('[data-a="invia"]').isDisabled())) throw new Error('«Invia» acceso senza misura');
++    if (!(await page.locator('#app').innerText()).includes('Scegli prima la misura')) throw new Error('manca «Scegli prima la misura»');
++    await foto('36c-carrello-misura-da-scegliere');
++    await clic('[data-a="c-misura"][data-v="t8"]'); await page.waitForTimeout(300);
++    const b = await page.evaluate(() => P.carrello.map(r => `${r.piatto}:${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
++    if (b !== 'ravioli:kg,parmigiana:t8') throw new Error('scelta della misura: ' + b);
++    if (await page.locator('[data-a="invia"]').isDisabled()) throw new Error('«Invia» ancora spento dopo la scelta');
++    await page.evaluate(() => { P.carrello = []; P.linkFatti = []; UI.ordineLink = '1 teglia da 8 di melanzane alla parmigiana'; carrelloDaLink(); render(); });   // misura detta: niente scelta
++    const c = await page.evaluate(() => P.carrello.map(r => `${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
++    if (c !== 't8') throw new Error('misura detta nel link non presa: ' + c);
++    await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = undefined; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
++  });
+   await passo('Monica: l\'aiutante capisce il senso, le parole sono solo indizi; senza AI chiede «Intendi…?» (C102)', async () => {   // autonoma
+     await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; AI.attesa = false; UI.aiQui = null; UI.foglio = null; window._chiediVero = window._chiediVero || chiediAiutante; vai('aiutante'); });
+     // 1) con l'AI: decide lei dal senso, anche se le parole portano altrove; le parole le arrivano come indizi
+@@ -665,7 +685,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+   });
+   await passo('cliente: tasto «Scrivimi»; Monica: «Sono qui» squilla con l\'app aperta e si ferma con «Ho visto» (C51)', async () => {
+     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
+-    if (!(await page.locator('.wa-monica', { hasText: 'Scrivimi' }).count())) throw new Error('il tasto non dice «Scrivimi»');
++    if (!(await page.locator('.wa-monica', { hasText: 'Scrivi a Monica' }).count())) throw new Error('manca «Scrivi a Monica»');
+     await page.evaluate(() => { S.impostazioni.whatsapp = ''; P.ruolo = 'monica'; UI.vista = 'home'; render(); });
+     const n = await page.evaluate(() => S.ordini.find(o => !o.archiviato).n);
+     await page.evaluate(n => suoneria({ nome: 'Laura Rossi', n }), n);
+@@ -1525,8 +1545,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     const sab = await page.evaluate(() => { for (let i = 1; i <= 7; i++) { const g = piuGiorni(oggi(), i); if (daIso(g).getDay() === 6) return g; } });
+     if (!(await page.locator('.vc-fab').count())) throw new Error('manca il microfono fisso nel menù');
+     if (!(await page.locator('.vc-primo').count())) throw new Error('manca «Puoi parlarmi!» la prima volta');
+-    const pos = await page.evaluate(() => { const a = document.querySelector('.vc-fab').getBoundingClientRect(), b = document.querySelector('.wa-monica').getBoundingClientRect(); return { sx: a.left < window.innerWidth / 2, dx: b.left > window.innerWidth / 2, sovra: a.right > b.left && a.top < b.bottom && a.bottom > b.top }; });
+-    if (!pos.sx || !pos.dx || pos.sovra) throw new Error('microfono e «Scrivimi» mal messi: ' + JSON.stringify(pos));
++    const pos = await page.evaluate(() => { const b = document.querySelector('.wa-monica'); return { fisso: !!b && getComputedStyle(b).position === 'fixed', sx: document.querySelector('.vc-fab').getBoundingClientRect().left < window.innerWidth / 2 }; });
++    if (pos.fisso || !pos.sx) throw new Error('«Scrivi a Monica» non deve essere un tasto fisso sopra il microfono (Mario 13/11): ' + JSON.stringify(pos));
+     await page.waitForTimeout(2600); await foto('40-voce-clienti');   // dopo il toast «Ecco il menù»
+     await page.locator('.vc-fab').click(); await page.waitForTimeout(1500);
+     const r = await page.evaluate(() => ({ vista: UI.vista, msgs: AIC.msgs.map(m => m.t), carr: P.carrello.map(x => [x.piatto, x.qta]), entro: UI.entro, esito: (AIC.msgs[1] || {}).esito }));
+diff --git a/voce-clienti.js b/voce-clienti.js
+index 7ac13ea4..c5587781 100644
+--- a/voce-clienti.js
++++ b/voce-clienti.js
+@@ -324,8 +324,9 @@ function rispostaLocale(e, menzioni, gruppi, t) {
+         const qq = Math.max(min, Math.min(f.tipo === 'kg' ? 20 : 30, Math.round(q / st) * st));
+         if (g && Math.abs(qq - q) > 0.01) nota += ` ${p.nome}: ${qtaVoce(f, qq)} è il minimo che Monica prepara.`;
+         if (f.tipo === 'teglia' || f.tipo === 'intera') teglie += qq;
+-        az.push({ azione: 'carrello', id: p.id, formato: f.id, qta: qq, gusto: m.gusto ? m.gusto.id : '' });
+-        descr.push(`${qtaVoce(f, qq)} di ${p.nome}${m.gusto ? ' ' + m.gusto.nome.toLowerCase() : p.varianti.length > 1 ? ' (gusto da scegliere)' : ''}`);
++        const scegli = p.formati.length > 1 && !(g && (g.porz || g.grande || g.unita === 'kg' || g.unita === 'pz'));   // C157: misura non detta → la sceglie il cliente nel carrello
++        az.push({ azione: 'carrello', id: p.id, formato: f.id, qta: qq, gusto: m.gusto ? m.gusto.id : '', ...(scegli ? { scegli: true } : {}) });
++        descr.push(`${scegli ? `${qq} di ${p.nome} (misura da scegliere)` : `${qtaVoce(f, qq)} di ${p.nome}`}${m.gusto ? ' ' + m.gusto.nome.toLowerCase() : p.varianti.length > 1 ? ' (gusto da scegliere)' : ''}`);
+       });
+       let giorno = e.giorno;
+       if (giorno) {
+@@ -636,7 +637,7 @@ function dopoConfermaCliente(m) {
+ }
+ 
+ /* ================= C. MICROFONO FISSO E «HO CAPITO» ================= */
+-const fabVisibile = () => P.ruolo !== 'monica' && typeof aiClientiVisibile === 'function' && aiClientiVisibile() && vcOpz('voceClientiFab', true) && ['menu', 'carrello'].includes(UI.vista) && !UI.foglio && !UI.modifica && !!(riconoscitore() || (navigator.mediaDevices && window.MediaRecorder));
++const fabVisibile = () => P.ruolo !== 'monica' && typeof aiClientiVisibile === 'function' && aiClientiVisibile() && vcOpz('voceClientiFab', true) && UI.vista === 'carrello' && !UI.foglio && !UI.modifica && !!(riconoscitore() || (navigator.mediaDevices && window.MediaRecorder));
+ function disegnaVC() {
+   let box = document.getElementById('vc');
+   if (!box) { box = document.createElement('div'); box.id = 'vc'; document.body.appendChild(box); agganciaFab(box); }
