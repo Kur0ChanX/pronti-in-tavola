@@ -1,0 +1,23 @@
+{
+  "nota": "C151 (Mario 13/11 12:54 «cose utili così lasciale… ma una sezione a parte»): video delle Ricette video che NON sono ricette, letti a occhio uno per uno dalla #74. Vanno in «💡 Consigli, allenamenti e altro». tipo: allenamento · consiglio · prodotti · posti.",
+  "video": {
+    "yt:PRlReKtXhPY": {"tipo": "allenamento", "perche": "GAG gambe: attrezzi (manubri, elastici, tappetino)"},
+    "yt:nBbM6PrRunU": {"tipo": "allenamento", "perche": "Road to Lisbona: piazzamenti di una gara"},
+    "yt:FquhtBP_ZsI": {"tipo": "consiglio", "perche": "Ti alleni ma non dimagrisci: argomenti del video"},
+    "yt:rtUZc2Iaco0": {"tipo": "consiglio", "perche": "Amido resistente: tipi RS1-RS4"},
+    "yt:-OPgDRTMZqY": {"tipo": "consiglio", "perche": "Vitamina C: domande e risposte"},
+    "yt:97cdLnGnLeU": {"tipo": "consiglio", "perche": "minerali e meno sale: pregi di un prodotto"},
+    "yt:0gdy9DP-i9k": {"tipo": "consiglio", "perche": "integrazione per chi corre"},
+    "yt:L-fsxztw9A0": {"tipo": "consiglio", "perche": "sale nascosto nei cibi"},
+    "yt:IWXhrbM-7Tg": {"tipo": "prodotti", "perche": "senza lattosio, low carb: pregi di un prodotto"},
+    "yt:XMNfJJCwfnQ": {"tipo": "prodotti", "perche": "gusti di un prodotto"},
+    "yt:w0KAod5aldg": {"tipo": "prodotti", "perche": "gusti di un prodotto"},
+    "yt:Em1IT1WDrQc": {"tipo": "prodotti", "perche": "gusti delle creme proteiche"},
+    "yt:25v-7yeq5bg": {"tipo": "prodotti", "perche": "gusti dei budini proteici"},
+    "yt:Aqg3d_3CXTk": {"tipo": "prodotti", "perche": "gusti dei budini proteici"},
+    "yt:T1DSAglFHVY": {"tipo": "posti", "perche": "pasticcerie e posti a Parigi"},
+    "yt:iLjstV5PWVA": {"tipo": "posti", "perche": "pasticcerie e panifici"},
+    "yt:DwXzv3nzaRs": {"tipo": "posti", "perche": "pasticcerie e marchi"},
+    "yt:OIa7sDZ210k": {"tipo": "posti", "perche": "pasticcerie e chef"}
+  }
+}

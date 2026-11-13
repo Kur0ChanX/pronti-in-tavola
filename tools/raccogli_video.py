@@ -38,7 +38,7 @@ INTEGRATORI = r'(?i)melatonin|omega ?3|creatina|\beaa\b|beta ?alanin|\bvit\.? ?[
 NON_RICETTE = r'(?i)non chiedetemi|è salvo|grazie ragazzi|cosa mangio|settimane (dalla|della) gara|in ogni situazione #gym #funny'
 # …e questi mai, neanche con gli ingredienti scritti (una giornata intera di pasti non è una ricetta)
 MAI_RICETTE = (r'(?i)recension|review|ristorante|michelin|\bhaul\b|cosa ho comprato|degustazion|full ?day ?of ?eating|allenamento|peak ?week|push day|pull day|leg day|\bbulk\b|weeks out|pasto libero|dopo mesi|vedo la luce|\d settimane -|\bgag\b|lower body|upper body|total body|workout|\bhiit\b|tabata')
-# C151 (Mario 13/11 «è uno scherzo?»: «GAG parte 4 | Gambe» con ingredienti Manubri, Elastici, Tappetino): attrezzi da palestra = allenamento, mai ricetta
+# C151 (Mario 13/11 «è uno scherzo?» poi «cose utili… lasciale… una sezione a parte»): attrezzi da palestra = allenamento → sezione «Consigli, allenamenti e altro»
 ATTREZZI = r'(?i)\bmanubri|\belastic[io]\b|tappetin|kettlebell|bilanciere|fitball|\bpanca\b|cavigliere'
 VUOTO = r'(?i)^\s*(codice|cod\.? sconto|sconto|usa il codice|link|http|www\.|@|seguimi|iscriviti|instagram|tiktok)'
 
@@ -362,6 +362,20 @@ def stima_su(x):
         x['nutr'] = st; x['porzioni'] = porz; x['stimata'] = True
 
 
+def segna_altro(tutte):
+    """C151: i video che non sono ricette (elenco letto a occhio + attrezzi) restano, segnati «altro» = allenamento/consiglio/prodotti/posti."""
+    try:
+        elenco = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dati', 'video-non-ricette.json'), encoding='utf-8'))['video']
+    except (OSError, ValueError, KeyError):
+        elenco = {}
+    n = 0
+    for x in tutte:
+        tipo = (elenco.get(x['id']) or {}).get('tipo') or ('allenamento' if re.search(ATTREZZI, ' '.join(map(str, x.get('ingredienti') or []))) else '')
+        if tipo:
+            x['altro'] = tipo; x.pop('proteica', None); n += 1
+    print(f'non ricette (sezione a parte): {n}', file=sys.stderr)
+
+
 def su_file(f):
     """--parlato-su FILE: il parlato su un ricette-video.js già fatto (es. con la patch C148), senza rileggere YouTube."""
     t = open(f, encoding='utf-8').read()
@@ -373,6 +387,7 @@ def su_file(f):
         if x.get('parlato'):
             c[x['parlato']] += 1
     distingui(tutte)
+    segna_altro(tutte)
     righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False, separators=(',', ':')) for x in tutte)
     t = t[:i] + '[\n' + righe + '\n]' + t[fine:]
     open(f, 'w', encoding='utf-8').write(t.replace('i passi sono nel video.', 'senza dosi sotto, dosi e passi dal parlato del video («parlato», C150).'))
@@ -410,8 +425,6 @@ def main():
                 ricetta = len(ing) >= 2 and not re.search(MAI_RICETTE, v['titolo'])   # a sezioni (o C148): ricetta = ingredienti scritti
             if re.fullmatch(r'\s*\d{1,2}\s+\w+\s+\d{4}\s*', v['titolo']) and len(ing) < 2:
                 ricetta = False
-            if ing and re.search(ATTREZZI, ' '.join(ing)):
-                ricetta = False   # C151: è un allenamento
             if not ricetta:
                 c['scartati'] += 1
                 if elenco:
@@ -468,6 +481,7 @@ def main():
                 print('  SÌ  ', f"{x['tipo'][:12]:12} {x['nome'][:34]:34} ing {len(ing):2} {'suoi' if x.get('suoi') else 'stim' if x.get('stimata') else '----'}"
                       f" {round(n['kcal']) if n else '':>5} kcal {n['prot'] if n else '':>5} p  ← {v['titolo'][:50]!r}")
     distingui(tutte)
+    segna_altro(tutte)
     tutte.sort(key=lambda x: (x['autore'], x['data']), reverse=True)
     canali = {a: 'https://www.youtube.com/channel/' + c for a, c in CANALI}
     oggi = time.strftime('%d/%m/%Y')
