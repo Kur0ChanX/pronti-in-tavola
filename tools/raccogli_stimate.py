@@ -7,7 +7,7 @@ e scrive ricette-stimate.js, un file del sito (zero letture di Cloudflare).
 - Della fonte si tengono nome, foto, porzioni, l'elenco ingredienti e i passi COSÌ COME SONO (PT E25); C146: senza passi né video fuori.
 - Entra solo chi passa la regola «🏋️ Proteiche» (soglie di base di fitRic in ricettario.js, copiate qui sotto) sui valori stimati.
 - Metà dolci (dolce_o_salato: nessun ingrediente salato, almeno uno dolce), metà il resto.
-Uso: python3 -I tools/raccogli_stimate.py [quante=500] [--ignoti = solo l'elenco degli ingredienti sconosciuti in .cache-stime/ignoti.txt]   (pagine in .cache-stime/; rilanciarlo non rilegge i siti)
+Uso: python3 -I tools/raccogli_stimate.py [quante=500] [--aggiungi = tiene le vecchie, aggiunge solo le nuove] [--ignoti = solo l'elenco degli ingredienti sconosciuti in .cache-stime/ignoti.txt]   (pagine in .cache-stime/; rilanciarlo non rilegge i siti)
      python3 -I tools/raccogli_stimate.py --passi   (C146: solo i passi delle ricette già nel file)
      python3 -I tools/raccogli_stimate.py --pulisci (12/11: toglie la pubblicità dai passi già nel file, senza rete)
      python3 -I tools/raccogli_stimate.py --creatori (C148: AGGIUNGE le ricette di Fit with Fun, Iamfitandsweet, Giuseppe Healthy) """
@@ -252,6 +252,12 @@ def main():
         p = os.path.join(RADICE, f)
         if os.path.exists(p):
             gia |= {norm(n) for n in re.findall(r'"nome":"([^"]+)"', open(p, encoding='utf-8').read())}
+    aggiungi = '--aggiungi' in sys.argv   # C152: le ricette già nell'app restano UGUALI (valori compresi), si aggiungono solo le nuove
+    if aggiungi:
+        t = open(os.path.join(RADICE, 'ricette-stimate.js'), encoding='utf-8').read()
+        testa, corpo = t.split('const RICETTE_STIMATE = [', 1)
+        vecchie = json.loads('[' + corpo.rsplit('];', 1)[0] + ']')
+        gia |= {norm(x['nome']) for x in vecchie} | {x['id'] for x in vecchie}
     cand = candidati()
     print(f'candidati: {len(cand)}', file=sys.stderr)
     ricette = pietrobon()
@@ -272,7 +278,7 @@ def main():
         if x['nome'].isupper():
             x['nome'] = x['nome'].capitalize()   # «TORTA PROTEICA» → «Torta proteica»
         k = norm(x['nome'])
-        if k in nomi or k in gia:
+        if k in nomi or k in gia or x.get('id') in gia:
             scarti['doppione'] += 1; continue
         v, dett, q = stima_ricetta(x['ingredienti'], x['porzioni'])
         if not v:
@@ -303,6 +309,12 @@ def main():
         print(json.dumps({'scarti': scarti, 'righe ignote': len(righe), 'file': out}, ensure_ascii=False))
         return
     perProt = lambda a: -a['nutr']['prot'] / a['nutr']['kcal']
+    if aggiungi:
+        nuove = sorted(buone, key=perProt)
+        righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False) for x in vecchie + nuove)
+        open(os.path.join(RADICE, 'ricette-stimate.js'), 'w', encoding='utf-8').write(testa + 'const RICETTE_STIMATE = [\n' + righe + '\n];\n')
+        print(json.dumps({'prima': len(vecchie), 'aggiunte': len(nuove), 'dolci': sum(x['dolce'] for x in nuove), 'scarti': scarti}, ensure_ascii=False))
+        return
     dolci = sorted([x for x in buone if x['dolce']], key=perProt)
     altre = sorted([x for x in buone if not x['dolce']], key=perProt)
     meta = QUANTE // 2
