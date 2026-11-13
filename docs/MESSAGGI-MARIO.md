@@ -142,3 +142,6 @@ adesso forse sono o al [percentuale]% di grasso circa
 
 ## 2026-11-13 ~10:05 · 01WTjqUvtoJC
 mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2
+
+## 2026-11-13 ~10:07 · 01WTjqUvtoJC
+valuta tu la percentuale
