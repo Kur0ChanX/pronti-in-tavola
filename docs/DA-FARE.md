@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 13/11 · 🛑 · 🟢 Principale 82 · C159 vista cliente di Monica, 2 domande: DOMANDA 1 gesto per aprirla (1 = come il tuo: dito verso destra in alto a sinistra · 2 = verso l'alto) · DOMANDA 2 tocchi la prima volta (1 = 7 sulla firma come te · 2 = 5). A cosa serve: Monica prova l'app come un cliente.
 - 13/11 · 🟡 Principale 81 · v0.10.30 ONLINE (C155 barra «Chiedi o ordina» + C157 misura della teglia): chiudi e riapri l'app, guarda il menù da cliente; una foto quando puoi.
 - 13/11 · 🟢 Principale 77 · C154 velocità della trascrizione: Gemini gratis fa ~25 video al giorno, ne restano 765 (~4 settimane). 1 = resto gratis, vado ogni mattina (consiglio) · 2 = piano a pagamento di Google, tutto in ~1 giorno, stima 10-40 € una volta sola. A cosa serve: decidi tu se spendere.
 - 13/11 · 🟢 Principale 76 · C154 scritte «✅ controllata con Gemini» / «⚠️ non controllata» (foto `archivio/foto/2026-11-13-c154-48*.png` mandate, patch `c154-etichette.patch`): 1 = vanno bene, metto online nell'app · 2 = cambia qualcosa. A cosa serve: senza il tuo ok non pubblico.
