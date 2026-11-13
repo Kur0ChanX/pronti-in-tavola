@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 13/11 · 🛑 · 🟢 Principale 72 · C148 ricette nuove (316 dai siti Fit with Fun, Iamfitandsweet, Giuseppe Healthy; youtuber Cotto al Dente e 2foodfitlovers): foto `archivio/foto/2026-11-13-1150-c148-nuove-*di3.png` mandate. Rispondi 1 = metti online C148 e C150 insieme (versione 0.10.26) · 2 = cambia (dimmi cosa). A cosa serve: senza il tuo ok non pubblico (PT E69).
 - 13/11 · 🛑 · 🟢 Principale 72 · C150 ricette «🎙️ dal video» (dosi, passi e nome dal parlato): foto `archivio/foto/2026-11-13-1140-c150-dal-video-*di4.png` mandate. Rispondi 1 = va bene, la metto online insieme a C148 · 2 = cambia (dimmi cosa). A cosa serve: le ricette video senza dosi diventano cucinabili, con la lista della spesa.
 - 13/11 · 🟢 Principale 70 · C149 idee: scegli i numeri (1 obiettivo proteine · 2 svuota frigo · 3 prima/dopo allenamento · 4 «+1 voto»); consiglio 1 e 4.
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
