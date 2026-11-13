@@ -687,10 +687,11 @@ function controllaAIC(a) {
       let q = numeroAI(a.qta); if (!(q > 0)) q = min;
       q = Math.max(min, Math.min(f.tipo === 'kg' ? 20 : 30, Math.round(q / st) * st));
       const r = { piatto: p.id, nome: p.nome, formato: f.id, formatoNome: f.nome, tipo: f.tipo, variante: v ? v.id : '', varianteNome: v ? v.nome : '', qta: arrot(q),
-        prezzo: prezzoDi(p, f.id, v ? v.id : ''), note: [], testo: '', pronto: false, fritto: false, frittoPrezzo: 0, forno: false, fornoPrezzo: 0 };
+        prezzo: prezzoDi(p, f.id, v ? v.id : ''), note: [], testo: '', pronto: false, fritto: false, frittoPrezzo: 0, forno: false, fornoPrezzo: 0,
+        ...(a.scegli && p.formati.length > 1 ? { daScegliere: true } : {}) };   // C157: misura non detta → la sceglie il cliente nel carrello, «Invia» fermo
       const n = quanti(P.carrello);
       return { titolo: `Metto nel carrello: ${p.nome}`, nota0: n ? `Nel carrello hai già ${n} ${n === 1 ? 'cosa' : 'cose'}: restano.` : '',
-        dopo: `${descRiga(r)} · ${euro(prezzoRiga(r))}`, nota: p.varianti.length > 1 && !p.varianti.some(x => x.id === a.gusto) ? 'Gusto da controllare nel carrello' : '',
+        dopo: r.daScegliere ? `${r.qta} · misura da scegliere nel carrello` : `${descRiga(r)} · ${euro(prezzoRiga(r))}`, nota: p.varianti.length > 1 && !p.varianti.some(x => x.id === a.gusto) ? 'Gusto da controllare nel carrello' : '',
         campi: [['qta', 'number', f.tipo === 'kg' ? 'Quanti kg' : 'Quanti']], fai() { aggiungiRiga(P.carrello, r); salvaP(); } };
     }
     case 'piatto': return ok ? { titolo: p.nome, dopo: p.sotto || '', etichetta: 'Guarda il piatto', vai: 'piatto:' + p.id } : { no: 'Questo piatto adesso non è nel menù.' };
