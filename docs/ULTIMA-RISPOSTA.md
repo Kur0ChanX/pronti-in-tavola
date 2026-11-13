@@ -1,21 +1,28 @@
-# Ultima risposta di Claude (13/11/2026 20:30 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:33 ora italiana)
 
-Ho capito: per la parmigiana e le lasagne il cliente deve scegliere la misura per forza, sennò l'ordine non parte.
+Ho capito: sessione nuova (#80). Riparto da dove si era fermata la #79 e aspetto le tue risposte.
 
-Ho ricevuto la tua richiesta dalla sessione di prima.
+🛑 Tasti del menù: confermi cosa ho capito? Lo trovi qui sotto.
+🛑 Versione 0.10.26: chiudi e riapri l'app, vai in Ricettario → Ricette video e mandami una foto.
+🛑 Pagella delle Proteiche: aspetto il tuo parere sulle foto.
+🛑 PC di casa come riserva: scegli fra 1 officina e 2 gemello silenzioso.
 
 ───
-💡 PARERE
-- **Il problema è più grande di quanto sembra.** Quando l'ordine arriva dal link, da «Scrivimi» o dalla voce, l'app prende da sola la prima misura della teglia. Lisa non se ne accorge.
-- **Anche dal menù normale** la prima misura è già scelta in partenza. Il cliente può toccare «Aggiungi» senza guardarla.
-- Proposta: la riga nel carrello resta rossa con scritto «Scegli la misura». Il tasto «Invia l'ordine a …
+✅ FATTO
+- Ramo allineato a GitHub. Il lavoro della #79 è già tutto dentro, non si è perso niente.
+- Ho riletto intere le tue 5 frasi dell'ultima sessione, non solo il riassunto.
+- Codice non toccato: …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-DOMANDA 3: anche dal menù normale il cliente deve scegliere la misura da solo?
-📌 Di cosa parliamo: oggi, quando apri un piatto con più misure, la prima è già selezionata. Con la scelta 1, all'inizio nessuna misura è selezionata e «Aggiungi» non va finché il cliente non ne tocca una.
-1 · Sì, la misura sempre da scegliere, da tutte le strade (consiglio: nessuno ordina la teglia sbagliata senza accorgersene)
-2 · No, solo per gli ordini dal link, da «Scrivimi» e dalla voce
+**DOMANDA 1 · tasti del menù** 🛑
+A cosa serve: la #79 ha fatto foto sbagliate. Così non ripeto l'errore.
+Ho capito che vuoi:
+1. Il riquadro «Hai una domanda? Allergie, prezzi…» più basso, cioè meno alto. Ti segue mentre scorri la pagina.
+2. Dentro quel riquadro un tasto solo, sia per le domande sia per «Dettami l'ordine». Niente più tasti gemelli.
+3. Via il microfono che galleggia in basso.
+4. Nella barra bianca in basso: Menù · I miei ordini · Scrivi a Monica.
 
-Restano aperte la DOMANDA 1 (tasti del menù: ho capito bene?) e la DOMANDA 2 (controllo delle regole: dopo i …
+Rispondi **1** = giusto: faccio le foto coi caratteri grandi e te le mando.
+Rispondi **2** = sbagliato: dimmi cosa …
