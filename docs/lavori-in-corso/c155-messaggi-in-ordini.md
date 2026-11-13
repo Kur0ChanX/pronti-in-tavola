@@ -8,6 +8,9 @@ Foto (nome coperto): `archivio/foto/2026-11-13-1817-c155-messaggio-cliente-senza
 «No, troppo che Monica deve incollare e fare, voglio automatismo. Riesci innanzitutto a mettermi questo ordine dentro e far partire subito il fix?»
 → scelta: solo lato cliente, automatico (niente lavoro per Monica).
 
+## Terza richiesta di Mario (13/11 ~18:35)
+«dimmi la causa anche come è successo … Voglio tutto tracciato nell app cosí non c'è l'ordine spingi i clienti a ordinare nell app» → piano: (1) ogni messaggio di «Scrivimi» salvato nell'app (raccolta nuova `messaggi`, regole da incollare in Firebase da Mario), Monica li vede in Ordini con «diventato ordine» o «senza ordine»; (2) messaggio con numeri o kg ma piatti non capiti → prima «Ordina dal menù»; (3) per un messaggio senza ordine Monica ha un tocco «Chiedi di ordinare dall'app» (risposta WhatsApp già scritta col link).
+
 ## Fatto (patch `docs/lavori-in-corso/c155-scrivimi.patch`, v0.10.29, NON online)
 - «Scrivimi» apre un foglio «Scrivi a Monica»: il cliente scrive; se `ordineDaMessaggio` (app.js, usa `capisciCliente` + `controllaAIC`) trova piatti del menù → «Sembra un ordine 🛒» (con scelta se ambiguo, es. quale parmigiana) → «Metti nel carrello» (righe + messaggio nella nota + giorno se detto e possibile) → il cliente sceglie il giorno e invia: ordine vero. Niente piatti → WhatsApp col testo già scritto (una volta sola: `window.open` senza «noopener», che dava sempre null e apriva due volte).
 - «2kg» → «2 kg»; gusto: a parità vince chi ha più ingredienti detti («ricotta e spinaci» → Spinaci) in `piattiVoce` (voce-clienti.js).

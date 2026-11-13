@@ -75,6 +75,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E78** Video con attrezzi al posto del cibo = allenamento: scartato (`ATTREZZI`).
 - **PT E79** Filtro che scarta righe intere (pubblicità, @, #): provarlo su un elenco vero e contare cosa butta; si toglie la parte, non la riga (C154: 92 ricette senza farina o cacao).
 - **PT E80** Durata con un servizio gratis: contare il limite AL GIORNO, non solo al minuto.
+- **PT E81** Tasto «scrivi» accanto agli ordini: chi non è pratico ci scrive l'ordine; deve capirlo e portarlo nell'app (C155).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
