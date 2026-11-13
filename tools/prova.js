@@ -1893,6 +1893,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const b = await page.evaluate(() => ({ conta: (document.querySelector('.ric-conta') || {}).textContent || '', chi: UI.ric.chi }));
     if (!/Cookpad \d+/.test(b.conta) || !/YouTube \d+/.test(b.conta) || b.chi !== 'Cookpad|Massimo Pietrobon Gobbi') throw new Error('C148: due scelte in «Da chi» (l\'una o l\'altra) sbagliate: ' + JSON.stringify(b));
     await page.evaluate(() => document.querySelector('.ric-chi-scelte').scrollIntoView({ block: 'center' })); await foto('48e-c148-da-chi');
+    /* C148: una ricetta di un sito dei creatori, aperta, dice il sito giusto e non «GialloZafferano», senza nome doppio (solo coi dati nuovi) */
+    const idSito = await page.evaluate(() => (RICETTE_STIMATE.find(x => /^(fw|fs|gh):/.test(x.id) && (x.passi || []).length) || {}).id || '');
+    if (idSito) {
+      await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, idSito); await page.waitForTimeout(300);
+      const fr = await page.evaluate(() => (document.querySelector('.ric-fonte-riga') || {}).innerText || '');
+      if (!/Fit with Fun|Iamfitandsweet|Giuseppe Healthy/.test(fr) || /GialloZafferano/.test(fr) || /(Fit with Fun|Iamfitandsweet|Giuseppe Healthy) · \1/.test(fr)) throw new Error('C148: ricetta di un sito dei creatori con la fonte sbagliata: ' + JSON.stringify({ idSito, fr }));
+      await foto('48f-c148-ricetta-sito');
+      await page.evaluate(() => { UI.vista = 'ricettario'; render(); });
+    }
     await clic('[data-a="ric-zona"][data-v="tutte"]');
     const c = await page.evaluate(() => ({ chi: UI.ric.chi, server: window.__c148 }));
     if (c.chi) throw new Error('C148: uscendo da Proteiche «Da chi» resta acceso: ' + JSON.stringify(c));
