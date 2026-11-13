@@ -334,7 +334,6 @@ function waTesta() {
   const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '';
   return `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${chi ? ` Sono ${chi}.` : ''}`;
 }
-const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi" aria-label="Scrivimi">${ico('chat')}<span>Scrivimi</span></button>` : '';
 /* «Scrivimi» capisce gli ordini (C155, Mario 13/11 «voglio automatismo»: una cliente aveva scritto l'ordine nel messaggio WhatsApp e a Monica
    non era arrivato niente). Il cliente scrive QUI; se nel testo ci sono piatti del menù l'app propone di metterli nel carrello (l'ordine
    arriva vero tra gli Ordini, col messaggio nella nota); se no, o se il cliente vuole, si apre WhatsApp col testo già scritto.
@@ -953,7 +952,7 @@ function vMenu() {
     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
       <div class="voci">${visibili().filter(p => p.cat === k && p.disponibile).map(voce).join('')}</div></section>`;
   });
-  return h + tastoMonica() + '</main>';
+  return h + '</main>';
 }
 
 function apriPiatto(id, pronto, anteprima) {
@@ -1026,6 +1025,13 @@ function sceltaProva() {
     <button type="button" class="scelta" data-a="ordine-prova" data-v="1" aria-pressed="${UI.prova === true}">Sto solo provando l'app</button></div>
     <span class="tenue piccolo">${UI.prova === undefined ? 'Scegli una delle due: serve per inviare.' : UI.prova ? 'Monica lo vede con la scritta PROVA e non lo cucina.' : 'Monica lo prepara per te.'}</span></section>`;
 }
+/* C157 (Mario 13/11): piatto con più misure arrivato da link, «Scrivimi» o voce senza misura detta → la sceglie il cliente; senza, «Invia» non parte */
+const misuraManca = () => P.carrello.some(r => r.daScegliere);
+function sceltaMisura(r, i) {
+  const p = piatto(r.piatto), ff = p ? p.formati : [];
+  return `<div class="misura-scegli" role="group" aria-label="Scegli la misura di ${esc(r.nome)}"><span class="etichetta">Scegli la misura</span>
+    <div class="scelte">${ff.map(f => `<button type="button" class="chip" data-a="c-misura" data-i="${i}" data-v="${esc(f.id)}">${esc(f.nome)} · ${euro(prezzoDi(p, f.id, r.variante))}</button>`).join('')}</div></div>`;
+}
 function vCarrello() {
   const c = P.carrello;
   let h = testataSemplice('Il tuo ordine', 'menu', 'Menù') + '<main class="corpo">';
@@ -1033,8 +1039,8 @@ function vCarrello() {
   const pronti = c.map((r, i) => [r, i]).filter(([r]) => r.pronto), dopo = c.map((r, i) => [r, i]).filter(([r]) => !r.pronto);
   const imp = S.impostazioni, metodi = Object.keys(METODO).filter(m => imp.paga[m]);
   if (!metodi.includes(UI.metodo)) UI.metodo = metodi[0] || 'contanti';
-  const riga = ([r, i]) => `<div class="riga-ord"><b>${esc(r.nome)}</b><span class="prezzo">${euro(prezzoRiga(r))}</span>
-    <span class="det">${esc(descRiga(r))}</span>
+  const riga = ([r, i]) => `<div class="riga-ord${r.daScegliere ? ' da-scegliere' : ''}"><b>${esc(r.nome)}</b><span class="prezzo">${r.daScegliere ? '—' : euro(prezzoRiga(r))}</span>
+    ${r.daScegliere ? sceltaMisura(r, i) : `<span class="det">${esc(descRiga(r))}</span>`}
     ${r.note.length || r.testo ? `<span class="nota">${esc([...r.note, r.testo].filter(Boolean).join(' · '))}</span>` : ''}
     <div class="azioni">${passo('c-qta', r.tipo === 'kg' ? NUM.format(r.qta) + ' kg' : r.qta, `data-i="${i}"`)}<button type="button" class="link" data-a="c-togli" data-i="${i}">Togli</button></div></div>`;
   if (pronti.length && dopo.length) h += `<div class="avviso">${ico('orologio')}<div>Sono <b>due ritiri</b>: oggi i piatti già pronti, il resto nel giorno che scegli.</div></div>`;
@@ -1053,9 +1059,9 @@ function vCarrello() {
   if (opz('altroPagare')) h += `<p class="paga-riga">${ico('aiuto')}<span>Puoi pagare anche così: <b>${esc(opz('altroPagare'))}</b>. ${opz('notaClienti') ? 'Scrivilo nella nota.' : 'Diglielo quando ritiri.'}</span></p>`;   // C92
   const minimo = opz('minimo'), sotto = minimo > 0 && totale(c) < minimo;   // ordine minimo (C88)
   h += `    ${opz('notaClienti') ? `<div class="gruppo"><label for="nota-ordine">Vuoi dire qualcosa a Monica?</label><textarea id="nota-ordine" data-campo="nota" placeholder="es. polpette senza prezzemolo, passo dopo le 18">${esc(UI.nota)}</textarea></div>` : ''}${sotto ? `<div class="avviso">${ico('euro')}<div>L'ordine minimo è <b>${euro(minimo)}</b>: aggiungi ancora ${euro(minimo - totale(c))}.</div></div>` : ''}
-    <div class="totale"><span>Totale</span><span>${euro(totale(c))}</span></div>
-    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() || sotto ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
-    ${dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : sceltaManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima: ordini davvero o provi l\'app?</span>' : ''}`;
+    <div class="totale"><span>Totale</span><span>${misuraManca() ? 'scegli la misura' : euro(totale(c))}</span></div>
+    ${sceltaProva()}<button type="button" class="btn pieno" data-a="invia" ${(dopo.length && !UI.entro) || UI.invio || sceltaManca() || misuraManca() || sotto ? 'disabled' : ''}>${ico('invito')}${UI.invio ? 'Invio in corso…' : 'Invia l\'ordine a Monica'}</button>
+    ${misuraManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima la misura.</span>' : dopo.length && !UI.entro ? '<span class="tenue piccolo" style="text-align:center">Scegli prima il giorno.</span>' : sceltaManca() ? '<span class="tenue piccolo" style="text-align:center">Scegli prima: ordini davvero o provi l\'app?</span>' : ''}`;
   return h + '</main>';
 }
 
@@ -1146,7 +1152,7 @@ function vOrdiniCliente() {
       <div class="ord-lista">${oo.map(rigaCliente).join('')}</div></section>`).join('');
     if (passati.length > (UI.ordQuanti || 40)) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri</button>`;
   }
-  return h + cartaNotifica() + tastoMonica() + '</main>';
+  return h + cartaNotifica() + '</main>';
 }
 /* «Sono qui» (Mario 07/11, idea presa dal ritiro in auto): il cliente sotto casa avvisa Monica con un tocco */
 function sonoQui(o) {
@@ -1198,7 +1204,9 @@ function barraCliente() {
   const att = { menu: 'menu', carrello: 'menu', modifica: 'ordini', inviato: 'ordini' }[UI.vista] || UI.vista;
   const avvisi = S.ordini.filter(o => o.cliente === P.cliente && (o.stato === 'proposta' || o.stato === 'pronto')).length;
   const b = (v, n, t, extra = '') => `<button type="button" data-a="vai" data-v="${v}" ${att === v ? 'aria-current="page"' : ''}>${ico(n)}${t}${extra}</button>`;
-  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}</nav>`;
+  /* (C155, Mario 13/11) terza voce «Scrivi a Monica»: le domande in secondo piano, niente tasti sospesi sopra il menù; solo ai clienti approvati */
+  const scrivi = S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi">${ico('chat')}Scrivi a Monica</button>` : '';
+  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}${scrivi}</nav>`;
 }
 
 /* ================= MONICA ================= */
@@ -1911,6 +1919,7 @@ const POS = {}; let penultimaVista = '';
 function render() {
   applicaParti();   // parti del menù scelte da Monica (opzioni.js, C92)
   document.documentElement.classList.toggle('grande', !!P.grande);
+  requestAnimationFrame(() => { const t = document.querySelector('.testata'); document.documentElement.style.setProperty('--alto-testata', (t ? t.offsetHeight : 0) + 'px'); });   // barra «Chiedi o ordina» ferma sotto la testata (C155)
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
   /* file che scorrono di lato: restano dove erano (C31); C127: ritrovate per nome (classe + aria-label), non per posizione, così una riga che compare sopra non le scambia */
@@ -1970,7 +1979,7 @@ function vai(v) {
   UI.vista = v; UI.foglio = null; UI.salvato = false; render();
 }
 function aggiungiRiga(lista, r) {
-  const k = x => [x.piatto, x.formato, x.variante, x.note.join(','), x.testo, !!x.pronto, !!x.fritto, !!x.forno].join('|');
+  const k = x => [x.piatto, x.formato, x.variante, x.note.join(','), x.testo, !!x.pronto, !!x.fritto, !!x.forno, !!x.daScegliere].join('|');
   const c = lista.find(x => k(x) === k(r));
   if (c) c.qta = arrot(c.qta + r.qta); else lista.push(r);
 }
@@ -2321,6 +2330,13 @@ const A = {
     chiudiFoglio(() => { vola(da); mostraToast(`Nel carrello: ${p.nome}`); });
   },
   'c-qta'(el) { const r = P.carrello[el.dataset.i]; r.qta = cambiaQta(r, Number(el.dataset.d)); salvaP(); render(); },
+  'c-misura'(el) {   // C157: il cliente sceglie la misura (se la stessa riga c'è già, si sommano)
+    const i = Number(el.dataset.i), r = P.carrello[i], p = r && piatto(r.piatto), f = p && p.formati.find(x => x.id === el.dataset.v);
+    if (!f) return;
+    const { min } = passoDi(f), n = { ...r, formato: f.id, formatoNome: f.nome, tipo: f.tipo, prezzo: prezzoDi(p, f.id, r.variante), qta: Math.max(min, r.qta) };
+    delete n.daScegliere;
+    P.carrello.splice(i, 1); aggiungiRiga(P.carrello, n); salvaP(); render();
+  },
   'c-togli'(el) {
     const prima = JSON.stringify(P.carrello), r = P.carrello[el.dataset.i];
     P.carrello.splice(Number(el.dataset.i), 1); salvaP(); render();
@@ -2330,6 +2346,7 @@ const A = {
   metodo(el) { UI.metodo = el.dataset.v; render(); },
   invia() {
     if (UI.devCliente && Dati.attivo) { P.carrello = []; UI.entro = null; UI.nota = ''; UI.prova = undefined; salvaP(); mostraToast('Modalità sviluppatore: ordine NON inviato a Monica. Per un ordine vero usa un altro telefono.'); vai('inviato'); return; }
+    if (misuraManca()) { mostraToast('Scegli prima la misura della teglia.'); return; }
     if (sceltaManca()) { mostraToast('Scegli prima: ordini davvero o stai provando l\'app?'); return; }
     if (opz('minimo') > 0 && totale(P.carrello) < opz('minimo')) { mostraToast(`L'ordine minimo è ${euro(opz('minimo'))}.`); return; }
     if (Dati.attivo) { inviaVero(); return; }

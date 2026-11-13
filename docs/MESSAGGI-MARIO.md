@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:37 · 01WTjqUvRgtB
-non va nega la metto su ambiente
-
 ## 2026-11-13 10:38 · 01WTjqUvRgtB
 fatto messa nell'ambiente
 
@@ -126,3 +123,6 @@ E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mett
 
 ## 2026-11-13 21:12 · 01WTjqUwJ4nE
 Allora, le foto secondo me per ora vanno bene. Cosa resta in sospeso? La questione del passaggio di consegna e poi cos'altro abbiamo lasciato in sospeso di cose che ti ho chiesto.
+
+## 2026-11-13 21:18 · 01WTjqUwJ4nE
+Allora, spiegami cosa vuoi fare su / chiedi o ordina più misura della teglia. Qual è la tua idea?
