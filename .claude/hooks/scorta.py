@@ -539,6 +539,11 @@ def prendi_messaggi(scorta):
                 raise RuntimeError(f"unione non riuscita: {f} (niente cambiato)")
         finally:
             os.remove(copia)
+        # PT E85 bis (#82): anche la copia locale della scorta, sennò la scorta dopo li toglie di nuovo dal ramo
+        gitdir = git("rev-parse", "--absolute-git-dir") or os.path.join(radice, ".git")
+        locale = os.path.join(gitdir, "scorta-registro.md")
+        if os.path.isfile(locale) and f == FILE_REGISTRO.get(ruolo_chat(gitdir, {}), ""):
+            driver_registro("", locale, percorso)
     return nuove
 
 
@@ -608,8 +613,8 @@ def aggiungi_al_registro(gitdir, ruolo, testo, sessione, domanda=""):
     # perdono). Dopo, solo il proprio: le voci più vecchie delle 40 tolte non devono rientrare.
     percorso = os.path.join(gitdir, "scorta-registro.md")
     try:
-        with open(percorso, encoding="utf-8") as f:
-            fonti = [f.read()]
+        with open(percorso, encoding="utf-8") as f:  # PT E85 bis: anche il ramo (messaggi entrati con prendi-messaggi o
+            fonti = [f.read(), git("show", f"HEAD:{FILE_REGISTRO[ruolo]}")]  # un merge), sennò la scorta li toglieva
     except OSError:
         ramo = git("symbolic-ref", "-q", "--short", "HEAD")
         fonti = [git("show", f"{rif}:{FILE_REGISTRO[ruolo]}")  # C352: la propria scorta (per sessione), se scaricata
