@@ -73,6 +73,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E76** Scelte ambigue («1 = pubblica» letto «palestra pubblica»): scrivere «metto online nell'app» e cosa vede Mario.
 - **PT E77** Gemini: mai un modello solo; 503 → riprova, poi il Flash precedente; 429 al minuto → aspetta, al giorno → cambia; 404 → via.
 - **PT E78** Video con attrezzi al posto del cibo = allenamento: scartato (`ATTREZZI`).
+- **PT E79** Filtro che scarta righe intere (pubblicità, @, #): provarlo su un elenco vero e contare cosa butta; si toglie la parte, non la riga (C154: 92 ricette senza farina o cacao).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC

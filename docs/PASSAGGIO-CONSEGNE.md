@@ -32,7 +32,7 @@ Sessione attuale: #76 (dopo la #75 `session_01WTjqUtr7kgfPr9chcd8gX1`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-0. PRIMA: C154 (messaggio di Mario ~15:30 sopra): domanda 🛑 su cosa fare delle ricette video (1 solo complete · 2 togliere tutto · 3 avviso «forse incompleti»), con i numeri veri. C152 (70 stimate) è indipendente dai video: chiedere a parte se pubblicarla.
+0. C154: causa trovata e corretta (#76, patch `c154-ingredienti-video.patch`, sostituisce la C153); DOMANDA 🛑 mandata (1 solo complete · 2 avviso · 3 togliere). C152 a parte (1 online · 2 no).
 1. Risposta di Mario alla DOMANDA 1 (C152 + C153). «1» → `git apply` delle due patch, versione nuova (`VERSIONE` in data.js e sw.js come le volte prima), anteprima, giro completo verde (dove dice `tools/scegli-giro.py`), commit `[pubblica]`, curl di verifica, «chiudi e riapri l'app». «2» → correggere quello che dice.
 2. Ogni mattina dopo le 9:00: `python3 -I tools/trascrivi_video.py --da ricette-video.js` in sottofondo (se C153 non è ancora online, prima `git apply` della patch in locale e poi toglierla: il json del parlato non è del sito); controllo a campione e righe `dubbi`; commit del json; sveglia `send_later` del giorno dopo.
 3. Ordine della trascrizione: oggi prima i video senza valori, poi senza dosi. Valutare di mettere prima le ricette con ingredienti senza quantità (Mario vuole ingredienti completi).
@@ -48,7 +48,7 @@ Sessione attuale: #76 (dopo la #75 `session_01WTjqUtr7kgfPr9chcd8gX1`, chiusa al
 13/11 15:18, parola per parola (con 2 foto del Cloud bread): «mancano in tutti ingredienti» → C153 patch + foto, DOMANDA 1 (1 = metto online C152 + C153 · 2 = no).
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C155; prossimo M libero: M1.
+Prossimo E libero: E1 (PT E80); prossimo C libero: C155; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).

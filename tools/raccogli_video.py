@@ -73,9 +73,29 @@ def leggi_canale(canale):
     return out
 
 
+PROMO = r'(?i)promozion|omagg|sconto|codice|\bcod\b|cashback|link|https?://'
+
+
 def ingredienti(testo):
-    return [l.strip(' -•').strip() for l in testo.split('\n')
-            if re.match(r'\s*[-•]\s*\S', l) and not re.search(r'(?i)codice|kcal|@|#|http', l)]
+    """Righe a trattino. Una menzione (@marca, #tag) o una pubblicità fra parentesi NON butta via l'ingrediente: si toglie solo lei
+    («-5g cacao (noi degrassato @fitporn)» → «5g cacao (noi degrassato)»). C154: prima la riga spariva intera (43 ricette senza
+    farina, cacao o proteine in polvere; Mario 13/11 «chissà in quanti altre ricette video mancano gli ingredienti»)."""
+    out = []
+    for l in testo.split('\n'):
+        if not re.match(r'\s*[-•]\s*\S', l):
+            continue
+        l = re.sub(r'\([^)]*(?:' + PROMO[4:] + r')[^)]*\)?', '', l, flags=re.I)   # «(promozione omaggi ogni 20€ con …»
+        l = re.sub(r'(?i)\s*(?:➡️?|,\s*lo trovi|,?\s*(?:col\s+)?cod\b).*$', '', l)   # «… ➡️ noi usiamo quelle di …», «, cod Fitlovers …»
+        if re.search(r'(?i)codice|kcal|https?://|www\.|e-?mail|\w@\w', l):
+            continue   # pubblicità, valori o indirizzi email: non sono ingredienti
+        l = re.sub(r'[@#][\w.]+', '', l)
+        l = re.sub(r'(?:\s+(?:di|da|del|della|con|il|la|nostro|nostra|noi|io|tipo|come|quello|quella|marca))*\s*\)', ')', l)   # «(… come il nostro @fitporn)» → «(…)»
+        l = re.sub(r'\(\s+', '(', l)
+        l = re.sub(r'\(\s*\)', '', l)
+        l = re.sub(r'\s{2,}', ' ', l).strip(' -•').strip()
+        if re.search(r'[a-zà-ü]{3}', l, re.I):
+            out.append(l)
+    return out
 
 
 STOP_DOSE = r'\s+(?:e|ed|per|in|a|al|alla|nel|nella|poi|fino|dentro|sopra|insieme|oppure|o|che|quindi|così|cosi)\b.*$'
