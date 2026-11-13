@@ -70,3 +70,4 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
   | Sergio Chisari | YouTube (ricette dietetiche, allenamento) | da vedere se scrive gli ingredienti |
   | Thomas Hungry (Marenduzzo) | YouTube 760 mila | NO: sfide ipercaloriche, non ricette fit |
   | Luca Romano (@lucaromano.food) | Instagram | NO per ora: solo Instagram (#59) |
+- 13/11 #70 (dopo le consegne): raccolta `--creatori` FINITA → `docs/lavori-in-corso/c148-stimate.patch` = `ricette-stimate.js` 206 → 522 (+316: Fit with Fun 241, Iamfitandsweet 19, Giuseppe Healthy 56; scarti: lettura 399, stima 310, regola 545). Da pubblicare con C149 e c148-video dopo la foto; manca `FONTI_RIC` coi prefissi fw, fs, gh.
