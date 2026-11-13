@@ -391,6 +391,31 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (!(await page.locator('.formato-riga', { hasText: 'teglia da 8: 800 g' }).count())) throw new Error('teglia da 8 non ricalcolata');
     await page.evaluate(() => { UI.vista = 'piatti'; render(); });   // resta in «I miei piatti»: la prova dopo parte da una schermata interna
   });
+  await passo('C160 confezione in grammi, etti, kg, ml, cl, litri', async () => {
+    // Mario 13/11 23:07 «aggiungi anche KG e CL ed Etti»: scrive il numero del pacco e tocca l'unità; in memoria resta in g o ml
+    await page.evaluate(() => { window._c160 = JSON.stringify([SPESA.ing.mascarpone, SPESA.ing.latte]);
+      SPESA.ing.mascarpone = { prezzo: 2.5 }; SPESA.ing.latte = { prezzo: 1.2 };
+      P.ruolo = 'monica'; UI.vista = 'piatto:tiramisu'; UI.foglio = { tipo: 'spesa-ing', id: 'mascarpone' }; render(); });
+    const conf = page.locator('.foglio [data-campo="sp.conf"]'), testo = () => page.locator('.foglio').innerText();
+    if (await conf.inputValue() !== '250' || !(await page.locator('.foglio [data-a="sp-cu"][data-v="g"][aria-pressed="true"]').count())) throw new Error('mascarpone di partenza: ' + await conf.inputValue());
+    await conf.fill('1'); await conf.dispatchEvent('change'); await clic('.foglio [data-a="sp-cu"][data-v="kg"]');
+    let m = await page.evaluate(() => SPESA.ing.mascarpone);
+    if (m.conf !== 1000 || m.cu !== 'kg' || !/per 1 kg/.test(await testo())) throw new Error('«1» + kg: ' + JSON.stringify(m));
+    await conf.fill('3'); await conf.dispatchEvent('change'); await clic('.foglio [data-a="sp-cu"][data-v="hg"]');
+    m = await page.evaluate(() => SPESA.ing.mascarpone);
+    if (m.conf !== 300 || !/per 3 etti/.test(await testo()) || await conf.inputValue() !== '3') throw new Error('«3» + etti: ' + JSON.stringify(m));
+    if (await page.evaluate(() => prezzoUnita('mascarpone')) !== 2.5 / 300) throw new Error('prezzo al grammo sbagliato coi 3 etti');
+    await page.evaluate(() => { UI.foglio = { tipo: 'spesa-ing', id: 'latte' }; render(); });
+    // latte da 1000 ml: si vede «1 litri»; scrive 75 e tocca «cl» = 75 cl (il numero resta, cambia l'unità)
+    if (await conf.inputValue() !== '1' || !(await page.locator('.foglio [data-a="sp-cu"][data-v="l"][aria-pressed="true"]').count())) throw new Error('latte di partenza: ' + await conf.inputValue());
+    await conf.fill('75'); await conf.dispatchEvent('change');
+    await clic('.foglio [data-a="sp-cu"][data-v="cl"]');
+    if (await page.evaluate(() => SPESA.ing.latte.conf) !== 750 || !/per 75 cl/.test(await testo())) throw new Error('«75» + cl: ' + await page.evaluate(() => JSON.stringify(SPESA.ing.latte)));
+    if (await page.evaluate(() => misura(1500, 'ml', 'l') + ' · ' + misura(100, 'g', 'hg') + ' · ' + misura(1500, 'g')) !== '1,5 l · 1 etto · 1,5 kg') throw new Error('misura: ' + await page.evaluate(() => misura(1500, 'ml', 'l') + ' · ' + misura(100, 'g', 'hg')));
+    await clic('.foglio [data-a="sp-unita"][data-v="pz"]');   // cambia «si misura in»: l'unità della confezione torna quella giusta
+    if (await page.evaluate(() => SPESA.ing.latte.cu) !== null || await page.locator('.foglio [data-a="sp-cu"]').count()) throw new Error('a pezzi restano cl o i tasti');
+    await page.evaluate(() => { const [a, b] = JSON.parse(window._c160); if (a) SPESA.ing.mascarpone = a; else delete SPESA.ing.mascarpone; if (b) SPESA.ing.latte = b; else delete SPESA.ing.latte; UI.foglio = null; UI.vista = 'piatti'; render(); });
+  });
   await passo('foto del menù: Monica ne carica 2 e le può mandare, i clienti per ora no', async () => {
     await clic('[data-a="ruolo"][data-v="monica"]'); await page.waitForTimeout(300);
     while (await page.locator('.indietro').count()) { await clic('.indietro'); await page.waitForTimeout(150); }
