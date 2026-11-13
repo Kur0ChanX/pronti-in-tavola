@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 13/11 · 🟡 Principale 81 · v0.10.30 ONLINE (C155 barra «Chiedi o ordina» + C157 misura della teglia): chiudi e riapri l'app, guarda il menù da cliente; una foto quando puoi.
 - 13/11 · 🟢 Principale 81 · C158 (Mario 13/11 ~21:20 «facciamo della precedente… valuta tu qual è il sistema migliore»): proposta = l'hook d'avvio legge le parole intere della sessione PRECEDENTE anche dalla sua scorta (messaggi scritti dopo l'handoff), consegne corte come ora: 1 = ok, la faccio dopo la 0.10.30 · 2 = no.
 - 13/11 · 🟢 Principale 79 · DOMANDA 2 controllo delle regole (conflitti, doppioni, regole morte; tabella tengo/unisco/tolgo, decide Mario): 1 = dopo i tasti (consiglio) · 2 = subito. A cosa serve: Mario teme regole in conflitto.
 - 13/11 · 🟢 Principale 77 · C154 velocità della trascrizione: Gemini gratis fa ~25 video al giorno, ne restano 765 (~4 settimane). 1 = resto gratis, vado ogni mattina (consiglio) · 2 = piano a pagamento di Google, tutto in ~1 giorno, stima 10-40 € una volta sola. A cosa serve: decidi tu se spendere.
