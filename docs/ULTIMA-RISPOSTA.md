@@ -1,14 +1,11 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:46 ora italiana)
 
+🧠 Opus · Alto
 
+La sessione precedente mi ha girato il tuo messaggio su Lisa. È lo stesso a cui ho appena risposto: non c'è niente di nuovo da fare.
 
-## Domande a Mario
+Ho controllato un'altra ipotesi: che l'ordine di Lisa fosse fermo «da approvare». È poco probabile. Il tasto «Scrivimi» lo vede solo chi Monica ha già approvato, e Lisa l'ha usato. Comunque Monica vede anche gli ordini da approvare. L'ho scritto nel file del lavoro, salvato su GitHub.
 
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
+Resto in attesa delle due risposte: cosa vede Monica in **Ordini** (anche gli ordini «di PROVA») e cosa ha toccato Lisa.
 
-Rispondi col numero.
+⚠️ Aspettano te: 19 · causa di Lisa, …
