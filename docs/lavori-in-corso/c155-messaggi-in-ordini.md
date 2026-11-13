@@ -24,3 +24,12 @@ Doppione (già nel carrello: le righe si sommano con `aggiungiRiga`), piatto non
 
 ## Stato
 Aspetta l'ok di Mario sulle foto; poi giro completo, pubblicazione, «chiudi e riapri».
+
+## Quarto messaggio di Mario (13/11 ~18:45, dopo l'handoff)
+«La cliente Lisa … ha fatto un ordine tramite l'app, però gli è arrivato solo il messaggio a Monica … vorrei evitare questa cosa che arriva solo il messaggio e nell'app non c'è traccia di nulla … Stai correggendo i gusti. Nessuno ti ha parlato di gusti … stai lavorando a testa bassa».
+
+## Causa: cosa è PROVATO e cosa no (#78)
+- PROVATO dal codice: il testo «Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola. Sono … Volevo chiederti:» lo scrive SOLO `waMonica()` senza ordine (app.js:330-331): tasto verde «Scrivimi» in basso o «Scrivimi» nella scheda «Dove ritiri» (app.js:1149). Dentro un ordine il testo direbbe «per l'ordine n. …» (app.js:1091). Quindi il messaggio NON è partito da un ordine.
+- NON provato: se Lisa ha prima provato il carrello e si è fermata. Possibili inciampi: tasto «Invia» grigio finché non sceglie il giorno (la «prossima settimana» va scelta a mano fra i giorni), scelta «ordini davvero o stai provando?», ordine minimo, «parmigiana al posto della pasta al forno» che nel carrello non si può dire senza nota. Oppure ordine segnato «di prova».
+- Da qui non leggo i dati veri (nessuna chiave, giusto così): serve Monica (Ordini, anche quelli di prova) o Lisa (cosa ha toccato).
+- Il gusto «ricotta e spinaci» nella patch: Mario non l'ha chiesto → da togliere dalla patch.
