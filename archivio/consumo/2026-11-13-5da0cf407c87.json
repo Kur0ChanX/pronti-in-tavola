@@ -2,26 +2,34 @@
 "account": "108763",
 "sessione": "5da0cf407c87",
 "giorno": "2026-11-13",
-"turni": 1,
-"peso": 630965,
-"uscita": 23836,
-"contesto_max": 166490,
+"turni": 4,
+"peso": 2402594,
+"uscita": 93464,
+"contesto_max": 279522,
 "anomalie": [
 "2 uscite di strumento enormi (43 KB la più grande): leggere a pezzi (grep -n, sed -n)",
-"avvio pesante: 131k token dopo le letture d'avvio (tetto 130k)"
+"avvio pesante: 131k token dopo le letture d'avvio (tetto 130k)",
+"28k token scritti in un turno",
+"1 uscite di strumento enormi (116 KB la più grande): leggere a pezzi (grep -n, sed -n)",
+"34k token scritti in un turno"
 ],
 "remota": "01WTjqUuVK9Q",
 "aiutanti": 0,
-"strumenti": 33,
+"strumenti": 89,
 "motori": {
-"opus": 630965
+"opus": 2402594
 },
 "blocchi": {
-"Stop 6 · Segno delle domande nel titolo": 1
+"Stop 6 · Segno delle domande nel titolo": 1,
+"Stop 13 · There are uncommitted changes in": 2
 },
 "esempi_blocchi": {
 "Stop 6 · Segno delle domande nel titolo": [
 "22:53 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 83 ❓22 · costo ricetta» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avvi"
+],
+"Stop 13 · There are uncommitted changes in": [
+"23:16 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"23:23 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
 ]
 }
 }
