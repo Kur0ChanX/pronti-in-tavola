@@ -4,7 +4,7 @@ Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa al
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (13/11 09:38-10:09, #70):** «catalogo immenso proteico in priorità a GialloZafferano» (GZ piano piano): voto palestra su tutte le carte (C149, patch pronta, 🛑 DOMANDA 2 «1 = mettilo nell'app»), tanti creatori in più (C148), le ricette le carica Claude, MAI il motore dell'app (consumava tutto e bloccava l'app, Mario ~09:45).
+- **Cosa preme a Mario adesso (13/11 09:38-09:55, #70):** «catalogo immenso proteico in priorità a GialloZafferano» (GZ piano piano): voto palestra su tutte le carte (C149, patch pronta, 🛑 DOMANDA 2 «1 = mettilo nell'app»), tanti creatori in più (C148), le ricette le carica Claude, MAI il motore dell'app (consumava tutto e bloccava l'app, Mario ~09:45).
 
 ## Stato (13/11 10:00 ora italiana)
 - Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUvtoJC/claude/pronti-ramo-definitivo.
@@ -49,7 +49,7 @@ Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 15; 🛑 DOMANDA 2 C149, 🛑 C141, idee C149).
 
 ## Ultimo messaggio di Mario
-13/11 ~10:09, parola per parola: «palestra pubblica a cosa ti serve saperlo?!?!?» → malinteso: «1 = pubblica» della DOMANDA 2 letto come «palestra pubblica»; domanda riscritta («1 · Mettilo nell'app»), PT E76.
+13/11 09:55, parola per parola: «palestra pubblica a cosa ti serve saperlo?!?!?» → malinteso: «1 = pubblica» della DOMANDA 2 letto come «palestra pubblica»; domanda riscritta («1 · Mettilo nell'app»), PT E76.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C150; prossimo M libero: M1.
@@ -61,21 +61,16 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
 - 2026-11-13 09:12 · https://claude.ai/connect-github → GitHub controllato (get_me ok)
 - 2026-11-13 09:23 · Rinomina la sessione, rinomina la sessione, rinomina la sessioneeeeeeeeee → rinominata; PT E75
-- 2026-11-13 09:32 · [AVVIO] Sessione #70 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
-- 2026-11-13 09:38 · stai andando bene metti i voti anche fuori in vista prima di entrare valuta se t… → 
-- 2026-11-13 09:4x · Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resourc… → 
-- 2026-11-13 09:41 · stai andando bene metti i voti anche fuori in vista prima di entrare valuta se t… → 
-- 2026-11-13 09:42 · Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resourc… → 
-- 2026-11-13 09:46 · nel mio utente Mario mette i voti per me invece per monica valuta in modo generi… → 
-- 2026-11-13 ~09:50 · nel mio utente Mario mette i voti per me invece per monica valuta in modo generi… → 
-- 2026-11-13 09:52 · adesso forse sono o al 12% o 14% di grasso circa → 
-- 2026-11-13 09:54 · mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2 → 
+- 2026-11-13 09:32 · [AVVIO] Sessione #70 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … →  testo di avvio: fatto (titolo PT E75)
+- 2026-11-13 09:38 · stai andando bene metti i voti anche fuori in vista prima di entrare valuta se t… →  C149 + C148 (Da fare, c148-lista-creatori-fitness.md)
+- 2026-11-13 09:4x · Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resourc… →  C148: le carica Claude, motore dell'app spento
+- 2026-11-13 09:41 · stai andando bene metti i voti anche fuori in vista prima di entrare valuta se t… →  C149 + C148 (Da fare, c148-lista-creatori-fitness.md)
+- 2026-11-13 09:42 · Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resourc… →  C148: le carica Claude, motore dell'app spento
+- 2026-11-13 09:46 · nel mio utente Mario mette i voti per me invece per monica valuta in modo generi… →  C149 voto per te, profilo palestra (patch)
+- 2026-11-13 09:52 · adesso forse sono o al 12% o 14% di grasso circa →  campo «Grasso» nel profilo (patch C149)
+- 2026-11-13 09:54 · mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2 →  parere: obiettivo ricomposizione
 - 2026-11-13 09:54 · valuta tu la percentuale → stima 11-12 %, consiglio 12
 - 2026-11-13 09:55 · palestra pubblica a cosa ti serve saperlo?!?!? → PT E76, DOMANDA 2 riscritta
-- 2026-11-13 ~10:00 · adesso forse sono o al [percentuale]% di grasso circa (numero coperto: progetto … → 
-- 2026-11-13 ~10:05 · mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2 → 
-- 2026-11-13 ~10:07 · valuta tu la percentuale → stima 11-12 %, consiglio 12
-- 2026-11-13 ~10:09 · palestra pubblica a cosa ti serve saperlo?!?!? (malinteso: «1 = pubblica» della … → 
 
 Ultimo, intero:
 > palestra pubblica a cosa ti serve saperlo?!?!?
