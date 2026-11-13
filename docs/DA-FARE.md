@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 13/11 · 🟢 Principale 77 · «scrivo e non mi rispondi»: 1 = parlavi di me (turni lunghi) · 2 = della cliente · 3 = tutte e due. A cosa serve: capire cosa correggere.
 - 13/11 · 🟢 Principale 77 · C155 «Scrivimi» capisce gli ordini (foto `archivio/foto/2026-11-13-c155-scrivimi-*.png`, patch `c155-scrivimi.patch`): 1 = metto online nell'app · 2 = cambia qualcosa. A cosa serve: senza il tuo ok non pubblico.
 - 13/11 · 🟢 Principale 77 · C154 velocità della trascrizione: Gemini gratis fa ~25 video al giorno, ne restano 765 (~4 settimane). 1 = resto gratis, vado ogni mattina (consiglio) · 2 = piano a pagamento di Google, tutto in ~1 giorno, stima 10-40 € una volta sola. A cosa serve: decidi tu se spendere.
 - 13/11 · 🟢 Principale 76 · C154 scritte «✅ controllata con Gemini» / «⚠️ non controllata» (foto `archivio/foto/2026-11-13-c154-48*.png` mandate, patch `c154-etichette.patch`): 1 = vanno bene, metto online nell'app · 2 = cambia qualcosa. A cosa serve: senza il tuo ok non pubblico.
