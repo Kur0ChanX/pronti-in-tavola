@@ -1,5 +1,5 @@
 diff --git a/app.js b/app.js
-index 35cfb154..e669acbd 100644
+index 35cfb154..5a0ec4a9 100644
 --- a/app.js
 +++ b/app.js
 @@ -327,10 +327,47 @@ function rigaOrdine(r, extra = '') {
@@ -90,13 +90,48 @@ index 35cfb154..e669acbd 100644
 +    if (giorno && giorniPossibili(teglie).some(x => x.g === giorno && !x.no)) UI.entro = giorno;
 +    if (!UI.nota.includes(testo)) UI.nota = [UI.nota.trim(), `Il mio messaggio: ${testo}`].filter(Boolean).join('\n');
 +    salvaP(); UI.foglio = null; vai('carrello');
-+    mostraToast(UI.entro ? 'Controlla e tocca «Invia ordine».' : 'Scegli il giorno e tocca «Invia ordine».');
++    mostraToast(UI.entro ? 'Controlla e tocca «Invia l\'ordine a Monica».' : 'Scegli il giorno e tocca «Invia l\'ordine a Monica».');
 +  },
    async 'mio-nome-ok'() {   // (C99) il cliente corregge il suo nome
      const i = $('#mio-nome'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
      if (nome.length < 3 || !nome.includes(' ')) { mostraToast('Scrivi nome e cognome.'); if (i) i.focus(); return; }
+@@ -3153,8 +3208,26 @@ function controllaRichieste() {
+   UI.richViste.push(...nuove.map(r => r.id));
+   UI.foglio = { tipo: 'richieste' };
+ }
++/* (C155) link «carrello pronto» che Monica manda a un cliente (Mario 13/11: «il primo ordine di Lisa dall'app, tracciato»):
++   …/?ordine=<il messaggio del cliente> → l'app capisce i piatti (ordineDaMessaggio), li mette nel carrello col messaggio nella nota
++   e apre il carrello: il cliente sceglie il giorno e invia, l'ordine è suo. Aperto due volte non raddoppia (P.linkFatti).
++   Se non capisce tutto, apre «Scrivi a Monica» col testo già scritto. */
++UI.ordineLink = (() => { try { const q = new URLSearchParams(location.search), t = q.get('ordine'); if (!t) return null; q.delete('ordine');
++  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); return t.trim().slice(0, 800) || null; } catch (e) { return null; } })();
++function carrelloDaLink() {
++  if (!UI.ordineLink || P.ruolo !== 'cliente' || serveBenvenuto() || !S.piatti.length) return;
++  const testo = UI.ordineLink; UI.ordineLink = null;
++  UI.linkCiao = true;   // arrivato dal link: niente consigli del microfono sopra il carrello (voce-clienti.js)
++  if ((P.linkFatti || []).includes(testo)) { vai('carrello'); return; }
++  const pr = ordineDaMessaggio(testo);
++  UI.foglio = { tipo: 'scrivimi', testo, ...(pr ? { ordine: pr } : {}) };
++  if (!pr || pr.dubbio) return;
++  P.linkFatti = (P.linkFatti || []).concat(testo).slice(-10);
++  A['scrivimi-ordina']();
++}
+ if (/^#gestore(-m)?$/.test(location.hash)) { P.invitoGestore = location.hash === '#gestore-m' ? 'm' : true; if (Dati.attivo) salvaP(); }
+ const RIPRESA = riprendiDopoAggiornamento();
++if (!Dati.attivo) carrelloDaLink();
+ render();
+ if (RIPRESA) { requestAnimationFrame(() => window.scrollTo(0, RIPRESA.y || 0)); mostraToast(`App aggiornata alla ${VERSIONE_APP} ✅`); } else apertura();
+ if (Dati.attivo) avviaDati();
+@@ -3283,6 +3356,7 @@ function avviaDati() {
+     if (P.cliente) rinnovaAvvisi();
+     if (UI.vista === 'home' && P.ruolo === 'cliente') UI.vista = 'menu';
+     if (UI.vaiDopo && (P.ruolo === 'cliente' || io.gestore)) vaiDaNotifica();
++    if (UI.ordineLink) carrelloDaLink();
+     /* mentre Monica scrive in un campo non si ridisegna: si aspetta che esca dal campo */
+     if (staScrivendo()) { renderDopo = true; return; }
+     render();
 diff --git a/data.js b/data.js
-index c0c0a633..e8179185 100644
+index c0c0a633..869648f3 100644
 --- a/data.js
 +++ b/data.js
 @@ -183,9 +183,12 @@ function statoIniziale() {
@@ -108,7 +143,7 @@ index c0c0a633..e8179185 100644
  /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
  const NOVITA = [
 +  { v: '0.10.29', data: '13/11/2026',
-+    nuovo: ['Clienti: «Scrivimi» capisce gli ordini. Se nel messaggio ci sono piatti del menù (es. «2 kg di ravioli»), l\'app li mette nel carrello e l\'ordine arriva vero a Monica, col messaggio nella nota. Le domande vanno su WhatsApp come prima'],
++    nuovo: ['Clienti: «Scrivimi» capisce gli ordini. Se nel messaggio ci sono piatti del menù (es. «2 kg di ravioli»), l\'app li mette nel carrello e l\'ordine arriva vero a Monica, col messaggio nella nota. Le domande vanno su WhatsApp come prima', 'Monica può mandare a un cliente un link col carrello già pronto: il cliente sceglie il giorno e invia'],
 +    migliorato: ['Ordini detti o scritti: «ricotta e spinaci» sceglie il gusto giusto'] },
    { v: '0.10.28', data: '13/11/2026',
      nuovo: ['Ricettario: 70 ricette proteiche in più'],
@@ -127,10 +162,10 @@ index 16185eba..cf08a16c 100644
  .wa-monica svg { width: 24px; height: 24px; }
  @keyframes wa-entra { from { opacity: 0; transform: translateY(20px) scale(.9); } }
 diff --git a/tools/prova.js b/tools/prova.js
-index 43d04996..0644cd32 100644
+index 43d04996..443b30f6 100644
 --- a/tools/prova.js
 +++ b/tools/prova.js
-@@ -551,12 +551,28 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+@@ -551,18 +551,51 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
      await page.evaluate(p => { S.impostazioni.anticipo = p; }, prima);
      await page.evaluate(() => { UI.vista = 'home'; render(); });
    });
@@ -163,8 +198,31 @@ index 43d04996..0644cd32 100644
      await page.evaluate(() => { UI.vista = 'ordini'; UI.ordAperto = (S.ordini.find(o => o.cliente === P.cliente && !['rifiutato', 'annullato'].includes(o.stato)) || {}).id; render(); });
      await page.waitForTimeout(300);
      if (!decodeURIComponent(await page.locator('.wa-ordine').first().getAttribute('href')).includes('per l\'ordine n.')) throw new Error('manca il numero dell\'ordine nel messaggio');
+     await page.evaluate(() => { S.impostazioni.whatsapp = ''; UI.vista = 'menu'; render(); });
+     if (await page.locator('.wa-monica').count()) throw new Error('tasto visibile senza numero (cliente non approvato)');
+   });
++  await passo('cliente: link «carrello pronto» di Monica (?ordine=…) mette i piatti nel carrello, una volta sola (C155)', async () => {   // autonoma
++    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.linkFatti = []; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
++    const testo = '2 kg di ravioli ricotta e spinaci\n1 parmigiana di melanzane al posto della pasta al forno';
++    await page.evaluate(t => { UI.ordineLink = t; carrelloDaLink(); render(); }, testo);
++    await page.waitForTimeout(400);
++    const c = await page.evaluate(() => ({ v: UI.vista, f: !!UI.foglio, r: P.carrello.map(r => `${r.qta} ${r.piatto} ${r.variante}`).join(', '), n: UI.nota, l: UI.ordineLink }));
++    if (c.v !== 'carrello' || c.f || c.r !== '2 ravioli spinaci, 1 parmigiana ' || !c.n.includes('al posto della pasta al forno') || c.l) throw new Error('carrello dal link: ' + JSON.stringify(c));
++    if (!(await page.locator('#app').innerText()).includes('Ravioli')) throw new Error('il carrello non mostra i ravioli');
++    if (await page.locator('.vc-primo').count()) throw new Error('il consiglio del microfono copre il carrello del link');
++    await foto('36b-carrello-dal-link');
++    await page.evaluate(t => { UI.vista = 'menu'; UI.ordineLink = t; carrelloDaLink(); render(); }, testo);   // aperto di nuovo: non raddoppia
++    const d = await page.evaluate(() => ({ v: UI.vista, q: P.carrello.map(r => r.qta).join(',') }));
++    if (d.v !== 'carrello' || d.q !== '2,1') throw new Error('link aperto due volte: ' + JSON.stringify(d));
++    await page.evaluate(() => { P.carrello = []; UI.nota = ''; UI.ordineLink = 'ciao, a che ora aprite?'; carrelloDaLink(); render(); });   // niente piatti: «Scrivi a Monica» col testo
++    if (!(await page.evaluate(() => UI.foglio && UI.foglio.tipo === 'scrivimi' && UI.foglio.testo.includes('a che ora')))) throw new Error('senza piatti non apre «Scrivi a Monica»');
++    await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
++  });
+   await passo('Monica: l\'aiutante capisce il senso, le parole sono solo indizi; senza AI chiede «Intendi…?» (C102)', async () => {   // autonoma
+     await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; AI.attesa = false; UI.aiQui = null; UI.foglio = null; window._chiediVero = window._chiediVero || chiediAiutante; vai('aiutante'); });
+     // 1) con l'AI: decide lei dal senso, anche se le parole portano altrove; le parole le arrivano come indizi
 diff --git a/voce-clienti.js b/voce-clienti.js
-index 5f7cd00f..38fd574b 100644
+index 5f7cd00f..7ac13ea4 100644
 --- a/voce-clienti.js
 +++ b/voce-clienti.js
 @@ -131,7 +131,14 @@ function piattiVoce(tok, usatiQta, scelte, sin) {
@@ -183,3 +241,12 @@ index 5f7cd00f..38fd574b 100644
      let punti = somma / parole.length;
      if (gusto) { punti += 0.5; pos.push(gusto.i); }
      cand.push({ p, punti, pos: [...new Set(pos)].sort((a, b) => a - b), gusto, esatto: !gusto && punti >= 1 && parole.length === pos.length });
+@@ -636,7 +643,7 @@ function disegnaVC() {
+   const fab = fabVisibile(), su = fab || ascoltoInCorso() || VC.stato === 'capito';   // C110: anche nella pagina Aiutante (su iPad sembrava che non partisse)
+   box.hidden = !su; document.body.classList.toggle('vc-su', fab);
+   if (!su) return;
+-  const st = VC.stato, primo = fab && !st && (() => { try { return !localStorage.getItem('pit-vc-visto'); } catch (e) { return false; } })();
++  const st = VC.stato, primo = fab && !st && !UI.linkCiao && (() => { try { return !localStorage.getItem('pit-vc-visto'); } catch (e) { return false; } })();
+   const suggerimento = VC.perSi != null ? 'Di\' «sì» oppure «no»' : VC.dettato ? 'Dimmi piatti, quantità e giorno, tutto in una frase' : 'Parla pure: mi fermo da sola quando finisci';
+   const chiave = [fab, st, primo, ascoltoInCorso(), UI.vista === 'aiuto'].join('|');
+   const attesa = VC.sento ? 'Ti sento! Quando finisci mi fermo da sola.' : suggerimento;
