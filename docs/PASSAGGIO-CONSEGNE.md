@@ -2,6 +2,8 @@
 
 Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa alla soglia 13/11 10:00; la apre la #70 con `create_session` (catena 1 di 8)).
 
+**#72 aperta in parallelo dalla #71 (13/11 ~09:45; Mario: «lavorate in 2 sessione fino a quando non la chiudi questa e comunicate quello che vi serve»)**: la #72 fa SOLO C150 (`docs/lavori-in-corso/c150-ricette-dal-parlato.md`, ultima riga) finché la #71 è aperta; la #71 finisce C148 e poi le manda le consegne con `send_message`. Scorta della #71: NON unirla finché la #71 è aperta (E97).
+
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (13/11 09:38-09:55, #70):** «catalogo immenso proteico in priorità a GialloZafferano» (GZ piano piano): voto palestra su tutte le carte (C149, patch pronta, 🛑 DOMANDA 2 «1 = mettilo nell'app»), tanti creatori in più (C148), le ricette le carica Claude, MAI il motore dell'app (consumava tutto e bloccava l'app, Mario ~09:45).
