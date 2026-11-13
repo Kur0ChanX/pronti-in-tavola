@@ -38,3 +38,7 @@ Aspetta l'ok di Mario sulle foto; poi giro completo, pubblicazione, «chiudi e r
 ## Quinto messaggio di Mario (13/11 18:53)
 «Io voglio che sia tutto tracciato, voglio spingere il cliente a ordinare dall'app … non è la prima cosa che vede, scrivi a Monica … sennò bypassa tutto il lavoro che facciamo dell'app … la prima cosa è cercare di far ordinare e che sia tutto tracciato dall'applicazione. Tutto il resto è superfluo, i messaggi a Monica di WhatsApp, anche perché è controproducente per l'app. Inventati qualcosa di intelligente … impegnati di più e non metterci una vita.»
 → #78: piano «Messaggi dentro l'app» proposto, aspetta ok (modo di lavorare: prima ok, poi codice).
+
+## Sesto messaggio di Mario (13/11 ~18:57)
+«1 vai di consiglio. Riusciamo a metterlo dentro l'ordine? Almeno rimane tracciato questo primo ordine che gli stanno facendo dall'app … vorrei questo primo ordine dall'app. Come possiamo fare? Inventati qualcosa.»
+→ «1» letto come DOMANDA 3 = 1 (piano tutto) e DOMANDA 4 = 1 (regola account con blocco). Proposto per Lisa: link col carrello pronto (aspetta ok).
