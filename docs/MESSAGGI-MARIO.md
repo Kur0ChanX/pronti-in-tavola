@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 19:24 · 01WTjqUvhRwD
-hai aggiunto le ricette dello youtuber piú tutte quelle dette 500? ricette / 3 secondo me se sei d'accordo
-
 ## 2026-11-11 19:33 · 01WTjqUumr4n
 mettimi se puoi tutti i video delle ricette dello youtuber e metti le informazioni che hai in una sezione a parte esempio ricette video e dividi per il nome che dici? occupiamo teoppo spazio limiti ecc?
 
@@ -125,3 +122,7 @@ Voglio tutto tracciato nell app cosí non c'è l'ordine spingi i clienti a ordin
 
 ## 2026-11-13 18:39 · 01WTjqUwuvHs
 ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+
+## 2026-11-13 18:43 · 01WTjqUwuvHs
+La cliente Lisa non è molto pratica, ha fatto un ordine tramite l'app, però gli è arrivato solo il messaggio a Monica e non so come sia potuto succedere e vorrei evitare questa cosa che arriva solo il messaggio e nell'app non c'è traccia di nulla. Questo, adesso non so tu cosa sei andato a risolvere se non ascolti quello che ti dico.
+Quindi ti dico, non so cosa stai andando a correggere. Stai continuando a mettere in attesa i miei messaggi e stai lavorando a cose che non so. Stai correggendo i gusti. Nessuno ti ha parlato di gusti. Ok, se c'era un errore hai fatto bene a correggerlo, ma nessuno ti ha parlato di gusti. Tu non stai leggendo i miei messaggi, stai lavorando a testa bassa. E c'era scritto nelle regole delle preferenze: non lavorare a testa bassa.

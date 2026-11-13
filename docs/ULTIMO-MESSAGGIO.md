@@ -1,3 +1,4 @@
-# Ultimo messaggio di Mario (13/11/2026 18:39 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 18:43 ora italiana)
 
-ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+La cliente Lisa non è molto pratica, ha fatto un ordine tramite l'app, però gli è arrivato solo il messaggio a Monica e non so come sia potuto succedere e vorrei evitare questa cosa che arriva solo il messaggio e nell'app non c'è traccia di nulla. Questo, adesso non so tu cosa sei andato a risolvere se non ascolti quello che ti dico.
+Quindi ti dico, non so cosa stai andando a correggere. Stai continuando a mettere in attesa i miei messaggi e stai lavorando a cose che non so. Stai correggendo i gusti. Nessuno ti ha parlato di gusti. Ok, se c'era un errore hai fatto bene a correggerlo, ma nessuno ti ha parlato di gusti. Tu non stai leggendo i miei messaggi, stai lavorando a testa bassa. E c'era scritto nelle regole delle preferenze: non lavorare a testa bassa.

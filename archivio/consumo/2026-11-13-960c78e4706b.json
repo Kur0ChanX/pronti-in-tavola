@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "960c78e4706b",
 "giorno": "2026-11-13",
-"turni": 7,
-"peso": 2587126,
-"uscita": 61944,
-"contesto_max": 257608,
+"turni": 9,
+"peso": 3335661,
+"uscita": 74971,
+"contesto_max": 285191,
 "anomalie": [
 "1 uscite di strumento enormi (74 KB la più grande): leggere a pezzi (grep -n, sed -n)",
 "2 uscite di strumento enormi (90 KB la più grande): leggere a pezzi (grep -n, sed -n)",
@@ -13,9 +13,9 @@
 ],
 "remota": "01WTjqUwuvHs",
 "aiutanti": 0,
-"strumenti": 100,
+"strumenti": 124,
 "motori": {
-"opus": 2587126
+"opus": 3335661
 },
 "blocchi": {
 "Stop 5 · Foto e video (E240, E247;": 2,

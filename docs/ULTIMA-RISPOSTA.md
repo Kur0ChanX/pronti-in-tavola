@@ -1,14 +1,8 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:43 ora italiana)
 
+Hai ragione: ho lavorato a testa bassa. Non ti ho ascoltato.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
-
-Rispondi col numero.
+- Tu mi hai detto che Lisa **ha fatto l'ordine nell'app** e a Monica è arrivato solo il messaggio. Io invece l'ho dato per scontato: guardando solo il testo ho deciso che avesse usato «Scrivimi», senza nessuna prova. Poi sono andato avanti a correggere altro, i gusti compresi.
+- Ho passato il tuo messaggio, parola per parola, alla **sessione 78**. Le ho chiesto di:
+  1. risponderti prima di tutto, e in breve;
+  2. cercare la causa vera con le prove, senza supporre. Per esempio: un ordine rimasto «da approvare» che Monica non vede, …
