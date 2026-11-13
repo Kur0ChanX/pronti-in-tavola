@@ -1,21 +1,71 @@
 diff --git a/app.js b/app.js
-index 5a0ec4a9..3972cb22 100644
+index 5a0ec4a9..d9c09c8a 100644
 --- a/app.js
 +++ b/app.js
-@@ -334,7 +334,7 @@ function waTesta() {
+@@ -334,7 +334,6 @@ function waTesta() {
    const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '';
    return `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${chi ? ` Sono ${chi}.` : ''}`;
  }
 -const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi" aria-label="Scrivimi">${ico('chat')}<span>Scrivimi</span></button>` : '';
-+const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi">${ico('chat')}<span>Hai una domanda? Scrivi a Monica</span></button>` : '';
  /* «Scrivimi» capisce gli ordini (C155, Mario 13/11 «voglio automatismo»: una cliente aveva scritto l'ordine nel messaggio WhatsApp e a Monica
     non era arrivato niente). Il cliente scrive QUI; se nel testo ci sono piatti del menù l'app propone di metterli nel carrello (l'ordine
     arriva vero tra gli Ordini, col messaggio nella nota); se no, o se il cliente vuole, si apre WhatsApp col testo già scritto.
+@@ -939,9 +938,10 @@ function vMenu() {
+           <span class="piccolo num">${euro(prezzoDi(p, f.id))}${f.tipo === 'kg' ? ' al kg' : ''}</span></button>`;
+       }).join('')}</div></section>`;
+   }
+-  h += P.allergie.length
+-    ? `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Le tue allergie:</b> ${esc(P.allergie.map(a => NOME_ALL[a].toLowerCase()).join(', '))}<br><u>Cambia</u></span></button>`
+-    : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b><br><small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`;
++  /* (C155, Mario 13/11) allergie in una striscia più piccola che resta in cima mentre scorri il menù */
++  h += `<div class="striscia-menu">${P.allergie.length
++    ? `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Le tue allergie:</b> ${esc(P.allergie.map(a => NOME_ALL[a].toLowerCase()).join(', '))} · <u>Cambia</u></span></button>`
++    : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b> <small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`}</div>`;
+   h += profiloCliente();
+   h += `<nav class="schede-cat" aria-label="Parti del menù">${cats.map(([k, n]) => `<button type="button" class="chip" data-a="cat" data-v="${k}" aria-pressed="${UI.cat === k}">${n}</button>`).join('')}
+ </nav>`;
+@@ -953,7 +953,7 @@ function vMenu() {
+     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
+       <div class="voci">${visibili().filter(p => p.cat === k && p.disponibile).map(voce).join('')}</div></section>`;
+   });
+-  return h + tastoMonica() + '</main>';
++  return h + '</main>';
+ }
+ 
+ function apriPiatto(id, pronto, anteprima) {
+@@ -1146,7 +1146,7 @@ function vOrdiniCliente() {
+       <div class="ord-lista">${oo.map(rigaCliente).join('')}</div></section>`).join('');
+     if (passati.length > (UI.ordQuanti || 40)) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri</button>`;
+   }
+-  return h + cartaNotifica() + tastoMonica() + '</main>';
++  return h + cartaNotifica() + '</main>';
+ }
+ /* «Sono qui» (Mario 07/11, idea presa dal ritiro in auto): il cliente sotto casa avvisa Monica con un tocco */
+ function sonoQui(o) {
+@@ -1198,7 +1198,9 @@ function barraCliente() {
+   const att = { menu: 'menu', carrello: 'menu', modifica: 'ordini', inviato: 'ordini' }[UI.vista] || UI.vista;
+   const avvisi = S.ordini.filter(o => o.cliente === P.cliente && (o.stato === 'proposta' || o.stato === 'pronto')).length;
+   const b = (v, n, t, extra = '') => `<button type="button" data-a="vai" data-v="${v}" ${att === v ? 'aria-current="page"' : ''}>${ico(n)}${t}${extra}</button>`;
+-  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}</nav>`;
++  /* (C155, Mario 13/11) terza voce «Scrivi a Monica»: le domande in secondo piano, niente tasti sospesi sopra il menù; solo ai clienti approvati */
++  const scrivi = S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi">${ico('chat')}Scrivi a Monica</button>` : '';
++  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}${scrivi}</nav>`;
+ }
+ 
+ /* ================= MONICA ================= */
+@@ -1911,6 +1913,7 @@ const POS = {}; let penultimaVista = '';
+ function render() {
+   applicaParti();   // parti del menù scelte da Monica (opzioni.js, C92)
+   document.documentElement.classList.toggle('grande', !!P.grande);
++  requestAnimationFrame(() => { const t = document.querySelector('.testata'); document.documentElement.style.setProperty('--alto-testata', (t ? t.offsetHeight : 0) + 'px'); });   // striscia delle allergie sotto la testata (C155)
+   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
+   const attivo = document.activeElement && document.activeElement.id;
+   /* file che scorrono di lato: restano dove erano (C31); C127: ritrovate per nome (classe + aria-label), non per posizione, così una riga che compare sopra non le scambia */
 diff --git a/style.css b/style.css
-index cf08a16c..a5f4e2f0 100644
+index cf08a16c..5572c1b8 100644
 --- a/style.css
 +++ b/style.css
-@@ -699,15 +699,14 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
+@@ -699,16 +699,13 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
  .ai-foto-pronta { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; background: var(--foglio); border: 1px dashed var(--grano); }
  .ai-foto-pronta img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
  .ai-foto-pronta span { flex: 1; font-weight: 700; color: var(--tenue); }
@@ -24,18 +74,18 @@ index cf08a16c..a5f4e2f0 100644
 -  padding: 0 18px 0 14px; min-height: 52px; border-radius: 999px; background: #1F8F4E; color: #FFF; font-weight: 800; text-decoration: none; border: 0; font-family: inherit; font-size: inherit; cursor: pointer;
 -  box-shadow: 0 8px 22px -8px rgba(20, 80, 40, .6); animation: wa-entra .5s .8s both cubic-bezier(.3, 1.4, .5, 1); }
 -.wa-monica svg { width: 24px; height: 24px; }
-+/* «Scrivi a Monica» per i clienti approvati: riga discreta in fondo alla pagina, non più tasto fisso (Mario 13/11: prima si ordina dall'app,
-+   le domande in secondo piano; il tasto verde fisso copriva microfono e «Dettami l'ordine» coi caratteri grandi) */
-+.wa-monica { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 22px auto 0; padding: 10px 16px; min-height: 44px;
-+  background: none; border: 0; color: var(--tenue); font-family: inherit; font-size: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
-+.wa-monica svg { width: 20px; height: 20px; }
++/* (C155) allergie: striscia sottile e fissa in cima mentre scorri (Mario 13/11: più piccola, ma che si tocchi bene) */
++.striscia-menu { position: sticky; top: var(--alto-testata, 0px); z-index: 20; margin: 0 -4px; padding: 6px 4px; background: var(--carta); }
++.striscia-menu .allergie-box { width: 100%; min-height: 48px; padding: 8px 14px; font-size: .95rem; line-height: 1.3; }
++.striscia-menu .allergie-box small { font-size: .85rem; }
  @keyframes wa-entra { from { opacity: 0; transform: translateY(20px) scale(.9); } }
  .wa-ordine { display: inline-flex; align-items: center; gap: 6px; color: #1F8F4E; font-weight: 800; }
  .wa-ordine svg { width: 20px; height: 20px; }
 -@media (prefers-reduced-motion: reduce) { .wa-monica { animation: none; } }
- .corpo:has(> .wa-monica) { padding-bottom: 150px; }
+-.corpo:has(> .wa-monica) { padding-bottom: 150px; }
  
  /* «Sono qui sotto» con l'app aperta: schermata della suoneria (C51) */
+ .squillo { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px; background: rgba(60, 20, 15, .82); animation: squillo-luce 1s ease-in-out infinite alternate; }
 diff --git a/tools/prova.js b/tools/prova.js
 index 443b30f6..48eab443 100644
 --- a/tools/prova.js
