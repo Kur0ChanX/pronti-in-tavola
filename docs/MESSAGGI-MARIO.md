@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 17:48 · 01WTjqUu7eAD
-sono al pc fammi incollarew la chiave
-
-## 2026-11-11 17:49 · 01WTjqUu7eAD
-riprova
-
-## 2026-11-11 17:50 · 01WTjqUu7eAD
-la metto nel'ambiente
-
 ## 2026-11-11 17:52 · 01WTjqUu7eAD
 fatto
 
@@ -126,3 +117,9 @@ riordina la pagina oltre a non trovare nulla c'è un casino in questa pagina 300
 
 ## 2026-11-13 12:53 · 01WTjqUw4QVb
 è uno scherzo verooooooo????
+
+## 2026-11-13 12:55 · 01WTjqUw4QVb
+magari cose utili cosí lasciale visto che c'è ma una sezione a parte
+
+## 2026-11-13 12:57 · 01WTjqUw4QVb
+hai altre ricette da aggiungere?
