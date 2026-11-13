@@ -1,21 +1,10 @@
-# Ultima risposta di Claude (13/11/2026 20:30 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:33 ora italiana)
 
-Ho capito: per la parmigiana e le lasagne il cliente deve scegliere la misura per forza, sennò l'ordine non parte.
+Ho passato tutto il lavoro alla sessione nuova: **Principale 80**, catena 2 di 8. I controlli del passaggio sono tutti a posto e il lavoro è salvato su GitHub. La nuova lavora con Opus · Medio.
 
-Ho ricevuto la tua richiesta dalla sessione di prima.
+Rispondi pure qui o nella nuova:
+- **Domanda 1:** i tasti del menù, ho capito bene? Questa ferma il lavoro finché non rispondi.
+- **Domanda 2:** il controllo delle regole lo faccio dopo i tasti o subito?
+- **Domanda 3:** la misura della teglia va scelta per forza anche dal menù normale?
 
-───
-💡 PARERE
-- **Il problema è più grande di quanto sembra.** Quando l'ordine arriva dal link, da «Scrivimi» o dalla voce, l'app prende da sola la prima misura della teglia. Lisa non se ne accorge.
-- **Anche dal menù normale** la prima misura è già scelta in partenza. Il cliente può toccare «Aggiungi» senza guardarla.
-- Proposta: la riga nel carrello resta rossa con scritto «Scegli la misura». Il tasto «Invia l'ordine a …
-
-## Domande a Mario
-
-❓ DOMANDE
-DOMANDA 3: anche dal menù normale il cliente deve scegliere la misura da solo?
-📌 Di cosa parliamo: oggi, quando apri un piatto con più misure, la prima è già selezionata. Con la scelta 1, all'inizio nessuna misura è selezionata e «Aggiungi» non va finché il cliente non ne tocca una.
-1 · Sì, la misura sempre da scegliere, da tutte le strade (consiglio: nessuno ordina la teglia sbagliata senza accorgersene)
-2 · No, solo per gli ordini dal link, da «Scrivimi» e dalla voce
-
-Restano aperte la DOMANDA 1 (tasti del menù: ho capito bene?) e la DOMANDA 2 (controllo delle regole: dopo i …
+⚠️ Aspettano te: 17 domande in tutto, comprese le 3 qui sopra. Le altre sono le vecchie della lista «Aspetta …

@@ -11,7 +11,7 @@
 "Stop 13 · There are uncommitted changes in": 1,
 "Stop 6 · Il turno finisce con una": 2,
 "Stop 5 · Domanda a Mario poco chiara": 1,
-"Stop 6 · Segno delle domande nel titolo": 3,
+"Stop 6 · Segno delle domande nel titolo": 4,
 "Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
@@ -26,9 +26,9 @@
 "20:12 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
 ],
 "Stop 6 · Segno delle domande nel titolo": [
-"20:12 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «",
 "20:20 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 79 ❓17 · conferma tasti» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avv",
-"20:20 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 79 ❓17 · tasti e regole» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avv"
+"20:20 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 79 ❓17 · tasti e regole» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avv",
+"20:30 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 79 ❓17 · tasti, misura, regole» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un al"
 ],
 "Stop 12 · Ti fermi ad aspettare Mario": [
 "20:30 · Ti fermi ad aspettare Mario con il contesto a 188k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
