@@ -126,3 +126,6 @@ solo tutti italiani e se si traducono bene metti anche quelle inglesi
 ## 2026-11-13 09:38 · 01WTjqUvtoJC
 stai andando bene metti i voti anche fuori in vista prima di entrare valuta se tutti i tuoi voti vanno bene con la logita palestra fitness ipertrofia senza ingrassare e aggiungi gli altri youtuber influenzer video cercane tanti altri e aggiungi voglio un catalogo immenso proteico in priorità a GialloZafferano lo facciamo andare avanti piano piano alla volta giallo ma le ricette proteiche e video sono importanti se vuoi dammi anche qualche idea intelligente e geniale
 (foto: archivio/foto/2026-11-13-0938-mario-ricette-video-elenco.jpg, elenco «Ricette video» v0.10.24)
+
+## 2026-11-13 09:4x · 01WTjqUvtoJC
+Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resource dall'app. Per me l'idea sarebbe che me le cerchi in automatico dall'app, ma non so quanto sia performante, e me le carica. Solo che mi ha fatto consumare tutti i token e mi aveva bloccato l'applicazione, quindi per questo voglio evitarlo. Li faccio cercare e caricare a te.

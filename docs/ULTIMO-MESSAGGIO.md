@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 09:38 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 ~09:45 ora italiana)
 
-stai andando bene metti i voti anche fuori in vista prima di entrare valuta se tutti i tuoi voti vanno bene con la logita palestra fitness ipertrofia senza ingrassare e aggiungi gli altri youtuber influenzer video cercane tanti altri e aggiungi voglio un catalogo immenso proteico in priorità a GialloZafferano lo facciamo andare avanti piano piano alla volta giallo ma le ricette proteiche e video sono importanti se vuoi dammi anche qualche idea intelligente e geniale
+Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resource dall'app. Per me l'idea sarebbe che me le cerchi in automatico dall'app, ma non so quanto sia performante, e me le carica. Solo che mi ha fatto consumare tutti i token e mi aveva bloccato l'applicazione, quindi per questo voglio evitarlo. Li faccio cercare e caricare a te.
