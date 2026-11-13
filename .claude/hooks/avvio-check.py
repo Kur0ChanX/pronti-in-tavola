@@ -453,6 +453,36 @@ def messaggi_dopo_handoff(mia=""):
     return " ".join(avvisi)
 
 
+def parole_intere(mia=""):
+    # PT E84 (Mario 13/11 «deve leggere tutto quello che scrivo nei passaggi di consegna, perché ho paura che
+    # accorciandolo si perda qualche senso»): le consegne sono un riassunto; i messaggi INTERI della sessione
+    # precedente della mia catena stanno nel registro. L'hook dice le righe esatte da leggere prima dei Prossimi passi.
+    mio = ruolo_salvato() or "principale"
+    consegne, _ids = consegne_di(mio, mia)
+    rc, testo = run("show", f"HEAD:{consegne}") if consegne else (1, "")
+    rc2, registro = run("show", f"HEAD:{FILE_REGISTRO.get(mio, '')}")
+    if rc or rc2:
+        return ""
+    prima = next((c for c in (sessione_corta(x) for x in re.findall(r"session_[A-Za-z0-9]+", testo)) if c and c != mia), "")
+    if not prima:
+        return ""
+    righe = registro.splitlines()
+    inizi = [i for i, r in enumerate(righe) if VOCE.match(r)]
+    pezzi = []
+    for n, i in enumerate(inizi):
+        if (VOCE.match(righe[i]).group(2).split() or [""])[0] == prima:
+            fine = (inizi[n + 1] if n + 1 < len(inizi) else len(righe))
+            pezzi.append((i + 1, fine))
+    if not pezzi:
+        return ""
+    da, a = pezzi[0][0], pezzi[-1][1]
+    return (f"PAROLE INTERE DI MARIO (PT E84): la sessione precedente ({prima}) ha {len(pezzi)} messaggi di Mario in "
+            f"{FILE_REGISTRO[mio]} righe {da}-{a}: leggili TUTTI interi (sed -n {da},{a}p {FILE_REGISTRO[mio]}) PRIMA dei "
+            "Prossimi passi; le consegne e i riassunti non bastano. Lavoro a metà ereditato (patch, foto, piano): prima "
+            "scrivi a Mario «Ho capito che vuoi:» (una riga per richiesta, con le sue parole fra «») e aspetta il suo ok; "
+            "prima delle foto spunta ogni richiesta.")
+
+
 def promesse_aperte(riavvio=False):
     # C331 (Mario 29/10 «perché fai le cose a metà»): le promesse a Mario non chiuse con la prova, dal registro.
     hook = os.path.join(os.path.dirname(os.path.abspath(__file__)), "promesse.py")
@@ -528,7 +558,7 @@ if __name__ == "__main__":
         segno = ""
     riavvio = False
     avvisi, tempi = [], []
-    passi = ["ramo", "scorte", "messaggi di Mario", "Aspetta Mario", "promesse"]
+    passi = ["ramo", "scorte", "messaggi di Mario", "parole intere", "Aspetta Mario", "promesse"]
 
     def fase(nome, funzione, *argomenti):
         FASE["ora"], t0 = nome, time.time()
@@ -556,7 +586,7 @@ if __name__ == "__main__":
                  "o una voce che fa già quel lavoro? C333).")
         # C469 fase 3 (rapporto 11 voce 6): oltre ~10.000 caratteri Claude Code mostra solo l'inizio dell'avviso: prima
         # ATTENZIONE (ramo, scorta), poi messaggi di Mario e decisive, la frase fissa in fondo (al riavvio resta in testa)
-        avvisi += [fase("messaggi di Mario", messaggi_dopo_handoff, mia), fase("Aspetta Mario", aspetta_mario, riavvio),
+        avvisi += [fase("messaggi di Mario", messaggi_dopo_handoff, mia), fase("parole intere", parole_intere, mia), fase("Aspetta Mario", aspetta_mario, riavvio),
                    fase("promesse", promesse_aperte, riavvio)]
         avvisi.insert(0, frase) if riavvio else avvisi.append(frase)
         if time.time() - INIZIO > TEMPO_MAX:  # per il rodaggio: quale passo è lento
