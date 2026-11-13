@@ -62,3 +62,11 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
 - Scelte (Claude): utente dev (Mario) = voto «per te» dal SUO profilo palestra, che scrive lui nelle Impostazioni (peso, altezza, età, giorni di palestra, obiettivo), salvato solo nel suo profilo; Monica e gli altri = voto palestra generico.
 - Obiettivo «addominali + ipertrofia» = ricomposizione: proteine 2 g per kg al giorno (tetto 2,2), divise in 4 pasti (~0,5 g/kg a pasto); calorie un po' sotto il mantenimento (Mifflin-St Jeor × attività 3-5 giorni); il voto premia densità proteica e dose vicina alla sua quota per pasto, penalizza calorie oltre la sua quota.
 - 13/11 #70: C149 FATTO come patch `docs/lavori-in-corso/c149-app.patch` (voto palestra a 6 voci, voto sulle carte video, profilo palestra di Mario solo sul telefono, aiutante `imp-palestra`, prove C124/C141/C144/C100 verdi); foto `archivio/foto/2026-11-13-c149-*.png`, DOMANDA 2 🛑 a Mario. Al «1»: `git apply`, giro completo, versione 0.10.25, push.
+- Ricerca #70 di altri creatori (Parallel Search 13/11/2026, classifiche Heepsy e Hive di novembre 2026, pagine dei siti):
+  | Chi | Dove | Note |
+  |---|---|---|
+  | Ricette di Alice (Alice Mazzo, My-personaltrainer.it) | sito, sezione «Ricette proteiche» (~67) con video YouTube, ingredienti e kcal | da controllare robots e lettura |
+  | HSN Blog «Ricette fitness» (Fit Happy Sisters e altri) | sito hsnstore.it/blog | negozio di integratori: ricette con prodotti loro |
+  | Sergio Chisari | YouTube (ricette dietetiche, allenamento) | da vedere se scrive gli ingredienti |
+  | Thomas Hungry (Marenduzzo) | YouTube 760 mila | NO: sfide ipercaloriche, non ricette fit |
+  | Luca Romano (@lucaromano.food) | Instagram | NO per ora: solo Instagram (#59) |
