@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #81 (dopo la #80 `session_01WTjqUwF3CYsTq3HocLiEWG`, chiusa alla soglia 13/11 20:45; la apre la #80 con `create_session` (catena 3 di 8)).
+Sessione attuale: #82 (dopo la #81 `session_01WTjqUwJ4nEdo84Hoh2yP3S`, chiusa alla soglia 13/11 21:24; la apre la #81 con `create_session` (catena 4 di 8)).
 
 **#81: la apre la #80 (catena 3 di 8).** #80: C157 (misura della teglia da scegliere) + barra «Chiedi o ordina» dei tasti (C155) fatte in UNA patch `docs/lavori-in-corso/c155-c157-tutto.patch`, prove C157 verdi, foto della barra mandate: aspetta l'ok di Mario (DOMANDA 1 #80). Niente online. Lisa ha ordinato da sola (link non più urgente).
 
@@ -9,8 +9,8 @@ Sessione attuale: #81 (dopo la #80 `session_01WTjqUwF3CYsTq3HocLiEWG`, chiusa al
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (13/11 sera, #80):** tasti del menù COME LI VUOLE LUI (foto `archivio/foto/2026-11-13-c155-barra-{1,2}.png`, DOMANDA 1 #80), poi online insieme a C157. Poi il passaggio di consegne che non perda niente (C158, DOMANDA 2 #80) e il controllo delle regole (DOMANDA 2 #79). Caratteri grandi: Mario «è solo per la gente che vede poco» → foto a Mario coi caratteri NORMALI; i grandi li controllo io (PT E83 resta per il controllo). Turni corti, prima rispondere, niente lavori non chiesti.
 
-## Stato (13/11 20:45 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwF3CY/claude/pronti-ramo-definitivo.
+## Stato (13/11 21:24 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwJ4nE/claude/pronti-ramo-definitivo.
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -53,14 +53,15 @@ Ma poi io non capisco questa cosa dei caratteri grandi che stai dicendo, secondo
 Prossimo E libero: E1; prossimo C libero: C159; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
-Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
+Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 20:33 · [AVVIO] Sessione #80 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, titolo, domande ricordate
-- 2026-11-13 20:33 · Mi serve veloce il link di Lisa con, l'ho detto 3 volte, con i ravioli e la parm… → link (prima sbagliato, poi giusto coi messaggi girati dalla #79), C157 in patch, foto
-- 2026-11-13 20:42 · Allora, questa cosa dei ravioli l'ha fatta il cliente, è entrato dentro e è rius… → barra C155 in patch + foto (DOMANDA 1 #80), C158 (DOMANDA 2 #80), foto coi caratteri normali
+- 2026-11-13 20:46 · [AVVIO] Sessione #81 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-13 21:12 · Allora, le foto secondo me per ora vanno bene. Cosa resta in sospeso? La questio… → 
+- 2026-11-13 21:18 · Allora, spiegami cosa vuoi fare su / chiedi o ordina più misura della teglia. Qu… → 
+- 2026-11-13 21:18 · Scusa, se facciamo da quella precedente e basta, non rimarranno mai indietro, pe… → 
 
-Ultimo, intero: vedi «## Ultimo messaggio di Mario».
-
+Ultimo, intero:
+> Scusa, se facciamo da quella precedente e basta, non rimarranno mai indietro, perché alla fine quella dopo legge quella precedente. Di tutte mi sembra un po', forse un po' troppo dispendioso di token, di tutte quelle aperte. Facciamo della precedente. Perché non facciamo invece... risolviamo meglio che il passaggio di consegna, valuta tu se è meglio fare un passaggio di consegna più accurato oppure che la sessione dopo legge la sessione precedente. Qual è meglio, qual è il sistema migliore, più ottimale per lavorare meglio?
 
