@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 09:55 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 10:45 ora italiana)
 
-palestra pubblica a cosa ti serve saperlo?!?!?
+si lavorate in 2 sessione fino a quando non la chiudi questa e comunicate quello vhe vi serve

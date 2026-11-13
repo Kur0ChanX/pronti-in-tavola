@@ -1,0 +1,46 @@
+{
+"account": "108763",
+"sessione": "55a0d40b2467",
+"giorno": "2026-11-13",
+"turni": 10,
+"peso": 1536639,
+"uscita": 34214,
+"contesto_max": 272971,
+"anomalie": [],
+"remota": "01WTjqUvRgtB",
+"aiutanti": 0,
+"strumenti": 41,
+"motori": {
+"opus": 1536639
+},
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 13 · There are uncommitted changes in": 8,
+"Stop 6 · Segno delle domande nel titolo": 1,
+"Stop 5 · Foto e video (E240, E247;": 2,
+"Stop 6 · Il turno finisce con una": 2
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"10:11 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 13 · There are uncommitted changes in": [
+"10:37 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"10:37 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"10:38 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"10:24 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
+],
+"Stop 5 · Foto e video (E240, E247;": [
+"10:28 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid",
+"10:33 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 6 · Il turno finisce con una": [
+"10:33 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> ",
+"10:36 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+]
+},
+"memoria_scaduta": 1,
+"ricreati": 257769
+}
