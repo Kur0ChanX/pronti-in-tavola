@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 12:55 · 01WTjqUw4QVb
-magari cose utili cosí lasciale visto che c'è ma una sezione a parte
-
-## 2026-11-13 12:57 · 01WTjqUw4QVb
-hai altre ricette da aggiungere?
-
 ## 2026-11-13 13:11 · 01WTjqUw4QVb
 va bene metti online ma caricarle io 30 per volta non consumo limiti?
 
@@ -126,3 +120,13 @@ va bene come consiglio
 
 ## 2026-11-14 00:52 · 01WTjqUuVK9Q
 1 ok come consiglio
+
+## 2026-11-14 00:56 · 01WTjqUwbEtu
+Lisa è la vera numero 1 puoi modificarlo?  solo il numero  non fare danno all'ordine
+
+## 2026-11-14 00:59 · 01WTjqUwbEtu
+c'è l'opzione che Monica puoi mandare lo sconto anche fino aprima del ritiro nell'importo che vuole lei e se crea lo econto per l'ordine che si troverà in ordini tipo vuoi applicare uno sconto all'importo X e lei sceglie di quanto e al cliente arriva la notifica Monica ti ha applicato uno sconto o una frase carina con un cuore.
+Tipo grazie per l'ordine ecc ecc la frase può essere editata delle impostazioni 
+per inviare lo sconto deve andare a doppia conferma da parte di Monica 
+
+e Correggi i 2 buchi come consiglio
