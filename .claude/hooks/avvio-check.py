@@ -336,6 +336,7 @@ def controlla_scorta(mia=""):
     avvisi = []
     ignorate = []  # C352: scorte già nel ramo o superate (il ramo ha cambiato dopo le stesse righe): unirle non porta niente
     vive = []
+    con_messaggi = []  # PT E85: scorte che non si uniscono (conflitti nelle consegne) ma con messaggi di Mario fuori dal ramo
     non_guardate = []  # C352: tempo dell'hook quasi finito: meglio dirlo che farsi fermare e perdere tutto l'avviso
     for voce in trovate:
         if tempo_finito():
@@ -345,7 +346,7 @@ def controlla_scorta(mia=""):
         if resto() < 1:  # C469 A9: tempo finito durante il merge simulato, l'esito non è sicuro
             non_guardate.append(voce[1])
             continue
-        (vive if esito == "nuovo" else ignorate).append((voce, esito))
+        (vive if esito == "nuovo" else con_messaggi if esito == "messaggi" else ignorate).append((voce, esito))
     if len(da_guardare) > len(scaricate) and tempo_finito():
         non_guardate.append(f"{len(da_guardare) - len(scaricate)} non scaricate")
     trovate = [v for v, _ in vive]
@@ -377,6 +378,11 @@ def controlla_scorta(mia=""):
     if trovate and not mio:
         avvisi.append("Ruolo: parallela se il prompt di avvio dice «Sei la chat parallela», sennò principale. "
                       "La scorta dell'altra chat NON si unisce (E97): al massimo git show <scorta>:<suo file del messaggio>.")
+    for (ruolo, remoto, _tipo, _perche, chi), _e in con_messaggi:  # PT E85 (#82, C158): prima erano «vecchia», da NON unire
+        avvisi.append(f"MESSAGGI DI MARIO FUORI DAL RAMO (PT E85): {remoto} (chat {ruolo}, sessione {chi or '?'}) NON si unisce "
+                      "(conflitti nelle consegne), ma ha messaggi di Mario che il ramo non ha. Prendi SOLO quelli: "
+                      f"python3 -I .claude/hooks/scorta.py prendi-messaggi {remoto} ; poi commit e push di docs/MESSAGGI-MARIO*.md "
+                      "e archivio/messaggi-mario/, e leggili INTERI prima dei Prossimi passi.")
     if ignorate:  # C352: poche righe anche con decine di rami vecchi (prima ~3k token di elenco)
         nomi = [f"{v[1]} ({e})" for v, e in ignorate]
         elenco = ", ".join(nomi) if len(nomi) <= 4 else ", ".join(nomi[:3]) + f" e altre {len(nomi) - 3}"
@@ -466,18 +472,34 @@ def parole_intere(mia=""):
     prima = next((c for c in (sessione_corta(x) for x in re.findall(r"session_[A-Za-z0-9]+", testo)) if c and c != mia), "")
     if not prima:
         return ""
-    righe = registro.splitlines()
-    inizi = [i for i, r in enumerate(righe) if VOCE.match(r)]
-    pezzi = []
-    for n, i in enumerate(inizi):
-        if (VOCE.match(righe[i]).group(2).split() or [""])[0] == prima:
-            fine = (inizi[n + 1] if n + 1 < len(inizi) else len(righe))
-            pezzi.append((i + 1, fine))
-    if not pezzi:
+    def pezzi_di(testo):
+        righe = testo.splitlines()
+        inizi = [i for i, r in enumerate(righe) if VOCE.match(r)]
+        pezzi = []
+        for n, i in enumerate(inizi):
+            if (VOCE.match(righe[i]).group(2).split() or [""])[0] == prima:
+                pezzi.append((i + 1, inizi[n + 1] if n + 1 < len(inizi) else len(righe)))
+        return pezzi
+    pezzi = pezzi_di(registro)
+    # PT E85 (C158, Mario 13/11 21:20 «facciamo della precedente»): anche dalla SUA scorta, che ha i messaggi scritti
+    # dopo l'ultimo merge della scorta o dopo il passaggio (13/11 #82: «1 messaggio» invece di 3, 2 solo nella scorta)
+    scorta = ([s for s in sorted(git("for-each-ref", "--format=%(refname:short)", "refs/remotes/origin/").splitlines())
+               if s.startswith(f"origin/scorta-{mio}-") and f"-{prima}/" in s] or [""])[-1]
+    rc3, suo = run("show", f"{scorta}:{FILE_REGISTRO[mio]}") if scorta else (1, "")
+    pezzi_scorta = pezzi_di(suo) if not rc3 else []
+    fuori = len(pezzi_scorta) - len(pezzi)
+    if fuori > 0:
+        da, a = pezzi_scorta[0][0], pezzi_scorta[-1][1]
+        dove = (f"nella sua scorta (righe {da}-{a}; {fuori} non ancora nel ramo): leggili TUTTI interi (git show "
+                f"{scorta}:{FILE_REGISTRO[mio]} | sed -n {da},{a}p) e portali nel ramo (python3 -I .claude/hooks/scorta.py "
+                f"prendi-messaggi {scorta}, commit e push)")
+        pezzi = pezzi_scorta
+    elif pezzi:
+        da, a = pezzi[0][0], pezzi[-1][1]
+        dove = (f"in {FILE_REGISTRO[mio]} righe {da}-{a}: leggili TUTTI interi (sed -n {da},{a}p {FILE_REGISTRO[mio]})")
+    else:
         return ""
-    da, a = pezzi[0][0], pezzi[-1][1]
-    return (f"PAROLE INTERE DI MARIO (PT E84): la sessione precedente ({prima}) ha {len(pezzi)} messaggi di Mario in "
-            f"{FILE_REGISTRO[mio]} righe {da}-{a}: leggili TUTTI interi (sed -n {da},{a}p {FILE_REGISTRO[mio]}) PRIMA dei "
+    return (f"PAROLE INTERE DI MARIO (PT E84): la sessione precedente ({prima}) ha {len(pezzi)} messaggi di Mario {dove} PRIMA dei "
             "Prossimi passi; le consegne e i riassunti non bastano. Lavoro a metà ereditato (patch, foto, piano): prima "
             "scrivi a Mario «Ho capito che vuoi:» (una riga per richiesta, con le sue parole fra «») e aspetta il suo ok; "
             "prima delle foto spunta ogni richiesta.")
