@@ -51,7 +51,7 @@ index 557a201..c0e9a0b 100644
    if (r.intro) h += `<details class="ric-intro"><summary>${r.video ? '📝 Cosa scrive sotto il video ·' : esc(r.intro.split('\n')[0].slice(0, 140)) + (r.intro.length > 140 ? '…' : '')} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
    h += `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
 diff --git a/tools/prova.js b/tools/prova.js
-index 5174f70..fab7fcf 100644
+index 5174f70..ea3cc88 100644
 --- a/tools/prova.js
 +++ b/tools/prova.js
 @@ -1907,6 +1907,38 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
@@ -77,7 +77,7 @@ index 5174f70..fab7fcf 100644
 +    const carta = await page.evaluate(id => (document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`) || {}).innerText || '', x.id);
 +    if (!/🎙️ dosi dal video/.test(carta)) throw new Error('C150: la carta non dice «🎙️ dosi dal video»: ' + JSON.stringify({ x, carta }));
 +    if (x.senza && /🎙️/.test(await page.evaluate(id => (document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`) || {}).innerText || '', x.senza))) throw new Error('C150: «🎙️» su una ricetta senza parlato');
-+    if (!x.finta) { await page.evaluate(id => document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`).scrollIntoView({ block: 'center' }), x.id); await foto('48h-c150-carta-dal-video'); }
++    if (!x.finta) { await page.evaluate(id => document.querySelector(`main .ric-carta[data-v="ricetta:${id}"]`).scrollIntoView({ block: 'center' }), x.id); await page.waitForTimeout(800); await foto('48h-c150-carta-dal-video'); }   // l'attesa: senza, la carta non è ancora disegnata (foto vuota)
 +    await clic(`main .ric-carta[data-v="ricetta:${x.id}"]`);
 +    const d = await page.evaluate(() => ({ nota: (document.querySelector('.ric-parlato') || {}).innerText || '', ing: document.querySelectorAll('.ric-ing li').length,
 +      passi: document.querySelectorAll('.ric-passi li').length, play: !!document.querySelector('[data-a="ric-play"]') }));
