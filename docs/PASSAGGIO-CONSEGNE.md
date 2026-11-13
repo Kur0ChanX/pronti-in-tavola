@@ -1,30 +1,31 @@
 # Passaggio di consegne
 
-Sessione attuale: #76 (dopo la #75 `session_01WTjqUtr7kgfPr9chcd8gX1`, chiusa alla soglia 13/11 15:23; la apre la #75 con `create_session` (catena 6 di 8)).
+Sessione attuale: #77 (dopo la #76 `session_01WTjqUy56yFQCWNDcwHsXB4`, chiusa alla soglia 13/11 15:45; la apre la #76 con `create_session` (catena 7 di 8)).
 
-**#76 aperta dalla #75 (13/11, ferma ad aspettare Mario oltre 180k, C455).** C152 (+70 proteiche) e C153 (dosi del procedimento di Pietrobon) PRONTE IN PATCH, NON online: aspettano l'ok di Mario (DOMANDA 1, foto `archivio/foto/2026-11-13-c153-cloud-bread-ingredienti.png` mandata).
+**#77 aperta dalla #76 (13/11, ferma ad aspettare Mario oltre 180k, C455).** v0.10.28 ONLINE (C152 + correzione C154). Scritte «✅ controllata con Gemini / ⚠️ non controllata» PRONTE IN PATCH `docs/lavori-in-corso/c154-etichette.patch`, foto `archivio/foto/2026-11-13-c154-48{h,i,j}.png` mandate: aspettano l'ok di Mario. Trascrizione di tutti i video FERMATA all'handoff (22 su ~770): la nuova la rilancia.
 
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (13/11, #75):** ingredienti completi nelle ricette video (15:18 «mancano in tutti ingredienti»); altre ricette (12:57). Prima (#74): Ricettario chiaro (12:50 «3000 tastine… non si capisce nulla»), niente video non ricette fra le ricette (12:53 «è uno scherzo?»; 12:54 «cose utili… lasciale… una sezione a parte»); altre ricette (13:0x «hai altre ricette da aggiungere?»).
+- **Cosa preme a Mario adesso (13/11, #76):** ricette video di cui fidarsi: TUTTE controllate col video da Gemini, ingredienti completi, voto vero (15:37 «fai un check a tutti e trascrivi bene tutti gli ingredienti almeno puoi dare un voto vero»); scritte controllata / non controllata (15:42). Gemini è l'unica strada gratis (Mario «Per forza Gemini», ricerca 13/11 confermata).
 
-## Stato (13/11 15:23 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUtr7kg/claude/pronti-ramo-definitivo.
-- **C151 ONLINE v0.10.27** (giro 98/98 verde, commit `[pubblica]` 2ddd559). Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/ricettario.js | grep -c filtriAccesi` → 5; `…/ricette-video.js | grep -c '"altro"'` → 18. Video non ricette: `tools/dati/video-non-ricette.json`, `raccogli_video.py` `segna_altro`.
-- **C152 in patch** `docs/lavori-in-corso/c152-stimate-nuove.patch` (ricette-stimate.js: 522 vecchie uguali + 70 nuove; 37 porridge passano a dolce). Verifica: `git apply --check` ok; prova `SOLO=C141` verde.
-- **C153 in patch** `docs/lavori-in-corso/c153-dosi-procedimento.patch` (ricette-video.js: 13 ricette Pietrobon con dosi del procedimento, Cloud bread 3 → 5 ingredienti). Prove `SOLO=C144`, `SOLO=C150` verdi. Strumenti già nel ramo: `tools/stima.py`, `tools/raccogli_stimate.py --ignoti/--aggiungi`, `tools/raccogli_video.py --dosi-su`.
-- C151 CHIUSA (Mario ha visto il Cloud bread trovato, 15:17).
+## Stato (13/11 15:45 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice 0.10.28 (`VERSIONE_APP` in data.js). Scorte NON unite: scorta-principale-20261113-01WTjqUy56yF/claude/pronti-ramo-definitivo.
+- **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
+- **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
+- **Trascrizione** `tools/dati/video-dal-parlato.json`: 22 video (3 con `dubbi`). Ritmo 13/11 pomeriggio: ~2 ogni 5 min (503 sui Flash 3.8/3.7), da misurare. Totale da fare ~753 video = 17,4 ore (YouTube, misurato).
+- Regola nuova in `tools/raccogli_video.py`: `col_parlato` segna `controllata`; `unisci_ingredienti` = scritto + detto (aggiunge i mancanti, dose detta a chi non l'ha). Dopo ogni giorno di trascrizione: `python3 -I tools/raccogli_video.py` (cache YouTube in `.cache-stime`, sennò serve YOUTUBE_API_KEY: c'è).
 ## Riferimenti
 - C141: `docs/lavori-in-corso/c141-proteiche-stimate.md` (parole di Mario, specifica, stato). Foto: `archivio/foto/2026-11-11-1930-c141-pagella-*.png`.
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#75)
-- Avvio; sveglia C150 14/11 9:10 rifatta dalla #76 (`trig_01AeWzak3U9TaJYRmrQaDu7k`), quella della #75 cancellata.
-- C152: `--ignoti` (scarti per stima 293 → 136), stima migliorata (q b, erbe, attrezzi, pezzi, 9 prodotti, 20 codici CREA; bug cipollotti=pollo, pomodorini 100 g, peperoncino 150 g), `--aggiungi`: +70. Una tolta (nome «Kcal totali…»).
-- C153: foto di Mario del Cloud bread con 3 ingredienti → dosi nel procedimento (solo Pietrobon: gli altri raccontano, provato: rumore).
-- Controllo Da fare: 2 voci aggiunte (C152, C153); C151 chiusa in DA-FARE-FATTE.
+## Sessione appena chiusa (#76)
+- Avvio; sveglia C150 14/11 9:10 rifatta (`trig_01AeWzak3U9TaJYRmrQaDu7k`, della #76: la nuova la rifà sua e cancella questa).
+- C154: causa vera trovata (righe con @/# buttate intere, PT E79), corretta, +92 ricette con ingredienti; v0.10.28 online (Mario «mettile online»).
+- Trascrizione di tutti i video avviata (Mario «check a tutti»), ingredienti scritto + detto; scritte ✅/⚠️ in patch con foto; ricerca alternative a Gemini (nessuna gratis che guardi il video).
+- Controllo Da fare: 0 voci aggiunte (C154 aggiornata con le 3 richieste).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
+- #76: API «transcript» (youtube-transcript-api, Supadata, TranscriptAPI) → no: solo sottotitoli già esistenti, bloccate dai server cloud o ~100 crediti al mese. Filtro `%` nelle pubblicità → no: toglieva «(min 50%)» del cioccolato. Rifare `raccogli_video.py` senza C152 applicata → no: mancano i segni «proteica»; prima le stimate, poi i video.
 - #75: rifare tutte le stimate con la stima nuova (`main` riscrive il file) → no: 72 vecchie cambiavano valori già visti da Mario; si aggiungono solo le nuove (`--aggiungi`). Dosi dal procedimento per 2foodfitlovers e Beardedscara → no: frasi raccontate («100 g di e completate…», «1 kg di farina» di un'altra ricetta). `valida_stima.py` → senza cache non misura niente.
 - #72: **Flash-Lite** per trascrivere (500 al giorno gratis) → no: meno preciso, crema di riso contata due volte; Mario «il lite fà un pò schifo». **Gemini Omni** (`gemini-omni-1.2-flash`) → no: CREA video, niente generateContent né piano gratis. **gemini-2.5-flash** → 404 per gli utenti nuovi dall'11/11. Valori nutrizionali detti nel video → no: 2 su 3 sbagliati, si stimano dalle dosi. `--finto` scriveva nella cache vera → corretto.
 - #71: testo dei video coi sottotitoli di YouTube → no: `captions.download` solo per chi può modificare il video (403); librerie non ufficiali bloccate dai server cloud. Scaricare l'audio (Mario: «ti do il permesso») → no: contro le regole di YouTube e serve aggirare i controlli anti-robot. Finestra sicura `request_credential` per la chiave Gemini dal telefono → «Denied» (come PT E28): chiave a mano come variabile.
@@ -32,32 +33,31 @@ Sessione attuale: #76 (dopo la #75 `session_01WTjqUtr7kgfPr9chcd8gX1`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-0. C154: causa trovata e corretta (#76, patch `c154-ingredienti-video.patch`, sostituisce la C153); DOMANDA 🛑 mandata (1 solo complete · 2 avviso · 3 togliere). C152 a parte (1 online · 2 no).
-1. Risposta di Mario alla DOMANDA 1 (C152 + C153). «1» → `git apply` delle due patch, versione nuova (`VERSIONE` in data.js e sw.js come le volte prima), anteprima, giro completo verde (dove dice `tools/scegli-giro.py`), commit `[pubblica]`, curl di verifica, «chiudi e riapri l'app». «2» → correggere quello che dice.
-2. Ogni mattina dopo le 9:00: `python3 -I tools/trascrivi_video.py --da ricette-video.js` in sottofondo (se C153 non è ancora online, prima `git apply` della patch in locale e poi toglierla: il json del parlato non è del sito); controllo a campione e righe `dubbi`; commit del json; sveglia `send_later` del giorno dopo.
-3. Ordine della trascrizione: oggi prima i video senza valori, poi senza dosi. Valutare di mettere prima le ricette con ingredienti senza quantità (Mario vuole ingredienti completi).
-4. Foto di v0.10.26 (C148, C150, «🎙️ dosi»): Cloud bread non è ancora trascritto; mandare a Mario una ricetta già trascritta (es. `yt:-suyFvtSL6k`).
-5. Altri creatori (Ricette di Alice, HSN, Sergio Chisari); idee C149 quando Mario risponde. Vecchi: C140 privato, C143 + kit 38.26, pagella C141.
+1. Rilanciare SUBITO la trascrizione in sottofondo: `python3 -I tools/trascrivi_video.py --da ricette-video.js` (il file online va bene: legge gli id). Misurare il ritmo vero (video all'ora); se lento valutare 2-3 trascrizioni insieme (attenzione al limite al minuto, PT E77). Commit del json a blocchi.
+2. Risposta di Mario sulle scritte (foto 48h/48i/48j). «1» → `git apply` della patch, `python3 -I tools/raccogli_video.py` (con le trascrizioni nuove), versione 0.10.29 in data.js, anteprima, giro completo locale verde, commit `[pubblica]`, curl, «chiudi e riapri l'app».
+3. Ogni giorno: rigenerare con le trascrizioni nuove, controllo a campione delle ricette unite (scritto + detto: doppioni?), righe `dubbi` a mano, versione nuova. Il voto (pagella) si ricalcola dalla stima.
+4. Foto di v0.10.26/28 a Mario sulle ricette controllate quando ce ne sono di più. Vecchi: idee C149, C140 privato, C143 + kit, pagella C141.
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67), `01WTjqUvtoJC` (#70): vecchie.
 
 ## Domande aperte
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 16; 🛑 C148+C150 online, 🛑 C150 foto, 🛑 C141 pagella, idee C149).
 
 ## Ultimo messaggio di Mario
-13/11 ~15:30 (dopo l'handoff), parola per parola: «mi sà che cancelliamo tutto cosí nom ha senso / non posso riguardare il video perché ho paura che manchi qualcosa / chissà in quanti altre ricette video mancano gli ingredienti.......» → C154: decidere con Mario cosa fare delle ricette video (consiglio: mostrare solo le complete dal parlato); C153 NON pubblicare. Prima:
-13/11 15:18, parola per parola (con 2 foto del Cloud bread): «mancano in tutti ingredienti» → C153 patch + foto, DOMANDA 1 (1 = metto online C152 + C153 · 2 = no).
+13/11 15:42, parola per parola: «Metti nei video ricetta controllata con Gemini, fai ricetta non controllata nei video e poi controlla se c'è un'altra soluzione. Per forza Gemini dobbiamo usare, non c'è nient'altro di performante a costo zero» → scritte in patch + foto, ricerca fatta, DOMANDA 1 (1 = online · 2 = cambia).
 
 ## Numeri liberi
-Prossimo E libero: E1 (PT E80); prossimo C libero: C155; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C155; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 13:19 · [AVVIO] Sessione #75 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio; C152 +70 proteiche (patch)
-- 2026-11-13 15:18 · mancano in tutti ingredienti → C153 patch + foto, DOMANDA 1
+- 2026-11-13 15:25 · [AVVIO] Sessione #76 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-13 15:35 · mettile online → v0.10.28 online (C152 + C154)
+- 2026-11-13 15:37 · e nei video fai un check a tutti e trascrivi bene tutti gli ingredienti almeno p… → C154 trascrizione di tutti + `unisci_ingredienti`
+- 2026-11-13 15:42 · Metti nei video ricetta controllata con Gemini, fai ricetta non controllata nei … → C154 scritte in patch + foto, ricerca alternative, DOMANDA 1
 
 Ultimo, intero:
-> mancano in tutti ingredienti
+> Metti nei video ricetta controllata con Gemini, fai ricetta non controllata nei video e poi controlla se c'è un'altra soluzione. Per forza Gemini dobbiamo usare, non c'è nient'altro di performante a costo zero
 
