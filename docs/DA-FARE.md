@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 13/11 · 🟢 Principale 70 · C149 idee: scegli i numeri (1 obiettivo proteine · 2 svuota frigo · 3 prima/dopo allenamento · 4 «+1 voto»); consiglio 1 e 4.
 - 11/11 · 🟢 Principale 66 · DOMANDA 3: il controllo delle consegne considera salvata una copia automatica uguale alla patch? 1 = sì · 2 = no. A cosa serve: il blocco della DOMANDA 2 non ricapita a ogni lavoro che aspetta la tua foto.
 - 11/11 · 🟢 Principale 65 · C143 + kit: scrivi «ok» e accendo la difesa (ferma i push che pubblicherebbero l'app senza il tuo ok) e aggiorno il kit da 38.16 a 38.26 (serve al PC di casa). File degli hook: serve il tuo ok scritto. A cosa serve: l'errore della #62 non ricapita e il PC di casa entra nei giri.
 - 11/11 · 🟢 Principale 65 · C140 passo 1 a mano: rendi privato il progetto (1 minuto, passi in chat). A cosa serve: nomi dei clienti e tuoi messaggi non più pubblici; il PC di casa diventa sicuro per i giri.
