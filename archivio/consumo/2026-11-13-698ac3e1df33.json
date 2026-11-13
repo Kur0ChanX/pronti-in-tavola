@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "698ac3e1df33",
 "giorno": "2026-11-13",
-"turni": 7,
-"peso": 608613,
-"uscita": 18835,
-"contesto_max": 168709,
+"turni": 8,
+"peso": 688890,
+"uscita": 19656,
+"contesto_max": 176068,
 "anomalie": [],
 "blocchi": {
 "Stop 13 · There are uncommitted changes in": 1,
@@ -32,8 +32,8 @@
 },
 "remota": "01WTjqUvRMYe",
 "aiutanti": 0,
-"strumenti": 29,
+"strumenti": 32,
 "motori": {
-"opus": 608613
+"opus": 688890
 }
 }
