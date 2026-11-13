@@ -1505,7 +1505,7 @@ function vPiatti() {
     const pp = visibili().filter(p => p.cat === k);
     if (!pp.length) return;
     h += `<section class="sezione"><div class="cat-titolo"><h2>${n}</h2><span></span></div><div>${pp.map(p => `<div class="piatto-riga">${foto(p)}
-      <button type="button" class="apri" data-a="vai" data-v="piatto:${p.id}"><b>${esc(p.nome)}</b><span class="tenue piccolo">${etichettaPrezzo(p)}</span>
+      <button type="button" class="apri" data-a="vai" data-v="piatto:${p.id}"><b>${esc(p.nome)}</b><span class="tenue piccolo">${etichettaPrezzo(p)}</span>${typeof rigaCosto === 'function' ? rigaCosto(p) : ''}
       <span class="etichette" style="margin:0">${!p.controllato ? '<span class="eti nuovo">Da controllare</span>' : ''}${p.pronto && p.pronto.qta > 0 && p.pronto.giorno === oggi() ? '<span class="eti pronto">Pronto oggi</span>' : ''}${!p.disponibile ? '<span class="eti">Fuori menù</span>' : ''}</span></button>
       <label class="interr" aria-label="Nel menù: ${esc(p.nome)}"><input type="checkbox" data-campo="disp" data-id="${p.id}" ${p.disponibile ? 'checked' : ''}></label></div>`).join('')}</div></section>`;
   });
