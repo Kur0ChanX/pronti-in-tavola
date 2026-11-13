@@ -2,33 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:24 · 01WTjqUvRgtB
-va bene come Consiglio
-
-## 2026-11-13 10:26 · 01WTjqUvRgtB
-Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici nel video e fai la ricetta, perché altre intelligenze artificiali riescono, quindi magari dalle parole che dicono ti prendi il testo e ci fai la ricetta, anche perché nei video dicono spesso le quantità, quindi a te le quantità servono. Quindi puoi farlo per ogni singolo video, caricare magari un programmino che lo fa, non so, una skill, un MCP, un qualcosa da collegarlo, e ti trascrivi tutto quello che dicono e da lì prendi quello che ti serve, no? Per ogni singolo video.
-
-## 2026-11-13 10:33 · 01WTjqUvRgtB
-prendiamo l'audio da ogni video e prendi il testo tranquillo tanto lo guardo solo io non è publico di dò il permesso
-
-## 2026-11-13 10:34 · 01WTjqUvRgtB
-1 faccio la chiave
-
-## 2026-11-13 10:36 · 01WTjqUvRgtB
-mandami la finestra che la incollo la chiave
-
-## 2026-11-13 10:37 · 01WTjqUvRgtB
-non va nega la metto su ambiente
-
-## 2026-11-13 10:38 · 01WTjqUvRgtB
-fatto messa nell'ambiente
-
-## 2026-11-13 10:39 · 01WTjqUvRgtB
-1 metti online il voto palestra
-
-## 2026-11-13 10:45 · 01WTjqUvRgtB
-si lavorate in 2 sessione fino a quando non la chiudi questa e comunicate quello vhe vi serve
-
 ## 2026-11-13 11:32 · 01WTjqUwHBw1
 si chiamano diversamente ora gemini ha aggiornato i motori verifica
 
@@ -126,3 +99,30 @@ Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no ri
 
 ## 2026-11-13 20:19 · 01WTjqUu3oyB
 Mi puoi rinviare il link di Lisa in questa sessione?
+
+## 2026-11-13 20:26 · 01WTjqUu3oyB
+Lisa ha ordinato  2kg di ravioli ricotta e spinaci e una parmigiana da 6 e basta controlla se ci sono precompilati solo questi 2
+
+## 2026-11-13 20:29 · 01WTjqUu3oyB
+Puoi fare in modo che le lasagne deve mettere la quantità, se no non parte l'ordine? Perché cos'erano le lasagne? Cos'erano le melanzane? Non mi ricordo. La parmigiana, scusami. Puoi mettere che non c'è quantità, deve metterla per forza?
+
+## 2026-11-13 20:30 · 01WTjqUu3oyB
+No, aspetta, no, le lasagne no, la parmigiana, ci sono la parmigiana e le ravioli. Le ravioli ti ho dato la quantità, la parmigiana che metti, che non capiamo quant'è la quantità, la deve mettere lei.
+
+## 2026-11-13 20:30 · 01WTjqUu3oyB
+ok, dammi il link nuovo quando è online
+
+## 2026-11-13 20:33 · 01WTjqUu3oyB
+Ci sono 3 sessioni che non riescono a inviarmi questo link. Fai tu veloce, inviami il link dei ravioli e della parmigiana senza quantità, veloce.
+
+## 2026-11-13 20:34 · 01WTjqUu3oyB
+No, deve mettere i chili, cioè il numero di teglia. Scusa, se non mette il numero di teglia l'ordine non parte, giusto? Se è da 6 o da 8, questo noi non lo sappiamo, lo deve scegliere lei.
+
+## 2026-11-13 20:35 · 01WTjqUu3oyB
+Sappiamo che è una teglia, ma non sappiamo se è da 6 o da 8. Il link è giusto? Se è da 8 o da 6 non lo sappiamo.
+
+## 2026-11-13 20:35 · 01WTjqUu3oyB
+Sì, ma quando lei entra nel link è già precompilato il carrello con una teglia di melanzane senza, che non si sa se da 6 o da 8, e i ravioli.
+
+## 2026-11-13 20:36 · 01WTjqUu3oyB
+No, ci deve essere anche una teglia di melanzane alla parmigiana e i ravioli. Però la melanzana alla parmigiana non sappiamo se è la teglia da 6 o da 8.
