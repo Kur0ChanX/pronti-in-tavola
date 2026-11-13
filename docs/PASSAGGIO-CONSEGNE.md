@@ -42,7 +42,7 @@ Sessione attuale: #73 (dopo la #72 `session_01WTjqUwHBw1MvTh5EqXhE1y`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-⛔ NON unire le scorte `01WTjqUup234` (#66) e `01WTjqUwz4Kr` (#67): vecchie.
+⛔ NON unire le scorte `01WTjqUup234` (#66) e `01WTjqUwz4Kr` (#67): vecchie; né `01WTjqUvtoJC` (#70): ha `ricette-stimate.js` (file del sito = pubblicherebbe C148, già nella patch).
 1. Al «1» di Mario (riga 🛑 C148+C150 in «Aspetta Mario»): versione 0.10.26 → `git apply` di `c148-stimate.patch` e `c148-video.patch`, `python3 -I tools/raccogli_video.py --parlato-su ricette-video.js`, `git apply docs/lavori-in-corso/c150-app.patch`, versione in `data.js`, giro completo `node tools/prova.js` (tutto verde), commit `[pubblica]`, push, `curl` del sito, `git rm` delle 3 patch, novità. Poi a Mario: «chiudi e riapri l'app».
 2. Ogni mattina dopo le 9:00 (limite azzerato): `git show HEAD:ricette-video.js` + `git apply --include=ricette-video.js docs/lavori-in-corso/c148-video.patch` in una cartella dello scratchpad (finché C148 non è online), poi `python3 -I tools/trascrivi_video.py --da <quel file>` in sottofondo; controllo a occhio a campione e delle righe `dubbi`; commit del json. Una sveglia `send_later` alle 9:10 per questo.
 3. A fine giro: rifare i primi video senza «nome» (togliere le loro voci senza nome dal json e rilanciare), poi nuove versioni coi video trascritti.
