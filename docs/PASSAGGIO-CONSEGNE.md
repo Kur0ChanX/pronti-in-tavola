@@ -56,7 +56,7 @@ Sessione attuale: #75 (dopo la #74 `session_01WTjqUw4QVbXHnpAg1txmfs`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 16; 🛑 C148+C150 online, 🛑 C150 foto, 🛑 C141 pagella, idee C149).
 
 ## Ultimo messaggio di Mario
-13/11 ~13:00 (ora a mano: arrivato a metà turno), parola per parola: «hai altre ricette da aggiungere?» → risposta in chat (tabella: ~450 RicetteFit dal server, ~300 scartate da `stima.py`, 3 creatori, dosi dei video ogni mattina; consiglio: prima C151, poi le 300, poi i creatori). Prima, 12:53 «è uno scherzo verooooooo????» e 12:54 «magari cose utili cosí lasciale visto che c'è ma una sezione a parte» → C151.
+13/11 12:57, parola per parola: «hai altre ricette da aggiungere?» → risposta in chat (tabella: ~450 RicetteFit dal server, ~300 scartate da `stima.py`, 3 creatori, dosi dei video ogni mattina; consiglio: prima C151, poi le 300, poi i creatori). Prima, 12:53 «è uno scherzo verooooooo????» e 12:54 «magari cose utili cosí lasciale visto che c'è ma una sezione a parte» → C151.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C152; prossimo M libero: M1.
