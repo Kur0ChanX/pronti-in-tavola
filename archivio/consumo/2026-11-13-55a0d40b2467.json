@@ -1,0 +1,28 @@
+{
+"account": "108763",
+"sessione": "55a0d40b2467",
+"giorno": "2026-11-13",
+"turni": 1,
+"peso": 262119,
+"uscita": 8613,
+"contesto_max": 162405,
+"anomalie": [],
+"remota": "01WTjqUvRgtB",
+"aiutanti": 0,
+"strumenti": 13,
+"motori": {
+"opus": 262119
+},
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 13 · There are uncommitted changes in": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"10:11 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 13 · There are uncommitted changes in": [
+"10:11 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+]
+}
+}
