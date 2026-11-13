@@ -1,20 +1,26 @@
-# Ultima risposta di Claude (13/11/2026 15:23 ora italiana)
+# Ultima risposta di Claude (13/11/2026 15:32 ora italiana)
 
-Ho capito: nel Cloud bread mancano ingredienti, e manca qualcosa anche nelle altre ricette video.
+Ho capito: temi che manchino ingredienti in molte ricette video e pensi di cancellarle tutte. Ho cercato la causa e l'ho trovata.
+
+🛑 Ti aspettano ancora queste risposte:
+- 🛑 Versione 0.10.26: chiudi e riapri l'app, vai in Ricettario → Ricette video e mandami una foto.
+- 🛑 Pagella delle Proteiche (C141): mi serve il tuo parere sulle foto che ti ho mandato.
+- 🛑 PC di casa come riserva (Salvagente): scegli fra 1, 2, 3 e 4.
 
 ───
-✅ FATTO
-- La versione 0.10.27 si vede bene: Cloud bread trovato. Ho chiuso il riordino del Ricettario.
-- **Causa:** Pietrobon scrive alcune dosi dentro il procedimento, non nell'elenco. Per esempio «aggiungete **150 ml di albume** e montatelo». Il programma leggeva solo l'elenco.
-- Corretto: ora prende anche quelle dosi, nell'ordine in cui le scrive lui. Recupera ingredienti in 13 ricette, e il Cloud bread passa da 3 a 5 ingredienti (foto qui sopra). Le prove automatiche sono verdi.
-
-───
-💡 …
+✅ **FATTO**
+- **Causa**: il programma che legge le ricette scartava tutta la riga se c'era una **menzione** (il nome di una marca col simbolo @ davanti). Esempio: «5g …
 
 ## Domande a Mario
 
-❓ DOMANDE
-**DOMANDA 1** · A cosa serve: senza il tuo ok non pubblico nulla.
-Guarda la foto: a sinistra com'è oggi, a destra con gli ingredienti in più. Se mi dai l'ok, pubblico anche le 70 ricette proteiche nuove.
-1. Va bene: metto online nell'app ingredienti in più e 70 ricette nuove (consiglio)
-2. No, qualcosa non va (dimmi cosa)
+❓ **DOMANDE**
+**DOMANDA 1 🛑 · Ricette video.** A cosa serve: decidere di quali ricette Monica si può fidare.
+1. Metto online la correzione e mostro solo le ricette complete (~420) ⭐ consiglio
+2. Le mostro tutte, con «⚠️ forse incompleta» su quelle dubbie
+3. Tolgo tutte le ricette video
+
+**DOMANDA 2 · 70 ricette proteiche nuove.** Non dipendono dai video.
+1. Le metto online nell'app ⭐ consiglio
+2. No
+
+⚠️ Aspettano te: 17 · ricette video, proteiche nuove, foto 0.10.26, pagella, PC di casa…
