@@ -17,3 +17,11 @@
 
 ## Stato
 - 13/11 #74: proposta scritta, al lavoro sulla patch (mai commit dei `.js`, PT E69).
+
+## Video che non sono ricette (Mario 13/11 12:53-12:54)
+- 12:53 «è uno scherzo verooooooo????» (foto «GAG PARTE 4 | Gambe»: ingredienti Manubri, Elastici, Tappetino).
+- 12:54 «magari cose utili cosí lasciale visto che c'è ma una sezione a parte» (foto «Ti alleni tanto ma non dimagrisci»: argomenti al posto degli ingredienti).
+- Scelta: NON si tolgono. Sezione a parte «💡 Consigli e allenamenti» nelle Ricette video: fuori da ricette, ricerca di cibo, Proteiche, spesa e menù; nella pagina «Di cosa parla» al posto di «Ingredienti».
+- Elenco: candidati trovati in automatico (righe senza dosi né cibo), poi letti a occhio uno per uno (PT E25) → `tools/dati/video-non-ricette.json`. Primo giro: ~28 candidati, fra cui vitamina C, integrazione runner, sale nascosto, budini «pr-ou» (gusti di un prodotto), pasticcerie (Iginio Massari…).
+- La rimozione del solo «GAG» (v0.10.27 preparata alle 12:58) NON va online: superata da questa scelta.
+- Si pubblica insieme al riordino, dopo le foto.
