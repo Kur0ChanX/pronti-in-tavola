@@ -69,7 +69,7 @@ body.con-barra #app { padding-bottom: 72px; }
   background: var(--foglio); border-top: 1px solid var(--riga);
   padding-bottom: env(safe-area-inset-bottom);
 }
-.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(2, 1fr); }
+.barra nav { width: 100%; max-width: 560px; display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr));   /* 2 o 3 voci (C155: «Scrivi a Monica») sempre su una riga */ }
 .barra button {
   border: 0; background: none; padding: 8px 4px 10px; min-height: 62px;
   display: flex; flex-direction: column; align-items: center; gap: 2px;
@@ -246,6 +246,8 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
 .riga-ord b { font-family: var(--display); font-weight: 600; font-size: 1.05rem; }
 .riga-ord .prezzo { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
 .riga-ord .det { grid-column: 1 / -1; font-size: .88rem; color: var(--tenue); }
+.riga-ord .misura-scegli { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; padding: 8px 10px; border: 2px solid var(--allarme); border-radius: 12px; }
+.riga-ord .misura-scegli .etichetta { color: var(--allarme); font-weight: 800; }
 .riga-ord .nota { grid-column: 1 / -1; font-size: .88rem; font-weight: 800; color: var(--cotto); }
 .riga-ord .azioni { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; justify-content: space-between; }
 .riga-ord.aggiunta { background: #E7EFDB; border-radius: 10px; padding: 12px; }
@@ -699,16 +701,15 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ai-foto-pronta { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; background: var(--foglio); border: 1px dashed var(--grano); }
 .ai-foto-pronta img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
 .ai-foto-pronta span { flex: 1; font-weight: 700; color: var(--tenue); }
-/* «Scrivi a Monica» per i clienti approvati (Mario 08/11): pulsante tondo in basso a destra, sopra la barra */
-.wa-monica { position: fixed; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 30; display: flex; align-items: center; gap: 8px;
-  padding: 0 18px 0 14px; min-height: 52px; border-radius: 999px; background: #1F8F4E; color: #FFF; font-weight: 800; text-decoration: none; border: 0; font-family: inherit; font-size: inherit; cursor: pointer;
-  box-shadow: 0 8px 22px -8px rgba(20, 80, 40, .6); animation: wa-entra .5s .8s both cubic-bezier(.3, 1.4, .5, 1); }
-.wa-monica svg { width: 24px; height: 24px; }
+/* (C155, Mario 13/11) clienti: barra «Chiedi o ordina» larga quanto la pagina, bassa, ferma in cima mentre scorri; il microfono a destra fa tutto */
+.ai-barra.ai-cliente { position: sticky; top: var(--alto-testata, 0px); z-index: 20; margin: 0 -16px; padding: 6px 16px; background: var(--carta); }
+.ai-cliente .ai-apri { min-height: 44px; padding: 0 14px; font-size: .95rem; }
+.ai-cliente .ai-apri svg { width: 20px; height: 20px; }
+.ai-cliente .ai-mic { width: 44px; height: 44px; }
+.ai-cliente .ai-mic svg { width: 22px; height: 22px; }
 @keyframes wa-entra { from { opacity: 0; transform: translateY(20px) scale(.9); } }
 .wa-ordine { display: inline-flex; align-items: center; gap: 6px; color: #1F8F4E; font-weight: 800; }
 .wa-ordine svg { width: 20px; height: 20px; }
-@media (prefers-reduced-motion: reduce) { .wa-monica { animation: none; } }
-.corpo:has(> .wa-monica) { padding-bottom: 150px; }
 
 /* «Sono qui sotto» con l'app aperta: schermata della suoneria (C51) */
 .squillo { position: fixed; inset: 0; z-index: 9999; display: grid; place-items: center; padding: 16px; background: rgba(60, 20, 15, .82); animation: squillo-luce 1s ease-in-out infinite alternate; }

@@ -552,7 +552,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { UI.vista = 'home'; render(); });
   });
   await passo('cliente: «Scrivimi» capisce gli ordini (C155) e manda le domande su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
-    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
+    await page.evaluate(() => { try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ } document.querySelectorAll('.vapore').forEach(v => v.remove()); P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
     await page.waitForTimeout(1500);
     await page.evaluate(() => { $('#toast').innerHTML = ''; }); await foto('36-scrivi-monica');
     // 1) il messaggio vero di una cliente (13/11): ordine scritto nel testo → carrello, con la scelta della parmigiana
@@ -595,6 +595,26 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { P.carrello = []; UI.nota = ''; UI.ordineLink = 'ciao, a che ora aprite?'; carrelloDaLink(); render(); });   // niente piatti: «Scrivi a Monica» col testo
     if (!(await page.evaluate(() => UI.foglio && UI.foglio.tipo === 'scrivimi' && UI.foglio.testo.includes('a che ora')))) throw new Error('senza piatti non apre «Scrivi a Monica»');
     await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
+  });
+  await passo('cliente: link senza misura della teglia → la sceglie il cliente nel carrello, «Invia» fermo finché non la sceglie (C157)', async () => {   // autonoma
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.linkFatti = []; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = false; render(); });
+    await page.evaluate(t => { UI.ordineLink = t; carrelloDaLink(); render(); }, '2 kg di ravioli ricotta e spinaci\n1 teglia di melanzane alla parmigiana');
+    await page.waitForTimeout(400);
+    const a = await page.evaluate(() => ({ v: UI.vista, r: P.carrello.map(r => `${r.piatto}${r.daScegliere ? '?' : ''}`).join(',') }));
+    if (a.v !== 'carrello' || a.r !== 'ravioli,parmigiana?') throw new Error('misura non lasciata da scegliere: ' + JSON.stringify(a));
+    if (await page.locator('.misura-scegli [data-a="c-misura"]').count() !== 2) throw new Error('mancano i due tasti «Teglia da 6» e «Teglia da 8»');
+    const g = await page.locator('.giorno:not([disabled])').first(); await g.click(); await page.waitForTimeout(200);
+    if (!(await page.locator('[data-a="invia"]').isDisabled())) throw new Error('«Invia» acceso senza misura');
+    if (!(await page.locator('#app').innerText()).includes('Scegli prima la misura')) throw new Error('manca «Scegli prima la misura»');
+    await foto('36c-carrello-misura-da-scegliere');
+    await clic('[data-a="c-misura"][data-v="t8"]'); await page.waitForTimeout(300);
+    const b = await page.evaluate(() => P.carrello.map(r => `${r.piatto}:${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
+    if (b !== 'ravioli:kg,parmigiana:t8') throw new Error('scelta della misura: ' + b);
+    if (await page.locator('[data-a="invia"]').isDisabled()) throw new Error('«Invia» ancora spento dopo la scelta');
+    await page.evaluate(() => { P.carrello = []; P.linkFatti = []; UI.ordineLink = '1 teglia da 8 di melanzane alla parmigiana'; carrelloDaLink(); render(); });   // misura detta: niente scelta
+    const c = await page.evaluate(() => P.carrello.map(r => `${r.formato}${r.daScegliere ? '?' : ''}`).join(','));
+    if (c !== 't8') throw new Error('misura detta nel link non presa: ' + c);
+    await page.evaluate(() => { UI.foglio = null; UI.linkCiao = false; P.carrello = []; UI.nota = ''; UI.entro = null; UI.prova = undefined; UI.vista = 'menu'; S.impostazioni.whatsapp = ''; render(); });
   });
   await passo('Monica: l\'aiutante capisce il senso, le parole sono solo indizi; senza AI chiede «Intendi…?» (C102)', async () => {   // autonoma
     await page.evaluate(() => { P.ruolo = 'monica'; AI.msgs = []; AI.attesa = false; UI.aiQui = null; UI.foglio = null; window._chiediVero = window._chiediVero || chiediAiutante; vai('aiutante'); });
@@ -665,7 +685,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   });
   await passo('cliente: tasto «Scrivimi»; Monica: «Sono qui» squilla con l\'app aperta e si ferma con «Ho visto» (C51)', async () => {
     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
-    if (!(await page.locator('.wa-monica', { hasText: 'Scrivimi' }).count())) throw new Error('il tasto non dice «Scrivimi»');
+    if (!(await page.locator('.wa-monica', { hasText: 'Scrivi a Monica' }).count())) throw new Error('manca «Scrivi a Monica»');
     await page.evaluate(() => { S.impostazioni.whatsapp = ''; P.ruolo = 'monica'; UI.vista = 'home'; render(); });
     const n = await page.evaluate(() => S.ordini.find(o => !o.archiviato).n);
     await page.evaluate(n => suoneria({ nome: 'Laura Rossi', n }), n);
@@ -1525,8 +1545,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const sab = await page.evaluate(() => { for (let i = 1; i <= 7; i++) { const g = piuGiorni(oggi(), i); if (daIso(g).getDay() === 6) return g; } });
     if (!(await page.locator('.vc-fab').count())) throw new Error('manca il microfono fisso nel menù');
     if (!(await page.locator('.vc-primo').count())) throw new Error('manca «Puoi parlarmi!» la prima volta');
-    const pos = await page.evaluate(() => { const a = document.querySelector('.vc-fab').getBoundingClientRect(), b = document.querySelector('.wa-monica').getBoundingClientRect(); return { sx: a.left < window.innerWidth / 2, dx: b.left > window.innerWidth / 2, sovra: a.right > b.left && a.top < b.bottom && a.bottom > b.top }; });
-    if (!pos.sx || !pos.dx || pos.sovra) throw new Error('microfono e «Scrivimi» mal messi: ' + JSON.stringify(pos));
+    const pos = await page.evaluate(() => { const b = document.querySelector('.wa-monica'); return { fisso: !!b && getComputedStyle(b).position === 'fixed', sx: document.querySelector('.vc-fab').getBoundingClientRect().left < window.innerWidth / 2 }; });
+    if (pos.fisso || !pos.sx) throw new Error('«Scrivi a Monica» non deve essere un tasto fisso sopra il microfono (Mario 13/11): ' + JSON.stringify(pos));
     await page.waitForTimeout(2600); await foto('40-voce-clienti');   // dopo il toast «Ecco il menù»
     await page.locator('.vc-fab').click(); await page.waitForTimeout(1500);
     const r = await page.evaluate(() => ({ vista: UI.vista, msgs: AIC.msgs.map(m => m.t), carr: P.carrello.map(x => [x.piatto, x.qta]), entro: UI.entro, esito: (AIC.msgs[1] || {}).esito }));
