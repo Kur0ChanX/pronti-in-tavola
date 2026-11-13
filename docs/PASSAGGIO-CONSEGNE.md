@@ -63,11 +63,11 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
 - 2026-11-13 10:02 · [AVVIO] Sessione #71 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio fatto
 - 2026-11-13 10:24 · va bene come Consiglio → foto «Da chi» approvata (C148)
-- 2026-11-13 10:26 · Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici … → C150
+- 2026-11-13 10:26 · Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici … → C150 aperta: strade e domanda (c150-ricette-dal-parlato.md)
 - 2026-11-13 10:33 · prendiamo l'audio da ogni video e prendi il testo tranquillo tanto lo guardo sol… → C150, strada 3 no (motivi in chat)
 - 2026-11-13 10:34 · 1 faccio la chiave → C150 strada 1
 - 2026-11-13 10:36 · mandami la finestra che la incollo la chiave → finestra «Denied», GUIDE-GIUSTE
-- 2026-11-13 10:37 · non va nega la metto su ambiente → ok
+- 2026-11-13 10:37 · non va nega la metto su ambiente → chiave come variabile GEMINI_API_KEY (GUIDE-GIUSTE)
 - 2026-11-13 10:38 · fatto messa nell'ambiente → chiave vista (C150)
 - 2026-11-13 10:39 · 1 metti online il voto palestra → v0.10.25 online
 - 2026-11-13 10:45 · si lavorate in 2 sessione fino a quando non la chiudi questa e comunicate quello… → #72 aperta
