@@ -798,7 +798,7 @@ function vAiutoCliente() {
     ${(Riconosci || window.MediaRecorder) ? `<button type="button" class="ai-mic ${asc ? 'acceso' : ''}" data-a="ac-detta" aria-label="${asc ? 'Smetti di ascoltare' : 'Chiedi a voce'}">${ico('microfono')}</button>` : ''}
     <button type="button" class="btn" data-a="ac-invia" ${AIC.attesa ? 'disabled' : ''}>Invia</button></div>
     <p class="tenue piccolo" style="margin:0">L'aiutante usa un'intelligenza artificiale: può sbagliare. Per allergie e intolleranze chiedi sempre conferma a Monica.</p>`;
-  return h + tastoMonica() + '</main>';
+  return h + '</main>';   // «Scrivi a Monica» ora è nella barra in basso (C155)
 }
 const pianoAC = el => AIC.msgs[Number(el.dataset.i)];
 Object.assign(A, {

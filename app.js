@@ -334,7 +334,6 @@ function waTesta() {
   const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '';
   return `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${chi ? ` Sono ${chi}.` : ''}`;
 }
-const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi" aria-label="Scrivimi">${ico('chat')}<span>Scrivimi</span></button>` : '';
 /* «Scrivimi» capisce gli ordini (C155, Mario 13/11 «voglio automatismo»: una cliente aveva scritto l'ordine nel messaggio WhatsApp e a Monica
    non era arrivato niente). Il cliente scrive QUI; se nel testo ci sono piatti del menù l'app propone di metterli nel carrello (l'ordine
    arriva vero tra gli Ordini, col messaggio nella nota); se no, o se il cliente vuole, si apre WhatsApp col testo già scritto.
@@ -939,9 +938,10 @@ function vMenu() {
           <span class="piccolo num">${euro(prezzoDi(p, f.id))}${f.tipo === 'kg' ? ' al kg' : ''}</span></button>`;
       }).join('')}</div></section>`;
   }
-  h += P.allergie.length
-    ? `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Le tue allergie:</b> ${esc(P.allergie.map(a => NOME_ALL[a].toLowerCase()).join(', '))}<br><u>Cambia</u></span></button>`
-    : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b><br><small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`;
+  /* (C155, Mario 13/11) allergie in una striscia più piccola che resta in cima mentre scorri il menù */
+  h += `<div class="striscia-menu">${P.allergie.length
+    ? `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Le tue allergie:</b> ${esc(P.allergie.map(a => NOME_ALL[a].toLowerCase()).join(', '))} · <u>Cambia</u></span></button>`
+    : `<button type="button" class="allergie-box" data-a="apri-allergie">${ico('cuore')}<span><b>Hai allergie?</b> <small>Toccale qui: i piatti a rischio diventano rossi.</small></span></button>`}</div>`;
   h += profiloCliente();
   h += `<nav class="schede-cat" aria-label="Parti del menù">${cats.map(([k, n]) => `<button type="button" class="chip" data-a="cat" data-v="${k}" aria-pressed="${UI.cat === k}">${n}</button>`).join('')}
 </nav>`;
@@ -953,7 +953,7 @@ function vMenu() {
     h += `<section class="sezione" aria-labelledby="cat-${k}"><div class="cat-titolo" id="cat-${k}"><h2>${n}</h2><span></span></div>
       <div class="voci">${visibili().filter(p => p.cat === k && p.disponibile).map(voce).join('')}</div></section>`;
   });
-  return h + tastoMonica() + '</main>';
+  return h + '</main>';
 }
 
 function apriPiatto(id, pronto, anteprima) {
@@ -1146,7 +1146,7 @@ function vOrdiniCliente() {
       <div class="ord-lista">${oo.map(rigaCliente).join('')}</div></section>`).join('');
     if (passati.length > (UI.ordQuanti || 40)) h += `<button type="button" class="btn chiaro pieno" data-a="ord-altri">Mostra altri</button>`;
   }
-  return h + cartaNotifica() + tastoMonica() + '</main>';
+  return h + cartaNotifica() + '</main>';
 }
 /* «Sono qui» (Mario 07/11, idea presa dal ritiro in auto): il cliente sotto casa avvisa Monica con un tocco */
 function sonoQui(o) {
@@ -1198,7 +1198,9 @@ function barraCliente() {
   const att = { menu: 'menu', carrello: 'menu', modifica: 'ordini', inviato: 'ordini' }[UI.vista] || UI.vista;
   const avvisi = S.ordini.filter(o => o.cliente === P.cliente && (o.stato === 'proposta' || o.stato === 'pronto')).length;
   const b = (v, n, t, extra = '') => `<button type="button" data-a="vai" data-v="${v}" ${att === v ? 'aria-current="page"' : ''}>${ico(n)}${t}${extra}</button>`;
-  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}</nav>`;
+  /* (C155, Mario 13/11) terza voce «Scrivi a Monica»: le domande in secondo piano, niente tasti sospesi sopra il menù; solo ai clienti approvati */
+  const scrivi = S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi">${ico('chat')}Scrivi a Monica</button>` : '';
+  return `<nav aria-label="Sezioni">${b('menu', 'menu', 'Menù')}${b('ordini', 'ordini', 'I miei ordini', avvisi ? `<span class="pallino">${avvisi}</span>` : '')}${scrivi}</nav>`;
 }
 
 /* ================= MONICA ================= */
@@ -1911,6 +1913,7 @@ const POS = {}; let penultimaVista = '';
 function render() {
   applicaParti();   // parti del menù scelte da Monica (opzioni.js, C92)
   document.documentElement.classList.toggle('grande', !!P.grande);
+  requestAnimationFrame(() => { const t = document.querySelector('.testata'); document.documentElement.style.setProperty('--alto-testata', (t ? t.offsetHeight : 0) + 'px'); });   // striscia delle allergie sotto la testata (C155)
   const y = window.scrollY, f = $('.foglio'), fy = f ? f.scrollTop : 0;
   const attivo = document.activeElement && document.activeElement.id;
   /* file che scorrono di lato: restano dove erano (C31); C127: ritrovate per nome (classe + aria-label), non per posizione, così una riga che compare sopra non le scambia */

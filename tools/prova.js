@@ -552,7 +552,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await page.evaluate(() => { UI.vista = 'home'; render(); });
   });
   await passo('cliente: «Scrivimi» capisce gli ordini (C155) e manda le domande su WhatsApp col messaggio già iniziato (Mario 08/11)', async () => {
-    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
+    await page.evaluate(() => { try { localStorage.setItem('pit-vc-visto', '1'); } catch (e) { /* niente */ } document.querySelectorAll('.vapore').forEach(v => v.remove()); P.ruolo = 'cliente'; P.benvenuto = true; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; P.carrello = []; UI.nota = ''; UI.entro = null; render(); });
     await page.waitForTimeout(1500);
     await page.evaluate(() => { $('#toast').innerHTML = ''; }); await foto('36-scrivi-monica');
     // 1) il messaggio vero di una cliente (13/11): ordine scritto nel testo → carrello, con la scelta della parmigiana
@@ -665,7 +665,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
   });
   await passo('cliente: tasto «Scrivimi»; Monica: «Sono qui» squilla con l\'app aperta e si ferma con «Ho visto» (C51)', async () => {
     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
-    if (!(await page.locator('.wa-monica', { hasText: 'Scrivimi' }).count())) throw new Error('il tasto non dice «Scrivimi»');
+    if (!(await page.locator('.wa-monica', { hasText: 'Scrivi a Monica' }).count())) throw new Error('manca «Scrivi a Monica»');
     await page.evaluate(() => { S.impostazioni.whatsapp = ''; P.ruolo = 'monica'; UI.vista = 'home'; render(); });
     const n = await page.evaluate(() => S.ordini.find(o => !o.archiviato).n);
     await page.evaluate(n => suoneria({ nome: 'Laura Rossi', n }), n);
@@ -1525,8 +1525,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const sab = await page.evaluate(() => { for (let i = 1; i <= 7; i++) { const g = piuGiorni(oggi(), i); if (daIso(g).getDay() === 6) return g; } });
     if (!(await page.locator('.vc-fab').count())) throw new Error('manca il microfono fisso nel menù');
     if (!(await page.locator('.vc-primo').count())) throw new Error('manca «Puoi parlarmi!» la prima volta');
-    const pos = await page.evaluate(() => { const a = document.querySelector('.vc-fab').getBoundingClientRect(), b = document.querySelector('.wa-monica').getBoundingClientRect(); return { sx: a.left < window.innerWidth / 2, dx: b.left > window.innerWidth / 2, sovra: a.right > b.left && a.top < b.bottom && a.bottom > b.top }; });
-    if (!pos.sx || !pos.dx || pos.sovra) throw new Error('microfono e «Scrivimi» mal messi: ' + JSON.stringify(pos));
+    const pos = await page.evaluate(() => { const b = document.querySelector('.wa-monica'); return { fisso: !!b && getComputedStyle(b).position === 'fixed', sx: document.querySelector('.vc-fab').getBoundingClientRect().left < window.innerWidth / 2 }; });
+    if (pos.fisso || !pos.sx) throw new Error('«Scrivi a Monica» non deve essere un tasto fisso sopra il microfono (Mario 13/11): ' + JSON.stringify(pos));
     await page.waitForTimeout(2600); await foto('40-voce-clienti');   // dopo il toast «Ecco il menù»
     await page.locator('.vc-fab').click(); await page.waitForTimeout(1500);
     const r = await page.evaluate(() => ({ vista: UI.vista, msgs: AIC.msgs.map(m => m.t), carr: P.carrello.map(x => [x.piatto, x.qta]), entro: UI.entro, esito: (AIC.msgs[1] || {}).esito }));
