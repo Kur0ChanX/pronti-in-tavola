@@ -1,0 +1,28 @@
+{
+"account": "108763",
+"sessione": "87f479a9f0f9",
+"giorno": "2026-11-13",
+"turni": 3,
+"peso": 207387,
+"uscita": 4447,
+"contesto_max": 132964,
+"anomalie": [],
+"remota": "01WTjqUwF3CY",
+"aiutanti": 0,
+"strumenti": 8,
+"motori": {
+"opus": 207387
+},
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 6 · Il turno finisce con una": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"20:33 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: #79. Riscr"
+],
+"Stop 6 · Il turno finisce con una": [
+"20:34 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+]
+}
+}

@@ -1,21 +1,26 @@
-# Ultima risposta di Claude (13/11/2026 20:30 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:34 ora italiana)
 
-Ho capito: per la parmigiana e le lasagne il cliente deve scegliere la misura per forza, sennò l'ordine non parte.
+Ho capito: dalla sessione precedente sono arrivati due tuoi messaggi che non avevo. Il link che ti ho dato prima era **sbagliato**: non c'erano i 2 kg di ravioli.
 
-Ho ricevuto la tua richiesta dalla sessione di prima.
+✅ FATTO
+Usa questo, non quello di prima. Carica 2 kg di ravioli ricotta e spinaci e 1 parmigiana:
+
+https://pronti-in-tavola.pronti-in-tavola.workers.dev/?ordine=2%20kg%20di%20ravioli%20ricotta%20e%20spinaci%0A1%20parmigiana
+
+Da copiare:
+```
+https://pronti-in-tavola.pronti-in-tavola.workers.dev/?ordine=2%20kg%20di%20ravioli%20ricotta%20e%20spinaci%0A1%20parmigiana
+```
 
 ───
-💡 PARERE
-- **Il problema è più grande di quanto sembra.** Quando l'ordine arriva dal link, da «Scrivimi» o dalla voce, l'app prende da sola la prima misura della teglia. Lisa non se ne accorge.
-- **Anche dal menù normale** la prima misura è già scelta in partenza. Il cliente può toccare «Aggiungi» senza guardarla.
-- Proposta: la riga nel carrello resta rossa con scritto «Scegli la misura». Il tasto «Invia l'ordine a …
+⚠️ ATTENZIONE
+Oggi la misura della parmigiana la sceglie …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-DOMANDA 3: anche dal menù normale il cliente deve scegliere la misura da solo?
-📌 Di cosa parliamo: oggi, quando apri un piatto con più misure, la prima è già selezionata. Con la scelta 1, all'inizio nessuna misura è selezionata e «Aggiungi» non va finché il cliente non ne tocca una.
-1 · Sì, la misura sempre da scegliere, da tutte le strade (consiglio: nessuno ordina la teglia sbagliata senza accorgersene)
-2 · No, solo per gli ordini dal link, da «Scrivimi» e dalla voce
-
-Restano aperte la DOMANDA 1 (tasti del menù: ho capito bene?) e la DOMANDA 2 (controllo delle regole: dopo i …
+**DOMANDA 3 · misura obbligatoria della parmigiana** 🛑
+📌 Di cosa parliamo: i piatti in teglia, come la parmigiana, hanno più misure. Oggi l'app sceglie già la prima, anche quando il cliente non l'ha scelta. Serve adesso per l'ordine di Lisa.
+1 · Lo faccio subito, per tutte le strade (menù, link, «Scrivimi» e voce): nessuno può inviare senza aver scelto la misura (mio consiglio).
+2 · Lo faccio subito, ma solo per link, «Scrivimi» e voce: dal menù normale la prima misura resta già scelta.
+3 · Aspetto: prima i tasti del menù.
