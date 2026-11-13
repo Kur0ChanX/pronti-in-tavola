@@ -20,7 +20,10 @@ CACHE = os.path.join(RADICE, '.cache-stime')
 # Canali che scrivono la ricetta a sezioni (ingredienti, preparazione, valori): si leggono con sezioni(), passi compresi
 A_SEZIONI = {'Beardedscara'}
 CANALI = [('Massimo Pietrobon Gobbi', 'UCkQmObN7tBXzPQTQhlT704Q'),
-          ('Beardedscara', 'UCWhoPXcEJRPWxtIwjSGgpug')]   # C145 (Mario 11/11 22:46 «aggiungi tutti i suoi video di ricette»)
+          ('Beardedscara', 'UCWhoPXcEJRPWxtIwjSGgpug'),   # C145 (Mario 11/11 22:46 «aggiungi tutti i suoi video di ricette»)
+          ('Cotto al Dente', 'UCF3eVR6iAiKYZHOXLj9Coyw'), ('2foodfitlovers', 'UCAkHCnECo1Uqyy9MvhsVOSQ')]   # C148 (Mario 12/11 «tutti i creatori italiani»)
+# C148: canali con tanti video che non sono ricette (recensioni, prove di prodotti): ricetta SOLO con gli ingredienti scritti sotto il video
+SOLO_CON_INGREDIENTI = {'Cotto al Dente', '2foodfitlovers'}
 
 # Tipo della ricetta: la prima parola che compare (nome, hashtag, ingredienti) decide. Ordine = priorità.
 TIPI = [('Pancake', r'pancake'), ('Porridge', r'porridge|porridgemis|portidge|ba(?:c?k)e?d ?oats?'), ('Cheesecake', r'chee?r?s?e?cake'), ('Brownie', r'brownie'),
@@ -318,8 +321,8 @@ def main():
             cibo = re.search(CIBO, v['titolo'] + ' ' + ' '.join(re.findall(r'#\w+', v['testo'])))
             nv = sz['nv'] if sz is not None else numeri(riga) if riga else None   # i suoi valori leggibili: li scrive solo sotto le ricette
             ricetta = (len(ing) >= 2 or ((cibo or nv) and not re.search(NON_RICETTE, v['titolo']))) and not re.search(MAI_RICETTE, v['titolo'])
-            if sz is not None:
-                ricetta = len(ing) >= 2 and not re.search(MAI_RICETTE, v['titolo'])   # a sezioni: ricetta = ingredienti scritti
+            if sz is not None or autore in SOLO_CON_INGREDIENTI:
+                ricetta = len(ing) >= 2 and not re.search(MAI_RICETTE, v['titolo'])   # a sezioni (o C148): ricetta = ingredienti scritti
             if re.fullmatch(r'\s*\d{1,2}\s+\w+\s+\d{4}\s*', v['titolo']) and len(ing) < 2:
                 ricetta = False
             if not ricetta:
