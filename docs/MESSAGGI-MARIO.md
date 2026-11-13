@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:37 · 01WTjqUvRgtB
-non va nega la metto su ambiente
-
 ## 2026-11-13 10:38 · 01WTjqUvRgtB
 fatto messa nell'ambiente
 
@@ -126,3 +123,6 @@ E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mett
 
 ## 2026-11-13 21:12 · 01WTjqUwJ4nE
 Allora, le foto secondo me per ora vanno bene. Cosa resta in sospeso? La questione del passaggio di consegna e poi cos'altro abbiamo lasciato in sospeso di cose che ti ho chiesto.
+
+## 2026-11-13 22:35 · 01WTjqUw66Sp
+Sì, guarda se l'hai studiata meglio, rifletti bene e vai come consiglio. Poi ti chiedo un'altra cosa da mettere in priorità, scusami, due cose. Prima fai questa cosa che abbiamo detto adesso, poi questa cosa delle regole. Poi cosa facciamo? Abilitiamo Monica alla modalità sviluppatore, però in che senso? Voglio che anche Monica vede come vedono i clienti, però voglio che ci sia solo lo swipe verso l'alto come ce l'ho io, e ogni volta che rientra nell'app si chiude, cioè lo deve riswappare per andare nella modalità cliente. E poi così può provare lei gli ordini, che si può fare gli ordini da sola, però tu dirai cosa se ne fa a farsi gli ordini da sola, giusto per provare l'app. Quindi ci sarà, prima di ordinare sto solo provando l'app quando va a ordinare, oppure sto ordinando davvero, ma sto ordinando davvero non lo farà mai, quasi mai, però glielo lasciamo questa opzione. Verifica che ci sia, sto solo facendo una prova, come mi sembra l'abbiamo già implementato, e così abilitiamo anche Monica a far vedere l'app come il cliente, che anche lì deve vedere come lo vede il cliente, ecco. Quindi evitiamo di, non lo so, facciamo magari mettiamo 5 tocchi la prima volta per entrare, come lo faccio io, 5 tocchi in modalità mi sembra la 5 tocchi dove c'è sotto i noi la scritta, sotto in basso nella pagina principale, e poi lei fa lo swipe su in alto, lì si abilita. Ogni volta che rientra nell'app però questa se la ritroverà chiusa, perché non è bellissima da vedere. Poi un'altra cosa da implementare è il costo per cioè quanto spende lei per creare una ricetta. Quindi mi sembra che abbiamo già implementato che Monica carica tutti gli ingredienti, mette le quantità che usa nella ricetta e poi mettiamo una parte di quanto lei lo paga. Nel senso, mette monica le sue quantita e poi aggiungiamo la quantita esempio kg litri ecc del prodotto acquistato con il prezzo caricato da Monica cosi puoi calcolare quanto gli costa fare quella ricetta e carica i prodotti nella lista spesa che dici fai un bel lavoro con logica
