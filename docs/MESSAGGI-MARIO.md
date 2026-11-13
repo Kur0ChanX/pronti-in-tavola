@@ -2,18 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 10:24 · 01WTjqUvRgtB
-va bene come Consiglio
-
-## 2026-11-13 10:26 · 01WTjqUvRgtB
-Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici nel video e fai la ricetta, perché altre intelligenze artificiali riescono, quindi magari dalle parole che dicono ti prendi il testo e ci fai la ricetta, anche perché nei video dicono spesso le quantità, quindi a te le quantità servono. Quindi puoi farlo per ogni singolo video, caricare magari un programmino che lo fa, non so, una skill, un MCP, un qualcosa da collegarlo, e ti trascrivi tutto quello che dicono e da lì prendi quello che ti serve, no? Per ogni singolo video.
-
-## 2026-11-13 10:33 · 01WTjqUvRgtB
-prendiamo l'audio da ogni video e prendi il testo tranquillo tanto lo guardo solo io non è publico di dò il permesso
-
-## 2026-11-13 10:34 · 01WTjqUvRgtB
-1 faccio la chiave
-
 ## 2026-11-13 10:36 · 01WTjqUvRgtB
 mandami la finestra che la incollo la chiave
 
@@ -124,5 +112,17 @@ Sì, ok, ma non farla troppo stretta perché te l'ho detto io, no? Cerca di rimp
 ## 2026-11-13 19:47 · 01WTjqUu3oyB
 Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
 
-## 2026-11-13 20:19 · 01WTjqUu3oyB
-Mi puoi rinviare il link di Lisa in questa sessione?
+## 2026-11-13 20:12 · 01WTjqUvRMYe
+tra quanto è online?
+
+## 2026-11-13 20:13 · 01WTjqUvRMYe
+No, non vanno bene per niente. Cioè, non capisco perché non mi capisci quando parlo. Cioè, ma ultimamente, prima mi capivi sempre. Non ho neanche voglia di rispiegartelo. Quando mi dici, hai una domanda, allergia, quello lì io prima ti ho detto di metterlo più piccolo, stretto, non stretto in lunghezza, ma in larghezza, e di farlo che segue la pagina. E non ho capito perché hai fatto di testa tua. Sotto ti ho detto di togliere il pulsante del microfono, di lasciarlo lì. Hai una domanda, allergia, prezzi, cosa prendere? Lì facciamo tutto insieme, sia detta l'ordine sia hai una domanda. Vedi che ci sono due tasti, ma perché non te ne accorgi? Sono gemelli. E ti ho detto di toglierlo quello in mezzo, perché l'hai lasciato? Ma non risolvere il problema, spiegami come stai ragionando.
+
+## 2026-11-13 20:15 · 01WTjqUvRMYe
+Aspetta, quindi significa che è un problema di passaggio di consegna? L'ha accorciato così tanto che è letto a metà? Rispondimi, perché sennò devo modificare la regola.
+
+## 2026-11-13 20:17 · 01WTjqUvRMYe
+miglioralo Miglioralo che deve leggere tutto quello che scrivo nei passaggi di consegna, perché ho paura che accorciandolo si perda qualche senso di quello che dico. Cerca di migliorarla perché è troppo importante, si fanno dei grossi caos.
+
+## 2026-11-13 20:20 · 01WTjqUvRMYe
+E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.
