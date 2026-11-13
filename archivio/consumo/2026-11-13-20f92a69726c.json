@@ -1,0 +1,25 @@
+{
+"account": "108763",
+"sessione": "20f92a69726c",
+"giorno": "2026-11-13",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 147607,
+"anomalie": [],
+"blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 6 · Il turno finisce con una": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Domanda a Mario poco chiara": [
+"21:28 · Domanda a Mario poco chiara (C233, E145): mancano le scelte numerate «1 · … · 2 · …»; sigle da dire a parole: C158. Riscrivi SOLO la domanda, col contesto in 1-2 righe e cosa cambia con ogni scelta (n"
+],
+"Stop 6 · Il turno finisce con una": [
+"21:28 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+]
+},
+"remota": "01WTjqUw66Sp",
+"aiutanti": 0,
+"strumenti": 0
+}
