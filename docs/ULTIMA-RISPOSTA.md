@@ -1,3 +1,10 @@
-# Ultima risposta di Claude (13/11/2026 13:12 ora italiana)
+# Ultima risposta di Claude (13/11/2026 14:07 ora italiana)
 
-Le modifiche non salvate sono quelle dell'app 0.10.27. Le salvo su GitHub appena le prove sono verdi: salvarle prima la metterebbe online senza prove (PT E69).
+Ho capito: le ~300 ricette scartate si possono recuperare migliorando il calcolo dei valori.
+🧠 Opus · Medio
+
+───
+✅ FATTO
+- **+70 ricette proteiche nuove**: tra le Proteiche passano da 522 a 592. Sono quasi tutte frittate, pancake, polpette e cheesecake.
+- Il programma che calcola i valori dagli ingredienti ora capisce più cose. Riconosce «q.b.», salta erbe e attrezzi (es. «1 pentolino») e conosce kefir, semi di chia, pancarrè, gallette e 20 verdure e frutti.
+- Ho corretto tre errori che falsavano i conti: i «cipollotti» venivano letti come pollo, un pomodorino pesava 100 g e un peperoncino …
