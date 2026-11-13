@@ -1,3 +1,3 @@
-# Ultima risposta di Claude (13/11/2026 13:12 ora italiana)
+# Ultima risposta di Claude (13/11/2026 14:07 ora italiana)
 
-Le modifiche non salvate sono quelle dell'app 0.10.27. Le salvo su GitHub appena le prove sono verdi: salvarle prima la metterebbe online senza prove (PT E69).
+Ora aspetto la tua foto.

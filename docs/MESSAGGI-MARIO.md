@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 17:52 · 01WTjqUu7eAD
-nell'ambiente pronti in tavola
-
 ## 2026-11-11 17:53 · 01WTjqUu7eAD
 fatto
 
@@ -123,3 +120,6 @@ hai altre ricette da aggiungere?
 
 ## 2026-11-13 13:11 · 01WTjqUw4QVb
 va bene metti online ma caricarle io 30 per volta non consumo limiti?
+
+## 2026-11-13 15:18 · 01WTjqUtr7kg
+mancano in tutti ingredienti
