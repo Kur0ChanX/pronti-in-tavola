@@ -77,6 +77,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E80** Durata con un servizio gratis: contare il limite AL GIORNO, non solo al minuto.
 - **PT E81** Tasto «scrivi» accanto agli ordini: chi non è pratico ci scrive l'ordine; deve capirlo e portarlo nell'app (C155).
 - **PT E82** Messaggio di Mario durante il passaggio di sessione: la vecchia gli risponde SUBITO (corto) prima di chiudere; la nuova risponde all’ultimo messaggio di Mario PRIMA dell’avvio lungo. 13/11: risposta dopo ~20 min, con la correzione sbagliata (gusti). Prima di chiedere, rileggere i messaggi di Mario: «Monica vede l’ordine?» l’aveva già detto (18:19 «non c’è nessun ordine").
+- **PT E83** Pubblicato senza foto della pagina intera sul telefono di Mario (caratteri grandi): «Scrivimi» fisso copriva microfono e «Dettami l’ordine». Prima di pubblicare: foto del menù coi caratteri grandi e ok di Mario sulle foto, non solo il «vai».
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC

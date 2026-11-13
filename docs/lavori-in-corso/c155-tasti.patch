@@ -1,0 +1,62 @@
+diff --git a/app.js b/app.js
+index 5a0ec4a9..3972cb22 100644
+--- a/app.js
++++ b/app.js
+@@ -334,7 +334,7 @@ function waTesta() {
+   const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '';
+   return `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${chi ? ` Sono ${chi}.` : ''}`;
+ }
+-const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi" aria-label="Scrivimi">${ico('chat')}<span>Scrivimi</span></button>` : '';
++const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi">${ico('chat')}<span>Hai una domanda? Scrivi a Monica</span></button>` : '';
+ /* «Scrivimi» capisce gli ordini (C155, Mario 13/11 «voglio automatismo»: una cliente aveva scritto l'ordine nel messaggio WhatsApp e a Monica
+    non era arrivato niente). Il cliente scrive QUI; se nel testo ci sono piatti del menù l'app propone di metterli nel carrello (l'ordine
+    arriva vero tra gli Ordini, col messaggio nella nota); se no, o se il cliente vuole, si apre WhatsApp col testo già scritto.
+diff --git a/style.css b/style.css
+index cf08a16c..a5f4e2f0 100644
+--- a/style.css
++++ b/style.css
+@@ -699,15 +699,14 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
+ .ai-foto-pronta { display: flex; gap: 10px; align-items: center; padding: 8px; border-radius: 12px; background: var(--foglio); border: 1px dashed var(--grano); }
+ .ai-foto-pronta img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; }
+ .ai-foto-pronta span { flex: 1; font-weight: 700; color: var(--tenue); }
+-/* «Scrivi a Monica» per i clienti approvati (Mario 08/11): pulsante tondo in basso a destra, sopra la barra */
+-.wa-monica { position: fixed; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 30; display: flex; align-items: center; gap: 8px;
+-  padding: 0 18px 0 14px; min-height: 52px; border-radius: 999px; background: #1F8F4E; color: #FFF; font-weight: 800; text-decoration: none; border: 0; font-family: inherit; font-size: inherit; cursor: pointer;
+-  box-shadow: 0 8px 22px -8px rgba(20, 80, 40, .6); animation: wa-entra .5s .8s both cubic-bezier(.3, 1.4, .5, 1); }
+-.wa-monica svg { width: 24px; height: 24px; }
++/* «Scrivi a Monica» per i clienti approvati: riga discreta in fondo alla pagina, non più tasto fisso (Mario 13/11: prima si ordina dall'app,
++   le domande in secondo piano; il tasto verde fisso copriva microfono e «Dettami l'ordine» coi caratteri grandi) */
++.wa-monica { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 22px auto 0; padding: 10px 16px; min-height: 44px;
++  background: none; border: 0; color: var(--tenue); font-family: inherit; font-size: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
++.wa-monica svg { width: 20px; height: 20px; }
+ @keyframes wa-entra { from { opacity: 0; transform: translateY(20px) scale(.9); } }
+ .wa-ordine { display: inline-flex; align-items: center; gap: 6px; color: #1F8F4E; font-weight: 800; }
+ .wa-ordine svg { width: 20px; height: 20px; }
+-@media (prefers-reduced-motion: reduce) { .wa-monica { animation: none; } }
+ .corpo:has(> .wa-monica) { padding-bottom: 150px; }
+ 
+ /* «Sono qui sotto» con l'app aperta: schermata della suoneria (C51) */
+diff --git a/tools/prova.js b/tools/prova.js
+index 443b30f6..999e155f 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -665,7 +665,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+   });
+   await passo('cliente: tasto «Scrivimi»; Monica: «Sono qui» squilla con l\'app aperta e si ferma con «Ho visto» (C51)', async () => {
+     await page.evaluate(() => { P.ruolo = 'cliente'; S.impostazioni.whatsapp = '3331234567'; UI.vista = 'menu'; UI.foglio = null; render(); });
+-    if (!(await page.locator('.wa-monica', { hasText: 'Scrivimi' }).count())) throw new Error('il tasto non dice «Scrivimi»');
++    if (!(await page.locator('.wa-monica', { hasText: 'Scrivi a Monica' }).count())) throw new Error('manca «Scrivi a Monica»');
+     await page.evaluate(() => { S.impostazioni.whatsapp = ''; P.ruolo = 'monica'; UI.vista = 'home'; render(); });
+     const n = await page.evaluate(() => S.ordini.find(o => !o.archiviato).n);
+     await page.evaluate(n => suoneria({ nome: 'Laura Rossi', n }), n);
+@@ -1525,8 +1525,8 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     const sab = await page.evaluate(() => { for (let i = 1; i <= 7; i++) { const g = piuGiorni(oggi(), i); if (daIso(g).getDay() === 6) return g; } });
+     if (!(await page.locator('.vc-fab').count())) throw new Error('manca il microfono fisso nel menù');
+     if (!(await page.locator('.vc-primo').count())) throw new Error('manca «Puoi parlarmi!» la prima volta');
+-    const pos = await page.evaluate(() => { const a = document.querySelector('.vc-fab').getBoundingClientRect(), b = document.querySelector('.wa-monica').getBoundingClientRect(); return { sx: a.left < window.innerWidth / 2, dx: b.left > window.innerWidth / 2, sovra: a.right > b.left && a.top < b.bottom && a.bottom > b.top }; });
+-    if (!pos.sx || !pos.dx || pos.sovra) throw new Error('microfono e «Scrivimi» mal messi: ' + JSON.stringify(pos));
++    const pos = await page.evaluate(() => { const b = document.querySelector('.wa-monica'); return { fisso: !!b && getComputedStyle(b).position === 'fixed', sx: document.querySelector('.vc-fab').getBoundingClientRect().left < window.innerWidth / 2 }; });
++    if (pos.fisso || !pos.sx) throw new Error('«Scrivi a Monica» non deve essere un tasto fisso sopra il microfono (Mario 13/11): ' + JSON.stringify(pos));
+     await page.waitForTimeout(2600); await foto('40-voce-clienti');   // dopo il toast «Ecco il menù»
+     await page.locator('.vc-fab').click(); await page.waitForTimeout(1500);
+     const r = await page.evaluate(() => ({ vista: UI.vista, msgs: AIC.msgs.map(m => m.t), carr: P.carrello.map(x => [x.piatto, x.qta]), entro: UI.entro, esito: (AIC.msgs[1] || {}).esito }));
