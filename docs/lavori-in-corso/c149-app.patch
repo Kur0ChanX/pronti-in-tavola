@@ -1,0 +1,227 @@
+diff --git a/aiutante.js b/aiutante.js
+index dcac2859..aced6312 100644
+--- a/aiutante.js
++++ b/aiutante.js
+@@ -172,6 +172,7 @@ function controllaAI(a) {
+       }
+       if (a.voce === 'imp-gestori' || a.voce === 'imp-lucchetto') { if (!Dati.attivo) return { no: 'Questa voce c\'è solo nell\'app vera, con i dati veri.' }; }
+       if (a.voce === 'clienti-rifiutati' && !(S.rifiutati || []).length) return { no: 'Non hai detto di no a nessuno: la lista delle persone rifiutate è vuota.' };
++      if (a.voce === 'imp-palestra' && !(typeof puoSviluppare === 'function' && puoSviluppare())) return { no: 'Il profilo palestra c\'è solo sul telefono di Mario.' };
+       if (a.voce === 'imp-voce' && typeof sonoMarioVero === 'function' && sonoMarioVero()) return { vai: 'impostazioni', sez: null, etichetta: 'Portami lì', titolo: 'Voce', dopo: 'La tua velocità della voce è in alto, nella scheda «Solo per te, Mario».' };
+       const pv = a.perVoce && DOVE_AI[a.perVoce];
+       return { vai: v.vista, sez: v.sez || null, ui: v.ui || null, etichetta: 'Portami lì', titolo: v.nome, dopo: pv ? `Tocca il piatto, poi «${pv.nome}». ${pv.come}` : v.come };
+@@ -531,6 +532,8 @@ const DOVE_AI = {
+   spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
+   'ricettario-foto': { vista: 'ricettario', nome: 'Foto piccole: Migliora con l\'AI', come: 'Apri una ricetta e tocca la foto di un passo: si ingrandisce. Sotto c\'è «✨ Migliora con l\'AI»: in pochi secondi la foto diventa grande e nitida. Dopo la prima volta lo fa da sola.', parole: /(foto|immagin)\w*.*(sgranat|sfocat|piccol|brutt|nitid|miglior|ingrand|pixel)|(sgranat|sfocat|miglior|ingrand)\w*.*(foto|immagin)/ },
+   // C124: sezione proteica, difficoltà e Database (prima di «ricettario»: vince sulle parole più precise)
++  // C149: prima di «ricettario-fit» (che prende «palestra»): il profilo di Mario per il «Voto per te»
++  'imp-palestra': { vista: 'impostazioni', nome: 'Il mio profilo palestra', come: 'Nella scheda «Solo per te, Mario» c\'è «🏋️ Il mio profilo palestra»: scrivi peso, altezza, età, quante volte fai pesi e l\'obiettivo. Si salva da solo, solo su questo telefono, e nel Ricettario vedi il «Voto per te».', parole: /profilo (della )?palestr|(il )?mio peso|voto per te|quante proteine (mi servono|devo|al giorno)|mio obiettivo/ },
+   'ricettario-fit': { vista: 'ricettario', nome: 'Ricette proteiche', come: 'Sei in «🏋️ Proteiche»: tutte le ricette ricche di proteine, ognuna col voto da 1 a 10 e il semaforo (🟢 bene, 🟡 così così, 🔴 attento) per proteine, calorie, grassi saturi, zuccheri e sale; prima quelle col voto più alto. Scegli uno o più momenti (Colazione, Cena…) e, se vuoi, una o più fonti (pollo, albumi…); il riquadro verde dice cosa sto caricando e «🔍 Cerca altre» ne cerca di nuove. Su ogni ricetta trovi i valori per porzione.', parole: /protei|palestr|fitness|\bgym\b|ipertrofi|definizion|asciugar|massa muscol|poche calorie|ricett\w* (light|legger|fit)/, ui: { ricZona: 'fit' } },
+   'ricettario-video': { vista: 'ricvideo', nome: 'Ricette video', come: 'Qui ci sono le ricette dai video di YouTube, divise per youtuber: tocca un nome, poi una ricetta. Tocca la foto e il video parte dentro l\'app; «✕ Chiudi il video» per tornare.', parole: /video|youtub|youtuber|pietrobon|bearded/ },
+   'ricettario-diff': { vista: 'ricettario', nome: 'Difficoltà delle ricette', come: 'Sotto le portate c\'è «Difficoltà»: tocca Facili, Medie o Difficili.', parole: /ricett\w* (facil|semplic|difficil)|difficolt/ },
+diff --git a/app.js b/app.js
+index 8085a72b..35cfb154 100644
+--- a/app.js
++++ b/app.js
+@@ -1652,6 +1652,7 @@ function schedaMario() {
+     <label class="interr"><span>Ricettario nella Home<small>${S.impostazioni.ricettario !== false ? 'Acceso: tu e Monica vedete «Ricettario» nella Home. I clienti mai.' : 'Spento: il riquadro non c\'è nella Home.'}</small></span><input type="checkbox" data-campo="i.ricettario" ${S.impostazioni.ricettario !== false ? 'checked' : ''}></label>
+     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
+     ${velVoceHtml(false)}
++    ${typeof profiloPalHtml === 'function' ? profiloPalHtml() : ''}
+     ${contoAI()}
+     ${listaSez(OPZIONI.filter(o => o.g === 'mario').map(sezOpz))}
+     ${provaAIhtml()}
+diff --git a/ricettario.js b/ricettario.js
+index d70b7b3f..3cdb0206 100644
+--- a/ricettario.js
++++ b/ricettario.js
+@@ -61,36 +61,83 @@ function fitRic(n) {
+   if (!valoriPieni(n) || n.prot < sogliaFit('fitSnackProt', 8) || n.prot * 400 / n.kcal < sogliaFit('fitEntraPerc', 20)) return false;
+   return n.prot >= sogliaFit('fitProt', 25) || n.kcal > sogliaFit('fitSnackKcal', 300) ? 'pasto' : 'snack';
+ }
+-/* PAGELLA (C141): semaforo come sulle etichette per proteine, calorie, grassi saturi, zuccheri e sale, e un VOTO da 1 a 10.
+-   Calorie, saturi, zuccheri e sale in parte del fabbisogno di un giorno (assunzioni di riferimento UE, Reg. UE 1169/2011: 2000 kcal,
+-   20 g saturi, 90 g zuccheri, 6 g sale): 🟢 fino al pagVerde% (15), 🟡 fino al pagGiallo% (30), 🔴 oltre. Proteine in parte delle calorie:
+-   🟢 dal fitProtPerc% (25, scelta di Mario 10/11), 🟡 dal fitEntraPerc% (20, regola UE), 🔴 sotto. Voto: 🟢 2 punti, 🟡 1, 🔴 0,
+-   le proteine contano doppio (12 punti = 10). Soglie in Impostazioni → «Solo per te, Mario». */
++/* PAGELLA PALESTRA (C141, rifatta C149: Mario 13/11 «valuta se tutti i tuoi voti vanno bene con la logica palestra fitness ipertrofia senza
++   ingrassare… nel mio utente mette i voti per me, per Monica in modo generico»). Sei voci col semaforo e un VOTO da 1 a 10:
++   💪 Proteine nel piatto (la DOSE: per i muscoli conta quanta ne mangi in un pasto) · ⚡ Proteine ogni 100 kcal (la DENSITÀ: più è alta, più
++   muscolo con meno calorie = senza ingrassare) · 🔥 Calorie (giudicate per il tipo: pasto o snack) · 🧈 Grassi saturi · 🍬 Zuccheri · 🧂 Sale
++   (questi tre in parte del fabbisogno di un giorno, assunzioni UE Reg. 1169/2011: 20 g saturi, 90 g zuccheri, 6 g sale; 🟢 fino al pagVerde% 15,
++   🟡 fino al pagGiallo% 30). Dose e densità contano doppio. Valori che mancano (es. i soli kcal e proteine del video): la voce non c'è e il voto
++   si fa sulle altre. Per Mario (solo sul suo telefono) le soglie di dose e calorie vengono dal SUO profilo palestra (Impostazioni → «Solo per te,
++   Mario»); per tutti gli altri valgono quelle generiche. Soglie generiche in «Solo per te, Mario». */
+ const RI_UE = { kcal: 2000, saturi: 20, zuc: 90, sale: 6 };
+ const PAROLE_PAG = { prot: { v: 'tante', g: 'buone', r: 'poche' }, altro: { v: 'poche', g: 'medie', r: 'tante' } };
++/* profilo palestra di Mario: solo su questo telefono (dato sulla salute, come le allergie), mai sul server */
++const OBIETTIVI_PAL = { ricomp: { nome: 'Addominali in vista e muscoli (ricomposizione)', kcal: 0.85 }, massa: { nome: 'Più muscoli, poco grasso (massa pulita)', kcal: 1.08 }, defin: { nome: 'Perdere grasso tenendo i muscoli (definizione)', kcal: 0.78 } };
++function profiloPal() {
++  if (typeof puoSviluppare !== 'function' || !puoSviluppare()) return null;
++  try { const p = JSON.parse(localStorage.getItem('pit-profilo-pal') || 'null'); return p && p.peso >= 35 && p.peso <= 250 ? p : null; } catch (e) { return null; }
++}
++/* quote di Mario: Mifflin-St Jeor × attività (3-5 giorni di pesi = 1,55; 6-7 = 1,725; 1-2 = 1,375) × obiettivo; proteine 2 g/kg al giorno
++   (studi sull'ipertrofia: 1,6-2,2), divise in 4 pasti; snack = metà di un pasto */
++function quotePal(p) {
++  if (!p) return null;
++  const bmr = 10 * p.peso + 6.25 * (p.altezza || 175) - 5 * (p.eta || 35) + (p.donna ? -161 : 5);
++  const att = (p.giorni || 4) >= 6 ? 1.725 : (p.giorni || 4) >= 3 ? 1.55 : 1.375, ob = OBIETTIVI_PAL[p.obiettivo] || OBIETTIVI_PAL.ricomp;
++  const kcal = Math.round(bmr * att * ob.kcal / 10) * 10, prot = Math.round(p.peso * 2);
++  return { kcal, prot, protPasto: Math.round(prot / 4), kcalPasto: Math.round(kcal / 4 / 10) * 10 };
++}
++const tipoPiatto = n => n.prot >= sogliaFit('fitProt', 25) || n.kcal > sogliaFit('fitSnackKcal', 300) ? 'pasto' : 'snack';
+ function pagellaRic(n) {
+-  if (!valoriPieni(n)) return null;
+-  const quota = n.prot * 400 / n.kcal, ve = sogliaFit('pagVerde', 15) / 100, gi = Math.max(ve, sogliaFit('pagGiallo', 30) / 100), sale = n.sodio * 2.5 / 1000;
++  if (!n || !(n.kcal > 0) || n.prot == null) return null;
++  const q = quotePal(profiloPal()), snack = tipoPiatto(n) === 'snack', ve = sogliaFit('pagVerde', 15) / 100, gi = Math.max(ve, sogliaFit('pagGiallo', 30) / 100);
+   const col = x => x <= ve ? 'v' : x <= gi ? 'g' : 'r';
++  const dens = n.prot * 100 / n.kcal;
++  /* dose: per Mario la sua quota a pasto (snack metà); per gli altri 25 g a pasto, 15 g a snack */
++  const dose = q ? (snack ? q.protPasto / 2 : q.protPasto) : (snack ? sogliaFit('palDoseSnack', 15) : sogliaFit('palDosePasto', 25));
++  const tettoKcal = q ? (snack ? q.kcalPasto / 2 : q.kcalPasto) : (snack ? sogliaFit('fitSnackKcal', 300) : sogliaFit('palKcalPasto', 650));
+   const voci = [
+-    { k: 'prot', ico: '💪', nome: 'Proteine', val: numIt(n.prot) + ' g', c: quota >= sogliaFit('fitProtPerc', 25) ? 'v' : quota >= sogliaFit('fitEntraPerc', 20) ? 'g' : 'r' },
+-    { k: 'kcal', ico: '🔥', nome: 'Calorie', val: Math.round(n.kcal) + ' kcal', c: col(n.kcal / RI_UE.kcal) },
+-    { k: 'saturi', ico: '🧈', nome: 'Grassi saturi', val: numIt(n.saturi) + ' g', c: col(n.saturi / RI_UE.saturi) },
+-    { k: 'zuc', ico: '🍬', nome: 'Zuccheri', val: numIt(n.zuc) + ' g', c: col(n.zuc / RI_UE.zuc) },
+-    { k: 'sale', ico: '🧂', nome: 'Sale', val: numIt(sale) + ' g', c: col(sale / RI_UE.sale) }];
+-  voci.forEach(x => { x.parola = (x.k === 'prot' ? PAROLE_PAG.prot : PAROLE_PAG.altro)[x.c]; });
+-  const punti = voci.reduce((t, x, i) => t + { v: 2, g: 1, r: 0 }[x.c] * (i ? 1 : 2), 0);
+-  return { voci, voto: Math.max(1, Math.round(punti * 10 / 12)) };
++    { k: 'prot', ico: '💪', nome: 'Proteine', val: numIt(n.prot) + ' g', c: n.prot >= dose * 0.9 ? 'v' : n.prot >= dose * 0.6 ? 'g' : 'r', peso: 2 },
++    { k: 'dens', ico: '⚡', nome: 'Proteine ogni 100 kcal', val: numIt(dens) + ' g', c: dens >= sogliaFit('palDensVerde', 8) ? 'v' : dens >= sogliaFit('palDensGiallo', 6) ? 'g' : 'r', peso: 2 },
++    { k: 'kcal', ico: '🔥', nome: 'Calorie', val: Math.round(n.kcal) + ' kcal', c: n.kcal <= tettoKcal * 1.1 ? 'v' : n.kcal <= tettoKcal * 1.4 ? 'g' : 'r', peso: 1 }];
++  if (n.saturi != null) voci.push({ k: 'saturi', ico: '🧈', nome: 'Grassi saturi', val: numIt(n.saturi) + ' g', c: col(n.saturi / RI_UE.saturi), peso: 1 });
++  if (n.zuc != null) voci.push({ k: 'zuc', ico: '🍬', nome: 'Zuccheri', val: numIt(n.zuc) + ' g', c: col(n.zuc / RI_UE.zuc), peso: 1 });
++  if (n.sodio != null) { const sale = n.sodio * 2.5 / 1000; voci.push({ k: 'sale', ico: '🧂', nome: 'Sale', val: numIt(sale) + ' g', c: col(sale / RI_UE.sale), peso: 1 }); }
++  voci.forEach(x => { x.parola = (x.k === 'prot' || x.k === 'dens' ? PAROLE_PAG.prot : PAROLE_PAG.altro)[x.c]; });
++  const max = voci.reduce((t, x) => t + 2 * x.peso, 0), punti = voci.reduce((t, x) => t + { v: 2, g: 1, r: 0 }[x.c] * x.peso, 0);
++  return { voci, voto: Math.max(1, Math.round(punti * 10 / max)), perTe: !!q, parziale: voci.length < 6, quote: q, snack };
++}
++/* C149: «🏋️ Il mio profilo palestra» in Impostazioni → «Solo per te, Mario». Si salva da solo a ogni cambio, solo su questo telefono. */
++function profiloPalHtml() {
++  let p = {}; try { p = JSON.parse(localStorage.getItem('pit-profilo-pal') || '{}') || {}; } catch (e) { p = {}; }
++  const q = quotePal(profiloPal());
++  const campo = (k, t, min, max, u) => `<label class="pal-campo"><span>${t}</span><input type="number" inputmode="decimal" min="${min}" max="${max}" step="1" data-pal="${k}" value="${p[k] != null ? esc(String(p[k])) : ''}" aria-label="${t}"> <small>${u}</small></label>`;
++  return `<div class="pal-profilo" id="pal-profilo"><p style="margin:0"><b>🏋️ Il mio profilo palestra</b><br><small class="tenue">Solo su questo telefono, mai sul server. Con il peso, nel Ricettario vedi il «Voto per te»; Monica e i clienti vedono il voto palestra di tutti.</small></p>
++    <div class="pal-campi">${campo('peso', 'Peso', 35, 250, 'kg')}${campo('altezza', 'Altezza', 120, 230, 'cm')}${campo('eta', 'Età', 14, 99, 'anni')}${campo('giorni', 'Pesi a settimana', 0, 7, 'volte')}</div>
++    <label class="etichetta" for="pal-obiettivo">Obiettivo</label>
++    <select id="pal-obiettivo" data-pal="obiettivo">${Object.entries(OBIETTIVI_PAL).map(([k, o]) => `<option value="${k}"${(p.obiettivo || 'ricomp') === k ? ' selected' : ''}>${o.nome}</option>`).join('')}</select>
++    <p class="piccolo" style="margin:6px 0 0">${q ? `Per te: <b>${q.prot} g di proteine</b> e circa <b>${q.kcal} kcal</b> al giorno; a pasto ${q.protPasto} g e ${q.kcalPasto} kcal (4 pasti).` : 'Scrivi almeno il peso per avere il «Voto per te».'}</p>
++    <p class="piccolo tenue" style="margin:2px 0 0">Calcolo: formula Mifflin-St Jeor, proteine 2 g per kg. È un'indicazione, non un parere medico.</p></div>`;
++}
++function salvaPal(k, v) {
++  let p = {}; try { p = JSON.parse(localStorage.getItem('pit-profilo-pal') || '{}') || {}; } catch (e) { p = {}; }
++  if (k === 'obiettivo') p.obiettivo = OBIETTIVI_PAL[v] ? v : 'ricomp';
++  else { const x = Number(String(v).replace(',', '.')); if (v === '' || !Number.isFinite(x)) delete p[k]; else p[k] = x; }
++  try { localStorage.setItem('pit-profilo-pal', JSON.stringify(p)); } catch (e) { mostraToast('Questo telefono non riesce a salvarlo.'); return; }
++  if (typeof salvatoOk === 'function') salvatoOk();
++  render();
+ }
++document.addEventListener('change', e => { if (e.target && e.target.dataset && e.target.dataset.pal) salvaPal(e.target.dataset.pal, e.target.value); });
+ const votoRic = r => { const p = pagellaRic(r && r.nutr); return p ? p.voto : 0; };
+ const PALLINO = { v: '🟢', g: '🟡', r: '🔴' };
+ const colVoto = v => v >= 8 ? 'v' : v >= 5 ? 'g' : 'r';
+ /* sulla carta: «Voto 8 · 🟢🟢🟡🟢🟢» (stesso ordine della pagella) */
+-const rigaPagella = n => { const p = pagellaRic(n); return p ? `<small class="ric-pagella-riga"><b class="ric-voto ${colVoto(p.voto)}">Voto ${p.voto}</b> <span aria-label="${esc(p.voci.map(x => x.nome + ' ' + x.parola).join(', '))}">${p.voci.map(x => PALLINO[x.c]).join('')}</span></small>` : ''; };
++const rigaPagella = n => { const p = pagellaRic(n); return p ? `<small class="ric-pagella-riga"><b class="ric-voto ${colVoto(p.voto)}">${p.parziale ? '≈ ' : ''}Voto ${p.perTe ? 'per te ' : ''}${p.voto}</b> <span aria-label="${esc(p.voci.map(x => x.nome + ' ' + x.parola).join(', '))}">${p.voci.map(x => PALLINO[x.c]).join('')}</span></small>` : ''; };
+ /* nella ricetta: il voto grande e una riga per voce, con la parola (tante, medie, poche) */
+ function pagellaHtml(n) {
+   const p = pagellaRic(n); if (!p) return '';
+-  return `<div class="ric-pagella"><p class="ric-pagella-voto"><b class="ric-voto ${colVoto(p.voto)}">Voto ${p.voto}/10</b> <span class="piccolo">pagella fit${fitRic(n) ? '' : ' · non entra in Proteiche'}</span></p>
++  const chi = p.perTe ? `voto per te: ${p.snack ? 'snack' : 'pasto'} sulla tua quota (${p.snack ? Math.round(p.quote.protPasto / 2) : p.quote.protPasto} g di proteine, ${p.snack ? p.quote.kcalPasto / 2 : p.quote.kcalPasto} kcal)` : `pagella palestra · ${p.snack ? 'snack' : 'pasto'}`;
++  return `<div class="ric-pagella"><p class="ric-pagella-voto"><b class="ric-voto ${colVoto(p.voto)}">${p.parziale ? '≈ ' : ''}Voto ${p.voto}/10</b> <span class="piccolo">${chi}${fitRic(n) ? '' : ' · non entra in Proteiche'}</span></p>
++    ${p.parziale ? '<p class="piccolo tenue" style="margin:0 0 4px">≈ Mancano alcuni valori (grassi saturi, zuccheri o sale): il voto è fatto sugli altri.</p>' : ''}
+     <ul>${p.voci.map(x => `<li>${PALLINO[x.c]} ${x.ico} ${x.nome} <b>${x.val}</b> <span class="tenue">${x.parola}</span></li>`).join('')}</ul></div>`;
+ }
+ const protPer100 = n => n && n.kcal > 0 && n.prot != null ? n.prot * 100 / n.kcal : -1;   // ordine della sezione: grammi di proteine per 100 kcal
+@@ -835,7 +882,7 @@ const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'unde
+ const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
+     <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
+     <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}</small>${r.nutr && r.nutr.kcal > 0
+-      ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>` : ''}</span></button>`;
++      ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;   // C149: il voto anche fuori
+ function vRicVideo(id) {
+   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
+   if (RIC.stato !== 'pronto') return attesaRic('Ricette video', 'ricettario');
+diff --git a/style.css b/style.css
+index 02ad4ac5..abb5c67c 100644
+--- a/style.css
++++ b/style.css
+@@ -753,6 +753,9 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
+ .ric-valori-griglia span { font-size: .78rem; color: var(--tenue); }
+ .ric-fit-si { color: var(--basilico); }
+ /* C141 pagella fit: voto 1-10 e semaforo (proteine, calorie, grassi saturi, zuccheri, sale) */
++.pal-profilo { border: 1px solid var(--bordo, #e6d9c4); border-radius: 14px; padding: 10px 12px; display: grid; gap: 4px; }
++.pal-campi { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; margin-top: 6px; }
++.pal-campo { display: grid; grid-template-columns: 1fr; font-size: .9rem; } .pal-campo input { width: 100%; min-height: 44px; font-size: 1rem; }
+ .ric-pagella-riga { display: block; margin-top: 3px; font-size: .86rem; letter-spacing: 1px; }
+ .ric-voto { display: inline-block; border-radius: 999px; padding: 1px 9px; color: #fff; font-weight: 800; letter-spacing: 0; }
+ .ric-voto.v { background: var(--basilico); } .ric-voto.g { background: #A86B00; } .ric-voto.r { background: var(--allarme); }
+diff --git a/tools/prova.js b/tools/prova.js
+index 1b84b6fa..b8e082af 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -1694,7 +1694,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     /* C141: entra anche la troppo salata (col 🔴 nella pagella); fuori la carbonara (16% di proteine) e quella senza valori; prima il voto più alto */
+     if (JSON.stringify(fit.nomi.filter(n => /prova$/.test(n))) !== '["Merluzzo fit prova","Pollo fit prova","Salata prova"]') throw new Error('Proteiche: ricette o ordine sbagliati (carbonara 16% di proteine, senza valori: fuori; ordine per voto): ' + JSON.stringify(fit.nomi));
+     const pagCarte = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta')].filter(c => /prova/.test(c.innerText)).map(c => (c.querySelector('.ric-pagella-riga') || {}).textContent));
+-    if (JSON.stringify(pagCarte) !== '["Voto 10 🟢🟢🟢🟢🟢","Voto 8 🟢🟡🟢🟢🟡","Voto 8 🟢🟡🟢🟢🔴"]') throw new Error('C141 pagella sulle carte sbagliata: ' + JSON.stringify(pagCarte));
++    if (JSON.stringify(pagCarte) !== '["Voto 10 🟢🟢🟢🟢🟢🟢","Voto 9 🟢🟢🟢🟢🟢🟡","Voto 9 🟢🟢🟢🟢🟢🔴"]') throw new Error('C141 pagella sulle carte sbagliata: ' + JSON.stringify(pagCarte));
+     if (fit.riga !== '💪 27 g proteine · 300 kcal · sale 0,9 g' || !fit.nota || fit.fonte !== 'GialloZafferano') throw new Error('Proteiche: riga dei valori, nota o fonte sbagliate: ' + JSON.stringify(fit));
+     await foto('47-c124-proteiche');
+     /* difficoltà in vista (Facili comprende «Molto facile», Difficili «Molto difficile») */
+@@ -1735,6 +1735,15 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     if (!ai || ai.voce !== 'ricettario-fit' || ai.vai !== 'ricettario' || !ai.ui || ai.ui.ricZona !== 'fit') throw new Error('aiutante: «ricette proteiche» non porta alla sezione: ' + JSON.stringify(ai));
+     const aiv = await page.evaluate(() => { const c = capisciDove('dove sono le ricette dei video di youtube?'); return c && c[0] && Object.assign({ voce: c[0].voce }, controllaAI(c[0])); });
+     if (!aiv || aiv.voce !== 'ricettario-video' || aiv.vai !== 'ricvideo') throw new Error('aiutante: «ricette video» non porta alla sezione: ' + JSON.stringify(aiv));
++    const aip = await page.evaluate(() => { const c = capisciDove('dove metto il mio peso per il voto per te?'); return c && c[0] && Object.assign({ voce: c[0].voce }, controllaAI(c[0])); });
++    if (!aip || aip.voce !== 'imp-palestra' || aip.vai !== 'impostazioni') throw new Error('aiutante: «profilo palestra» non porta alle Impostazioni: ' + JSON.stringify(aip));
++    /* C149: il profilo palestra nelle Impostazioni si salva da solo e dà le quote */
++    await page.evaluate(() => { localStorage.removeItem('pit-profilo-pal'); UI.sez = null; vai('impostazioni'); });
++    await page.locator('#pal-profilo [data-pal="peso"]').fill('80'); await page.locator('#pal-profilo [data-pal="peso"]').dispatchEvent('change'); await page.waitForTimeout(200);
++    const pp = await page.evaluate(() => ({ s: localStorage.getItem('pit-profilo-pal'), t: (document.querySelector('#pal-profilo') || {}).innerText || '' }));
++    if (pp.s !== '{"peso":80}' || !/Per te: 160 g di proteine/.test(pp.t)) throw new Error('C149: profilo palestra non salvato o quote sbagliate: ' + JSON.stringify(pp));
++    await foto('48z-c149-profilo-palestra');
++    await page.evaluate(() => { localStorage.removeItem('pit-profilo-pal'); UI.vista = 'home'; render(); });
+     await page.evaluate(() => { [P.ruolo, UI.devCliente] = window.__primaC124; UI.ric = null; localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-cache'); salvaScelte([]); RIC.db = null; UI.vista = 'home'; render(); });
+   });
+   await passo('ricettario C125: Proteiche con Pasti, Snack e dolci, «⚡ Pronte in 10 minuti», nota con le due regole', async () => {   // autonomo
+@@ -1885,6 +1894,9 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+       canale: (document.querySelector('main a[href^="https://www.youtube.com/channel/"]') || {}).href || '', nomiVuoti: [...document.querySelectorAll('main .ric-carta b')].filter(x => !x.textContent.trim()).length }));
+     if (l.v !== 'ricvideo:0' || l.carte !== au.nP || l.tipi.length < 6 || !l.tipi.includes('Pancake') || !l.canale || l.nomiVuoti) throw new Error('C144: elenco dello youtuber sbagliato: ' + JSON.stringify(l));
+     await foto('48f-c144-video-elenco');
++    /* C149 (Mario 13/11 «metti i voti anche fuori»): ogni carta coi valori ha il voto */
++    const vv = await page.evaluate(() => { const c = [...document.querySelectorAll('main .ric-elenco .ric-carta')].filter(x => x.querySelector('.ric-valori-riga')); return { n: c.length, senza: c.filter(x => !/Voto \d/.test((x.querySelector('.ric-pagella-riga') || {}).textContent || '')).length }; });
++    if (!vv.n || vv.senza) throw new Error('C149: carte video coi valori ma senza voto: ' + JSON.stringify(vv));
+     await clic('[data-a="ric-video-tipo"][data-v="Pancake"]');
+     const pc = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta small:first-of-type')].map(x => x.textContent.split(' · ')[0]));
+     if (!pc.length || pc.length >= au.nP || pc.some(t => t !== 'Pancake')) throw new Error('C144: il tipo «Pancake» non filtra: ' + JSON.stringify(pc.slice(0, 5)));
+@@ -2071,7 +2083,12 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     if (JSON.stringify(prof) !== '["pasto","pasto","snack",false,"💪 16 g proteine · 180 kcal · sale 0,4 g · snack o dolce","pasto","pasto","pasto"]') throw new Error('C141 regola d\'entrata: pasto, snack o fuori sbagliati: ' + JSON.stringify(prof));
+     const pag = await page.evaluate(() => [{ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }, { kcal: 458, prot: 24.4, saturi: 6.5, zuc: 2.8, sodio: 463 }, { kcal: 150, prot: 10, saturi: 0.5, zuc: 2, sodio: 100 }, { kcal: 300, prot: 12, saturi: 1, zuc: 5, sodio: 100 }]
+       .map(n => { const p = pagellaRic(n); return p.voto + ':' + p.voci.map(x => x.c).join('') + ':' + fitRic(n); }));
+-    if (JSON.stringify(pag) !== '["8:vgvvg:pasto","5:ggrvg:pasto","10:vvvvv:snack","7:rvvvv:false"]') throw new Error('C141 pagella: voti o semafori sbagliati: ' + JSON.stringify(pag));
++    if (JSON.stringify(pag) !== '["9:vvvvvg:pasto","6:vrvrvg:pasto","8:ggvvvv:snack","6:grvvvv:false"]') throw new Error('C141 pagella: voti o semafori sbagliati: ' + JSON.stringify(pag));
++    /* C149 (Mario 13/11): voto palestra; i soli kcal e proteine (video) danno un voto «≈»; col profilo di Mario il «Voto per te» sulla sua quota */
++    const pal = await page.evaluate(() => { const v = pagellaRic({ kcal: 670, prot: 47 }); localStorage.setItem('pit-profilo-pal', JSON.stringify({ peso: 80, altezza: 178, eta: 36, giorni: 4, obiettivo: 'ricomp' }));
++      const t = pagellaRic({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }), riga = rigaPagella({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }); localStorage.removeItem('pit-profilo-pal');
++      return [v.voto, v.parziale, v.voci.length, t.voto, t.perTe, t.quote.prot, t.quote.protPasto, t.quote.kcal, t.quote.kcalPasto, /Voto per te 9/.test(riga), !!pagellaRic({ kcal: 380, prot: 38, saturi: 2, zuc: 3, sodio: 400 }).perTe]; });
++    if (JSON.stringify(pal) !== '[8,true,3,9,true,160,40,2290,570,true,false]') throw new Error('C149 voto palestra o voto per te sbagliati: ' + JSON.stringify(pal));
+     /* portata del motore («Primi piatti») sotto il filtro «Primi»; la carta di RicetteFit col suo nome */
+     await page.evaluate(() => { UI.ric.cat = 'primi'; render(); });
+     let nomi = await page.evaluate(() => [...document.querySelectorAll('main .ric-elenco .ric-carta b')].map(b => b.textContent.replace(/^\W+/u, '')).filter(n => /prova$|rf$/.test(n)));
+diff --git a/worker.js b/worker.js
+index e124cb13..6303742e 100644
+--- a/worker.js
++++ b/worker.js
+@@ -70,7 +70,7 @@ Azioni possibili (usa solo queste):
+ {"azione":"spesa","voci":["2 kg farina","ricotta"]}  aggiunge alla lista della spesa
+ {"azione":"whatsapp","n":<n>,"testo":"..."}  prepara un messaggio WhatsApp al cliente di quell'ordine (Monica lo manda lei)
+ {"azione":"apri","vista":"ordini|piatti|clienti|impostazioni|spesa"}  porta Monica a una pagina
+-{"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche (anche gli ultimi avvisi arrivati), imp-lucchetto, imp-anticipo, imp-limite, imp-natale, imp-voce (velocità della voce che legge). Pagine: ordini, ordini-storico (ordini finiti, prove, archiviati), piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), clienti-nuovi (interruttore «Accetta clienti nuovi»), clienti-rifiutati (persone a cui ha detto no, si possono riaccettare), clienti-attesa (chi aspetta il suo sì; chi non compare tocca «Ricorda a Monica»), spesa, ricettario, ricettario-fit (ricette proteiche per palestra e definizione), ricettario-video (ricette dai video di YouTube, divise per youtuber), ricettario-diff (filtro difficoltà), ricettario-db (database e motore delle ricette). Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
++{"azione":"vai","voce":"<voce>","id":"<id piatto, solo per le voci del piatto>"}  porta Monica DRITTA nel punto dell'app dove si fa una cosa (la apre e la evidenzia). Voci del piatto (con id): foto, prezzi, pronto, nome, gusti, ingredienti, dosi, richieste, fritto, casa, novita. Voci delle Impostazioni: imp-pausa, imp-pronti, imp-ritiro, imp-numeri, imp-paga, imp-vista, imp-gestori, imp-notifiche (anche gli ultimi avvisi arrivati), imp-lucchetto, imp-anticipo, imp-limite, imp-natale, imp-voce (velocità della voce che legge). Pagine: ordini, ordini-storico (ordini finiti, prove, archiviati), piatti, nuovo, clienti, clienti-nome (nome e codice di un cliente), clienti-nuovi (interruttore «Accetta clienti nuovi»), clienti-rifiutati (persone a cui ha detto no, si possono riaccettare), clienti-attesa (chi aspetta il suo sì; chi non compare tocca «Ricorda a Monica»), spesa, ricettario, ricettario-fit (ricette proteiche per palestra e definizione), ricettario-video (ricette dai video di YouTube, divise per youtuber), imp-palestra (solo Mario: profilo palestra con peso e obiettivo, per il «Voto per te» delle ricette), ricettario-diff (filtro difficoltà), ricettario-db (database e motore delle ricette). Usala per ogni «come si fa», «dove trovo», «voglio cambiare…» che Monica fa da sola nell'app (es. «cambiare la foto della parmigiana» → {"azione":"vai","voce":"foto","id":"<id della parmigiana>"}), e nel testo spiega in 1-2 frasi cosa toccare una volta lì.
+ CAPIRE IL SENSO (Mario: «deve capire il contesto di quello che dico, non leggere la parola»): prima di scegliere un posto chiediti cosa vuole FARE Monica con la frase intera, non quale parola ha detto. Es. «la mia amica non riesce ad aprire il link» → clienti (inviti), non ordini; «non mi suona niente quando ordinano» → imp-notifiche; «leggo male le scritte» → imp-vista; «la Laura ora si chiama in un altro modo» → clienti-nome. DATI.indizi = posti trovati solo cercando le parole: un aiuto, spesso sbagliato. Sicura → UNA azione vai. Esiti fra 2-3 posti → 2-3 azioni vai e nel testo «Intendi…?». Non capisci → nessuna azione e chiedi cosa vuole fare.
+ {"azione":"idea","testo":"..."}  Monica vuole cambiare o aggiungere qualcosa che NON si può fare dall'app (una funzione nuova, un cambio del funzionamento): scrivi per Mario, che la programma, cosa vuole, dove nell'app e perché, con tutti i dettagli che ha detto
+ GUIDA DELL'APP (per rispondere a «come si fa…»): Home = saluto, «Chiedi all'aiutante», riquadri Ordini · I miei piatti · Clienti · Impostazioni, «Pronti subito oggi», «Da preparare» con la Lista della spesa, Incassi del mese, Inviti. Ordini = schede Nuovi · Oggi · Prossimi · Storico; un ordine si accetta, si rifiuta o si propone un altro giorno; poi Pronto (il cliente riceve l'avviso), Ritirato, Soldi ricevuti; si può annullare per 10 secondi. I miei piatti = foto, nome, prezzi per formato, gusti, ingredienti e allergeni (li controlla sempre Monica), dosi per la spesa, fritto o al forno da Monica col sovrapprezzo, interruttore «Nel menù». Clienti = invita le amiche con un biglietto per WhatsApp, approva le persone nuove (la prima volta Monica le accetta), persone rifiutate; ogni persona ha un codice fisso che non cambia mai (es. K7P2M; Mario ⭐MARIO, Monica ⭐MONICA), la matita accanto al nome cambia il nome che vede Monica, e se il cliente corregge il suo nome Monica vede «ora si chiama… prima…» finché tocca «Visto». Impostazioni a voci: pausa e ferie, giorni di preavviso, limite di teglie, pronti fino a, Natale, pagamenti (contanti, bonifico, Postepay), indirizzo e nota del ritiro, numero WhatsApp, lucchetto (impronta o PIN), notifiche (con la corsia d'emergenza 🛟: se il server si ferma, gli avvisi degli ordini partono lo stesso). Lista della spesa = dagli ordini (per oggi, 3 giorni, settimana) + la sua lista. Ricettario = ricette di GialloZafferano, di RicetteFit (ricette fit; le nuove arrivano quando le chiedi con «⚡ Carica altre»; con «🛟 Modalità risparmio» in alto, fino alle 01:00 non ne cerca di nuove ma le tue funzionano) e sue (su ogni ricetta la fonte e i valori per porzione: calorie, proteine, carboidrati, grassi, zuccheri, sale); filtri per portata, «Difficoltà» (Facili, Medie, Difficili) e la sezione «🏋️ Proteiche» (almeno 20 g di proteine a porzione, poche calorie, grassi saturi, zuccheri e sale; prima quelle con più proteine); nella Home il riquadro «Proteiche» porta lì; «🗄 Database» porta dritto al database; foto di un passo piccola o sgranata: toccala per ingrandirla, poi «✨ Migliora con l'AI» (l'AI del telefono la rende grande e nitida; dopo la prima volta lo fa da sola).
