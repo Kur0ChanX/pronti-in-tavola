@@ -6,13 +6,13 @@ suoi valori («Kcal totali…»), oppure un titolo di cibo. Scrive ricette-video
 Di ogni video: nome pulito, tipo (Pancake, Porridge…), copertina e link di YouTube, data, ingredienti e testo COSÌ COME
 li scrive lui (PT E25; tolti hashtag, codici sconto e link), i suoi valori se li scrive (vincono), sennò «≈ stimati» da
 tools/stima.py se gli ingredienti bastano.
-Uso: python3 -I tools/raccogli_video.py [--elenco]   (--elenco: stampa ogni video con la scelta, per il controllo a occhio)
+Uso: python3 -I tools/raccogli_video.py [--elenco] [--dosi-su ricette-video.js]   (--elenco: stampa ogni video con la scelta, per il controllo a occhio)
 Cache: .cache-stime/yt-video-<canale>.json (rilanciarlo non rilegge YouTube; per rileggere cancella quel file)."""
 import json, os, re, subprocess, sys, time
 from urllib.parse import urlencode
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from stima import stima_ricetta, norm
+from stima import stima_ricetta, norm, alimento
 
 RADICE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CACHE = os.path.join(RADICE, '.cache-stime')
@@ -76,6 +76,60 @@ def leggi_canale(canale):
 def ingredienti(testo):
     return [l.strip(' -•').strip() for l in testo.split('\n')
             if re.match(r'\s*[-•]\s*\S', l) and not re.search(r'(?i)codice|kcal|@|#|http', l)]
+
+
+STOP_DOSE = r'\s+(?:e|ed|per|in|a|al|alla|nel|nella|poi|fino|dentro|sopra|insieme|oppure|o|che|quindi|così|cosi)\b.*$'
+
+
+def dosi_nel_testo(testo, ing):
+    """C153 (Mario 13/11 «mancano in tutti ingredienti»): le dosi che l'autore scrive DENTRO il procedimento
+    («aggiungete 150 ml di albume e montatelo» → «150 ml di albume»), se non sono già fra gli ingredienti a trattino."""
+    gia = ' '.join(norm(i) for i in ing)
+    nuove = []
+    for l in testo.split('\n'):
+        if re.match(r'\s*[-•]', l) or re.search(r'(?i)kcal|codice|@|#|http|valori|carbo\b|proteine\s*/', l):
+            continue
+        for m in re.finditer(r'(\d+(?:[.,]\d+)?)\s*(g|gr|grammi|ml|kg)\s+((?:di\s+|d[\'’]\s*)?[^\d,.;:()!?\n]{3,60})', l, re.I):
+            cibo = re.sub(STOP_DOSE, '', m.group(3).strip(), flags=re.I).strip()
+            cibo = re.sub(r'^(?:di\s+|d[\'’]\s*)', '', cibo, flags=re.I)
+            parole = [w for w in norm(cibo).split() if len(w) > 2 and w not in ('senza', 'con', 'del', 'della', 'dei', 'delle')]
+            if not parole or len(cibo) < 3 or parole[0] in ('totali', 'circa', 'impasto', 'abbiamo', 'gradi', 'seconda', 'proteine', 'carboidrati', 'grassi', 'calorie', 'acqua') or not alimento(cibo):
+                continue   # solo cibi che la tabella conosce («100 g di e completate…», «5 g di totali» fuori)
+            if any(w[:5] in gia for w in parole[:2]):
+                continue   # già scritto fra gli ingredienti
+            riga = f'{m.group(1)} {m.group(2).lower()} di {cibo}'
+            nuove.append(riga); gia += ' ' + norm(cibo)
+    return nuove
+
+
+def con_dosi_testo(testo, ing):
+    """Ingredienti a trattino + dosi del procedimento, nell'ordine in cui compaiono nel testo (l'albume montato viene prima)."""
+    nuove = dosi_nel_testo(testo, ing)
+    if not nuove:
+        return ing
+    t = norm(testo)
+    def pos(i):
+        k = norm(i)
+        p = t.find(k)
+        if p < 0 and ' di ' in i:
+            p = t.find(norm(i.split(' di ', 1)[1]))
+        return p if p >= 0 else len(t)
+    return sorted(ing + nuove, key=pos)
+
+
+def dosi_su(f):
+    """--dosi-su FILE: aggiunge le dosi scritte nel procedimento (C153) a un ricette-video.js già fatto, senza rileggere YouTube."""
+    t = open(f, encoding='utf-8').read()
+    i = t.index('const RICETTE_VIDEO = [') + len('const RICETTE_VIDEO = '); fine = t.index('\n];', i) + 2
+    tutte, n = json.loads(t[i:fine]), 0
+    for x in tutte:
+        if x.get('autore') == 'Massimo Pietrobon Gobbi' and x.get('ingredienti') and x.get('parlato') != 'dosi':
+            nuovi = con_dosi_testo(x.get('testo') or '', x['ingredienti'])
+            if nuovi != x['ingredienti']:
+                x['ingredienti'] = nuovi; n += 1
+    righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False, separators=(',', ':')) for x in tutte)
+    open(f, 'w', encoding='utf-8').write(t[:i] + '[\n' + righe + '\n]' + t[fine:])
+    print(json.dumps({'ricette con dosi in più': n}, ensure_ascii=False), file=sys.stderr)
 
 
 def riga_valori(testo):
@@ -395,6 +449,8 @@ def su_file(f):
 
 
 def main():
+    if '--dosi-su' in sys.argv:
+        return dosi_su(sys.argv[sys.argv.index('--dosi-su') + 1])
     if '--parlato-su' in sys.argv:
         return su_file(sys.argv[sys.argv.index('--parlato-su') + 1])
     elenco = '--elenco' in sys.argv
@@ -415,6 +471,8 @@ def main():
                 t = re.sub(r'\s+', ' ', t.replace('”', '').replace('“', '').replace('"', '')).strip(' -')
                 v = dict(v, titolo=t.capitalize() if re.search(r'\b[A-ZÀ-Ü]{3,}\b', t) else t)   # una parola TUTTA MAIUSCOLA → «Frittelle di zucchine»
             ing = ingredienti(v['testo']) if sz is None else sz['ing']
+            if sz is None and ing and autore == 'Massimo Pietrobon Gobbi':   # scrive le dosi nel «Procedimento»; gli altri raccontano (letto a occhio 13/11)
+                ing = con_dosi_testo(v['testo'], ing)   # C153: anche le dosi scritte nel procedimento
             if ing and re.search(INTEGRATORI, ' '.join(ing)):
                 ing = []   # è la lista degli integratori, non degli ingredienti
             riga = riga_valori(v['titolo'] + '\n' + v['testo']) if sz is None else sz['riga']
