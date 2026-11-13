@@ -38,3 +38,10 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
 - 12/11 21:27 Mario (nella #69), parola per parola: «solo tutti italiani e se si traducono bene metti anche quelle inglesi».
   Scelta finale: tutti gli italiani (i 5 + MattsfitChef, italiano) e anche gli inglesi (MattsfitChef, Remington James, fitfoodieselma, Stealth Health Life) SE la traduzione viene bene.
   Come (sessione #70): prima gli italiani; poi una prova di traduzione su poche ricette inglesi (grammi al posto di tazze e once, nomi degli ingredienti italiani, passi chiari) con foto a Mario prima di metterle tutte (PT E25: dosi e salute = fiducia).
+
+## Piano #70 (13/11, dopo v0.10.24 online)
+- Regole dei siti (robots.txt, 13/11): Giuseppe Healthy, Fit with Fun, Iamfitandsweet, MattsfitChef permettono le pagine delle ricette.
+- Lettura provata (13/11): Fit with Fun (1.204 articoli) e Iamfitandsweet (69) hanno la ricetta in formato standard (ld+json: ingredienti, porzioni, passi; Fit with Fun anche i suoi valori). Giuseppe Healthy: pagina sua (ingredienti, passi, porzioni, video YouTube), elenco caricato a pezzi da `async-ricetta.php` → lettore apposta.
+- 1) Siti: modalità `--creatori` di `tools/raccogli_stimate.py` che AGGIUNGE a `ricette-stimate.js` (non rifà Cookpad/GZ: la cache non c'è più), stessi filtri (passi o video, regola Proteiche, stima; i loro valori vincono), campo `fonte` col nome del creatore.
+- 2) YouTube: Cotto al Dente e 2foodfitlovers in `CANALI` di `tools/raccogli_video.py`, controllo a occhio con `--elenco` (2foodfitlovers fa molte recensioni: fuori).
+- 3) App: filtro «per creatore o sito» anche in Proteiche; prova; foto a Mario prima di pubblicare (PT E69). Poi gli inglesi: prova di traduzione su poche, foto.
