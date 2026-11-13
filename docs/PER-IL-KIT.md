@@ -86,3 +86,10 @@ Controlli fatti dalla Principale 52 sul kit 38.16 (REGOLE.md, skill, Preferenze 
 ## Hook `domande-chiare.py`: «video» scambiato per movimento (Principale 72-73, 13/11)
 - Difetto: `MOVIMENTO` contiene `video`; una domanda su «ricette video» o «dal video» (contenuti, niente che si muove) chiede un video a Mario. Successo 2 volte nella #72 (C148, C150).
 - Correzione per il kit: togliere `video` da `MOVIMENTO` (il caso «mandami un video» resta coperto da `animazion|transizion|si muove|movimento`), o ignorarlo quando segue «ricett» o «dal ». Prova: «ricette video nuove» → nessun avviso; «l'animazione del video» → avviso.
+
+## PT E84 · Parole intere di Mario al passaggio di consegne (Principale 79, 13/11)
+Mario 13/11: «Miglioralo che deve leggere tutto quello che scrivo nei passaggi di consegna, perché ho paura che accorciandolo si perda qualche senso di quello che dico. Cerca di migliorarla perché è troppo importante, si fanno dei grossi caos.»
+- Cosa è successo: la #78 ha letto «quel bannerino lì, dove c'è scritto allergie» come la striscia sbagliata; le consegne l'hanno scritto come deciso; la #79 ha seguito il riassunto senza rileggere le frasi intere. Foto sbagliate a Mario.
+- Hook: `avvio-check.py` funzione `parole_intere` (avviso «PAROLE INTERE DI MARIO»: righe esatte del registro della sessione precedente della catena); prova in `tools/test-avvio-check.py`.
+- Skill `consegne`: fase 1 (frasi di Mario copiate intere nel file del lavoro, mai «…»; «Ho capito» separato con ✅ confermato / ❓ da confermare) e «Avvio» (leggere tutto, «Ho capito che vuoi:» a Mario e ok prima di toccare un lavoro ereditato; spunta prima delle foto).
+- `REGOLE.md` «Avvio» (proposta di testo): «leggo i messaggi INTERI di Mario della sessione precedente (righe nell'avviso dell'hook), non solo le consegne; lavoro a metà ereditato: prima «Ho capito che vuoi:» a Mario e il suo ok».
