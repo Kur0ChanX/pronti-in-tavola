@@ -2,23 +2,45 @@
 "account": "108763",
 "sessione": "f589f33f0285",
 "giorno": "2026-11-13",
-"turni": 1,
-"peso": 206199,
-"uscita": 4380,
-"contesto_max": 113125,
+"turni": 7,
+"peso": 492950,
+"uscita": 10467,
+"contesto_max": 181743,
 "anomalie": [],
 "remota": "01WTjqUwJ4nE",
 "aiutanti": 0,
-"strumenti": 12,
+"strumenti": 22,
 "motori": {
-"opus": 206199
+"opus": 492950
 },
 "blocchi": {
-"Stop 8 · Promessa a Mario senza voce": 1
+"Stop 8 · Promessa a Mario senza voce": 4,
+"Stop 6 · Il turno finisce con una": 2,
+"Stop 5 · Domanda a Mario poco chiara": 2,
+"Stop 13 · There are uncommitted changes in": 3,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
 "Stop 8 · Promessa a Mario senza voce": [
-"20:47 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Col tuo «» applico le modifiche, rifaccio le prove dei tasti e la metto online.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la "
+"21:12 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Fra un minuto parto: metto la barra nuova e la scelta della misura della teglia, faccio tutte le prove e la metto online.». Nella sua voce (o ",
+"21:17 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Ora gira il controllo completo: quando finisce te lo dico e la metto online.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la ved",
+"21:19 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Nessun riassunto, anche perfetto, può contenere un messaggio che arriva dopo.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la ve"
+],
+"Stop 6 · Il turno finisce con una": [
+"21:12 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> ",
+"21:19 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"21:12 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont",
+"21:24 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 13 · There are uncommitted changes in": [
+"21:17 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"21:18 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"21:19 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"21:24 · Ti fermi ad aspettare Mario con il contesto a 181k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
 ]
 }
 }
