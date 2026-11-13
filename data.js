@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.29';
+const VERSIONE_APP = '0.10.30';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.30', data: '13/11/2026',
+    migliorato: ['Clienti: in cima al menù una barra sola «Chiedi o ordina», che resta in vista mentre scorri: scrivi o tocca il microfono a destra per chiedere di allergie e prezzi o per ordinare', '«Scrivi a Monica» è nella barra in basso, accanto a Menù e I miei ordini', 'Teglie: se l’ordine arriva senza misura, il cliente la sceglie nel carrello (da 6 o da 8) prima di inviare'] },
   { v: '0.10.29', data: '13/11/2026',
     nuovo: ['Clienti: «Scrivimi» capisce gli ordini. Se nel messaggio ci sono piatti del menù (es. «2 kg di ravioli»), l\'app li mette nel carrello e l\'ordine arriva vero a Monica, col messaggio nella nota. Le domande vanno su WhatsApp come prima', 'Monica può mandare a un cliente un link col carrello già pronto: il cliente sceglie il giorno e invia'],
     migliorato: ['Ordini detti o scritti: «ricotta e spinaci» sceglie il gusto giusto'] },
