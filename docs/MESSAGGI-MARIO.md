@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 17:47 · 01WTjqUu7eAD
-chiave sono al pc
-
 ## 2026-11-11 17:48 · 01WTjqUu7eAD
 sono al pc fammi incollarew la chiave
 
@@ -123,3 +120,6 @@ il lite fà un pò schifo
 
 ## 2026-11-13 11:36 · 01WTjqUwHBw1
 hai aggiornato l'app vedo le stesse ricette non ne hai aggiunto
+
+## 2026-11-13 11:41 · 01WTjqUwHBw1
+manda online tutto
