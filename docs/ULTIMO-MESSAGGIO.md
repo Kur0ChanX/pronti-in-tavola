@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 ~10:00 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 09:54 ora italiana)
 
-adesso forse sono o al [percentuale]% di grasso circa (numero coperto)
+mi si vedono gli addomina no tutti tranne quelli bassi gli ultimi 2
