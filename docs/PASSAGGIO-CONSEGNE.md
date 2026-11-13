@@ -52,7 +52,7 @@ Sessione attuale: #71 (dopo la #70 `session_01WTjqUvtoJCfRTCpGySkXAG`, chiusa al
 13/11 09:55, parola per parola: «palestra pubblica a cosa ti serve saperlo?!?!?» → malinteso: «1 = pubblica» della DOMANDA 2 letto come «palestra pubblica»; domanda riscritta («1 · Mettilo nell'app»), PT E76.
 
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C150; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C151; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
 Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
