@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "327d2840d56e",
 "giorno": "2026-11-13",
-"turni": 3,
+"turni": 4,
 "peso": 906440,
 "uscita": 29024,
-"contesto_max": 157182,
+"contesto_max": 211580,
 "anomalie": [],
 "remota": "01WTjqUtr7kg",
 "aiutanti": 0,
@@ -14,11 +14,15 @@
 "opus": 906440
 },
 "blocchi": {
-"Stop 6 · Il turno finisce con una": 1
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 5 · Domanda a Mario poco chiara": 1
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
 "14:07 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"15:23 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
 ]
 }
 }
