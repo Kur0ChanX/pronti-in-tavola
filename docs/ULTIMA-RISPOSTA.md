@@ -1,19 +1,13 @@
-# Ultima risposta di Claude (13/11/2026 22:45 ora italiana)
+# Ultima risposta di Claude (13/11/2026 22:48 ora italiana)
 
-✅ **FATTO**
-Ho controllato le regole che uso sempre: le tue preferenze, le regole comuni, quelle del progetto e il diario degli errori.
-Ho trovato 11 cose da sistemare: 3 conflitti, 6 doppioni e 2 regole che qui non servono più. L'elenco è salvato su GitHub.
 
-| N | Cosa ho trovato | Proposta |
-|---|---|---|
-| 1 | Conflitto. Tu vuoi che ti chieda prima di ogni modifica, ma questo è scritto solo nelle consegne. Le regole comuni invece dicono «le correzioni ovvie le faccio da sola» | Lo scrivo nelle regole del progetto: per l'app e la pubblicazione ti chiedo prima; documenti e prove li faccio …
 
 ## Domande a Mario
 
-❓ **DOMANDE**
-**DOMANDA · Sistemare le regole**
-1 · Faccio tutte le 11 proposte.
-2 · Dimmi i numeri da non fare.
+❓ **DOMANDA · Sistemare le regole**
+📌 Di cosa parliamo: nelle regole che seguo ci sono 3 conflitti, 6 doppioni e 2 regole superate. L'elenco è nella tabella qui sopra; la cosa più importante è che il tuo «chiedimi prima di cambiare l'app» resti scritto per sempre.
+1 · Faccio tutte le 11 proposte: regole più corte e senza contraddizioni.
+2 · Dimmi i numeri da non fare: quelle regole restano come sono.
 Consiglio: **1**.
 
-Restano in attesa anche le 2 domande sulla vista cliente di Monica: il gesto e i tocchi.
+Prima di chiudere ho trovato e corretto un altro buco: la copia automatica aveva cancellato di nuovo i 2 messaggi recuperati. Adesso sono rientrati e salvati su GitHub, e le …
