@@ -742,6 +742,12 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .scelte.scorri .scelta { flex: 0 0 auto; flex-direction: row; align-items: center; white-space: nowrap; }
 .scelte.scorri .scelta[aria-pressed="true"]::after { content: '✓'; margin-left: 8px; font-weight: 900; }
 .btn.ric-piu { width: 100%; border-radius: 999px; }
+/* C151: filtri in un pannello, filtri accesi come etichette con ✕ */
+.ric-filtri { display: grid; gap: 10px; }
+.ric-accesi { align-items: center; }
+.ric-chip { border-color: var(--vino); background: #F8E6DC; font-size: .95em; padding: 6px 12px; min-height: 40px; }
+.ric-zone .scelta small { display: block; font-size: .75em; opacity: .75; }
+.ric-di-cosa ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
 .ric-carica { background: #EEF3E8; border-color: #C9D8BC; gap: 10px; }
 .ric-carica-stato, .ric-carica-oggi { margin: 0; }
 .ric-barra { height: 10px; border-radius: 6px; background: #fff; overflow: hidden; }

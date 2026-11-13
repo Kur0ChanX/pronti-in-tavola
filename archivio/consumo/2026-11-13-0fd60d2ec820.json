@@ -2,23 +2,44 @@
 "account": "108763",
 "sessione": "0fd60d2ec820",
 "giorno": "2026-11-13",
-"turni": 1,
-"peso": 290280,
-"uscita": 9329,
-"contesto_max": 115522,
-"anomalie": [],
+"turni": 6,
+"peso": 1819588,
+"uscita": 49029,
+"contesto_max": 262630,
+"anomalie": [
+"25k token scritti in un turno",
+"2 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+],
 "remota": "01WTjqUw4QVb",
 "aiutanti": 0,
-"strumenti": 17,
+"strumenti": 69,
 "motori": {
-"opus": 290280
+"opus": 1819588
 },
 "blocchi": {
-"Stop 6 · Il turno finisce con una": 1
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 3 · Consegne non su GitHub (C226,": 1,
+"Stop 13 · There are uncommitted changes in": 3,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
 "11:54 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> "
+],
+"Stop 3 · Consegne non su GitHub (C226,": [
+"12:54 · Consegne non su GitHub (C226, blocco 1/3): docs/ERRORI-STORIA.md, docs/ERRORI.md fuori dal commit. Fai commit e push adesso (`git push -u origin claude/pronti-ramo-definitivo`), controlla `git rev-par"
+],
+"Stop 13 · There are uncommitted changes in": [
+"12:54 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"13:07 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"13:09 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"13:09 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"13:09 · Ti fermi ad aspettare Mario con il contesto a 262k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
 ]
 }
 }
