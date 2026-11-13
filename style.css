@@ -753,6 +753,9 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-valori-griglia span { font-size: .78rem; color: var(--tenue); }
 .ric-fit-si { color: var(--basilico); }
 /* C141 pagella fit: voto 1-10 e semaforo (proteine, calorie, grassi saturi, zuccheri, sale) */
+.pal-profilo { border: 1px solid var(--bordo, #e6d9c4); border-radius: 14px; padding: 10px 12px; display: grid; gap: 4px; }
+.pal-campi { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; margin-top: 6px; }
+.pal-campo { display: grid; grid-template-columns: 1fr; font-size: .9rem; } .pal-campo input { width: 100%; min-height: 44px; font-size: 1rem; }
 .ric-pagella-riga { display: block; margin-top: 3px; font-size: .86rem; letter-spacing: 1px; }
 .ric-voto { display: inline-block; border-radius: 999px; padding: 1px 9px; color: #fff; font-weight: 800; letter-spacing: 0; }
 .ric-voto.v { background: var(--basilico); } .ric-voto.g { background: #A86B00; } .ric-voto.r { background: var(--allarme); }
