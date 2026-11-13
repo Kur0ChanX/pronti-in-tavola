@@ -1,3 +1,5 @@
-# Ultimo messaggio di Mario (13/11/2026 ~09:50 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 09:46 ora italiana)
 
-nel mio utente Mario mette i voti per me invece per monica valuta in modo generico — palestra sala pesi 3-5 volte a settimana, addominali in vista e molta ipertrofia (età e altezza coperte)
+nel mio utente Mario mette i voti per me invece per monica valuta in modo generico
+
+io mi chiamo mario ho 36 anni alto 178 vado in palestra sala pesi dalle 3 alle 5 volte a settimana per scopo addominali in vista e molta ipertrofia

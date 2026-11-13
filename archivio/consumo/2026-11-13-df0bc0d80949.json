@@ -1,0 +1,41 @@
+{
+"account": "108763",
+"sessione": "df0bc0d80949",
+"giorno": "2026-11-13",
+"turni": 5,
+"peso": 1128150,
+"uscita": 29464,
+"contesto_max": 195898,
+"anomalie": [],
+"remota": "01WTjqUvtoJC",
+"aiutanti": 0,
+"strumenti": 61,
+"motori": {
+"opus": 1128150
+},
+"blocchi": {
+"Stop 13 · There are uncommitted changes in": 1,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 6 · Il turno finisce con una": 1,
+"Stop 8 · Promessa a Mario senza voce": 2,
+"Stop 6 · Segno delle domande nel titolo": 1
+},
+"esempi_blocchi": {
+"Stop 13 · There are uncommitted changes in": [
+"09:14 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"09:42 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 6 · Il turno finisce con una": [
+"09:42 · Il turno finisce con una domanda o un passo a mano per Mario: scrivi in docs/DA-FARE.md, sezione «## 0. Aspetta Mario» in cima, una riga per ogni cosa che aspetta Mario («- 13/11 · <segno giallo> <Nom"
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"09:43 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Le cerco e le carico io.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la vede Mario> · prova: <foto o lettura dei dati veri>», c",
+"09:47 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Il voto «» farà così:». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la vede Mario> · prova: <foto o lettura dei dati veri>», comm"
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"09:43 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
+]
+}
+}
