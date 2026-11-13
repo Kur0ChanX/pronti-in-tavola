@@ -142,14 +142,26 @@ function quanto(q, u) {
   if (q >= 1000) return `${NUM.format(Math.ceil(q / 100 - 1e-9) / 10)} ${grande}`;
   return `${Math.max(10, Math.ceil(q / 10 - 1e-9) * 10)} ${u}`;
 }
-/* la confezione com'è scritta sul pacco, senza arrotondare (es. 75 g, 1,5 l) */
-const misura = (q, u) => u !== 'pz' && q >= 1000 ? `${NUM.format(q / 1000)} ${u === 'g' ? 'kg' : 'l'}` : `${NUM.format(q)} ${u}`;
+/* confezione in grammi, etti, kg · ml, cl, litri · pezzi (C160, Mario 13/11 23:07 «aggiungi anche KG e CL ed Etti»):
+   in memoria resta in g, ml o pz (conti e dati di prima uguali); «cu» è solo l'unità con cui Monica la scrive */
+const MISURE_CONF = { g: [['g', 1, 'grammi'], ['hg', 100, 'etti'], ['kg', 1000, 'kg']], ml: [['ml', 1, 'ml'], ['cl', 10, 'cl'], ['l', 1000, 'litri']], pz: [['pz', 1, 'pezzi']] };
+function unitaConf(inf) {   // [sigla, quanti g/ml per 1, nome]
+  const tt = MISURE_CONF[inf.u] || MISURE_CONF.g;
+  return tt.find(x => x[0] === inf.cu) || (inf.conf >= 1000 && tt[2] ? tt[2] : tt[0]);
+}
+const prezzoPer = inf => `€ ${inf.conf > 0 ? `per ${misura(inf.conf, inf.u, inf.cu)}` : inf.u === 'pz' ? 'al pezzo' : inf.u === 'g' ? 'al kg' : 'al litro'}`;
+/* la confezione com'è scritta sul pacco, senza arrotondare (es. 75 g, 3 etti, 75 cl, 1,5 l) */
+function misura(q, u, cu) {
+  const x = (MISURE_CONF[u] || []).find(m => m[0] === cu && m[1] > 1);
+  if (x) { const v = +(q / x[1]).toFixed(3); return x[0] === 'hg' ? `${NUM.format(v)} ${v === 1 ? 'etto' : 'etti'}` : `${NUM.format(v)} ${x[0]}`; }
+  return u !== 'pz' && q >= 1000 ? `${NUM.format(q / 1000)} ${u === 'g' ? 'kg' : 'l'}` : `${NUM.format(q)} ${u}`;
+}
 function daComprare(id, serve) {
   const inf = infoIng(id), casa = casaDi(id), manca = Math.max(0, serve - casa);
   if (!manca) return null;
   if (inf.conf > 0) {
     const n = Math.ceil(manca / inf.conf - 1e-9);
-    return { testo: inf.u === 'pz' && inf.conf === 1 ? `${n} pz` : `${n} × ${misura(inf.conf, inf.u)}`, manca };
+    return { testo: inf.u === 'pz' && inf.conf === 1 ? `${n} pz` : `${n} × ${misura(inf.conf, inf.u, inf.cu)}`, manca };
   }
   return { testo: quanto(manca, inf.u), manca };
 }
@@ -217,16 +229,17 @@ function vSpesaOrdini({ oo, c, fino, ids, compra }) {
 }
 
 function foglioSpesaIng() {
-  const id = UI.foglio.id, inf = infoIng(id), casa = casaDi(id);
+  const id = UI.foglio.id, inf = infoIng(id), casa = casaDi(id), uc = unitaConf(inf);
   const serve = calcolaSpesa(ordiniSpesa()).tot[id] || 0;
   return `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro"><h1>${esc(ING(id).n)}</h1>
     <p class="tenue" style="margin:0">${serve ? `Per gli ordini scelti ti servono <b>${quanto(serve, inf.u)}</b>.` : 'Per gli ordini scelti non serve.'}</p>
     <span class="etichetta" style="font-weight:800">Ce l'hai già in casa</span>
     <div class="fila">${passo('sp-casa', casa ? quanto(casa, inf.u) : '0', `data-ing="${id}"`)}<span class="tenue">${casa ? 'Lo tolgo dalla lista.' : 'Niente in casa.'}</span></div>
     <span class="etichetta" style="font-weight:800">Quanto lo paghi (se vuoi)</span>
-    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.prezzo" data-ing="${id}" value="${inf.prezzo || ''}" placeholder="0,00" aria-label="Prezzo in euro"><span class="tenue">€ ${inf.conf > 0 ? `per ${misura(inf.conf, inf.u)}` : inf.u === 'pz' ? 'al pezzo' : inf.u === 'g' ? 'al kg' : 'al litro'}</span></div>
+    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.prezzo" data-ing="${id}" value="${inf.prezzo || ''}" placeholder="0,00" aria-label="Prezzo in euro"><span class="tenue" id="sp-per">${prezzoPer(inf)}</span></div>
     <span class="etichetta" style="font-weight:800">La confezione che compri</span>
-    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.conf" data-ing="${id}" value="${inf.conf || ''}" placeholder="sfuso, a peso" aria-label="Confezione in ${UNITA[inf.u]}"><span class="tenue">${UNITA[inf.u]}</span></div>
+    <div class="fila" style="flex-wrap:nowrap"><input type="number" inputmode="decimal" min="0" step="any" data-campo="sp.conf" data-ing="${id}" value="${inf.conf ? +(inf.conf / uc[1]).toFixed(3) : ''}" placeholder="${inf.u === 'pz' ? 'sfusi' : 'sfuso, a peso'}" aria-label="Confezione in ${uc[2]}"><span class="tenue">${uc[2]}</span></div>
+    ${inf.u === 'pz' ? '' : `<div class="scelte">${(MISURE_CONF[inf.u] || MISURE_CONF.g).map(([k, , n]) => `<button type="button" class="chip" data-a="sp-cu" data-ing="${id}" data-v="${k}" aria-pressed="${uc[0] === k}">${n}</button>`).join('')}</div>`}
     <span class="etichetta" style="font-weight:800">Si misura in</span>
     <div class="scelte">${Object.entries(UNITA).map(([k, n]) => `<button type="button" class="chip" data-a="sp-unita" data-ing="${id}" data-v="${k}" aria-pressed="${inf.u === k}">${n}</button>`).join('')}</div>
     <span class="etichetta" style="font-weight:800">Reparto del negozio</span>
@@ -273,7 +286,8 @@ function salvaCampoSpesa(el) {
   if (c === 'sp.vn' || c === 'sp.vq') { salvaVoce(el); return; }
   if (c === 'sp.anche') { SPESA.anche = el.checked; salvaSpesa(); render(); return; }
   if (c === 'sp.prezzo') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { prezzo: num(el.value) }); salvaSpesa(); salvatoOk(); return; }
-  if (c === 'sp.conf') { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { conf: num(el.value) }); salvaSpesa(); render(); }
+  if (c === 'sp.conf') { const uc = unitaConf(infoIng(id)); SPESA.ing[id] = Object.assign({}, SPESA.ing[id], { conf: arrot(num(el.value) * uc[1]), cu: uc[0] }); salvaSpesa();
+    const per = document.getElementById('sp-per'); if (per) per.textContent = prezzoPer(infoIng(id)); salvatoOk(); }
 }
 function cambiaIng(id, campi) { SPESA.ing[id] = Object.assign({}, SPESA.ing[id], campi); salvaSpesa(); render(); }
 
@@ -288,7 +302,12 @@ Object.assign(A, {
     if (!SPESA.casa[id]) delete SPESA.casa[id];
     salvaSpesa(); render();
   },
-  'sp-unita'(el) { cambiaIng(el.dataset.ing, { u: el.dataset.v }); },
+  'sp-unita'(el) { cambiaIng(el.dataset.ing, { u: el.dataset.v, cu: null }); },
+  'sp-cu'(el) {
+    const id = el.dataset.ing, inf = infoIng(id), prima = unitaConf(inf), dopo = (MISURE_CONF[inf.u] || []).find(x => x[0] === el.dataset.v);
+    if (!dopo) return;
+    cambiaIng(id, { cu: dopo[0], conf: inf.conf ? arrot(inf.conf / prima[1] * dopo[1]) : inf.conf });
+  },
   'sp-rep'(el) { cambiaIng(el.dataset.ing, { rep: el.dataset.v }); },
   'sp-fatta'() {   /* le cose spuntate vanno «in casa» (le confezioni intere che hai preso), la lista si svuota da sola */
     const prima = JSON.stringify(SPESA), c = calcolaSpesa(ordiniSpesa());
