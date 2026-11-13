@@ -79,6 +79,48 @@
 ],
 "porzioni": null
 },
+"yt:97cdLnGnLeU": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"7 cucchiai di semi di sesamo",
+"1 cucchiaio di sale"
+],
+"modello": "gemini-3.5-flash",
+"nome": "Gomasio",
+"passi": [
+"Versare i semi di sesamo in padella e tostarli a fiamma non troppo alta finché non si appiccicano più a un cucchiaio asciutto.",
+"Trasferire i semi di sesamo tostati in un mortaio.",
+"Tostare un cucchiaio di sale in padella per qualche istante.",
+"Versare il sale tostato nel mortaio insieme al sesamo.",
+"Schiacciare e pestare con cura nel mortaio fino ad amalgamare gli ingredienti."
+],
+"porzioni": null
+},
+"yt:C1GNtl5fk4E": {
+"data": "2026-11-13",
+"dubbi": [],
+"ingredienti": [
+"Latte di soia (almeno 8% di soia)",
+"1 cucchiaino di sale",
+"3 cucchiai di succo di limone",
+"Olio extravergine d'oliva",
+"Pepe"
+],
+"modello": "gemini-3.6-flash",
+"nome": "Ricotta di soia",
+"passi": [
+"Versare il latte di soia in una pentola e aggiungere un cucchiaino di sale.",
+"Rivestire uno stampo da ricotta con uno strofinaccio e posizionarlo sopra un colino o scolapasta con una ciotola sotto.",
+"Portare il latte di soia a bollore, poi togliere la pentola dal fuoco.",
+"Aggiungere il succo di limone, mescolare e far riposare qualche minuto per far cagliare il composto.",
+"Versare gradualmente la cagliata nello stampo rivestito con lo strofinaccio per lasciar sgocciolare il siero.",
+"Chiudere lo strofinaccio sopra la ricotta e lasciar sgocciolare per circa 1 ora.",
+"Trasferire la ricotta di soia direttamente nello stampo, compattarla leggermente con un cucchiaio e riporla in frigo per un'altra ora.",
+"Ribaltare la ricotta su un piatto e servire con un filo d'olio a crudo e un pizzico di pepe."
+],
+"porzioni": null
+},
 "yt:DTLzaexdJAk": {
 "data": "2026-11-13",
 "dubbi": [],
