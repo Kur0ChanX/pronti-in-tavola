@@ -163,20 +163,36 @@ function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!
 const ZONE_RIC = [['tutte', 'Tutte'], ['fit', '🏋️ Proteiche'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
 /* C127 (Mario 10/11 «fai ordine», foto approvata 15:05): in vista Tutte, Proteiche, Preferite; le altre dentro «Altre ▾» */
 const ZONE_ALTRE = ['sarda', 'italiana', 'mie'];
-function zoneRic(f) {
-  const altra = ZONE_ALTRE.includes(f.zona), nome = k => (ZONE_RIC.find(z => z[0] === k) || [, k])[1];
+function zoneRic(f) {   // C151 (Mario 13/11 «3000 tastine… non si capisce nulla»): 4 schede; Sarde, Italiane e Le mie dentro «🎛️ Filtri»
   const z = (k, ico, t) => `<button type="button" class="scelta" data-a="ric-zona" data-v="${k}" aria-pressed="${f.zona === k}">${ico ? `<span aria-hidden="true">${ico}</span>` : ''}${t}</button>`;
-  return `<div class="ric-zone" role="group" aria-label="Quali">${z('tutte', '', 'Tutte')}${z('fit', '🏋️', 'Proteiche')}${z('pref', '⭐', 'Preferite')}<button type="button" class="scelta" data-a="ric-zone-altre" aria-pressed="${altra}" aria-expanded="${!!UI.ricAltre}">${altra ? esc(nome(f.zona)) : 'Altre'} ▾</button></div>
-    ${UI.ricAltre ? `<div class="scelte" role="group" aria-label="Altre">${ZONE_ALTRE.map(k => z(k, '', nome(k))).join('')}</div>` : ''}`;
+  const nv = typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.filter(x => !x.altro).length : 0;
+  return `<div class="ric-zone" role="group" aria-label="Quali">${z('tutte', '', 'Tutte')}${z('fit', '🏋️', 'Proteiche')}<button type="button" class="scelta ric-video-link" data-a="vai" data-v="ricvideo"><span aria-hidden="true">🎬</span>Video${nv ? ` <small>(${nv})</small>` : ''}</button>${z('pref', '⭐', 'Preferite')}</div>`;
 }
 /* C127: «⚙️ Portata, difficoltà, tempo e ordine (n)»: chiuso, dice quanti filtri sono accesi lì dentro */
-function piuFiltriRic(f) {
-  const lampo = f.zona === 'fit' && f.tempo === sogliaFit('fitVeloci', 10), n = (f.cat ? 1 : 0) + (f.diff ? 1 : 0) + (f.tempo && !lampo ? 1 : 0) + (f.ordine ? 1 : 0);   // ⚡ sta coi momenti
+function piuFiltriRic(f, n, fit) {   // C151: un tasto solo; dentro tutti i gruppi e «Mostra N ricette»
+  const k = filtriAccesi(f).length;
   const riga = (et, a, ll, si) => `<div class="scelte" role="group" aria-label="${et}"><span class="piccolo tenue" style="align-self:center">${et}:</span>${ll.map(([k, t]) => `<button type="button" class="scelta" data-a="${a}" data-v="${k}" aria-pressed="${si(k)}">${t}</button>`).join('')}</div>`;
-  return `<button type="button" class="btn chiaro ric-piu" data-a="ric-piu" aria-expanded="${!!f.piu}">⚙️ Portata, difficoltà, tempo e ordine${n ? ` (${n})` : ''}</button>
-    ${f.piu ? riga('Portata', 'ric-cat', CAT_RIC, k => f.cat === k) + riga('Difficoltà', 'ric-diff', DIFF_RIC, k => (f.diff || '') === k)
-      + riga('Tempo', 'ric-tempo', [[30, '⏱ Fino a 30 min'], [60, '⏱ Fino a 1 ora']], k => f.tempo === k) + riga('Ordina', 'ric-ordine', ORDINI_RIC, k => (f.ordine || '') === k) : ''}`;
+  const nome = k => (ZONE_RIC.find(z => z[0] === k) || [, k])[1];
+  return `<button type="button" class="btn chiaro ric-piu" data-a="ric-piu" aria-expanded="${!!f.piu}">🎛️ Filtri${k ? ` · <b>${k}</b> ${k === 1 ? 'acceso' : 'accesi'}` : ''} ${f.piu ? '▴' : '▾'}</button>
+    ${f.piu ? `<section class="scheda ric-filtri">${fit || ''}${riga('Portata', 'ric-cat', CAT_RIC, k => f.cat === k) + riga('Difficoltà', 'ric-diff', DIFF_RIC, k => (f.diff || '') === k)
+      + riga('Tempo', 'ric-tempo', [[30, '⏱ Fino a 30 min'], [60, '⏱ Fino a 1 ora']], k => f.tempo === k) + riga('Ordina', 'ric-ordine', ORDINI_RIC, k => (f.ordine || '') === k)
+      + riga('Raccolta', 'ric-zona', ZONE_ALTRE.map(k => [k, nome(k)]), k => f.zona === k)}
+      <button type="button" class="btn pieno ric-mostra" data-a="ric-piu">Mostra ${n} ${n === 1 ? 'ricetta' : 'ricette'}</button></section>` : ''}`;
 }
+/* C151: i filtri accesi, ognuno con la sua ✕ (stesse azioni dei tasti dentro «Filtri») */
+function filtriAccesi(f) {
+  const v = [], lampo = sogliaFit('fitVeloci', 10), et = (ll, k) => ((ll.find(x => String(x[0]) === String(k)) || [, k])[1]);
+  if (ZONE_ALTRE.includes(f.zona)) v.push([et(ZONE_RIC, f.zona), 'ric-zona', 'tutte']);
+  fitSel(f).forEach(k => v.push([et(MOMENTI_FIT, k), 'ric-fit-tipo', k]));
+  protSel(f).forEach(k => v.push([et(FONTI_PROT, k), 'ric-prot', k]));
+  chiSel(f).forEach(k => v.push([k, 'ric-chi', k]));
+  if (f.cat) v.push([et(CAT_RIC, f.cat), 'ric-cat', '']);
+  if (f.diff) v.push([et(DIFF_RIC, f.diff), 'ric-diff', f.diff]);
+  if (f.tempo) v.push([f.zona === 'fit' && f.tempo === lampo ? `⚡ Pronte in ${lampo} minuti` : `⏱ Fino a ${f.tempo === 60 ? '1 ora' : f.tempo + ' min'}`, 'ric-tempo', f.tempo]);
+  if (f.ordine) v.push(['Ordina: ' + et(ORDINI_RIC, f.ordine), 'ric-ordine', '']);
+  return v;
+}
+const etichetteRic = f => { const v = filtriAccesi(f); return v.length ? `<div class="scelte ric-accesi" role="group" aria-label="Filtri accesi">${v.map(([t, a, k]) => `<button type="button" class="scelta ric-chip" data-a="${a}" data-v="${esc(String(k))}" aria-label="Togli ${esc(t)}">${esc(t)} <span aria-hidden="true">✕</span></button>`).join('')}<button type="button" class="link" data-a="ric-pulisci">Azzera tutti</button></div>` : ''; };
 const CAT_RIC = [['', 'Tutto'], ['antipasti', 'Antipasti'], ['primi', 'Primi'], ['secondi', 'Secondi'], ['contorni', 'Contorni'], ['dolci', 'Dolci'], ['pane', 'Pane e pizze']];
 const URL_GZ = 'https://ricette.giallozafferano.it/', URL_RF = 'https://www.ricettefit.it/ricetta/', URL_BG = 'https://blog.giallozafferano.it/';
 /* C124 passo 8: ricette prese da un sito (GialloZafferano «gz:», RicetteFit «rf:»), il loro indirizzo e il ritorno dall'indirizzo all'id */
@@ -404,7 +420,7 @@ function videoRic(x) {
   const ing = (x.ingredienti || []).map(ingRic).filter(i => i.nome);
   return (VIDEO_CACHE[x.id] = { id: x.id, nome: x.nome, zona: '', categoria: '', foto: x.foto || '', totale: 0, difficolta: '', nutr: x.nutr || null, stimata: !!x.stimata,
     valoriSuoi: x.suoi ? x.valoriSuoi || '' : '', video: true, tipo: x.tipo || 'Altro', data: x.data || '', proteica: !!x.proteica, url: x.url, autore: x.autore || '',
-    porzioni: x.porzioni || 1, ingredienti: ing, passi: (x.passi || []).map(t => ({ t: String(t || ''), foto: [] })).filter(p => p.t), parlato: x.parlato || '',   // C145: i passi scritti sotto il video
+    porzioni: x.porzioni || 1, ingredienti: ing, passi: (x.passi || []).map(t => ({ t: String(t || ''), foto: [] })).filter(p => p.t), parlato: x.parlato || '', altro: x.altro || '', argomenti: x.altro ? (x.ingredienti || []).map(String) : [],   // C151: non è una ricetta (allenamento, consiglio, prodotti, posti)   // C145: i passi scritti sotto il video
     intro: x.testo || '', cerca: ing.map(i => i.nome).join(', ') });
 }
 const videoDi = id => typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.find(x => x.id === id) : null;
@@ -816,11 +832,12 @@ function vRicettario() {
   UI.ricVideoDa = '';   // C144: dal Ricettario, «Indietro» di una ricetta torna qui
   const idsEl = new Set(elenco.map(r => r.id)), videoPref = typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.filter(x => pref.includes(x.id) && !idsEl.has(x.id)).map(videoRic) : [];
   const tutte = mie.concat(videoPref, elenco.map(r => { const x = extra[r.id]; return !x ? r : Object.assign({}, r, { foto: r.foto || x.foto || '', totale: r.totale || x.totale || (x.prep || 0) + (x.cottura || 0), difficolta: r.difficolta || x.difficolta || '', ingredienti: r.ingredienti || x.ingredienti, nutr: r.nutr || x.nutr || null }); }), Object.values(extra).filter(r => !elenco.some(x => x.id === r.id)));
+  const testoOk = r => !q || q.split(/[\s,]+/).filter(Boolean).every(p => senzaAccenti(r.nome + ' ' + (r.cerca || '') + ' ' + (r.ingredienti || []).map(i => i.nome).join(' ')).includes(p));
   let rr = tutte.filter(r => (f.zona === 'tutte' ? !(!r.mia && !r.zona && !pref.includes(r.id)) : f.zona === 'fit' ? !r.mia && passaFit(r, f) && passaChi(r, f) : f.zona === 'pref' ? pref.includes(r.id) : f.zona === 'mie' ? r.mia
       : f.zona === 'sarda' ? r.zona === 'sarda' || r.zona === 'gallura' : r.zona === f.zona)
     && (!f.cat || r.categoria === f.cat)
     && (!f.tempo || (minutiRic(r) > 0 && minutiRic(r) <= f.tempo)) && (!f.diff || diffRic(r.difficolta) === f.diff)
-    && (!q || q.split(/[\s,]+/).filter(Boolean).every(p => senzaAccenti(r.nome + ' ' + (r.cerca || '') + ' ' + (r.ingredienti || []).map(i => i.nome).join(' ')).includes(p))));
+    && testoOk(r));
   const az = (a, b) => a.nome.localeCompare(b.nome, 'it');
   rr = rr.sort(f.ordine === 'nuove' ? (a, b) => (b.aggiunta || 0) - (a.aggiunta || 0) || az(a, b) : f.ordine === 'az' ? az
     : f.ordine === 'veloci' ? (a, b) => (minutiRic(a) || 1e4) - (minutiRic(b) || 1e4) || az(a, b)
@@ -836,11 +853,9 @@ function vRicettario() {
       ${typeof Riconosci !== 'undefined' && Riconosci && typeof ascoltaAI === 'function' ? `<button type="button" class="btn chiaro" data-a="ric-dico" aria-label="Cerca a voce">${AI.rec ? '⏹' : '🎙'}</button>` : ''}
       <button type="submit" class="btn pieno" aria-label="Cerca su GialloZafferano e RicetteFit">${ico('cerca')}</button></form>
     ${zoneRic(f)}
-    <button type="button" class="btn chiaro pieno ric-video-link" data-a="vai" data-v="ricvideo">🎬 Ricette video${typeof RICETTE_VIDEO !== 'undefined' ? ` <small>(${RICETTE_VIDEO.length})</small>` : ''}</button>
-    ${f.zona === 'fit' ? sceltaFit(f, contaChi(tutte.filter(r => !r.mia && passaFit(r, f)))) : ''}
-    ${piuFiltriRic(f)}
-    ${f.zona === 'fit' ? riquadroFit(f, tutte) : ''}
-    <p class="piccolo ric-conta" style="margin:0"><b>${rr.length}</b> ${rr.length === 1 ? 'ricetta' : 'ricette'}${f.zona === 'fit' && rr.length ? `: ${perFonte(rr)}` : ''}${filtrato ? ` · <button type="button" class="link" data-a="ric-pulisci">✕ Azzera i filtri</button>` : ''}${f.tempo || f.diff ? '<br><span class="tenue">Tempo e difficoltà ci sono solo per le ricette già arrivate nell\'archivio: le altre compaiono dopo.</span>' : ''}</p>`;
+    ${piuFiltriRic(f, rr.length, f.zona === 'fit' ? sceltaFit(f, contaChi(tutte.filter(r => !r.mia && passaFit(r, f)))) : '')}
+    ${etichetteRic(f)}
+    <p class="piccolo ric-conta" style="margin:0"><b>${rr.length}</b> ${rr.length === 1 ? 'ricetta' : 'ricette'}${f.zona === 'fit' && rr.length ? `: ${perFonte(rr)}` : ''}${filtrato && !filtriAccesi(f).length ? ` · <button type="button" class="link" data-a="ric-pulisci">✕ Azzera</button>` : ''}${f.tempo || f.diff ? '<br><span class="tenue">Tempo e difficoltà ci sono solo per le ricette già arrivate nell\'archivio: le altre compaiono dopo.</span>' : ''}</p>`;
   if (f.zona !== 'fit' && f.q.trim().length >= 2) h += `<button type="button" class="btn chiaro pieno" data-a="ric-cerca-gz">${ico('cerca')}Cerca «${esc(f.q.trim())}» su GialloZafferano e RicetteFit</button>`;
   if (c.stato) {
     h += `<section class="scheda" id="ric-risultati"><h2>${c.cat === 'nuove' ? '🔎 Ricette nuove per te' : c.cat ? '📚 ' + esc(c.q) + ' · tutte' : `Da ${c.risultati.some(r => /^rf:/.test(r.id)) ? 'GialloZafferano e RicetteFit' : 'GialloZafferano'}: «${esc(c.q)}»`}${c.risultati.length ? ` <small class="tenue">(${c.risultati.length}${c.prossima ? '+' : ''})</small>` : ''}</h2>${c.stato === 'carico' ? '<p class="tenue" style="margin:0">Cerco…</p>'
@@ -860,8 +875,15 @@ function vRicettario() {
   /* L'ELENCO, subito (Mario 08/11 «fai ordine»): prima le ricette, poi il resto */
   const conValori = f.zona === 'fit' || f.ordine === 'prot' || f.ordine === 'kcal';
   h += rr.length ? `<div class="ric-elenco">${rr.map(r => cartaRic(r, pref, conValori)).join('')}</div>`
-    : `<section class="scheda"><p style="margin:0">${f.zona === 'fit' ? 'Nessuna ricetta proteica con questi filtri. I valori per porzione arrivano dal server un po\' alla volta: riprova più tardi.' : f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : filtrato ? 'Nessuna ricetta con questi filtri.' : 'Nessuna ricetta in questo gruppo.'}</p>
+    : `<section class="scheda"><p style="margin:0">${q.length >= 2 ? `In questa scheda niente con «${esc(f.q.trim())}»${filtriAccesi(f).length ? ' e questi filtri' : ''}.` : f.zona === 'fit' ? 'Nessuna ricetta proteica con questi filtri. I valori per porzione arrivano dal server un po\' alla volta: riprova più tardi.' : f.zona === 'pref' ? 'Nessuna preferita: apri una ricetta e tocca ☆ Preferita.' : f.zona === 'mie' ? 'Non hai ancora scritto ricette tue.' : filtrato ? 'Nessuna ricetta con questi filtri.' : 'Nessuna ricetta in questo gruppo.'}</p>
       <button type="button" class="btn chiaro" data-a="ric-pulisci">Mostra tutte</button></section>`;
+  if (q.length >= 2) {   // C151: la ricerca guarda in TUTTE le ricette (anche video), non solo nella scheda accesa
+    const gia = new Set(rr.map(r => r.id)), idsT = new Set(tutte.map(r => r.id));
+    const pool = tutte.concat(typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.filter(x => !x.altro && !idsT.has(x.id)).map(videoRic) : []);
+    const fuori = pool.filter(r => !gia.has(r.id) && testoOk(r));
+    if (fuori.length) h += `<section class="scheda ric-altrove"><h2>🔎 «${esc(f.q.trim())}» anche fuori da ${f.zona === 'tutte' ? 'questa scheda' : esc((ZONE_RIC.find(z => z[0] === f.zona) || [, f.zona])[1])} <small class="tenue">(${fuori.length})</small></h2><div class="ric-elenco">${fuori.slice(0, 30).map(r => r.video ? cartaVideo(r, pref) : cartaRic(r, pref, conValori)).join('')}</div>${fuori.length > 30 ? `<p class="piccolo tenue" style="margin:0">Le prime 30: scrivi una parola in più per vedere le altre.</p>` : ''}</section>`;
+  }
+  if (f.zona === 'fit') h += riquadroFit(f, tutte);   // C151: il lavoro del server in fondo, dopo le ricette
   h += `<button type="button" class="btn chiaro pieno" data-a="vai" data-v="ricmia:nuova">${ico('matita')}Scrivi una tua ricetta</button>`;
   if (!q && !c.stato) {
     /* SCOPRI: il motore, il catalogo, i temi, le ispirate: tutto in una scheda, aperto solo quello che tocchi */
@@ -889,10 +911,13 @@ function vRicettario() {
 }
 
 /* 🎬 RICETTE VIDEO (C144): un riquadro per youtuber → le sue ricette, con i tipi (Pancake, Porridge…) per filtrare. Nuove in cima. */
-const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO : []).forEach(x => m.set(x.autore, (m.get(x.autore) || []).concat(x))); return [...m]; };
+const ALTRO_VIDEO = [['allenamento', '🏋️ Allenamenti'], ['consiglio', '💡 Consigli'], ['prodotti', '🛒 Prodotti'], ['posti', '📍 Posti']];   // C151 (Mario 13/11 «cose utili… una sezione a parte»)
+const altriVideo = () => (typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO : []).filter(x => x.altro);
+const nomeAltro = k => (ALTRO_VIDEO.find(x => x[0] === k) || [, '💡 Altro'])[1];
+const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO : []).filter(x => !x.altro).forEach(x => m.set(x.autore, (m.get(x.autore) || []).concat(x))); return [...m]; };
 const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
-    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}${r.parlato ? ' · 🎙️ ' + (r.parlato === 'dosi' ? 'dosi' : 'passi') + ' dal video' : ''}</small>${r.nutr && r.nutr.kcal > 0
+    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.altro ? esc(nomeAltro(r.altro)) + ' · ' + esc(r.autore) : esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}${r.parlato ? ' · 🎙️ ' + (r.parlato === 'dosi' ? 'dosi' : 'passi') + ' dal video' : ''}</small>${r.nutr && r.nutr.kcal > 0
       ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;   // C149: il voto anche fuori
 function vRicVideo(id) {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
@@ -903,12 +928,20 @@ function vRicVideo(id) {
       ? '<p style="margin:0"><b>Non riesco ad aprire le ricette video.</b> La prima volta serve la rete: controllala e riprova.</p><button type="button" class="btn pieno" data-a="ric-video-riprova">Riprova</button>'
       : '<p class="tenue" style="margin:0">Apro le ricette video…</p>'}</section></main>`;
   }
-  const autori = autoriVideo(), k = Number(id), a = id !== '' && autori[k] ? autori[k] : null;
+  const autori = autoriVideo(), k = Number(id), a = id !== '' && autori[k] ? autori[k] : null, al = altriVideo();
+  if (id === 'altro') {   // C151: video utili che non sono ricette, in una sezione a parte
+    UI.ricVideoDa = 'ricvideo:altro';
+    const pref = preferiteRic(), t = UI.ricVideoAltro || '', rr = al.filter(x => !t || x.altro === t).map(videoRic);
+    return testataMonica('Consigli e allenamenti', 'ricvideo') + `<main class="corpo"><div><h1>💡 Consigli, allenamenti e altro</h1><p class="tenue" style="margin:4px 0 0">Video utili degli stessi youtuber che non sono ricette: allenamenti, consigli, prodotti e posti. Non finiscono fra le ricette né nella spesa.</p></div>
+      <div class="scelte ric-tipi-video" role="group" aria-label="Tipo">${[['', 'Tutti', al.length]].concat(ALTRO_VIDEO.map(([v, n]) => [v, n, al.filter(x => x.altro === v).length]).filter(x => x[2])).map(([v, n, c]) => `<button type="button" class="scelta" data-a="ric-video-altro" data-v="${v}" aria-pressed="${t === v}">${n} · ${c}</button>`).join('')}</div>
+      <div class="ric-elenco">${rr.map(r => cartaVideo(r, pref)).join('')}</div></main>`;
+  }
   let h = testataMonica('Ricette video', a ? 'ricvideo' : 'ricettario') + '<main class="corpo">';
   if (!a) {
     UI.ricVideoDa = 'ricvideo';
     h += `<div><h1>🎬 Ricette video</h1><p class="tenue" style="margin:4px 0 0">Ricette dai video di YouTube, divise per chi le fa. Ingredienti, valori e video sono qui: tocca la foto e il video parte.</p></div>`;
     h += autori.map(([nome, rr], i) => `<button type="button" class="riquadro ric-video-autore" data-a="vai" data-v="ricvideo:${i}">🎬<div><b>${esc(nome)}</b><small>${rr.length} ricette video · ${rr.filter(x => x.suoi).length} coi suoi valori · ${rr.filter(x => x.proteica).length} anche in Proteiche</small></div></button>`).join('');
+    if (al.length) h += `<button type="button" class="riquadro ric-video-autore ric-video-altro" data-a="vai" data-v="ricvideo:altro">💡<div><b>Consigli, allenamenti e altro</b><small>${al.length} video utili che non sono ricette</small></div></button>`;
     h += `<p class="piccolo tenue" style="margin:0">${navigator.onLine === false ? 'Senza rete: vedi nomi, ingredienti e valori; i video e le copertine tornano con la rete.' : 'Nomi, ingredienti e valori come li scrive chi fa il video. Le aggiorna Claude.'}</p>`;
     return h + '</main>';
   }
@@ -952,12 +985,14 @@ function vRicetta(id) {
   h += `<div><h1>${esc(r.nome)}</h1>${info ? `<p class="tenue" style="margin:4px 0 0">${esc(info)}</p>` : ''}</div>`;
   if (!r.mia) h += `<p class="piccolo ric-fonte-riga" style="margin:0">Fonte: <b>${esc(fonteRic(r))}</b>${r.url ? ` · <a href="${esc(r.url)}" target="_blank" rel="noopener">Apri l'originale ↗</a>` : ''}</p>`;   // C124
   if (r.parlato) h += `<p class="piccolo ric-parlato" style="margin:0">🎙️ <b>${r.parlato === 'dosi' ? 'Dosi e passi detti' : 'Passi detti'} nel video</b>: li ha ascoltati Claude, con l'aiuto di Google, da quello che dice ${esc(r.autore || 'chi fa il video')}. Possono avere errori: nel dubbio guarda il video.</p>`;   // C150
-  h += valoriRic(r.nutr || (v && v.nutr), r);
+  if (r.altro) h += `<p class="piccolo ric-altro-nota" style="margin:0">💡 <b>Non è una ricetta</b> (${esc(nomeAltro(r.altro))}): sta in Ricette video → «Consigli, allenamenti e altro».</p>`;   // C151
+  else h += valoriRic(r.nutr || (v && v.nutr), r);
   if (r.intro) h += `<details class="ric-intro"><summary>${r.video ? '📝 Cosa scrive sotto il video ·' : esc(r.intro.split('\n')[0].slice(0, 140)) + (r.intro.length > 140 ? '…' : '')} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
   h += `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
       ${r.mia ? `<button type="button" class="btn chiaro" data-a="vai" data-v="ricmia:${esc(id)}">${ico('matita')}Cambia</button>` : ''}
-      ${typeof S !== 'undefined' && S.piatti && !S.piatti.some(x => x.ricetta === id) ? `<button type="button" class="btn chiaro" data-a="ric-menu" data-v="${esc(id)}">➕ Metti nel menù</button>` : ''}</div>
-    ${r.ingredienti.length ? `<section class="scheda"><h2>Ingredienti</h2>
+      ${!r.altro && typeof S !== 'undefined' && S.piatti && !S.piatti.some(x => x.ricetta === id) ? `<button type="button" class="btn chiaro" data-a="ric-menu" data-v="${esc(id)}">➕ Metti nel menù</button>` : ''}</div>
+    ${r.altro && (r.argomenti || []).length ? `<section class="scheda ric-di-cosa"><h2>Di cosa parla</h2><ul>${r.argomenti.map(t => `<li>${esc(t.replace(/^\*+|\*+$/g, '').replace(/\*/g, ''))}</li>`).join('')}</ul></section>` : ''}
+    ${!r.altro && r.ingredienti.length ? `<section class="scheda"><h2>Ingredienti</h2>
       <div class="fila ric-porz"><span>Per <b>${porz}</b> ${porz === 1 ? 'persona' : 'persone'}</span>
         <button type="button" class="btn chiaro piccolo" data-a="ric-porz" data-v="-1" aria-label="Una persona in meno" ${porz <= 1 ? 'disabled' : ''}>−</button>
         <button type="button" class="btn chiaro piccolo" data-a="ric-porz" data-v="1" aria-label="Una persona in più" ${porz >= 60 ? 'disabled' : ''}>+</button></div>
@@ -1433,6 +1468,7 @@ Object.assign(A, {
       .catch(e => { RIC.cerca.stato = 'errore'; RIC.cerca.errore = navigator.onLine === false ? 'Senza rete non posso cercare: riprova quando torna.' : 'Ricerca non riuscita: ' + (e.message || e); })
       .finally(() => { if (UI.vista === 'ricettario') render(); });
   },
+  'ric-video-altro'(el) { UI.ricVideoAltro = el.dataset.v; render(); },   // C151
   'ric-video-tipo'(el) { const a = autoriVideo()[Number(UI.vista.split(':')[1])]; UI.ricVideoTipo = { a: a ? a[0] : '', t: el.dataset.v }; render(); },   // C144
   'ric-video-riprova'() { RIC.video = ''; caricaVideo(); render(); },
   'video-yt'(el) { apriVideoYt(el.dataset.v); },   // C147
