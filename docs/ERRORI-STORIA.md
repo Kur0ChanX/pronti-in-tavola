@@ -143,3 +143,6 @@ Primo giro vero di C150: `trascrivi_video.py` usava solo il Flash più nuovo (ge
 - **RVC E30** Mai «non è successo» senza una prova che lo possa vedere.
 - **PT E4** Un'informazione che non è nella sessione né nel repo: dirlo una volta e chiedere tutto insieme.
 - **PT E10** Una causa si dice solo con un esperimento che la conferma; sennò «ipotesi».
+
+## PT E77 (bis) · 13/11/2026 (#72) · limite al minuto scambiato per limite del giorno
+Dopo il riavvio del contenitore il giro è ripartito: 429 su gemini-3.8, 3.7, 3.6, 3.5 in pochi secondi (il tool passava subito al modello successivo), poi 404 sul 2.5 («no longer available to new users») contato come errore del video → fermo dopo 5. Una chiamata dopo: 200. Causa vera: il 429 era il limite AL MINUTO, non del giorno; il tool non leggeva il motivo. Difesa: `limite()` legge quotaId e retryDelay di Google: al minuto aspetta e riprova lo stesso modello (max 3), al giorno passa al successivo; 404 «model» toglie il modello dalla lista.

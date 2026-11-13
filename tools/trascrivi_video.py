@@ -106,6 +106,17 @@ def dubbi(r):
     return [s for s in (r.get('ingredienti') or []) + (r.get('passi') or []) if isinstance(s, str) and numeri(s) - noti]
 
 
+def limite(t):
+    """429 di Google: ('giorno' o 'minuto', secondi da aspettare, nomi dei limiti). Al minuto si aspetta, al giorno si cambia modello."""
+    try:
+        dd = json.loads(t)['error'].get('details', [])
+        ids = ' '.join(v.get('quotaId', '') for d in dd for v in d.get('violations', []))
+        sec = float(re.sub(r'[^\d.]', '', next((d['retryDelay'] for d in dd if 'retryDelay' in d), '')) or 60)
+        return ('giorno' if 'PerDay' in ids else 'minuto'), min(max(sec, 5), 120), ids
+    except Exception:
+        return 'minuto', 60, ''
+
+
 def buona(r):
     """Una risposta entra solo se è una ricetta con almeno 2 ingredienti con la dose e almeno un passo."""
     if not isinstance(r, dict) or not r.get('ricetta'):
@@ -137,8 +148,17 @@ def main():
             prove = 0
             while True:
                 c, t = chiama('POST', f'models/{modelli[m]}:generateContent', corpo)
+                if c == 404 and 'model' in t.lower() and len(modelli) > 1:   # «no longer available to new users» (2.5, 13/11): via dalla lista
+                    print(f'{modelli[m]}: non disponibile (404), lo tolgo', file=sys.stderr)
+                    modelli.pop(m); m = min(m, len(modelli) - 1); prove = 0; continue
                 if c == 503 and prove == 0:          # pieno: aspetto e riprovo una volta
                     prove = 1; time.sleep(30); continue
+                if c == 429:
+                    tipo, attesa, ids = limite(t)
+                    if tipo == 'minuto' and prove < 3:   # limite al minuto (13/11 #72): aspetto quanto dice Google, stesso modello
+                        print(f'{modelli[m]}: limite al minuto, aspetto {round(attesa)} s', file=sys.stderr)
+                        prove += 1; time.sleep(attesa); continue
+                    print(f'{modelli[m]}: limite {tipo} ({ids[:120]})', file=sys.stderr)
                 if c in (503, 429) and m + 1 < len(modelli):   # ancora pieno o limite di oggi: Flash precedente
                     print(f'{modelli[m]}: codice {c}, passo a {modelli[m + 1]}', file=sys.stderr)
                     m += 1; prove = 0; continue

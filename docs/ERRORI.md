@@ -71,7 +71,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E74** Prova «senza rete» finta: alla fine `delete navigator.onLine` (controllo in `passo` di `tools/prova.js`).
 - **PT E75** Avvio: titolo della sessione PER PRIMO, anche se il primo messaggio di Mario parla d'altro; una sua richiesta diretta si fa subito, prima del lavoro in corso.
 - **PT E76** Scelte ambigue («1 = pubblica» letto «palestra pubblica»): scrivere «metto online nell'app» e cosa vede Mario.
-- **PT E77** Gemini: mai un modello solo; 503 «pieno» → riprova, poi il Flash precedente (anche al 429): `tools/trascrivi_video.py`.
+- **PT E77** Gemini: mai un modello solo; 503 → riprova, poi il Flash precedente; 429 al minuto → aspetta, al giorno → cambia; 404 → via (`trascrivi_video.py`).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
