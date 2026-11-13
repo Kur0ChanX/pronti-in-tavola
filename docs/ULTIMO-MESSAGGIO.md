@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 20:19 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:37 ora italiana)
 
-Mi puoi rinviare il link di Lisa in questa sessione?
+Scusa, allora che cosa glielo invio a fare questo link se non cercarlo precompilato?
