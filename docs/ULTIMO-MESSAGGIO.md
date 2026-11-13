@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 20:19 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:34 ora italiana)
 
-Mi puoi rinviare il link di Lisa in questa sessione?
+No, deve mettere i chili, cioè il numero di teglia. Scusa, se non mette il numero di teglia l'ordine non parte, giusto? Se è da 6 o da 8, questo noi non lo sappiamo, lo deve scegliere lei.
