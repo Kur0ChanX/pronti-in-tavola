@@ -1,20 +1,18 @@
-# Ultima risposta di Claude (13/11/2026 15:23 ora italiana)
+# Ultima risposta di Claude (13/11/2026 15:39 ora italiana)
 
-Ho capito: nel Cloud bread mancano ingredienti, e manca qualcosa anche nelle altre ricette video.
-
-───
-✅ FATTO
-- La versione 0.10.27 si vede bene: Cloud bread trovato. Ho chiuso il riordino del Ricettario.
-- **Causa:** Pietrobon scrive alcune dosi dentro il procedimento, non nell'elenco. Per esempio «aggiungete **150 ml di albume** e montatelo». Il programma leggeva solo l'elenco.
-- Corretto: ora prende anche quelle dosi, nell'ordine in cui le scrive lui. Recupera ingredienti in 13 ricette, e il Cloud bread passa da 3 a 5 ingredienti (foto qui sopra). Le prove automatiche sono verdi.
+Ho capito: vuoi ogni ricetta video controllata ascoltando il video, con tutti gli ingredienti e le dosi, e un voto calcolato su quelli veri.
 
 ───
-💡 …
+✅ **FATTO**
+- **Trascrizione partita**: Google ascolta ogni video e ne scrive gli ingredienti. Ne mancano 769, circa 17 ore di video.
+- Ci vogliono circa 3 giorni, perché c'è un limite gratuito al giorno (è una stima). Si ferma da sola al limite e ogni mattina riparte.
+- **Regola nuova**: quello che l'autore ha scritto resta. Quello che dice nel video **aggiunge** gli ingredienti mancanti e le dosi non scritte. Così il voto si calcola su …
 
 ## Domande a Mario
 
-❓ DOMANDE
-**DOMANDA 1** · A cosa serve: senza il tuo ok non pubblico nulla.
-Guarda la foto: a sinistra com'è oggi, a destra con gli ingredienti in più. Se mi dai l'ok, pubblico anche le 70 ricette proteiche nuove.
-1. Va bene: metto online nell'app ingredienti in più e 70 ricette nuove (consiglio)
-2. No, qualcosa non va (dimmi cosa)
+❓ **DOMANDE**
+**DOMANDA 1 · Ricette non ancora controllate.** A cosa serve: decidere cosa vede Monica finché il controllo non è finito.
+1. Le nascondo finché non sono controllate ⭐ consiglio
+2. Le lascio, con «⚠️ forse incompleta»
+
+⚠️ Aspettano te: 16 · ricette non controllate, foto 0.10.26, pagella, PC di casa…

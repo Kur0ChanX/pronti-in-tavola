@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 17:53 · 01WTjqUu7eAD
-fatto
-
-## 2026-11-11 18:04 · 01WTjqUu7eAD
-ok vai avanti allora
-
 ## 2026-11-11 18:22 · 01WTjqUu7eAD
 nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta quanto è proteica calorica grassa zuccheri sale ecc ecc con i voti o inventati tu qualcosa di migliore ti dò carta bianca fai passare tutte le ricette proteiche
 
@@ -123,3 +117,9 @@ va bene metti online ma caricarle io 30 per volta non consumo limiti?
 
 ## 2026-11-13 15:18 · 01WTjqUtr7kg
 mancano in tutti ingredienti
+
+## 2026-11-13 15:35 · 01WTjqUy56yF
+mettile online
+
+## 2026-11-13 15:37 · 01WTjqUy56yF
+e nei video fai un check a tutti e trascrivi bene tutti gli ingredienti almeno puoi dare un voto vero
