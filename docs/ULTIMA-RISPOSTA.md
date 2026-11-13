@@ -1,20 +1,14 @@
-# Ultima risposta di Claude (13/11/2026 15:23 ora italiana)
+# Ultima risposta di Claude (13/11/2026 15:32 ora italiana)
 
-Ho capito: nel Cloud bread mancano ingredienti, e manca qualcosa anche nelle altre ricette video.
+Ho capito: è arrivato il messaggio della #75 con le stesse parole tue delle 15:30. L'avevo già ricevuto e ci ho già lavorato.
 
-───
-✅ FATTO
-- La versione 0.10.27 si vede bene: Cloud bread trovato. Ho chiuso il riordino del Ricettario.
-- **Causa:** Pietrobon scrive alcune dosi dentro il procedimento, non nell'elenco. Per esempio «aggiungete **150 ml di albume** e montatelo». Il programma leggeva solo l'elenco.
-- Corretto: ora prende anche quelle dosi, nell'ordine in cui le scrive lui. Recupera ingredienti in 13 ricette, e il Cloud bread passa da 3 a 5 ingredienti (foto qui sopra). Le prove automatiche sono verdi.
+🧠 Opus · Alto
 
 ───
-💡 …
+✅ **FATTO**
+- La causa è già trovata e corretta, e le DOMANDE 1 e 2 te le ho già mandate. Non è online niente finché non scegli.
+- Trascrizione dei video: il limite gratuito è circa 8 ore di video al giorno. Quante ricette completa ogni mattina lo misuro domattina alle 9:10: oggi è solo una stima.
 
-## Domande a Mario
-
-❓ DOMANDE
-**DOMANDA 1** · A cosa serve: senza il tuo ok non pubblico nulla.
-Guarda la foto: a sinistra com'è oggi, a destra con gli ingredienti in più. Se mi dai l'ok, pubblico anche le 70 ricette proteiche nuove.
-1. Va bene: metto online nell'app ingredienti in più e 70 ricette nuove (consiglio)
-2. No, qualcosa non va (dimmi cosa)
+───
+⚠️ **ATTENZIONE**
+- Questo turno ha scritto circa 26 mila **token** (i pezzi di testo che il modello legge e scrive: più sono, più consumo). Il …

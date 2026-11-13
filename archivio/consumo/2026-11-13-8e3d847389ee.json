@@ -1,0 +1,26 @@
+{
+"account": "108763",
+"sessione": "8e3d847389ee",
+"giorno": "2026-11-13",
+"turni": 2,
+"peso": 770981,
+"uscita": 27464,
+"contesto_max": 148751,
+"anomalie": [
+"26k token scritti in un turno"
+],
+"remota": "01WTjqUy56yF",
+"aiutanti": 0,
+"strumenti": 44,
+"motori": {
+"opus": 770981
+},
+"blocchi": {
+"Stop 5 · Foto e video (E240, E247;": 1
+},
+"esempi_blocchi": {
+"Stop 5 · Foto e video (E240, E247;": [
+"15:32 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+]
+}
+}
