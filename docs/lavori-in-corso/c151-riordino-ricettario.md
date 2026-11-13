@@ -25,3 +25,4 @@
 - Elenco: candidati trovati in automatico (righe senza dosi né cibo), poi letti a occhio uno per uno (PT E25) → `tools/dati/video-non-ricette.json`. Primo giro: ~28 candidati, fra cui vitamina C, integrazione runner, sale nascosto, budini «pr-ou» (gusti di un prodotto), pasticcerie (Iginio Massari…).
 - La rimozione del solo «GAG» (v0.10.27 preparata alle 12:58) NON va online: superata da questa scelta.
 - Si pubblica insieme al riordino, dopo le foto.
+- 13/11 ~13:15 Mario: «va bene metti online ma caricarle io 30 per volta non consumo limiti?» → «1»: v0.10.27 in pubblicazione (#74).
