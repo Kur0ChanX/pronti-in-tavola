@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 09:55 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 10:26 ora italiana)
 
-palestra pubblica a cosa ti serve saperlo?!?!?
+Riesci per ogni singolo video a magari, non so, riesci a capire quello che dici nel video e fai la ricetta, perché altre intelligenze artificiali riescono, quindi magari dalle parole che dicono ti prendi il testo e ci fai la ricetta, anche perché nei video dicono spesso le quantità, quindi a te le quantità servono. Quindi puoi farlo per ogni singolo video, caricare magari un programmino che lo fa, non so, una skill, un MCP, un qualcosa da collegarlo, e ti trascrivi tutto quello che dicono e da lì prendi quello che ti serve, no? Per ogni singolo video.
