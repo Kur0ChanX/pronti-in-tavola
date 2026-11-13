@@ -2,24 +2,32 @@
 "account": "108763",
 "sessione": "960c78e4706b",
 "giorno": "2026-11-13",
-"turni": 2,
-"peso": 348301,
-"uscita": 7674,
-"contesto_max": 143653,
-"anomalie": [],
+"turni": 4,
+"peso": 821917,
+"uscita": 17061,
+"contesto_max": 179566,
+"anomalie": [
+"1 uscite di strumento enormi (74 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+],
 "remota": "01WTjqUwuvHs",
 "aiutanti": 0,
-"strumenti": 23,
+"strumenti": 35,
 "motori": {
-"opus": 348301
+"opus": 821917
 },
 "blocchi": {
-"Stop 5 · Foto e video (E240, E247;": 2
+"Stop 5 · Foto e video (E240, E247;": 2,
+"Stop 5 · Domanda a Mario poco chiara": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Foto e video (E240, E247;": [
 "15:50 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid",
 "15:54 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"18:21 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
 ]
-}
+},
+"memoria_scaduta": 1,
+"ricreati": 159516
 }
