@@ -74,6 +74,7 @@ Si legge a ogni avvio. Una riga corta per errore: la lezione. La storia intera (
 - **PT E64** Risorsa a mano su Cloudflare: prima l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); 10041 = account sbagliato.
 - **PT E73** Scelte numerate: ogni nome controllato con la tabella (lingua, numeri) prima di mandarle (C148).
 - **PT E74** Prova «senza rete» finta: alla fine `delete navigator.onLine` (controllo in `passo` di `tools/prova.js`).
+- **PT E75** Avvio: titolo della sessione PER PRIMO, anche se il primo messaggio di Mario parla d'altro; una sua richiesta diretta si fa subito, prima del lavoro in corso.
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
