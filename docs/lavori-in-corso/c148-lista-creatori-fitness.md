@@ -56,3 +56,8 @@ Consiglio: 1 + 2 + 3 (italiani, tante ricette, grammi). Prima di leggerli: regol
 ## Mario 13/11 ~09:45 (#70), parola per parola
 > Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resource dall'app. Per me l'idea sarebbe che me le cerchi in automatico dall'app, ma non so quanto sia performante, e me le carica. Solo che mi ha fatto consumare tutti i token e mi aveva bloccato l'applicazione, quindi per questo voglio evitarlo. Li faccio cercare e caricare a te.
 - Scelta: le ricette le cerca e le carica Claude nelle sessioni (file del sito, zero letture del server); il motore automatico dell'app resta spento.
+
+## Mario 13/11 ~09:50 (#70): voto personale
+> nel mio utente Mario mette i voti per me invece per monica valuta in modo generico — io … vado in palestra sala pesi dalle 3 alle 5 volte a settimana per scopo addominali in vista e molta ipertrofia (età e altezza coperte, progetto pubblico)
+- Scelte (Claude): utente dev (Mario) = voto «per te» dal SUO profilo palestra, che scrive lui nelle Impostazioni (peso, altezza, età, giorni di palestra, obiettivo), salvato solo nel suo profilo; Monica e gli altri = voto palestra generico.
+- Obiettivo «addominali + ipertrofia» = ricomposizione: proteine 2 g per kg al giorno (tetto 2,2), divise in 4 pasti (~0,5 g/kg a pasto); calorie un po' sotto il mantenimento (Mifflin-St Jeor × attività 3-5 giorni); il voto premia densità proteica e dose vicina alla sua quota per pasto, penalizza calorie oltre la sua quota.

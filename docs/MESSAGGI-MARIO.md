@@ -129,3 +129,9 @@ stai andando bene metti i voti anche fuori in vista prima di entrare valuta se t
 
 ## 2026-11-13 09:4x · 01WTjqUvtoJC
 Le sto facendo cercare a te su Claude perché mi ha consumato un sacco di resource dall'app. Per me l'idea sarebbe che me le cerchi in automatico dall'app, ma non so quanto sia performante, e me le carica. Solo che mi ha fatto consumare tutti i token e mi aveva bloccato l'applicazione, quindi per questo voglio evitarlo. Li faccio cercare e caricare a te.
+
+## 2026-11-13 ~09:50 · 01WTjqUvtoJC
+nel mio utente Mario mette i voti per me invece per monica valuta in modo generico
+
+io mi chiamo mario ho [età] anni alto [altezza] vado in palestra sala pesi dalle 3 alle 5 volte a settimana per scopo addominali in vista e molta ipertrofia
+(età e altezza coperte: il progetto è pubblico, C140; i numeri Mario li scrive nel suo profilo dentro l'app)
