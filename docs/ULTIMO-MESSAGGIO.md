@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 09:55 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 10:36 ora italiana)
 
-palestra pubblica a cosa ti serve saperlo?!?!?
+mandami la finestra che la incollo la chiave
