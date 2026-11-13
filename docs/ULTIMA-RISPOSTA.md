@@ -1,21 +1,27 @@
-# Ultima risposta di Claude (13/11/2026 20:30 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:44 ora italiana)
 
-Ho capito: per la parmigiana e le lasagne il cliente deve scegliere la misura per forza, sennò l'ordine non parte.
+Ho capito: prima le foto dei tasti nuovi, poi mi chiedi del passaggio di consegne e dei caratteri grandi.
 
-Ho ricevuto la tua richiesta dalla sessione di prima.
+✅ FATTO
+- Una sola barra in cima: «Chiedi o ordina: allergie, prezzi…», con il microfono a destra, tutto su una riga.
+- È larga quanto la pagina, più bassa di prima e resta in cima mentre scorri.
+- Nel menù non c'è più il microfono che galleggia in basso, né «Dettami l'ordine».
+- Barra in basso: Menù · I miei ordini · Scrivi a Monica.
+- È tutto su GitHub come patch: l'app online non è cambiata.
 
 ───
 💡 PARERE
-- **Il problema è più grande di quanto sembra.** Quando l'ordine arriva dal link, da «Scrivimi» o dalla voce, l'app prende da sola la prima misura della teglia. Lisa non se ne accorge.
-- **Anche dal menù normale** la prima misura è già scelta in partenza. Il cliente può toccare «Aggiungi» senza guardarla.
-- Proposta: la riga nel carrello resta rossa con scritto «Scegli la misura». Il tasto «Invia l'ordine a …
+**Passaggio di consegne:** sì, la sessione 79 l'ha migliorato. All'avvio l'app …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-DOMANDA 3: anche dal menù normale il cliente deve scegliere la misura da solo?
-📌 Di cosa parliamo: oggi, quando apri un piatto con più misure, la prima è già selezionata. Con la scelta 1, all'inizio nessuna misura è selezionata e «Aggiungi» non va finché il cliente non ne tocca una.
-1 · Sì, la misura sempre da scegliere, da tutte le strade (consiglio: nessuno ordina la teglia sbagliata senza accorgersene)
-2 · No, solo per gli ordini dal link, da «Scrivimi» e dalla voce
+**DOMANDA 1 · foto della barra nuova** 🛑
+📌 Di cosa parliamo: le 2 foto qui sopra, il menù dei clienti in alto e mentre scorri. Serve per mettere online i tasti nuovi.
+1 · Vanno bene → aggiorno le prove, metto online tasti e misura della parmigiana, poi ti scrivo (mio consiglio).
+2 · Da cambiare → dimmi cosa.
 
-Restano aperte la DOMANDA 1 (tasti del menù: ho capito bene?) e la DOMANDA 2 (controllo delle regole: dopo i …
+**DOMANDA 2 · passaggio di consegne**
+📌 Di cosa parliamo: la regola che fa leggere le tue frasi intere a ogni sessione nuova. Serve perché non si perda più niente.
+1 · Leggo le frasi di tutte le sessioni non ancora chiuse, non solo dell'ultima (mio consiglio).
+2 · Lascia com'è.

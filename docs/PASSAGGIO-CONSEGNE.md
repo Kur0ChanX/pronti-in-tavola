@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #80 (dopo la #79 `session_01WTjqUvRMYeAzAnDtr3mSfk`, chiusa alla soglia 13/11 20:31; la apre la #79 con `create_session` (catena 2 di 8)).
+Sessione attuale: #81 (dopo la #80 `session_01WTjqUwF3CYsTq3HocLiEWG`, chiusa alla soglia 13/11 20:45; la apre la #80 con `create_session` (catena 3 di 8)).
 
 **#80: la apre la #79 (catena 2 di 8).** #79: le foto della v0.10.30 (tasti) BOCCIATE da Mario: la #78 aveva capito male («bannerino» = riquadro «Hai una domanda? Allergie, prezzi…», non la striscia «Hai allergie?»). Niente online. Regola nuova PT E84 (parole intere di Mario) fatta: hook + skill. Aspettano Mario 3 domande della #79 (tasti, controllo regole, misura C157).
 
@@ -9,8 +9,8 @@ Sessione attuale: #80 (dopo la #79 `session_01WTjqUvRMYeAzAnDtr3mSfk`, chiusa al
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (13/11 sera, #79):** pagina del menù «bella ordinata» online COME LA VUOLE LUI (DOMANDA 1 della #79), poi lui manda a Lisa il link NUOVO «carrello pronto» (dato dalla #78: `?ordine=2 kg di ravioli ricotta e spinaci` + `1 parmigiana da 6`). Poi C157 misura obbligatoria. Paura di Mario: troppe regole in conflitto (DOMANDA 2). Turni CORTISSIMI, prima rispondere, niente lavori non chiesti, foto coi caratteri grandi prima di pubblicare (PT E83).
 
-## Stato (13/11 20:31 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUvRMYe/claude/pronti-ramo-definitivo.
+## Stato (13/11 20:45 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwF3CY/claude/pronti-ramo-definitivo.
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -48,20 +48,19 @@ Sessione attuale: #80 (dopo la #79 `session_01WTjqUvRMYeAzAnDtr3mSfk`, chiusa al
 ## Ultimo messaggio di Mario
 13/11 20:20, parola per parola: «E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.» → risposta coi conflitti visti, DOMANDA 2. Dopo, scritto nella #78 e girato qui: «Puoi fare in modo che le lasagne deve mettere la quantità, se no non parte l'ordine? Perché cos'erano le lasagne? Cos'erano le melanzane? Non mi ricordo. La parmigiana, scusami. Puoi mettere che non c'è quantità, deve metterla per forza?» → C157, DOMANDA 3.
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C158; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C159; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
-Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, `get_session` alla chiusura; Mario lo cambia spesso dal selettore): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
+Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 20:10 · [AVVIO] Sessione #79 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, scorta unita, foto v0.10.30
-- 2026-11-13 20:12 · tra quanto è online? → stima ~25 min dopo il suo ok sulle foto
-- 2026-11-13 20:13 · No, non vanno bene per niente. Cioè, non capisco perché non mi capisci quando pa… → spiegato come ho ragionato, PT E84, niente codice
-- 2026-11-13 20:15 · Aspetta, quindi significa che è un problema di passaggio di consegna? L'ha accor… → risposta: errore della #78 portato avanti dalle consegne
-- 2026-11-13 20:17 · miglioralo Miglioralo che deve leggere tutto quello che scrivo nei passaggi di c… → PT E84 hook parole_intere + skill consegne + PER-IL-KIT
-- 2026-11-13 20:20 · E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mett… → tabella conflitti, DOMANDA 2
+- 2026-11-13 20:33 · [AVVIO] Sessione #80 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-13 20:33 · Mi serve veloce il link di Lisa con, l'ho detto 3 volte, con i ravioli e la parm… → 
+- 2026-11-13 20:42 · Allora, questa cosa dei ravioli l'ha fatta il cliente, è entrato dentro e è rius… → 
 
 Ultimo, intero:
-> E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.
+> Allora, questa cosa dei ravioli l'ha fatta il cliente, è entrato dentro e è riuscito a ordinare. Allora, come prima cosa miglioriamo quella cosa del tasto che ti ho detto. Se ho capito bene, mandami prima delle foto, quella del microfono e quella della ricerca sopra, di togliere il doppio microfono e la ricerca sopra solo col microfono, che fa tutto, sia allergie sia per ordinare dall'app. Mettila larga al massimo e che segua un po' lo scroll, non farla troppo grossa, nel senso troppo alta, ecco. Se riesci a farci stare tutto in una riga, magari col pulsante a destra del microfono, e sotto il tasto scrivimi.
+> Poi dimmi se hai migliorato questa cosa, questo problema che abbiamo avuto nel passaggio di consegna, che non hai capito, che lo miglioriamo, che facciamo che leggi tutto quello della sessione precedente, gli ultimi messaggi, oppure fai in modo che non si perda lucidità nel passaggio di consegna, a discapito magari di qualche piccolo token in più.
+> Ma poi io non capisco questa cosa dei caratteri grandi che stai dicendo, secondo me hai capito male. Cioè non per forza... Cioè quello dei caratteri grandi è un pulsante che attivi e disattivi. Non capisco questa cosa che mi vuoi far vedere con i caratteri grandi, cioè non l'ho capito. Quello è solo per la gente che vede poco.
 
