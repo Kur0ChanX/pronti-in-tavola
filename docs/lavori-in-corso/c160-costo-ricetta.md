@@ -40,4 +40,4 @@ Ho capito: per ogni ingrediente della ricetta Monica ha già la quantità usata;
 - Prova `C160 costo della ricetta…` in `tools/prova.js`. Foto: `archivio/foto/2026-11-13-2340-c160-dopo-1..4.png`.
 
 ## Stato
-- #84: ok di Mario sulle foto; patch applicata, v0.10.31, giro completo in corso, poi online.
+- #84: v0.10.31 ONLINE 13/11 23:51 (giro 102/102 locale, commit 16e1997 `[pubblica]`; verifica `curl -s …/data.js?x=1 | grep VERSIONE_APP` → 0.10.31, `…/spesa.js | grep -c spesaStimata` → 2). Manca la foto di Mario dall'app.
