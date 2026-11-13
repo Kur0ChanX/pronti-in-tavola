@@ -7,7 +7,7 @@ e scrive ricette-stimate.js, un file del sito (zero letture di Cloudflare).
 - Della fonte si tengono nome, foto, porzioni, l'elenco ingredienti e i passi COSÌ COME SONO (PT E25); C146: senza passi né video fuori.
 - Entra solo chi passa la regola «🏋️ Proteiche» (soglie di base di fitRic in ricettario.js, copiate qui sotto) sui valori stimati.
 - Metà dolci (dolce_o_salato: nessun ingrediente salato, almeno uno dolce), metà il resto.
-Uso: python3 -I tools/raccogli_stimate.py [quante=500]   (pagine in .cache-stime/; rilanciarlo non rilegge i siti)
+Uso: python3 -I tools/raccogli_stimate.py [quante=500] [--ignoti = solo l'elenco degli ingredienti sconosciuti in .cache-stime/ignoti.txt]   (pagine in .cache-stime/; rilanciarlo non rilegge i siti)
      python3 -I tools/raccogli_stimate.py --passi   (C146: solo i passi delle ricette già nel file)
      python3 -I tools/raccogli_stimate.py --pulisci (12/11: toglie la pubblicità dai passi già nel file, senza rete)
      python3 -I tools/raccogli_stimate.py --creatori (C148: AGGIUNGE le ricette di Fit with Fun, Iamfitandsweet, Giuseppe Healthy) """
@@ -264,7 +264,7 @@ def main():
             x = None
         if x:
             ricette.append(x)
-    buone, nomi, scarti = [], set(), {'stima': 0, 'regola': 0, 'doppione': 0, 'senza passi': 0}
+    buone, nomi, scarti, ignoti = [], set(), {'stima': 0, 'regola': 0, 'doppione': 0, 'senza passi': 0}, {}
     for x in ricette:
         if not con_passi(x):
             scarti['senza passi'] += 1; continue
@@ -274,9 +274,14 @@ def main():
         k = norm(x['nome'])
         if k in nomi or k in gia:
             scarti['doppione'] += 1; continue
-        v, _, q = stima_ricetta(x['ingredienti'], x['porzioni'])
+        v, dett, q = stima_ricetta(x['ingredienti'], x['porzioni'])
         if not v:
-            scarti['stima'] += 1; continue
+            scarti['stima'] += 1
+            if isinstance(dett, list):   # --ignoti: quali righe fanno scartare la ricetta
+                for riga, g, perche in dett:
+                    if g is None or perche == 'alimento?':
+                        ignoti.setdefault(perche + ' ' + norm(riga)[:60], []).append(x['nome'])
+            continue
         if x.get('suoi'):   # Pietrobon: i suoi valori (ricetta intera) vincono; zuccheri, saturi e sale dalla stima
             suoi = {k2: round(val / x['porzioni'], 1) for k2, val in x.pop('suoi').items()}
             r = suoi['grassi'] / v['grassi'] if v['grassi'] else 1   # saturi in proporzione ai SUOI grassi (sennò i nostri, più alti, la scartano)
@@ -291,6 +296,12 @@ def main():
         tipo, _ = dolce_o_salato(x['nome'], x['ingredienti'])
         x.update(nutr=v, dolce=tipo == 'dolce', stimata=True)
         buone.append(x)
+    if '--ignoti' in sys.argv:   # solo l'elenco degli ingredienti che la stima non conosce: ricette-stimate.js resta com'è
+        righe = sorted(ignoti.items(), key=lambda kv: -len(kv[1]))
+        out = os.path.join(CACHE, 'ignoti.txt')
+        open(out, 'w', encoding='utf-8').write('\n'.join(f'{len(n)}\t{r}\t{n[0]}' for r, n in righe))
+        print(json.dumps({'scarti': scarti, 'righe ignote': len(righe), 'file': out}, ensure_ascii=False))
+        return
     perProt = lambda a: -a['nutr']['prot'] / a['nutr']['kcal']
     dolci = sorted([x for x in buone if x['dolce']], key=perProt)
     altre = sorted([x for x in buone if not x['dolce']], key=perProt)
