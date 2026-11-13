@@ -15,7 +15,7 @@
 },
 "blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": 1,
-"Stop 13 · There are uncommitted changes in": 8,
+"Stop 13 · There are uncommitted changes in": 9,
 "Stop 6 · Segno delle domande nel titolo": 1,
 "Stop 5 · Foto e video (E240, E247;": 2,
 "Stop 6 · Il turno finisce con una": 2
@@ -26,8 +26,8 @@
 ],
 "Stop 13 · There are uncommitted changes in": [
 "10:37 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
-"10:37 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
-"10:38 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+"10:38 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"10:48 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
 ],
 "Stop 6 · Segno delle domande nel titolo": [
 "10:24 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
