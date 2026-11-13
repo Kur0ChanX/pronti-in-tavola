@@ -223,7 +223,9 @@ def nome_scorta(gitdir, ruolo, ramo):
 def lavoro_della_scorta(scorta, head="HEAD", scadenza=None):
     """C352: cosa porterebbe al ramo l'unione di una scorta: «nuovo» (lavoro vero da unire), «niente» (già tutto nel
     ramo, o solo i file della scorta stessa), «vecchia» (il ramo ha cambiato dopo le stesse righe: unirla farebbe solo
-    conflitti di codice vecchio, come la scorta-parallela del 29/10 con 112 segni). Merge simulato: non tocca niente.
+    conflitti di codice vecchio, come la scorta-parallela del 29/10 con 112 segni), «messaggi» (vecchia, ma con messaggi
+    di Mario che il ramo non ha: non si unisce, si prendono solo quelli con `prendi-messaggi`, PT E85). Merge simulato:
+    non tocca niente.
     C469 A9: «scadenza» (ora assoluta, la dà l'hook d'avvio): nessun comando la supera; con meno di 15 s niente scavo."""
     def tempo(t):
         return t if scadenza is None else max(1, min(t, scadenza - time.time()))
@@ -246,7 +248,9 @@ def lavoro_della_scorta(scorta, head="HEAD", scadenza=None):
     # scrivono lo stesso mese) non fanno «vecchia»: decidono i messaggi (sennò un messaggio di Mario resterebbe fuori)
     conflitti = righe[1:righe.index("")] if "" in righe else righe[1:]
     if rc == 1 and any(f not in FILE_SCORTA and not f.startswith(ARCHIVIO + "/") for f in conflitti):
-        return "vecchia"
+        # PT E85 (#82, 13/11): conflitto nelle consegne + messaggi di Mario che il ramo non ha = «messaggi», mai
+        # «vecchia» (prima l'avvio diceva di NON unirla e i messaggi delle 21:18 restavano fuori dal registro)
+        return "messaggi" if messaggi_nuovi(scorta, head) else "vecchia"
     file = [f for f in git("diff", "--name-only", head, albero).splitlines()
             if f not in FILE_SCORTA and not f.startswith(ARCHIVIO + "/")]  # l'archivio lo guarda messaggi_nuovi
     return "nuovo" if file or messaggi_nuovi(scorta, head) else "niente"
@@ -511,6 +515,33 @@ def driver_registro(base, nostro, loro, archivio=False):
         return 1
 
 
+def prendi_messaggi(scorta):
+    """PT E85 (Mario 13/11 «vai come consiglio», C158): porta nella cartella di lavoro SOLO i messaggi di Mario di una
+    scorta che non si unisce (conflitti nelle consegne): registri e archivio voce per voce, come il driver; il resto della
+    scorta resta fuori. Il commit lo fa chi lo chiama. Ritorna le voci nuove (contro HEAD)."""
+    radice = git("rev-parse", "--show-toplevel") or CWD
+    nuove = len(messaggi_nuovi(scorta))
+    for f in list(FILE_REGISTRO.values()) + git("ls-tree", "--name-only", scorta, f"{ARCHIVIO}/").splitlines():
+        rc, loro = run("show", f"{scorta}:{f}")
+        if rc:
+            continue
+        percorso = os.path.join(radice, f)
+        if not os.path.isfile(percorso):
+            os.makedirs(os.path.dirname(percorso), exist_ok=True)
+            with open(percorso, "w", encoding="utf-8") as h:
+                h.write(loro + "\n")
+            continue
+        copia = os.path.join(git("rev-parse", "--absolute-git-dir") or os.path.join(radice, ".git"), "scorta-loro.md")
+        with open(copia, "w", encoding="utf-8") as h:
+            h.write(loro + "\n")
+        try:
+            if driver_registro("", percorso, copia, archivio=f.startswith(ARCHIVIO + "/")):
+                raise RuntimeError(f"unione non riuscita: {f} (niente cambiato)")
+        finally:
+            os.remove(copia)
+    return nuove
+
+
 def messaggi_nuovi(scorta, head="HEAD"):
     """C469 B6: voci del registro della scorta che il ramo non ha e più nuove della voce più vecchia del ramo (quelle
     più vecchie sono uscite per il tetto delle REGISTRO_MAX, ma erano arrivate). Una scorta che porta solo un messaggio
@@ -703,7 +734,7 @@ def scorta(gitdir, ruolo="principale", push=True):
     remota = git("rev-parse", "-q", "--verify", f"refs/remotes/origin/{nome}")
     genitore_extra = ""
     if not locale and remota and run("merge-base", "--is-ancestor", remota, head)[0] != 0:
-        if lavoro_della_scorta(remota, head) == "nuovo":
+        if lavoro_della_scorta(remota, head) in ("nuovo", "messaggi"):  # PT E85: i messaggi non si assorbono
             segna_ferma(gitdir, nome, remota)  # C252: contenitore nuovo, la scorta di prima non è ancora nel ramo
         else:  # C352: scorta vecchia o vuota (es. di un'altra chat parallela chiusa): la assorbo come genitore,
             genitore_extra = remota  # così il push va avanti e nessuno la propone più da unire
@@ -940,6 +971,14 @@ def main():
 if __name__ == "__main__":  # C352: avvio-check.py importa lavoro_della_scorta, senza far partire la scorta
     if sys.argv[1:2] == ["unisci-registro"] and len(sys.argv) == 5:  # C469 B6: driver di git, l'uscita conta
         sys.exit(driver_registro(*sys.argv[2:5]))
+    if sys.argv[1:2] == ["prendi-messaggi"] and len(sys.argv) == 3:  # PT E85: solo i messaggi di una scorta
+        try:
+            n = prendi_messaggi(sys.argv[2])
+        except Exception as e:  # noqa: BLE001
+            print(f"ERRORE: {e}")
+            sys.exit(1)
+        print(f"Messaggi di Mario presi da {sys.argv[2]}: {n} nuovi. Ora commit e push dei registri e dell'archivio.")
+        sys.exit(0)
     if sys.argv[1:2] == ["unisci-archivio"] and len(sys.argv) == 5:  # C469 fase 1: driver «archivio», senza tetto
         sys.exit(driver_registro(*sys.argv[2:5], archivio=True))
     try:

@@ -215,6 +215,10 @@ def lavoro_della_scorta(remoto):
         return "nuovo"
 
 
+AIUTO_SCORTE = (" (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`,"
+                " PT E85).")
+
+
 def scorte_non_unite(ramo, ruolo="principale"):
     """Scorte con lavoro vero non ancora nel ramo. La scorta che ha solo i commit automatici di fine risposta
     (`ULTIMA-RISPOSTA.md`, #434) non conta: è il caso normale a ogni handoff."""
@@ -222,7 +226,7 @@ def scorte_non_unite(ramo, ruolo="principale"):
     for nome in mie_scorte(nomi_delle_scorte(ramo), id_corto_mio(), ruolo):
         if run(["git", "fetch", "-q", "origin", f"+refs/heads/{nome}:refs/remotes/origin/{nome}"])[0] == 0 and \
                 run(["git", "merge-base", "--is-ancestor", f"origin/{nome}", "HEAD"])[0] != 0 and \
-                lavoro_della_scorta(f"origin/{nome}") == "nuovo":
+                lavoro_della_scorta(f"origin/{nome}") in ("nuovo", "messaggi"):  # PT E85: anche i soli messaggi di Mario
             fuori.append(nome)
     return fuori
 
@@ -508,7 +512,7 @@ def fatti(args):
              f"`origin/{ramo}`). {maiuscola(giri_in_corso())}. {maiuscola(pr_aperte())}. Versione nel codice v{versione_nel_codice()}.")
     scorte = scorte_non_unite(ramo)
     if scorte:
-        punto += " Scorte NON unite: " + ", ".join(scorte) + "."
+        punto += " Scorte NON unite: " + ", ".join(scorte) + AIUTO_SCORTE
     testo = stato_primo_punto(testo, f"{quando} ora italiana", punto)
     testo = strade_scartate(testo)
     liberi = numeri_liberi(ramo)
@@ -617,7 +621,7 @@ def fatti_parallela(args):
              f"`origin/{ramo}`). {maiuscola(giri_in_corso())}. {maiuscola(pr_aperte())}. Versione nel codice v{versione_nel_codice()}.")
     scorte = scorte_non_unite(ramo, "parallela")
     if scorte:
-        punto += " Scorte NON unite: " + ", ".join(scorte) + "."
+        punto += " Scorte NON unite: " + ", ".join(scorte) + AIUTO_SCORTE
     blocco = (f"## Stato ({nome} {n}{sigla}, {quando} ora italiana, chiusa alla soglia; {chi_apre})\n- {punto}\n"
               f"- (qui le righe di giudizio della {nome} {n}: fatto, provato, dove si verifica)\n\n")
     gia = re.search(rf"^## Stato \({re.escape(nome)} {n}\b[^\n]*\n- [^\n]*\n", testo, re.M)

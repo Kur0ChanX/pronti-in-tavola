@@ -1,0 +1,7 @@
+# PT E85 (C158, #82): i file delle scorte si uniscono coi driver di .claude/hooks/scorta.py e avvio-check.py
+# (configurati in ogni contenitore). Senza questo file ogni merge di una scorta faceva conflitti nei registri.
+docs/MESSAGGI-MARIO.md merge=registro
+docs/MESSAGGI-MARIO-PARALLELA.md merge=registro
+archivio/messaggi-mario/*.md merge=archivio
+docs/ULTIMA-RISPOSTA*.md merge=scorta
+.claude/settings.json merge=impostazioni
