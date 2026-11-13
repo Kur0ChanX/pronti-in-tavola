@@ -1,14 +1,21 @@
-# Ultima risposta di Claude (13/11/2026 18:39 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:49 ora italiana)
 
+Ho capito: non capisci perché ho toccato i gusti, visto che parlavi solo dell'ordine sparito. Te lo spiego col messaggio di Lisa.
 
+───
+✅ **Perché è successo, con la prova**
+1. La correzione fa leggere all'app il messaggio del cliente, per mettere i piatti nel carrello.
+2. L'ho provata col messaggio vero di Lisa: «2kg di ravioli **ricotta e spinaci**».
+3. Nel menù ci sono due ravioli: «ricotta» e «spinaci» (che contiene anche la ricotta). L'app prendeva la prima parola che trovava, «ricotta». Nel carrello di Lisa sarebbero finiti i ravioli sbagliati.
+4. Allora la sessione 77 ha fatto …
 
 ## Domande a Mario
 
-❓ DOMANDE
-- DOMANDA · «scrivo e non mi rispondi»
-📌 Di cosa parliamo: non sono sicuro di chi parli nella tua frase. Mi serve saperlo adesso per correggere la cosa giusta.
-1 · **Parlavi di me**: rispondo prima a te e lavoro a turni corti. Questo lo faccio comunque, da subito.
-2 · **Parlavi della cliente**: lei scrive e nell'app non resta niente. Vado subito col punto 1 del piano: ogni messaggio salvato nell'app.
-3 · **Tutte e due**: faccio entrambe le cose.
+❓ **DOMANDE**
+DOMANDA 2 (cambia rispetto a prima)
+📌 Di cosa parliamo: la correzione di «Scrivimi» (il messaggio diventa un ordine vero in Ordini). Va online solo dopo le prove complete.
+1 · la metto online così, con la scelta giusta dei ravioli (consiglio)
+2 · la metto online senza il pezzo dei ravioli
+3 · prima voglio rivedere le foto
 
-Rispondi col numero.
+⚠️ Aspettano te: 20 · correzione Scrivimi, controllo automatico, v0.10.26, pagella, trascrizione, altre 15

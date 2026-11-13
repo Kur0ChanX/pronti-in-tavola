@@ -1,0 +1,33 @@
+{
+"account": "108763",
+"sessione": "0da5351b180c",
+"giorno": "2026-11-13",
+"turni": 5,
+"peso": 395916,
+"uscita": 10330,
+"contesto_max": 161851,
+"anomalie": [],
+"remota": "01WTjqUu3oyB",
+"aiutanti": 0,
+"strumenti": 18,
+"motori": {
+"opus": 395916
+},
+"blocchi": {
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 6 · Il turno finisce con una": 2
+},
+"esempi_blocchi": {
+"Stop 8 · Promessa a Mario senza voce": [
+"18:44 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Con «» su Scrivimi la metto online subito, dopo le prove complete». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la vede Mario> · "
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"18:46 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 6 · Il turno finisce con una": [
+"18:46 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> ",
+"18:49 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+]
+}
+}
