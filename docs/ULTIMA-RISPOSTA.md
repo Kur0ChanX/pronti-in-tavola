@@ -1,13 +1,15 @@
-# Ultima risposta di Claude (13/11/2026 19:49 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:27 ora italiana)
 
-Ho capito: il link a Lisa lo mandi solo quando il menù ordinato è online.
+Sì: nel carrello entrano solo quei 2 piatti, niente altro. L'ho provato sull'app di prova, non sul menù vero di Monica: da qui non posso leggerlo.
+- 2 kg di ravioli ricotta e spinaci
+- 1 parmigiana
 
-✅ **FATTO**
-- La versione 0.10.29 è online. Il link per Lisa funziona.
-- Il menù ordinato (versione 0.10.30) è pronto e salvato su GitHub, ma **non è ancora online**. Nella foto di controllo la barra in basso andava su due righe e «Scrivi a Monica» finiva sotto. L'ho corretta, ma devo ancora rifare la foto per controllarla.
+Due cose da sapere:
+- Se nel menù di Monica ci sono due parmigiane, l'app chiede a Lisa quale vuole. È un tocco solo.
+- La misura «da 6» il link non la legge. Se la parmigiana ha più misure, Lisa la sceglie nel carrello.
 
-───
-⚠️ **ATTENZIONE**
-La memoria di questa sessione è piena e devo chiuderla.
-È l'ottava sessione di fila, il massimo: la nuova la devi aprire tu.
-Appena parte, la nuova sessione controlla la …
+Ho tolto dal testo «al posto della pasta al forno», così non confonde niente. Usa questo link nuovo:
+
+```
+Ciao Lisa! 😊 Grazie mille per l'ordine!
+Così non si perde, te l'ho già …
