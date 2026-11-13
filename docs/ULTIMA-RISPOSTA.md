@@ -1,13 +1,12 @@
-# Ultima risposta di Claude (13/11/2026 19:49 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:37 ora italiana)
 
-Ho capito: il link a Lisa lo mandi solo quando il menù ordinato è online.
+Hai ragione: il link ha senso solo se il carrello è già pronto. Ho trovato una strada che funziona **già oggi**: l'app legge la misura se nel link c'è scritto «teglia da 6» o «teglia da 8». L'ho appena provato sull'app di prova.
 
-✅ **FATTO**
-- La versione 0.10.29 è online. Il link per Lisa funziona.
-- Il menù ordinato (versione 0.10.30) è pronto e salvato su GitHub, ma **non è ancora online**. Nella foto di controllo la barra in basso andava su due righe e «Scrivi a Monica» finiva sotto. L'ho corretta, ma devo ancora rifare la foto per controllarla.
+Quindi:
+1. Monica chiede a Lisa: «La parmigiana la vuoi da 6 o da 8?»
+2. Secondo la risposta, Monica le manda il link giusto. Il carrello si apre già completo: ravioli + teglia della misura giusta. Lisa sceglie solo il giorno e invia.
 
-───
-⚠️ **ATTENZIONE**
-La memoria di questa sessione è piena e devo chiuderla.
-È l'ottava sessione di fila, il massimo: la nuova la devi aprire tu.
-Appena parte, la nuova sessione controlla la …
+**Se Lisa dice da 6:**
+```
+Ciao Lisa! 😊 Grazie mille per l'ordine!
+Così non si perde, te l'ho già preparato io nell'app: tocca il …
