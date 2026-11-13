@@ -1,16 +1,16 @@
 # Passaggio di consegne
 
-Sessione attuale: #79 (dopo la #78 `session_01WTjqUu3oyBhedrQbbAPNAH`, chiusa alla soglia 13/11 19:48; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
+Sessione attuale: #80 (dopo la #79 `session_01WTjqUvRMYeAzAnDtr3mSfk`, chiusa alla soglia 13/11 20:31; la apre la #79 con `create_session` (catena 2 di 8)).
 
-**#79: la apre Mario (catena 8 di 8).** #78: v0.10.29 ONLINE (Scrivimi capisce gli ordini + link «carrello pronto» per Lisa). Poi Mario ha chiesto i tasti del menù ordinati e ha DATO L'OK A PUBBLICARE (13/11 ~19:35): patch v0.10.30 `docs/lavori-in-corso/c155-tasti.patch` (giro 99/99 verde PRIMA dell'ultimo ritocco CSS della barra a 3 voci). Mario manda il link a Lisa SOLO dopo che la v0.10.30 è online.
+**#80: la apre la #79 (catena 2 di 8).** #79: le foto della v0.10.30 (tasti) BOCCIATE da Mario: la #78 aveva capito male («bannerino» = riquadro «Hai una domanda? Allergie, prezzi…», non la striscia «Hai allergie?»). Niente online. Regola nuova PT E84 (parole intere di Mario) fatta: hook + skill. Aspettano Mario 3 domande della #79 (tasti, controllo regole, misura C157).
 
 - **Modo di lavorare (Mario 13/11 18:50, dopo C155):** prima di OGNI modifica scrivo a Mario cosa e perché in una riga e aspetto il suo ok; rispondo a ogni suo messaggio prima di lavorare; niente cose non chieste.
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (13/11 sera, #78):** pagina del menù «bella ordinata» online, poi lui manda a Lisa il link «carrello pronto» (già dato, vale ancora). Turni CORTISSIMI, prima rispondere, niente lavori non chiesti, foto coi caratteri grandi prima di pubblicare (PT E83).
+- **Cosa preme a Mario adesso (13/11 sera, #79):** pagina del menù «bella ordinata» online COME LA VUOLE LUI (DOMANDA 1 della #79), poi lui manda a Lisa il link NUOVO «carrello pronto» (dato dalla #78: `?ordine=2 kg di ravioli ricotta e spinaci` + `1 parmigiana da 6`). Poi C157 misura obbligatoria. Paura di Mario: troppe regole in conflitto (DOMANDA 2). Turni CORTISSIMI, prima rispondere, niente lavori non chiesti, foto coi caratteri grandi prima di pubblicare (PT E83).
 
-## Stato (13/11 19:48 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUu3oyB/claude/pronti-ramo-definitivo.
+## Stato (13/11 20:31 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUvRMYe/claude/pronti-ramo-definitivo.
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -20,11 +20,12 @@ Sessione attuale: #79 (dopo la #78 `session_01WTjqUu3oyBhedrQbbAPNAH`, chiusa al
 - C141: `docs/lavori-in-corso/c141-proteiche-stimate.md` (parole di Mario, specifica, stato). Foto: `archivio/foto/2026-11-11-1930-c141-pagella-*.png`.
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#78)
-- C155: causa provata (Lisa ha usato «Scrivimi»), v0.10.29 online (giro 99/99): «Scrivimi» capisce gli ordini + `?ordine=<testo>` → `carrelloDaLink` (app.js). Link e messaggio WhatsApp per Lisa dati a Mario.
-- Tasti del menù (patch `c155-tasti.patch`, v0.10.30): «Scrivi a Monica» terza voce della barra in basso (`barraCliente`, classe `wa-monica`), tolto il tasto verde fisso e `tastoMonica` (anche in aiutante.js:801), allergie in `.striscia-menu` sticky sotto la testata (`--alto-testata` messo in `render`), barra `repeat(auto-fit, minmax(0,1fr))`. Prove: C155 apre il foglio dalla barra; nel passo C155 `pit-vc-visto` e via il `.vapore` (coprivano il tasto).
-- PT E82 (risposta in ritardo), PT E83 (pubblicato senza foto coi caratteri grandi). C156 regola account (Mario «1»: Preferenze + kit + blocco automatico) in Da fare.
-- Controllo Da fare: C156 aggiunta; Aspetta Mario aggiornato.
+## Sessione appena chiusa (#79)
+- Foto v0.10.30 coi caratteri grandi (`archivio/foto/2026-11-13-c155-tasti-grande-{1,2}.jpg`) BOCCIATE. Parole intere di Mario e «Ho capito» (❓ da confermare) in fondo a `docs/lavori-in-corso/c155-messaggi-in-ordini.md`. La patch `c155-tasti.patch` resta valida SOLO per la barra in basso a 3 voci; striscia allergie e «Dettami l'ordine» vanno rifatti dopo il «1» di Mario.
+- PT E84 (`docs/ERRORI.md`): hook `avvio-check.py` funzione `parole_intere` (avviso «PAROLE INTERE DI MARIO» con le righe esatte), prova in `tools/test-avvio-check.py` (8/8), skill `consegne` fase 1 e «Avvio», nota in `docs/PER-IL-KIT.md`.
+- C157 in Da fare (misura obbligatoria dei piatti a teglia: causa `aiutante.js:685` prende `p.formati[0]`, `app.js:961` prima misura già scelta).
+- Controllo Da fare: 1 voce aggiunta (C157); 3 righe in Aspetta Mario.
+- Contraddizioni viste, per il controllo regole: tetto «voce ≤400 caratteri» di `file-snelli` contro le parole intere di Mario (PT E84); «ok a pubblicare» delle consegne contro PT E83; conteggi diversi di « ❓N» fra gli hook (19/20/17/18).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - #77: «Ordine da messaggio» per Monica (incolla o Condividi) → no: Mario «troppo che Monica deve incollare e fare, voglio automatismo». Leggere WhatsApp in automatico → impossibile sul numero normale. Scrivere l'ordine di Lisa nel database da qui → niente chiave (regole: gestore o cliente). `window.open(url,'_blank','noopener')` → dà sempre null: apriva WhatsApp due volte.
@@ -36,42 +37,31 @@ Sessione attuale: #79 (dopo la #78 `session_01WTjqUu3oyBhedrQbbAPNAH`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Poi `git apply docs/lavori-in-corso/c155-tasti.patch` (oppure `git stash list`: «c155-tasti handoff» c'è solo nel contenitore vecchio), `python3 -I tools/anteprima.py`, foto del menù coi caratteri grandi (`P.grande = true`, Pixel 7): la barra in basso deve avere Menù · I miei ordini · Scrivi a Monica su UNA riga e «Dettami l'ordine» + microfono NON devono coprire la barra (prima del ritocco andava su due righe). Se va: giro completo, commit `v0.10.30 [pubblica]` (Mario HA GIÀ DATO L'OK a pubblicare), curl della versione, poi a Mario: «puoi mandare il link a Lisa» + foto.
-2. Dopo: microfono e «Dettami l'ordine» nella striscia in cima (Mario: «così non rimane nessun microfono sospeso lì in basso»; file della Voce `voce-clienti.js` `disegnaVC`/`fabVisibile`, molte prove `.vc-fab` in tools/prova.js). Prima una riga a Mario e il suo ok.
-3. Piano «Tutto dentro l'app» (Mario «1»): Messaggi dentro l'app, raccolta `messaggi`, regole Firebase (guida a Mario). Poi C156 regola account (Mario «1»).
-4. Vecchi: trascrizione ogni mattina (sveglia della #77), scritte C154, idee C149, C140, pagella C141.
+1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Mai toccare il codice dei tasti prima del suo «1» alla DOMANDA 1 della #79 (domanda intera in «Aspetta Mario»; ❓ da confermare).
+2. Col «1»: `git apply docs/lavori-in-corso/c155-tasti.patch` (buona solo la barra a 3 voci), poi: riquadro «Hai una domanda?» più basso e fisso mentre scorri, dentro anche «Dettami l'ordine» (un tasto solo), via `.vc-fab` in basso (file della Voce `voce-clienti.js` `disegnaVC`/`fabVisibile`; prove `.vc-fab` in tools/prova.js). Spunta ogni richiesta, foto coi caratteri grandi (`P.grande = true`, Pixel 7), ok di Mario sulle foto, giro completo, `v0.10.30 [pubblica]`, curl, «puoi mandare il link a Lisa».
+3. C157 dopo la DOMANDA 3. Controllo delle regole dopo la DOMANDA 2 (consiglio: dopo i tasti).
+4. Vecchi: «Tutto dentro l'app» e C156, trascrizione ogni mattina (sveglia della #77), scritte C154, idee C149, C140, pagella C141.
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67), `01WTjqUvtoJC` (#70): vecchie.
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 19; prime DOMANDA 3 piano e DOMANDA 4 regola).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 20; prime le 3 della #79: DOMANDA 1 tasti 🛑, 2 controllo regole, 3 misura C157).
 
 ## Ultimo messaggio di Mario
-13/11 19:47, parola per parola: «Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.» → Mario manda il link solo dopo v0.10.30 online.
+13/11 20:20, parola per parola: «E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.» → risposta coi conflitti visti, DOMANDA 2. Dopo, scritto nella #78 e girato qui: «Puoi fare in modo che le lasagne deve mettere la quantità, se no non parte l'ordine? Perché cos'erano le lasagne? Cos'erano le melanzane? Non mi ricordo. La parmigiana, scusami. Puoi mettere che non c'è quantità, deve metterla per forza?» → C157, DOMANDA 3.
 ## Numeri liberi
-Prossimo E libero: E1; prossimo C libero: C157; prossimo M libero: M1.
+Prossimo E libero: E1; prossimo C libero: C158; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
-Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
+Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 18:43 · [AVVIO] Sessione #78 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, risposta su C155
-- 2026-11-13 18:46 · Cioè, stai rispondendo a quello che ti ho detto dopo 20 e passa minuti? È un'alt… → spiegazione del ritardo, PT E82
-- 2026-11-13 18:48 · Se ascolti quello che dico nei messaggi, ti ho detto che Monica non lo visualizz… → causa provata, domanda ritirata, PT E82
-- 2026-11-13 18:49 · Come puoi da questo messaggio correggere i gusti dei cibi? Cioè, sei pazzo. Hai … → spiegato il gusto dei ravioli
-- 2026-11-13 18:50 · No, non è che non ti avevo chiesto se è una correzione, è una correzione, ma non… → modo di lavorare nelle consegne, v0.10.28 verificata
-- 2026-11-13 18:53 · Io voglio che sia tutto tracciato, voglio spingere il cliente a ordinare dall'ap… → C155 piano «Tutto dentro l'app», DOMANDA 3
-- 2026-11-13 18:54 · Mi raccomando, questo errore che è appena successo non deve capitare in tutto l'… → C156, DOMANDA 4
-- 2026-11-13 18:56 · 1 vai di consiglio Riusciamo a metterlo dentro l'ordine? Almeno rimane tracciato… → DOMANDE 3 e 4 = 1; proposta link Lisa
-- 2026-11-13 18:59 · 1 VAI E DAMMI IL LINK PER LISA CON CARRELLO GIà PRONTO DOPO AGGIORNAMENTO DA APP → v0.10.29 online, link dato
-- 2026-11-13 19:01 · Puoi mettere qualcosa di carino per scocciare i clienti, qualcosa, qualche, nell… → benvenuto nel carrello (poi tolto)
-- 2026-11-13 19:02 · Non nell'app non so come sia possibile un messaggio carino. Cioè, voglio su What… → messaggio WhatsApp per Lisa, riquadro nell'app tolto
-- 2026-11-13 19:12 · è normale un lavoro cosí certosino guarda i tasti ...ti ho messo opus alto..... … → PT E83, tasti sistemati in patch
-- 2026-11-13 19:16 · Poi ti ho detto, bisogna incentivare i clienti a ordinare nell'app, non a mandar… → Scrivi a Monica in secondo piano
-- 2026-11-13 19:29 · Io quel tasto l'avrei messo sotto nella banda bianca tra menu e i miei ordini. A… → DOMANDA 7
-- 2026-11-13 19:33 · Che dici? Poi correggimi, eh? Dici che nella parte di su, quella dove c'è scritt… → piano tasti, DOMANDA 8
-- 2026-11-13 19:34 · Sì, ok, ma non farla troppo stretta perché te l'ho detto io, no? Cerca di rimpic… → patch c155-tasti v0.10.30, ok a pubblicare
-- 2026-11-13 19:47 · Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no ric… → link a Lisa dopo v0.10.30 online
+- 2026-11-13 20:10 · [AVVIO] Sessione #79 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, scorta unita, foto v0.10.30
+- 2026-11-13 20:12 · tra quanto è online? → stima ~25 min dopo il suo ok sulle foto
+- 2026-11-13 20:13 · No, non vanno bene per niente. Cioè, non capisco perché non mi capisci quando pa… → spiegato come ho ragionato, PT E84, niente codice
+- 2026-11-13 20:15 · Aspetta, quindi significa che è un problema di passaggio di consegna? L'ha accor… → risposta: errore della #78 portato avanti dalle consegne
+- 2026-11-13 20:17 · miglioralo Miglioralo che deve leggere tutto quello che scrivo nei passaggi di c… → PT E84 hook parole_intere + skill consegne + PER-IL-KIT
+- 2026-11-13 20:20 · E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mett… → tabella conflitti, DOMANDA 2
 
 Ultimo, intero:
-> Voglio mandargliela a Lisa una volta che c'è la pagina bella ordinata, se no riclicca cose che non deve cliccare.
+> E siccome ho cambiato tantissime regole, ne ho aggiunto tante, ho paura che mettendone troppe si sta creando un conflitto.
 
