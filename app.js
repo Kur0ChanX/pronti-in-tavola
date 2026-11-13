@@ -327,10 +327,47 @@ function rigaOrdine(r, extra = '') {
 function waMonica(o) {
   /* nome e cognome scritti all'entrata; se manca (es. Mario che guarda come cliente) quello di chi gestisce, poi quello di prova */
   const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '', firma = chi ? ` Sono ${chi}.` : '';
-  const testa = o ? `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola per l'ordine n. ${o.n} (ritiro ${giornoLungo(o.entro)}).${firma}` : `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${firma}`;
+  const testa = o ? `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola per l'ordine n. ${o.n} (ritiro ${giornoLungo(o.entro)}).${firma}` : waTesta();
   return wa(S.impostazioni.whatsapp, `${testa}\n\nVolevo chiederti: `);
 }
-const tastoMonica = () => S.impostazioni.whatsapp ? `<a class="wa-monica" href="${waMonica()}" target="_blank" rel="noopener" aria-label="Scrivimi su WhatsApp">${ico('chat')}<span>Scrivimi</span></a>` : '';
+function waTesta() {
+  const chi = [nomeCliente(), Dati.attivo && Dati.io.nomeGestore, P.nomeProva].find(x => x && x !== 'Cliente') || '';
+  return `Ciao Monica! 👋 Ti scrivo dall'app Pronti in Tavola.${chi ? ` Sono ${chi}.` : ''}`;
+}
+const tastoMonica = () => S.impostazioni.whatsapp ? `<button type="button" class="wa-monica" data-a="scrivimi" aria-label="Scrivimi">${ico('chat')}<span>Scrivimi</span></button>` : '';
+/* «Scrivimi» capisce gli ordini (C155, Mario 13/11 «voglio automatismo»: una cliente aveva scritto l'ordine nel messaggio WhatsApp e a Monica
+   non era arrivato niente). Il cliente scrive QUI; se nel testo ci sono piatti del menù l'app propone di metterli nel carrello (l'ordine
+   arriva vero tra gli Ordini, col messaggio nella nota); se no, o se il cliente vuole, si apre WhatsApp col testo già scritto.
+   Capisce con capisciCliente (voce-clienti.js, senza rete); «2kg» → «2 kg». Niente piatti riconosciuti = solo WhatsApp, come prima. */
+function ordineDaMessaggio(testo, scelte) {
+  if (typeof capisciCliente !== 'function' || typeof controllaAIC !== 'function') return null;
+  let e; try { e = capisciCliente(String(testo).replace(/(\d)([a-zA-Z])/g, '$1 $2'), scelte); } catch (x) { return null; }
+  if (!e || e.intento !== 'ordina' || !e.piatti.length) return null;
+  if (e.alternative.length) return { dubbio: e.risposta ? e.risposta.testo : 'Quale intendi?', alternative: e.alternative.map(a => ({ nome: a.nome, scelte: a.scelte })) };
+  const azioni = ((e.risposta && e.risposta.azioni) || []).filter(a => a.azione === 'carrello' && !(controllaAIC(a) || {}).no);
+  return azioni.length ? { azioni, giorno: e.giorno, descr: String(e.risposta.testo || '').replace(/^Ecco: /, '') } : null;
+}
+function apriWaMonica(testo) {
+  const url = wa(S.impostazioni.whatsapp, `${waTesta()}\n\n${testo}`);
+  UI.foglio = null; render();
+  const w = window.open(url, '_blank');   // senza «noopener»: con quello window.open dà sempre null e si aprirebbe due volte
+  if (w) { try { w.opener = null; } catch (e) { /* già staccata */ } } else location.href = url;   // finestre bloccate: nella stessa
+}
+function foglioScrivimi() {
+  const f = UI.foglio, pr = f.ordine, dentro = h => `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro">${h}</div>`;
+  if (pr && pr.dubbio) return dentro(`<h2>Sembra un ordine 🛒</h2><p>${esc(pr.dubbio)}</p>
+    ${pr.alternative.map((a, i) => `<button type="button" class="btn chiaro" data-a="scrivimi-scegli" data-i="${i}">${esc(a.nome)}</button>`).join('')}
+    <button type="button" class="link" data-a="scrivimi-wa">No, mandalo solo come messaggio</button>`);
+  if (pr) return dentro(`<h2>Sembra un ordine 🛒</h2>
+    <p>Ho capito: <b>${esc(pr.descr)}</b></p>
+    <p class="tenue">Fallo qui: arriva subito a Monica tra gli ordini, con il tuo messaggio. Nel carrello controlli e scegli il giorno.</p>
+    <button type="button" class="btn pieno" data-a="scrivimi-ordina">${ico('carrello')}Metti nel carrello</button>
+    <button type="button" class="btn chiaro" data-a="scrivimi-wa">${ico('chat')}No, mandalo solo come messaggio</button>`);
+  return dentro(`<h2>Scrivi a Monica</h2>
+    <p class="tenue">Una domanda o un ordine: scrivilo qui. Se è un ordine te lo preparo nel carrello.</p>
+    <textarea id="scrivimi-testo" maxlength="800" rows="4" aria-label="Il tuo messaggio" placeholder="es. 2 kg di ravioli per sabato">${esc(f.testo || '')}</textarea>
+    <button type="button" class="btn pieno" data-a="scrivimi-invia">${ico('chat')}Invia</button>`);
+}
 const nomeCliente = () => Dati.attivo ? ((Dati.io.utente && (Dati.mioNome ? Dati.mioNome() : Dati.io.utente.nome)) || (cliente(P.cliente) || {}).nome || '') : (P.nomeProva || cliente(P.cliente).nome);
 /* il benvenuto: alla prima apertura il cliente nuovo scrive nome e cognome, senza non si entra (nell'anteprima: una volta per telefono) */
 function serveBenvenuto() {
@@ -1146,7 +1183,7 @@ function schedaRitiro() {
     <div><b style="font-size:1.2rem;font-family:var(--display)">${esc(r.via)}</b><br><span class="tenue">${esc(r.citta)}</span></div>
     ${r.nota ? `<p class="tenue" style="margin:0">${esc(r.nota)}</p>` : ''}
     <a class="btn pieno" href="${mapsLink()}" target="_blank" rel="noopener">${ico('mappa')}Apri in Maps</a>
-    ${num ? `<div class="fila larga"><a class="btn chiaro" href="${waMonica()}" target="_blank" rel="noopener">${ico('chat')}Scrivimi</a>
+    ${num ? `<div class="fila larga"><button type="button" class="btn chiaro" data-a="scrivimi">${ico('chat')}Scrivimi</button>
       <a class="btn chiaro" href="tel:+${numero(num)}">${ico('telefono')}Chiama</a></div>` : ''}
   </section>`;
 }
@@ -1892,7 +1929,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'togli-ordini' ? foglioTogliOrdini() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : UI.foglio.tipo === 'chiudi-nuovi' ? foglioChiudiNuovi() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'scrivimi' ? foglioScrivimi() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'togli-ordini' ? foglioTogliOrdini() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : UI.foglio.tipo === 'chiudi-nuovi' ? foglioChiudiNuovi() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -2226,6 +2263,24 @@ const A = {
   chiudi() { if (UI.foglio && UI.foglio.tipo === 'installa' && !(UI.notEsito && UI.notEsito.ok)) { P.invitoDopo = Date.now() + 864e5; salvaP(); } chiudiFoglio(); },   // «Più tardi»: torna domani
   'apri-allergie'() { UI.foglio = { tipo: 'allergie' }; render(); },
   'mio-nome'() { UI.foglio = { tipo: 'mio-nome' }; render(); const i = $('#mio-nome'); if (i) i.focus(); },
+  scrivimi() { UI.foglio = { tipo: 'scrivimi', testo: '' }; render(); const i = $('#scrivimi-testo'); if (i) i.focus(); },
+  'scrivimi-invia'() {
+    const testo = (($('#scrivimi-testo') || {}).value || '').trim();
+    if (!testo) { mostraToast('Scrivi prima il messaggio.'); return; }
+    UI.foglio.testo = testo; const pr = ordineDaMessaggio(testo);
+    if (pr) { UI.foglio.ordine = pr; render(); } else apriWaMonica(testo);
+  },
+  'scrivimi-scegli'(el) { const a = UI.foglio.ordine.alternative[el.dataset.i]; UI.foglio.ordine = ordineDaMessaggio(UI.foglio.testo, a.scelte) || UI.foglio.ordine; if (UI.foglio.ordine.dubbio) apriWaMonica(UI.foglio.testo); else render(); },
+  'scrivimi-wa'() { apriWaMonica(UI.foglio.testo); },
+  'scrivimi-ordina'() {
+    const { azioni, giorno } = UI.foglio.ordine, testo = UI.foglio.testo;
+    azioni.forEach(a => { const c = controllaAIC(a); if (c && c.fai) c.fai(); });
+    const teglie = P.carrello.filter(r => !r.pronto && (r.tipo === 'teglia' || r.tipo === 'intera')).reduce((s, r) => s + r.qta, 0);
+    if (giorno && giorniPossibili(teglie).some(x => x.g === giorno && !x.no)) UI.entro = giorno;
+    if (!UI.nota.includes(testo)) UI.nota = [UI.nota.trim(), `Il mio messaggio: ${testo}`].filter(Boolean).join('\n');
+    salvaP(); UI.foglio = null; vai('carrello');
+    mostraToast(UI.entro ? 'Controlla e tocca «Invia ordine».' : 'Scegli il giorno e tocca «Invia ordine».');
+  },
   async 'mio-nome-ok'() {   // (C99) il cliente corregge il suo nome
     const i = $('#mio-nome'), nome = (i ? i.value : '').trim().replace(/\s+/g, ' ');
     if (nome.length < 3 || !nome.includes(' ')) { mostraToast('Scrivi nome e cognome.'); if (i) i.focus(); return; }
@@ -3153,8 +3208,25 @@ function controllaRichieste() {
   UI.richViste.push(...nuove.map(r => r.id));
   UI.foglio = { tipo: 'richieste' };
 }
+/* (C155) link «carrello pronto» che Monica manda a un cliente (Mario 13/11: «il primo ordine di Lisa dall'app, tracciato»):
+   …/?ordine=<il messaggio del cliente> → l'app capisce i piatti (ordineDaMessaggio), li mette nel carrello col messaggio nella nota
+   e apre il carrello: il cliente sceglie il giorno e invia, l'ordine è suo. Aperto due volte non raddoppia (P.linkFatti).
+   Se non capisce tutto, apre «Scrivi a Monica» col testo già scritto. */
+UI.ordineLink = (() => { try { const q = new URLSearchParams(location.search), t = q.get('ordine'); if (!t) return null; q.delete('ordine');
+  history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '') + location.hash); return t.trim().slice(0, 800) || null; } catch (e) { return null; } })();
+function carrelloDaLink() {
+  if (!UI.ordineLink || P.ruolo !== 'cliente' || serveBenvenuto() || !S.piatti.length) return;
+  const testo = UI.ordineLink; UI.ordineLink = null;
+  if ((P.linkFatti || []).includes(testo)) { vai('carrello'); return; }
+  const pr = ordineDaMessaggio(testo);
+  UI.foglio = { tipo: 'scrivimi', testo, ...(pr ? { ordine: pr } : {}) };
+  if (!pr || pr.dubbio) return;
+  P.linkFatti = (P.linkFatti || []).concat(testo).slice(-10);
+  A['scrivimi-ordina']();
+}
 if (/^#gestore(-m)?$/.test(location.hash)) { P.invitoGestore = location.hash === '#gestore-m' ? 'm' : true; if (Dati.attivo) salvaP(); }
 const RIPRESA = riprendiDopoAggiornamento();
+if (!Dati.attivo) carrelloDaLink();
 render();
 if (RIPRESA) { requestAnimationFrame(() => window.scrollTo(0, RIPRESA.y || 0)); mostraToast(`App aggiornata alla ${VERSIONE_APP} ✅`); } else apertura();
 if (Dati.attivo) avviaDati();
@@ -3283,6 +3355,7 @@ function avviaDati() {
     if (P.cliente) rinnovaAvvisi();
     if (UI.vista === 'home' && P.ruolo === 'cliente') UI.vista = 'menu';
     if (UI.vaiDopo && (P.ruolo === 'cliente' || io.gestore)) vaiDaNotifica();
+    if (UI.ordineLink) carrelloDaLink();
     /* mentre Monica scrive in un campo non si ridisegna: si aspetta che esca dal campo */
     if (staScrivendo()) { renderDopo = true; return; }
     render();

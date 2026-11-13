@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 18:39 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 19:01 ora italiana)
 
-ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+Puoi mettere qualcosa di carino per scocciare i clienti, qualcosa, qualche, nella foto, qualche cosa tipo un messaggio carino, cosa ne so, per dirgli per aiutare nell'app a perfezionarsi, se può dare magari una mano a cliccare il link e fare l'ordine da questo link. Cioè, in poche parole, non voglio che si scocciano con l'app, che se si scocciano ordinano sempre meno possibile. Voglio qualcosa di veramente semplice che l'aiuti, ecco, che aiuti il cliente, perché se si scoccia che deve entrare più volte e non ordina più nell'applicazione.
