@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 20:19 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 20:35 ora italiana)
 
-Mi puoi rinviare il link di Lisa in questa sessione?
+Sì, ma quando lei entra nel link è già precompilato il carrello con una teglia di melanzane senza, che non si sa se da 6 o da 8, e i ravioli.

@@ -1,13 +1,11 @@
-# Ultima risposta di Claude (13/11/2026 19:49 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:35 ora italiana)
 
-Ho capito: il link a Lisa lo mandi solo quando il menù ordinato è online.
+Questo succede perché sul tuo telefono hai già aperto il link vecchio, quello con la parmigiana. Il carrello resta salvato nel telefono, e il link nuovo aggiunge i ravioli a quello che c'era già.
 
-✅ **FATTO**
-- La versione 0.10.29 è online. Il link per Lisa funziona.
-- Il menù ordinato (versione 0.10.30) è pronto e salvato su GitHub, ma **non è ancora online**. Nella foto di controllo la barra in basso andava su due righe e «Scrivi a Monica» finiva sotto. L'ho corretta, ma devo ancora rifare la foto per controllarla.
+Il link nuovo mette **solo i ravioli**. Sul telefono di Lisa, se non ha aperto i link vecchi, vedrà solo i ravioli.
 
-───
-⚠️ **ATTENZIONE**
-La memoria di questa sessione è piena e devo chiuderla.
-È l'ottava sessione di fila, il massimo: la nuova la devi aprire tu.
-Appena parte, la nuova sessione controlla la …
+Per provarlo tu:
+1. Apri il carrello e togli tutto (tasto «Togli» su ogni piatto).
+2. Riapri il link nuovo: deve comparire solo «2 kg di ravioli».
+
+⚠️ Il link vecchio a Lisa l'hai già mandato? Se l'ha aperto, nel suo carrello c'è già la parmigiana con una teglia scelta dall'app. In …
