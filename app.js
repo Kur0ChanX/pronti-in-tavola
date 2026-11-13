@@ -1652,6 +1652,7 @@ function schedaMario() {
     <label class="interr"><span>Ricettario nella Home<small>${S.impostazioni.ricettario !== false ? 'Acceso: tu e Monica vedete «Ricettario» nella Home. I clienti mai.' : 'Spento: il riquadro non c\'è nella Home.'}</small></span><input type="checkbox" data-campo="i.ricettario" ${S.impostazioni.ricettario !== false ? 'checked' : ''}></label>
     <label class="interr"><span>Aiutante AI per i clienti<small>${S.impostazioni.aiClienti !== false ? 'Acceso: tutti i clienti accettati lo trovano in cima al menù.' : 'Spento: i clienti non lo vedono. Tu lo provi da «guarda come» → cliente.'}</small></span><input type="checkbox" data-campo="i.aiClienti" ${S.impostazioni.aiClienti !== false ? 'checked' : ''}></label>
     ${velVoceHtml(false)}
+    ${typeof profiloPalHtml === 'function' ? profiloPalHtml() : ''}
     ${contoAI()}
     ${listaSez(OPZIONI.filter(o => o.g === 'mario').map(sezOpz))}
     ${provaAIhtml()}
