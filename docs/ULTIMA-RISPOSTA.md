@@ -1,13 +1,12 @@
-# Ultima risposta di Claude (13/11/2026 19:49 ora italiana)
+# Ultima risposta di Claude (13/11/2026 20:37 ora italiana)
 
-Ho capito: il link a Lisa lo mandi solo quando il menù ordinato è online.
+Una domanda per capire, perché le cause possibili sono diverse:
 
-✅ **FATTO**
-- La versione 0.10.29 è online. Il link per Lisa funziona.
-- Il menù ordinato (versione 0.10.30) è pronto e salvato su GitHub, ma **non è ancora online**. Nella foto di controllo la barra in basso andava su due righe e «Scrivi a Monica» finiva sotto. L'ho corretta, ma devo ancora rifare la foto per controllarla.
+Hai aperto il link **dal tuo telefono**, dove sei entrato come gestore (sviluppatore o Monica)? In quel caso è normale che il carrello non si riempia: il link lavora solo per i clienti, e chi gestisce non ha un carrello da cliente.
 
-───
-⚠️ **ATTENZIONE**
-La memoria di questa sessione è piena e devo chiuderla.
-È l'ottava sessione di fila, il massimo: la nuova la devi aprire tu.
-Appena parte, la nuova sessione controlla la …
+Se invece l'hai aperto da un telefono di cliente, cosa vedi?
+1 · il menù normale
+2 · una finestra «Scrivi a Monica» con il testo dentro
+3 · altro (mandami una foto)
+
+Sono le tre cose che cambiano la causa. Dalla tua risposta capisco dove si ferma.
