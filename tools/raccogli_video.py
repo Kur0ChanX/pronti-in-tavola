@@ -297,8 +297,67 @@ def testo_pulito(testo):
     return '\n'.join(righe)[:600]
 
 
+PARLATO = os.path.join(RADICE, 'tools', 'dati', 'video-dal-parlato.json')
+
+
+def leggi_parlato():
+    return json.load(open(PARLATO, encoding='utf-8')) if os.path.exists(PARLATO) else {}
+
+
+def con_dosi(ing):
+    return sum(bool(re.search(r'\d', i)) for i in ing) >= 2
+
+
+def col_parlato(x, par):
+    """C150 (Mario 13/11 «dalle parole che dicono… ci fai la ricetta»): dosi e passi dal parlato del video (tools/trascrivi_video.py).
+    Lo scritto dell'autore vince: ai video con le dosi scritte solo i passi che mancano. Fuori: risposte con numeri non sentiti nel
+    parlato («dubbi», finché Claude non le guarda, PT E25) e dosi per porzioni diverse dai suoi valori scritti.
+    «parlato» = 'dosi' (ingredienti e passi) o 'passi': nell'app «📝 dal video». True se ha cambiato gli ingredienti."""
+    p = par.get(x['id'])
+    if not p or 'ingredienti' not in p or p.get('dubbi'):
+        return False
+    cambia = not con_dosi(x.get('ingredienti') or [])
+    if cambia and x.get('suoi') and (p.get('porzioni') or 1) != (x.get('porzioni') or 1):
+        cambia = False   # i suoi valori sono per altre porzioni: le dosi del parlato li confonderebbero
+    if cambia:
+        x['ingredienti'] = p['ingredienti']; x['parlato'] = 'dosi'
+        if not x.get('suoi'):
+            x['porzioni'] = p.get('porzioni') or 1
+    if not x.get('passi') and p.get('passi'):
+        x['passi'] = p['passi']; x.setdefault('parlato', 'passi')
+    return cambia
+
+
+def stima_su(x):
+    """Valori «≈ stimati» dalle dosi (tools/stima.py), mai quelli detti nel video (13/11 #72: 2 su 3 sbagliati)."""
+    porz = x.get('porzioni') or 1
+    st, _, _ = stima_ricetta([re.sub(r'\s*\(oppure .*$', '', i) for i in x['ingredienti'] if '(facoltativo)' not in i], porz)
+    x.pop('nutr', None); x.pop('stimata', None)
+    if st and 40 <= st['kcal'] <= 1500:
+        x['nutr'] = st; x['porzioni'] = porz; x['stimata'] = True
+
+
+def su_file(f):
+    """--parlato-su FILE: il parlato su un ricette-video.js già fatto (es. con la patch C148), senza rileggere YouTube."""
+    t = open(f, encoding='utf-8').read()
+    i = t.index('const RICETTE_VIDEO = [') + len('const RICETTE_VIDEO = '); fine = t.index('\n];', i) + 2
+    tutte, par, c = json.loads(t[i:fine]), leggi_parlato(), {'dosi': 0, 'passi': 0, 'stimati': 0}
+    for x in tutte:
+        if col_parlato(x, par) and not x.get('suoi'):
+            stima_su(x); c['stimati'] += 'nutr' in x
+        if x.get('parlato'):
+            c[x['parlato']] += 1
+    righe = ',\n'.join('  ' + json.dumps(x, ensure_ascii=False, separators=(',', ':')) for x in tutte)
+    t = t[:i] + '[\n' + righe + '\n]' + t[fine:]
+    open(f, 'w', encoding='utf-8').write(t.replace('i passi sono nel video.', 'senza dosi sotto, dosi e passi dal parlato del video («parlato», C150).'))
+    print(json.dumps(c, ensure_ascii=False), file=sys.stderr)
+
+
 def main():
+    if '--parlato-su' in sys.argv:
+        return su_file(sys.argv[sys.argv.index('--parlato-su') + 1])
     elenco = '--elenco' in sys.argv
+    par = leggi_parlato()
     stimate = set()
     p = os.path.join(RADICE, 'ricette-stimate.js')
     if os.path.exists(p):
@@ -370,6 +429,8 @@ def main():
                 st, _, _ = stima_ricetta(ing_st, porz)
                 if st and 40 <= st['kcal'] <= 1500:
                     x['nutr'] = st; x['porzioni'] = porz; x['stimata'] = True; c['stimati'] += 1
+            if col_parlato(x, par) and not x.get('suoi'):
+                stima_su(x)   # C150: dosi dal parlato → «≈ stimati»
             if 'nutr' not in x:
                 c['senza'] += 1
             c['ricette'] += 1
@@ -394,7 +455,7 @@ def main():
     open(os.path.join(RADICE, 'ricette-video.js'), 'w', encoding='utf-8').write(
         f"""/* C144 · Ricette video di YouTube, divise per youtuber, raccolte da Claude il {oggi} (Mario 11/11 «tutti i video delle
    ricette dello youtuber… in una sezione a parte»). Scritto da tools/raccogli_video.py, NON a mano.
-   Nome, ingredienti e testo come li scrive l'autore sotto il video (tolti hashtag, codici sconto e link); i passi sono nel video.
+   Nome, ingredienti e testo come li scrive l'autore sotto il video (tolti hashtag, codici sconto e link); senza dosi sotto, dosi e passi dal parlato del video («parlato», C150).
    Valori: quelli dell'autore se li scrive («suoi»), sennò «≈ stimati» dagli ingredienti (tabella CREA, tools/stima.py), sennò niente. */
 const CANALI_VIDEO = {json.dumps(canali, ensure_ascii=False)};
 const RICETTE_VIDEO = [
