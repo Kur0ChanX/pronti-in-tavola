@@ -1,12 +1,11 @@
-# Ultima risposta di Claude (13/11/2026 15:54 ora italiana)
+# Ultima risposta di Claude (13/11/2026 18:38 ora italiana)
 
+Ho capito: vuoi sapere come è potuto succedere, e vuoi che tutto resti scritto nell'app e che i clienti siano spinti a ordinare lì.
 
-
-## Domande a Mario
-
-❓ DOMANDE
-- DOMANDA 1 · Velocità del controllo dei video. Rispondi 1 o 2:
-  1 = resto gratis: circa 4 settimane, un pezzo ogni mattina (mio consiglio).
-  2 = piano a pagamento di Google: tutto in circa 1 giorno, stima 10-40 € una volta sola.
-  Se non rispondi, vado con la 1.
-- Qui non c'è niente che si muove, quindi non ti mando un video: si tratta di una scelta di tempi e costi. Le foto delle scritte te le ho già mandate.
+───
+✅ LA CAUSA
+- **La cliente non ha mai fatto l'ordine nell'app.** Lo dimostra il messaggio. Quando si scrive da un ordine, l'app mette «per l'ordine n. …». Nel suo c'è solo «Ti scrivo dall'app… Volevo chiederti:».
+- **Come è successo, passo per passo:**
+  1. Nel Menù c'è sempre il grande tasto verde «Scrivimi», in basso a destra.
+  2. Lei l'ha toccato: l'app ha aperto WhatsApp con l'inizio del messaggio già scritto.
+  3. Ha scritto l'ordine dentro WhatsApp e …

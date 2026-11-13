@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-11 18:04 · 01WTjqUu7eAD
-ok vai avanti allora
-
-## 2026-11-11 18:22 · 01WTjqUu7eAD
-nelle ricette aggiungile tutte quante e metti un voto o fammi capire ler ricetta quanto è proteica calorica grassa zuccheri sale ecc ecc con i voti o inventati tu qualcosa di migliore ti dò carta bianca fai passare tutte le ricette proteiche
-
-## 2026-11-11 19:06 · 01WTjqUvCWdA
-devi girare in priorita sul GitHub del mio pc nzxt a casa poi blacksmith poi github a comsumo gratuito
-
 ## 2026-11-11 19:20 · 01WTjqUvhRwD
 se lo rendiamo privato e mettiamo il mio PC?
 
@@ -123,3 +114,14 @@ mancano in tutti ingredienti
 
 ## 2026-11-13 18:19 · 01WTjqUwuvHs
 Un cliente non proprio pratico di tecnologia gli è arrivato questo messaggio a Monica, però non c'è nessun ordine. Si può fare in modo di integrarlo all'ordine, in qualche modo in automatico?
+
+## 2026-11-13 18:21 · 01WTjqUwuvHs
+spiegami cosa è successo
+
+## 2026-11-13 18:22 · 01WTjqUwuvHs
+No, troppo che Monica deve incollare e fare, voglio automatismo. Riesci innanzitutto a mettermi questo ordine dentro e far partire subito il fix?
+
+## 2026-11-13 18:37 · 01WTjqUwuvHs
+dimmi la causa anche come è successo
+Sì, ma la mia domanda è come mai il cliente ha fatto l'ordine e gli ha inviato il messaggio senza farlo, senza ricevere il messaggio nell'app? Come sia potuto succedere?
+Voglio tutto tracciato nell app cosí non c'è l'ordine spingi i clienti a ordinare nell app
