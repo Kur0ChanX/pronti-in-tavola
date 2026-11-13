@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (13/11/2026 18:39 ora italiana)
+# Ultimo messaggio di Mario (13/11/2026 18:53 ora italiana)
 
-ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
+Io voglio che sia tutto tracciato, voglio spingere il cliente a ordinare dall'app, quindi cercherei un sistema che non lo so, che non è la prima cosa che vede, scrivi a Monica, ecco, perché sennò bypassa tutto il lavoro che facciamo dell'app. Se non mi spieghi che cosa l'abbiamo fatto l'app, se poi il cliente manda un messaggino su WhatsApp, quindi dobbiamo spingere il cliente a ordinare dall'app. Poi se vuole chiedere qualcos'altro, quello lì passa in secondo piano, però la prima cosa è cercare di far ordinare e che sia tutto tracciato dall'applicazione. Tutto il resto è superfluo, i messaggi a Monica di WhatsApp, anche perché è controproducente per l'app. Inventati qualcosa di intelligente per farti anche scusare dell'errore che hai fatto, quindi impegnati di più e non metterci una vita.
