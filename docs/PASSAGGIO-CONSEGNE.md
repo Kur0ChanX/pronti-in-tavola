@@ -53,10 +53,10 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Extra** (`xhigh`, dal regist
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 20:46 · [AVVIO] Sessione #81 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
-- 2026-11-13 21:12 · Allora, le foto secondo me per ora vanno bene. Cosa resta in sospeso? La questio… → 
-- 2026-11-13 21:18 · Allora, spiegami cosa vuoi fare su / chiedi o ordina più misura della teglia. Qu… → 
-- 2026-11-13 21:18 · Scusa, se facciamo da quella precedente e basta, non rimarranno mai indietro, pe… → 
+- 2026-11-13 20:46 · [AVVIO] Sessione #81 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, titolo, foto rimandate
+- 2026-11-13 21:12 · Allora, le foto secondo me per ora vanno bene. Cosa resta in sospeso? La questio… → risposta alla DOMANDA 1 #80 (foto ok) → v0.10.30 online (1e115ff), tabella delle cose in sospeso
+- 2026-11-13 21:18 · Allora, spiegami cosa vuoi fare su / chiedi o ordina più misura della teglia. Qu… → spiegato barra + misura della teglia
+- 2026-11-13 21:18 · Scusa, se facciamo da quella precedente e basta, non rimarranno mai indietro, pe… → C158: proposta + DOMANDA C158 in Aspetta Mario, `docs/lavori-in-corso/c158-passaggio-consegne.md`
 
 Ultimo, intero:
 > Scusa, se facciamo da quella precedente e basta, non rimarranno mai indietro, perché alla fine quella dopo legge quella precedente. Di tutte mi sembra un po', forse un po' troppo dispendioso di token, di tutte quelle aperte. Facciamo della precedente. Perché non facciamo invece... risolviamo meglio che il passaggio di consegna, valuta tu se è meglio fare un passaggio di consegna più accurato oppure che la sessione dopo legge la sessione precedente. Qual è meglio, qual è il sistema migliore, più ottimale per lavorare meglio?
