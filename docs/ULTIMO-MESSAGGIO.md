@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (14/11/2026 01:47 ora italiana)
+# Ultimo messaggio di Mario (14/11/2026 02:05 ora italiana)
 
-è numero 1 lisa ora nell'app grazie, vai avanti ora
+la prima volta che non mi fai copiare la stringa da mettere nell'altra chat successiva cerca la causa e risolvi

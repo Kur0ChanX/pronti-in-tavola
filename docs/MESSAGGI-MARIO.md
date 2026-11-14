@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:22 · 01WTjqUwuvHs
-No, troppo che Monica deve incollare e fare, voglio automatismo. Riesci innanzitutto a mettermi questo ordine dentro e far partire subito il fix?
-
 ## 2026-11-13 18:37 · 01WTjqUwuvHs
 dimmi la causa anche come è successo
 Sì, ma la mia domanda è come mai il cliente ha fatto l'ordine e gli ha inviato il messaggio senza farlo, senza ricevere il messaggio nell'app? Come sia potuto succedere?
@@ -131,3 +128,6 @@ ok fatto è andato spero non si sia rotto nulla
 
 ## 2026-11-14 01:47 · 01WTjqUvFmqR
 è numero 1 lisa ora nell'app grazie, vai avanti ora
+
+## 2026-11-14 02:05 · 01WTjqUvFmqR
+la prima volta che non mi fai copiare la stringa da mettere nell'altra chat successiva cerca la causa e risolvi
