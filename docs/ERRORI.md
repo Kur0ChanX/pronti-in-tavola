@@ -79,6 +79,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E87** Codice dell'app non provato nella cartella: MAI `git commit -a` / `add -A`: il push lo pubblica. Sempre `git add <file>`. Difesa: guardia (`tools/test-guardia.py`).
 - **PT E88** Giorno detto uguale a oggi («per sabato» di sabato) dava «nessun giorno». Ogni frase con un giorno si prova in tutti e 7 i giorni: prova con data finta in `tools/prova.js`.
 - **PT E89** Sessione aperta da Mario: il testo da incollare va SEMPRE nel messaggio, in un riquadro, mai «lo trovi nel file». Difesa: `domande-chiare.py`.
+- **PT E90** Nome fatto dalla macchina («Ricetta con limone» per la ricotta di soia): se il video dice il piatto, vince il nome detto (`fatto_qui` e `REFUSI` in `tools/raccogli_video.py`); a ogni giro di ricette controllare i nomi delle nuove.
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
