@@ -21,7 +21,7 @@ function datiAI() {
   const ordini = S.ordini.filter(o => !o.archiviato && (!FINITI.includes(o.stato) || o.entro >= da || (o.stato === 'ritirato' && !pagato(o))))
     .sort((a, b) => a.entro.localeCompare(b.entro)).slice(-80)
     .map(o => Object.assign({ n: o.n, cliente: cliente(o.cliente).nome, stato: STATO_AI[o.stato] || o.stato, ritiro: o.entro + ' ' + giornoLungo(o.entro),
-      cosa: o.righe.map(r => `${r.nome} (${descRiga(r)})`).join(', '), totale: totale(o.righe), pagato: pagato(o) }, diProva(o) ? { prova: true } : {}));
+      cosa: o.righe.map(r => `${r.nome} (${descRiga(r)})`).join(', '), totale: daPagare(o), pagato: pagato(o) }, diProva(o) ? { prova: true } : {}, scontoSu(o, totale(o.righe)) ? { sconto: scontoTesto(o) } : {}));
   const c = contiMese(oggi().slice(0, 7));
   return { oggi: oggi() + ' ' + giornoLungo(oggi()), pausa: imp.pausa && imp.pausa.attiva ? 'in pausa fino al ' + imp.pausa.fino : 'aperta',
     piatti: visibili().map(p => ({ id: p.id, nome: p.nome, cat: p.cat, nelMenu: !!p.disponibile, descrizione: p.sotto || '', prontiOggi: p.pronto && p.pronto.giorno === oggi() ? p.pronto.qta : 0,
@@ -52,7 +52,7 @@ function controllaAI(a) {
     case 'soldi':
       if (!VALIDI.includes(o.stato)) return { no: `${ord} è ${stato}: niente soldi da segnare.` };
       if (o.paga && o.paga.ricevuto) return { no: `I soldi dell'ordine n. ${o.n} sono già segnati.` };
-      return { titolo: `${ord}: soldi ricevuti`, prima: 'Da prendere', dopo: `Presi ${euro(totale(o.righe))}`, fai: () => { o.paga = Object.assign({}, o.paga, { ricevuto: true, dice: false }); } };
+      return { titolo: `${ord}: soldi ricevuti`, prima: 'Da prendere', dopo: `Presi ${euro(daPagare(o))}`, fai: () => { o.paga = Object.assign({}, o.paga, { ricevuto: true, dice: false }); } };
     case 'accetta':
       if (o.stato !== 'nuovo') return { no: `${ord} è ${stato}: non c'è niente da accettare.` };
       return { titolo: `${ord}: accetto`, prima: 'Da accettare', dopo: `Confermato per ${giornoLungo(o.entro)}`, nota: cosa, fai: () => { o.righe = prezziGiusti(o.righe); segna(o, 'accettato'); } };
@@ -527,6 +527,7 @@ const DOVE_AI = {
   'clienti-nuovi': { vista: 'clienti', nome: 'Accetta clienti nuovi', come: 'In «Fai conoscere la tua cucina» c\'è l\'interruttore «Accetta clienti nuovi». Spento: chi ha il link vede il menù, ma non può fare il primo ordine.', parole: /accett\w* (client|person|gent)\w* nuov|(client|person|gent)\w* nuov\w* no\b|non (voglio|prendo|accetto) (piu )?(client|person|gent)\w* nuov|nessun (cliente|altro) nuov/ },
   'clienti-rifiutati': { vista: 'clienti', nome: 'Persone rifiutate', come: 'In fondo, in «Persone rifiutate», ci sono quelle a cui hai detto no. Se hai sbagliato, tocca «Accetta».', parole: /rifiutat|ho detto (di )?no|detto no per sbaglio|riaccett|sbagliato a (rifiut|dire no)/, ui: { rifiutati: true } },
   'clienti-attesa': { vista: 'clienti', nome: 'Chi aspetta il tuo sì', come: 'Sotto «Nuovi» ci sono le persone che aspettano: tocca Sì o No. Se una persona dice che aspetta e qui non c\'è, dille di toccare «Ricorda a Monica» nell\'app; se ancora non compare, deve riaprire il link e scrivere di nuovo il nome.', parole: /aspett\w* (il mio |il tuo |un )?s[iì]\b|ricorda a monica|non (la|lo|li) trovo (tra|nei|fra) (i )?client|non compar\w* (tra|nei|fra) (i )?client|non c.e (tra|nei|fra) (i )?client/ },
+  'ordini-sconto': { vista: 'ordini', nome: 'Sconto su un ordine', come: 'Tocca l\'ordine (prima del ritiro), poi «Fai uno sconto»: scegli in euro o in percentuale e conferma due volte. Al cliente arriva un avviso con la tua frase.', parole: /\bscont/ },
   'ordini-storico': { vista: 'ordini', nome: 'Storico degli ordini', come: 'Qui ci sono gli ordini finiti, le prove e quelli archiviati.', parole: /storic|ordini (vecchi|passati|finiti|archiviat)|archiviat/, ui: { tab: 'storico' } },
   clienti: { vista: 'clienti', nome: 'Clienti', come: 'Qui inviti le amiche su WhatsApp e approvi le persone nuove.', parole: /client|invit|amich|approv|nuove persone/ },
   spesa: { vista: 'spesa', nome: 'Lista della spesa', come: 'In alto scegli per quanti giorni: la lista si fa dagli ordini, e puoi aggiungere le tue cose.', parole: /spesa|comprar|supermercat/ },
@@ -670,7 +671,7 @@ function datiAIC() {
       p.pronto && p.pronto.giorno === oggi() && p.pronto.qta > 0 && !pausaOra() ? { prontiOggi: p.pronto.qta } : {});
   });
   const miei = S.ordini.filter(o => o.cliente === P.cliente && o.stato !== 'prova' && !o.archiviato).sort((a, b) => b.n - a.n).slice(0, 8)
-    .map(o => ({ n: o.n, stato: STATO_AI[o.stato] || o.stato, ritiro: o.entro + ' ' + giornoLungo(o.entro), cosa: o.righe.map(r => `${r.nome} (${descRiga(r)})`).join(', '), totale: totale(o.righe), pagato: !!(o.paga && o.paga.ricevuto) }));
+    .map(o => Object.assign({ n: o.n, stato: STATO_AI[o.stato] || o.stato, ritiro: o.entro + ' ' + giornoLungo(o.entro), cosa: o.righe.map(r => `${r.nome} (${descRiga(r)})`).join(', '), totale: daPagare(o), pagato: !!(o.paga && o.paga.ricevuto) }, scontoSu(o, totale(o.righe)) ? { sconto: scontoTesto(o) } : {}));
   return { oggi: oggi() + ' ' + giornoLungo(oggi()), monica: pausaOra() ? `in pausa fino a ${giornoLungo(imp.pausa.fino)} (si può ordinare per i giorni dopo)` : 'aperta',
     giorniDiPreavviso: imp.anticipo, prontiDaRitirareEntroLe: imp.prontiFino, pagamenti: Object.keys(METODO).filter(m => imp.paga[m]).map(m => METODO[m]),
     notaRitiro: (imp.ritiro || {}).nota || '', allergie: P.allergie.length ? 'segnate sul telefono, le controlla l\'app (non chiederle)' : 'nessuna segnata', piatti, mieiOrdini: miei,
