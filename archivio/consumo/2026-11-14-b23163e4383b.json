@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "b23163e4383b",
 "giorno": "2026-11-14",
-"turni": 1,
-"peso": 0,
-"uscita": 0,
-"contesto_max": 113654,
+"turni": 2,
+"peso": 421742,
+"uscita": 12775,
+"contesto_max": 151922,
 "anomalie": [],
 "blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": 1,
@@ -25,5 +25,8 @@
 },
 "remota": "01WTjqUuqoS1",
 "aiutanti": 0,
-"strumenti": 0
+"strumenti": 22,
+"motori": {
+"opus": 421742
+}
 }

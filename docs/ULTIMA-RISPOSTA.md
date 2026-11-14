@@ -1,12 +1,18 @@
-# Ultima risposta di Claude (14/11/2026 02:25 ora italiana)
+# Ultima risposta di Claude (14/11/2026 03:04 ora italiana)
 
+Ho capito: «sì a tutte e 2». Ho fatto le due difese contro gli errori di ieri.
+🧠 Opus · Medio
 
+───
+✅ FATTO
+- **Difesa 1 (PT E87):** la **guardia** (il programma che controlla i miei comandi prima che partano) ora mi blocca se provo a salvare tutti i file insieme mentre ci sono file dell'app cambiati. Così niente va online prima delle prove. Le sue prove: 133 su 133 verdi.
+- **Difesa 2 (PT E88):** una prova nuova con un **orologio finto** (l'app crede di essere in un altro giorno). Prova «per lunedì… per domenica», anche con «prossimo», in tutti e 7 i giorni.
+- Ho rimesso apposta l'errore di …
 
 ## Domande a Mario
 
 ❓ DOMANDE
-DOMANDA 1 · Faccio adesso le 2 difese contro gli errori di ieri?
-📌 Di cosa parliamo: sono due controlli automatici per me, tu e Monica non vedete niente nell'app. Servono adesso perché ieri questi due errori sono già capitati: lo sconto è andato online prima delle prove e «per sabato», detto di sabato, non funzionava.
-1 · sì, tutte e 2: non posso più mettere online codice non provato, e le frasi coi giorni vengono provate in tutti e 7 i giorni (consiglio)
-2 · solo la 1: niente codice online prima delle prove, ma le frasi coi giorni restano provate solo nei giorni feriali
-3 · …
+DOMANDA 1 · Accorcio i due file di appunti?
+📌 Di cosa parliamo: sono la lista dei lavori e il diario degli errori, li leggo io a ogni avvio. Tu nell'app non vedi niente. Servono adesso perché hanno passato il limite.
+1 · sì: sposto le cose finite e le storie lunghe nei file di storia, senza perdere niente. Ogni avvio costa meno token (consiglio)
+2 · più avanti: restano come sono, e ogni avvio continua a costare di più
