@@ -1989,6 +1989,22 @@ let ultimaVista = '', ultimoFoglio = '';
 /* C84 (Mario 08/11 «quando vado indietro voglio che mi ritorni dove ero»): punto della pagina per ogni schermata lasciata.
    Si torna allo stesso punto con «Indietro» (anche col gesto del telefono) o tornando alla schermata di prima (es. dopo «Salva»). */
 const POS = {}; let penultimaVista = '';
+/* C165 (Mario 14/11 «una piccola freccia dove io clicco e ritorno su in cima»): nelle pagine di Monica e Mario,
+   dopo uno schermo e mezzo in giù compare una freccia tonda in basso a destra; un tocco = in cima, subito (C124: niente scorrimento lento).
+   Nel Ricettario sta sopra il tasto «🗄 Database». Ai clienti no: in basso hanno già barra e microfoni (PT E83). */
+function frecciaSu() {
+  let b = document.getElementById('freccia-su');
+  if (!b) {
+    b = document.createElement('button'); b.type = 'button'; b.id = 'freccia-su'; b.className = 'freccia-su'; b.setAttribute('aria-label', 'Torna in cima');
+    b.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    b.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'instant' }));
+    document.body.appendChild(b);
+  }
+  b.classList.toggle('vedi', P.ruolo === 'monica' && !UI.foglio && window.scrollY > window.innerHeight * 1.5);
+  b.classList.toggle('con-salta', !!document.querySelector('.ric-salta'));
+}
+window.addEventListener('scroll', () => frecciaSu(), { passive: true });
+
 function render() {
   applicaParti();   // parti del menù scelte da Monica (opzioni.js, C92)
   document.documentElement.classList.toggle('grande', !!P.grande);
@@ -2037,6 +2053,7 @@ function render() {
   }
   UI.torna = false;
   if (UI.inCima) { UI.inCima = false; window.scrollTo(0, 0); }   // dopo il tocco su una notifica: si parte dall'alto
+  frecciaSu();   // C165
   if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|ai-testo)/.test(attivo)) document.getElementById(attivo).focus();
   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
   if (chiuso === 'chiuso') setTimeout(provaApri, 0);

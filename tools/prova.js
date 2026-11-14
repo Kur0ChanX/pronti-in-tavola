@@ -1294,6 +1294,31 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await b.textContent() !== '🗄 Database') throw new Error('in cima il tasto dice: ' + await b.textContent());
     await page.evaluate(() => vai('home'));
   });
+  await passo('C165 freccia per tornare in cima: compare scendendo, un tocco = in cima, sopra «🗄 Database», mai ai clienti', async () => {   // autonoma
+    // Mario 14/11 «una piccola freccia dove io clicco e ritorno su in cima al punto di partenza»
+    await page.evaluate(() => { P.ruolo = 'monica'; S.impostazioni.ricettario = true; UI.foglio = null; RIC.voceAutoFatto = true;
+      RIC.chiedi = async c => c.cerca ? { ricette: [] } : c.db ? { db: null } : { ricetta: null }; vai('home'); vai('ricettario'); });
+    await page.locator('.ric-elenco .ric-carta').nth(20).waitFor({ timeout: 8000 });
+    const f = page.locator('#freccia-su');
+    if (await f.isVisible()) throw new Error('in cima la freccia non deve vedersi');
+    await page.evaluate(() => window.scrollTo(0, 3000)); await page.waitForTimeout(300);
+    if (!(await f.isVisible())) throw new Error('scendendo la freccia non compare');
+    const r = await page.evaluate(() => { const a = document.getElementById('freccia-su').getBoundingClientRect(), b = document.querySelector('.ric-salta').getBoundingClientRect(); return { sotto: a.bottom <= b.top + 1, dentro: a.right <= innerWidth && a.bottom <= innerHeight, alto: a.height }; });
+    if (!r.sotto || !r.dentro || r.alto < 44) throw new Error('freccia sopra il tasto «🗄 Database», dentro lo schermo, almeno 44 px: ' + JSON.stringify(r));
+    await foto('165-freccia-su');
+    await f.click(); await page.waitForTimeout(400);
+    if (await page.evaluate(() => window.scrollY) > 5) throw new Error('la freccia non riporta in cima');
+    if (await f.isVisible()) throw new Error('in cima la freccia resta accesa');
+    // Database ricette (pagina a parte): c'è anche lì
+    await page.evaluate(() => vai('ricdb')); await page.waitForTimeout(300);
+    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await page.waitForTimeout(300);
+    const lungo = await page.evaluate(() => document.body.scrollHeight > innerHeight * 2.6);
+    if (lungo && !(await f.isVisible())) throw new Error('nel Database ricette la freccia non compare');
+    // cliente: mai (in basso ha barra e microfoni)
+    await page.evaluate(() => { P.ruolo = 'cliente'; vai('menu'); window.scrollTo(0, 4000); window.dispatchEvent(new Event('scroll')); }); await page.waitForTimeout(300);
+    if (await f.isVisible()) throw new Error('il cliente non deve vedere la freccia');
+    await page.evaluate(() => { P.ruolo = 'monica'; vai('home'); window.scrollTo(0, 0); });
+  });
   await passo('cliente: invito «Installa l\'app» all\'ingresso, scelta iPhone | Android, notifiche (Mario 08/11 «fallo subito»)', async () => {   // autonoma
     await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.installata = false; UI.foglio = null; UI.invitoFatto = false; UI.invitoProva = true; vai('menu'); });
     await page.waitForSelector('.foglio .inv-scelta', { timeout: 3000 });
