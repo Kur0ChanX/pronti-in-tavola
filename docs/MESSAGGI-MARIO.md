@@ -2,15 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:49 · 01WTjqUu3oyB
-Come puoi da questo messaggio correggere i gusti dei cibi? Cioè, sei pazzo. Hai bug.
-
-## 2026-11-13 18:50 · 01WTjqUu3oyB
-No, non è che non ti avevo chiesto se è una correzione, è una correzione, ma non so se è una correzione perché non so cosa stavi facendo. Cioè, mi è scappata la situazione fuori controllo perché ti sei messo a fare cose che non ti ho chiesto e ti scrivevo messaggi dopo e tu non li leggevi e tu hai quasi fatto partire una correzione che poteva essere qualcosa di gravissimo.
-
-## 2026-11-13 18:53 · 01WTjqUu3oyB
-Io voglio che sia tutto tracciato, voglio spingere il cliente a ordinare dall'app, quindi cercherei un sistema che non lo so, che non è la prima cosa che vede, scrivi a Monica, ecco, perché sennò bypassa tutto il lavoro che facciamo dell'app. Se non mi spieghi che cosa l'abbiamo fatto l'app, se poi il cliente manda un messaggino su WhatsApp, quindi dobbiamo spingere il cliente a ordinare dall'app. Poi se vuole chiedere qualcos'altro, quello lì passa in secondo piano, però la prima cosa è cercare di far ordinare e che sia tutto tracciato dall'applicazione. Tutto il resto è superfluo, i messaggi a Monica di WhatsApp, anche perché è controproducente per l'app. Inventati qualcosa di intelligente per farti anche scusare dell'errore che hai fatto, quindi impegnati di più e non metterci una vita.
-
 ## 2026-11-13 18:54 · 01WTjqUu3oyB
 Mi raccomando, questo errore che è appena successo non deve capitare in tutto l'account e non solo in pronti in tavola. Questa cosa che lavori per conto tuo, pubblichi, senza che ascolti e leggi i miei messaggi.
 
@@ -127,3 +118,12 @@ rifammi la domanda chiara
 
 ## 2026-11-14 03:39 · 01WTjqUuBu8a
 ho 10 minuti
+
+## 2026-11-14 03:42 · 01WTjqUuBu8a
+vapore ok ecc  oer ora sono ok te lo segnalerò io se ci saranno problemi tu vai avanti tranquillo
+
+## 2026-11-14 03:48 · 01WTjqUuBu8a
+dimmi le regole in contrasto  6 doppioni e 2 inutili fammi capire bene di cosa stai parlando in modo chiaro e semplice
+
+## 2026-11-14 03:51 · 01WTjqUuBu8a
+correzione ovvie falle da solo anteprima di prova tieni 400 il resto valuta bene tutto deve avere solo pro e mettici logica oer bon creare conglitti o problemi e scegli tu
