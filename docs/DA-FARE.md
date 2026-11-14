@@ -2,6 +2,7 @@
 Voci accorciate il 14/11 (#86): testo intero in `docs/DA-FARE-FATTE.md` («Storia delle voci ancora aperte … 14/11»).
 
 ## 0. Aspetta Mario
+- 14/11 · 🟡 Principale 87 · C23 lotti dei lavori da controllare: scrivi «ora» quando hai 10 minuti e ti mando il primo gruppo (5-8). Le 4 🛑 (C159, v0.10.26, C141, PC di casa) restano nelle loro righe.
 - 14/11 · 🟡 Principale 85 · v0.10.33 ONLINE (C163 sconto): chiudi e riapri l'app, Ordini → un ordine → «Fai uno sconto»; una foto quando puoi.
 - 13/11 · 🟡 Principale 84 · v0.10.31 ONLINE (C160 costo della ricetta): chiudi e riapri l'app, Spesa → un ingrediente (confezione e prezzo) e «I miei piatti» (costo sotto ogni piatto); una foto quando puoi. A cosa serve: chiudo la promessa C160.
 - 13/11 · 🟢 Principale 82 · C161 controllo delle regole: 11 proposte in `docs/lavori-in-corso/c161-controllo-regole.md` (3 conflitti, 6 doppioni, 2 morte). 1 = le faccio tutte · 2 = dimmi i numeri da non fare.
