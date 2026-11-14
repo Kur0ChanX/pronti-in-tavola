@@ -2,12 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:19 · 01WTjqUwuvHs
-Un cliente non proprio pratico di tecnologia gli è arrivato questo messaggio a Monica, però non c'è nessun ordine. Si può fare in modo di integrarlo all'ordine, in qualche modo in automatico?
-
-## 2026-11-13 18:21 · 01WTjqUwuvHs
-spiegami cosa è successo
-
 ## 2026-11-13 18:22 · 01WTjqUwuvHs
 No, troppo che Monica deve incollare e fare, voglio automatismo. Riesci innanzitutto a mettermi questo ordine dentro e far partire subito il fix?
 
@@ -131,3 +125,9 @@ e Correggi i 2 buchi come consiglio
 
 ## 2026-11-14 01:23 · 01WTjqUvFmqR
 le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica
+
+## 2026-11-14 01:31 · 01WTjqUvFmqR
+ok fatto è andato spero non si sia rotto nulla
+
+## 2026-11-14 01:47 · 01WTjqUvFmqR
+è numero 1 lisa ora nell'app grazie, vai avanti ora

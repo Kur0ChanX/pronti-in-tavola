@@ -1,13 +1,17 @@
-# Ultima risposta di Claude (14/11/2026 01:28 ora italiana)
+# Ultima risposta di Claude (14/11/2026 01:31 ora italiana)
+
+Ho capito: hai fatto i due cambi su Firebase per Lisa e temi di aver rotto qualcosa.
+🧠 Sonnet · Medio
 
 ✅ FATTO
-Lo sconto è online, versione **0.10.33**. L'ho controllato sul sito vero: il tasto «Fai uno sconto» c'è.
+- Il tuo messaggio è scritto nelle consegne e salvato su GitHub.
+- Una sessione nuova non è ancora aperta: appena la apri, lo trova lì.
 
 ───
 👉 DA FARE TU
-A cosa serve: vedere lo sconto con i dati veri, sul tuo telefono.
-1. Chiudi e riapri l'app.
-2. Ordini → tocca un ordine → «Fai uno sconto».
-3. Quando puoi, mandami una foto.
+A cosa serve: da qui non posso leggere Firebase, quindi controllo solo con una tua foto.
+1. Apri l'app, poi Ordini → Prossimi. Lisa Petta deve essere **n. 1**.
+2. Mandami una foto di quella schermata.
+3. Se vuoi essere sicuro del contatore, foto anche di Firebase → contatori → ordini: **prossimo** deve essere 2.
 
-Con l'ordine di Lisa continua dai passi di prima: ti aspetto con la foto.
+Se Lisa non è n. 1 …
