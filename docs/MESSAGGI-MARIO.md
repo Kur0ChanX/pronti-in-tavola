@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 13:11 · 01WTjqUw4QVb
-va bene metti online ma caricarle io 30 per volta non consumo limiti?
-
 ## 2026-11-13 15:18 · 01WTjqUtr7kg
 mancano in tutti ingredienti
 
@@ -130,3 +127,7 @@ Tipo grazie per l'ordine ecc ecc la frase può essere editata delle impostazioni
 per inviare lo sconto deve andare a doppia conferma da parte di Monica 
 
 e Correggi i 2 buchi come consiglio
+
+## 2026-11-14 01:12 · 01WTjqUwbEtu
+1 1 ok
+2 in tutti e 2 i modi
