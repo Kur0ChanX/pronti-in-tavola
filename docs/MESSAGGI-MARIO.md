@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:46 · 01WTjqUu3oyB
-Cioè, stai rispondendo a quello che ti ho detto dopo 20 e passa minuti? È un'altra sessione? Boh, non capisco cosa stai sbagliando proprio il modo di pensare, di lavorare, stai proprio sbagliando. Te l'ho scritto dall'inizio e tu mi hai provato a correggere un problema che non ti ho detto e mi rispondi al messaggio dopo una sessione. Mai successo. Sicuramente hai qualche bug, qualche problema grave.
-
 ## 2026-11-13 18:48 · 01WTjqUu3oyB
 Se ascolti quello che dico nei messaggi, ti ho detto che Monica non lo visualizza degli ordini. Non capisco. Se te l'ho detto, hai un bug, hai un problema grave. Non leggi neanche i miei messaggi e non mi rispondi. Non è il tuo modo di pensare questo.
 
@@ -129,3 +126,6 @@ si va bene per tutti che dici?
 
 ## 2026-11-14 03:25 · 01WTjqUuqoS1
 rifammi la domanda chiara
+
+## 2026-11-14 03:27 · 01WTjqUuqoS1
+1 basta che non si dimenticano e che vengano controllati o menzionati
