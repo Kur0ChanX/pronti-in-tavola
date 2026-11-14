@@ -41,7 +41,7 @@ Sessione attuale: #85 (dopo la #84 `session_01WTjqUwbEtuW5m6ckQeJqwr`, chiusa al
 
 ## Prossimi passi
 1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Aperte: C163 «1 1» (sconto), C162 a che passo è con Lisa, foto 0.10.32.
-2. C163 col suo ok: ❓ «Ho capito» da confermare (nel file del lavoro). Poi codice (app.js ordine aperto «Fai uno sconto» con doppia conferma, totale scontato ovunque, `avvisaCliente` tipo `sconto` + worker, frase `msgSconto` nelle Impostazioni → Messaggi), prova, foto, ok, giro, online.
+2. C163: Mario 14/11 ~01:15 «1 1 ok / 2 in tutti e 2 i modi» = piano ok, euro E percentuale. Codice (app.js ordine aperto «Fai uno sconto» con doppia conferma, totale scontato ovunque, `avvisaCliente` tipo `sconto` + worker, frase `msgSconto` nelle Impostazioni → Messaggi), prova, foto, ok, giro, online.
 3. C162: se Mario si blocca, guidarlo con foto (GUIDE-GIUSTE.md: Firebase); a fine passi scrivere in GUIDE-GIUSTE i pulsanti veri.
 4. C159 vista cliente dopo le 2 risposte (gesto, tocchi). C161 col «1». Poi i vecchi: foto menù 0.10.30, trascrizione (sveglia #77), scritte C154, idee C149, pagella C141.
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67), `01WTjqUvtoJC` (#70), `01WTjqUuVK9Q` (#83, il suo codice era la patch C160, già online).

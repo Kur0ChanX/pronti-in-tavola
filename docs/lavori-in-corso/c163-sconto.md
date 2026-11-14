@@ -7,7 +7,7 @@ per inviare lo sconto deve andare a doppia conferma da parte di Monica»
 (stesso messaggio: «e Correggi i 2 buchi come consiglio» = C159 ordini di prova)
 
 ## Ho capito
-Nell’ordine aperto (Ordini), finché non è ritirato, Monica tocca «Fai uno sconto», sceglie quanto, conferma due volte; il cliente riceve una notifica con una frase carina e un cuore (frase cambiabile nelle Impostazioni) e vede il prezzo nuovo. ❓ da confermare (DOMANDA 1 del 14/11).
+Nell’ordine aperto (Ordini), finché non è ritirato, Monica tocca «Fai uno sconto», sceglie quanto, conferma due volte; il cliente riceve una notifica con una frase carina e un cuore (frase cambiabile nelle Impostazioni) e vede il prezzo nuovo. ✅ confermato da Mario (14/11 ~01:15, «1 1 ok / 2 in tutti e 2 i modi»: piano ok, sconto in euro e in percentuale).
 
 ## Occhio critico (deciso da me, salvo diverso parere di Mario)
 - Il prezzo scontato vale ovunque: totale dell'ordine, incassi, messaggi WhatsApp, bonifico, «ti costa · ti restano» (C160).
