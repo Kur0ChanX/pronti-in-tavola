@@ -2,16 +2,16 @@
 "account": "108763",
 "sessione": "5ae591fa9724",
 "giorno": "2026-11-14",
-"turni": 5,
-"peso": 924321,
-"uscita": 21675,
-"contesto_max": 237913,
+"turni": 6,
+"peso": 1010328,
+"uscita": 22726,
+"contesto_max": 263999,
 "anomalie": [],
 "remota": "01WTjqUwbEtu",
 "aiutanti": 0,
-"strumenti": 31,
+"strumenti": 33,
 "motori": {
-"opus": 924321
+"opus": 1010328
 },
 "memoria_scaduta": 1,
 "ricreati": 110717,
@@ -19,7 +19,8 @@
 "Stop 13 · There are uncommitted changes in": 3,
 "Stop 6 · Il turno finisce con una": 1,
 "Stop 8 · Promessa a Mario senza voce": 1,
-"Stop 6 · Segno delle domande nel titolo": 1
+"Stop 6 · Segno delle domande nel titolo": 1,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
 "Stop 13 · There are uncommitted changes in": [
@@ -35,6 +36,9 @@
 ],
 "Stop 6 · Segno delle domande nel titolo": [
 "01:03 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"01:09 · Ti fermi ad aspettare Mario con il contesto a 237k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
 ]
 }
 }
