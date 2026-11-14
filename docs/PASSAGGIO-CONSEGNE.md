@@ -10,7 +10,7 @@ Sessione attuale: #87 (dopo la #86 `session_01WTjqUuqoS1WHeKkswH3iaF`, chiusa al
 - **Cosa preme a Mario adesso (14/11 03:30, #86):** niente di urgente; Mario vuole che i 103 lavori fatti non si dimentichino («basta che non si dimenticano e che vengano controllati o menzionati»): proposta C23 = mandarglieli a gruppi da guardare nell'app quando ha 10 minuti (aspetta il suo «quando»). Poi foto v0.10.33/31/30, C159 vista cliente (2 🛑), C161, pagella Proteiche, PC di casa.
 
 ## Stato (14/11 03:30 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261114-01WTjqUuqoS1/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorta della #86 unita (le sue scorte automatiche dopo questo commit: la #87 le unisce) (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -59,10 +59,10 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal regis
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-14 02:24 · [AVVIO] Sessione #86 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
-- 2026-11-14 03:00 · si va bene per tutti che dici? → 
-- 2026-11-14 03:25 · rifammi la domanda chiara → 
-- 2026-11-14 03:27 · 1 basta che non si dimenticano e che vengano controllati o menzionati → 
+- 2026-11-14 02:24 · [AVVIO] Sessione #86 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, scorta #85 unita, titolo, sveglia C150
+- 2026-11-14 03:00 · si va bene per tutti che dici? → risposta alla DOMANDA 1 (difese): PT E87 guardia + PT E88 prova data finta, commit f9141a7
+- 2026-11-14 03:25 · rifammi la domanda chiara → DOMANDA 1 (snellire i file) riscritta semplice
+- 2026-11-14 03:27 · 1 basta che non si dimenticano e che vengano controllati o menzionati → risposta alla DOMANDA 1: Da fare ed ERRORI snelliti, commit 263a832; proposta lotti C23
 
 Ultimo, intero:
 > 1 basta che non si dimenticano e che vengano controllati o menzionati
