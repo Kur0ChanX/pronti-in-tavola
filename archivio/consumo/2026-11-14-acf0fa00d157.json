@@ -1,0 +1,21 @@
+{
+"account": "108763",
+"sessione": "acf0fa00d157",
+"giorno": "2026-11-14",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 120651,
+"anomalie": [],
+"blocchi": {
+"Stop 6 · Segno delle domande nel titolo": 1
+},
+"esempi_blocchi": {
+"Stop 6 · Segno delle domande nel titolo": [
+"01:12 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 85 ❓24 · rispondi sconto» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro av"
+]
+},
+"remota": "01WTjqUvFmqR",
+"aiutanti": 0,
+"strumenti": 0
+}
