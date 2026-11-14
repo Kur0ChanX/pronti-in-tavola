@@ -2,15 +2,15 @@
 "account": "108763",
 "sessione": "b23163e4383b",
 "giorno": "2026-11-14",
-"turni": 2,
-"peso": 421742,
-"uscita": 12775,
-"contesto_max": 151922,
+"turni": 3,
+"peso": 458626,
+"uscita": 13320,
+"contesto_max": 155632,
 "anomalie": [],
 "blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": 1,
 "Stop 8 · Promessa a Mario senza voce": 1,
-"Stop 6 · Il turno finisce con una": 2
+"Stop 6 · Il turno finisce con una": 3
 },
 "esempi_blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": [
@@ -21,13 +21,14 @@
 ],
 "Stop 6 · Il turno finisce con una": [
 "02:25 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
-"03:04 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> "
+"03:04 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
+"03:25 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
 ]
 },
 "remota": "01WTjqUuqoS1",
 "aiutanti": 0,
-"strumenti": 22,
+"strumenti": 23,
 "motori": {
-"opus": 421742
+"opus": 458626
 }
 }
