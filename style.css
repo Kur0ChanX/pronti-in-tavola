@@ -254,6 +254,10 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--v
 .riga-ord.tolta { background: #F8DCD6; border-radius: 10px; padding: 12px; text-decoration: line-through; }
 .totale { display: flex; justify-content: space-between; align-items: baseline; font-size: 1.25rem; font-weight: 800; }
 .totale span:last-child { color: var(--vino); font-variant-numeric: tabular-nums; }
+/* C163 sconto di Monica: prezzo di prima barrato, riga col cuore */
+.totale s.prima { font-size: .85em; font-weight: 700; color: var(--tenue, #8a7a6a); margin-right: 4px; }
+.sconto-riga { margin: -4px 0 0; display: flex; align-items: center; gap: 6px; justify-content: flex-end; color: var(--basilico); font-weight: 800; font-size: .95rem; }
+.sconto-riga svg { width: 18px; height: 18px; flex: none; }
 .giorni { display: flex; gap: 8px; overflow-x: auto; margin: 0 -16px; padding: 2px 16px 6px; scrollbar-width: none; }
 .giorni::-webkit-scrollbar { display: none; }
 .giorno { flex: none; width: 68px; min-height: 76px; border: 1.5px solid var(--riga); border-radius: 14px; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; gap: 0; }

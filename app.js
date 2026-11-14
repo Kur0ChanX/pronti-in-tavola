@@ -185,6 +185,11 @@ const descRiga = r => [r.varianteNome, qtaTesto(r.tipo, r.qta, r.formatoNome), r
 const extraFritto = r => r.fritto ? arrot(r.frittoPrezzo || 0) : r.forno ? arrot(r.fornoPrezzo || 0) : 0;
 const prezzoRiga = r => arrot(r.prezzo * r.qta + extraFritto(r));
 const totale = rr => arrot(rr.reduce((s, r) => s + prezzoRiga(r), 0));
+/* C163 sconto di Monica (Mario 14/11: «nell'importo che vuole lei», «in tutti e 2 i modi»): o.sconto = { modo: 'euro' | 'perc', valore, il };
+   la percentuale segue il totale (anche dopo una modifica), gli euro restano fissi; mai più del totale. Vale ovunque si dice quanto si paga */
+const scontoSu = (o, tot) => { const s = o && o.sconto; if (!s || !(Number(s.valore) > 0)) return 0; return Math.min(tot, arrot(s.modo === 'perc' ? tot * Math.min(100, Number(s.valore)) / 100 : Number(s.valore))); };
+const daPagare = (o, rr) => { const t = totale(rr || o.righe); return arrot(t - scontoSu(o, t)); };
+const scontoTesto = o => euro(scontoSu(o, totale(o.righe))) + (o.sconto && o.sconto.modo === 'perc' ? ` (${NUM.format(o.sconto.valore)}%)` : '');
 const quanti = rr => rr.length;
 const passoDi = f => ({ min: f.min || 1, passo: f.passo || 1 });
 const piuAmato = () => { const p = visibili().filter(x => x.disponibile).sort((a, b) => b.cuori - a.cuori)[0]; return p && p.cuori >= 5 ? p.id : null; };
@@ -642,9 +647,10 @@ async function attivaAvvisiCliente() {
   } catch (e) { UI.notEsito = { ok: false, t: 'Non attivato: ' + ((e && e.message) || 'errore sconosciuto') + '.' }; }
   finally { UI.notProva = false; render(); }
 }
-function avvisaCliente(o, tipo = 'pronto') {   // tipo: 'pronto' o 'proposta' (Monica propone un altro giorno)
+function avvisaCliente(o, tipo = 'pronto') {   // tipo: 'pronto', 'proposta' (Monica propone un altro giorno) o 'sconto' (C163, con la frase di Monica)
   if (!sulSito() || !o.cliente) return;
-  Dati.token().then(tok => tok && fetch('/api/pronto', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify({ cliente: o.cliente, tipo }) })).catch(() => {});
+  const corpo = Object.assign({ cliente: o.cliente, tipo }, tipo === 'sconto' ? { testo: fraseSconto(o), da: cuoca() } : {});
+  Dati.token().then(tok => tok && fetch('/api/pronto', { method: 'POST', headers: { authorization: 'Bearer ' + tok, 'content-type': 'application/json' }, body: JSON.stringify(corpo) })).catch(() => {});
 }
 async function attivaAvvisi() {
   UI.notProva = true; UI.notEsito = null; render();
@@ -1093,11 +1099,11 @@ function tappe(o) {
 function boxPaga(o) {
   const imp = S.impostazioni.paga, c = cliente(o.cliente);
   if (o.paga.ricevuto) return `<div class="avviso verde">${ico('spunta')}<div>Pagamento ricevuto. Grazie!</div></div>`;
-  if (o.paga.metodo === 'contanti') return `<p class="tenue" style="margin:0">Paghi in contanti al ritiro: ${euro(totale(o.righe))}.</p>`;
+  if (o.paga.metodo === 'contanti') return `<p class="tenue" style="margin:0">Paghi in contanti al ritiro: ${euro(daPagare(o))}.</p>`;
   if (!['accettato', 'pronto', 'ritirato'].includes(o.stato)) return `<p class="tenue" style="margin:0">Paghi con ${METODO[o.paga.metodo].toLowerCase()} dopo la conferma di Monica.</p>`;
   const riga = (et, val, esempio) => `<div class="copia"><small>${et}${esempio ? ' · esempio, Monica lo inserisce' : ''}</small><code>${esc(val)}</code><button type="button" class="btn chiaro piccolo" data-a="copia" data-t="${esc(val)}">Copia</button></div>`;
   let h = `<div class="scheda" style="box-shadow:none"><h3>Come pagare: ${METODO[o.paga.metodo].toLowerCase()}</h3>`;
-  h += riga('Importo', NUM.format(totale(o.righe)).replace(/(,\d)$/, '$10'));
+  h += riga('Importo', NUM.format(daPagare(o)).replace(/(,\d)$/, '$10'));
   if (o.paga.metodo === 'bonifico') {
     h += riga('IBAN', imp.iban || 'IT00 X000 0000 0000 0000 0000 000', !imp.iban) + riga('Intestato a', imp.intestataria) + riga('Causale', `Ordine ${o.n} - ${c.nome}`);
     h += '<span class="tenue piccolo">Apri l\'app della tua banca, scegli «bonifico istantaneo» e incolla i dati.</span>';
@@ -1124,7 +1130,8 @@ function cartaOrdineCliente(o) {
     const piace = !!(o.cuori || {})[r.piatto];
     return rigaOrdine(r) + `<button type="button" class="chip" data-a="cuore" data-id="${o.id}" data-p="${r.piatto}" aria-pressed="${piace}" style="margin:-4px 0 8px">${ico('cuore')}${piace ? 'Ti è piaciuto' : 'Mi è piaciuto'}</button>`;
   }).join('')}</div>
-    <div class="totale"><span>Totale</span><span>${euro(totale(o.righe))}</span></div>`;
+    ${totaleHtml(o)}`;
+  if (scontoSu(o, totale(o.righe)) && !chiuso) h += `<div class="avviso verde sconto-frase">${ico('cuore')}<div>${esc(fraseSconto(o))}</div></div>`;
   if (!chiuso) h += boxPaga(o);
   const az = [];
   if (['nuovo', 'accettato'].includes(o.stato) && !o.pronto && !o.modifica) az.push(`<button type="button" class="btn chiaro" data-a="modifica" data-id="${o.id}">${ico('matita')}Cambia l'ordine</button>`);
@@ -1168,7 +1175,7 @@ function rigaCliente(o) {
   return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}">
     <span class="ord-n">n. ${o.n}<small>${F_BREVE.format(daIso(o.entro))}</small></span>
     <span class="ord-chi"><b>${esc(cosa)}</b></span>
-    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b><span class="stato ${o.stato}">${STATO_CLIENTE[o.stato]}</span></span></button>`;
+    <span class="ord-dx"><b>${euroBreve(daPagare(o))}</b><span class="stato ${o.stato}">${STATO_CLIENTE[o.stato]}</span></span></button>`;
 }
 
 function vModifica() {
@@ -1178,7 +1185,7 @@ function vModifica() {
   h += m.righe.length ? m.righe.map((r, i) => `<div class="riga-ord"><b>${esc(r.nome)}</b><span class="prezzo">${euro(prezzoRiga(r))}</span><span class="det">${esc(descRiga(r))}</span>
     <div class="azioni">${passo('m-qta', r.tipo === 'kg' ? NUM.format(r.qta) + ' kg' : r.qta, `data-i="${i}"`)}<button type="button" class="link" data-a="m-togli" data-i="${i}">Togli</button></div></div>`).join('') : '<p class="tenue">Hai tolto tutto. Se non vuoi più niente, puoi annullare l\'ordine.</p>';
   h += `</section><button type="button" class="btn chiaro pieno" data-a="vai" data-v="menu">${ico('piu')}Aggiungi un piatto</button>
-    <div class="totale"><span>Nuovo totale</span><span>${euro(totale(m.righe))}</span></div>
+    <div class="totale"><span>Nuovo totale</span><span>${euro(daPagare(o, m.righe))}</span></div>
     <button type="button" class="btn pieno" data-a="modifica-invia" ${m.righe.length ? '' : 'disabled'}>Invia la modifica a Monica</button>`;
   return h + '</main>';
 }
@@ -1276,7 +1283,8 @@ function contiMese(mese) {
   const presi = oo.filter(o => o.paga && o.paga.ricevuto), daPrendere = oo.filter(o => !(o.paga && o.paga.ricevuto));
   const piatti = {};
   oo.forEach(o => o.righe.forEach(r => { piatti[r.nome] = (piatti[r.nome] || 0) + totale([r]); }));
-  return { oo, presi: totale(presi.flatMap(o => o.righe)), daPrendere: totale(daPrendere.flatMap(o => o.righe)), nDa: daPrendere.length,
+  const somma = l => arrot(l.reduce((x, o) => x + daPagare(o), 0));   // C163: col prezzo scontato
+  return { oo, presi: somma(presi), daPrendere: somma(daPrendere), nDa: daPrendere.length,
     piatti: Object.entries(piatti).sort((a, b) => b[1] - a[1]).slice(0, 3) };
 }
 function incassi() {
@@ -1319,10 +1327,73 @@ function diff(o) {
 function waOrdine(o, tipo) {
   const c = cliente(o.cliente), r = S.impostazioni.ritiro;
   /* testi scritti da Monica in Impostazioni (C88); di base quelli di sempre */
-  const val = { nome: nomeBreve(c.nome), n: o.n, giorno: giornoLungo(tipo === 'proposta' ? o.proposta : o.entro), totale: euro(totale(o.righe)),
+  const val = { nome: nomeBreve(c.nome), n: o.n, giorno: giornoLungo(tipo === 'proposta' ? o.proposta : o.entro), totale: euro(daPagare(o)),
     indirizzo: [r.via, r.citta].filter(Boolean).join(', '), mappa: mapsLink(), nota: r.nota || '', orari: opz('orari'), link: SITO };
   const k = { pronto: 'msgPronto', proposta: 'msgProposta', accettato: 'msgAccettato' }[tipo];
   return wa(c.telefono || '', riempi(opz(k), val) + '\n' + opz('firma'));
+}
+/* C163 sconto di Monica (Mario 14/11 00:59): su un ordine non ancora ritirato, quanto vuole lei, in euro o in percentuale;
+   doppia conferma («Avanti», poi «Sì, manda lo sconto»); al cliente arriva un avviso con la frase delle Impostazioni → Messaggi */
+const PUO_SCONTO = ['nuovo', 'proposta', 'accettato', 'pronto'];
+const puoSconto = o => !!o && !!o.cliente && PUO_SCONTO.includes(o.stato) && !o.modifica && !o.archiviato;
+function totaleHtml(o, rr, et = 'Totale') {
+  const t = totale(rr || o.righe), s = scontoSu(o, t);
+  if (!s) return `<div class="totale"><span>${et}</span><span>${euro(t)}</span></div>`;
+  return `<div class="totale"><span>${et}</span><span><s class="tenue prima">${euro(t)}</s> ${euro(t - s)}</span></div>
+    <p class="sconto-riga">${ico('cuore')}Sconto di ${esc(cuoca())}: −${esc(scontoTesto(o))}</p>`;
+}
+function fraseSconto(o, sc) {   // sc = sconto non ancora salvato (anteprima nel foglio)
+  const oo = sc ? Object.assign({}, o, { sconto: sc }) : o, t = totale(oo.righe);
+  return riempi(opz('msgSconto'), { nome: nomeBreve(cliente(oo.cliente).nome), n: oo.n, sconto: euro(scontoSu(oo, t)), totale: euro(daPagare(oo)), prima: euro(t) });
+}
+const valoreSconto = v => { const n = Number(String(v == null ? '' : v).replace(',', '.').replace(/[^\d.]/g, '')); return Number.isFinite(n) ? arrot(n) : 0; };
+function esitoSconto(o, modo, val) {   // cosa paga il cliente con lo sconto scritto; errore = perché non va
+  const t = totale(o.righe), v = valoreSconto(val);
+  if (!(v > 0)) return { errore: modo === 'perc' ? 'Scrivi quanti per cento (es. 10).' : 'Scrivi quanti euro (es. 5).' };
+  if (modo === 'perc' && v > 100) return { errore: 'Al massimo 100%.' };
+  if (modo === 'euro' && v > t) return { errore: `Al massimo ${euro(t)}: è il totale dell'ordine.` };
+  const sc = { modo, valore: v }, s = scontoSu({ sconto: sc }, t);
+  return { sc, t, s, paga: arrot(t - s) };
+}
+function testoEsitoSconto(o, f) {
+  const e = esitoSconto(o, f.modo, f.val);
+  if (e.errore) return { ok: false, t: e.errore };
+  return { ok: true, t: e.paga === 0 ? `Glielo regali: paga 0 € invece di ${euro(e.t)}.` : `Paga ${euro(e.paga)} invece di ${euro(e.t)} (−${euro(e.s)}).` };
+}
+function foglioSconto() {
+  const f = UI.foglio, o = ordine(f.id);
+  const x = `<div class="chiudi"><button type="button" class="icona" data-a="chiudi" aria-label="Chiudi">${ico('x')}</button></div><div class="dentro">`;
+  if (!o) return x + '<h1>Ordine non trovato</h1></div>';
+  const nome = esc(nomeBreve(cliente(o.cliente).nome)), t = totale(o.righe);
+  if (!puoSconto(o)) return x + `<h1>Sconto non più possibile</h1><p class="tenue">L'ordine n. ${o.n} è «${esc(STATO_MONICA[o.stato] || o.stato)}»: lo sconto si fa solo prima del ritiro.</p></div>`;
+  if (f.passo === 'togli') return x + `<h1>Togli lo sconto a ${nome}?</h1>
+    <div class="avviso">${ico('occhio')}<div>Torna a pagare <b>${euro(t)}</b>. Non le arriva nessun avviso.</div></div></div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="sconto-togli-si">Sì, togli lo sconto</button><button type="button" class="btn chiaro pieno" data-a="sconto-indietro">No, lascialo</button></div>`;
+  if (f.passo === 2) {
+    const e = esitoSconto(o, f.modo, f.val);
+    return x + `<h1>Mandi lo sconto a ${nome}?</h1>
+    <div class="avviso verde">${ico('euro')}<div>Ordine n. ${o.n}: paga <b>${euro(e.paga)}</b> invece di ${euro(e.t)}<br>Sconto −${euro(e.s)}${f.modo === 'perc' ? ` (${NUM.format(e.sc.valore)}%)` : ''}</div></div>
+    <span class="etichetta" style="font-weight:800">Le arriva questo avviso</span>
+    <div class="ai-fum lei sconto-anteprima" style="white-space:pre-line;max-width:100%"><b>${esc(cuoca())} ti ha fatto uno sconto ❤️</b>\n${esc(fraseSconto(o, e.sc))}</div>
+    <p class="tenue piccolo" style="margin:0">La frase la cambi nelle Impostazioni, alla voce «Frase dello sconto».</p>
+    ${o.paga && o.paga.ricevuto ? `<div class="avviso">${ico('aiuto')}<div><b>Ha già pagato ${euro(t)}.</b> La differenza (${euro(e.s)}) gliela rendi tu.</div></div>` : ''}</div>
+    <div class="piede"><button type="button" class="btn verde pieno" data-a="sconto-si">${ico('cuore')}Sì, manda lo sconto</button><button type="button" class="btn chiaro pieno" data-a="sconto-indietro">No, torna indietro</button></div>`;
+  }
+  const veloci = f.modo === 'perc' ? [5, 10, 20] : [2, 5, 10].filter(v => v < t);
+  const es = testoEsitoSconto(o, f);
+  return x + `<h1>Sconto per ${nome}</h1>
+    <p class="tenue" style="margin:0">Ordine n. ${o.n} · totale ${euro(t)}</p>
+    <div class="fila larga" role="group" aria-label="Come fai lo sconto">
+      <button type="button" class="chip" data-a="sconto-modo" data-m="euro" aria-pressed="${f.modo === 'euro'}">In euro (€)</button>
+      <button type="button" class="chip" data-a="sconto-modo" data-m="perc" aria-pressed="${f.modo === 'perc'}">In percentuale (%)</button></div>
+    <label for="sconto-val" class="etichetta" style="font-weight:800">${f.modo === 'perc' ? 'Quanti per cento?' : 'Quanti euro di sconto?'}</label>
+    <div class="fila"><input type="text" id="sconto-val" inputmode="decimal" maxlength="7" autocomplete="off" value="${esc(f.val)}" placeholder="${f.modo === 'perc' ? 'es. 10' : 'es. 5'}" style="flex:1;min-width:0">
+      <b>${f.modo === 'perc' ? '%' : '€'}</b></div>
+    <div class="fila">${veloci.map(v => `<button type="button" class="chip" data-a="sconto-veloce" data-v="${v}">${f.modo === 'perc' ? v + '%' : euroBreve(v)}</button>`).join('')}</div>
+    <p id="sconto-esito" class="${es.ok ? '' : 'tenue'}" style="margin:0;font-weight:800">${f.val === '' ? 'Scrivi lo sconto: qui vedi quanto paga.' : esc(es.t)}</p>
+    ${o.sconto ? `<p class="tenue piccolo" style="margin:0">Adesso ha uno sconto di ${esc(scontoTesto(o))}: quello nuovo lo sostituisce.</p>` : ''}</div>
+    <div class="piede"><button type="button" class="btn pieno" data-a="sconto-avanti">Avanti</button>
+      ${o.sconto ? '<button type="button" class="btn chiaro pieno" data-a="sconto-togli">Togli lo sconto</button>' : '<button type="button" class="btn chiaro pieno" data-a="chiudi">Lascia stare</button>'}</div>`;
 }
 function cartaOrdineMonica(o) {
   const r = richiestaDi(o), righe = daAccettare(o) ? prezziGiusti(o.righe) : o.righe;
@@ -1333,16 +1404,17 @@ function cartaOrdineMonica(o) {
   if (o.stato === 'proposta') h += `<p class="tenue" style="margin:0">Hai proposto ${giornoLungo(o.proposta)}. Aspetti la risposta. <a class="link" href="${waOrdine(o, 'proposta')}" target="_blank" rel="noopener">Avvisala su WhatsApp</a></p>`;
   if (o.modifica) {
     h += `<div class="avviso">${ico('matita')}<div><b>Chiede una modifica.</b> In verde il nuovo, in rosso il tolto.</div></div><div>${diff(o)}</div>
-      <div class="totale"><span>Nuovo totale</span><span>${euro(totale(prezziGiusti(o.modifica.righe, daAccettare(o) ? [] : o.righe)))}</span></div>
+      <div class="totale"><span>Nuovo totale</span><span>${euro(daPagare(o, prezziGiusti(o.modifica.righe, daAccettare(o) ? [] : o.righe)))}</span></div>
       <div class="fila larga"><button type="button" class="btn verde" data-a="mod-si" data-id="${o.id}">Accetta la modifica</button><button type="button" class="btn chiaro" data-a="mod-no" data-id="${o.id}">No</button></div>`;
   } else {
-    h += `<div>${righe.map(x => rigaOrdine(x)).join('')}</div><div class="totale"><span>Totale</span><span>${euro(totale(righe))}</span></div>`;
+    h += `<div>${righe.map(x => rigaOrdine(x)).join('')}</div>${totaleHtml(o, righe)}`;
     if (totale(righe) !== totale(o.righe)) h += `<p class="tenue piccolo" style="margin:0">Coi tuoi prezzi di oggi. Il cliente vedeva ${euro(totale(o.righe))}: quando accetti, vede il tuo.</p>`;
   }
   if (o.nota) h += `<div class="avviso">${ico('chat')}<div><b>Nota:</b> ${esc(o.nota)}</div></div>`;
   if (o.prova) h += `<div class="avviso avviso-prova">${ico('aiuto')}<div><b>È un ordine di PROVA.</b> ${o.provaCliente ? 'Il cliente ha scritto che sta provando l\'app.' : 'L\'hai segnato tu.'} Non conta negli incassi né nella spesa. Puoi seguirlo come un ordine vero.</div></div>`;
   if (o.stato === 'prova') return h + `<div class="avviso">${ico('aiuto')}<div><b>Ordine di prova.</b> Non conta negli incassi, nella spesa, nelle etichette né nei giorni pieni, e il cliente non lo vede.</div></div>
     <button type="button" class="btn chiaro pieno" data-a="ord-vero" data-id="${o.id}">Rimetti tra i veri</button></article>`;
+  if (puoSconto(o)) h += `<button type="button" class="btn chiaro" data-a="sconto-apri" data-id="${o.id}">${ico('cuore')}${o.sconto ? 'Cambia o togli lo sconto' : 'Fai uno sconto'}</button>`;
   if (!['rifiutato', 'annullato', 'daApprovare'].includes(o.stato)) {
     const pg = o.paga;
     h += `<div class="fila" style="justify-content:space-between"><span><b>${METODO[pg.metodo]}</b> · ${pg.ricevuto ? '<span style="color:var(--basilico);font-weight:800">soldi ricevuti ✓</span>' : pg.dice ? '<span style="color:var(--cotto);font-weight:800">dice che ha pagato: controlla</span>' : 'da ricevere'}</span>
@@ -1434,7 +1506,7 @@ function rigaOrd(o, conGiorno) {
   return `<button type="button" class="ord-riga" data-a="ord-apri" data-id="${o.id}" data-testo="${esc((chi + ' ' + cosa + ' ' + o.n + ' ' + codiceDi(o).replace(/ (🦝|❤️)$/u, '')).toLowerCase())}">
     <span class="ord-n">n. ${o.n}${conGiorno ? `<small>${F_BREVE.format(daIso(giornoDi(o)))}</small>` : ''}</span>
     <span class="ord-chi"><b>${bollinoProva(o)}${esc(chi)}</b><small>${esc(cosa)}</small></span>
-    <span class="ord-dx"><b>${euroBreve(totale(o.righe))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && !['proposta', 'prova'].includes(o.stato) ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
+    <span class="ord-dx"><b>${euroBreve(daPagare(o))}</b>${(() => { const sc = scadenza(giornoDi(o), FINITI.includes(o.stato) || o.stato === 'pronto'); return sc.t && !['proposta', 'prova'].includes(o.stato) ? `<span class="scad ${sc.c}">${maiuscola(sc.t)}</span>` : `<span class="stato ${o.stato}">${STATO_MONICA[o.stato]}</span>`; })()}</span></button>`;
 }
 /* orari di ogni passo (da questa versione: gli ordini vecchi non li hanno) */
 function tempiOrdine(o) {
@@ -1457,7 +1529,7 @@ function vOrdiniMonica() {
   if (UI.tab === 'oggi') {
     const fare = lista.filter(o => o.stato === 'accettato'), pronti = lista.filter(o => o.stato === 'pronto');
     const ritirati = S.ordini.filter(o => o.stato === 'ritirato' && o.entro === o0);
-    const incasso = S.ordini.filter(o => VALIDI.includes(o.stato) && !diProva(o) && o.entro === o0).reduce((x, o) => x + totale(o.righe), 0);
+    const incasso = S.ordini.filter(o => VALIDI.includes(o.stato) && !diProva(o) && o.entro === o0).reduce((x, o) => x + daPagare(o), 0);
     const ritardo = lista.filter(o => o.entro < o0).length;
     h += `<div class="riepilogo"><div><b>${fare.length}</b><span>da preparare</span></div><div><b>${pronti.length}</b><span>pronti</span></div><div><b>${ritirati.length}</b><span>ritirati</span></div><div><b>${euroBreve(arrot(incasso))}</b><span>di oggi</span></div></div>`;
     if (ritardo) h += `<div class="avviso">${ico('aiuto')}<div><b>${ritardo === 1 ? '1 ordine' : ritardo + ' ordini'} di giorni passati</b> non ancora ritirati: sono qui sotto, segnati «in ritardo».</div></div>`;
@@ -1637,7 +1709,7 @@ function vClienti() {
   const riga = r => { const o = ordineDi(r);
     return `<div class="gruppo" style="border-bottom:1px dashed var(--riga);padding-bottom:12px"><div><b>${esc(r.nome)}</b><br><span class="tenue piccolo">${r.cliente ? 'Dice che ha cambiato telefono' : r.tramite ? 'Amica di ' + esc(r.tramite) : 'Ha trovato il link'}
       · codice ${r.codice ? mostraCodice(r.codice) : [r.id, ...(r.gemelli || [])].map(codiceTel).join(', ')}${(r.nomiPrima || []).length ? ` · prima si chiamava «${esc(r.nomiPrima[r.nomiPrima.length - 1].nome)}»` : ''}
-      · ${o ? `ha ordinato: ${euro(totale(prezziGiusti(o.righe)))}, ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}` : 'non ha ancora ordinato'}</span></div>${bottoniRichiesta(r)}</div>`; };
+      · ${o ? `ha ordinato: ${euro(daPagare(o, prezziGiusti(o.righe)))}, ${o.pronto ? 'pronti subito' : 'entro ' + giornoLungo(o.entro)}` : 'non ha ancora ordinato'}</span></div>${bottoniRichiesta(r)}</div>`; };
   const nuovi = S.richieste.filter(r => !r.cliente), telefoni = S.richieste.filter(r => r.cliente), rifiutati = S.rifiutati || [];
   const rigaRifiutato = r => `<div class="fila" style="justify-content:space-between;border-bottom:1px dashed var(--riga);padding:8px 0"><b>${esc(r.nome)}</b>
     <button type="button" class="btn verde piccolo" data-a="rifiutato-si" data-id="${r.id}"${UI.decido === r.id ? ' disabled' : ''}>${ico('spunta')}Accetta</button></div>`;
@@ -1939,7 +2011,7 @@ function render() {
   const chiaveFoglio = UI.foglio ? UI.foglio.tipo + (UI.foglio.id || '') : '';
   let fh = '';
   if (UI.foglio && !chiuso) {
-    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'scrivimi' ? foglioScrivimi() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'togli-ordini' ? foglioTogliOrdini() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : UI.foglio.tipo === 'chiudi-nuovi' ? foglioChiudiNuovi() : foglioGiorni();
+    const dentro = UI.foglio.tipo === 'ritaglio' ? foglioRitaglio() : UI.foglio.tipo === 'novita' ? foglioNovita() : UI.foglio.tipo === 'installa' ? foglioInstalla() : UI.foglio.tipo === 'spesa-ing' ? foglioSpesaIng() : UI.foglio.tipo === 'spesa-voce' ? foglioSpesaVoce() : UI.foglio.tipo === 'invito-img' ? foglioInvitoImg() : UI.foglio.tipo === 'menu-img' ? foglioMenuImg() : UI.foglio.tipo === 'etichette' ? foglioEtichette() : UI.foglio.tipo === 'piatto' ? foglioPiatto() : UI.foglio.tipo === 'pronti' ? foglioPronti() : UI.foglio.tipo === 'nome' ? foglioNome() : UI.foglio.tipo === 'mio-nome' ? foglioMioNome() : UI.foglio.tipo === 'scrivimi' ? foglioScrivimi() : UI.foglio.tipo === 'nome-monica' ? foglioNomeMonica() : UI.foglio.tipo === 'allergie' ? foglioAllergie() : UI.foglio.tipo === 'richieste' ? foglioRichieste() : UI.foglio.tipo === 'togli-ordini' ? foglioTogliOrdini() : UI.foglio.tipo === 'tutti-prova' ? foglioTuttiProva() : UI.foglio.tipo === 'chiudi-nuovi' ? foglioChiudiNuovi() : UI.foglio.tipo === 'sconto' ? foglioSconto() : foglioGiorni();
     fh = `<div class="velo" data-a="chiudi-fuori"><div class="foglio" role="dialog" aria-modal="true">${dentro}</div></div>`;
   }
   $('#foglio').innerHTML = fh;
@@ -2396,6 +2468,33 @@ const A = {
   'nuovi-chiudi-si'() { chiudiFoglio(() => cambia('Chiuso ai clienti nuovi', () => { S.impostazioni.nuovi = false; })); },
   'nuovi-riapri'() { cambia('Riaperto ai clienti nuovi', () => { S.impostazioni.nuovi = true; }); },
   'tutti-prova-apri'() { UI.foglio = { tipo: 'tutti-prova' }; render(); },
+  /* C163 sconto: doppia conferma, poi l'avviso al cliente */
+  'sconto-apri'(el) { const o = ordine(el.dataset.id); if (!puoSconto(o)) return; UI.foglio = { tipo: 'sconto', id: o.id, modo: o.sconto ? o.sconto.modo : 'euro', val: o.sconto ? NUM.format(o.sconto.valore) : '', passo: 1 }; render(); },
+  'sconto-modo'(el) { const f = UI.foglio; if (!f || f.tipo !== 'sconto' || f.modo === el.dataset.m) return; f.modo = el.dataset.m === 'perc' ? 'perc' : 'euro'; f.val = ''; render(); setTimeout(() => { const i = $('#sconto-val'); if (i) i.focus(); }, 30); },
+  'sconto-veloce'(el) { const f = UI.foglio; if (!f || f.tipo !== 'sconto') return; f.val = el.dataset.v; render(); },
+  'sconto-avanti'() {
+    const f = UI.foglio, i = $('#sconto-val'); if (!f || f.tipo !== 'sconto') return;
+    if (i) f.val = i.value;
+    const o = ordine(f.id), e = o ? esitoSconto(o, f.modo, f.val) : { errore: 'Ordine non trovato.' };
+    if (e.errore) { mostraToast(e.errore); return; }
+    f.passo = 2; render();
+  },
+  'sconto-indietro'() { if (UI.foglio && UI.foglio.tipo === 'sconto') { UI.foglio.passo = 1; render(); } },
+  'sconto-si'() {
+    const f = UI.foglio; if (!f || f.tipo !== 'sconto' || f.passo !== 2) return;
+    const o = ordine(f.id); UI.foglio = null;
+    if (!puoSconto(o)) { render(); mostraToast('Lo sconto si fa solo prima del ritiro.'); return; }
+    const e = esitoSconto(o, f.modo, f.val); if (e.errore) { render(); mostraToast(e.errore); return; }
+    cambia(`Sconto mandato a ${nomeBreve(cliente(o.cliente).nome)} ❤️`, () => { o.sconto = { modo: e.sc.modo, valore: e.sc.valore, il: new Date().toISOString() }; }, false);   // niente «Annulla»: l'avviso è già partito; si toglie con «Togli lo sconto»
+    avvisaCliente(o, 'sconto');   // anche sugli ordini di prova: serve proprio a provarlo
+  },
+  'sconto-togli'() { if (UI.foglio && UI.foglio.tipo === 'sconto') { UI.foglio.passo = 'togli'; render(); } },
+  'sconto-togli-si'() {
+    const f = UI.foglio; if (!f || f.tipo !== 'sconto') return;
+    const o = ordine(f.id); UI.foglio = null;
+    if (!o || !o.sconto) { render(); return; }
+    cambia('Sconto tolto', () => { o.sconto = null; });   // null (non delete): così si cancella anche sul server
+  },
   'togli-ordini-apri'() { UI.foglio = { tipo: 'togli-ordini' }; render(); },
   'togli-ordini-si'() {
     if (!puoSviluppare()) return;
@@ -3127,7 +3226,12 @@ document.addEventListener('input', e => {
   if (el.dataset.spcerca) suggerisciSpesa(el);
   if (el.dataset.cercaord) cercaOrdini(el.value);
   if (el.classList.contains('vel-cursore')) { const t = el.closest('.vel-voce').querySelector('.vel-voce-txt'); if (t) t.textContent = velTesto(Number(el.value)); }
-  if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;   // resta anche se la pagina si ridisegna (una foto che arriva)
+  if (el.id === 'nome-nuovo' && UI.foglio) UI.foglio.scritto = el.value;
+  if (el.id === 'sconto-val' && UI.foglio && UI.foglio.tipo === 'sconto') {   // (C163) solo la scritta: la tastiera resta aperta
+    UI.foglio.val = el.value;
+    const o = ordine(UI.foglio.id), p = $('#sconto-esito');
+    if (o && p) { const es = testoEsitoSconto(o, UI.foglio); p.textContent = el.value === '' ? 'Scrivi lo sconto: qui vedi quanto paga.' : es.t; p.classList.toggle('tenue', !es.ok); }
+  }   // resta anche se la pagina si ridisegna (una foto che arriva)
 });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && UI.foglio) A.chiudi();
@@ -3205,7 +3309,7 @@ function vaiDaNotifica() {
     if (!g.length) { UI.tab = 'oggi'; UI.avvisoTesto = 'Già fatto: niente di nuovo da guardare.'; }
   } else {
     UI.vista = 'ordini';
-    UI.avvisoTesto = t === 'proposta' ? 'Monica ti propone un altro giorno: rispondi qui sotto.' : t === 'pronto' ? 'Il tuo ordine è pronto: passa a ritirarlo.' : '';
+    UI.avvisoTesto = t === 'proposta' ? 'Monica ti propone un altro giorno: rispondi qui sotto.' : t === 'pronto' ? 'Il tuo ordine è pronto: passa a ritirarlo.' : t === 'sconto' ? `${cuoca()} ti ha fatto uno sconto ❤️ Il nuovo prezzo è qui sotto.` : '';
   }
 }
 /* persone nuove che vogliono ordinare: a Monica si apre subito il riquadro per dire sì o no (Mario 07/11, C33) */
