@@ -133,9 +133,13 @@ const votoRic = r => { const p = pagellaRic(r && r.nutr); return p ? p.voto : 0;
 const PALLINO = { v: '🟢', g: '🟡', r: '🔴' };
 const colVoto = v => v >= 8 ? 'v' : v >= 5 ? 'g' : 'r';
 /* sulla carta: «Voto 8 · 🟢🟢🟡🟢🟢» (stesso ordine della pagella) */
-const rigaPagella = n => { const p = pagellaRic(n); return p ? `<small class="ric-pagella-riga"><b class="ric-voto ${colVoto(p.voto)}">${p.parziale ? '≈ ' : ''}Voto ${p.perTe ? 'per te ' : ''}${p.voto}</b> <span aria-label="${esc(p.voci.map(x => x.nome + ' ' + x.parola).join(', '))}">${p.voci.map(x => PALLINO[x.c]).join('')}</span></small>` : ''; };
+const rigaPagella = n => { if (!vediVoti()) return ''; const p = pagellaRic(n); return p ? `<small class="ric-pagella-riga"><b class="ric-voto ${colVoto(p.voto)}">${p.parziale ? '≈ ' : ''}Voto ${p.perTe ? 'per te ' : ''}${p.voto}</b> <span aria-label="${esc(p.voci.map(x => x.nome + ' ' + x.parola).join(', '))}">${p.voci.map(x => PALLINO[x.c]).join('')}</span></small>` : ''; };
 /* nella ricetta: il voto grande e una riga per voce, con la parola (tante, medie, poche) */
+/* C166 (Mario 14/11 «i voti delle ricette proteiche le posso vedere solo io, Monica no… lasciamogli le ricette proteiche»):
+   voto e pagella solo sul telefono di Mario; Monica (e gli altri gestori) vedono le Proteiche coi valori, senza voto. Senza dati (anteprima) si vedono. */
+const vediVoti = () => typeof Dati === 'undefined' || !Dati.attivo || (typeof chiLucchetto === 'function' && chiLucchetto() === 'mario');
 function pagellaHtml(n) {
+  if (!vediVoti()) return '';
   const p = pagellaRic(n); if (!p) return '';
   const chi = p.perTe ? `voto per te: ${p.snack ? 'snack' : 'pasto'} sulla tua quota (${p.snack ? Math.round(p.quote.protPasto / 2) : p.quote.protPasto} g di proteine, ${p.snack ? p.quote.kcalPasto / 2 : p.quote.kcalPasto} kcal)` : `pagella palestra · ${p.snack ? 'snack' : 'pasto'}`;
   return `<div class="ric-pagella"><p class="ric-pagella-voto"><b class="ric-voto ${colVoto(p.voto)}">${p.parziale ? '≈ ' : ''}Voto ${p.voto}/10</b> <span class="piccolo">${chi}${fitRic(n) ? '' : ' · non entra in Proteiche'}</span></p>
@@ -160,13 +164,13 @@ function contaRicHome() {
 }
 const minutiRic = r => Number(r.totale) || Number(r.minuti) || (Number(r.prep) || 0) + (Number(r.cottura) || 0) || 0;
 function salvaFiltri() { const f = UI.ric; scriviRic('pit-ric-filtri', { piu: !!f.piu, zona: f.zona, cat: f.cat, tempo: f.tempo, diff: f.diff, ordine: f.ordine, fit: f.fit || '', prot: f.prot || '', chi: f.chi || '' }); }
-const ZONE_RIC = [['tutte', 'Tutte'], ['fit', '🏋️ Proteiche'], ['pref', '⭐ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
+const ZONE_RIC = [['tutte', 'Tutte'], ['fit', '🏋️ Proteiche'], ['pref', '❤️ Preferite'], ['sarda', 'Sarde'], ['italiana', 'Italiane'], ['mie', 'Le mie']];   // Mario 08/11 «filtri quasi doppi»: una riga sola
 /* C127 (Mario 10/11 «fai ordine», foto approvata 15:05): in vista Tutte, Proteiche, Preferite; le altre dentro «Altre ▾» */
 const ZONE_ALTRE = ['sarda', 'italiana', 'mie'];
 function zoneRic(f) {   // C151 (Mario 13/11 «3000 tastine… non si capisce nulla»): 4 schede; Sarde, Italiane e Le mie dentro «🎛️ Filtri»
   const z = (k, ico, t) => `<button type="button" class="scelta" data-a="ric-zona" data-v="${k}" aria-pressed="${f.zona === k}">${ico ? `<span aria-hidden="true">${ico}</span>` : ''}${t}</button>`;
   const nv = typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.filter(x => !x.altro).length : 0;
-  return `<div class="ric-zone" role="group" aria-label="Quali">${z('tutte', '', 'Tutte')}${z('fit', '🏋️', 'Proteiche')}<button type="button" class="scelta ric-video-link" data-a="vai" data-v="ricvideo"><span aria-hidden="true">🎬</span>Video${nv ? ` <small>(${nv})</small>` : ''}</button>${z('pref', '⭐', 'Preferite')}</div>`;
+  return `<div class="ric-zone" role="group" aria-label="Quali">${z('tutte', '', 'Tutte')}${z('fit', '🏋️', 'Proteiche')}<button type="button" class="scelta ric-video-link" data-a="vai" data-v="ricvideo"><span aria-hidden="true">🎬</span>Video${nv ? ` <small>(${nv})</small>` : ''}</button>${z('pref', '❤️', 'Preferite')}</div>`;
 }
 /* C127: «⚙️ Portata, difficoltà, tempo e ordine (n)»: chiuso, dice quanti filtri sono accesi lì dentro */
 function piuFiltriRic(f, n, fit) {   // C151: un tasto solo; dentro tutti i gruppi e «Mostra N ricette»
@@ -525,9 +529,12 @@ function attesaRic(titolo, indietro, testo) {
     ? '<p style="margin:0"><b>Non riesco ad aprire il ricettario.</b> Controlla la rete e riprova.</p><button type="button" class="btn pieno" data-a="ric-riprova">Riprova</button>'
     : `<p class="tenue" style="margin:0">${testo || 'Apro il ricettario…'}</p>`}</section></main>`;
 }
+/* C166 (Mario 14/11 «un cuoricino che me le serve in una categoria preferite»): cuore su ogni carta, un tocco = fra le «❤️ Preferite» (o tolta).
+   È uno span dentro la carta: il tocco va a «ric-pref» (il più vicino con data-a), non apre la ricetta. */
+const cuoreRic = (id, pref) => { const si = pref.includes(id); return `<span class="ric-cuore" role="button" tabindex="0" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${si}" aria-label="${si ? 'Togli dalle preferite' : 'Metti fra le preferite'}">${si ? '❤️' : '🤍'}</span>`; };
 const cartaRic = (r, pref, conValori) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     ${r.foto ? `<img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer">` : `<span class="ric-senzafoto">${ico('piatti')}</span>`}
-    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ''}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;
+    <span class="ric-testo"><b>${r.nuova ? '🆕 ' : ''}${esc(r.nome)}</b><small><span class="ric-fonte${r.mia ? ' mia' : ''}">${esc(fonteRic(r))}</span>${{ gallura: ' · Gallura', sarda: ' · Sardegna' }[r.zona] || ''}${r.categoria ? ' · ' + esc((CAT_RIC.find(c => c[0] === r.categoria) || [, r.categoria])[1]) : ''}</small>${conValori && r.nutr && r.nutr.kcal > 0 ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ''}</small>${rigaPagella(r.nutr)}` : ''}</span>${cuoreRic(r.id, pref)}</button>`;
 /* C128 (Mario 10/11 «ne ho pochissime»; C127 «fammi capire chiaro se sono state caricate»): a che punto è la lettura delle fonti.
    Mentre carica ricette il server legge RicetteFit (5 ogni 30 s) e i valori che mancano (10 ogni 30 s); qui i numeri e una stima del tempo.
    C136: col motore automatico spento (di base) si legge solo a mano: il testo dice dove toccare, niente «parto da sola». */
@@ -548,7 +555,7 @@ function letturaFit(d) {   // → { t: testo, p: 0-1 per la barra (-1 = niente b
 /* C124: «🏋️ Proteiche» spiegata in una riga, con le soglie di adesso (cambiano da Impostazioni) e i valori ancora da leggere */
 function notaFit() {
   const g = (k, x) => sogliaFit(k, x);
-  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Entrano tutte le ricette <b>ricche di proteine</b> (regola UE: almeno il ${g('fitEntraPerc', 20)}% delle calorie dalle proteine, almeno ${g('fitSnackProt', 8)} g a porzione). Ognuna ha la <b>pagella</b>: 🟢 bene, 🟡 così così, 🔴 attento, per proteine, calorie, grassi saturi, zuccheri e sale, e un <b>voto da 1 a 10</b> (le proteine contano doppio). Prima quelle col voto più alto. Valori per porzione.</p>`;
+  return `<p class="piccolo ric-nota-fit" style="margin:0">🏋️ Entrano tutte le ricette <b>ricche di proteine</b> (regola UE: almeno il ${g('fitEntraPerc', 20)}% delle calorie dalle proteine, almeno ${g('fitSnackProt', 8)} g a porzione). ${vediVoti() ? 'Ognuna ha la <b>pagella</b>: 🟢 bene, 🟡 così così, 🔴 attento, per proteine, calorie, grassi saturi, zuccheri e sale, e un <b>voto da 1 a 10</b> (le proteine contano doppio). Prima quelle col voto più alto. ' : ''}Valori per porzione.</p>`;
 }
 /* C125 «🔍 Cerca ricette fit» (Mario 10/11 «tasto cerca per ricerche fitness che mi cerca in automatico… tante fonti»): qui sopra filtra
    le proteiche già lette; il tasto chiede al server di cercare su GialloZafferano e RicetteFit e di leggere SUBITO le nuove (5 ogni 30 s).
@@ -842,7 +849,7 @@ function vRicettario() {
   rr = rr.sort(f.ordine === 'nuove' ? (a, b) => (b.aggiunta || 0) - (a.aggiunta || 0) || az(a, b) : f.ordine === 'az' ? az
     : f.ordine === 'veloci' ? (a, b) => (minutiRic(a) || 1e4) - (minutiRic(b) || 1e4) || az(a, b)
     : f.ordine === 'prot' ? (a, b) => protPer100(b.nutr) - protPer100(a.nutr) || az(a, b)
-    : !f.ordine && f.zona === 'fit' ? (a, b) => votoRic(b) - votoRic(a) || protPer100(b.nutr) - protPer100(a.nutr) || az(a, b)   // C141: prima il voto più alto
+    : !f.ordine && f.zona === 'fit' && vediVoti() ? (a, b) => votoRic(b) - votoRic(a) || protPer100(b.nutr) - protPer100(a.nutr) || az(a, b)   // C141: prima il voto più alto
     : f.ordine === 'kcal' ? (a, b) => (a.nutr && a.nutr.kcal > 0 ? a.nutr.kcal : 1e5) - (b.nutr && b.nutr.kcal > 0 ? b.nutr.kcal : 1e5) || az(a, b)
     : (a, b) => (pref.includes(b.id) - pref.includes(a.id)) || (!!b.mia - !!a.mia) || az(a, b));
   const filtrato = filtriAttivi(f);
@@ -899,7 +906,7 @@ function vRicettario() {
       ispira();
       const isp = ispirate();
       if (isp.length) h += `<section class="scheda"><h2>✨ Ispirate ai tuoi piatti</h2><p class="piccolo tenue" style="margin:0">Ricette di GialloZafferano simili a quelle del tuo menù. Si aggiornano ogni giorno.</p>
-        <div class="ric-scorri">${isp.map(r => cartaRic(Object.assign({}, r, { categoria: '' }), pref).replace('</small></span></button>', ` · come «${esc(r.per)}»</small></span></button>`)).join('')}</div></section>`;
+        <div class="ric-scorri">${isp.map(r => cartaRic(Object.assign({}, r, { categoria: '' }), pref).replace('</small></span><span class="ric-cuore"', ` · come «${esc(r.per)}»</small></span><span class="ric-cuore"`)).join('')}</div></section>`;
     }
     /* 🗄 verso la pagina Database: i numeri in una riga */
     const d = RIC.db && !RIC.db.errore ? RIC.db : null;
@@ -917,8 +924,8 @@ const nomeAltro = k => (ALTRO_VIDEO.find(x => x[0] === k) || [, '💡 Altro'])[1
 const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO : []).filter(x => !x.altro).forEach(x => m.set(x.autore, (m.get(x.autore) || []).concat(x))); return [...m]; };
 const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
-    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.altro ? esc(nomeAltro(r.altro)) + ' · ' + esc(r.autore) : esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}${r.video && !r.altro ? (r.controllata ? ' · ✅ controllata con Gemini' : ' · ⚠️ non controllata') : ''}</small>${r.nutr && r.nutr.kcal > 0
-      ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;   // C149: il voto anche fuori
+    <span class="ric-testo"><b>${esc(r.nome)}</b><small>${r.altro ? esc(nomeAltro(r.altro)) + ' · ' + esc(r.autore) : esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}${r.video && !r.altro ? (r.controllata ? ' · ✅ controllata con Gemini' : ' · ⚠️ non controllata') : ''}</small>${r.nutr && r.nutr.kcal > 0
+      ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>${rigaPagella(r.nutr)}` : ''}</span>${cuoreRic(r.id, pref)}</button>`;   // C149: il voto anche fuori
 function vRicVideo(id) {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
   if (RIC.stato !== 'pronto') return attesaRic('Ricette video', 'ricettario');
@@ -990,7 +997,7 @@ function vRicetta(id) {
   if (r.altro) h += `<p class="piccolo ric-altro-nota" style="margin:0">💡 <b>Non è una ricetta</b> (${esc(nomeAltro(r.altro))}): sta in Ricette video → «Consigli, allenamenti e altro».</p>`;   // C151
   else h += valoriRic(r.nutr || (v && v.nutr), r);
   if (r.intro) h += `<details class="ric-intro"><summary>${r.video ? '📝 Cosa scrive sotto il video ·' : esc(r.intro.split('\n')[0].slice(0, 140)) + (r.intro.length > 140 ? '…' : '')} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
-  h += `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '⭐ Preferita' : '☆ Preferita'}</button>
+  h += `<div class="fila"><button type="button" class="btn chiaro" data-a="ric-pref" data-v="${esc(id)}" aria-pressed="${pref}">${pref ? '❤️ Preferita' : '🤍 Preferita'}</button>
       ${r.mia ? `<button type="button" class="btn chiaro" data-a="vai" data-v="ricmia:${esc(id)}">${ico('matita')}Cambia</button>` : ''}
       ${!r.altro && typeof S !== 'undefined' && S.piatti && !S.piatti.some(x => x.ricetta === id) ? `<button type="button" class="btn chiaro" data-a="ric-menu" data-v="${esc(id)}">➕ Metti nel menù</button>` : ''}</div>
     ${r.altro && (r.argomenti || []).length ? `<section class="scheda ric-di-cosa"><h2>Di cosa parla</h2><ul>${r.argomenti.map(t => `<li>${esc(t.replace(/^\*+|\*+$/g, '').replace(/\*/g, ''))}</li>`).join('')}</ul></section>` : ''}
