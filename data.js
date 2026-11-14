@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.35';
+const VERSIONE_APP = '0.10.36';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.36', data: '14/11/2026',
+    nuovo: ['Ricettario: un cuore su ogni ricetta, un tocco e la trovi in «❤️ Preferite» (ognuno ha le sue sul proprio telefono)'],
+    corretto: ['Proteiche: voto e pagella solo sul telefono di Mario; Monica vede le ricette proteiche coi valori, senza voto'] },
   { v: '0.10.35', data: '14/11/2026',
     nuovo: ['Freccia tonda in basso a destra per tornare in cima alle pagine lunghe (Ricettario, Database ricette, Ricette video…), solo per chi gestisce'] },
   { v: '0.10.34', data: '14/11/2026',

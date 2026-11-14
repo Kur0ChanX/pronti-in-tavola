@@ -10,4 +10,4 @@
 - Prova `C166` in tools/prova.js (OK).
 
 ## Stato
-- Patch `c166-voti-cuore.patch`; foto `archivio/foto/2026-11-14-c166-cuore.png` mandata; aspetta l'ok di Mario.
+- v0.10.36 ONLINE 14/11: Mario «ok», giro 107/107 locale.
