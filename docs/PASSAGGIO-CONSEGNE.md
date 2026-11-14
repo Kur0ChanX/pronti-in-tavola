@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #89 (dopo la #88 `session_01WTjqUuBu8asstNqK8GBSNf`, chiusa alla soglia 14/11 04:35; la apre la #88 con `create_session` (catena 2 di 8)).
+Sessione attuale: #88 (dopo la #87 `session_01WTjqUuBu8asstNqK8GBSNf`, chiusa alla soglia 14/11 04:35; la apre la #87 con `create_session` (catena 2 di 8)).
 
 **#88: la apre la #87 (catena 2 di 8).** #87: v0.10.34 ONLINE (C154 scritte «✅ Controllata con Gemini» / «⚠️ Non ancora controllata», 16 controllate una per una, 3 nomi corretti); C161 regole sistemate (CLAUDE.md, ERRORI.md, prove.md); C23 gruppo 1 visto da Mario (7 voci chiuse).
 
