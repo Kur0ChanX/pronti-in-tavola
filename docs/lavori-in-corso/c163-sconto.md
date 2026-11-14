@@ -21,3 +21,6 @@ Nell’ordine aperto (Ordini), finché non è ritirato, Monica tocca «Fai uno s
 
 ## Stato
 - 14/11 01:12 Mario «1 1 ok / 2 in tutti e 2 i modi»: piano ok, sconto in euro E in percentuale. Codice dalla Principale 85.
+- 14/11 #85: codice in PATCH `docs/lavori-in-corso/c163-sconto.patch` (app.js, aiutante.js, opzioni.js, data.js v0.10.33, style.css, sw.js, worker.js, tools/prova.js, tools/prova-database.mjs). Verifica: `git apply --check docs/lavori-in-corso/c163-sconto.patch`; applicata: `python3 -I tools/anteprima.py && SOLO=C163 node tools/prova.js` → OK; `node tools/prova-database.mjs` → 186 OK.
+  Come funziona: `o.sconto = { modo: 'euro'|'perc', valore, il }` (togliere = `null`, non delete: il server aggiorna solo i campi presenti); `scontoSu`/`daPagare` in app.js usati in carta cliente e Monica, liste, incassi del giorno e del mese, WhatsApp {totale}, aiutante. Foglio `foglioSconto` (passo 1 → «Avanti» → passo 2 «Sì, manda lo sconto»; «Togli lo sconto» col suo sì). Niente «Annulla» dopo l'invio (l'avviso è già partito): si toglie dal tasto. Avviso: `/api/pronto` tipo `sconto` + `testo` (≤220 lettere, pulito) e `da`; sw.js titolo «<cuoca> ti ha fatto uno sconto ❤️». Frase: opzione `msgSconto` (parole {nome} {n} {sconto} {totale} {prima}). Aiutante: voce `ordini-sconto`.
+
