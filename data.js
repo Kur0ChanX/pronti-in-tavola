@@ -183,9 +183,12 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.33';
+const VERSIONE_APP = '0.10.34';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.34', data: '14/11/2026',
+    nuovo: ['Ricette video: «✅ Controllata con Gemini» sulle ricette confrontate col video, «⚠️ Non ancora controllata» sulle altre (ogni giorno se ne controllano altre)'],
+    corretto: ['Nomi più chiari per alcune ricette video: «Ricotta di soia», «Gomasio», «Pancake con farina torta a limone»'] },
   { v: '0.10.33', data: '14/11/2026',
     nuovo: ['Sconto su un ordine: tocca l\'ordine, poi «Fai uno sconto», in euro o in percentuale; confermi due volte e al cliente arriva un avviso con la tua frase e un cuore', 'Impostazioni: «Frase dello sconto», la scrivi come vuoi tu'] },
   { v: '0.10.32', data: '14/11/2026',

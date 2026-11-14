@@ -1,5 +1,3 @@
-# Ultima risposta di Claude (14/11/2026 03:33 ora italiana)
+# Ultima risposta di Claude (14/11/2026 04:27 ora italiana)
 
-Ho aggiunto la riga nel Da fare e l'ho salvata su GitHub.
-
-Le quattro domande 🛑 erano già segnate nelle loro righe. La riga nuova dei controlli a gruppi non è decisiva, quindi niente 🛑.
+I'm leaving the app files uncommitted on purpose: committing them would put them online before the full run finishes (PT E69, PT E87). The patch with all the changes is saved on GitHub (`f2b24a67`).
