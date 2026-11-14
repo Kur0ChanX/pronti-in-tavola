@@ -4,6 +4,11 @@
 "modello": "gemini-3.6-flash",
 "scartato": "non è una ricetta"
 },
+"yt:-cnpKcSefGs": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
 "yt:-suyFvtSL6k": {
 "data": "2026-11-13",
 "dubbi": [],
@@ -30,6 +35,16 @@
 },
 "yt:0gdy9DP-i9k": {
 "data": "2026-11-13",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
+},
+"yt:1HpJcjJt_fA": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
+"yt:25v-7yeq5bg": {
+"data": "2026-11-14",
 "modello": "gemini-3.6-flash",
 "scartato": "non è una ricetta"
 },
@@ -102,6 +117,11 @@
 ],
 "porzioni": null
 },
+"yt:Aqg3d_3CXTk": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
+},
 "yt:C1GNtl5fk4E": {
 "data": "2026-11-13",
 "dubbi": [],
@@ -154,6 +174,16 @@
 "Decorare in superficie con pezzetti di banana, 10 g di cioccolato fondente tritato, 10 g di burro di arachidi e qualche goccia di cioccolato bianco."
 ],
 "porzioni": null
+},
+"yt:DwXzv3nzaRs": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
+},
+"yt:Em1IT1WDrQc": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
 },
 "yt:F5silvkBhHo": {
 "data": "2026-11-13",
@@ -263,6 +293,11 @@
 ],
 "porzioni": null
 },
+"yt:IWXhrbM-7Tg": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
 "yt:PRlReKtXhPY": {
 "data": "2026-11-13",
 "modello": "gemini-3.5-flash",
@@ -292,6 +327,11 @@
 },
 "yt:T4MW0tsy4BM": {
 "data": "2026-11-13",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
+"yt:TlZkRVjKsRE": {
+"data": "2026-11-14",
 "modello": "gemini-3.6-flash",
 "scartato": "senza dosi o passi"
 },
@@ -370,6 +410,16 @@
 "modello": "gemini-3.5-flash",
 "scartato": "non è una ricetta"
 },
+"yt:cxk7o1nsyLs": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
+"yt:dNwLHh87tJM": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
 "yt:e8piApMsrP0": {
 "data": "2026-11-13",
 "dubbi": [
@@ -398,6 +448,16 @@
 "Cuocere a fiamma medio-bassa con coperchio per qualche minuto, poi girare il pancake e ultimare la cottura."
 ],
 "porzioni": null
+},
+"yt:h-1McsS3Pac": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
+"yt:iLjstV5PWVA": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
 },
 "yt:mtMQr96ER1g": {
 "data": "2026-11-13",
@@ -434,6 +494,11 @@
 ],
 "porzioni": null
 },
+"yt:o9Frt8So8vA": {
+"data": "2026-11-14",
+"modello": "gemini-3.8-flash",
+"scartato": "non è una ricetta"
+},
 "yt:oZ1xgCirJgY": {
 "data": "2026-11-13",
 "dubbi": [],
@@ -452,6 +517,16 @@
 "Cuocere in forno a 160° per circa 25 minuti."
 ],
 "porzioni": null
+},
+"yt:pYpL9jzQiyg": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
+},
+"yt:q2MIPhZJX_c": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "senza dosi o passi"
 },
 "yt:rg85C4FP8PA": {
 "data": "2026-11-13",
@@ -518,6 +593,11 @@
 "Guarnire la superficie con due palline di cioccolato bianco e un filo di burro d'arachidi al cioccolato bianco."
 ],
 "porzioni": 1
+},
+"yt:w0KAod5aldg": {
+"data": "2026-11-14",
+"modello": "gemini-3.6-flash",
+"scartato": "non è una ricetta"
 },
 "yt:wbyC8HyvWD4": {
 "data": "2026-11-13",
