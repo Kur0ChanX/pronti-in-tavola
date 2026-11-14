@@ -11,6 +11,7 @@
 ## Lavori in corso
 | Chat | Lavoro | File | Dal |
 |---|---|---|---|
+| 🟢 Principale 85 `session_01WTjqUvFmqRdTVxKTg2GE7d` | C163 sconto di Monica (euro e percentuale, doppia conferma, notifica col cuore) | `app.js` · `worker.js` · `tools/prova.js` · `docs/lavori-in-corso/c163-sconto.md` | 14/11 |
 | 🔴 Principale 75 · chiusa 13/11 15:25: C152 + C153 in patch, DOMANDA 1 · 🔴 Principale 76 chiusa 13/11 15:47: v0.10.28 online, C154 scritte in patch · 🟢 Principale 77 `session_01WTjqUwuvHsJV45jPRb8icT` | C154 trascrizione di tutti i video (in sottofondo dalle 15:50); foto di Mario su v0.10.27 (C151) e v0.10.26 (C148 + C150); · 🔴 #74 chiusa 13/11 13:19: v0.10.27 online; trascrizione dei video ogni mattina dopo le 9:00 · 🔴 #73 chiusa 13/11 11:52: v0.10.26 online; trascrizione dei video ogni mattina dopo le 9:00 | `tools/trascrivi_video.py` · `tools/raccogli_video.py` · `tools/dati/` · `docs/lavori-in-corso/c148-*` · `docs/lavori-in-corso/c150-*` · `ricette-stimate.js` · `ricette-video.js` · `ricettario.js` · `aiutante.js` | 13/11 |
 | 🔴 Principale 71 | chiusa 13/11 ~10:55 (soglia): v0.10.25 online, C150 chiave pronta, C148 patch verificata (identica alla #70); tutto alla #72 | `docs/PASSAGGIO-CONSEGNE.md` · `tools/trascrivi_video.py` · `tools/prova.js` | 13/11 |
 | 🔴 Principale 68 | chiusa 12/11 ~18:25 (attesa oltre 180k): foto e video C144-C147, DOMANDA 5 🛑; proteiche controllate una per una (PT E72); alla 69 | `docs/lavori-in-corso/c144-app.patch` · `archivio/foto/2026-11-12-0014-c144-c147-*.png` · `docs/DA-FARE.md` | 12/11 |

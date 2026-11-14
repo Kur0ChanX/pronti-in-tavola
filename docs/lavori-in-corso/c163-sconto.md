@@ -20,4 +20,4 @@ Nell’ordine aperto (Ordini), finché non è ritirato, Monica tocca «Fai uno s
 - Frase di base nelle Impostazioni → Messaggi: «Grazie per l'ordine, {nome}! Ti ho fatto uno sconto di {sconto}: ora paghi {totale} ❤️».
 
 ## Stato
-- 14/11: domande a Mario (euro o percentuale; ok al piano). Niente codice prima del suo ok.
+- 14/11 01:12 Mario «1 1 ok / 2 in tutti e 2 i modi»: piano ok, sconto in euro E in percentuale. Codice dalla Principale 85.
