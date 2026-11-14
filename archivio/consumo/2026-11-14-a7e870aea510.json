@@ -2,17 +2,19 @@
 "account": "108763",
 "sessione": "a7e870aea510",
 "giorno": "2026-11-14",
-"turni": 7,
-"peso": 875946,
-"uscita": 7514,
-"contesto_max": 199717,
-"anomalie": [],
+"turni": 9,
+"peso": 1960239,
+"uscita": 30190,
+"contesto_max": 244037,
+"anomalie": [
+"1 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+],
 "blocchi": {
 "Stop 8 · Promessa a Mario senza voce": 1,
 "Stop 6 · Segno delle domande nel titolo": 2,
 "Stop 6 · Il turno finisce con una": 2,
 "Stop 5 · Domanda a Mario poco chiara": 2,
-"Stop 13 · There are uncommitted changes in": 1
+"Stop 13 · There are uncommitted changes in": 3
 },
 "esempi_blocchi": {
 "Stop 8 · Promessa a Mario senza voce": [
@@ -31,14 +33,16 @@
 "05:40 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
 ],
 "Stop 13 · There are uncommitted changes in": [
-"05:34 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+"05:34 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"11:47 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"11:47 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
 ]
 },
 "remota": "01WTjqUxsM3B",
 "aiutanti": 0,
-"strumenti": 17,
+"strumenti": 57,
 "motori": {
-"opus": 875946
+"opus": 1960239
 },
 "memoria_scaduta": 2,
 "ricreati": 384955
