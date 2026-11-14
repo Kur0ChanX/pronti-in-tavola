@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:59 · 01WTjqUu3oyB
-1 VAI E DAMMI IL LINK PER LISA CON CARRELLO GIà PRONTO DOPO AGGIORNAMENTO DA APP
-
 ## 2026-11-13 19:01 · 01WTjqUu3oyB
 Puoi mettere qualcosa di carino per scocciare i clienti, qualcosa, qualche, nella foto, qualche cosa tipo un messaggio carino, cosa ne so, per dirgli per aiutare nell'app a perfezionarsi, se può dare magari una mano a cliccare il link e fare l'ordine da questo link. Cioè, in poche parole, non voglio che si scocciano con l'app, che se si scocciano ordinano sempre meno possibile. Voglio qualcosa di veramente semplice che l'aiuti, ecco, che aiuti il cliente, perché se si scoccia che deve entrare più volte e non ordina più nell'applicazione.
 
@@ -126,3 +123,6 @@ mettile online ma controllale tutte piano piano con cura
 
 ## 2026-11-14 05:11 · 01WTjqUxsM3B
 Quando clicco database sotto, che potrebbe chiamarsi anche in un altro nome, lì nelle ricette, mi fa scendere molto giù, ma poi per risalire su devo scrollare all'infinito. Mi servirebbe una freccia o un qualcosa per risalire su in un posto fatto bene, una piccola freccia dove io clicco e ritorno su in cima al punto di partenza o nel punto dove in genere non lo so, nel punto di partenza, dai, di su. Mi confermi che per quanto riguarda la parte del calcolo di quanto gli costa la ricetta è tutto a posto, è già tutto implementato, quindi lei può caricare i suoi consumi, di quanto ci mette, quanti ingredienti mette nelle ricette, le quantità, poi di quello che compra, i prezzi di quello che compra, e gli fa il calcolo giusto.
+
+## 2026-11-14 05:33 · 01WTjqUxsM3B
+si va bene la freccia
