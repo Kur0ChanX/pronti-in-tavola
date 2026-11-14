@@ -6,7 +6,8 @@ const GRUPPI_OPZ = [['clienti', 'Menù e ordini dei clienti'], ['messaggi', 'Mes
 const GIORNI_SETT = [[1, 'Lunedì'], [2, 'Martedì'], [3, 'Mercoledì'], [4, 'Giovedì'], [5, 'Venerdì'], [6, 'Sabato'], [0, 'Domenica']];
 const PARTI_BASE = CATEGORIE.map(c => c.slice());   // le parti del menù di base (data.js): Monica le rinomina, le sposta, ne aggiunge (C92)
 const PAROLE_MSG = [['nome', 'il nome del cliente'], ['n', 'il numero dell\'ordine'], ['giorno', 'il giorno del ritiro'], ['totale', 'il totale'],
-  ['indirizzo', 'il tuo indirizzo'], ['mappa', 'il link per arrivare'], ['nota', 'come trovarti'], ['orari', 'gli orari di ritiro'], ['link', 'il link dell\'app']];
+  ['indirizzo', 'il tuo indirizzo'], ['mappa', 'il link per arrivare'], ['nota', 'come trovarti'], ['orari', 'gli orari di ritiro'], ['link', 'il link dell\'app'],
+  ['sconto', 'lo sconto', 1], ['prima', 'il totale senza sconto', 1]];   // 1 = solo nei messaggi che le nominano (pm, C163)
 const OPZIONI = [
   { k: 'avviso', g: 'clienti', nome: 'Avviso in cima al menù', tipo: 'testo', max: 160, def: '', es: 'es. Questa settimana niente fritti',
     aiuto: 'Una frase che i clienti vedono subito, in cima al menù. Vuota = nessun avviso.', parole: /avviso|in cima al menu|scritta per i client|comunicazion|annunci/ },
@@ -54,6 +55,9 @@ const OPZIONI = [
     aiuto: 'Lo mandi su WhatsApp quando l\'ordine è pronto.', parole: /messaggio (di |del )?pront/ },
   { k: 'msgProposta', g: 'messaggi', nome: 'Messaggio «ti propongo un altro giorno»', tipo: 'messaggio', max: 600, def: 'Ciao {nome}! Per il tuo ordine n. {n} ti propongo {giorno}. Rispondi dall\'app con un tocco: {link}',
     aiuto: 'Lo mandi su WhatsApp quando proponi un altro giorno.', parole: /messaggio (per |di |del )?(propost|altro giorno)/ },
+  { k: 'msgSconto', g: 'messaggi', nome: 'Frase dello sconto', tipo: 'messaggio', max: 200, pm: ['nome', 'n', 'sconto', 'totale', 'prima'], senzaFirma: true,
+    def: 'Grazie per l\'ordine, {nome}! Ti ho fatto uno sconto di {sconto}: ora paghi {totale} ❤️',
+    aiuto: 'Arriva al cliente quando gli fai uno sconto (nell\'ordine: «Fai uno sconto»): avviso sul telefono e scritta nel suo ordine.', parole: /(frase|messaggio|testo|scritta) (dello |di |per lo |della )?scont/ },
   { k: 'invitoAmici', g: 'messaggi', nome: 'Messaggio d\'invito per gli amici', tipo: 'messaggio', max: 600, pm: ['link'], senzaFirma: true,
     def: () => `Ciao! Sono ${cuoca()} 🍝 Ho aperto Pronti in Tavola, la mia cucina casalinga: guardi il menù coi prezzi, ordini con pochi tocchi e passi da me a ritirare.\n\nTocca qui:\n{link}`,
     aiuto: 'Il messaggio che parte con «Invita gli amici». Se togli {link} il link lo metto io in fondo.', parole: /messaggio (d.|per l.|dell.)?invit|invit\w* (per )?(gli |i )?amic/ },
@@ -187,9 +191,9 @@ function sezOpz(o) {
       + (cambiataOpz(o.k) ? `<button type="button" class="link" data-a="o-base" data-k="${o.k}">Rimetti le parti di base</button>` : '');
   }
   if (o.tipo === 'messaggio') {
-    const esempio = riempi(v, { nome: 'Laura', n: 12, giorno: 'sabato 14 novembre', totale: '24,00 €', indirizzo: 'Via Roma 1, Olbia', mappa: 'https://maps.google.com/…', nota: 'Suona il citofono', orari: opz('orari') || 'dalle 17 alle 20', link: 'https://…' });
+    const esempio = riempi(v, { nome: 'Laura', n: 12, giorno: 'sabato 14 novembre', totale: '24,00 €', indirizzo: 'Via Roma 1, Olbia', mappa: 'https://maps.google.com/…', nota: 'Suona il citofono', orari: opz('orari') || 'dalle 17 alle 20', link: 'https://…', sconto: '3,00 €', prima: '27,00 €' });
     dentro += `<textarea ${campo} rows="5" maxlength="${o.max}" aria-label="${esc(o.nome)}">${esc(v)}</textarea>
-      <small class="tenue">Parole che riempio io: ${PAROLE_MSG.filter(([k]) => !o.pm || o.pm.includes(k)).map(([k, t]) => `<b>{${k}}</b> ${t}`).join(' · ')}</small>
+      <small class="tenue">Parole che riempio io: ${PAROLE_MSG.filter(([k, , solo]) => o.pm ? o.pm.includes(k) : !solo).map(([k, t]) => `<b>{${k}}</b> ${t}`).join(' · ')}</small>
       <span class="etichetta" style="font-weight:800">Esempio</span><div class="ai-fum lei" style="white-space:pre-line;max-width:100%">${esc(esempio)}${o.senzaFirma ? '' : '\n' + esc(opz('firma'))}</div>
       ${cambiataOpz(o.k) ? `<button type="button" class="link" data-a="o-base" data-k="${o.k}">Rimetti il messaggio di base</button>` : ''}`;
   }
