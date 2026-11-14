@@ -1,10 +1,16 @@
-# Ultima risposta di Claude (14/11/2026 03:30 ora italiana)
+# Ultima risposta di Claude (14/11/2026 03:32 ora italiana)
 
-Ho capito: «1», a patto che nessun lavoro venga dimenticato e che tutti restino controllati o nominati.
+Ho capito: sessione nuova (#87), avvio fatto, aspetto te.
+
+✅ FATTO
+- La sessione 87 è partita: il lavoro è allineato e salvato su GitHub.
+- La sveglia delle 9:10 per scrivere i video l'ho rifatta qui.
+- Il tuo ultimo messaggio («basta che non si dimenticano…») l'ha già fatto la 86: file del «Da fare» più corti, nessun lavoro perso.
 
 ───
-✅ FATTO
-- **Lista dei lavori:** ho accorciato 12 voci lunghe. Le voci restano 109, i lavori che aspettano il tuo controllo restano 103. Il testo intero è nel file della storia.
-- **Diario degli errori:** ho accorciato 6 righe lunghe. Le lezioni sono sempre 81, il testo intero è nel file della storia.
-- Ho contato le voci prima e dopo: sono uguali, non se n'è persa nessuna.
-- Restano anche nominate: a ogni chat nuova un controllo automatico mi elenca i lavori aperti. Tutto è salvato su …
+💡 PARERE
+Niente di urgente. Il passo più utile adesso sono i lotti dei lavori da controllare: te ne mando 5-8 alla volta, i più vecchi prima, e ti dico dove guardarli nell'app. Per ognuno basta un «ok» e lo segno come visto da te.
+
+───
+👉 DA FARE TU
+A cosa …
