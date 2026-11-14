@@ -1,6 +1,7 @@
 # Da fare
 
 ## 0. Aspetta Mario
+- 14/11 · 🟡 Principale 86 · DOMANDA 1 difese PT E87 (blocco su `commit -a` con file dell'app non provati) e PT E88 (prove con data finta, 7 giorni): 1 = tutte e 2 (consiglio) · 2 = solo la 1 · 3 = aspetta.
 - 14/11 · 🟡 Principale 85 · v0.10.33 ONLINE (C163 sconto): chiudi e riapri l'app, Ordini → un ordine → «Fai uno sconto»; una foto quando puoi.
 - 13/11 · 🟡 Principale 84 · v0.10.31 ONLINE (C160 costo della ricetta): chiudi e riapri l'app, Spesa → un ingrediente (confezione e prezzo) e «I miei piatti» (costo sotto ogni piatto); una foto quando puoi. A cosa serve: chiudo la promessa C160.
 - 13/11 · 🟢 Principale 82 · C161 controllo delle regole: 11 proposte in `docs/lavori-in-corso/c161-controllo-regole.md` (3 conflitti, 6 doppioni, 2 morte). 1 = le faccio tutte · 2 = dimmi i numeri da non fare.
