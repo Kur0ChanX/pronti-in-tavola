@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.31';
+const VERSIONE_APP = '0.10.32';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.32', data: '14/11/2026',
+    corretto: ['Gli ordini di prova non tolgono più porzioni dai «pronti subito» e non occupano le teglie della settimana', 'Ordini a voce: «per sabato» detto di sabato vale il sabato dopo, se oggi non si può più ordinare'] },
   { v: '0.10.31', data: '13/11/2026',
     nuovo: ['Spesa: in «I miei piatti» sotto ogni piatto vedi quanto ti costa e quanto ti resta', 'Lista della spesa: «Spenderai circa N €» dai prezzi delle confezioni', 'Costo del piatto: casella «Altre spese» per vaschetta, carta e gas, per ogni misura'],
     migliorato: ['Ingredienti: confezione in g, etti, kg, ml, cl, l o pezzi; prima la confezione, poi il prezzo, con «Cioè … € al kg»', 'Costo dei gusti con ingredienti in più; gli ingredienti senza dose si vedono e non contano'] },
