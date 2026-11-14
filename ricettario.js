@@ -420,7 +420,7 @@ function videoRic(x) {
   const ing = (x.ingredienti || []).map(ingRic).filter(i => i.nome);
   return (VIDEO_CACHE[x.id] = { id: x.id, nome: x.nome, zona: '', categoria: '', foto: x.foto || '', totale: 0, difficolta: '', nutr: x.nutr || null, stimata: !!x.stimata,
     valoriSuoi: x.suoi ? x.valoriSuoi || '' : '', video: true, tipo: x.tipo || 'Altro', data: x.data || '', proteica: !!x.proteica, url: x.url, autore: x.autore || '',
-    porzioni: x.porzioni || 1, ingredienti: ing, passi: (x.passi || []).map(t => ({ t: String(t || ''), foto: [] })).filter(p => p.t), parlato: x.parlato || '', altro: x.altro || '', argomenti: x.altro ? (x.ingredienti || []).map(String) : [],   // C151: non è una ricetta (allenamento, consiglio, prodotti, posti)   // C145: i passi scritti sotto il video
+    porzioni: x.porzioni || 1, ingredienti: ing, passi: (x.passi || []).map(t => ({ t: String(t || ''), foto: [] })).filter(p => p.t), parlato: x.parlato || '', controllata: !!x.controllata, altro: x.altro || '', argomenti: x.altro ? (x.ingredienti || []).map(String) : [],   // C151: non è una ricetta (allenamento, consiglio, prodotti, posti)   // C145: i passi scritti sotto il video
     intro: x.testo || '', cerca: ing.map(i => i.nome).join(', ') });
 }
 const videoDi = id => typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO.find(x => x.id === id) : null;
@@ -917,7 +917,7 @@ const nomeAltro = k => (ALTRO_VIDEO.find(x => x[0] === k) || [, '💡 Altro'])[1
 const autoriVideo = () => { const m = new Map(); (typeof RICETTE_VIDEO !== 'undefined' ? RICETTE_VIDEO : []).filter(x => !x.altro).forEach(x => m.set(x.autore, (m.get(x.autore) || []).concat(x))); return [...m]; };
 const cartaVideo = (r, pref) => `<button type="button" class="ric-carta" data-a="vai" data-v="ricetta:${esc(r.id)}">
     <span class="ric-mini-video"><img src="${esc(r.foto)}" alt="" loading="lazy" referrerpolicy="no-referrer"><i aria-hidden="true">▶</i></span>
-    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.altro ? esc(nomeAltro(r.altro)) + ' · ' + esc(r.autore) : esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}${r.parlato ? ' · 🎙️ ' + (r.parlato === 'dosi' ? 'dosi' : 'passi') + ' dal video' : ''}</small>${r.nutr && r.nutr.kcal > 0
+    <span class="ric-testo"><b>${pref.includes(r.id) ? '⭐ ' : ''}${esc(r.nome)}</b><small>${r.altro ? esc(nomeAltro(r.altro)) + ' · ' + esc(r.autore) : esc(r.tipo)}${r.data ? ' · ' + dataIt(r.data) : ''}${r.proteica ? ' · 🏋️ anche in Proteiche' : ''}${r.video && !r.altro ? (r.controllata ? ' · ✅ controllata con Gemini' : ' · ⚠️ non controllata') : ''}</small>${r.nutr && r.nutr.kcal > 0
       ? `<small class="ric-valori-riga">${r.stimata ? '≈ ' : ''}${esc(rigaFit(r.nutr))}${r.stimata ? ' · stimati' : ' · valori del video'}</small>${rigaPagella(r.nutr)}` : ''}</span></button>`;   // C149: il voto anche fuori
 function vRicVideo(id) {
   if (!RIC.dbLetto) { RIC.dbLetto = true; caricaScaricate(); }
@@ -984,7 +984,9 @@ function vRicetta(id) {
     r.difficolta && 'Difficoltà ' + r.difficolta.toLowerCase(), r.costo && 'Costo ' + r.costo.toLowerCase()].filter(Boolean).join(' · ');
   h += `<div><h1>${esc(r.nome)}</h1>${info ? `<p class="tenue" style="margin:4px 0 0">${esc(info)}</p>` : ''}</div>`;
   if (!r.mia) h += `<p class="piccolo ric-fonte-riga" style="margin:0">Fonte: <b>${esc(fonteRic(r))}</b>${r.url ? ` · <a href="${esc(r.url)}" target="_blank" rel="noopener">Apri l'originale ↗</a>` : ''}</p>`;   // C124
-  if (r.parlato) h += `<p class="piccolo ric-parlato" style="margin:0">🎙️ <b>${r.parlato === 'dosi' ? 'Dosi e passi detti' : 'Passi detti'} nel video</b>: li ha ascoltati Claude, con l'aiuto di Google, da quello che dice ${esc(r.autore || 'chi fa il video')}. Possono avere errori: nel dubbio guarda il video.</p>`;   // C150
+  if (r.video && !r.altro) h += r.controllata   // C154 (Mario 13/11 «metti nei video ricetta controllata con Gemini… ricetta non controllata»)
+    ? `<p class="piccolo ric-parlato" style="margin:0">✅ <b>Controllata con Gemini</b>: Google ha ascoltato il video di ${esc(r.autore || 'chi fa il video')}${r.parlato === 'dosi' ? ' e ha aggiunto gli ingredienti e le dosi che dice' : r.parlato === 'passi' ? ' e ha scritto i passi che dice' : ''}. Possono esserci errori: nel dubbio guarda il video.</p>`
+    : `<p class="piccolo ric-parlato ric-non-controllata" style="margin:0">⚠️ <b>Non ancora controllata</b>: ingredienti come li scrive ${esc(r.autore || 'chi fa il video')} sotto il video, potrebbe mancare qualcosa. Nel dubbio guarda il video.</p>`;
   if (r.altro) h += `<p class="piccolo ric-altro-nota" style="margin:0">💡 <b>Non è una ricetta</b> (${esc(nomeAltro(r.altro))}): sta in Ricette video → «Consigli, allenamenti e altro».</p>`;   // C151
   else h += valoriRic(r.nutr || (v && v.nutr), r);
   if (r.intro) h += `<details class="ric-intro"><summary>${r.video ? '📝 Cosa scrive sotto il video ·' : esc(r.intro.split('\n')[0].slice(0, 140)) + (r.intro.length > 140 ? '…' : '')} <b>Leggi tutto</b></summary>${r.intro.split(/\n+/).map(p => `<p>${esc(p)}</p>`).join('')}</details>`;
