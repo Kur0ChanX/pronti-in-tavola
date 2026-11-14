@@ -19,7 +19,8 @@
 "Stop 5 · Domanda a Mario poco chiara": 1,
 "Stop 8 · Promessa a Mario senza voce": 1,
 "Stop 5 · Foto e video (E240, E247;": 1,
-"Stop 13 · There are uncommitted changes in": 3
+"Stop 13 · There are uncommitted changes in": 3,
+"Stop 12 · Ti fermi ad aspettare Mario": 1
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
@@ -44,6 +45,9 @@
 "04:16 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
 "04:22 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
 "04:27 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"04:34 · Ti fermi ad aspettare Mario con il contesto a 219k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
 ]
 }
 }
