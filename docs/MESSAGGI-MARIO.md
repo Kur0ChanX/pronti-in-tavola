@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 19:02 · 01WTjqUu3oyB
-Non nell'app non so come sia possibile un messaggio carino. Cioè, voglio su WhatsApp che l'invita a ricliccare il link e rifare l'ordine da lì. Se no si scocciola, sta già facendo 2 volte. Già era entrato, non era pratica. Questa è già la terza volta.
-
 ## 2026-11-13 19:12 · 01WTjqUu3oyB
 è normale un lavoro cosí certosino guarda i tasti ...ti ho messo opus alto..... c'è qualche regola che ti manda in confusione o nel kot o nelle preferenze
 
@@ -126,3 +123,6 @@ si va bene la freccia
 
 ## 2026-11-14 11:01 · 01WTjqUxsM3B
 Mi raccomando, non usare la versione lite di Gemini perché la lite la elabora superficialmente.
+
+## 2026-11-14 11:41 · 01WTjqUxsM3B
+Ovviamente i voti delle ricette proteiche le posso vedere solo io, Monica no, perché a lei non interessa molto, però lasciamogli le ricette proteiche. Però i voti per Monica togliamoli. Fammi sapere se hai fatto questa cosa del Monica con la vista cliente, se è già aggiunta. Metti delle ricette, magari un cuoricino che me le serve in una categoria preferite.

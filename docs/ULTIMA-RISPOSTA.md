@@ -1,11 +1,13 @@
-# Ultima risposta di Claude (14/11/2026 09:41 ora italiana)
+# Ultima risposta di Claude (14/11/2026 11:02 ora italiana)
 
+Ho capito: per i video non devo mai usare la versione «lite» di Gemini.
+
+───
 ✅ FATTO
-- Oggi Gemini ha ascoltato 16 video, poi il limite gratis del giorno è finito. Ricette nuove: nessuna. I 16 video li ho controllati uno per uno:
-  - 7 non sono ricette. Sono assaggi di prodotti, come budini e creme proteiche, o consigli come «Dimagrire vs tonificare».
-  - 9 sono ricette, ma nel video nessuno dice le dosi. Restano come prima, con la scritta «⚠️ Non ancora controllata».
-- Niente versione nuova, perché non c'è niente di nuovo da mostrare. Domani alle 9:10 riparto da sola.
+- Ho controllato: la lite non l'abbiamo mai usata. Il programma che ascolta i video prende solo i modelli con il nome esatto «gemini-numero-flash». Le lite e le versioni di prova restano fuori da sole.
+- Anche nel resto dell'app nessuno usa una lite.
+- Ho scritto la tua regola tra le cose già decise, così vale anche per le prossime sessioni.
 
 ───
 💡 PARERE
-Stamattina due modelli di Gemini erano pieni. Per questo ne ha fatti 16 e non i …
+Quando i modelli normali sono pieni, il programma non passa alla lite: si ferma e riprova il giorno dopo. Le ricette arrivano più piano, ma sono fatte bene.

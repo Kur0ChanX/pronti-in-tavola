@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "a7e870aea510",
 "giorno": "2026-11-14",
-"turni": 6,
-"peso": 559727,
-"uscita": 6097,
-"contesto_max": 195120,
+"turni": 7,
+"peso": 875946,
+"uscita": 7514,
+"contesto_max": 199717,
 "anomalie": [],
 "blocchi": {
 "Stop 8 · Promessa a Mario senza voce": 1,
@@ -36,10 +36,10 @@
 },
 "remota": "01WTjqUxsM3B",
 "aiutanti": 0,
-"strumenti": 14,
+"strumenti": 17,
 "motori": {
-"opus": 559727
+"opus": 875946
 },
-"memoria_scaduta": 1,
-"ricreati": 187267
+"memoria_scaduta": 2,
+"ricreati": 384955
 }
