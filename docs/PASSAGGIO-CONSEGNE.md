@@ -4,7 +4,7 @@ Sessione attuale: #87 (dopo la #86 `session_01WTjqUuqoS1WHeKkswH3iaF`, chiusa al
 
 **#87: la apre la #86 (catena 1 di 8).** #86: niente codice dell'app. Difese PT E87 (guardia: `commit -a`/`add -A` + commit fermati con file del sito cambiati, `tools/test-guardia.py` 133/133) e PT E88 (prova «giorni detti … 7 giorni … data finta» in `tools/prova.js`, rossa senza la correzione). Da fare ed ERRORI snelliti (stesse 109 voci, 103 promesse, 81 lezioni; testo intero in `DA-FARE-FATTE.md` e `ERRORI-STORIA.md`).
 
-- **Modo di lavorare (Mario 13/11 18:50, dopo C155):** prima di OGNI modifica scrivo a Mario cosa e perché in una riga e aspetto il suo ok; rispondo a ogni suo messaggio prima di lavorare; niente cose non chieste.
+- **Modo di lavorare (Mario 14/11, C161, sostituisce quello del 13/11):** correzioni ovvie da sola e le dico; funzioni nuove, aspetto e proposte grandi: prima una riga a Mario e il suo ok (`CLAUDE.md` «Regime leggero»); rispondo a ogni suo messaggio prima di lavorare.
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (14/11 03:30, #86):** niente di urgente; Mario vuole che i 103 lavori fatti non si dimentichino («basta che non si dimenticano e che vengano controllati o menzionati»): proposta C23 = mandarglieli a gruppi da guardare nell'app quando ha 10 minuti (aspetta il suo «quando»). Poi foto v0.10.33/31/30, C159 vista cliente (2 🛑), C161, pagella Proteiche, PC di casa.
@@ -38,7 +38,7 @@ Sessione attuale: #87 (dopo la #86 `session_01WTjqUuqoS1WHeKkswH3iaF`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Modo di lavorare: prima di OGNI modifica una riga a Mario e il suo ok.
+1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Modo di lavorare: `CLAUDE.md` «Regime leggero» (correzioni ovvie da sola).
 2. C23: quando Mario dice «ora», mandargli i lavori 👁 a gruppi (5-8 per messaggio, i più vecchi prima), con dove guardare nell'app; ogni «ok» → voce in `DA-FARE-FATTE.md` con «👁 Visto da Mario».
 3. Sveglia C150 (9:10): trascrizione dei video (se non gira, rilanciarla in sottofondo); solo `git add` coi nomi (PT E87).
 4. C159 vista cliente dopo le 2 risposte 🛑; C161 col «1»; poi foto menù 0.10.30, scritte C154, idee C149, pagella C141.

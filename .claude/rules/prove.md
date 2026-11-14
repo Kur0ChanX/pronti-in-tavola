@@ -24,4 +24,4 @@ Si carica da sola quando apro con Read, Edit o Write un file delle prove.
 ## Lezioni (per scriverle)
 - **RVC E38** Scorrimento: tolleranza 2 px, mai il pixel esatto.
 - **RVC E52** Prove con orologio fisso (`page.clock.setFixedTime`): mai dipendere dall'ora.
-- **PT regime leggero** (Mario 08/11) Ogni passo di `tools/prova.js` è autonomo: se dipende da quelli prima, mette lo stato con `page.evaluate` in testa al passo (così `SOLO=<parola>` lo prova da solo).
+- **PT regime leggero** (Mario 08/11) Ogni passo di `tools/prova.js` è autonomo: se dipende da quelli prima, mette lo stato con `page.evaluate` in testa al passo (così `SOLO=<parola>` lo prova da solo; PT E70: rossa da sola e verde nel giro = dipende dalla prima).

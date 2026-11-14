@@ -20,4 +20,6 @@ Guardate (#82): preferenze della chat, `docs/kit-progetto/REGOLE.md`, `CLAUDE.md
 | 10 | DOPPIONE «prima grep -n»: RVC E23 e regola del kit «Token» | Tolgo dal diario |
 | 11 | MORTA: PT E63 (sblocco di Cloudflare dell'11/11, finito) | Nella storia |
 
-Stato: aspetta Mario (1 = tutte · 2 = numeri da non fare).
+- 14/11 (#87): «correzione ovvie falle da solo anteprima di prova tieni 400 il resto valuta bene tutto deve avere solo pro e mettici logica oer bon creare conglitti o problemi e scegli tu»
+
+Stato: FATTO 14/11 (#87). 1 = correzioni ovvie da sola, il resto con l'ok (`CLAUDE.md`); 2 = anteprima locale, codice in patch; 3 = «niente PR né main» in `CLAUDE.md`, RVC E19/E31 tolte; 4 = 400 px; 5-10 = una regola in un posto solo (E20 e E70 in `prove.md`; E16+E39, E52+E80, E65+E79 unite; grep nel kit); 11 = E63 nella storia. Righe vecchie in fondo a `ERRORI-STORIA.md`.

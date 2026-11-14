@@ -159,3 +159,20 @@ Mario 12:53 «è uno scherzo verooooooo????» con la foto di «GAG PARTE 4 | Gam
 - **PT E87** Con codice dell'app non ancora provato nella cartella, MAI `git commit -a` / `-am`: porta su anche il codice e il push lo pubblica (14/11 01:0x, C159 online prima del giro completo). Sempre `git add <file>` coi nomi dei documenti. Difesa (14/11 #86): la guardia ferma `commit -a` / `add -A` / `add .` + commit con file del sito cambiati (`tools/test-guardia.py`).
 - **PT E88** Giorno detto uguale a oggi («per sabato» di sabato) dava «nessun giorno»: le prove giravano solo nei giorni feriali e non l'hanno visto. Ogni frase con un giorno della settimana si prova anche il giorno stesso Difesa (14/11 #86): prova «giorni detti … 7 giorni … data finta (PT E88)» in `tools/prova.js` (orologio finto, anticipo 0 e 1).
 - **PT E89** Sessione nuova aperta da Mario (8 di 8): gli ho detto «incolla il testo che trovi in `docs/PROSSIMA-SESSIONE.md`» invece di dargli il testo pronto (14/11 #85). Il testo da incollare va SEMPRE nel messaggio, in un riquadro da copiare. Difesa: `domande-chiare.py` (`manca_testo_da_incollare`).
+
+## Righe tolte o unite da ERRORI.md il 14/11/2026 (C161, Principale 87: doppioni e regole morte)
+E70 vive in `.claude/rules/prove.md` («ogni passo è autonomo»), E20 in `prove.md` e `CLAUDE.md`, E63 finita (sblocco dell'11/11), RVC E19/E31 morte (qui niente squash né `main`), «prima grep -n» è nel kit «Token», foto di lavoro: vale PT E58 (400 px).
+
+- **PT E16** Animazioni: provarle su Safari; niente `filter` animati su iPhone.
+- **PT E39** Funzioni del telefono: cercare i bug WebKit noti e provarle nell'app installata su iPhone/iPad.
+- **PT E52** Lavoro che si ripete da solo: misurarlo PRIMA contro il limite gratuito.
+- **PT E80** Durata con un servizio gratis: contare il limite AL GIORNO, non solo al minuto.
+- **PT E65** Filtro a parole: provarlo su un elenco vero e grande e guardare cosa entra («yogurt» metteva il pollo a colazione).
+- **PT E79** Filtro che scarta righe intere (pubblicità, @, #): provarlo su un elenco vero e contare cosa butta; si toglie la parte, non la riga (C154: 92 ricette senza farina o cacao).
+- **PT E70** Ogni prova prepara da sola il suo stato (guida chiusa, ruolo, vista): rossa da sola e verde nel giro = dipende dalla prima.
+- **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
+- **RVC E19** «unrelated histories» dopo uno squash: `git fetch --unshallow origin`, poi merge normale.
+- **RVC E20** Mai `prove … | grep … && git commit`: prima l'esito, poi il commit.
+- **RVC E31** Dopo lo squash: unire `main` prima di ogni altro commit.
+- **RVC E23 E32 E33 E36** Prima `grep -n`, poi le righe utili; all'avvio niente `list_sessions` completo, `actions_list`, `list_events`, `Artifact read`.
+- **RVC E37 E48 E49** Foto: io un'anteprima ≤1000 px; a Mario un telefono e una schermata per foto, pezzi alti ≤1100 px.

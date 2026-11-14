@@ -17,7 +17,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E13** Nomi di persona sempre dai dati (`gestori/<UID>.nome`), mai scritti nel codice.
 - **PT E14** A ogni lavoro proporre soluzioni smart e professionali, non il minimo; decide Mario. Regole scritte generali.
 - **PT E15** Indirizzo corretto nel codice: controllare anche i dati salvati; l'app usa sempre `SITO` di `data.js`.
-- **PT E16** Animazioni: provarle su Safari; niente `filter` animati su iPhone.
+- **PT E16 E39** Animazioni e funzioni del telefono: cercare i bug WebKit noti e provarle su Safari e nell'app installata su iPhone/iPad; niente `filter` animati su iPhone.
 - **PT E17** Mai scrivere nelle schermate una funzione che non c'è ancora: testi onesti.
 - **PT E18 E66** Sito da aprire nei passi = SEMPRE link cliccabile (se il profondo non va, quello base); da copiare = riquadro (`domande-chiare.py`).
 - **PT E19** Samsung Internet scurisce ogni sito: pulsante «Apri in Chrome»; provare i browser dei telefoni veri.
@@ -31,7 +31,6 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E26** Voce per persone vere: tono 1.0, frasi corte, sigle per intero; ascoltarla prima di consegnarla.
 - **PT E28/E68** Modulo sicuro solo dal PC (`origin` di `get_session`: android = telefono). Chiavi Google (`X-Goog-Api-Key`): rifiutate, a mano nell'ambiente.
 - **PT E69** Push di file del sito sul ramo = app pubblicata (`sito.yml`): senza foto approvata e giro verde solo patch; prima leggo «Stato» delle consegne. Difesa: C143.
-- **PT E70** Ogni prova prepara da sola il suo stato (guida chiusa, ruolo, vista): rossa da sola e verde nel giro = dipende dalla prima.
 - **PT E29** Ogni indirizzo esterno si prova dal vivo; un giro automatico non resta mai fermo sullo stesso errore.
 - **PT E30** «Migliora» una ricetta ufficiale = completare ciò che manca, mai aggiungere; nel dubbio un esempio prima.
 - **PT E31** Misure chieste come le usa chi cucina (teglie); i conti li fa l'app.
@@ -41,7 +40,6 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E35** Controllo nuovo dentro una classe esistente: foto sul telefono prima di consegnarlo.
 - **PT E37** Interruttore che chiude la porta ai clienti: conferma, avviso rosso con «Riapri», nome non perso; nel dubbio leggere il server.
 - **PT E38** File nuovo dell'app: in `FILE_APP` di `tools/sito.py`, `GUSCIO` di `sw.js` e anteprima; dopo il push `curl` del file.
-- **PT E39** Funzioni del telefono: cercare i bug WebKit noti e provarle nell'app installata su iPhone/iPad.
 - **PT E40** Riconoscimento vocale: provato con frasi vere e reso robusto; non basta che risponda.
 - **PT E42** Ogni stato di attesa si prova sul percorso più lento (iPad dalla Home, server lento).
 - **PT E43** Cambia un passaggio (chi è accettato, quando) → ricontrollare ogni funzione che dipende da quello stato.
@@ -53,8 +51,8 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E49** Un dato che arriva da più strade si traduce in un punto solo (`catRic`); le prove usano il dato vero del server.
 - **PT E50** «Cerca ancora» ricorda dove è arrivato; tetti dopo aver tolto le già lette; guardare il ritmo vero di ogni fonte.
 - **PT E51** Prima di dare un nome a un'azione (`data-a`) cercarlo in tutti i file (prova «nessun nome definito due volte»).
-- **PT E52** Lavoro che si ripete da solo: misurarlo PRIMA contro il limite gratuito.
-- **PT E65** Filtro a parole: provarlo su un elenco vero e grande e guardare cosa entra («yogurt» metteva il pollo a colazione).
+- **PT E52 E80** Lavoro che si ripete o servizio gratis: misurarlo PRIMA contro il limite gratuito, AL GIORNO e non solo al minuto.
+- **PT E65 E79** Filtro a parole o che scarta righe: provarlo su un elenco vero e grande, contare cosa entra e cosa butta; si toglie la parte, non la riga («yogurt» metteva il pollo a colazione; C154: 92 ricette senza farina o cacao).
 - **PT E53** All'avviso di un limite PRIMA si ferma la fonte (interruttore), poi si corregge; il freno vale per tutto il server.
 - **PT E54** Per un mio errore la soluzione è gratis e nel codice, mai i soldi di Mario; consumo alto = avviso, mai una persona ferma.
 - **PT E55** Una seconda strada per una cosa che esiste: controllarla contro ogni lettore dello stato; «è cambiato?» su insiemi ordinati.
@@ -65,7 +63,6 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E60** In `DA-FARE-FATTE.md` solo voci chiuse (mai righe `| C…` di voci aperte); dopo ogni ritocco di Da fare `promesse.py --controlla`.
 - **PT E61** Sessione nata solo per aspettare Mario: avvio leggero, solo i passi delle consegne, niente indagini né uscite lunghe.
 - **PT E62** Promemoria di una domanda già fatta: riga semplice che parte da «🛑», mai nel blocco «❓».
-- **PT E63** Lo sblocco gratuito di Cloudflare arriva dopo mezzanotte UTC (11/11: 01:26): sveglie alle 01:35, controllo ogni minuto.
 - **PT E64** Risorsa a mano su Cloudflare: prima l'account giusto (quello con «pronti-in-tavola» in Workers & Pages); 10041 = account sbagliato.
 - **PT E73** Scelte numerate: ogni nome controllato con la tabella (lingua, numeri) prima di mandarle (C148).
 - **PT E74** Prova «senza rete» finta: alla fine `delete navigator.onLine` (controllo in `passo` di `tools/prova.js`).
@@ -73,8 +70,6 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E76** Scelte ambigue («1 = pubblica» letto «palestra pubblica»): scrivere «metto online nell'app» e cosa vede Mario.
 - **PT E77** Gemini: mai un modello solo; 503 → riprova, poi il Flash precedente; 429 al minuto → aspetta, al giorno → cambia; 404 → via.
 - **PT E78** Video con attrezzi al posto del cibo = allenamento: scartato (`ATTREZZI`).
-- **PT E79** Filtro che scarta righe intere (pubblicità, @, #): provarlo su un elenco vero e contare cosa butta; si toglie la parte, non la riga (C154: 92 ricette senza farina o cacao).
-- **PT E80** Durata con un servizio gratis: contare il limite AL GIORNO, non solo al minuto.
 - **PT E81** Tasto «scrivi» accanto agli ordini: chi non è pratico ci scrive l'ordine; deve capirlo e portarlo nell'app (C155).
 - **PT E82** Messaggio di Mario durante il passaggio di sessione: la vecchia risponde SUBITO (corto); la nuova risponde all'ultimo messaggio PRIMA dell'avvio lungo. Prima di chiedere, rileggere i suoi messaggi.
 - **PT E83** Pubblicato senza foto della pagina intera sul telefono di Mario (caratteri grandi): «Scrivimi» fisso copriva microfono e «Dettami l’ordine». Prima di pubblicare: foto del menù coi caratteri grandi e ok di Mario sulle foto, non solo il «vai».
@@ -87,12 +82,9 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
-- **RVC E19** «unrelated histories» dopo uno squash: `git fetch --unshallow origin`, poi merge normale.
-- **RVC E20** Mai `prove … | grep … && git commit`: prima l'esito, poi il commit.
 - **RVC E21** Mai inventare un pulsante; selettore: medium «Medio», high «Alto», xhigh «Extra».
-- **RVC E23 E32 E33 E36** Prima `grep -n`, poi le righe utili; all'avvio niente `list_sessions` completo, `actions_list`, `list_events`, `Artifact read`.
-- **RVC E31** Dopo lo squash: unire `main` prima di ogni altro commit.
-- **RVC E37 E48 E49** Foto: io un'anteprima ≤1000 px; a Mario un telefono e una schermata per foto, pezzi alti ≤1100 px.
+- **RVC E23 E32 E33 E36** All'avvio niente `list_sessions` completo, `actions_list`, `list_events`, `Artifact read`.
+- **RVC E37 E48 E49** Foto: a Mario un telefono e una schermata per foto, pezzi alti ≤1100 px.
 - **RVC E59** File di `.claude/`: ok scritto di Mario nella chat di quella sessione.
 - **RVC E60** Dopo un riavvio: unire la scorta e leggere `docs/ULTIMO-MESSAGGIO.md`.
 - **RVC E61** Prima di ogni push `git fetch`: il lavoro di un'altra chat si unisce con un merge normale.
