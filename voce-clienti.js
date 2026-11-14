@@ -103,6 +103,8 @@ function giornoDetto(tok) {
     if (!m) continue;
     let avanti = (i - d.getDay() + 7) % 7;
     if (avanti === 0 && (m[2] || /\bprossim/.test(t))) avanti = 7;
+    // detto di sabato «per sabato»: se oggi non si può più ordinare (anticipo, ora limite) vale il sabato dopo (PT E88)
+    if (avanti === 0 && typeof giorniPossibili === 'function') { const pr = (giorniPossibili(0)[0] || {}).g; if (pr && pr > og) avanti = 7; }
     return { g: piuGiorni(og, avanti), detto: GIORNI_VOCE[i] };
   }
   if (/\b(fine settimana|weekend|week end)\b/.test(t)) return { g: piuGiorni(og, (6 - d.getDay() + 7) % 7 || 7), detto: 'il fine settimana' };
