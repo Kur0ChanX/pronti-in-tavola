@@ -98,6 +98,24 @@ def ultimo_commit_del_ramo(ingresso, ramo):
         return ""
 
 
+SITO = re.compile(r"^(?:[^/]+\.(?:js|mjs|html|css)|manifest\.webmanifest|media/.*|tools/sito\.py|wrangler\.jsonc|\.github/workflows/sito\.yml)$")
+COMMIT_TUTTO = INIZIO + r"git\s+commit\b[^;&|\n'\"]*\s(?:-[a-zA-Z]*a[a-zA-Z]*\b|--all\b)"
+ADD_TUTTO = INIZIO + r"git\s+add\s+(?:[^;&|\n]*\s)?(?:-A\b|--all\b|\.(?=\s|$|[;&|]))"
+
+
+def file_sito_cambiati():
+    """File del sito (percorsi di sito.yml) cambiati e non ancora in `git add`. FILE_SITO_PROVA solo per le prove."""
+    if "FILE_SITO_PROVA" in os.environ:
+        return [f for f in os.environ["FILE_SITO_PROVA"].split(",") if SITO.match(f)]
+    try:
+        cwd = os.environ.get("CLAUDE_PROJECT_DIR") or None
+        r = subprocess.run(["git", "status", "--porcelain", "--untracked-files=all"], capture_output=True, text=True, timeout=5, cwd=cwd)
+        nomi = [riga[3:].split(" -> ")[-1].strip('"') for riga in r.stdout.splitlines() if len(riga) > 3 and riga[1] != " "]
+        return [n for n in nomi if SITO.match(n)]
+    except Exception:
+        return []
+
+
 def merge_a_meta():
     """True se c'è un merge a metà (MERGE_HEAD). MERGE_A_META_PROVA solo per le prove. Errore: False, la guardia lascia passare."""
     if "MERGE_A_META_PROVA" in os.environ:
@@ -152,6 +170,11 @@ def controlla_bash(cmd):
     if re.search(COMMIT, cmd) and re.search(SCRIPT, cmd) and merge_a_meta():
         esito("deny", "script e commit nello stesso comando con un merge a metà (E286: lo script è fallito e i segni «<<<<<<<» "
                       "sono finiti su GitHub). Prima lo script, poi `git diff --check` o `grep -c '^<<<<<<<'` = 0, SOLO dopo il commit.")
+    if (re.search(COMMIT_TUTTO, cmd) or (re.search(ADD_TUTTO, cmd) and re.search(COMMIT, cmd))):
+        cambiati = file_sito_cambiati()
+        if cambiati:
+            esito("deny", "commit di tutti i file con file dell'app cambiati (PT E87: il push li pubblica, anche se non provati): "
+                          + ", ".join(cambiati[:5]) + ". Usa `git add <file>` coi nomi; il codice dell'app solo dopo il giro verde.")
     if re.search(COMMIT, cmd) and re.search(SALTA_CI, cmd, re.I):
         esito("deny", "«[skip ci]» nel messaggio del commit (F04): non serve (i workflow su push hanno già i percorsi, un commit di soli "
                       "documenti non fa partire niente) e fa danno (nello squash GitHub lo incolla e main non pubblica, E132). "

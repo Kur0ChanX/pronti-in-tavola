@@ -10,7 +10,7 @@ def decide(nome, ingresso, corpo="", **finti):
     # CORPO_PR_PROVA: corpo finto della PR, così le prove dell'unione non chiedono niente a GitHub.
     r = subprocess.run([sys.executable, "-I", GUARDIA], input=json.dumps({"tool_name": nome, "tool_input": ingresso}),
                        capture_output=True, text=True, timeout=10, cwd=QUI,
-                       env={**os.environ, "CLAUDE_PROJECT_DIR": QUI, "CORPO_PR_PROVA": corpo, **finti})
+                       env={**os.environ, "CLAUDE_PROJECT_DIR": QUI, "CORPO_PR_PROVA": corpo, "FILE_SITO_PROVA": "", **finti})
     if r.returncode != 0:
         return "errore:" + r.stderr.strip()[-200:]
     if not r.stdout.strip():
@@ -140,6 +140,21 @@ for comando, meta, atteso in A_META:
     if avuto != atteso:
         errori += 1
         print(f"✗ «{comando}» (merge a metà {meta}): atteso {atteso}, avuto {avuto}")
+# PT E87: commit di tutti i file con file dell'app cambiati e non provati → fermo; coi nomi passa.
+SITO = [
+    ("git commit -am 'doc'", "app.js", "deny"), ("git commit -a -m x", "media/logo.png", "deny"),
+    ("git commit --all -m x", "index.html", "deny"), ("git add -A && git commit -qm x", "style.css", "deny"),
+    ("git add . && git commit -m x", "app.js", "deny"), ("git add --all; git commit -m x", "worker.js", "deny"),
+    ("git commit -am 'doc'", "docs/DA-FARE.md", "passa"), ("git commit -am x", "", "passa"),
+    ("git add docs/DA-FARE.md && git commit -m x", "app.js", "passa"), ("git add -A", "app.js", "passa"),
+    ("git commit -m 'a capo'", "app.js", "passa"), ("git commit --amend -m x", "app.js", "passa"),
+    ("git add tools/x.py && git commit -m 'commit -a vietato'", "app.js", "passa"),
+]
+for comando, file_cambiati, atteso in SITO:
+    avuto = decide("Bash", {"command": comando}, FILE_SITO_PROVA=file_cambiati)
+    if avuto != atteso:
+        errori += 1
+        print(f"✗ «{comando}» (cambiati {file_cambiati or 'nessuno'}): atteso {atteso}, avuto {avuto}")
 # Il matcher della guardia in .claude/settings.json deve mandarle TUTTI gli strumenti che controlla (C469 B7: C413 era spento).
 impostazioni = json.load(open(os.path.join(QUI, ".claude", "settings.json"), encoding="utf-8"))
 matcher = "|".join(h.get("matcher", "") for h in impostazioni["hooks"]["PreToolUse"]
@@ -151,6 +166,6 @@ for s in STRUMENTI:
     if s not in matcher.split("|"):
         errori += 1
         print(f"✗ {s} non arriva alla guardia (matcher di .claude/settings.json)")
-totale = len(BASH) + len(ALTRI) + len(CORPI) + len(PR) + len(A_META) + len(STRUMENTI)
+totale = len(BASH) + len(ALTRI) + len(CORPI) + len(PR) + len(A_META) + len(SITO) + len(STRUMENTI)
 print(f"{totale - errori}/{totale} prove della guardia verdi" if errori == 0 else f"{errori} prove ROSSE su {totale}")
 sys.exit(1 if errori else 0)
