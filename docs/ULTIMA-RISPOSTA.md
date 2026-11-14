@@ -1,15 +1,9 @@
-# Ultima risposta di Claude (14/11/2026 01:48 ora italiana)
+# Ultima risposta di Claude (14/11/2026 02:06 ora italiana)
 
-Ho capito: Lisa ora è l'ordine n. 1 nell'app e vuoi che vada avanti.
+Ho capito: ti ho detto di copiare il testo da un file invece di dartelo pronto. Vuoi la causa vera e una difesa perché non ricapiti.
+🧠 Opus · Medio
 
 ✅ FATTO
-- Il lavoro di Lisa è chiuso e l'ho tolto dalle cose che aspettano te. È salvato su GitHub.
-
-───
-👉 DA FARE TU
-A cosa serve: questa sessione è chiusa e la catena è a 8 su 8. Per andare avanti serve la sessione nuova, e la apri tu.
-1. Apri https://claude.ai/code e scegli il repo `Kur0ChanX/pronti-in-tavola`, ramo `claude/pronti-ramo-definitivo`.
-2. Imposta motore **Opus 5.5** e impegno **Medio**.
-3. Incolla il testo che trovi in `docs/PROSSIMA-SESSIONE.md`, nel riquadro «Testo da incollare».
-
-La sessione nuova trova …
+- **Causa:** le regole per le consegne dicevano solo «la apre Mario dal file `docs/PROSSIMA-SESSIONE.md`». Non dicevano di mettere il testo nel messaggio, così l'ho saltato.
+- **Difesa:** ho aggiunto un **controllo automatico** (un piccolo programma che legge i miei messaggi prima che ti arrivino). Se ti dico «incolla il testo che trovi nel file» senza il riquadro da copiare, mi blocca. Le sue prove: 48 su 48 verdi.
+- Ho anche scritto la …
