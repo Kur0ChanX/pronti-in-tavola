@@ -2,11 +2,13 @@
 "account": "108763",
 "sessione": "a7e870aea510",
 "giorno": "2026-11-14",
-"turni": 7,
-"peso": 875946,
-"uscita": 7514,
-"contesto_max": 199717,
-"anomalie": [],
+"turni": 8,
+"peso": 1908307,
+"uscita": 29704,
+"contesto_max": 242455,
+"anomalie": [
+"1 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)"
+],
 "blocchi": {
 "Stop 8 · Promessa a Mario senza voce": 1,
 "Stop 6 · Segno delle domande nel titolo": 2,
@@ -36,9 +38,9 @@
 },
 "remota": "01WTjqUxsM3B",
 "aiutanti": 0,
-"strumenti": 17,
+"strumenti": 56,
 "motori": {
-"opus": 875946
+"opus": 1908307
 },
 "memoria_scaduta": 2,
 "ricreati": 384955
