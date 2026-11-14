@@ -1757,6 +1757,35 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (r.dopo !== 'dopodomani') throw new Error('«dopo domani» capito come ' + r.dopo);
     if (r.salato !== '' || r.si !== 'Sì.') throw new Error('ritocco dei giorni a caso: ' + JSON.stringify(r));
   });
+  await passo('voce dei clienti: i giorni detti («per sabato», «lunedì prossimo») in tutti e 7 i giorni della settimana, con data finta (PT E88)', async () => {   // autonomo: contesto suo con l'orologio finto
+    const c3 = await browser.newContext({ ...devices['Pixel 7'], deviceScaleFactor: 1, timezoneId: 'Europe/Rome' });
+    const p3 = await c3.newPage(), sbagli = [];
+    try {
+      await p3.clock.setFixedTime(new Date('2026-11-16T10:00:00+01:00'));
+      await p3.goto(FILE); await p3.waitForTimeout(2500);
+      for (let d = 16; d <= 22; d++) for (const anticipo of [0, 1]) {   // lunedì 16 … domenica 22 novembre 2026, ore 10
+        await p3.clock.setFixedTime(new Date(`2026-11-${d}T10:00:00+01:00`));
+        const r = await p3.evaluate(an => {
+          S.impostazioni.anticipo = an; const og = oggi(), primo = (giorniPossibili(0)[0] || {}).g, fuori = [];
+          GIORNI_VOCE.forEach((nome, i) => {
+            for (const frase of [`due teglie di lasagne per ${nome}`, `due teglie di lasagne per ${nome} prossimo`]) {
+              const gg = giornoDetto(frase.split(' '));
+              if (!gg) { fuori.push(`«${frase}» → nessun giorno`); continue; }
+              const avanti = (daIso(gg.g) - daIso(og)) / 864e5;
+              if (daIso(gg.g).getDay() !== i) fuori.push(`«${frase}» → ${gg.g}, giorno della settimana sbagliato`);
+              else if (avanti < 0 || avanti > 7) fuori.push(`«${frase}» → ${gg.g}, fuori dalla settimana`);
+              else if (avanti === 0 && (/prossimo/.test(frase) || primo !== og)) fuori.push(`«${frase}» → oggi ${og}, ma oggi non si può ordinare o ha detto «prossimo»`);
+              else if (avanti === 7 && !/prossimo/.test(frase) && primo === og) fuori.push(`«${frase}» → fra 7 giorni, ma oggi si può ancora ordinare`);
+            }
+          });
+          return { og, fuori };
+        }, anticipo);
+        if (r.og !== `2026-11-${d}`) sbagli.push(`orologio finto non usato: oggi ${r.og} invece del ${d}`);
+        r.fuori.forEach(f => sbagli.push(`${r.og} anticipo ${anticipo}: ${f}`));
+      }
+    } finally { await c3.close(); }
+    if (sbagli.length) throw new Error(sbagli.length + ' giorni sbagliati: ' + sbagli.slice(0, 4).join(' | '));
+  });
   await passo('aiutante di Monica: su iPad con l\'app sulla Home il microfono detta con l\'ascolto preciso (il riconoscitore di Safari lì non parte, PT E39)', async () => {   // autonomo
     await page.evaluate(() => { P.ruolo = 'monica'; UI.devCliente = false; UI.foglio = null; AI.msgs = []; AI.attesa = false; UI.aiQui = null; AIC.msgs = [];
       Object.defineProperty(navigator, 'userAgent', { get: () => 'Mozilla/5.0 (iPad; CPU OS 26_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.1 Mobile/15E148 Safari/604.1', configurable: true });
