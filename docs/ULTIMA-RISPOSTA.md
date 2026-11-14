@@ -1,30 +1,10 @@
-# Ultima risposta di Claude (13/11/2026 23:52 ora italiana)
-
-🧠 Opus · Alto
+# Ultima risposta di Claude (14/11/2026 01:09 ora italiana)
 
 ✅ **FATTO**
-- Il costo della ricetta è online: versione **0.10.31**.
-- Le prove dell'app sono passate tutte: 102 su 102.
-- Ho controllato sul sito vero: risponde 0.10.31 e c'è il nuovo «Spenderai circa».
-- Il lavoro è salvato su GitHub.
+- La versione **0.10.32** è online. Le prove sono passate tutte, 103 su 103, e l'ho controllato sul sito vero.
+- Un ordine «Sto solo provando l'app» non toglie più porzioni dai «pronti subito» e non occupa più le teglie. Se Monica lo rimette tra i veri, torna a contare.
+- «Per sabato» detto di sabato adesso vale il sabato dopo.
 
-───
-👉 **DA FARE TU**
-A cosa serve: vedere coi tuoi occhi che funziona sul telefono. Solo così chiudo la promessa.
-1. Chiudi del tutto l'app e riaprila.
-2. Vai in Spesa e apri un ingrediente: prima la confezione, poi il prezzo.
-3. Apri «I miei piatti»: sotto ogni piatto c'è quanto costa.
-4. Mandami una foto quando puoi.
+👉 Chiudi e riapri l'app. Quando puoi, mandami una foto dove si vede la versione 0.10.32.
 
-## Domande a Mario
-
-❓ **DOMANDA 2 · Ordini di prova di Monica** 🛑
-
-📌 **Di cosa parliamo:** quando Monica invia un ordine e spunta «Sto solo provando l'app», l'ordine è di prova. Già adesso non conta negli incassi né nella lista della spesa. Restano però 2 buchi:
-- toglie porzioni vere dai «pronti subito», come se fossero vendute;
-- occupa posto nelle teglie della settimana.
-
-1 · Correggo: un ordine di prova non tocca più i pronti né le teglie (**consiglio**). Esce in una versione nuova, dopo le prove e il tuo ok.
-2 · Lascia così: Monica deve ricordarsi di cancellare ogni ordine di prova.
-
-Rispondi col numero. …
+⚠️ Aspetto ancora la tua risposta sullo sconto («1 1») e il passo a cui sei col numero di Lisa.
