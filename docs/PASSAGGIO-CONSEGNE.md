@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #86 (dopo la #85 `session_01WTjqUvFmqRdTVxKTg2GE7d`, chiusa alla soglia 14/11 01:28; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
+Sessione attuale: #86 `session_01WTjqUuqoS1WHeKkswH3iaF` (aperta da Mario 14/11 02:23, catena 1 di 8; dopo la #85 `session_01WTjqUvFmqRdTVxKTg2GE7d`). Scorta della #85 unita. Sveglia C150 rifatta nella #86 (`trig_01XSJxcg5WkqtkMrxf1DDAhy`, 14/11 9:10), quella della #77 cancellata.
 
 **#86: la apre Mario (catena a 8 di 8).** #85: v0.10.33 ONLINE (C163 sconto di Monica: euro e %, doppia conferma, avviso col cuore, frase `msgSconto` nelle Impostazioni, voce aiutante `ordini-sconto`); giro 104/104, server 186/186, foto approvate da Mario. C162 Lisa: Mario è sul documento Firebase giusto (`omwfdndqiz478x`, n: 2, entro 2026-11-21); gli ho detto matita su `n` → 1, poi contatori/ordini `prossimo` 3 → 2.
 
