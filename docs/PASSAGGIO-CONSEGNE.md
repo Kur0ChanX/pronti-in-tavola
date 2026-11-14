@@ -1,16 +1,16 @@
 # Passaggio di consegne
 
-Sessione attuale: #86 `session_01WTjqUuqoS1WHeKkswH3iaF` (aperta da Mario 14/11 02:23, catena 1 di 8; dopo la #85 `session_01WTjqUvFmqRdTVxKTg2GE7d`). Scorta della #85 unita. Sveglia C150 rifatta nella #86 (`trig_01XSJxcg5WkqtkMrxf1DDAhy`, 14/11 9:10), quella della #77 cancellata.
+Sessione attuale: #87 (dopo la #86 `session_01WTjqUuqoS1WHeKkswH3iaF`, chiusa alla soglia 14/11 03:30; la apre la #86 con `create_session` (catena 1 di 8)).
 
-**#86: la apre Mario (catena a 8 di 8).** #85: v0.10.33 ONLINE (C163 sconto di Monica: euro e %, doppia conferma, avviso col cuore, frase `msgSconto` nelle Impostazioni, voce aiutante `ordini-sconto`); giro 104/104, server 186/186, foto approvate da Mario. C162 Lisa: Mario è sul documento Firebase giusto (`omwfdndqiz478x`, n: 2, entro 2026-11-21); gli ho detto matita su `n` → 1, poi contatori/ordini `prossimo` 3 → 2.
+**#87: la apre la #86 (catena 1 di 8).** #86: niente codice dell'app. Difese PT E87 (guardia: `commit -a`/`add -A` + commit fermati con file del sito cambiati, `tools/test-guardia.py` 133/133) e PT E88 (prova «giorni detti … 7 giorni … data finta» in `tools/prova.js`, rossa senza la correzione). Da fare ed ERRORI snelliti (stesse 109 voci, 103 promesse, 81 lezioni; testo intero in `DA-FARE-FATTE.md` e `ERRORI-STORIA.md`).
 
 - **Modo di lavorare (Mario 13/11 18:50, dopo C155):** prima di OGNI modifica scrivo a Mario cosa e perché in una riga e aspetto il suo ok; rispondo a ogni suo messaggio prima di lavorare; niente cose non chieste.
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (14/11 01:30, #85):** C162 Lisa a n. 1 (aspettare la sua foto dopo i 2 cambi e controllare in app: Ordini → Prossimi, Lisa n. 1); foto di v0.10.33 (sconto, dal suo telefono); poi C159 vista cliente (2 domande), C161 controllo regole, foto 0.10.26/30/31, pagella Proteiche, PC di casa.
+- **Cosa preme a Mario adesso (14/11 03:30, #86):** niente di urgente; Mario vuole che i 103 lavori fatti non si dimentichino («basta che non si dimenticano e che vengano controllati o menzionati»): proposta C23 = mandarglieli a gruppi da guardare nell'app quando ha 10 minuti (aspetta il suo «quando»). Poi foto v0.10.33/31/30, C159 vista cliente (2 🛑), C161, pagella Proteiche, PC di casa.
 
-## Stato (14/11 01:28 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261114-01WTjqUvFmqR/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
+## Stato (14/11 03:30 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261114-01WTjqUuqoS1/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -24,13 +24,11 @@ Sessione attuale: #86 `session_01WTjqUuqoS1WHeKkswH3iaF` (aperta da Mario 14/11 
 - C141: `docs/lavori-in-corso/c141-proteiche-stimate.md` (parole di Mario, specifica, stato). Foto: `archivio/foto/2026-11-11-1930-c141-pagella-*.png`.
 - Decisioni: `docs/SPECIFICA.md`. Lavori: `docs/DA-FARE.md`. Regole: `.claude/rules/progetto.md`, `.claude/rules/prove.md`.
 
-## Sessione appena chiusa (#84)
-- C160: rimandate le 4 foto (Mario «rifammi la domanda»), «va bene come consiglio» → patch applicata, v0.10.31 online (giro 102/102).
-- C159 ordini di prova: «1 ok come consiglio» (scritto nella #83, inoltrato) + «Correggi i 2 buchi come consiglio» → app.js `teglieOrdine`, `riprendiPronti`/`rimettiPronti` (escludono `o.prova`), `ord-prova`/`tutti-prova-si` rimettono i pronti, `ord-vero` li riprende, invio locale senza scalo; dati.js `presi`; prova `C159 ordine di prova…`. Online in v0.10.32.
-- PT E87: un `git commit -am` (per un documento) ha pubblicato C159 prima del giro completo; poi il giro era verde. Difesa da fare: guardia che ferma `commit -a` con file del sito cambiati.
-- PT E88: «per sabato» detto di sabato → nessun giorno (voce-clienti.js `giornoDetto`): ora, se oggi non si può più ordinare, vale il sabato dopo. Difesa da fare: prove con data finta per i 7 giorni.
-- C162 Lisa: niente chiave per scrivere nel database → a Mario i passi su Firebase (contatori/ordini `ultimo` → ordine, `n` 2→1; consiglio `prossimo` 3→2). Foto in `archivio/foto/2026-11-14-0053-mario-lisa-n2-*.jpg`.
-- C163 sconto: parole intere e piano nel file del lavoro; voce in DA-FARE. Controllo Da fare: 3 voci aggiunte (C162, C163, C164).
+## Sessione appena chiusa (#86)
+- Avvio: scorta #85 unita; sveglia C150 rifatta qui (`trig_01XSJxcg5WkqtkMrxf1DDAhy`, 14/11 9:10 → arriva alla #86: la #87 la rifà sua e cancella questa), quella della #77 cancellata.
+- Mario «si va bene per tutti» → PT E87 + PT E88 fatte (commit 2b81f4bd e f9141a7). Prova E88 controllata: tolta apposta la correzione di `giornoDetto` → 7 giorni sbagliati; rimessa → verde.
+- Mario «1 basta che non si dimenticano e che vengano controllati o menzionati» → snellimento: 12 voci di Da fare accorciate (storia in `DA-FARE-FATTE.md` «Storia delle voci ancora aperte … 14/11»), 6 righe di ERRORI accorciate (storia in fondo a `ERRORI-STORIA.md`). Ancora sopra i tetti (Da fare 46 KB su 40, ERRORI 12 KB su 10): il motivo sono i 103 lavori 👁 che aspettano Mario.
+- Controllo Da fare: 0 voci aggiunte (C23 copre già i lotti 👁).
 
 ## Strade provate e scartate (perché; così la prossima non le rifà)
 - #83: rifare la pagina (`salvatoOk`, `render`) quando si esce dal campo prezzo/confezione → no: il tocco subito dopo su «kg» o «Fatto» si perdeva (PT E86). Tasto dell'unità che converte il numero (250 g → 0,25 kg) → no: chi scrive «1» e poi tocca «kg» vuole 1 kg; il numero resta, cambia l'unità.
@@ -40,20 +38,18 @@ Sessione attuale: #86 `session_01WTjqUuqoS1WHeKkswH3iaF` (aperta da Mario 14/11 
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Aperte: C162 Lisa (n 2→1 e prossimo 3→2 su Firebase: aspetta la sua foto), foto sconto v0.10.33.
-2. C163 FATTA e online (v0.10.33): chiudere la promessa 👁 solo quando Mario manda la foto dall'app. Idee non fatte: sconto anche dall'aiutante a voce (oggi solo «portami lì»).
-3. C162: se Mario si blocca, guidarlo con foto (GUIDE-GIUSTE.md: Firebase); a fine passi scrivere in GUIDE-GIUSTE i pulsanti veri.
-4. C159 vista cliente dopo le 2 risposte (gesto, tocchi). C161 col «1». Poi i vecchi: foto menù 0.10.30, trascrizione (sveglia #77), scritte C154, idee C149, pagella C141.
-⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67), `01WTjqUvtoJC` (#70), `01WTjqUuVK9Q` (#83, il suo codice era la patch C160, già online).
+1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Modo di lavorare: prima di OGNI modifica una riga a Mario e il suo ok.
+2. C23: quando Mario dice «ora», mandargli i lavori 👁 a gruppi (5-8 per messaggio, i più vecchi prima), con dove guardare nell'app; ogni «ok» → voce in `DA-FARE-FATTE.md` con «👁 Visto da Mario».
+3. Sveglia C150 (9:10): trascrizione dei video (se non gira, rilanciarla in sottofondo); solo `git add` coi nomi (PT E87).
+4. C159 vista cliente dopo le 2 risposte 🛑; C161 col «1»; poi foto menù 0.10.30, scritte C154, idee C149, pagella C141.
+⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67), `01WTjqUvtoJC` (#70), `01WTjqUuVK9Q` (#83).
 
 ## Domande aperte
-- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 23; prime C163 sconto 🛑 e C162 Lisa).
+- Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 22; 🛑: C159, v0.10.26, C141, PC di casa).
 
 ## Ultimo messaggio di Mario
-14/11 01:23 (foto Firebase 01:25-01:28 dopo): «le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica» → sconto v0.10.33 online; Lisa: passi a mano su Firebase (n 2→1, prossimo 3→2), Mario è sul documento giusto, aspetta la sua foto. Prima: 01:12 «1 1 ok / 2 in tutti e 2 i modi».
+14/11 ~03:35: «1 basta che non si dimenticano e che vengano controllati o menzionati» → snellimento fatto (sopra); proposta dei lotti C23, aspetta il suo «quando».
 
-## Dopo le consegne (Mario 14/11, dopo la chiusura della #85)
-- «ok fatto è andato spero non si sia rotto nulla» = dice di aver fatto i 2 cambi su Firebase per Lisa (n 2→1, prossimo 3→2). Poi Mario: «è numero 1 lisa ora nell'app grazie, vai avanti ora» → C162 CHIUSA (riga tolta da Aspetta Mario). «Vai avanti» = la #86 riparte dai Prossimi passi.
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C165; prossimo M libero: M1.
@@ -63,9 +59,11 @@ Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal regis
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-14 01:11 · [AVVIO] Sessione #85 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, titolo, promemoria domande
-- 2026-11-14 01:23 · le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lis… → C163 foto ok → v0.10.33 online; C162 Lisa passi a mano su Firebase (n 2→1, prossimo 3→2)
+- 2026-11-14 02:24 · [AVVIO] Sessione #86 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-14 03:00 · si va bene per tutti che dici? → 
+- 2026-11-14 03:25 · rifammi la domanda chiara → 
+- 2026-11-14 03:27 · 1 basta che non si dimenticano e che vengano controllati o menzionati → 
 
 Ultimo, intero:
-> le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica
+> 1 basta che non si dimenticano e che vengano controllati o menzionati
 
