@@ -1,9 +1,12 @@
-# Ultima risposta di Claude (14/11/2026 02:06 ora italiana)
+# Ultima risposta di Claude (14/11/2026 02:25 ora italiana)
 
-Ho capito: ti ho detto di copiare il testo da un file invece di dartelo pronto. Vuoi la causa vera e una difesa perché non ricapiti.
-🧠 Opus · Medio
 
-✅ FATTO
-- **Causa:** le regole per le consegne dicevano solo «la apre Mario dal file `docs/PROSSIMA-SESSIONE.md`». Non dicevano di mettere il testo nel messaggio, così l'ho saltato.
-- **Difesa:** ho aggiunto un **controllo automatico** (un piccolo programma che legge i miei messaggi prima che ti arrivino). Se ti dico «incolla il testo che trovi nel file» senza il riquadro da copiare, mi blocca. Le sue prove: 48 su 48 verdi.
-- Ho anche scritto la …
+
+## Domande a Mario
+
+❓ DOMANDE
+DOMANDA 1 · Faccio adesso le 2 difese contro gli errori di ieri?
+📌 Di cosa parliamo: sono due controlli automatici per me, tu e Monica non vedete niente nell'app. Servono adesso perché ieri questi due errori sono già capitati: lo sconto è andato online prima delle prove e «per sabato», detto di sabato, non funzionava.
+1 · sì, tutte e 2: non posso più mettere online codice non provato, e le frasi coi giorni vengono provate in tutti e 7 i giorni (consiglio)
+2 · solo la 1: niente codice online prima delle prove, ma le frasi coi giorni restano provate solo nei giorni feriali
+3 · …
