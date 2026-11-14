@@ -2,10 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:56 · 01WTjqUu3oyB
-1 vai di consiglio 
-Riusciamo a metterlo dentro l'ordine? Almeno rimane tracciato questo primo ordine che gli stanno facendo dall'app. Cioè, se noi iniziamo proprio male, vorrei questo primo ordine dall'app. Come possiamo fare? Inventati qualcosa.
-
 ## 2026-11-13 18:59 · 01WTjqUu3oyB
 1 VAI E DAMMI IL LINK PER LISA CON CARRELLO GIà PRONTO DOPO AGGIORNAMENTO DA APP
 
@@ -127,3 +123,6 @@ correzione ovvie falle da solo anteprima di prova tieni 400 il resto valuta bene
 
 ## 2026-11-14 04:12 · 01WTjqUuBu8a
 mettile online ma controllale tutte piano piano con cura
+
+## 2026-11-14 05:11 · 01WTjqUxsM3B
+Quando clicco database sotto, che potrebbe chiamarsi anche in un altro nome, lì nelle ricette, mi fa scendere molto giù, ma poi per risalire su devo scrollare all'infinito. Mi servirebbe una freccia o un qualcosa per risalire su in un posto fatto bene, una piccola freccia dove io clicco e ritorno su in cima al punto di partenza o nel punto dove in genere non lo so, nel punto di partenza, dai, di su. Mi confermi che per quanto riguarda la parte del calcolo di quanto gli costa la ricetta è tutto a posto, è già tutto implementato, quindi lei può caricare i suoi consumi, di quanto ci mette, quanti ingredienti mette nelle ricette, le quantità, poi di quello che compra, i prezzi di quello che compra, e gli fa il calcolo giusto.

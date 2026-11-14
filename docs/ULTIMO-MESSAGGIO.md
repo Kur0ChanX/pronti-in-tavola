@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (14/11/2026 04:12 ora italiana)
+# Ultimo messaggio di Mario (14/11/2026 05:11 ora italiana)
 
-mettile online ma controllale tutte piano piano con cura
+Quando clicco database sotto, che potrebbe chiamarsi anche in un altro nome, lì nelle ricette, mi fa scendere molto giù, ma poi per risalire su devo scrollare all'infinito. Mi servirebbe una freccia o un qualcosa per risalire su in un posto fatto bene, una piccola freccia dove io clicco e ritorno su in cima al punto di partenza o nel punto dove in genere non lo so, nel punto di partenza, dai, di su. Mi confermi che per quanto riguarda la parte del calcolo di quanto gli costa la ricetta è tutto a posto, è già tutto implementato, quindi lei può caricare i suoi consumi, di quanto ci mette, quanti ingredienti mette nelle ricette, le quantità, poi di quello che compra, i prezzi di quello che compra, e gli fa il calcolo giusto.
