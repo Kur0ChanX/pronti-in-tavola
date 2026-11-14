@@ -1,5 +1,5 @@
-# Ultima risposta di Claude (14/11/2026 03:33 ora italiana)
+# Ultima risposta di Claude (14/11/2026 04:27 ora italiana)
 
-Ho aggiunto la riga nel Da fare e l'ho salvata su GitHub.
+Ho trovato perché una prova a volte veniva rossa. La prova aspettava WhatsApp solo 1,5 secondi, e quando il computer era lento non bastavano. Ora aspetta che WhatsApp si apra davvero.
 
-Le quattro domande 🛑 erano già segnate nelle loro righe. La riga nuova dei controlli a gruppi non è decisiva, quindi niente 🛑.
+Da sola adesso è verde. Ho rilanciato il giro completo sull'ultima versione. Se è tutto verde, metto online la 0.10.34 e ti scrivo.
