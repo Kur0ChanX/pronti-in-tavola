@@ -9,20 +9,29 @@
 "anomalie": [],
 "blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": 1,
-"Stop 8 · Promessa a Mario senza voce": 1,
-"Stop 6 · Il turno finisce con una": 3
+"Stop 8 · Promessa a Mario senza voce": 2,
+"Stop 6 · Il turno finisce con una": 3,
+"Stop 12 · Ti fermi ad aspettare Mario": 1,
+"Stop 6 · Segno delle domande nel titolo": 1
 },
 "esempi_blocchi": {
 "Stop 5 · Domanda a Mario poco chiara": [
 "02:25 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
 ],
 "Stop 8 · Promessa a Mario senza voce": [
-"02:25 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Ho spostato in questa chat la **sveglia** (un messaggio che mi arriva da solo a un'ora fissa) delle 9:10 per la trascrizione dei video». Nella"
+"02:25 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Ho spostato in questa chat la **sveglia** (un messaggio che mi arriva da solo a un'ora fissa) delle 9:10 per la trascrizione dei video». Nella",
+"03:30 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Quando hai 10 minuti te li mando a gruppi, con cosa aprire nell'app». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la vede Mario> "
 ],
 "Stop 6 · Il turno finisce con una": [
 "02:25 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
 "03:04 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
 "03:25 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 12 · Ti fermi ad aspettare Mario": [
+"03:30 · Ti fermi ad aspettare Mario con il contesto a 189k (oltre 180k, C455): fai PRIMA le consegne (skill consegne, tutte le fasi; nella sessione nuova la riga in «Aspetta Mario» e le sue domande). NON risc"
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"03:30 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 86 ❓23 · file snelliti» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avvi"
 ]
 },
 "remota": "01WTjqUuqoS1",
