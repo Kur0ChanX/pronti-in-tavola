@@ -1,0 +1,87 @@
+diff --git a/app.js b/app.js
+index b15e95de..c7d45ac8 100644
+--- a/app.js
++++ b/app.js
+@@ -1989,6 +1989,22 @@ let ultimaVista = '', ultimoFoglio = '';
+ /* C84 (Mario 08/11 «quando vado indietro voglio che mi ritorni dove ero»): punto della pagina per ogni schermata lasciata.
+    Si torna allo stesso punto con «Indietro» (anche col gesto del telefono) o tornando alla schermata di prima (es. dopo «Salva»). */
+ const POS = {}; let penultimaVista = '';
++/* C165 (Mario 14/11 «una piccola freccia dove io clicco e ritorno su in cima»): nelle pagine di Monica e Mario,
++   dopo uno schermo e mezzo in giù compare una freccia tonda in basso a destra; un tocco = in cima, subito (C124: niente scorrimento lento).
++   Nel Ricettario sta sopra il tasto «🗄 Database». Ai clienti no: in basso hanno già barra e microfoni (PT E83). */
++function frecciaSu() {
++  let b = document.getElementById('freccia-su');
++  if (!b) {
++    b = document.createElement('button'); b.type = 'button'; b.id = 'freccia-su'; b.className = 'freccia-su'; b.setAttribute('aria-label', 'Torna in cima');
++    b.innerHTML = '<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M12 5l-7 7m7-7l7 7M12 5v14" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
++    b.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'instant' }));
++    document.body.appendChild(b);
++  }
++  b.classList.toggle('vedi', P.ruolo === 'monica' && !UI.foglio && window.scrollY > window.innerHeight * 1.5);
++  b.classList.toggle('con-salta', !!document.querySelector('.ric-salta'));
++}
++window.addEventListener('scroll', () => frecciaSu(), { passive: true });
++
+ function render() {
+   applicaParti();   // parti del menù scelte da Monica (opzioni.js, C92)
+   document.documentElement.classList.toggle('grande', !!P.grande);
+@@ -2037,6 +2053,7 @@ function render() {
+   }
+   UI.torna = false;
+   if (UI.inCima) { UI.inCima = false; window.scrollTo(0, 0); }   // dopo il tocco su una notifica: si parte dall'alto
++  frecciaSu();   // C165
+   if (attivo && document.getElementById(attivo) && /^(ing-|nota-nuova|ai-testo)/.test(attivo)) document.getElementById(attivo).focus();
+   ultimaVista = UI.vista; ultimoFoglio = chiaveFoglio;
+   if (chiuso === 'chiuso') setTimeout(provaApri, 0);
+diff --git a/style.css b/style.css
+index 662c26f9..b3bd0599 100644
+--- a/style.css
++++ b/style.css
+@@ -897,6 +897,11 @@ body.con-video { overflow: hidden; }
+ .ric-salta { position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; border: 0; border-radius: 999px;
+   padding: 12px 18px; font: inherit; font-weight: 700; background: var(--vino); color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+ body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
++/* C165: freccia per tornare in cima (pagine di Monica e Mario) */
++.freccia-su { position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; width: 52px; height: 52px; border: 0; border-radius: 50%;
++  display: none; place-items: center; padding: 0; background: var(--vino); color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
++.freccia-su.vedi { display: grid; }
++.freccia-su.con-salta { bottom: calc(80px + env(safe-area-inset-bottom)); }
+ 
+ /* «Portami lì» dell'aiutante (C87): riga in cima alla pagina e lampo sulla voce aperta */
+ .ai-qui { scroll-margin-top: 84px; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; background: var(--foglio); border: 2px solid var(--vino); }
+diff --git a/tools/prova.js b/tools/prova.js
+index 071844d8..7002e404 100644
+--- a/tools/prova.js
++++ b/tools/prova.js
+@@ -1294,6 +1294,31 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
+     if (await b.textContent() !== '🗄 Database') throw new Error('in cima il tasto dice: ' + await b.textContent());
+     await page.evaluate(() => vai('home'));
+   });
++  await passo('C165 freccia per tornare in cima: compare scendendo, un tocco = in cima, sopra «🗄 Database», mai ai clienti', async () => {   // autonoma
++    // Mario 14/11 «una piccola freccia dove io clicco e ritorno su in cima al punto di partenza»
++    await page.evaluate(() => { P.ruolo = 'monica'; S.impostazioni.ricettario = true; UI.foglio = null; RIC.voceAutoFatto = true;
++      RIC.chiedi = async c => c.cerca ? { ricette: [] } : c.db ? { db: null } : { ricetta: null }; vai('home'); vai('ricettario'); });
++    await page.locator('.ric-elenco .ric-carta').nth(20).waitFor({ timeout: 8000 });
++    const f = page.locator('#freccia-su');
++    if (await f.isVisible()) throw new Error('in cima la freccia non deve vedersi');
++    await page.evaluate(() => window.scrollTo(0, 3000)); await page.waitForTimeout(300);
++    if (!(await f.isVisible())) throw new Error('scendendo la freccia non compare: ' + JSON.stringify(await page.evaluate(() => [scrollY, innerHeight, document.body.scrollHeight, (document.getElementById('freccia-su') || {}).className, P.ruolo, UI.vista])));
++    const r = await page.evaluate(() => { const a = document.getElementById('freccia-su').getBoundingClientRect(), b = document.querySelector('.ric-salta').getBoundingClientRect(); return { sotto: a.bottom <= b.top + 1, dentro: a.right <= innerWidth && a.bottom <= innerHeight, alto: a.height }; });
++    if (!r.sotto || !r.dentro || r.alto < 44) throw new Error('freccia sopra il tasto «🗄 Database», dentro lo schermo, almeno 44 px: ' + JSON.stringify(r));
++    await foto('165-freccia-su');
++    await f.click(); await page.waitForTimeout(400);
++    if (await page.evaluate(() => window.scrollY) > 5) throw new Error('la freccia non riporta in cima');
++    if (await f.isVisible()) throw new Error('in cima la freccia resta accesa');
++    // Database ricette (pagina a parte): c'è anche lì
++    await page.evaluate(() => vai('ricdb')); await page.waitForTimeout(300);
++    await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight)); await page.waitForTimeout(300);
++    const lungo = await page.evaluate(() => document.body.scrollHeight > innerHeight * 2.6);
++    if (lungo && !(await f.isVisible())) throw new Error('nel Database ricette la freccia non compare');
++    // cliente: mai (in basso ha barra e microfoni)
++    await page.evaluate(() => { P.ruolo = 'cliente'; vai('menu'); window.scrollTo(0, 4000); window.dispatchEvent(new Event('scroll')); }); await page.waitForTimeout(300);
++    if (await f.isVisible()) throw new Error('il cliente non deve vedere la freccia');
++    await page.evaluate(() => { P.ruolo = 'monica'; vai('home'); window.scrollTo(0, 0); });
++  });
+   await passo('cliente: invito «Installa l\'app» all\'ingresso, scelta iPhone | Android, notifiche (Mario 08/11 «fallo subito»)', async () => {   // autonoma
+     await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.installata = false; UI.foglio = null; UI.invitoFatto = false; UI.invitoProva = true; vai('menu'); });
+     await page.waitForSelector('.foglio .inv-scelta', { timeout: 3000 });
