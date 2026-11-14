@@ -3,7 +3,6 @@ Voci accorciate il 14/11 (#86): testo intero in `docs/DA-FARE-FATTE.md` («Stori
 
 ## 0. Aspetta Mario
 - 14/11 · 🟡 Principale 88 · C160 tempo nel costo: 1 · resta il gas in € per teglia · 2 · caselle facoltative «minuti di forno» e «il mio tempo all'ora» (consiglio 2). A cosa serve: senza ok non aggiungo funzioni.
-- 14/11 · 🛑 · 🟡 Principale 88 · C165 freccia per tornare su (foto `archivio/foto/2026-11-14-c165-freccia-su.png`): 1 = va bene, la metto online · 2 = cambiala. A cosa serve: senza il tuo ok non la pubblico.
 - 14/11 · 🟡 Principale 85 · v0.10.33 ONLINE (C163 sconto): chiudi e riapri l'app, Ordini → un ordine → «Fai uno sconto»; una foto quando puoi.
 - 13/11 · 🟡 Principale 84 · v0.10.31 ONLINE (C160 costo della ricetta): chiudi e riapri l'app, Spesa → un ingrediente (confezione e prezzo) e «I miei piatti» (costo sotto ogni piatto); una foto quando puoi. A cosa serve: chiudo la promessa C160.
 - 13/11 · 🛑 · 🟢 Principale 82 · C159 vista cliente di Monica, 2 domande: DOMANDA 1 gesto per aprirla (1 = come il tuo: dito verso destra in alto a sinistra · 2 = verso l'alto) · DOMANDA 2 tocchi la prima volta (1 = 7 sulla firma come te · 2 = 5). A cosa serve: Monica prova l'app come un cliente.
