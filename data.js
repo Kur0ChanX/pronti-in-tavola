@@ -183,9 +183,11 @@ function statoIniziale() {
 }
 
 /* Versione dell'app e novità: le vede solo lo sviluppatore (Mario 07/11). La prima è la più nuova. */
-const VERSIONE_APP = '0.10.34';
+const VERSIONE_APP = '0.10.35';
 /* Novità per versione, divise come nelle note di RVC (Mario 07/11): Nuovo · Migliorato · Corretto */
 const NOVITA = [
+  { v: '0.10.35', data: '14/11/2026',
+    nuovo: ['Freccia tonda in basso a destra per tornare in cima alle pagine lunghe (Ricettario, Database ricette, Ricette video…), solo per chi gestisce'] },
   { v: '0.10.34', data: '14/11/2026',
     nuovo: ['Ricette video: «✅ Controllata con Gemini» sulle ricette confrontate col video, «⚠️ Non ancora controllata» sulle altre (ogni giorno se ne controllano altre)'],
     corretto: ['Nomi più chiari per alcune ricette video: «Ricotta di soia», «Gomasio», «Pancake con farina torta a limone»'] },

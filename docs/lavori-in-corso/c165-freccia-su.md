@@ -10,4 +10,4 @@
 - Prova `C165` in `tools/prova.js` (OK). C84 da sola (`SOLO=C84`) è rossa anche senza la patch («Indietro» 2262 invece di 2500): da guardare nel giro completo.
 
 ## Stato
-- Patch `c165-freccia-su.patch` (app.js, style.css, tools/prova.js); foto `archivio/foto/2026-11-14-c165-freccia-su.png` mandata; aspetta l'ok di Mario.
+- v0.10.35 ONLINE 14/11: Mario «si va bene la freccia», giro 106/106 locale.
