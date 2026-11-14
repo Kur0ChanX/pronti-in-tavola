@@ -211,4 +211,11 @@ controlla(c == 2, "link solo nel riquadro (da copiare) non conta come cliccabile
 c, err = stop(SENZA_LINK, attivo=True)
 controlla(c == 0, "secondo giro: silenzio", f"{c} {err}")
 
+# PT E89 (Mario 14/11): testo da incollare nell'altra chat = riquadro nel messaggio
+SOLO_FILE = "👉 DA FARE TU\nA cosa serve: aprire la sessione nuova.\n1. Apri https://claude.ai/code\n2. Incolla il testo che trovi in `docs/PROSSIMA-SESSIONE.md`."
+c, err = stop(SOLO_FILE)
+controlla(c == 2 and "PT E89" in err, "testo da incollare solo nel file: blocca", f"{c} {err}")
+c, err = stop(SOLO_FILE + "\n```\n[AVVIO] Sessione #86\n```")
+controlla(c == 0 and not err, "testo da incollare nel riquadro: passa", f"{c} {err}")
+
 print(f"OK domande-chiare: {ok_n} controlli")

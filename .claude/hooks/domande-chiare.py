@@ -86,6 +86,17 @@ def manca_link_da_aprire(testo):
     return bool(SITO_DA_APRIRE.search(fuori)) and 'https://' not in fuori
 
 
+INCOLLA = re.compile(r'\bincoll\w*', re.I)
+TESTO_IN_FILE = re.compile(r'PROSSIMA-SESSIONE|CAMBIO-ACCOUNT|testo che trovi|«Testo da incollare»', re.I)
+
+
+def manca_testo_da_incollare(testo):
+    """PT E89 (Mario 14/11 «la prima volta che non mi fai copiare la stringa da mettere nell'altra chat»):
+    se dico a Mario di incollare un testo, il testo sta nel messaggio in un riquadro di codice, mai solo
+    «lo trovi in docs/PROSSIMA-SESSIONE.md». → True se manca."""
+    return bool(INCOLLA.search(testo)) and bool(TESTO_IN_FILE.search(testo)) and '```' not in testo
+
+
 def difetti(testo):
     """→ elenco dei difetti del blocco delle domande (vuoto = va bene)."""
     b = blocco(testo)
@@ -236,6 +247,11 @@ def main():
         if manca_a_cosa_serve(finale):
             print('«👉 DA FARE TU» senza «A cosa serve» (kit 37.2, Mario: «regola per tutti i progetti»): prima riga del '
                   'blocco «A cosa serve: …» (cosa ottiene Mario, l\'app o il lavoro). Riscrivi solo quel blocco.',
+                  file=sys.stderr)
+            return 2
+        if manca_testo_da_incollare(finale):
+            print('Testo da incollare solo nominato (PT E89): il testo per l\'altra chat va NEL messaggio, in un '
+                  'riquadro di codice (```), pronto da copiare; il file si nomina solo come copia. Riscrivi solo quel passo.',
                   file=sys.stderr)
             return 2
         if manca_link_da_aprire(finale):

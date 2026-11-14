@@ -83,6 +83,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E86** Campo che si salva uscendo con `salvatoOk()` (rifà la pagina): il tocco subito dopo su un tasto vicino («kg», «Fatto») si perde. Nei fogli con tasti accanto ai campi: salvare senza rifare la pagina, aggiornare solo le scritte; prova «scrivi e tocca subito» (C160, #83).
 - **PT E87** Con codice dell'app non ancora provato nella cartella, MAI `git commit -a` / `-am`: porta su anche il codice e il push lo pubblica (14/11 01:0x, C159 online prima del giro completo). Sempre `git add <file>` coi nomi dei documenti. Difesa da fare: la guardia ferma `commit -a` se ci sono file del sito cambiati.
 - **PT E88** Giorno detto uguale a oggi («per sabato» di sabato) dava «nessun giorno»: le prove giravano solo nei giorni feriali e non l'hanno visto. Ogni frase con un giorno della settimana si prova anche il giorno stesso (difesa da fare: data finta in `tools/prova.js` per i 7 giorni).
+- **PT E89** Sessione nuova aperta da Mario (8 di 8): gli ho detto «incolla il testo che trovi in `docs/PROSSIMA-SESSIONE.md`» invece di dargli il testo pronto (14/11 #85). Il testo da incollare va SEMPRE nel messaggio, in un riquadro da copiare. Difesa: `domande-chiare.py` (`manca_testo_da_incollare`).
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC
