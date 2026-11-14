@@ -2,16 +2,17 @@
 "account": "108763",
 "sessione": "a7e870aea510",
 "giorno": "2026-11-14",
-"turni": 2,
+"turni": 3,
 "peso": 0,
 "uscita": 0,
-"contesto_max": 165086,
+"contesto_max": 176447,
 "anomalie": [],
 "blocchi": {
 "Stop 8 · Promessa a Mario senza voce": 1,
 "Stop 6 · Segno delle domande nel titolo": 1,
 "Stop 6 · Il turno finisce con una": 1,
-"Stop 5 · Domanda a Mario poco chiara": 1
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 13 · There are uncommitted changes in": 1
 },
 "esempi_blocchi": {
 "Stop 8 · Promessa a Mario senza voce": [
@@ -25,6 +26,9 @@
 ],
 "Stop 5 · Domanda a Mario poco chiara": [
 "05:18 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 13 · There are uncommitted changes in": [
+"05:34 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
 ]
 },
 "remota": "01WTjqUxsM3B",

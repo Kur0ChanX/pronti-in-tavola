@@ -897,6 +897,11 @@ body.con-video { overflow: hidden; }
 .ric-salta { position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; border: 0; border-radius: 999px;
   padding: 12px 18px; font: inherit; font-weight: 700; background: var(--vino); color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
 body.con-barra .ric-salta { bottom: calc(86px + env(safe-area-inset-bottom)); }
+/* C165: freccia per tornare in cima (pagine di Monica e Mario) */
+.freccia-su { position: fixed; right: 16px; bottom: calc(18px + env(safe-area-inset-bottom)); z-index: 30; width: 52px; height: 52px; border: 0; border-radius: 50%;
+  display: none; place-items: center; padding: 0; background: var(--vino); color: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+.freccia-su.vedi { display: grid; }
+.freccia-su.con-salta { bottom: calc(80px + env(safe-area-inset-bottom)); }
 
 /* «Portami lì» dell'aiutante (C87): riga in cima alla pagina e lampo sulla voce aperta */
 .ai-qui { scroll-margin-top: 84px; display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border-radius: 16px; background: var(--foglio); border: 2px solid var(--vino); }
