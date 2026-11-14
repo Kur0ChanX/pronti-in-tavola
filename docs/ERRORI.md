@@ -81,6 +81,7 @@ Ogni errore → causa vera provata e difesa: riga qui, storia in `docs/ERRORI-ST
 - **PT E89** Sessione aperta da Mario: il testo da incollare va SEMPRE nel messaggio, in un riquadro, mai «lo trovi nel file». Difesa: `domande-chiare.py`.
 - **PT E90** Nome fatto dalla macchina («Ricetta con limone» per la ricotta di soia): se il video dice il piatto, vince il nome detto (`fatto_qui` e `REFUSI` in `tools/raccogli_video.py`); a ogni giro di ricette controllare i nomi delle nuove.
 - **PT E91** `consegne.py fatti` lanciato due volte (prima e dopo il merge della scorta) alza il numero due volte (#89 al posto di #88): prima unisco la scorta, poi `fatti` UNA volta; se va rilanciato, controllo «Sessione attuale» e `PROSSIMA-SESSIONE.md`.
+- **PT E92** Foto aperta per controllarla: copia «ridotta» fatta a mano in PNG (275×600, 117 KB = ~35k token) e senza «DI LAVORO»: la regola E58 diceva JPEG ≤400 px ma nessuno strumento la faceva. Ora SOLO `python3 -I tools/copia-lavoro.py <foto>` (≤400 px, JPEG, scritta gialla, esce 1 oltre 40 KB) e apro quella.
 - **PT E67** Ogni file di prove sta nel giro completo (`prova.js` lancia le prove del server): fuori dal giro erano rotte da giorni.
 
 ## Lezioni ereditate da RVC

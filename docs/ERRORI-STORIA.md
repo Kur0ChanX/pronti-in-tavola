@@ -176,3 +176,6 @@ E70 vive in `.claude/rules/prove.md` («ogni passo è autonomo»), E20 in `prove
 - **RVC E31** Dopo lo squash: unire `main` prima di ogni altro commit.
 - **RVC E23 E32 E33 E36** Prima `grep -n`, poi le righe utili; all'avvio niente `list_sessions` completo, `actions_list`, `list_events`, `Artifact read`.
 - **RVC E37 E48 E49** Foto: io un'anteprima ≤1000 px; a Mario un telefono e una schermata per foto, pezzi alti ≤1100 px.
+
+## PT E92 · 14/11 (#88) foto di lavoro troppo pesanti
+Aperte con Read due foto «ridotte» a mano (PNG, un terzo della 2x): 91 KB e 117 KB, ~27k e ~35k token, rilette a ogni chiamata. Mario: «Avevamo già messo questa regola di non aprire foto troppo grandi. Non so perché non l'hai fatto.» Causa vera: la regola E58 (JPEG ≤400 px, «DI LAVORO») stava solo scritta; nello script ho ridotto «a occhio» e in PNG. Difesa: `tools/copia-lavoro.py` fa la copia giusta e si ferma oltre 40 KB; proposta a Mario una guardia su Read (file di `.claude/`, serve il suo ok, RVC E59).
