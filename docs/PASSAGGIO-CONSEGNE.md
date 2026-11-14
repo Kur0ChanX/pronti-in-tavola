@@ -1,6 +1,6 @@
 # Passaggio di consegne
 
-Sessione attuale: #85 (dopo la #84 `session_01WTjqUwbEtuW5m6ckQeJqwr`, chiusa alla soglia 14/11 01:10; la apre la #84 con `create_session` (catena 7 di 8)).
+Sessione attuale: #86 (dopo la #85 `session_01WTjqUvFmqRdTVxKTg2GE7d`, chiusa alla soglia 14/11 01:28; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
 
 **#85: la apre la #84 (catena 7 di 8).** #84: v0.10.31 (C160 costo della ricetta) e v0.10.32 (C159 ordini di prova fuori da pronti e teglie + «per sabato» di sabato) ONLINE; C163 sconto: piano scritto, aspetta «1 1»; C162 numero di Lisa: passi a mano dati a Mario (Firebase).
 
@@ -9,8 +9,8 @@ Sessione attuale: #85 (dopo la #84 `session_01WTjqUwbEtuW5m6ckQeJqwr`, chiusa al
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
 - **Cosa preme a Mario adesso (14/11 01:10, #84):** C163 sconto di Monica (piano in `docs/lavori-in-corso/c163-sconto.md`, DOMANDA 1 ok al piano, DOMANDA 2 euro e/o percentuale: aspetta «1 1»); C162 ordine di Lisa da n. 2 a n. 1 (passi a mano su Firebase già dati: chiedere a che passo è); foto di v0.10.31/32. Prima di OGNI modifica dell'app: una riga a Mario e il suo ok.
 
-## Stato (14/11 01:10 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwbEtu/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
+## Stato (14/11 01:28 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261114-01WTjqUvFmqR/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -56,20 +56,13 @@ Sessione attuale: #85 (dopo la #84 `session_01WTjqUwbEtuW5m6ckQeJqwr`, chiusa al
 Prossimo E libero: E1; prossimo C libero: C165; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
-Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
+Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 23:27 · [AVVIO] Sessione #84 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, titolo, promemoria domande
-- 2026-11-13 23:37 · rifammi la domanda → C160 4 foto rimandate + domanda
-- 2026-11-13 23:44 · va bene come consiglio → C160 v0.10.31 online
-- 2026-11-14 00:56 · Lisa è la vera numero 1 puoi modificarlo? solo il numero non fare danno all'ordi… → C162 passi a mano su Firebase
-- 2026-11-14 00:59 · c'è l'opzione che Monica puoi mandare lo sconto anche fino aprima del ritiro nel… → C163 piano + DOMANDE 1-2; C159 v0.10.32 online
+- 2026-11-14 01:11 · [AVVIO] Sessione #85 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → 
+- 2026-11-14 01:23 · le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lis… → 
 
 Ultimo, intero:
-> c'è l'opzione che Monica puoi mandare lo sconto anche fino aprima del ritiro nell'importo che vuole lei e se crea lo econto per l'ordine che si troverà in ordini tipo vuoi applicare uno sconto all'importo X e lei sceglie di quanto e al cliente arriva la notifica Monica ti ha applicato uno sconto o una frase carina con un cuore.
-> Tipo grazie per l'ordine ecc ecc la frase può essere editata delle impostazioni 
-> per inviare lo sconto deve andare a doppia conferma da parte di Monica 
-> 
-> e Correggi i 2 buchi come consiglio
+> le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica
 
