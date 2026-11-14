@@ -285,6 +285,15 @@ def nome_cibo(testo):
     return NOMI_CIBO.get(k, t.capitalize()) if t else ''
 
 
+REFUSI = {r'\btornta\b': 'torta'}   # refusi nei titoli dei video («farina tornta a limone», C154 controllo 14/11)
+
+
+def refusi(n):
+    for k, v in REFUSI.items():
+        n = re.sub(k, v, n, flags=re.I)
+    return n
+
+
 def generico(n):
     """Nome che non distingue una ricetta dall'altra («Pancake», «Ricetta», «8 settembre 2026», «Torte e tortini»)."""
     t = re.sub(r'\b(fit|fitness|proteic\w*|ricett\w*|la mia|versione|il mio|di|e|al|alla)\b', ' ', norm(n))
@@ -329,7 +338,7 @@ def nome_pulito(titolo, tipo, ing, data, testo='', lungo=40):
         n = ''   # una frase, non un nome
     if n.isupper() or n.islower():
         n = n.capitalize()
-    n = NOMI_CIBO.get(norm(n).replace(' ', ''), n)
+    n = refusi(NOMI_CIBO.get(norm(n).replace(' ', ''), n))
     if n and not generico(n):
         return n
     base = n if n and not re.match(r'(?i)(ricett|altro|\d)', n) else ''
@@ -434,7 +443,9 @@ def col_parlato(x, par):
         x['passi'] = p['passi']; x.setdefault('parlato', 'passi')
     m = re.fullmatch(r'(.*?) del \d{1,2} \w+ \d{4}( · [\d/]+)?', x['nome'])
     senza_cibo = not re.search(CIBO, x['nome']) and p.get('nome')   # «In cucina con mio padre»: non dice il piatto
-    if x.get('parlato') and (m or generico(x['nome']) or senza_cibo):   # «Ricetta del 4 giu 2025» → il piatto come lo dice
+    fatto_qui = re.match(r'(?i)ricetta con\b', x['nome'])   # «Ricetta con limone» l'ha fatto nome_pulito: il nome detto è meglio («Ricotta di soia»)
+    x['nome'] = refusi(x['nome'])
+    if x.get('parlato') and (m or generico(x['nome']) or senza_cibo or fatto_qui):   # «Ricetta del 4 giu 2025» → il piatto come lo dice
         if p.get('nome') and len(p['nome']) <= 40:
             x['nome'] = p['nome'][0].upper() + p['nome'][1:]
         elif cambia:
