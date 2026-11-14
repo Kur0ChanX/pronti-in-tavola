@@ -2,18 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 19:12 · 01WTjqUu3oyB
-è normale un lavoro cosí certosino guarda i tasti ...ti ho messo opus alto..... c'è qualche regola che ti manda in confusione o nel kot o nelle preferenze
-
-## 2026-11-13 19:16 · 01WTjqUu3oyB
-Poi ti ho detto, bisogna incentivare i clienti a ordinare nell'app, non a mandare i messaggi a Monica su WhatsApp. Ed è poco professionale i tasti messi così, proprio una schifezza.
-
-## 2026-11-13 19:29 · 01WTjqUu3oyB
-Io quel tasto l'avrei messo sotto nella banda bianca tra menu e i miei ordini. Anzi, avrei messo menu, i miei ordini e poi il tasto. Che dici?
-
-## 2026-11-13 19:33 · 01WTjqUu3oyB
-Che dici? Poi correggimi, eh? Dici che nella parte di su, quella dove c'è scritto allergie, cosa, quel bannerino lì, lo facciamo che scorre insieme rimane fisso mentre scorri, magari lo facciamo un pochettino più piccolo, perché sennò è troppo invasivo, un po' più stretto. Mm, Non largo, stretto. E sotto mettiamo, come dicevi tu, scriviamo Monica sotto, così non rimane nessun microfono sospeso lì in basso. Ok, che dici?
-
 ## 2026-11-13 19:34 · 01WTjqUu3oyB
 Sì, ok, ma non farla troppo stretta perché te l'ho detto io, no? Cerca di rimpicciorirla e che sia cliccabile bene, ecco. Per il resto, vai ok, ti do l'autorizzazione a pubblicare. E dimmi se è sempre valido quel link di Lisa. E basta.
 
@@ -126,3 +114,15 @@ Mi raccomando, non usare la versione lite di Gemini perché la lite la elabora s
 
 ## 2026-11-14 11:41 · 01WTjqUxsM3B
 Ovviamente i voti delle ricette proteiche le posso vedere solo io, Monica no, perché a lei non interessa molto, però lasciamogli le ricette proteiche. Però i voti per Monica togliamoli. Fammi sapere se hai fatto questa cosa del Monica con la vista cliente, se è già aggiunta. Metti delle ricette, magari un cuoricino che me le serve in una categoria preferite.
+
+## 2026-11-14 11:47 · 01WTjqUxsM3B
+Anche Monica può salvare i preferiti
+
+## 2026-11-14 11:48 · 01WTjqUxsM3B
+Avevamo già messo questa regola di non aprire foto troppo grandi. Non so perché non l'hai fatto.
+
+## 2026-11-14 11:50 · 01WTjqUxsM3B
+si aggiungilo a tutto l account
+
+## 2026-11-14 12:02 · 01WTjqUxsM3B
+ok
