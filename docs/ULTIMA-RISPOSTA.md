@@ -1,13 +1,12 @@
-# Ultima risposta di Claude (14/11/2026 11:02 ora italiana)
+# Ultima risposta di Claude (14/11/2026 11:51 ora italiana)
 
-Ho capito: per i video non devo mai usare la versione «lite» di Gemini.
+Ho capito: vuoi il guardiano delle foto pesanti, e che valga per tutti i progetti.
 
 ───
 ✅ FATTO
-- Ho controllato: la lite non l'abbiamo mai usata. Il programma che ascolta i video prende solo i modelli con il nome esatto «gemini-numero-flash». Le lite e le versioni di prova restano fuori da sole.
-- Anche nel resto dell'app nessuno usa una lite.
-- Ho scritto la tua regola tra le cose già decise, così vale anche per le prossime sessioni.
+- **Guardiano aggiunto in Pronti in Tavola** e salvato su GitHub. Se provo ad aprire una foto oltre 40 KB mi blocca, e mi dice di fare prima la copia piccola.
+- L'ho provato con tre file. La foto del cuore (204 KB) viene bloccata. La copia piccola (13 KB) passa. I file che non sono foto passano.
 
 ───
 💡 PARERE
-Quando i modelli normali sono pieni, il programma non passa alla lite: si ferma e riprova il giorno dopo. Le ricette arrivano più piano, ma sono fatte bene.
+Per «tutto l'account» serve il **kit** (il pacchetto di regole comune a tutti i tuoi progetti). Il kit si cambia solo dalla sua sessione, che lavora su un altro progetto: da qui non posso. …
