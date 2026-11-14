@@ -1,0 +1,21 @@
+{
+"account": "108763",
+"sessione": "a7e870aea510",
+"giorno": "2026-11-14",
+"turni": 1,
+"peso": 0,
+"uscita": 0,
+"contesto_max": 107067,
+"anomalie": [],
+"blocchi": {
+"Stop 8 · Promessa a Mario senza voce": 1
+},
+"esempi_blocchi": {
+"Stop 8 · Promessa a Mario senza voce": [
+"04:38 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «Poi la metto online.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la vede Mario> · prova: <foto o lettura dei dati veri>», commi"
+]
+},
+"remota": "01WTjqUxsM3B",
+"aiutanti": 0,
+"strumenti": 0
+}

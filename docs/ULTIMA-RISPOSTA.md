@@ -1,13 +1,14 @@
-# Ultima risposta di Claude (14/11/2026 04:34 ora italiana)
+# Ultima risposta di Claude (14/11/2026 04:38 ora italiana)
 
-✅ FATTO
-- **La versione 0.10.34 è online.** L'ho controllato sul sito vero: c'è la versione 0.10.34 e ci sono le 16 ricette con «✅ Controllata con Gemini».
-- Prima di metterla online ho fatto il giro completo delle prove: 105 su 105 verdi.
-- Ho anche corretto la prova di WhatsApp che a volte veniva rossa.
+Ho capito: sessione nuova (#88), avvio da fare e poi continuare da sola.
+
+🛑 C159 vista cliente di Monica: 2 domande (gesto per aprirla e altro).
+🛑 v0.10.26: una foto delle Ricette video con la versione 0.10.26.
+🛑 C141 pagella delle Proteiche: la foto è già pronta, manca il tuo parere.
+🛑 PC di casa come riserva: scegli 1 (officina) o 2 (più gemello silenzioso).
 
 ───
-👉 DA FARE TU
-A cosa serve: vedere con i tuoi occhi che le scritte nell'app sono giuste.
-1. Chiudi e riapri l'app.
-2. Vai in Ricettario → Ricette video → «Cloud bread» oppure «Ricotta di soia».
-3. Sopra gli ingredienti deve esserci «✅ Controllata con Gemini». Nelle ricette non ancora …
+✅ FATTO
+- Avvio finito e salvato su GitHub (il mio ramo è uguale a quello online).
+- L'app online è la **0.10.34**: l'ho controllata ora sul sito vero.
+- **Sveglia** (un promemoria che mi riattiva da sola) rifatta mia: oggi alle …
