@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "f2669dc9e4a2",
 "giorno": "2026-11-14",
-"turni": 1,
+"turni": 2,
 "peso": 155124,
 "uscita": 3952,
-"contesto_max": 102945,
+"contesto_max": 120852,
 "anomalie": [],
 "remota": "01WTjqUuBu8a",
 "aiutanti": 0,
@@ -14,11 +14,12 @@
 "opus": 155124
 },
 "blocchi": {
-"Stop 6 · Il turno finisce con una": 1
+"Stop 6 · Il turno finisce con una": 2
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
-"03:32 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> "
+"03:32 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
+"03:39 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
 ]
 }
 }

@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:49 · 01WTjqUu3oyB
-Come puoi da questo messaggio correggere i gusti dei cibi? Cioè, sei pazzo. Hai bug.
-
 ## 2026-11-13 18:50 · 01WTjqUu3oyB
 No, non è che non ti avevo chiesto se è una correzione, è una correzione, ma non so se è una correzione perché non so cosa stavi facendo. Cioè, mi è scappata la situazione fuori controllo perché ti sei messo a fare cose che non ti ho chiesto e ti scrivevo messaggi dopo e tu non li leggevi e tu hai quasi fatto partire una correzione che poteva essere qualcosa di gravissimo.
 
@@ -127,3 +124,6 @@ rifammi la domanda chiara
 
 ## 2026-11-14 03:39 · 01WTjqUuBu8a
 ho 10 minuti
+
+## 2026-11-14 03:42 · 01WTjqUuBu8a
+vapore ok ecc  oer ora sono ok te lo segnalerò io se ci saranno problemi tu vai avanti tranquillo
