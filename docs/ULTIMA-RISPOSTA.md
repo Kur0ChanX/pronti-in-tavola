@@ -1,13 +1,13 @@
-# Ultima risposta di Claude (14/11/2026 11:02 ora italiana)
+# Ultima risposta di Claude (14/11/2026 11:47 ora italiana)
 
-Ho capito: per i video non devo mai usare la versione «lite» di Gemini.
+Ho capito: anche Monica deve poter salvare le sue ricette preferite.
 
 ───
 ✅ FATTO
-- Ho controllato: la lite non l'abbiamo mai usata. Il programma che ascolta i video prende solo i modelli con il nome esatto «gemini-numero-flash». Le lite e le versioni di prova restano fuori da sole.
-- Anche nel resto dell'app nessuno usa una lite.
-- Ho scritto la tua regola tra le cose già decise, così vale anche per le prossime sessioni.
+- Sì, può già farlo. Il cuore c'è anche sul telefono di Monica, uguale al tuo. Lei tocca il cuore e la ricetta finisce nelle sue «❤️ Preferite».
+- Ognuno ha le sue: le preferite di Monica restano sul suo telefono, le tue sul tuo.
+- Il giro completo delle prove è ancora in corso.
 
 ───
-💡 PARERE
-Quando i modelli normali sono pieni, il programma non passa alla lite: si ferma e riprova il giorno dopo. Le ricette arrivano più piano, ma sono fatte bene.
+⚠️ ATTENZIONE
+Prima ho aperto due foto intere per controllarle, e mi sono costate troppo. Da ora le guardo più piccole.
