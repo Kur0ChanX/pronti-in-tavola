@@ -42,6 +42,7 @@ self.addEventListener('push', e => {
       promemoria: ['Domani si cucina 🍝', `Domani hai ${u && u.n === 1 ? '1 ordine' : ((u && u.n) || 0) + ' ordini'} da preparare. Tocca per vedere cosa cucinare.`],
       pronto: ['Il tuo ordine è pronto! 🍝', 'Passa a ritirarlo quando vuoi. Tocca per vedere l\'indirizzo.'],
       proposta: ['Monica ti propone un altro giorno 🍝', 'Tocca per rispondere: «Va bene» o «Un altro giorno».'],
+      sconto: [`${(u && u.da) || 'Monica'} ti ha fatto uno sconto ❤️`, (u && u.testo) || 'Tocca per vedere il nuovo prezzo.'],   // (C163) frase scritta da Monica
       richiesta: ['Una persona nuova vuole ordinare 🍝', 'Tocca per vedere chi è e accettarla.'],
       ordineProva: ['Ordine di PROVA', 'Un cliente sta provando l\'app: non è da cucinare. Tocca per vederlo.'],
       primo: ['Una persona nuova ha ordinato: accettala 🍝', 'Il suo primo ordine aspetta il tuo sì. Tocca per vedere chi è.'],
