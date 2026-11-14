@@ -1,30 +1,29 @@
-# Ultima risposta di Claude (13/11/2026 23:52 ora italiana)
+# Ultima risposta di Claude (14/11/2026 01:00 ora italiana)
 
-🧠 Opus · Alto
+Ho capito: vuoi due cose. Primo, correggere i 2 buchi degli ordini di prova: è già in corso. Secondo, una cosa nuova: lo sconto che Monica fa su un ordine, con una frase carina al cliente.
 
 ✅ **FATTO**
-- Il costo della ricetta è online: versione **0.10.31**.
-- Le prove dell'app sono passate tutte: 102 su 102.
-- Ho controllato sul sito vero: risponde 0.10.31 e c'è il nuovo «Spenderai circa».
-- Il lavoro è salvato su GitHub.
+- Ordini di prova: la correzione è scritta e la sua prova automatica è verde. Le prove complete sono a 54 verdi, nessuna rossa. Se finiscono tutte verdi, segno la versione 0.10.32.
+- Sconto: ho salvato le tue parole e il piano. Niente codice prima del tuo ok.
 
 ───
-👉 **DA FARE TU**
-A cosa serve: vedere coi tuoi occhi che funziona sul telefono. Solo così chiudo la promessa.
-1. Chiudi del tutto l'app e riaprila.
-2. Vai in Spesa e apri un ingrediente: prima la confezione, poi il prezzo.
-3. Apri «I miei piatti»: sotto ogni piatto c'è quanto costa.
-4. Mandami una foto quando puoi.
+⚠️ **ATTENZIONE: ho sbagliato io**
+Salvando un documento, con un comando sbagliato ho mandato online anche la correzione degli …
 
 ## Domande a Mario
 
-❓ **DOMANDA 2 · Ordini di prova di Monica** 🛑
+❓ **DOMANDE**
 
-📌 **Di cosa parliamo:** quando Monica invia un ordine e spunta «Sto solo provando l'app», l'ordine è di prova. Già adesso non conta negli incassi né nella lista della spesa. Restano però 2 buchi:
-- toglie porzioni vere dai «pronti subito», come se fossero vendute;
-- occupa posto nelle teglie della settimana.
+🛑 **DOMANDA 1 · Piano dello sconto**
+📌 **Di cosa parliamo:** il piano qui sopra. Dopo il tuo ok scrivo il codice, ti mando le foto e poi lo metto online.
+1 · Va bene così (**consiglio**)
+2 · Cambia qualcosa (dimmi cosa)
 
-1 · Correggo: un ordine di prova non tocca più i pronti né le teglie (**consiglio**). Esce in una versione nuova, dopo le prove e il tuo ok.
-2 · Lascia così: Monica deve ricordarsi di cancellare ogni ordine di prova.
+**DOMANDA 2 · Come scrive lo sconto Monica**
+📌 **Di cosa parliamo:** il riquadro dove Monica sceglie quanto scontare.
+1 · In euro o in percentuale: Monica sceglie «5 €» oppure «10 %» (**consiglio**: le promozioni a percentuale le vengono comode)
+2 · Solo in euro
 
-Rispondi col numero. …
+Rispondi così: «1 1».
+
+⚠️ Aspettano te: 25 · sconto, numero di Lisa, foto costo, gesto Monica, …
