@@ -1,5 +1,3 @@
-# Ultima risposta di Claude (14/11/2026 03:33 ora italiana)
+# Ultima risposta di Claude (14/11/2026 04:16 ora italiana)
 
-Ho aggiunto la riga nel Da fare e l'ho salvata su GitHub.
-
-Le quattro domande 🛑 erano già segnate nelle loro righe. La riga nuova dei controlli a gruppi non è decisiva, quindi niente 🛑.
+I don't commit the four changed app files yet. Pushing them to the branch puts them online straight away (PT E69, PT E87). They're already saved on GitHub in the patch `c154-etichette.patch`. The commit comes only if the full test run comes back green.

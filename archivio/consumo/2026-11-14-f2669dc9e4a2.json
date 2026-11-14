@@ -2,23 +2,46 @@
 "account": "108763",
 "sessione": "f2669dc9e4a2",
 "giorno": "2026-11-14",
-"turni": 1,
-"peso": 155124,
-"uscita": 3952,
-"contesto_max": 102945,
+"turni": 6,
+"peso": 984339,
+"uscita": 27401,
+"contesto_max": 196492,
 "anomalie": [],
 "remota": "01WTjqUuBu8a",
 "aiutanti": 0,
-"strumenti": 10,
+"strumenti": 48,
 "motori": {
-"opus": 155124
+"opus": 984339
 },
 "blocchi": {
-"Stop 6 · Il turno finisce con una": 1
+"Stop 6 · Il turno finisce con una": 3,
+"Stop 6 · Segno delle domande nel titolo": 2,
+"Stop 5 · Domanda a Mario poco chiara": 1,
+"Stop 8 · Promessa a Mario senza voce": 1,
+"Stop 5 · Foto e video (E240, E247;": 1,
+"Stop 13 · There are uncommitted changes in": 1
 },
 "esempi_blocchi": {
 "Stop 6 · Il turno finisce con una": [
-"03:32 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> "
+"03:32 · Il turno finisce con una domanda o un passo a mano per Mario: il messaggio ha una domanda decisiva (🛑): metti «🛑» nella sua riga di oggi in «## 0. Aspetta Mario» («- gg/mm · 🛑 · <segno giallo> <Nome> ",
+"03:39 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> ",
+"03:48 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+],
+"Stop 6 · Segno delle domande nel titolo": [
+"03:45 · Segno delle domande nel titolo (C454, « ❓N»): rinomina SOLO col titolo «🟡 🍝 Principale 87 ❓23 · ok ai 3» (set_session_title). NON riscrivere il messaggio; chiudi con 3-5 parole (se un altro avviso di ",
+"04:16 · Segno delle domande nel titolo (C454: « ❓N» dopo il numero, N = risposte che Mario deve dare alle righe della tua catena in «## 0. Aspetta Mario», niente se non ce ne sono): rinomina SOLO col titolo «"
+],
+"Stop 5 · Domanda a Mario poco chiara": [
+"03:45 · Domanda a Mario poco chiara (C233, E145): manca la riga «📌 Di cosa parliamo:» (cos'è, dove si vede, perché serve adesso); mancano le scelte numerate «1 · … · 2 · …». Riscrivi SOLO la domanda, col cont"
+],
+"Stop 8 · Promessa a Mario senza voce": [
+"03:45 · Promessa a Mario senza voce 👁 in docs/DA-FARE.md (C331): «La 2 cambia l'app: la metto online solo dopo il giro completo delle prove.». Nella sua voce (o in una nuova) scrivi «👁 Lo vedi: <dove la vede "
+],
+"Stop 5 · Foto e video (E240, E247;": [
+"03:53 · Foto e video (E240, E247; Mario 1/11 «mandami un video se mi devi mostrare qualcosa animata»): la domanda parla di una cosa che si muove ma nel turno non hai mandato un video: fallo con `tests/e2e/vid"
+],
+"Stop 13 · There are uncommitted changes in": [
+"04:16 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
 ]
 }
 }
