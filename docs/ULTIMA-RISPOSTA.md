@@ -1,13 +1,8 @@
-# Ultima risposta di Claude (14/11/2026 11:02 ora italiana)
+# Ultima risposta di Claude (14/11/2026 11:52 ora italiana)
 
-Ho capito: per i video non devo mai usare la versione «lite» di Gemini.
-
-───
 ✅ FATTO
-- Ho controllato: la lite non l'abbiamo mai usata. Il programma che ascolta i video prende solo i modelli con il nome esatto «gemini-numero-flash». Le lite e le versioni di prova restano fuori da sole.
-- Anche nel resto dell'app nessuno usa una lite.
-- Ho scritto la tua regola tra le cose già decise, così vale anche per le prossime sessioni.
+- Il giro completo delle prove è finito: 107 su 107 passate, comprese quelle nuove del cuore e dei voti.
+- Appena mi dai l'ok sulla foto del cuore (DOMANDA 1), la metto online.
 
 ───
-💡 PARERE
-Quando i modelli normali sono pieni, il programma non passa alla lite: si ferma e riprova il giorno dopo. Le ricette arrivano più piano, ma sono fatte bene.
+⚠️ Aspettano te: 25 · cuore e voti (1 = metto online), vista cliente di Monica (2 domande), tempo nel costo, le altre 🛑
