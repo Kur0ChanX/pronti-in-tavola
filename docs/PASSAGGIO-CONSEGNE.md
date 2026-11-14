@@ -52,6 +52,9 @@ Sessione attuale: #86 (dopo la #85 `session_01WTjqUvFmqRdTVxKTg2GE7d`, chiusa al
 ## Ultimo messaggio di Mario
 14/11 01:23 (foto Firebase 01:25-01:28 dopo): «le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica» → sconto v0.10.33 online; Lisa: passi a mano su Firebase (n 2→1, prossimo 3→2), Mario è sul documento giusto, aspetta la sua foto. Prima: 01:12 «1 1 ok / 2 in tutti e 2 i modi».
 
+## Dopo le consegne (Mario 14/11, dopo la chiusura della #85)
+- «ok fatto è andato spero non si sia rotto nulla» = dice di aver fatto i 2 cambi su Firebase per Lisa (n 2→1, prossimo 3→2). Non verificato: chiedere la foto dei 2 campi e controllare in app (Ordini → Prossimi, Lisa n. 1; nuovo ordine = n. 2). Poi chiudere C162.
+
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C165; prossimo M libero: M1.
 
