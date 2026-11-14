@@ -198,6 +198,52 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     const D = fs.readFileSync(require('path').join(__dirname, '..', 'dati.js'), 'utf8');
     if (!/o\.pronto && !o\.prova && !fuori\.includes/.test(D)) throw new Error('server: presi() conta anche gli ordini di prova');
   });
+  await passo('C163 sconto di Monica: euro e percentuale, doppia conferma, il cliente vede il prezzo nuovo', async () => {
+    const prima = await page.evaluate(() => {
+      const pr = { ruolo: P.ruolo, cliente: P.cliente, benvenuto: P.benvenuto };
+      P.ruolo = 'monica'; UI.foglio = null;
+      const base = S.ordini.find(o => o.righe && o.righe.length && o.cliente) || S.ordini[0];
+      const o = Object.assign(JSON.parse(JSON.stringify(base)), { id: 'oC163', n: 9163, stato: 'accettato', prova: false, archiviato: false, modifica: null, esitoModifica: '', sconto: null, entro: oggi(), pronto: false, paga: { metodo: 'contanti', ricevuto: false, dice: false } });
+      o.righe = [Object.assign({}, base.righe[0], { prezzo: 10, qta: 3, fritto: false, forno: false })];
+      S.ordini.push(o); salva(); UI.vista = 'ordini'; UI.tab = 'oggi'; UI.ordAperto = o.id; render();
+      return pr;
+    });
+    const paga = () => page.evaluate(() => { const o = ordine('oC163'); return { sc: o.sconto ? o.sconto.modo + o.sconto.valore : null, paga: daPagare(o) }; });
+    // percentuale: scrive e tocca subito «Avanti» (PT E86)
+    await clic('[data-a="sconto-apri"][data-id="oC163"]');
+    await clic('[data-a="sconto-modo"][data-m="perc"]');
+    await page.fill('#sconto-val', '10');
+    const es = await page.locator('#sconto-esito').innerText();
+    if (!/Paga 27,00\s€ invece di 30,00\s€/.test(es)) throw new Error('anteprima sbagliata: ' + es);
+    await clic('[data-a="sconto-avanti"]');
+    const t2 = await page.locator('.foglio').innerText();
+    if (!/Mandi lo sconto/.test(t2) || !/sconto di 3,00\s€: ora paghi 27,00\s€/.test(t2)) throw new Error('seconda conferma senza la frase giusta: ' + t2.slice(0, 200));
+    if ((await paga()).sc) throw new Error('sconto salvato prima della seconda conferma');
+    await foto('c163-sconto-conferma');
+    await clic('[data-a="sconto-si"]');
+    let r = await paga(); if (r.sc !== 'perc10' || r.paga !== 27) throw new Error('10% non salvato: ' + JSON.stringify(r));
+    const carta = await page.locator('main').innerText();
+    if (!/Sconto di .+: −3,00\s€ \(10%\)/.test(carta)) throw new Error('nella carta di Monica manca la riga dello sconto');
+    // euro: oltre il totale non passa; poi 5 €
+    await clic('[data-a="sconto-apri"][data-id="oC163"]'); await clic('[data-a="sconto-modo"][data-m="euro"]');
+    await page.fill('#sconto-val', '40'); await clic('[data-a="sconto-avanti"]');
+    if (!(await page.locator('#sconto-val').count())) throw new Error('sconto più grande del totale accettato');
+    await page.fill('#sconto-val', '5'); await clic('[data-a="sconto-avanti"]'); await clic('[data-a="sconto-si"]');
+    r = await paga(); if (r.sc !== 'euro5' || r.paga !== 25) throw new Error('5 € non salvati: ' + JSON.stringify(r));
+    // il cliente: prezzo nuovo, frase col cuore
+    await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.cliente = ordine('oC163').cliente; UI.foglio = null; UI.vista = 'ordini'; UI.ordAperto = 'oC163'; render(); });
+    const tc = await page.locator('main').innerText();
+    if (!/25,00\s€/.test(tc) || !/Ti ho fatto uno sconto di 5,00\s€/.test(tc)) throw new Error('il cliente non vede lo sconto: ' + tc.slice(0, 300));
+    await foto('c163-sconto-cliente');
+    // Monica lo toglie (doppio tocco), torna 30 €
+    await page.evaluate(() => { P.ruolo = 'monica'; UI.vista = 'ordini'; UI.tab = 'oggi'; UI.ordAperto = 'oC163'; render(); });
+    await clic('[data-a="sconto-apri"][data-id="oC163"]'); await clic('[data-a="sconto-togli"]'); await clic('[data-a="sconto-togli-si"]');
+    r = await paga(); if (r.sc !== null || r.paga !== 30) throw new Error('sconto non tolto: ' + JSON.stringify(r));
+    // ritirato: niente tasto
+    const dopo = await page.evaluate(() => { const o = ordine('oC163'); o.stato = 'ritirato'; render(); return document.querySelectorAll('[data-a="sconto-apri"]').length; });
+    if (dopo) throw new Error('tasto dello sconto su un ordine ritirato');
+    await page.evaluate(pr => { S.ordini = S.ordini.filter(o => o.id !== 'oC163'); P.ruolo = pr.ruolo; P.cliente = pr.cliente; P.benvenuto = pr.benvenuto; UI.foglio = null; salva(); render(); }, prima);
+  });
   await passo('Monica: modifica piatto e ingredienti nuovi', async () => {
     await clic('.indietro'); await clic('.riquadro >> nth=1'); await foto('12-piatti');
     await page.locator('.piatto-riga', { hasText: 'Tiramisù' }).locator('.apri').click(); await page.waitForTimeout(300);
