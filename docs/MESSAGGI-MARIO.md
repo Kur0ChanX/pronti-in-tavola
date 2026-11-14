@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 15:18 · 01WTjqUtr7kg
-mancano in tutti ingredienti
-
 ## 2026-11-13 18:19 · 01WTjqUwuvHs
 Un cliente non proprio pratico di tecnologia gli è arrivato questo messaggio a Monica, però non c'è nessun ordine. Si può fare in modo di integrarlo all'ordine, in qualche modo in automatico?
 
@@ -131,3 +128,6 @@ e Correggi i 2 buchi come consiglio
 ## 2026-11-14 01:12 · 01WTjqUwbEtu
 1 1 ok
 2 in tutti e 2 i modi
+
+## 2026-11-14 01:23 · 01WTjqUvFmqR
+le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica
