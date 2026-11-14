@@ -1,5 +1,7 @@
-# Ultima risposta di Claude (14/11/2026 03:33 ora italiana)
+# Ultima risposta di Claude (14/11/2026 04:22 ora italiana)
 
-Ho aggiunto la riga nel Da fare e l'ho salvata su GitHub.
+Una prova su 105 è venuta rossa. Prova se il tasto «Scrivimi» apre WhatsApp quando il cliente fa una domanda.
 
-Le quattro domande 🛑 erano già segnate nelle loro righe. La riga nuova dei controlli a gruppi non è decisiva, quindi niente 🛑.
+Da sola è verde. Ho aggiunto dettagli alla prova e rilanciato il giro completo per trovare la causa vera.
+
+La versione 0.10.34 non va online finché il giro non è tutto verde. Ti scrivo appena finisce.
