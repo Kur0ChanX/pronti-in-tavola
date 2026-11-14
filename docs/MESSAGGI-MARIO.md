@@ -2,11 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:48 · 01WTjqUu3oyB
-Se ascolti quello che dico nei messaggi, ti ho detto che Monica non lo visualizza degli ordini. Non capisco. Se te l'ho detto, hai un bug, hai un problema grave. Non leggi neanche i miei messaggi e non mi rispondi. Non è il tuo modo di pensare questo.
-
-Quando ti ho mandato questo messaggio non è a fine sessione, quindi non prendermi per il culo.
-
 ## 2026-11-13 18:49 · 01WTjqUu3oyB
 Come puoi da questo messaggio correggere i gusti dei cibi? Cioè, sei pazzo. Hai bug.
 
@@ -129,3 +124,6 @@ rifammi la domanda chiara
 
 ## 2026-11-14 03:27 · 01WTjqUuqoS1
 1 basta che non si dimenticano e che vengano controllati o menzionati
+
+## 2026-11-14 03:39 · 01WTjqUuBu8a
+ho 10 minuti
