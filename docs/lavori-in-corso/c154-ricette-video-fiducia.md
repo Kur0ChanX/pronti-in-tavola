@@ -26,3 +26,6 @@ Da fare: a trascrizione finita (o a blocchi ogni giorno) rigenerare, controllo a
 → v0.10.28 ONLINE (giro 98/98, curl: versione e «5g cacao» ok). Scritte ✅/⚠️ in patch `c154-etichette.patch` (ricettario.js, ricette-video.js con 12 controllate, prova C150+C154 verde), foto mandate.
 → Alternative cercate 13/11: le API «transcript» leggono solo i sottotitoli già esistenti (bloccate dai server cloud o 100 crediti al mese: Supadata, TranscriptAPI); nessuna gratis che guardi e ascolti il video da un link come Gemini.
 → Ritmo vero: ~2 video ogni 5 minuti (503 «troppo carico» sui Flash nuovi): da misurare ancora; idea: 2-3 trascrizioni insieme.
+
+## 14/11 (#87) Mario «mettile online ma controllale tutte piano piano con cura»
+→ controllate una per una le 19 trascritte: 16 ✅, 3 con `dubbi` restano «non controllata» (Ciambellefit, Pancake del 1 lug, Ricetta del 25 mag); 3 nomi corretti (Ricotta di soia, Gomasio, «torta a limone»), PT E90. Giro 105/105 locale → v0.10.34 online. Sveglia 9:10: ogni nuova una per una.
