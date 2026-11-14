@@ -723,6 +723,9 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   spinte.length = 0;
   const p1 = await api('/api/pronto', { cliente: 'C1', tipo: 'pronto' }, 'monica'), up = await api('/api/ultimo?e=' + encodeURIComponent('https://push.prova/c1')), ug = await api('/api/ultimo?e=' + encodeURIComponent('https://push.prova/mo1'));
   prova('C135 memoria bloccata: «il tuo ordine è pronto» al cliente, col testo giusto solo sul suo telefono', p1.j.mandati === 1 && spinte.join() === 'c1' && up.j.tipo === 'pronto' && ug.j.tipo === 'primo');
+  spinte.length = 0;
+  const s1 = await api('/api/pronto', { cliente: 'C1', tipo: 'sconto', testo: 'Grazie Laura!\u0007 Ora paghi 27,00 € ❤️' + 'x'.repeat(300), da: 'Monica' }, 'monica'), us = await api('/api/ultimo?e=' + encodeURIComponent('https://push.prova/c1'));
+  prova('C163 memoria bloccata: lo sconto arriva al cliente con la frase di Monica (pulita e corta)', s1.j.mandati === 1 && spinte.join() === 'c1' && us.j.tipo === 'sconto' && us.j.da === 'Monica' && us.j.testo.startsWith('Grazie Laura! Ora paghi 27,00 € ❤️x') && [...us.j.testo].length === 220);
   const q1 = await api('/api/qui', { nome: 'Laura <b>', n: 7 }, 'k1'), uq = await api('/api/ultimo'), q2 = await api('/api/qui', { nome: 'Laura', n: 7 }, 'k1');
   prova('C135 memoria bloccata: «sono qui» suona a chi gestisce (uno al minuto)', q1.j.mandati === 2 && uq.j.tipo === 'qui' && uq.j.nome === 'Laura b' && uq.j.n === 7 && q2.j.fermo === 'pausa');
   const i1 = await api('/api/cliente', { sub: sub('c2') }, 'k1'), i2 = await api('/api/iscrivi', { sub: sub('mo2') }, 'monica'), st = await api('/api/stato?e=' + encodeURIComponent('https://push.prova/m1'));
@@ -731,6 +734,9 @@ prova('originale: pulizia toglie le vecchie (pezzi compresi)', (await ponte.puli
   await W.default.scheduled({ cron: '*/10 * * * *' }, cfgAv, contesto); await finisci();
   const sv = await api('/api/stato');
   prova('C135 memoria tornata: i telefoni iscritti durante il blocco rientrano da soli (nessuno si riiscrive)', (mappa.get('clienti') || []).some(x => x.endpoint.endsWith('/c2')) && (mappa.get('iscritti') || []).some(x => x.endpoint.endsWith('/mo2')) && !copia().nuovi && sv.j.riserva && sv.j.riserva.clienti === 2 && sv.j.riserva.telefoni === 3);
+  spinte.length = 0;
+  const s2 = await api('/api/pronto', { cliente: 'C1', tipo: 'sconto', testo: 'Ti ho fatto uno sconto ❤️', da: 'Monica' }, 'monica'), us2 = await api('/api/ultimo?e=' + encodeURIComponent('https://push.prova/c1')), ug2 = await api('/api/ultimo?e=' + encodeURIComponent('https://push.prova/mo1'));
+  prova('C163 lo sconto (server sano) arriva solo ai telefoni del cliente (qui 2), col suo testo', s2.j.mandati === 2 && spinte.sort().join() === 'c1,c2' && us2.j.tipo === 'sconto' && us2.j.testo === 'Ti ho fatto uno sconto ❤️' && ug2.j.tipo !== 'sconto');
   spinte.length = 0;
   const pr = await api('/api/prova', { riserva: true }, 'mario'), ur = await api('/api/ultimo');
   prova('C135 «Prova la corsia d\'emergenza» (Mario): parte dalla copia, solo ai suoi telefoni', pr.j.riserva && pr.j.mandati === 1 && spinte.join() === 'm1' && ur.j.tipo === 'riserva');
