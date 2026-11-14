@@ -1319,6 +1319,42 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     if (await f.isVisible()) throw new Error('il cliente non deve vedere la freccia');
     await page.evaluate(() => { P.ruolo = 'monica'; vai('home'); window.scrollTo(0, 0); });
   });
+  await passo('C166 voti delle Proteiche solo per Mario (Monica vede le ricette senza voto); cuore sulle carte → «❤️ Preferite»', async () => {   // autonoma
+    // Mario 14/11 «i voti … le posso vedere solo io, Monica no … lasciamogli le ricette proteiche … un cuoricino … in una categoria preferite»
+    await page.evaluate(() => { window.__c166 = [Dati.attivo, window.chiLucchetto, window.statoLucchetto]; P.ruolo = 'monica'; S.impostazioni.ricettario = true; UI.foglio = null; RIC.voceAutoFatto = true;
+      const nu = { kcal: 380, prot: 38, carb: 30, grassi: 8, saturi: 2, zuc: 3, fibre: 3, sodio: 400 };
+      const ss = [{ id: 'gz:Cuore-fit-prova', nome: 'Cuore fit prova', zona: 'italiana', categoria: 'secondi', foto: '', aggiunta: Date.now(), totale: 30, difficolta: 'Facile', cerca: 'pollo', nutr: nu }];
+      RIC.chiedi = async c => c.db === 'mie' ? { scelte: ss } : c.cerca ? { ricette: [] } : c.db ? { db: null } : { ricetta: null };
+      salvaScelte(ss); localStorage.removeItem('pit-ric-filtri'); localStorage.removeItem('pit-ric-pref'); UI.ric = null; RIC.scelteOra = Date.now(); UI.ricZona = 'fit'; vai('home'); vai('ricettario'); });
+    await page.locator('.ric-elenco .ric-carta').first().waitFor({ timeout: 8000 });
+    const conta = () => page.evaluate(() => ({ carte: document.querySelectorAll('main .ric-elenco .ric-carta').length, voti: document.querySelectorAll('main .ric-pagella-riga').length, nota: /voto da 1 a 10/.test(typeof notaFit === 'function' ? notaFit() : '') }));
+    const mario = await conta();
+    if (!mario.carte || !mario.voti || !mario.nota) throw new Error('senza dati (o Mario) le Proteiche hanno il voto: ' + JSON.stringify(mario));
+    await page.evaluate(() => { Dati.attivo = true; window.statoLucchetto = () => null; window.chiLucchetto = () => 'monica'; render(); }); await page.waitForTimeout(200);
+    const mon = await conta();
+    if (!mon.carte || mon.voti || mon.nota) throw new Error('Monica: le Proteiche ci sono, i voti no: ' + JSON.stringify(mon));
+    const id = await page.evaluate(() => document.querySelector('main .ric-elenco .ric-carta').dataset.v.replace('ricetta:', ''));
+    await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id); await page.waitForTimeout(200);
+    if (await page.locator('.ric-pagella').count() || await page.evaluate(() => pagellaHtml({ kcal: 380, prot: 38, carb: 30, grassi: 8, saturi: 2, zuc: 3, fibre: 3, sodio: 400 }))) throw new Error('Monica: nella ricetta c\'è ancora la pagella');
+    await page.evaluate(() => { window.chiLucchetto = () => 'mario'; render(); });
+    if (!(await page.evaluate(() => /ric-pagella/.test(pagellaHtml({ kcal: 380, prot: 38, carb: 30, grassi: 8, saturi: 2, zuc: 3, fibre: 3, sodio: 400 }))))) throw new Error('Mario: nella ricetta manca la pagella');
+    // cuore: un tocco sulla carta la mette fra le preferite SENZA aprire la ricetta; nelle «❤️ Preferite» c'è; ritocco = tolta
+    await page.evaluate(() => { UI.ric = null; UI.ricZona = 'fit'; vai('ricettario'); }); await page.waitForTimeout(200);
+    const cuore = page.locator(`main .ric-elenco .ric-carta[data-v="ricetta:${id}"] .ric-cuore`);
+    if ((await cuore.textContent()) !== '🤍') throw new Error('cuore vuoto all\'inizio: ' + await cuore.textContent());
+    const bb = await cuore.boundingBox(); if (!bb || bb.width < 44 || bb.height < 44) throw new Error('cuore troppo piccolo da toccare: ' + JSON.stringify(bb));
+    await cuore.click(); await page.waitForTimeout(250);
+    const dopo = await page.evaluate(id => ({ vista: UI.vista, pref: JSON.parse(localStorage.getItem('pit-ric-pref') || '[]').includes(id) }), id);
+    if (dopo.vista !== 'ricettario' || !dopo.pref) throw new Error('il cuore deve mettere fra le preferite senza aprire la ricetta: ' + JSON.stringify(dopo));
+    await page.evaluate(() => window.scrollTo(0, 0));
+    await foto('166-cuore');
+    await clic('[data-a="ric-zona"][data-v="pref"]');
+    const inPref = await page.evaluate(id => [...document.querySelectorAll('main .ric-elenco .ric-carta')].map(c => c.dataset.v).includes('ricetta:' + id), id);
+    if (!inPref) throw new Error('la ricetta col cuore non è nelle «❤️ Preferite»');
+    await page.locator(`main .ric-elenco .ric-carta[data-v="ricetta:${id}"] .ric-cuore`).click(); await page.waitForTimeout(250);
+    if (await page.evaluate(id => JSON.parse(localStorage.getItem('pit-ric-pref') || '[]').includes(id), id)) throw new Error('ritoccare il cuore non la toglie');
+    await page.evaluate(() => { [Dati.attivo, window.chiLucchetto, window.statoLucchetto] = window.__c166; localStorage.removeItem('pit-ric-pref'); UI.ric = null; UI.ricZona = null; vai('home'); });
+  });
   await passo('cliente: invito «Installa l\'app» all\'ingresso, scelta iPhone | Android, notifiche (Mario 08/11 «fallo subito»)', async () => {   // autonoma
     await page.evaluate(() => { P.ruolo = 'cliente'; P.benvenuto = true; P.installata = false; UI.foglio = null; UI.invitoFatto = false; UI.invitoProva = true; vai('menu'); });
     await page.waitForSelector('.foglio .inv-scelta', { timeout: 3000 });
@@ -2249,7 +2285,7 @@ const OUT = '/tmp/pit'; fs.mkdirSync(OUT, { recursive: true });
     await foto('48g3-c145-ricetta-beardedscara');
     await page.evaluate(id => { UI.vista = 'ricetta:' + id; render(); }, id2); await page.waitForTimeout(200);
     // ⭐ preferita: la ritrovo nelle Preferite del Ricettario; dal Ricettario «Indietro» torna al Ricettario
-    await clic('[data-a="ric-pref"]');
+    await clic('button[data-a="ric-pref"]');
     await page.evaluate(() => { UI.ric = null; UI.ricZona = 'pref'; UI.vista = 'ricettario'; render(); });
     const pr = await page.evaluate(id => ({ c: !!document.querySelector(`main .ric-elenco .ric-carta[data-v="ricetta:${id}"]`), da: UI.ricVideoDa }), id2);
     if (!pr.c || pr.da) throw new Error('C144: la preferita video non è nelle Preferite: ' + JSON.stringify(pr));

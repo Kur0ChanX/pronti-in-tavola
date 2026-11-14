@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 19:12 · 01WTjqUu3oyB
-è normale un lavoro cosí certosino guarda i tasti ...ti ho messo opus alto..... c'è qualche regola che ti manda in confusione o nel kot o nelle preferenze
-
 ## 2026-11-13 19:16 · 01WTjqUu3oyB
 Poi ti ho detto, bisogna incentivare i clienti a ordinare nell'app, non a mandare i messaggi a Monica su WhatsApp. Ed è poco professionale i tasti messi così, proprio una schifezza.
 
@@ -126,3 +123,6 @@ Mi raccomando, non usare la versione lite di Gemini perché la lite la elabora s
 
 ## 2026-11-14 11:41 · 01WTjqUxsM3B
 Ovviamente i voti delle ricette proteiche le posso vedere solo io, Monica no, perché a lei non interessa molto, però lasciamogli le ricette proteiche. Però i voti per Monica togliamoli. Fammi sapere se hai fatto questa cosa del Monica con la vista cliente, se è già aggiunta. Metti delle ricette, magari un cuoricino che me le serve in una categoria preferite.
+
+## 2026-11-14 11:47 · 01WTjqUxsM3B
+Anche Monica può salvare i preferiti
