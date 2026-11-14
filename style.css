@@ -829,6 +829,9 @@ details.scheda summary { cursor: pointer; min-height: 32px; }
 .ric-zoom img.ric-zoom-grande { width: 100%; height: auto; max-height: calc(100% - 140px); }
 .ric-scorri { display: grid; grid-auto-flow: column; grid-auto-columns: 78%; gap: 10px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; }
 .ric-scorri .ric-carta { scroll-snap-align: start; }
+/* C166: cuore delle preferite sulla carta (tocco largo 44 px) */
+.ric-cuore { margin-left: auto; flex: none; min-width: 44px; min-height: 44px; display: grid; place-items: center; font-size: 22px; border-radius: 50%; }
+.ric-cuore:active { transform: scale(.85); }
 .ric-cerca input { flex: 1; min-width: 0; }
 .ric-cerca .btn { flex: none; width: 52px; padding: 0; }
 .ric-video { border-radius: 18px; overflow: hidden; background: #000; aspect-ratio: 16 / 9; }
