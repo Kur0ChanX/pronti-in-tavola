@@ -1,3 +1,3 @@
-# Ultimo messaggio di Mario (14/11/2026 03:39 ora italiana)
+# Ultimo messaggio di Mario (14/11/2026 03:42 ora italiana)
 
-ho 10 minuti
+vapore ok ecc  oer ora sono ok te lo segnalerò io se ci saranno problemi tu vai avanti tranquillo
