@@ -1,0 +1,31 @@
+{
+"account": "108763",
+"sessione": "5ae591fa9724",
+"giorno": "2026-11-14",
+"turni": 3,
+"peso": 816523,
+"uscita": 19803,
+"contesto_max": 220504,
+"anomalie": [],
+"remota": "01WTjqUwbEtu",
+"aiutanti": 0,
+"strumenti": 26,
+"motori": {
+"opus": 816523
+},
+"memoria_scaduta": 1,
+"ricreati": 110717,
+"blocchi": {
+"Stop 13 · There are uncommitted changes in": 2,
+"Stop 6 · Il turno finisce con una": 1
+},
+"esempi_blocchi": {
+"Stop 13 · There are uncommitted changes in": [
+"00:57 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch.",
+"00:57 · There are uncommitted changes in the repository. Please commit and push these changes to the remote branch."
+],
+"Stop 6 · Il turno finisce con una": [
+"01:00 · Il turno finisce con una domanda o un passo a mano per Mario: rinomina la sessione (set_session_title): col giallo della tua catena se dopo questo messaggio ti fermi ad aspettare Mario («<🟡|🟨|💛|✴️|📒> "
+]
+}
+}
