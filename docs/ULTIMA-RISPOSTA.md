@@ -1,5 +1,4 @@
-# Ultima risposta di Claude (14/11/2026 03:33 ora italiana)
+# Ultima risposta di Claude (14/11/2026 03:53 ora italiana)
 
-Ho aggiunto la riga nel Da fare e l'ho salvata su GitHub.
-
-Le quattro domande 🛑 erano già segnate nelle loro righe. La riga nuova dei controlli a gruppi non è decisiva, quindi niente 🛑.
+DOMANDA 1: ti ho rimandato le 3 foto delle scritte sulle ricette video. Le scritte sono ferme, non si muovono, quindi non serve un video.
+Rispondi così: 1 · le metto online, dopo le prove (consiglio) · 2 · no, lascia com'è
