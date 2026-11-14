@@ -2,9 +2,6 @@
 
 Scritto da `.claude/hooks/scorta.py` (C291): arriva nel ramo unendo la scorta. Non si modifica a mano.
 
-## 2026-11-13 18:39 · 01WTjqUwuvHs
-ma hai capito il problema? scrivo e non mi rispondi e correggi i problemi senza leggere dopo
-
 ## 2026-11-13 18:46 · 01WTjqUu3oyB
 Cioè, stai rispondendo a quello che ti ho detto dopo 20 e passa minuti? È un'altra sessione? Boh, non capisco cosa stai sbagliando proprio il modo di pensare, di lavorare, stai proprio sbagliando. Te l'ho scritto dall'inizio e tu mi hai provato a correggere un problema che non ti ho detto e mi rispondi al messaggio dopo una sessione. Mai successo. Sicuramente hai qualche bug, qualche problema grave.
 
@@ -129,3 +126,6 @@ la prima volta che non mi fai copiare la stringa da mettere nell'altra chat succ
 
 ## 2026-11-14 03:00 · 01WTjqUuqoS1
 si va bene per tutti che dici?
+
+## 2026-11-14 03:25 · 01WTjqUuqoS1
+rifammi la domanda chiara
