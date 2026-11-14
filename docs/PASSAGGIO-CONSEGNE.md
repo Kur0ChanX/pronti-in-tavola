@@ -1,16 +1,16 @@
 # Passaggio di consegne
 
-Sessione attuale: #85 (dopo la #84 `session_01WTjqUwbEtuW5m6ckQeJqwr`, chiusa alla soglia 14/11 01:10; la apre la #84 con `create_session` (catena 7 di 8)).
+Sessione attuale: #86 (dopo la #85 `session_01WTjqUvFmqRdTVxKTg2GE7d`, chiusa alla soglia 14/11 01:28; la apre Mario (catena a 8 di 8, o cambio account): passi in `docs/kit-progetto/CAMBIO-ACCOUNT.md`).
 
-**#85: la apre la #84 (catena 7 di 8).** #84: v0.10.31 (C160 costo della ricetta) e v0.10.32 (C159 ordini di prova fuori da pronti e teglie + «per sabato» di sabato) ONLINE; C163 sconto: piano scritto, aspetta «1 1»; C162 numero di Lisa: passi a mano dati a Mario (Firebase).
+**#86: la apre Mario (catena a 8 di 8).** #85: v0.10.33 ONLINE (C163 sconto di Monica: euro e %, doppia conferma, avviso col cuore, frase `msgSconto` nelle Impostazioni, voce aiutante `ordini-sconto`); giro 104/104, server 186/186, foto approvate da Mario. C162 Lisa: Mario è sul documento Firebase giusto (`omwfdndqiz478x`, n: 2, entro 2026-11-21); gli ho detto matita su `n` → 1, poi contatori/ordini `prossimo` 3 → 2.
 
 - **Modo di lavorare (Mario 13/11 18:50, dopo C155):** prima di OGNI modifica scrivo a Mario cosa e perché in una riga e aspetto il suo ok; rispondo a ogni suo messaggio prima di lavorare; niente cose non chieste.
 - **Già deciso da Mario (non richiedere):** tutto in `docs/lavori-in-corso/gia-deciso-da-mario.md` (leggilo a blocchi con grep prima di ogni domanda). 10/11: Cloudflare NIENTE piano a pagamento e NIENTE blocchi alle persone, solo avvisi a Mario; C135 = «1» (anche i clienti, nessuno si riiscrive); 11/11: C139 regola dolci = «2» (snack prot ≥ 8 g, quota ≥ 20 %, zuccheri ≤ 30 %); Agent Reach NON si usa (#59: social, rischio, cookie); C137 = in emergenza il ricettario si ferma (ordini, menù, avvisi, clienti sempre).
 - **Da non rifare:** sessioni 1-15 in `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md` (in fondo anche #16-#46). C136 (v0.10.17), C135 codice e C137 (v0.10.18), C139 (v0.10.19, #57) FATTE. Snellimento di `ERRORI.md` e `DA-FARE.md` FATTO dalla #55.
-- **Cosa preme a Mario adesso (14/11 01:10, #84):** C163 sconto di Monica (piano in `docs/lavori-in-corso/c163-sconto.md`, DOMANDA 1 ok al piano, DOMANDA 2 euro e/o percentuale: aspetta «1 1»); C162 ordine di Lisa da n. 2 a n. 1 (passi a mano su Firebase già dati: chiedere a che passo è); foto di v0.10.31/32. Prima di OGNI modifica dell'app: una riga a Mario e il suo ok.
+- **Cosa preme a Mario adesso (14/11 01:30, #85):** C162 Lisa a n. 1 (aspettare la sua foto dopo i 2 cambi e controllare in app: Ordini → Prossimi, Lisa n. 1); foto di v0.10.33 (sconto, dal suo telefono); poi C159 vista cliente (2 domande), C161 controllo regole, foto 0.10.26/30/31, pagella Proteiche, PC di casa.
 
-## Stato (14/11 01:10 ora italiana)
-- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261113-01WTjqUwbEtu/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
+## Stato (14/11 01:28 ora italiana)
+- Ramo comune = origin (verifica: `git rev-parse HEAD` = `origin/claude/pronti-ramo-definitivo`). Nessun giro in corso. Nessuna PR aperta. Versione nel codice v?. Scorte NON unite: scorta-principale-20261114-01WTjqUvFmqR/claude/pronti-ramo-definitivo (merge con conflitti nelle consegne: `python3 -I .claude/hooks/scorta.py prendi-messaggi origin/<scorta>`, PT E85).
 - **v0.10.28 ONLINE** (giro 98/98 locale, commit `[pubblica]` 8a4b4b3): C152 +70 proteiche, C154 ingredienti con @marca non più persi (92 ricette) + dosi del procedimento Pietrobon. Verifica: `curl -s https://pronti-in-tavola.pronti-in-tavola.workers.dev/data.js | grep -o "VERSIONE_APP = '[0-9.]*'"` → 0.10.28; `…/ricette-video.js | grep -c '5g cacao'` → 12.
 - **C154 scritte in patch** `docs/lavori-in-corso/c154-etichette.patch` (ricettario.js carta e ricetta, ricette-video.js rigenerato con 12 `controllata`, tools/prova.js passo C150+C154). Verifica: `git apply --check`; `SOLO=C150` verde.
 - **Trascrizione** `tools/dati/video-dal-parlato.json`: 26 video (7 scartati). Misurato 13/11 (#77): limite GIORNALIERO gratis (~20 per modello, 429 «PerDay» su 3.8/3.7/3.6/3.5) → ~25 al giorno; ne restano 765 = ~4 settimane. La stima «17,4 ore» era sbagliata (PT E80). Sveglia ogni mattina 9:10 (`trig_01E2n2khL5VsdZX4q5C51iN3`, della #77). Domanda a Mario: gratis o a pagamento (stima 10-40 €).
@@ -40,8 +40,8 @@ Sessione attuale: #85 (dopo la #84 `session_01WTjqUwbEtuW5m6ckQeJqwr`, chiusa al
 - #60 e prima: vedi la sezione nelle consegne vecchie (`git log -p docs/PASSAGGIO-CONSEGNE.md`) e `docs/lavori-in-corso/da-non-rifare-sessioni-1-15.md`.
 
 ## Prossimi passi
-1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Aperte: C163 «1 1» (sconto), C162 a che passo è con Lisa, foto 0.10.32.
-2. C163: Mario 14/11 ~01:15 «1 1 ok / 2 in tutti e 2 i modi» = piano ok, euro E percentuale. Codice (app.js ordine aperto «Fai uno sconto» con doppia conferma, totale scontato ovunque, `avvisaCliente` tipo `sconto` + worker, frase `msgSconto` nelle Impostazioni → Messaggi), prova, foto, ok, giro, online.
+1. Rispondere SUBITO all'ultimo messaggio di Mario (PT E82). Aperte: C162 Lisa (n 2→1 e prossimo 3→2 su Firebase: aspetta la sua foto), foto sconto v0.10.33.
+2. C163 FATTA e online (v0.10.33): chiudere la promessa 👁 solo quando Mario manda la foto dall'app. Idee non fatte: sconto anche dall'aiutante a voce (oggi solo «portami lì»).
 3. C162: se Mario si blocca, guidarlo con foto (GUIDE-GIUSTE.md: Firebase); a fine passi scrivere in GUIDE-GIUSTE i pulsanti veri.
 4. C159 vista cliente dopo le 2 risposte (gesto, tocchi). C161 col «1». Poi i vecchi: foto menù 0.10.30, trascrizione (sveglia #77), scritte C154, idee C149, pagella C141.
 ⛔ NON unire le scorte `01WTjqUup234` (#66), `01WTjqUwz4Kr` (#67), `01WTjqUvtoJC` (#70), `01WTjqUuVK9Q` (#83, il suo codice era la patch C160, già online).
@@ -50,26 +50,19 @@ Sessione attuale: #85 (dopo la #84 `session_01WTjqUwbEtuW5m6ckQeJqwr`, chiusa al
 - Tutte in «## 0. Aspetta Mario» di `docs/DA-FARE.md` (della principale: 23; prime C163 sconto 🛑 e C162 Lisa).
 
 ## Ultimo messaggio di Mario
-14/11 00:59, intero in fondo («Messaggi di Mario di questa sessione») → C163 piano + domande; «Correggi i 2 buchi come consiglio» → v0.10.32 online.
+14/11 01:23 (foto Firebase 01:25-01:28 dopo): «le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica» → sconto v0.10.33 online; Lisa: passi a mano su Firebase (n 2→1, prossimo 3→2), Mario è sul documento giusto, aspetta la sua foto. Prima: 01:12 «1 1 ok / 2 in tutti e 2 i modi».
 
 ## Numeri liberi
 Prossimo E libero: E1; prossimo C libero: C165; prossimo M libero: M1.
 
 ## Motore e forza di pensiero
-Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Alto** (`high`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
+Motore: **claude-opus-5-5** (Opus 5.5) · impegno **Medio** (`medium`, dal registro della sessione): la sessione nuova nasce con questi (C474, `create_session` con `model` ed `effort`), mai chiesti a Mario (E277).
 
 ## Messaggi di Mario di questa sessione
 Scritti dallo script (C469): dopo «→» cosa ne è stato (C…, file, commit o «risposta alla domanda N»).
-- 2026-11-13 23:27 · [AVVIO] Sessione #84 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, titolo, promemoria domande
-- 2026-11-13 23:37 · rifammi la domanda → C160 4 foto rimandate + domanda
-- 2026-11-13 23:44 · va bene come consiglio → C160 v0.10.31 online
-- 2026-11-14 00:56 · Lisa è la vera numero 1 puoi modificarlo? solo il numero non fare danno all'ordi… → C162 passi a mano su Firebase
-- 2026-11-14 00:59 · c'è l'opzione che Monica puoi mandare lo sconto anche fino aprima del ritiro nel… → C163 piano + DOMANDE 1-2; C159 v0.10.32 online
+- 2026-11-14 01:11 · [AVVIO] Sessione #85 di Pronti in Tavola (repo Kur0ChanX/pronti-in-tavola, ramo … → avvio, titolo, promemoria domande
+- 2026-11-14 01:23 · le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lis… → C163 foto ok → v0.10.33 online; C162 Lisa passi a mano su Firebase (n 2→1, prossimo 3→2)
 
 Ultimo, intero:
-> c'è l'opzione che Monica puoi mandare lo sconto anche fino aprima del ritiro nell'importo che vuole lei e se crea lo econto per l'ordine che si troverà in ordini tipo vuoi applicare uno sconto all'importo X e lei sceglie di quanto e al cliente arriva la notifica Monica ti ha applicato uno sconto o una frase carina con un cuore.
-> Tipo grazie per l'ordine ecc ecc la frase può essere editata delle impostazioni 
-> per inviare lo sconto deve andare a doppia conferma da parte di Monica 
-> 
-> e Correggi i 2 buchi come consiglio
+> le foro dello sconto sembrano ok e poi riesci a passare dall'ordine 2 a 1 in lisa senza rompere nulla perché è il vero primo ordine che arriva a Monica
 
