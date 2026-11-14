@@ -2,10 +2,10 @@
 "account": "108763",
 "sessione": "a7e870aea510",
 "giorno": "2026-11-14",
-"turni": 12,
-"peso": 2103498,
-"uscita": 33361,
-"contesto_max": 260989,
+"turni": 13,
+"peso": 2314550,
+"uscita": 36605,
+"contesto_max": 268869,
 "anomalie": [
 "1 uscite di strumento enormi (117 KB la più grande): leggere a pezzi (grep -n, sed -n)"
 ],
@@ -43,9 +43,9 @@
 },
 "remota": "01WTjqUxsM3B",
 "aiutanti": 0,
-"strumenti": 61,
+"strumenti": 67,
 "motori": {
-"opus": 2103498
+"opus": 2314550
 },
 "memoria_scaduta": 2,
 "ricreati": 384955
